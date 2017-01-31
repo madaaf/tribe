@@ -5,8 +5,7 @@
     android:layout_height="300dp"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/shape_rect_white_rounded_corners"
-    >
+    android:background="@drawable/shape_rect_white_rounded_corners">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,8 +20,7 @@
             android:layout_height="@dimen/avatar_size"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/horizontal_margin_large"
-            android:scaleType="centerInside"
-            />
+            android:scaleType="centerInside" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtPopupTitle"
@@ -30,8 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/vertical_margin_large"
             android:gravity="center"
-            style="@style/Headline.Black.1"
-            />
+            style="@style/Headline.Black.1" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtPopupDesc"
@@ -40,8 +37,7 @@
             android:layout_marginTop="10dp"
             android:lineSpacingExtra="2.5dp"
             android:gravity="center_horizontal"
-            style="@style/Title.1.Black"
-            />
+            style="@style/Title.1.Black" />
 
     </LinearLayout>
 
@@ -61,8 +57,7 @@
             android:foreground="@drawable/selectable_button_light"
             android:background="@color/blue.text"
             android:gravity="center"
-            android:text="@string/newlevel_share"
-            />
+            android:text="@string/newlevel_share" />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtDone"
@@ -74,8 +69,7 @@
             android:foreground="@drawable/selectable_button_light"
             android:background="@color/yellow"
             android:gravity="center"
-            android:text="@string/newlevel_close"
-            />
+            android:text="@string/newlevel_close" />
 
     </LinearLayout>
 </FrameLayout>

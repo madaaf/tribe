@@ -15,7 +15,9 @@ import rx.Observable;
 public class DiskUpdateFriendship extends UseCaseDisk {
 
     private String friendshipId;
-    private @FriendshipRealm.FriendshipStatus String status;
+    private
+    @FriendshipRealm.FriendshipStatus
+    String status;
     private UserRepository userRepository;
 
     @Inject

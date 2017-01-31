@@ -19,7 +19,8 @@ public class GroupEntity implements Serializable {
         this.imgPath = imgPath;
     }
 
-    public GroupEntity() { }
+    public GroupEntity() {
+    }
 
     public String getName() {
         return name;

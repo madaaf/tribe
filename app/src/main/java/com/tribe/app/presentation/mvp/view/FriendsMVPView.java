@@ -7,10 +7,15 @@ import java.util.List;
 public interface FriendsMVPView extends LoadDataMVPView {
 
     void renderContactList(List<User> contactList);
+
     void successFacebookLogin();
+
     void errorFacebookLogin();
+
     void syncDone();
+
     void successCreateFriendships();
+
     void errorCreateFriendships();
 }
 

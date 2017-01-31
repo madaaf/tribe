@@ -371,7 +371,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         subscriptions.add(viewMembersGroup.onClickRemoveFromGroup()
                 .map(groupMember -> {
                     membership.getGroup().getMembers().remove(groupMember.getUser());
-                    if (viewStack.getTopView() instanceof MembersGroupView) currentTitle.setText(getTitleForMembers());
+                    if (viewStack.getTopView() instanceof MembersGroupView)
+                        currentTitle.setText(getTitleForMembers());
                     updateGroup(membership.getGroup(), true);
                     return groupMember.getUser();
                 })
@@ -384,7 +385,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
             setupTitle(groupEntity == null ? membership.getDisplayName() : getString(R.string.group_add_members_title), forward);
             if (groupEntity != null || newMembers.size() > 0) {
                 txtAction.setVisibility(View.VISIBLE);
-                if (newMembers.size() > 0) txtAction.setText(getString(R.string.action_add, newMembers.size()));
+                if (newMembers.size() > 0)
+                    txtAction.setText(getString(R.string.action_add, newMembers.size()));
             }
         } else if (to instanceof CreateGroupView) {
             setupTitle(getString(R.string.group_identification_title), forward);

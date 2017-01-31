@@ -274,7 +274,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
             if (LOG_EGL) {
                 Log.w("EglHelper", "start() tid=" + Thread.currentThread().getId());
             }
-			/*
+            /*
 			 * Get an EGL instance
 			 */
             mEgl = (EGL10) EGLContext.getEGL();
@@ -292,7 +292,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
 			 * We can now initialize EGL for that display
 			 */
             int[] version = new int[2];
-            if(!mEgl.eglInitialize(mEglDisplay, version)) {
+            if (!mEgl.eglInitialize(mEglDisplay, version)) {
                 throw new RuntimeException("eglInitialize failed");
             }
             GlTextureView view = mGLSurfaceViewWeakRef.get();
@@ -378,6 +378,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
 
         /**
          * Create a GL object for the current EGL context.
+         *
          * @return
          */
         GL createGL() {
@@ -406,10 +407,11 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
 
         /**
          * Display the current render surface.
+         *
          * @return the EGL error code from eglSwapBuffers.
          */
         public int swap() {
-            if (! mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
+            if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
                 return mEgl.eglGetError();
             }
             return EGL_SUCCESS;
@@ -485,10 +487,9 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
      * A generic GL Thread. Takes care of initializing EGL and GL. Delegates
      * to a Renderer instance to do the actual drawing. Can be configured to
      * render continuously or on request.
-     *
+     * <p>
      * All potentially blocking synchronization is done through the
      * sGLThreadManager object. This avoids multiple-lock ordering issues.
-     *
      */
     static class GLThread extends Thread {
         GLThread(final WeakReference<GlTextureView> glSurfaceViewWeakRef) {
@@ -564,7 +565,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
                                 return;
                             }
 
-                            if (! mEventQueue.isEmpty()) {
+                            if (!mEventQueue.isEmpty()) {
                                 event = mEventQueue.remove(0);
                                 break;
                             }
@@ -629,7 +630,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
                             }
 
                             // Have we lost the SurfaceView surface?
-                            if ((! mHasSurface) && (! mWaitingForSurface)) {
+                            if ((!mHasSurface) && (!mWaitingForSurface)) {
                                 if (LOG_SURFACE) {
                                     Log.i("GLThread", "noticed surfaceView surface lost tid=" + getId());
                                 }
@@ -664,7 +665,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
                             if (readyToDraw()) {
 
                                 // If we don't have an EGL context, try to acquire one.
-                                if (! mHaveEglContext) {
+                                if (!mHaveEglContext) {
                                     if (askedToReleaseEglContext) {
                                         askedToReleaseEglContext = false;
                                     } else if (sGLThreadManager.tryAcquireEglContextLocked(this)) {
@@ -836,36 +837,36 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
         }
 
         public void setRenderMode(final int renderMode) {
-            if ( !((RENDERMODE_WHEN_DIRTY <= renderMode) && (renderMode <= RENDERMODE_CONTINUOUSLY)) ) {
+            if (!((RENDERMODE_WHEN_DIRTY <= renderMode) && (renderMode <= RENDERMODE_CONTINUOUSLY))) {
                 throw new IllegalArgumentException("renderMode");
             }
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 mRenderMode = renderMode;
                 sGLThreadManager.notifyAll();
             }
         }
 
         public int getRenderMode() {
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 return mRenderMode;
             }
         }
 
         public void requestRender() {
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 mRequestRender = true;
                 sGLThreadManager.notifyAll();
             }
         }
 
         public void surfaceCreated() {
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
                     Log.i("GLThread", "surfaceCreated tid=" + getId());
                 }
                 mHasSurface = true;
                 sGLThreadManager.notifyAll();
-                while((mWaitingForSurface) && (!mExited)) {
+                while ((mWaitingForSurface) && (!mExited)) {
                     try {
                         sGLThreadManager.wait();
                     } catch (final InterruptedException e) {
@@ -876,13 +877,13 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
         }
 
         public void surfaceDestroyed() {
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 if (LOG_THREADS) {
                     Log.i("GLThread", "surfaceDestroyed tid=" + getId());
                 }
                 mHasSurface = false;
                 sGLThreadManager.notifyAll();
-                while((!mWaitingForSurface) && (!mExited)) {
+                while ((!mWaitingForSurface) && (!mExited)) {
                     try {
                         sGLThreadManager.wait();
                     } catch (final InterruptedException e) {
@@ -899,7 +900,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
                 }
                 mRequestPaused = true;
                 sGLThreadManager.notifyAll();
-                while ((! mExited) && (! mPaused)) {
+                while ((!mExited) && (!mPaused)) {
                     if (LOG_PAUSE_RESUME) {
                         Log.i("Main thread", "onPause waiting for mPaused.");
                     }
@@ -921,7 +922,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
                 mRequestRender = true;
                 mRenderComplete = false;
                 sGLThreadManager.notifyAll();
-                while ((! mExited) && mPaused && (!mRenderComplete)) {
+                while ((!mExited) && mPaused && (!mRenderComplete)) {
                     if (LOG_PAUSE_RESUME) {
                         Log.i("Main thread", "onResume waiting for !mPaused.");
                     }
@@ -944,7 +945,7 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
                 sGLThreadManager.notifyAll();
 
                 // Wait for thread to react to resize and render a frame
-                while (! mExited && !mPaused && !mRenderComplete && ableToDraw()) {
+                while (!mExited && !mPaused && !mRenderComplete && ableToDraw()) {
                     if (LOG_SURFACE) {
                         Log.i("Main thread", "onWindowResize waiting for render complete from tid=" + getId());
                     }
@@ -960,10 +961,10 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
         public void requestExitAndWait() {
             // don't call this from GLThread thread or it is a guaranteed
             // deadlock!
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 mShouldExit = true;
                 sGLThreadManager.notifyAll();
-                while (! mExited) {
+                while (!mExited) {
                     try {
                         sGLThreadManager.wait();
                     } catch (final InterruptedException ex) {
@@ -980,13 +981,14 @@ public class GlTextureView extends TextureView implements TextureView.SurfaceTex
 
         /**
          * Queue an "event" to be run on the GL rendering thread.
+         *
          * @param r the runnable to be run on the GL rendering thread.
          */
         public void queueEvent(final Runnable r) {
             if (r == null) {
                 throw new IllegalArgumentException("r must not be null");
             }
-            synchronized(sGLThreadManager) {
+            synchronized (sGLThreadManager) {
                 mEventQueue.add(r);
                 sGLThreadManager.notifyAll();
             }

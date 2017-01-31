@@ -49,7 +49,8 @@ public class LivePresenter implements Presenter {
     private final class FriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

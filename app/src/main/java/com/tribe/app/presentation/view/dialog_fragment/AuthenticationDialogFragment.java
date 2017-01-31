@@ -86,7 +86,9 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
         return cancelClicked;
     }
 
-    public Observable<Void> onDismiss() { return onDismiss; }
+    public Observable<Void> onDismiss() {
+        return onDismiss;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,7 +129,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
             textCancel.setText(getString(R.string.onboarding_popup_error_edit_button_title));
             textConfirm.setText(getString(R.string.onboarding_popup_error_resend_button_title));
             LinearLayout.LayoutParams layoutBottomParams = (LinearLayout.LayoutParams) layoutBottom.getLayoutParams();
-            layoutBottomParams.setMargins(0,0,0,0);
+            layoutBottomParams.setMargins(0, 0, 0, 0);
             layoutBottom.setLayoutParams(layoutBottomParams);
             CodeSentToView codeSentToView = new CodeSentToView(getContext());
             LinearLayout.LayoutParams codeSentToViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.notif_size_big));

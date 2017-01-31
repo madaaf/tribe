@@ -16,7 +16,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 public class ToolTip {
 
     @IntDef({RIGHT_UPWARD, RIGHT_DOWNWARD, CENTER_DOWNWARD, NO_IND})
-    public @interface Style{}
+    public @interface Style {
+    }
 
     public static final int RIGHT_UPWARD = 0;
     public static final int RIGHT_DOWNWARD = 1;

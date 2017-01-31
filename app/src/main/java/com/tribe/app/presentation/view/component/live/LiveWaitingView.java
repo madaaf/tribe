@@ -41,7 +41,9 @@ public class LiveWaitingView extends FrameLayout {
     private ValueAnimator circleAnimator;
     private Recipient recipient;
     private Boolean isMeasuring = false;
-    private @LiveRoomView.TribeRoomViewType int type = LiveRoomView.GRID;
+    private
+    @LiveRoomView.TribeRoomViewType
+    int type = LiveRoomView.GRID;
     private TextViewFont txtDropInTheLive;
 
     private CompositeSubscription subscriptions = new CompositeSubscription();

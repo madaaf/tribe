@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:background="@color/white.opacity.20"
-        />
+        android:background="@color/white.opacity.20" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtTitle"
@@ -20,6 +17,5 @@
         android:paddingStart="50dp"
         android:paddingEnd="50dp"
         android:gravity="center"
-        android:clickable="true"
-        />
+        android:clickable="true" />
 </merge>

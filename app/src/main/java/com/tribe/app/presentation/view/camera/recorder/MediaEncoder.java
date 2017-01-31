@@ -50,7 +50,8 @@ public abstract class MediaEncoder implements Runnable {
 
             try {
                 sync.wait();
-            } catch (final InterruptedException e) { }
+            } catch (final InterruptedException e) {
+            }
         }
     }
 

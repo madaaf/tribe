@@ -78,7 +78,6 @@
         android:layout_marginTop="@dimen/vertical_margin_mid"
         android:alpha="0"
         android:gravity="center"
-        android:text="@string/onboarding_popup_error_team_notified"
-        />
+        android:text="@string/onboarding_popup_error_team_notified" />
 
 </LinearLayout>

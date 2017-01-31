@@ -45,8 +45,9 @@ public interface UserRepository {
 
     /**
      * Get an {@link Observable} which will emit an Access Token.
+     *
      * @param displayName the full name of the user.
-     * @param username the username of the user.
+     * @param username    the username of the user.
      * @param loginEntity the login infos needed to register (pinId, etc)
      */
     Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity);
@@ -54,21 +55,20 @@ public interface UserRepository {
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
-     * @param userId the id of the user for which we get the info
      *
+     * @param userId the id of the user for which we get the info
      */
     Observable<User> userInfos(final String userId);
 
     /**
      * Get an {@link Observable} which will emit a {@link List<Friendship>}
-     *
      */
     Observable<List<Friendship>> friendships();
 
     /**
      * Get an {@link Observable} which will emit a {@link User}
-     * @param token the token of the user for which we get the info
      *
+     * @param token the token of the user for which we get the info
      */
     Observable<Installation> createOrUpdateInstall(final String token);
 
@@ -120,7 +120,7 @@ public interface UserRepository {
      */
     Observable<Friendship> createFriendship(String userId);
 
-    Observable<Void> createFriendships(String ...userIds);
+    Observable<Void> createFriendships(String... userIds);
 
     /**
      * Get an {@link Observable} which will emit a void

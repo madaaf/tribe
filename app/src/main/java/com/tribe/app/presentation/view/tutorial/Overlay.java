@@ -15,7 +15,8 @@ public class Overlay {
     public final static int NOT_SET = -1;
 
     @IntDef({CIRCLE, RECTANGLE})
-    public @interface Style{}
+    public @interface Style {
+    }
 
     public static final int CIRCLE = 0;
     public static final int RECTANGLE = 1;
@@ -25,7 +26,9 @@ public class Overlay {
     public boolean disableClick;
     public boolean disableClickThroughHole;
     public View.OnClickListener onClickListener;
-    public @Style int style;
+    public
+    @Style
+    int style;
     public Animation enterAnimation, exitAnimation;
     public int holeOffsetLeft = 0;
     public int holeOffsetTop = 0;

@@ -46,7 +46,7 @@ public class DiagonalLayout extends FrameLayout {
         setWillNotDraw(false);
     }
 
-    private void calculateLayout(){
+    private void calculateLayout() {
         if (width > 0 && height > 0) {
             float perpendicularHeight = (float) (width * Math.tan(Math.toRadians(angle)));
             path.moveTo(0, 0);

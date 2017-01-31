@@ -52,8 +52,8 @@ public class CloudUserDataRepository implements UserRepository {
     /**
      * Constructs a {@link UserRepository}.
      *
-     * @param dataStoreFactory A factory to construct different data source implementations.
-     * @param realmDataMapper {@link UserRealmDataMapper}.
+     * @param dataStoreFactory   A factory to construct different data source implementations.
+     * @param realmDataMapper    {@link UserRealmDataMapper}.
      * @param pinRealmDataMapper {@link PinRealmDataMapper}.
      */
     @Inject
@@ -184,7 +184,7 @@ public class CloudUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Void> createFriendships(String ...userIds) {
+    public Observable<Void> createFriendships(String... userIds) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
         return cloudDataStore
                 .createFriendships(userIds);
@@ -233,14 +233,14 @@ public class CloudUserDataRepository implements UserRepository {
     @Override
     public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return  cloudDataStore.updateGroup(groupId, values)
+        return cloudDataStore.updateGroup(groupId, values)
                 .map(this.groupRealmDataMapper::transform);
     }
 
     @Override
     public Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values) {
         final CloudUserDataStore cloudDataStore = (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-        return  cloudDataStore.updateMembership(membershipId, values)
+        return cloudDataStore.updateMembership(membershipId, values)
                 .map(this.membershipRealmDataMapper::transform);
     }
 

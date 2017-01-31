@@ -40,7 +40,7 @@ public class RatingView extends FrameLayout {
     @Inject
     ScreenUtils screenUtils;
 
-    @BindViews({ R.id.txtReviewOne, R.id.txtReviewTwo })
+    @BindViews({R.id.txtReviewOne, R.id.txtReviewTwo})
     List<TextViewFont> txtReviews;
 
     // OBSERVABLES
@@ -50,7 +50,7 @@ public class RatingView extends FrameLayout {
     // VARIABLES
     private int currentTxtReviewAnimation = 0;
     private int currentTxtReviewWording = 0;
-    private String [] wordings;
+    private String[] wordings;
     private int initialDelay = START_DELAY_SMALL;
 
     public RatingView(Context context) {

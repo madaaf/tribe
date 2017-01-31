@@ -36,7 +36,7 @@ public class RxContacts {
         this.phoneUtils = phoneUtils;
         withPhones = true;
         sorter = Sorter.LAST_TIME_CONTACTED;
-        filter = new Filter[] { Filter.HAS_PHONE };
+        filter = new Filter[]{Filter.HAS_PHONE};
         helper = new ContactsHelper(context, phoneUtils);
         this.addressBook = addressBook;
     }
@@ -45,6 +45,7 @@ public class RxContacts {
 
     /**
      * Run ContentResolver query and emit results to the Observable
+     *
      * @return
      */
     public Observable<ContactABRealm> getContacts() {
@@ -62,6 +63,7 @@ public class RxContacts {
     /**
      * Experimental!
      * Faster query. Additional conditions doesn't work (withEmails, withPhotos, filters, sorters). Use Rx filters instead
+     *
      * @return
      */
     public Observable<Contact> getContactsFast() {

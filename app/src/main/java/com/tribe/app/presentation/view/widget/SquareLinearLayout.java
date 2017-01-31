@@ -6,7 +6,9 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-/** A LinearLayout that will always be square (based out of its width) */
+/**
+ * A LinearLayout that will always be square (based out of its width)
+ */
 public class SquareLinearLayout extends LinearLayout {
 
     public SquareLinearLayout(Context context) {

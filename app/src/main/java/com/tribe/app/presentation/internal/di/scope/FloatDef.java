@@ -34,9 +34,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.ANNOTATION_TYPE})
 public @interface FloatDef {
-    /** Defines the allowed constants for this element */
+    /**
+     * Defines the allowed constants for this element
+     */
     float[] value() default {};
 
-    /** Defines whether the constants can be used as a flag, or just as an enum (the default) */
+    /**
+     * Defines whether the constants can be used as a flag, or just as an enum (the default)
+     */
     boolean flag() default false;
 }

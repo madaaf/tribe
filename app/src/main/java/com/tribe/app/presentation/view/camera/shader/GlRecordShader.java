@@ -11,10 +11,10 @@ import com.tribe.app.presentation.view.camera.renderer.GLES20FramebufferObject;
 public abstract class GlRecordShader extends GlShader {
 
     protected MediaVideoEncoder mediaVideoEncoder;
-    protected EGLDisplay savedEglDisplay     = null;
+    protected EGLDisplay savedEglDisplay = null;
     protected EGLSurface savedEglDrawSurface = null;
     protected EGLSurface savedEglReadSurface = null;
-    protected EGLContext savedEglContext     = null;
+    protected EGLContext savedEglContext = null;
 
     public GlRecordShader(final String vertexShaderSource, final String fragmentShaderSource) {
         super(vertexShaderSource, fragmentShaderSource);
@@ -43,10 +43,10 @@ public abstract class GlRecordShader extends GlShader {
     }
 
     protected void saveRenderState() {
-        savedEglDisplay     = EGL14.eglGetCurrentDisplay();
+        savedEglDisplay = EGL14.eglGetCurrentDisplay();
         savedEglDrawSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW);
         savedEglReadSurface = EGL14.eglGetCurrentSurface(EGL14.EGL_READ);
-        savedEglContext     = EGL14.eglGetCurrentContext();
+        savedEglContext = EGL14.eglGetCurrentContext();
     }
 
     protected void restoreRenderState() {

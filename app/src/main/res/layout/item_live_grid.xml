@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
     android:orientation="horizontal"
-    android:gravity="center"
-    >
+    android:gravity="center">
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Points.Large"
-        />
+        style="@style/Points.Large" />
 </LinearLayout>

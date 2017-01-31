@@ -53,7 +53,8 @@ public class CameraWrapper extends CardView {
     public static final int SETTING = 1;
 
     @StringDef({VIDEO, AUDIO, PHOTO})
-    public @interface TribeMode {}
+    public @interface TribeMode {
+    }
 
     public static final String VIDEO = "video";
     public static final String AUDIO = "audio";
@@ -71,9 +72,11 @@ public class CameraWrapper extends CardView {
     @Filter
     Preference<Integer> filter;
 
-    @Inject ScreenUtils screenUtils;
+    @Inject
+    ScreenUtils screenUtils;
 
-    @Inject @AudioDefault
+    @Inject
+    @AudioDefault
     Preference<Boolean> audioDefault;
 
     @BindView(R.id.cameraView)
@@ -101,7 +104,9 @@ public class CameraWrapper extends CardView {
     PictoVisualizerView visualizerView;
 
     // VARIABLES
-    private @TribeMode String tribeMode;
+    private
+    @TribeMode
+    String tribeMode;
     private GlPreview preview;
     private double aspectRatio;
     private boolean isAudioMode;
@@ -359,7 +364,7 @@ public class CameraWrapper extends CardView {
     }
 
     private void snapCamera() {
-        int [] locationLayoutCamera = new int[2];
+        int[] locationLayoutCamera = new int[2];
         getLocationOnScreen(locationLayoutCamera);
 
         final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) getLayoutParams();
@@ -493,7 +498,9 @@ public class CameraWrapper extends CardView {
         return tribeModePublishSubject;
     }
 
-    public @CameraWrapper.TribeMode String getTribeMode() {
+    public
+    @CameraWrapper.TribeMode
+    String getTribeMode() {
         return tribeMode;
     }
 
@@ -543,7 +550,7 @@ public class CameraWrapper extends CardView {
                         } else {
                             cameraView.startPreview();
                         }
-                });
+                    });
         }
 
         if (preview != null)

@@ -14,7 +14,8 @@ import javax.inject.Singleton;
 public class LocationRealmDataMapper {
 
     @Inject
-    public LocationRealmDataMapper() {}
+    public LocationRealmDataMapper() {
+    }
 
     /**
      * Transform a {@link LocationRealm} into an {@link Location}.

@@ -13,7 +13,6 @@
         android:repeatCount="1"
         android:repeatMode="reverse"
         android:fillAfter="false"
-        android:fillEnabled="false"
-        />
+        android:fillEnabled="false" />
 
 </set>

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/containerTooltip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/title"
@@ -14,7 +12,6 @@
         android:layout_gravity="center"
         android:padding="@dimen/horizontal_margin_small"
         android:gravity="center"
-        style="@style/Title.2.Black"
-        />
+        style="@style/Title.2.Black" />
 
 </FrameLayout>

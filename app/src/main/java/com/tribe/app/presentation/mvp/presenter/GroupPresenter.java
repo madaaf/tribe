@@ -198,8 +198,7 @@ public class GroupPresenter implements Presenter {
 //    }
 
 
-
-//    public void updateScore() {
+    //    public void updateScore() {
 //        jobManager.addJobInBackground(new UpdateScoreJob(ScoreUtils.Point.CREATE_GROUP, 1));
 //    }
 //
@@ -244,7 +243,8 @@ public class GroupPresenter implements Presenter {
     private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -283,7 +283,8 @@ public class GroupPresenter implements Presenter {
     private final class AddMembersSubscriber extends DefaultSubscriber<Void> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -307,7 +308,8 @@ public class GroupPresenter implements Presenter {
     private final class RemoveMemberFromGroupSubscriber extends DefaultSubscriber<Void> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

@@ -53,14 +53,15 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
 
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                switch(playbackState) {
+                switch (playbackState) {
                     case ExoPlayer.STATE_ENDED:
                         if (looping) exoPlayer.seekTo(0);
                         onCompletion.onNext(true);
                         break;
                     case ExoPlayer.STATE_READY:
                         onPreparedPlayer.onNext(true);
-                        if (mute) exoPlayer.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0f);
+                        if (mute)
+                            exoPlayer.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0f);
                         if (autoStart) onVideoStarted.onNext(true);
                         break;
                     default:
@@ -69,7 +70,8 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
             }
 
             @Override
-            public void onPlayWhenReadyCommitted() {}
+            public void onPlayWhenReadyCommitted() {
+            }
 
             @Override
             public void onPlayerError(ExoPlaybackException error) {
@@ -168,7 +170,8 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     }
 
     @Override
-    public void onDroppedFrames(int count, long elapsed) {}
+    public void onDroppedFrames(int count, long elapsed) {
+    }
 
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
@@ -177,14 +180,18 @@ public class ExoMediaPlayer extends TribeMediaPlayer implements MediaCodecVideoT
     }
 
     @Override
-    public void onDrawnToSurface(Surface surface) {}
+    public void onDrawnToSurface(Surface surface) {
+    }
 
     @Override
-    public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {}
+    public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
+    }
 
     @Override
-    public void onCryptoError(MediaCodec.CryptoException e) {}
+    public void onCryptoError(MediaCodec.CryptoException e) {
+    }
 
     @Override
-    public void onDecoderInitialized(String decoderName, long elapsedRealtimeMs, long initializationDurationMs) {}
+    public void onDecoderInitialized(String decoderName, long elapsedRealtimeMs, long initializationDurationMs) {
+    }
 }

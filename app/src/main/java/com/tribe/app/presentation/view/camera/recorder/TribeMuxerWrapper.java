@@ -38,7 +38,7 @@ public class TribeMuxerWrapper {
     public void prepare(Context context, int width, int height) throws IOException {
         if (videoEncoder != null)
             videoEncoder.prepareEncoder(context, width, height);
-        
+
         if (audioEncoder != null)
             audioEncoder.prepareEncoder(context, width, height);
     }

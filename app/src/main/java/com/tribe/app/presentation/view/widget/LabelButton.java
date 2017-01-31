@@ -26,7 +26,8 @@ import butterknife.ButterKnife;
 public class LabelButton extends LinearLayout {
 
     @IntDef({ACTION, INFOS})
-    public @interface LabelType {}
+    public @interface LabelType {
+    }
 
     public static final int ACTION = 1;
     public static final int INFOS = 0;

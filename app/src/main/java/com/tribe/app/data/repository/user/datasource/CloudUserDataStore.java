@@ -341,7 +341,7 @@ public class CloudUserDataStore implements UserDataStore {
             if (currentUser != null) {
                 phones.remove(currentUser.getPhone());
             }
-            
+
             if (phones.size() > 0 || fbIds.size() > 0) {
                 StringBuffer buffer = new StringBuffer();
 
@@ -571,7 +571,7 @@ public class CloudUserDataStore implements UserDataStore {
                 });
     }
 
-    public Observable<Void> createFriendships(String ...userIds) {
+    public Observable<Void> createFriendships(String... userIds) {
         StringBuffer buffer = new StringBuffer();
         String mutationCreateFriendship = null;
 
@@ -726,7 +726,8 @@ public class CloudUserDataStore implements UserDataStore {
 
         String members = "";
 
-        if (groupEntity.getMembersId() != null && groupEntity.getMembersId().size() > 0) members = context.getString(R.string.create_group_members, idList);
+        if (groupEntity.getMembersId() != null && groupEntity.getMembersId().size() > 0)
+            members = context.getString(R.string.create_group_members, idList);
 
         final String request = context.getString(R.string.create_group, groupEntity.getName(),
                 GroupRealm.PUBLIC, !StringUtils.isEmpty(members) ? members : "", context.getString(R.string.groupfragment_info));
@@ -894,7 +895,7 @@ public class CloudUserDataStore implements UserDataStore {
             if (i == list.size() - 1) json += list.get(i) + "\"";
             else json += list.get(i) + "\", \"";
         }
-        if  (list.size() == 0) json += "\"";
+        if (list.size() == 0) json += "\"";
         return json;
     }
 

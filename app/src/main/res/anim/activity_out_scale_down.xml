@@ -5,19 +5,16 @@
         android:fromXScale="1.0"
         android:toXScale="0.84"
         android:fromYScale="1.0"
-        android:toYScale="0.84"
-        />
+        android:toYScale="0.84" />
 
     <translate
         android:fromYDelta="0%"
         android:fromXDelta="0%"
         android:toYDelta="8%"
-        android:toXDelta="16%"
-        />
+        android:toXDelta="16%" />
 
     <alpha
         android:fromAlpha="1.0"
-        android:toAlpha="0.25"
-        />
+        android:toAlpha="0.25" />
 
 </set>

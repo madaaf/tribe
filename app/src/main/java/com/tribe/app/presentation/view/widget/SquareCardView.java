@@ -4,7 +4,9 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 
-/** A FrameLayout that will always be square (based out of its width) */
+/**
+ * A FrameLayout that will always be square (based out of its width)
+ */
 public class SquareCardView extends CardView {
 
     private boolean shouldSquare = true;

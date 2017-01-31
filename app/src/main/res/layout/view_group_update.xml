@@ -12,7 +12,8 @@
         android:layout_height="0dp"
         android:focusableInTouchMode="true"
         android:focusable="true">
-        <requestFocus/>
+
+        <requestFocus />
     </LinearLayout>
 
 
@@ -27,8 +28,7 @@
             android:layout_width="@dimen/avatar_size_small"
             android:layout_height="@dimen/avatar_size_small"
             android:layout_gravity="center_vertical"
-            android:background="@null"
-            />
+            android:background="@null" />
 
         <com.tribe.app.presentation.view.widget.EditTextFont
             android:id="@+id/editGroupName"
@@ -44,8 +44,7 @@
             android:textColorHint="@color/black.opacity.40"
             android:singleLine="true"
             android:imeOptions="actionDone"
-            android:inputType="textCapWords|textNoSuggestions"
-            />
+            android:inputType="textCapWords|textNoSuggestions" />
     </FrameLayout>
 
     <include layout="@layout/view_separator_simple" />

@@ -18,7 +18,8 @@ public class ExifUtils {
     private static final String TIME_FORMAT = "HH:mm:ss";
     private static final String DATETIME_FORMAT = DATE_FORMAT + " " + TIME_FORMAT;
 
-    private ExifUtils() {}
+    private ExifUtils() {
+    }
 
     public static int getAngle(final String filename) throws IOException {
         final ExifInterface exif = new ExifInterface(filename);
@@ -95,11 +96,11 @@ public class ExifUtils {
         Log.d(TAG, "flash: " + exif.getAttributeInt(ExifInterface.TAG_FLASH, -1));
 
         Log.d(TAG, "gps latitude ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF));
-        Log.d(TAG, "gps latitude: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));	// 緯度
+        Log.d(TAG, "gps latitude: " + exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));    // 緯度
         Log.d(TAG, "gps longitude ref: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF));
-        Log.d(TAG, "gps longitude: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));	// 経度
+        Log.d(TAG, "gps longitude: " + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));    // 経度
         Log.d(TAG, "gps altitude ref: " + exif.getAttribute(ExifInterface.TAG_GPS_ALTITUDE_REF));
-        Log.d(TAG, "gps altitude: " + exif.getAttribute(ExifInterface.TAG_GPS_ALTITUDE));	// 経度
+        Log.d(TAG, "gps altitude: " + exif.getAttribute(ExifInterface.TAG_GPS_ALTITUDE));    // 経度
 
         Log.d(TAG, "gps datestamp: " + exif.getAttribute(ExifInterface.TAG_GPS_DATESTAMP));
         Log.d(TAG, "gps timestamp: " + exif.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP));

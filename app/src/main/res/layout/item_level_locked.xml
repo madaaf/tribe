@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.widget.SquareLinearLayout
-    android:id="@+id/layoutContent"
+<com.tribe.app.presentation.view.widget.SquareLinearLayout android:id="@+id/layoutContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
     android:orientation="vertical"
-    android:gravity="center"
-    >
+    android:gravity="center">
 
     <ImageView
         android:id="@+id/imgLevelLocked"
@@ -16,8 +14,7 @@
         android:layout_centerVertical="true"
         android:background="@drawable/shape_oval_dark_grey"
         android:src="@drawable/picto_lock_white"
-        android:scaleType="centerInside"
-        />
+        android:scaleType="centerInside" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtPoints"
@@ -25,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:singleLine="true"
-        style="@style/Points.Reg.Black40"
-        />
+        style="@style/Points.Reg.Black40" />
 
 </com.tribe.app.presentation.view.widget.SquareLinearLayout>

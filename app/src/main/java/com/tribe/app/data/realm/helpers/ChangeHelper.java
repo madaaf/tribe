@@ -14,8 +14,8 @@ public class ChangeHelper<T extends RealmResults<? extends Changeable>> {
             ChangeSet<T> newChangeSet = new ChangeSet<>(t, this.previousChangeSet);
 
             if (newChangeSet.insertedItems > 0 ||
-                newChangeSet.deletedItems > 0 ||
-                newChangeSet.updatedItems.length > 0) {
+                    newChangeSet.deletedItems > 0 ||
+                    newChangeSet.updatedItems.length > 0) {
 
                 this.previousChangeSet = newChangeSet;
 

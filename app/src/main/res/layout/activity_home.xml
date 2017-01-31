@@ -11,21 +11,19 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        />
+        android:orientation="vertical" />
 
     <com.tribe.app.presentation.view.component.TopBarContainer
         android:id="@+id/topBarContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null">
-        
+
         <com.tribe.app.presentation.view.component.TopBarView
             android:id="@+id/topBarView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/top_bar_height"
-            android:background="@null"
-            />
+            android:background="@null" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewFriends"
@@ -35,8 +33,7 @@
             android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@null"
-            />
+            android:background="@null" />
 
     </com.tribe.app.presentation.view.component.TopBarContainer>
 

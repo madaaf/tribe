@@ -6,7 +6,9 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
-/** A RelativeLayout that will always be square (based out of its width) */
+/**
+ * A RelativeLayout that will always be square (based out of its width)
+ */
 public class SquareRelativeLayout extends RelativeLayout {
 
     public SquareRelativeLayout(Context context) {

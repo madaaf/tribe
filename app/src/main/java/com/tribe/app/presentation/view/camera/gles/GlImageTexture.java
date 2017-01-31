@@ -26,10 +26,10 @@ public abstract class GlImageTexture implements Texture {
 
     private static final class GLES20FlipVerticalShader extends GlShader {
 
-        private static final float[] VERTICES_DATA = new float[] {
+        private static final float[] VERTICES_DATA = new float[]{
                 // X, Y, Z, U, V
-                -1.0f,  1.0f, 0.0f, 0.0f, 0.0f,
-                1.0f,  1.0f, 0.0f, 1.0f, 0.0f,
+                -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
                 -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
                 1.0f, -1.0f, 0.0f, 1.0f, 1.0f
         };
@@ -40,7 +40,9 @@ public abstract class GlImageTexture implements Texture {
             OpenGlUtils.updateBufferData(getVertexBufferName(), VERTICES_DATA);
         }
 
-    };
+    }
+
+    ;
 
     private final GLES20FramebufferObject framebufferObject = new GLES20FramebufferObject();
 

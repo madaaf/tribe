@@ -123,8 +123,8 @@ public class CreateGroupView extends FrameLayout {
         createNewGroup.onNext(groupEntity);
     }
 
-    @OnClick({ R.id.viewSuggestionBFF, R.id.viewSuggestionTeam, R.id.viewSuggestionClass, R.id.viewSuggestionRoomies,
-            R.id.viewSuggestionWork, R.id.viewSuggestionFamily })
+    @OnClick({R.id.viewSuggestionBFF, R.id.viewSuggestionTeam, R.id.viewSuggestionClass, R.id.viewSuggestionRoomies,
+            R.id.viewSuggestionWork, R.id.viewSuggestionFamily})
     void clickSuggestion(View v) {
         GroupSuggestionView groupSuggestionView = (GroupSuggestionView) v;
 

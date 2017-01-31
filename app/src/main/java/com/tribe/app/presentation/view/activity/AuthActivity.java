@@ -137,17 +137,24 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            if (savedInstanceState.getParcelable(DEEP_LINK) != null) deepLink = savedInstanceState.getParcelable(DEEP_LINK);
-            if (savedInstanceState.getString(COUNTRY_CODE) != null) countryCode = savedInstanceState.getString(COUNTRY_CODE);
-            if (savedInstanceState.get(LOGIN_ENTITY) != null) loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
-            if (savedInstanceState.get(ERROR_LOGIN) != null) errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
-            if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
+            if (savedInstanceState.getParcelable(DEEP_LINK) != null)
+                deepLink = savedInstanceState.getParcelable(DEEP_LINK);
+            if (savedInstanceState.getString(COUNTRY_CODE) != null)
+                countryCode = savedInstanceState.getString(COUNTRY_CODE);
+            if (savedInstanceState.get(LOGIN_ENTITY) != null)
+                loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
+            if (savedInstanceState.get(ERROR_LOGIN) != null)
+                errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
+            if (savedInstanceState.get(PIN) != null)
+                pin = (Pin) savedInstanceState.getSerializable(PIN);
             if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
-            if (savedInstanceState.get(PHONE_NUMBER) != null) phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
+            if (savedInstanceState.get(PHONE_NUMBER) != null)
+                phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
             if (savedInstanceState.get(COUNTDOWN) != null) {
                 currentCountdown = savedInstanceState.getInt(COUNTDOWN);
             }
-            if (savedInstanceState.get(IS_PAUSED) != null) shouldPauseOnRestore = savedInstanceState.getBoolean(IS_PAUSED);
+            if (savedInstanceState.get(IS_PAUSED) != null)
+                shouldPauseOnRestore = savedInstanceState.getBoolean(IS_PAUSED);
         }
 
         setContentView(R.layout.activity_auth);
@@ -205,7 +212,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
         if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
         if (pin != null) outState.putSerializable(PIN, pin);
-        if (!StringUtils.isEmpty(viewPhoneNumber.getPhoneNumberInput())) outState.putString(PHONE_NUMBER, viewPhoneNumber.getPhoneNumberInput());
+        if (!StringUtils.isEmpty(viewPhoneNumber.getPhoneNumberInput()))
+            outState.putString(PHONE_NUMBER, viewPhoneNumber.getPhoneNumberInput());
         if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
         if (countdownActive) outState.putInt(COUNTDOWN, viewCode.getCurrentCountdown());
         if (shouldPauseOnRestore) {
@@ -247,12 +255,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                 .delay(50, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
-                    if (shouldPauseOnRestore) {
-                        System.out.println("PAUSE");
-                        authVideoView.onPause(true);
-                    }
-                }
-            )
+                            if (shouldPauseOnRestore) {
+                                System.out.println("PAUSE");
+                                authVideoView.onPause(true);
+                            }
+                        }
+                )
         );
 
         initViewPhoneNumber();
@@ -428,10 +436,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         cleanCountdown();
 
         viewCode
-            .animate()
-            .translationX(screenUtils.getWidthPx())
-            .setDuration(DURATION)
-            .start();
+                .animate()
+                .translationX(screenUtils.getWidthPx())
+                .setDuration(DURATION)
+                .start();
     }
 
     private void showViewCode(boolean animate) {
@@ -440,17 +448,17 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         initCountdown();
 
         viewCode
-            .animate()
-            .translationX(0)
-            .setDuration(animate ? DURATION : 0)
-            .setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    viewCode.animate().setListener(null).start();
-                    viewCode.openKeyboard(animate ? DURATION : 0);
-                }
-            })
-            .start();
+                .animate()
+                .translationX(0)
+                .setDuration(animate ? DURATION : 0)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        viewCode.animate().setListener(null).start();
+                        viewCode.openKeyboard(animate ? DURATION : 0);
+                    }
+                })
+                .start();
     }
 
     private void backToPhoneNumber() {
@@ -509,7 +517,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                         viewPhoneNumber.getCountryCode()
                 ),
                 true
-            );
+        );
 
         authenticationDialogFragment.show(getSupportFragmentManager(), AuthenticationDialogFragment.class.getName());
         subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {

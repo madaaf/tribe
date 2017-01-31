@@ -50,7 +50,8 @@ public class LiveNotificationView extends LinearLayout {
 
 
     @IntDef({LIVE, ERROR})
-    public @interface LiveNotificationType {}
+    public @interface LiveNotificationType {
+    }
 
     public static final int LIVE = 0;
     public static final int ERROR = 1;
@@ -84,7 +85,9 @@ public class LiveNotificationView extends LinearLayout {
     private int minHeight = 0, maxHeight = 0, thresholdOpen = 0, margin = 0;
 
     // VARIABLES
-    private @LiveNotificationType int type;
+    private
+    @LiveNotificationType
+    int type;
     private Unbinder unbinder;
     private boolean expandable;
     private FrameLayout.LayoutParams params;
@@ -143,7 +146,9 @@ public class LiveNotificationView extends LinearLayout {
         private String title;
         private boolean expandable = true;
         private List<Pair<String, String>> pairActions;
-        private @LiveNotificationType int type;
+        private
+        @LiveNotificationType
+        int type;
 
         public Builder(Context context, @LiveNotificationType int type) {
             this.context = context;
@@ -188,7 +193,7 @@ public class LiveNotificationView extends LinearLayout {
                             (count == (pairActions.size() - 1))
                     );
 
-                    count ++;
+                    count++;
                 }
             } else {
                 view.setExpandable(false);
@@ -336,7 +341,7 @@ public class LiveNotificationView extends LinearLayout {
         getLocationOnScreen(location);
 
         switch (action & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN : {
+            case MotionEvent.ACTION_DOWN: {
                 activePointerId = event.getPointerId(0);
 
                 startY = event.getRawY();
@@ -349,7 +354,7 @@ public class LiveNotificationView extends LinearLayout {
                 break;
             }
 
-            case MotionEvent.ACTION_MOVE : {
+            case MotionEvent.ACTION_MOVE: {
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 if (pointerIndex != INVALID_POINTER) {
@@ -363,7 +368,8 @@ public class LiveNotificationView extends LinearLayout {
                 break;
             }
 
-            case MotionEvent.ACTION_UP: case MotionEvent.ACTION_CANCEL: {
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
                 final int pointerIndex = event.findPointerIndex(activePointerId);
 
                 if (pointerIndex != INVALID_POINTER && velocityTracker != null) {

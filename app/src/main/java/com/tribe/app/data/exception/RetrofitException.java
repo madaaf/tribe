@@ -23,11 +23,17 @@ public class RetrofitException extends RuntimeException {
         return new RetrofitException(exception.getMessage(), null, null, Kind.UNEXPECTED, exception, null);
     }
 
-    /** Identifies the event kind which triggered a {@link RetrofitException}. */
+    /**
+     * Identifies the event kind which triggered a {@link RetrofitException}.
+     */
     public enum Kind {
-        /** An {@link IOException} occurred while communicating to the server. */
+        /**
+         * An {@link IOException} occurred while communicating to the server.
+         */
         NETWORK,
-        /** A non-200 HTTP status code was received from the server. */
+        /**
+         * A non-200 HTTP status code was received from the server.
+         */
         HTTP,
         /**
          * An internal error occurred while attempting to execute a request. It is best practice to
@@ -49,22 +55,30 @@ public class RetrofitException extends RuntimeException {
         this.retrofit = retrofit;
     }
 
-    /** The request URL which produced the error. */
+    /**
+     * The request URL which produced the error.
+     */
     public String getUrl() {
         return url;
     }
 
-    /** Response object containing status code, headers, body, etc. */
+    /**
+     * Response object containing status code, headers, body, etc.
+     */
     public Response getResponse() {
         return response;
     }
 
-    /** The event kind which triggered this error. */
+    /**
+     * The event kind which triggered this error.
+     */
     public Kind getKind() {
         return kind;
     }
 
-    /** The Retrofit this request was executed on */
+    /**
+     * The Retrofit this request was executed on
+     */
     public Retrofit getRetrofit() {
         return retrofit;
     }

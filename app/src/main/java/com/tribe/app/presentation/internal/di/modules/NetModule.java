@@ -102,7 +102,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 @Module(
-    includes = DataModule.class
+        includes = DataModule.class
 )
 public class NetModule {
 
@@ -149,18 +149,22 @@ public class NetModule {
                         return false;
                     }
                 })
-                .registerTypeAdapter(new TypeToken<UserRealm>() {}.getType(), new TribeUserDeserializer(groupDeserializer, utcSimpleDate))
+                .registerTypeAdapter(new TypeToken<UserRealm>() {
+                }.getType(), new TribeUserDeserializer(groupDeserializer, utcSimpleDate))
                 .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
                 .registerTypeAdapter(GroupRealm.class, groupDeserializer)
                 .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
                 .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
-                .registerTypeAdapter(new TypeToken<List<UserRealm>>(){}.getType(), new UserListDeserializer<>())
+                .registerTypeAdapter(new TypeToken<List<UserRealm>>() {
+                }.getType(), new UserListDeserializer<>())
                 .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())
                 .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
-                .registerTypeAdapter(new TypeToken<List<Integer>>(){}.getType(), new HowManyFriendsDeserializer())
+                .registerTypeAdapter(new TypeToken<List<Integer>>() {
+                }.getType(), new HowManyFriendsDeserializer())
                 .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
                 .registerTypeAdapter(MembershipRealm.class, new NewMembershipDeserializer())
-                .registerTypeAdapter(new TypeToken<List<Installation>>(){}.getType(), new InstallsDeserializer())
+                .registerTypeAdapter(new TypeToken<List<Installation>>() {
+                }.getType(), new InstallsDeserializer())
                 .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
                 .create();
     }
@@ -251,7 +255,7 @@ public class NetModule {
                     .header("Content-type", "application/json");
 
             requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
-                                + " " + tribeAuthorizer.getAccessToken().getAccessToken());
+                    + " " + tribeAuthorizer.getAccessToken().getAccessToken());
             appendUserAgent(context, requestBuilder);
             requestBuilder.method(original.method(), original.body());
 
@@ -350,11 +354,11 @@ public class NetModule {
         }
 
         return new Retrofit.Builder()
-            .baseUrl(BuildConfig.TRIBE_API)
-            .callFactory(httpClientBuilder.build())
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
-            //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
-            .build().create(FileApi.class);
+                .baseUrl(BuildConfig.TRIBE_API)
+                .callFactory(httpClientBuilder.build())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+                //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
+                .build().create(FileApi.class);
     }
 
     @Provides
@@ -429,7 +433,7 @@ public class NetModule {
 
         try {
             sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+            sslContext.init(null, new TrustManager[]{new X509TrustManager() {
                 public X509Certificate[] getAcceptedIssuers() {
                     Timber.d("getAcceptedIssuers =============");
                     return null;
@@ -444,7 +448,7 @@ public class NetModule {
                                                String authType) {
                     Timber.d("checkServerTrusted =============");
                 }
-            } }, new SecureRandom());
+            }}, new SecureRandom());
         } catch (KeyManagementException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {

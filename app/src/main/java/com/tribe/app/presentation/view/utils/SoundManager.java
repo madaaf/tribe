@@ -51,17 +51,17 @@ public class SoundManager {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             soundPool = (new SoundPool.Builder()).setMaxStreams(20)
                     .setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build())
-            .build();
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build())
+                    .build();
         } else {
             soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
         }
 
         loadSound(context);
     }
- 
+
     public void loadSound(Context context) {
         soundPoolMap = new HashMap<Integer, Integer>();
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);

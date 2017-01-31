@@ -193,7 +193,8 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
                 PlaybackParams myPlayBackParams = new PlaybackParams();
                 mediaPlayer.setPlaybackParams(myPlayBackParams);
                 scheduleTimer();
-            } catch (IllegalStateException ex) {}
+            } catch (IllegalStateException ex) {
+            }
         }
     }
 
@@ -209,7 +210,7 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
 
     @Override
     public int getAudioSessionId() {
-       return mediaPlayer.getAudioSessionId();
+        return mediaPlayer.getAudioSessionId();
     }
 
     @Override
@@ -238,7 +239,8 @@ LegacyMediaPlayer extends TribeMediaPlayer implements MediaPlayer.OnVideoSizeCha
                         .onBackpressureDrop()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(count -> {
-                            if (count > 0) onCompletion.onNext(true); // WE DON'T SEND THE FIRST EVENT
+                            if (count > 0)
+                                onCompletion.onNext(true); // WE DON'T SEND THE FIRST EVENT
                         });
             }
         }

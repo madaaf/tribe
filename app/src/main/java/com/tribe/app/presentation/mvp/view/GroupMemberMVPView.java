@@ -5,9 +5,13 @@ package com.tribe.app.presentation.mvp.view;
  */
 public interface GroupMemberMVPView extends LoadDataMVPView {
     void createFriendship();
+
     void removeFriend();
+
     void setAdmin();
+
     void removeAdmin();
+
     void removeMember();
 
 }

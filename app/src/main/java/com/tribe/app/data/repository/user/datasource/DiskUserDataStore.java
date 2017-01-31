@@ -37,8 +37,9 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
     /**
      * Construct a {@link UserDataStore} based on the database.
-     * @param userCache A {@link UserCache} to retrieve the data.
-     * @param accessToken A {@link AccessToken} that contains the current user id.
+     *
+     * @param userCache    A {@link UserCache} to retrieve the data.
+     * @param accessToken  A {@link AccessToken} that contains the current user id.
      * @param contactCache A {@link ContactCache} that contains the cached data of the user's possible contacts
      */
     public DiskUserDataStore(UserCache userCache, LiveCache liveCache, AccessToken accessToken, ContactCache contactCache) {
@@ -59,7 +60,9 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     }
 
     @Override
-    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
+    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) {
+        return null;
+    }
 
     @Override
     public Observable<UserRealm> userInfos(String userId) {

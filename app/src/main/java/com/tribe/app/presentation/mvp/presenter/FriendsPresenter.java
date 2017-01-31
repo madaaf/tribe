@@ -118,7 +118,8 @@ public class FriendsPresenter implements Presenter {
     private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

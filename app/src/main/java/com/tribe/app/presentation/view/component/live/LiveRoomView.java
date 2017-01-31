@@ -13,7 +13,8 @@ import android.view.ViewGroup;
 public class LiveRoomView extends ViewGroup {
 
     @IntDef({GRID, LINEAR})
-    public @interface TribeRoomViewType {}
+    public @interface TribeRoomViewType {
+    }
 
     public static final int GRID = 0;
     public static final int LINEAR = 1;
@@ -22,7 +23,9 @@ public class LiveRoomView extends ViewGroup {
 
     // VARIABLES
     private int fullWidth, fullHeight, partialHeight, partialWidth;
-    private @TribeRoomViewType int type;
+    private
+    @TribeRoomViewType
+    int type;
 
     public LiveRoomView(Context context) {
         super(context);
@@ -51,7 +54,9 @@ public class LiveRoomView extends ViewGroup {
         //requestLayout();
     }
 
-    public @TribeRoomViewType int getType() {
+    public
+    @TribeRoomViewType
+    int getType() {
         return type;
     }
 
@@ -165,8 +170,10 @@ public class LiveRoomView extends ViewGroup {
 
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            if (fullIndex != -1 && i == fullIndex) measureTribeChild(child, widthMeasureSpec, heightMeasureSpec, fullWidth, partialHeight);
-            else measureTribeChild(child, widthMeasureSpec, heightMeasureSpec, partialWidth, partialHeight);
+            if (fullIndex != -1 && i == fullIndex)
+                measureTribeChild(child, widthMeasureSpec, heightMeasureSpec, fullWidth, partialHeight);
+            else
+                measureTribeChild(child, widthMeasureSpec, heightMeasureSpec, partialWidth, partialHeight);
             childState = combineMeasuredStates(childState, child.getMeasuredState());
         }
 
@@ -174,7 +181,7 @@ public class LiveRoomView extends ViewGroup {
     }
 
     private int measureTribeChild(View child, int widthMeasureSpec, int heightMeasureSpec,
-                                   int desiredWidth, int desiredHeight) {
+                                  int desiredWidth, int desiredHeight) {
         if (child.getVisibility() != GONE) {
             child.measure(
                     getChildMeasureSpec(widthMeasureSpec, getPaddingLeft() + getPaddingRight(),

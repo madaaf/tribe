@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/shape_white_rect_grey_border"
-    android:layout_width="match_parent" android:layout_height="40dp">
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
@@ -9,8 +10,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:text="@string/onboarding_popup_error_sent_to"
-        style="@style/Body.Two.Blue"
-        />
+        style="@style/Body.Two.Blue" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/textPhoneNumber"
@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
-        style="@style/Body.Two.Black"
-        />
+        style="@style/Body.Two.Black" />
 
 </FrameLayout>

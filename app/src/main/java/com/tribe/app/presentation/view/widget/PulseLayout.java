@@ -24,7 +24,6 @@ import static android.R.attr.repeatCount;
 /**
  * Created by tiago on 01/06/2017
  * Taken from https://github.com/booncol/Pulsator4Droid/
- *
  */
 public class PulseLayout extends RelativeLayout {
 
@@ -59,7 +58,7 @@ public class PulseLayout extends RelativeLayout {
      *
      * @param context The Context the view is running in, through which it can access the current
      *                theme, resources, etc.
-     * @param attrs The attributes of the XML tag that is inflating the view.
+     * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public PulseLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -68,9 +67,9 @@ public class PulseLayout extends RelativeLayout {
     /**
      * Perform inflation from XML and apply a class-specific base style from a theme attribute.
      *
-     * @param context The Context the view is running in, through which it can access the current
-     *                theme, resources, etc.
-     * @param attrs The attributes of the XML tag that is inflating the view.
+     * @param context      The Context the view is running in, through which it can access the current
+     *                     theme, resources, etc.
+     * @param attrs        The attributes of the XML tag that is inflating the view.
      * @param defStyleAttr An attribute in the current theme that contains a reference to a style
      *                     resource that supplies default values for the view. Can be 0 to not look
      *                     for defaults.
@@ -184,6 +183,7 @@ public class PulseLayout extends RelativeLayout {
     /**
      * Gets the current color of the pulse effect in integer
      * Defaults to Color.rgb(0, 116, 193);
+     *
      * @return an integer representation of color
      */
     public int getColor() {
@@ -194,6 +194,7 @@ public class PulseLayout extends RelativeLayout {
      * Sets the current color of the pulse effect in integer
      * Takes effect immediately
      * Usage: Color.parseColor("<hex-value>") or getResources().getColor(R.color.colorAccent)
+     *
      * @param color : an integer representation of color
      */
     public void setColor(int color) {
@@ -294,7 +295,7 @@ public class PulseLayout extends RelativeLayout {
         animatorSet.setInterpolator(new DecelerateInterpolator());
         animatorSet.setDuration(duration);
         animatorSet.addListener(new AnimatorListenerAdapter() {
-            
+
             @Override
             public void onAnimationCancel(Animator animation) {
                 started = false;

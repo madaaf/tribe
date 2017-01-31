@@ -8,5 +8,6 @@ public class GlPreviewTextureFactory {
         return new GlSurfaceTexture(texName);
     }
 
-    private GlPreviewTextureFactory() {}
+    private GlPreviewTextureFactory() {
+    }
 }

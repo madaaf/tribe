@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.component.group.CreateGroupView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tribe.app.presentation.view.component.group.CreateGroupView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.GroupActivity"
-    android:background="@android:color/white"
-    >
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusableInTouchMode="true"
         android:focusable="true">
-        <requestFocus/>
+
+        <requestFocus />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        >
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,8 +29,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light"
-                />
+                android:background="@color/grey.light" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -49,8 +46,7 @@
                     android:src="@drawable/picto_new_pic"
                     android:scaleType="centerInside"
                     android:clickable="true"
-                    android:foreground="@drawable/selectable_button_oval"
-                    />
+                    android:foreground="@drawable/selectable_button_oval" />
 
                 <com.tribe.app.presentation.view.widget.EditTextFont
                     android:id="@+id/editGroupName"
@@ -66,8 +62,7 @@
                     android:textColorHint="@color/black.opacity.40"
                     android:singleLine="true"
                     android:imeOptions="actionDone"
-                    android:inputType="textCapWords|textNoSuggestions"
-                    />
+                    android:inputType="textCapWords|textNoSuggestions" />
 
                 <ImageView
                     android:id="@+id/btnGo"
@@ -79,8 +74,7 @@
                     android:scaleX="-1"
                     android:scaleY="-1"
                     android:alpha="0.5"
-                    android:background="@drawable/selectable_button"
-                    />
+                    android:background="@drawable/selectable_button" />
             </FrameLayout>
 
             <include layout="@layout/view_separator" />
@@ -93,8 +87,7 @@
                 android:layout_marginTop="@dimen/horizontal_margin_small"
                 android:text="@string/group_suggestions_title"
                 android:singleLine="true"
-                style="@style/Title.2.Black"
-                />
+                style="@style/Title.2.Black" />
 
             <com.tribe.app.presentation.view.component.group.GroupSuggestionView
                 android:id="@+id/viewSuggestionBFF"
@@ -104,8 +97,7 @@
                 app:groupDrawable="@drawable/img_group_0"
                 app:groupType="bestfriends"
                 android:clickable="true"
-                android:foreground="@drawable/selectable_button"
-                />
+                android:foreground="@drawable/selectable_button" />
 
             <com.tribe.app.presentation.view.component.group.GroupSuggestionView
                 android:id="@+id/viewSuggestionTeam"
@@ -114,8 +106,7 @@
                 app:groupDrawable="@drawable/img_group_1"
                 app:groupType="teammates"
                 android:clickable="true"
-                android:foreground="@drawable/selectable_button"
-                />
+                android:foreground="@drawable/selectable_button" />
 
             <com.tribe.app.presentation.view.component.group.GroupSuggestionView
                 android:id="@+id/viewSuggestionClass"
@@ -124,8 +115,7 @@
                 app:groupDrawable="@drawable/img_group_2"
                 app:groupType="classmates"
                 android:clickable="true"
-                android:foreground="@drawable/selectable_button"
-                />
+                android:foreground="@drawable/selectable_button" />
 
             <com.tribe.app.presentation.view.component.group.GroupSuggestionView
                 android:id="@+id/viewSuggestionRoomies"
@@ -134,8 +124,7 @@
                 app:groupDrawable="@drawable/img_group_3"
                 app:groupType="classmates"
                 android:clickable="true"
-                android:foreground="@drawable/selectable_button"
-                />
+                android:foreground="@drawable/selectable_button" />
 
             <com.tribe.app.presentation.view.component.group.GroupSuggestionView
                 android:id="@+id/viewSuggestionWork"
@@ -144,8 +133,7 @@
                 app:groupDrawable="@drawable/img_group_4"
                 app:groupType="classmates"
                 android:clickable="true"
-                android:foreground="@drawable/selectable_button"
-                />
+                android:foreground="@drawable/selectable_button" />
 
             <com.tribe.app.presentation.view.component.group.GroupSuggestionView
                 android:id="@+id/viewSuggestionFamily"
@@ -154,8 +142,7 @@
                 app:groupDrawable="@drawable/img_group_5"
                 app:groupType="family"
                 android:clickable="true"
-                android:foreground="@drawable/selectable_button"
-                />
+                android:foreground="@drawable/selectable_button" />
         </LinearLayout>
     </ScrollView>
 </com.tribe.app.presentation.view.component.group.CreateGroupView>

@@ -32,7 +32,8 @@ import rx.subjects.PublishSubject;
 public class SyncView extends FrameLayout {
 
     @IntDef({FB, ADDRESSBOOK})
-    public @interface SyncViewType {}
+    public @interface SyncViewType {
+    }
 
     public static final int FB = 0;
     public static final int ADDRESSBOOK = 1;

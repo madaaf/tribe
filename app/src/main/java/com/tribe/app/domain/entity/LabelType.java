@@ -48,7 +48,9 @@ public class LabelType implements Serializable {
     public static final String INVITE_MESSENGER = "inviteMessenger";
     public static final String SEARCH = "search";
 
-    private @GenericTypeDef String typeDef;
+    private
+    @GenericTypeDef
+    String typeDef;
     private String label;
 
     public LabelType(String label, String typeDef) {

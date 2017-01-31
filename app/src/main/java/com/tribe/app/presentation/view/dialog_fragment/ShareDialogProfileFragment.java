@@ -39,7 +39,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ShareDialogProfileFragment extends BaseDialogFragment {
 
-    private static Integer [] colors;
+    private static Integer[] colors;
 
     public static ShareDialogProfileFragment newInstance() {
         Bundle args = new Bundle();
@@ -139,7 +139,7 @@ public class ShareDialogProfileFragment extends BaseDialogFragment {
     }
 
     private void initColors() {
-        colors = new Integer[] {
+        colors = new Integer[]{
                 ContextCompat.getColor(getContext(), R.color.tribe_profile_1),
                 ContextCompat.getColor(getContext(), R.color.tribe_profile_2),
                 ContextCompat.getColor(getContext(), R.color.tribe_profile_3),

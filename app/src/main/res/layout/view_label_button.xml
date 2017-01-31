@@ -8,15 +8,13 @@
         android:layout_gravity="center_vertical"
         android:padding="@dimen/divider_size"
         android:scaleType="centerCrop"
-        android:background="@null"
-        />
+        android:background="@null" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:background="@null"
-        />
+        android:background="@null" />
 
 </merge>

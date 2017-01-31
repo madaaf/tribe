@@ -16,7 +16,9 @@ import rx.Observable;
 public class CloudUpdateFriendship extends UseCase {
 
     private String friendshipId;
-    private @FriendshipRealm.FriendshipStatus String status;
+    private
+    @FriendshipRealm.FriendshipStatus
+    String status;
     private UserRepository userRepository;
 
     @Inject

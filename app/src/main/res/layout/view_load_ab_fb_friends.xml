@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <View
         android:id="@+id/viewSeparatorAddressBook"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 
     <com.tribe.app.presentation.view.component.common.LoadFriendsView
         android:id="@+id/viewFriendsAddressBookLoad"
@@ -21,15 +19,13 @@
         app:loadBody="@string/search_add_addressbook_subtitle"
         app:loadType="addressbook"
         app:loadBG="@drawable/bg_addressbook_load"
-        app:loadIcon="@drawable/picto_addressbook_load"
-        />
+        app:loadIcon="@drawable/picto_addressbook_load" />
 
     <View
         android:id="@+id/viewSeparatorFBTop"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 
     <com.tribe.app.presentation.view.component.common.LoadFriendsView
         android:id="@+id/viewFriendsFBLoad"
@@ -42,14 +38,12 @@
         app:loadBody="@string/search_add_facebook_subtitle"
         app:loadType="fb"
         app:loadBG="@drawable/bg_facebook_load"
-        app:loadIcon="@drawable/picto_facebook_load"
-        />
+        app:loadIcon="@drawable/picto_facebook_load" />
 
     <View
         android:id="@+id/viewSeparatorFBBottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:background="@color/grey.light"
-        />
+        android:background="@color/grey.light" />
 
 </merge>

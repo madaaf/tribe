@@ -93,7 +93,7 @@ android {
     buildTypes {
         debug {
             //generateStrings()
-            
+
             signingConfig signingConfigs.debug
             testCoverageEnabled true
             applicationIdSuffix = ".debug"

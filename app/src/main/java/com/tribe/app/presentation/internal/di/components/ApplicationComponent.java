@@ -124,61 +124,106 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 public interface ApplicationComponent {
 
     void inject(Navigator navigator);
+
     void inject(Tutorial tutorial);
 
     void inject(BaseFragment baseFragment);
+
     void inject(BaseActivity baseActivity);
+
     void inject(TribeFirebaseMessagingService tribeFirebaseMessagingService);
+
     void inject(AnalyticsManager analyticsManager);
 
     void inject(LauncherActivity launcherActivity);
+
     void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
+
     void inject(AvatarView avatarView);
+
     void inject(AvatarLiveView avatarLiveView);
+
     void inject(CameraWrapper cameraWrapper);
+
     void inject(HistogramVisualizerView visualizerView);
+
     void inject(PlayerView playerView);
+
     void inject(TribeFirebaseInstanceIDService instanceIDService);
+
     void inject(LabelButton labelButton);
+
     void inject(IntroVideoView introVideoView);
+
     void inject(LegacyMediaPlayer legacyMediaPlayer);
+
     void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
+
     void inject(TopBarContainer topBarContainer);
+
     void inject(TopBarView topBarView);
 
     void inject(GlPreview glPreview);
+
     void inject(VisualizerView visualizerView);
+
     void inject(RatingView ratingView);
+
     void inject(TextViewAnimatedDots textViewAnimatedDots);
+
     void inject(TileView tileView);
+
     void inject(CreateGroupView tileView);
+
     void inject(GroupSuggestionView groupSuggestionView);
+
     void inject(AddMembersGroupView addMembersGroupView);
+
     void inject(ActionView actionView);
+
     void inject(SettingsGroupView settingsGroupView);
+
     void inject(UpdateGroupView updateGroupView);
+
     void inject(MembersGroupView membersGroupView);
+
     void inject(MemberListAdapterDelegate memberListAdapterDelegate);
+
     void inject(SyncView syncView);
+
     void inject(UserListAdapterDelegate userListAdapterDelegate);
+
     void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
 
     void inject(LiveNotificationView liveNotificationView);
+
     void inject(LiveView liveView);
+
     void inject(LiveContainer liveContainer);
+
     void inject(LiveInviteView liveInviteView);
+
     void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
+
     void inject(LiveWaitingView liveWaitingView);
+
     void inject(LiveRowView liveRowView);
+
     void inject(LiveNotificationContainer liveNotificationContainer);
 
     // JOBS
     void inject(BaseJob baseJob);
+
     void inject(UpdateUserJob updateUserJob);
+
     void inject(SynchroContactsJob synchroContactsJob);
+
     void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
+
     void inject(UpdateFriendshipJob updateFriendshipJob);
+
     void inject(DeleteContactsABJob deleteContactsABJob);
+
     void inject(DeleteContactsFBJob deleteContactsFBJob);
 
     // SERVICES
@@ -213,9 +258,11 @@ public interface ApplicationComponent {
 
     Realm realm();
 
-    @Named("simpleDateHoursMinutes") SimpleDateFormat simpleDateHoursMinutes();
+    @Named("simpleDateHoursMinutes")
+    SimpleDateFormat simpleDateHoursMinutes();
 
-    @Named("fullLetteredDate") DateFormat fullLetteredDate();
+    @Named("fullLetteredDate")
+    DateFormat fullLetteredDate();
 
     DateUtils dateUtils();
 

@@ -75,11 +75,16 @@ public class UserCacheImpl implements UserCache {
         if (!StringUtils.isEmpty(from.getUsername())) to.setUsername(from.getUsername());
         if (!StringUtils.isEmpty(from.getPhone())) to.setPhone(from.getPhone());
         if (!StringUtils.isEmpty(from.getDisplayName())) to.setDisplayName(from.getDisplayName());
-        if (!StringUtils.isEmpty(from.getProfilePicture())) to.setProfilePicture(from.getProfilePicture());
-        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) to.setFbid(from.getFbid());
-        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) to.setTribeSave(from.isTribeSave());
-        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) to.setInvisibleMode(from.isInvisibleMode());
-        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) to.setPushNotif(from.isPushNotif());
+        if (!StringUtils.isEmpty(from.getProfilePicture()))
+            to.setProfilePicture(from.getProfilePicture());
+        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID))
+            to.setFbid(from.getFbid());
+        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE))
+            to.setTribeSave(from.isTribeSave());
+        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE))
+            to.setInvisibleMode(from.isInvisibleMode());
+        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF))
+            to.setPushNotif(from.isPushNotif());
         if (from.getLastOnline() != null) to.setLastOnline(from.getLastOnline());
 
         if (from.getLocation() != null) {
@@ -271,8 +276,10 @@ public class UserCacheImpl implements UserCache {
     }
 
     private void updateGroup(GroupRealm from, GroupRealm to) {
-        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(GroupRealm.NAME)) to.setName(from.getName());
-        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(GroupRealm.PICTURE)) to.setPicture(from.getPicture());
+        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(GroupRealm.NAME))
+            to.setName(from.getName());
+        if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(GroupRealm.PICTURE))
+            to.setPicture(from.getPicture());
     }
 
     @Override

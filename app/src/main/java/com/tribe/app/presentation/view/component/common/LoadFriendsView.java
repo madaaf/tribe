@@ -40,7 +40,8 @@ public class LoadFriendsView extends LinearLayout {
     public static final int ADDRESSBOOK = 1;
 
     @IntDef({FB, ADDRESSBOOK})
-    public @interface Type{}
+    public @interface Type {
+    }
 
     @Inject
     ScreenUtils screenUtils;

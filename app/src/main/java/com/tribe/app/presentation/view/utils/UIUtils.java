@@ -17,7 +17,7 @@ public class UIUtils {
         int color = PaletteGrid.get(position);
         int radiusTopLeft = position == 1 ? screenUtils.dpToPx(5) : 0;
         int radiusTopRight = position == 2 ? screenUtils.dpToPx(5) : 0;
-        float [] radiusMatrix = new float[] { radiusTopLeft, radiusTopLeft, radiusTopRight, radiusTopRight, 0, 0, 0, 0 };
+        float[] radiusMatrix = new float[]{radiusTopLeft, radiusTopLeft, radiusTopRight, radiusTopRight, 0, 0, 0, 0};
 
         if (background == null) {
             GradientDrawable gradientDrawable = new GradientDrawable();
@@ -38,7 +38,7 @@ public class UIUtils {
         Drawable background = v.getBackground();
         int color = PaletteGrid.get(position);
         int radius = screenUtils.dpToPx(5);
-        float [] radiusMatrix = new float[] { radius, radius, radius, radius, radius, radius, radius, radius };
+        float[] radiusMatrix = new float[]{radius, radius, radius, radius, radius, radius, radius, radius};
 
         if (background == null) {
             GradientDrawable gradientDrawable = new GradientDrawable();

@@ -50,7 +50,7 @@ public class PixelBuffer {
         mHeight = height;
 
         int[] version = new int[2];
-        int[] attribList = new int[] {
+        int[] attribList = new int[]{
                 EGL_WIDTH, mWidth,
                 EGL_HEIGHT, mHeight,
                 EGL_NONE
@@ -128,7 +128,7 @@ public class PixelBuffer {
     }
 
     private EGLConfig chooseConfig() {
-        int[] attribList = new int[] {
+        int[] attribList = new int[]{
                 EGL_DEPTH_SIZE, 0,
                 EGL_STENCIL_SIZE, 0,
                 EGL_RED_SIZE, 8,

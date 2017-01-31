@@ -464,7 +464,8 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
 
     @Override
     public void friendshipUpdated(Friendship friendship) {
-        if (viewSettingsBlockedHidden != null) viewSettingsBlockedHidden.friendshipUpdated(friendship);
+        if (viewSettingsBlockedHidden != null)
+            viewSettingsBlockedHidden.friendshipUpdated(friendship);
     }
 
     @Override
@@ -472,7 +473,8 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
         blockedFriendshipList.clear();
         blockedFriendshipList.addAll(friendshipList);
 
-        if (viewSettingsBlockedHidden != null) viewSettingsBlockedHidden.renderBlockedFriendshipList(friendshipList);
+        if (viewSettingsBlockedHidden != null)
+            viewSettingsBlockedHidden.renderBlockedFriendshipList(friendshipList);
     }
 
     @Override

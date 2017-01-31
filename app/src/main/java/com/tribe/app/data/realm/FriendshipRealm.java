@@ -13,7 +13,8 @@ import io.realm.annotations.PrimaryKey;
 public class FriendshipRealm extends RealmObject implements RecipientRealmInterface {
 
     @StringDef({DEFAULT, HIDDEN, BLOCKED})
-    public @interface FriendshipStatus {}
+    public @interface FriendshipStatus {
+    }
 
     public static final String DEFAULT = "DEFAULT";
     public static final String HIDDEN = "HIDDEN";
@@ -22,7 +23,9 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
     @PrimaryKey
     private String id;
 
-    private @FriendshipStatus String status;
+    private
+    @FriendshipStatus
+    String status;
     private String tag;
     private boolean blocked;
     private String category;
@@ -92,7 +95,9 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
         return friend.getId();
     }
 
-    public @FriendshipStatus String getStatus() {
+    public
+    @FriendshipStatus
+    String getStatus() {
         return status;
     }
 

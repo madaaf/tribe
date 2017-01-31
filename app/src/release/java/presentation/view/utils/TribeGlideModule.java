@@ -13,7 +13,8 @@ import com.bumptech.glide.module.GlideModule;
 
 public class TribeGlideModule implements GlideModule {
 
-    @Override public void applyOptions(Context context, GlideBuilder builder) {
+    @Override
+    public void applyOptions(Context context, GlideBuilder builder) {
         MemorySizeCalculator calculator = new MemorySizeCalculator(context);
         int defaultMemoryCacheSize = calculator.getMemoryCacheSize();
         int defaultBitmapPoolSize = calculator.getBitmapPoolSize();

@@ -13,10 +13,10 @@ public class UserListDeserializer<T> implements JsonDeserializer<T> {
 
     @Override
     public T deserialize(JsonElement je, Type typeOfT,
-                               JsonDeserializationContext context) throws JsonParseException {
+                         JsonDeserializationContext context) throws JsonParseException {
 
-            JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("users");
+        JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("users");
 
-            return new Gson().fromJson(results, typeOfT);
-        }
+        return new Gson().fromJson(results, typeOfT);
     }
+}

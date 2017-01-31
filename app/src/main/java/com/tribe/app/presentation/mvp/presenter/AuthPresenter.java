@@ -124,7 +124,8 @@ public class AuthPresenter implements Presenter {
                 goToCode(pin);
             } else {
                 hideViewLoading();
-                if (introView.context() != null) introView.showError(introView.context().getString(R.string.error_technical));
+                if (introView.context() != null)
+                    introView.showError(introView.context().getString(R.string.error_technical));
             }
         }
     }

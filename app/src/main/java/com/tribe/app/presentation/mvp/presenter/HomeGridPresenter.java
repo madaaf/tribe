@@ -200,7 +200,8 @@ public class HomeGridPresenter implements Presenter {
         }
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -218,7 +219,8 @@ public class HomeGridPresenter implements Presenter {
 
     private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -233,7 +235,8 @@ public class HomeGridPresenter implements Presenter {
 
     private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -249,10 +252,12 @@ public class HomeGridPresenter implements Presenter {
     private final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
-        public void onError(Throwable e) {}
+        public void onError(Throwable e) {
+        }
 
         @Override
         public void onNext(Friendship friendship) {
@@ -264,7 +269,8 @@ public class HomeGridPresenter implements Presenter {
     private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -280,7 +286,8 @@ public class HomeGridPresenter implements Presenter {
     private final class CreateMembershipSubscriber extends DefaultSubscriber<Membership> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -296,10 +303,12 @@ public class HomeGridPresenter implements Presenter {
     private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
-        public void onError(Throwable e) {}
+        public void onError(Throwable e) {
+        }
 
         @Override
         public void onNext(Installation installation) {
@@ -348,7 +357,8 @@ public class HomeGridPresenter implements Presenter {
     private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

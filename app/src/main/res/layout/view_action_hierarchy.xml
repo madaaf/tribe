@@ -7,6 +7,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/margin_end_action_view"
         android:orientation="vertical">
+
         <include layout="@layout/view_action_base" />
     </LinearLayout>
 
@@ -15,7 +16,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"
         android:src="@drawable/picto_return"
-        android:scaleType="centerInside"
-        />
+        android:scaleType="centerInside" />
 
 </merge>

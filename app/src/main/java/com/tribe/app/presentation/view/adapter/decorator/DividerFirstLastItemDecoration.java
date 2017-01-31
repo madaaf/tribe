@@ -17,8 +17,9 @@ public class DividerFirstLastItemDecoration extends RecyclerView.ItemDecoration 
     /**
      * Sole constructor. Takes in {@link Drawable} objects to be used as
      * horizontal and vertical dividers.
-     * @param marginTop the margin top
-     * @param marginBottom the margin bottom
+     *
+     * @param marginTop     the margin top
+     * @param marginBottom  the margin bottom
      * @param startPosition the start position of the decorator
      */
     public DividerFirstLastItemDecoration(int marginTop, int marginBottom, int startPosition) {
@@ -32,9 +33,9 @@ public class DividerFirstLastItemDecoration extends RecyclerView.ItemDecoration 
      * RecyclerView.
      *
      * @param outRect The {@link Rect} of offsets to be added around the child view
-     * @param view The child view to be decorated with an offset
-     * @param parent The RecyclerView onto which dividers are being added
-     * @param state The current RecyclerView.State of the RecyclerView
+     * @param view    The child view to be decorated with an offset
+     * @param parent  The RecyclerView onto which dividers are being added
+     * @param state   The current RecyclerView.State of the RecyclerView
      */
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {

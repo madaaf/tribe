@@ -18,7 +18,8 @@ public class DefaultContextFactory implements GLSurfaceView.EGLContextFactory {
 
     private int eGLContextClientVersion;
 
-    public DefaultContextFactory() {}
+    public DefaultContextFactory() {
+    }
 
     public DefaultContextFactory(final int version) {
         eGLContextClientVersion = version;
@@ -30,7 +31,7 @@ public class DefaultContextFactory implements GLSurfaceView.EGLContextFactory {
     public EGLContext createContext(final EGL10 egl, final EGLDisplay display, final EGLConfig config) {
         final int[] attrib_list;
         if (eGLContextClientVersion != 0) {
-            attrib_list = new int[] { EGL_CONTEXT_CLIENT_VERSION, eGLContextClientVersion, EGL_NONE };
+            attrib_list = new int[]{EGL_CONTEXT_CLIENT_VERSION, eGLContextClientVersion, EGL_NONE};
         } else {
             attrib_list = null;
         }

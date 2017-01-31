@@ -20,7 +20,8 @@ public abstract class TribeMediaPlayer {
     public static final String FILE_NOT_FOUND_ERROR = "fileNotFound";
 
     @StringDef({GENERAL_ERROR, FILE_NOT_FOUND_ERROR})
-    public @interface TribeMediaPlayerError {}
+    public @interface TribeMediaPlayerError {
+    }
 
     protected Context context;
     protected String media;
@@ -55,22 +56,38 @@ public abstract class TribeMediaPlayer {
         return onVideoStarted;
     }
 
-    public Observable<Boolean> onCompletion() { return onCompletion; }
+    public Observable<Boolean> onCompletion() {
+        return onCompletion;
+    }
 
-    public int getAudioStreamType() { return audioStreamType; }
+    public int getAudioStreamType() {
+        return audioStreamType;
+    }
 
     protected abstract void setup();
+
     public abstract void setMedia(String media);
+
     public abstract void setSurface(SurfaceTexture surfaceTexture);
+
     public abstract void prepare();
+
     public abstract void setPlaybackRate();
+
     public abstract void pause();
+
     public abstract void play();
+
     public abstract void release();
+
     public abstract long getPosition();
+
     public abstract long getDuration();
+
     public abstract void seekTo(long position);
+
     public abstract int getAudioSessionId();
+
     public abstract boolean isPlaying();
 
     public static class TribeMediaPlayerBuilder {
@@ -160,7 +177,9 @@ public abstract class TribeMediaPlayer {
             return changeSpeed;
         }
 
-        public boolean isLocal() { return isLocal; }
+        public boolean isLocal() {
+            return isLocal;
+        }
 
         public int getAudioStreamType() {
             return audioStreamType;

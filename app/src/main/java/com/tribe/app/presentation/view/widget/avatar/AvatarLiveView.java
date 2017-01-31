@@ -24,8 +24,9 @@ import butterknife.ButterKnife;
  */
 public class AvatarLiveView extends RelativeLayout implements Avatar {
 
-    @IntDef({ LIVE, CONNECTED })
-    public @interface AvatarLiveType {}
+    @IntDef({LIVE, CONNECTED})
+    public @interface AvatarLiveType {
+    }
 
     public static final int LIVE = 0;
     public static final int CONNECTED = 1;

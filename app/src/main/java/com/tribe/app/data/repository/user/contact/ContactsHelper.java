@@ -47,7 +47,7 @@ public class ContactsHelper {
             ContactsContract.Data.DATA_VERSION
     };
 
-    private static final String[] CONTACTS_PROJECTION = new String[] {
+    private static final String[] CONTACTS_PROJECTION = new String[]{
             Contacts._ID,
             Contacts.DISPLAY_NAME_PRIMARY,
             Contacts.HAS_PHONE_NUMBER,
@@ -66,7 +66,7 @@ public class ContactsHelper {
     }
 
     /**
-     * @param query      leave it null if you want all contacts
+     * @param query leave it null if you want all contacts
      * @return list with contacts data
      */
     @NonNull

@@ -4,6 +4,5 @@
     android:duration="@integer/fast_anim">
     <translate
         android:fromXDelta="0%p"
-        android:toXDelta="100%p"
-        />
+        android:toXDelta="100%p" />
 </set>

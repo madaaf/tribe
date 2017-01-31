@@ -111,6 +111,7 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
         mShader = shader;
         queueEvent(() -> renderer.setShader(shader));
     }
+
     public void setInputTexture(final Texture texture) {
         queueEvent(() -> renderer.setTexture(texture));
     }
@@ -124,9 +125,13 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
         cameraHelper = helper;
     }
 
-    @Override public void openCamera() {}
+    @Override
+    public void openCamera() {
+    }
 
-    @Override public void releaseCamera() {}
+    @Override
+    public void releaseCamera() {
+    }
 
     private boolean previewing;
 
@@ -274,12 +279,12 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
 
         private int mTexName;
 
-        private float[] mMVPMatrix  = new float[16];
+        private float[] mMVPMatrix = new float[16];
         private float[] mProjMatrix = new float[16];
-        private float[] mMMatrix    = new float[16];
-        private float[] mVMatrix    = new float[16];
-        private float[] mSTMatrix   = new float[16];
-        private float mCameraRatio  = 1.0f;
+        private float[] mMMatrix = new float[16];
+        private float[] mVMatrix = new float[16];
+        private float[] mSTMatrix = new float[16];
+        private float mCameraRatio = 1.0f;
 
         private GLES20FramebufferObject mFramebufferObject;
         private GlPreviewShader mPreviewShader;
@@ -478,15 +483,17 @@ public class GlPreview extends GlTextureView implements Preview, Camera.PictureC
         }
 
         public void setMediaVideoEncoder(MediaVideoEncoder mediaVideoEncoder) {
-            synchronized(this) {
+            synchronized (this) {
                 if (mediaVideoEncoder != null) {
                     if (filter.get() == 3) {
                         recordShader = new GlRecordPixellateShader();
                     } else {
                         int resourceFilter = -1;
                         if (filter.get().equals(0)) resourceFilter = R.drawable.video_filter_punch;
-                        else if (filter.get().equals(1)) resourceFilter = R.drawable.video_filter_blue;
-                        else if (filter.get().equals(2)) resourceFilter = R.drawable.video_filter_bw;
+                        else if (filter.get().equals(1))
+                            resourceFilter = R.drawable.video_filter_blue;
+                        else if (filter.get().equals(2))
+                            resourceFilter = R.drawable.video_filter_bw;
                         else resourceFilter = R.drawable.video_filter_punch;
                         recordShader = new GlRecordLutShader(getContext().getResources(), resourceFilter);
                     }

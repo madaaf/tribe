@@ -270,7 +270,9 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    ReactiveLocationProvider provideReactiveLocationProvider(Context context) { return new ReactiveLocationProvider(context); }
+    ReactiveLocationProvider provideReactiveLocationProvider(Context context) {
+        return new ReactiveLocationProvider(context);
+    }
 
     @Provides
     @Singleton
@@ -312,16 +314,16 @@ public class ApplicationModule {
     @Singleton
     JobManager provideJobManager() {
         Configuration.Builder builder = new Configuration.Builder(application)
-            .minConsumerCount(1)
-            .maxConsumerCount(3)
-            .loadFactor(3)
-            .consumerKeepAlive(180)
-            .id("JOBS")
-            .injector(job -> {
-                if (job instanceof BaseJob) {
-                    ((BaseJob) job).inject(application.getApplicationComponent());
-                }
-            });
+                .minConsumerCount(1)
+                .maxConsumerCount(3)
+                .loadFactor(3)
+                .consumerKeepAlive(180)
+                .id("JOBS")
+                .injector(job -> {
+                    if (job instanceof BaseJob) {
+                        ((BaseJob) job).inject(application.getApplicationComponent());
+                    }
+                });
 
         return new JobManager(builder.build());
     }

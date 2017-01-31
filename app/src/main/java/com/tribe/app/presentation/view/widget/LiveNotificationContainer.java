@@ -83,7 +83,7 @@ public class LiveNotificationContainer extends FrameLayout {
         subscriptions.add(
                 obs.subscribe(percent -> {
                     viewBG.setAlpha(percent);
-                    txtSwipe.setTranslationY(- (1 - percent) * getTxtTranslationY());
+                    txtSwipe.setTranslationY(-(1 - percent) * getTxtTranslationY());
                     viewNotification.setTranslationY(percent * margin);
                 })
         );

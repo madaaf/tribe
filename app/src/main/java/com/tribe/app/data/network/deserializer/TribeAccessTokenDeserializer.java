@@ -13,7 +13,7 @@ public class TribeAccessTokenDeserializer implements JsonDeserializer<AccessToke
 
     @Override
     public AccessToken deserialize(JsonElement je, Type typeOfT,
-                               JsonDeserializationContext context) throws JsonParseException {
+                                   JsonDeserializationContext context) throws JsonParseException {
 
         JsonObject results = je.getAsJsonObject();
         AccessToken accessToken = new AccessToken();

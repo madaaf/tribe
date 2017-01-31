@@ -216,7 +216,7 @@ public class OpenGlUtils {
 
     public static Bitmap createBitmap(final int[] pixels, final int width, final int height, final Bitmap.Config config, final int orientation, final boolean mirror) {
         final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-        paint.setColorFilter(new ColorMatrixColorFilter(new ColorMatrix(new float[] {
+        paint.setColorFilter(new ColorMatrixColorFilter(new ColorMatrix(new float[]{
                 0, 0, 1, 0, 0,
                 0, 1, 0, 0, 0,
                 1, 0, 0, 0, 0,
@@ -263,14 +263,14 @@ public class OpenGlUtils {
         texImage2D(target, level, width, height, border, pixels);
     }
 
-    private static void texImage2D(int target, int level, int width, int height, int border, int[] pixels){
+    private static void texImage2D(int target, int level, int width, int height, int border, int[] pixels) {
         int size = width * height;
         for (int i = 0; i < size; i++) {
             int p = pixels[i];
             pixels[i] =
                     (((pixels[i]) & 0xFF000000) | // A
                             ((pixels[i] << 16) & 0x00FF0000) | // R
-                            ((pixels[i]      ) & 0x0000FF00) | // G
+                            ((pixels[i]) & 0x0000FF00) | // G
                             ((pixels[i] >> 16) & 0x000000FF)); // B
         }
         Buffer _pixels = IntBuffer.wrap(pixels);

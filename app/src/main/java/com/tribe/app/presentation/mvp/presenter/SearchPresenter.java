@@ -103,7 +103,8 @@ public class SearchPresenter implements Presenter {
     private final class SearchResultSubscriber extends DefaultSubscriber<SearchResult> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -119,7 +120,8 @@ public class SearchPresenter implements Presenter {
     private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
 
         @Override
-        public void onCompleted() {}
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -176,7 +178,8 @@ public class SearchPresenter implements Presenter {
     private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {
@@ -213,7 +216,8 @@ public class SearchPresenter implements Presenter {
     private class RefreshHowManyFriendsSubscriber extends DefaultSubscriber<List<Void>> {
 
         @Override
-        public void onCompleted() { }
+        public void onCompleted() {
+        }
 
         @Override
         public void onError(Throwable e) {

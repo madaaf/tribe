@@ -55,7 +55,7 @@ public class DiskUserDataRepository implements UserRepository {
      * Constructs a {@link UserRepository}.
      *
      * @param dataStoreFactory A factory to construct different data source implementations.
-     * @param realmDataMapper {@link UserRealmDataMapper}.
+     * @param realmDataMapper  {@link UserRealmDataMapper}.
      */
     @Inject
     public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
@@ -70,13 +70,19 @@ public class DiskUserDataRepository implements UserRepository {
     }
 
     @Override
-    public Observable<Pin> requestCode(String phoneNumber) { return null; }
+    public Observable<Pin> requestCode(String phoneNumber) {
+        return null;
+    }
 
     @Override
-    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) { return null; }
+    public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+        return null;
+    }
 
     @Override
-    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) { return null; }
+    public Observable<AccessToken> register(String displayName, String username, LoginEntity loginEntity) {
+        return null;
+    }
 
     @Override
     public Observable<User> userInfos(String userId) {
@@ -92,7 +98,8 @@ public class DiskUserDataRepository implements UserRepository {
 
                         for (FriendshipRealm fr : userRealm.getFriendships()) {
                             if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT) && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
-                                if (onlineMap.containsKey(fr.getSubId())) fr.getFriend().setIsOnline(onlineMap.get(fr.getSubId()));
+                                if (onlineMap.containsKey(fr.getSubId()))
+                                    fr.getFriend().setIsOnline(onlineMap.get(fr.getSubId()));
                                 resultFr.add(fr);
                             }
                         }
@@ -325,7 +332,7 @@ public class DiskUserDataRepository implements UserRepository {
                 .getRecipientInfos(recipientId, isToGroup)
                 .map(recipientRealmInterface -> {
                     if (recipientRealmInterface instanceof MembershipRealm) {
-                       return userRealmDataMapper.getMembershipRealmDataMapper().transform((MembershipRealm) recipientRealmInterface);
+                        return userRealmDataMapper.getMembershipRealmDataMapper().transform((MembershipRealm) recipientRealmInterface);
                     } else {
                         return userRealmDataMapper.getFriendshipRealmDataMapper().transform((FriendshipRealm) recipientRealmInterface);
                     }

@@ -13,8 +13,7 @@
             android:layout_width="175dp"
             android:layout_height="175dp"
             android:background="@drawable/shape_circle_black_3"
-            android:layout_gravity="center"
-            />
+            android:layout_gravity="center" />
 
         <ImageView
             android:id="@+id/imgCircle"
@@ -72,8 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
                 android:alpha="1"
-                android:text="@string/onboarding_queue_loading_friends"
-                />
+                android:text="@string/onboarding_queue_loading_friends" />
         </LinearLayout>
 
         <ImageView
@@ -82,8 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_search_access"
-            />
+            android:src="@drawable/picto_search_access" />
 
     </FrameLayout>
 
@@ -99,6 +96,5 @@
         android:layout_marginBottom="@dimen/horizontal_margin_small"
         android:gravity="center"
         android:lines="2"
-        android:text="@string/search_add_addressbook_subtitle"
-        />
+        android:text="@string/search_add_addressbook_subtitle" />
 </merge>

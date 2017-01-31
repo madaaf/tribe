@@ -168,6 +168,7 @@ public class Navigator {
 
     /**
      * Logout -> new login
+     *
      * @param activity
      */
     public void navigateToLogout(Activity activity) {
@@ -207,7 +208,7 @@ public class Navigator {
     /**
      * Goes to the group screen.
      *
-     * @param activity activity needed to open the destiny activity.
+     * @param activity   activity needed to open the destiny activity.
      * @param membership membership to detail
      */
     public void navigateToGroupDetails(Activity activity, Membership membership) {
@@ -234,7 +235,7 @@ public class Navigator {
     /**
      * Goes to the live screen.
      *
-     * @param activity activity needed to open the destiny activity.
+     * @param activity  activity needed to open the destiny activity.
      * @param recipient recipient to go live with
      */
     public void navigateToLive(Activity activity, Recipient recipient) {
@@ -269,10 +270,10 @@ public class Navigator {
     }
 
     /**
-     *
      * Composes a tweet to post and opens Twitter app.
+     *
      * @param context context needed to open the intent.
-     * @param tweet the pre-filled tweet.
+     * @param tweet   the pre-filled tweet.
      */
 
     public void tweet(Context context, String tweet) {
@@ -281,16 +282,16 @@ public class Navigator {
         tweetIntent.putExtra(Intent.EXTRA_TEXT, tweet);
         tweetIntent.setType("text/plain");
 
-        PackageManager packManager =  context.getPackageManager();
-        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
+        PackageManager packManager = context.getPackageManager();
+        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent, PackageManager.MATCH_DEFAULT_ONLY);
 
         boolean resolved = false;
 
-        for (ResolveInfo resolveInfo: resolvedInfoList) {
+        for (ResolveInfo resolveInfo : resolvedInfoList) {
             if (resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")) {
                 tweetIntent.setClassName(
                         resolveInfo.activityInfo.packageName,
-                        resolveInfo.activityInfo.name );
+                        resolveInfo.activityInfo.name);
                 resolved = true;
                 break;
             }
@@ -310,9 +311,10 @@ public class Navigator {
 
     /**
      * Intent to send an email
-     * @param context context to start activity
+     *
+     * @param context   context to start activity
      * @param addresses addresses to send email to
-     * @param subject the subject of the email
+     * @param subject   the subject of the email
      */
 
     public void composeEmail(Context context, String[] addresses, String subject) {

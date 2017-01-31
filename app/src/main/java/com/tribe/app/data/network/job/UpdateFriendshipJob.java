@@ -24,7 +24,9 @@ public class UpdateFriendshipJob extends BaseJob {
     @Named("cloudUpdateFriendship")
     transient CloudUpdateFriendship cloudUpdateFriendship;
 
-    private @FriendshipRealm.FriendshipStatus String status;
+    private
+    @FriendshipRealm.FriendshipStatus
+    String status;
     private String friendshipId;
 
     public UpdateFriendshipJob(String friendshipId, @FriendshipRealm.FriendshipStatus String status) {

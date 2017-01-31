@@ -6,6 +6,7 @@ import com.tribe.app.domain.entity.User;
 public interface ProfileInfoMVPView extends UpdateUserMVPView {
 
     void loadFacebookInfos(FacebookEntity facebookEntity);
+
     void userRegistered(User user);
 }
 
