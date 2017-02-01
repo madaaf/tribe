@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.group.GroupDetailsView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".presentation.view.activity.GroupActivity"
+    >
+
+  <com.tribe.app.presentation.view.component.ActionView
+      android:id="@+id/viewActionAddMembers"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@null"
+      app:actionType="hierarchy"
+      />
+
+  <include layout="@layout/view_separator_simple"/>
+
+  <com.tribe.app.presentation.view.component.ActionView
+      android:id="@+id/viewActionInfos"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@null"
+      app:actionType="hierarchy"
+      />
+
+  <include layout="@layout/view_separator_simple"/>
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      android:clipToPadding="false"
+      android:scrollbars="none"
+      />
+
+</com.tribe.app.presentation.view.component.group.GroupDetailsView>

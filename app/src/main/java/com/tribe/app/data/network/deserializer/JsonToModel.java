@@ -61,7 +61,6 @@ import javax.inject.Singleton;
 
               if (shouldUpdateOnlineStatus) {
                 onlineMap.put(userRealm.getId(), userRealm.isOnline());
-                userRealm.setIsOnline(false);
               }
 
               updatedUserList.add(userRealm);

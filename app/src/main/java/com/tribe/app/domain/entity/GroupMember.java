@@ -13,6 +13,7 @@ public class GroupMember implements Serializable {
   private boolean friend = false;
   private boolean animateAdd = false;
   private User user;
+  private Friendship friendship;
 
   public GroupMember(User user) {
     this.user = user;
@@ -92,5 +93,13 @@ public class GroupMember implements Serializable {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public void setFriendship(Friendship friendship) {
+    this.friendship = friendship;
+  }
+
+  public Friendship getFriendship() {
+    return friendship;
   }
 }

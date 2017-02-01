@@ -44,6 +44,7 @@
   <dimen name="live_notification_min_height">75.5dp</dimen>
   <dimen name="live_notification_max_height">197.5dp</dimen>
   <dimen name="live_notification_item_height">60.5dp</dimen>
+  <dimen name="action_button_height">35dp</dimen>
 
   <!-- WIDTHS -->
 

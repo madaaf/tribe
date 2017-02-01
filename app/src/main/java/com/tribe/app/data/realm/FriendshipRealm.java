@@ -1,123 +1,124 @@
 package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
-
-import java.util.Date;
-
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import java.util.Date;
 
 /**
  * Created by tiago on 05/08/2016.
  */
 public class FriendshipRealm extends RealmObject implements RecipientRealmInterface {
 
-    @StringDef({DEFAULT, HIDDEN, BLOCKED})
-    public @interface FriendshipStatus {
-    }
+  @StringDef({DEFAULT, HIDDEN, BLOCKED})
+  public @interface FriendshipStatus {
+  }
 
-    public static final String DEFAULT = "DEFAULT";
-    public static final String HIDDEN = "HIDDEN";
-    public static final String BLOCKED = "BLOCKED";
+  public static final String DEFAULT = "DEFAULT";
+  public static final String HIDDEN = "HIDDEN";
+  public static final String BLOCKED = "BLOCKED";
 
-    @PrimaryKey
-    private String id;
+  @PrimaryKey
+  private String id;
 
-    private
-    @FriendshipStatus
-    String status;
-    private String tag;
-    private boolean blocked;
-    private String category;
-    private UserRealm friend;
-    private Date created_at;
-    private Date updated_at;
-    private boolean is_live;
+  private
+  @FriendshipStatus
+  String status;
+  private String tag;
+  private boolean blocked;
+  private String category;
+  private UserRealm friend;
+  private Date created_at;
+  private Date updated_at;
 
-    public String getId() {
-        return id;
-    }
+  @Ignore
+  private boolean is_live;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getTag() {
-        return tag;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
+  public String getTag() {
+    return tag;
+  }
 
-    public boolean isBlocked() {
-        return blocked;
-    }
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
 
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
-    }
+  public boolean isBlocked() {
+    return blocked;
+  }
 
-    public String getCategory() {
-        return category;
-    }
+  public void setBlocked(boolean blocked) {
+    this.blocked = blocked;
+  }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+  public String getCategory() {
+    return category;
+  }
 
-    public UserRealm getFriend() {
-        return friend;
-    }
+  public void setCategory(String category) {
+    this.category = category;
+  }
 
-    public void setFriend(UserRealm friend) {
-        this.friend = friend;
-    }
+  public UserRealm getFriend() {
+    return friend;
+  }
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+  public void setFriend(UserRealm friend) {
+    this.friend = friend;
+  }
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
-    }
+  public Date getCreatedAt() {
+    return created_at;
+  }
 
-    public Date getUpdatedAt() {
-        return updated_at;
-    }
+  public void setCreatedAt(Date created_at) {
+    this.created_at = created_at;
+  }
 
-    public void setUpdatedAt(Date updated_at) {
-        this.updated_at = updated_at;
-    }
+  public Date getUpdatedAt() {
+    return updated_at;
+  }
 
-    @Override
-    public String getSubId() {
-        return friend.getId();
-    }
+  public void setUpdatedAt(Date updated_at) {
+    this.updated_at = updated_at;
+  }
 
-    public
-    @FriendshipStatus
-    String getStatus() {
-        return status;
-    }
+  @Override
+  public String getSubId() {
+    return friend.getId();
+  }
 
-    public void setStatus(@FriendshipStatus String status) {
-        this.status = status;
-    }
+  public
+  @FriendshipStatus
+  String getStatus() {
+    return status;
+  }
 
-    public boolean isBlockedOrHidden() {
-        return status != null && !status.equals(FriendshipRealm.DEFAULT);
-    }
+  public void setStatus(@FriendshipStatus String status) {
+    this.status = status;
+  }
 
-    public boolean isHidden() {
-        return status != null && status.equals(FriendshipRealm.HIDDEN);
-    }
+  public boolean isBlockedOrHidden() {
+    return status != null && !status.equals(FriendshipRealm.DEFAULT);
+  }
 
-    public boolean isLive() {
-        return is_live;
-    }
+  public boolean isHidden() {
+    return status != null && status.equals(FriendshipRealm.HIDDEN);
+  }
 
-    public void setLive(boolean isLive) {
-        this.is_live = isLive;
-    }
+  public boolean isLive() {
+    return is_live;
+  }
+
+  public void setLive(boolean isLive) {
+    this.is_live = isLive;
+  }
 }

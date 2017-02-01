@@ -65,10 +65,10 @@ public class BlockedFriendAdapterDelegate extends AddAnimationAdapterDelegate<Li
             animateAddSuccessful(vh);
             friendship.setShouldAnimateAdd(false);
         } else if (friendship.getStatus().equals(FriendshipRealm.DEFAULT)) {
-            vh.imgPicto.setVisibility(View.VISIBLE);
-            vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-            vh.btnAddBG.setVisibility(View.VISIBLE);
-            vh.progressBarAdd.setVisibility(View.GONE);
+            //vh.imgPicto.setVisibility(View.VISIBLE);
+            //vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+            //vh.btnAddBG.setVisibility(View.VISIBLE);
+            //vh.progressBarAdd.setVisibility(View.GONE);
         }
 
         vh.txtName.setText(friendship.getDisplayName());

@@ -70,10 +70,8 @@ import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
-import com.tribe.app.presentation.view.component.group.CreateGroupView;
+import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
-import com.tribe.app.presentation.view.component.group.MembersGroupView;
-import com.tribe.app.presentation.view.component.group.SettingsGroupView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -100,7 +98,6 @@ import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
-import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -169,19 +166,15 @@ public interface ApplicationComponent {
 
   void inject(TileView tileView);
 
-  void inject(CreateGroupView tileView);
-
   void inject(GroupSuggestionView groupSuggestionView);
 
   void inject(AddMembersGroupView addMembersGroupView);
 
   void inject(ActionView actionView);
 
-  void inject(SettingsGroupView settingsGroupView);
-
   void inject(UpdateGroupView updateGroupView);
 
-  void inject(MembersGroupView membersGroupView);
+  void inject(GroupDetailsView groupDetailsView);
 
   void inject(MemberListAdapterDelegate memberListAdapterDelegate);
 

@@ -12,9 +12,11 @@ import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -27,6 +29,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -43,15 +47,19 @@ public class UpdateGroupView extends LinearLayout {
 
   @BindView(R.id.editGroupName) EditTextFont editGroupName;
 
+  @BindView(R.id.viewActionNotifications) ActionView viewActionNotifications;
+
+  @BindView(R.id.viewActionLeaveGroup) ActionView viewActionLeaveGroup;
+
   // VARIABLES
   private String imgUri;
-  private BottomSheetDialog dialogCamera;
-  private LabelSheetAdapter cameraTypeAdapter;
   private Membership membership;
   private GroupEntity groupEntity;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
+  private PublishSubject<Boolean> notificationsChange = PublishSubject.create();
+  private PublishSubject<Void> leaveGroup = PublishSubject.create();
 
   public UpdateGroupView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -96,6 +104,19 @@ public class UpdateGroupView extends LinearLayout {
           groupEntity.setName(s);
         }));
 
+    viewActionNotifications.setValue(!membership.isMute());
+    viewActionNotifications.setTitle(EmojiParser.demojizedText(getContext().getString(R.string.group_details_notifications_title)));
+    viewActionLeaveGroup.setTitle(EmojiParser.demojizedText(getContext().getString(R.string.group_details_leave_title)));
+
+    subscriptions.add(viewActionLeaveGroup.onClick()
+        .flatMap(x -> DialogFactory.dialog(getContext(), membership.getDisplayName(), null,
+            EmojiParser.demojizedText(getContext().getString(R.string.group_details_leave_title)),
+            getContext().getString(R.string.action_cancel)))
+        .filter(x -> x == true)
+        .subscribe(aVoid -> leaveGroup.onNext(null)));
+
+    subscriptions.add(viewActionNotifications.onChecked().subscribe(notificationsChange));
+
     loadAvatar(membership);
     editGroupName.setText(membership.getDisplayName());
   }
@@ -135,5 +156,13 @@ public class UpdateGroupView extends LinearLayout {
   /**
    * OBSERVABLES
    */
+
+  public Observable<Void> onLeaveGroup() {
+    return leaveGroup;
+  }
+
+  public Observable<Boolean> onNotificationsChange() {
+    return notificationsChange;
+  }
 
 }

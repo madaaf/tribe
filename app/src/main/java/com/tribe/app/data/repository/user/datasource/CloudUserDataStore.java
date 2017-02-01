@@ -22,7 +22,6 @@ import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
@@ -70,8 +69,6 @@ public class CloudUserDataStore implements UserDataStore {
   private final Context context;
   private AccessToken accessToken = null;
   private Installation installation = null;
-  private final ReactiveLocationProvider reactiveLocationProvider;
-  private Preference<String> lastUserRequest;
   private SimpleDateFormat utcSimpleDate = null;
 
   /**
@@ -96,8 +93,6 @@ public class CloudUserDataStore implements UserDataStore {
     this.context = context;
     this.accessToken = accessToken;
     this.installation = installation;
-    this.reactiveLocationProvider = reactiveLocationProvider;
-    this.lastUserRequest = lastUserRequest;
     this.utcSimpleDate = utcSimpleDate;
   }
 
@@ -123,32 +118,11 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<UserRealm> userInfos(String userId) {
-    String initRequest = utcSimpleDate.format(new Date());
-    int avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
-
-    return Observable.zip(this.tribeApi.getUserInfos(context.getString(R.string.user_infos,
-        !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start,
-            lastUserRequest.get()) : "",
-        !StringUtils.isEmpty(lastUserRequest.get()) ? context.getString(R.string.input_start,
-            lastUserRequest.get()) : "", context.getString(R.string.userfragment_infos),
-        context.getString(R.string.groupfragment_info_members),
-        context.getString(R.string.membershipfragment_info))),
-        reactiveLocationProvider.getLastKnownLocation()
-            .onErrorReturn(throwable -> null)
-            .defaultIfEmpty(null), (userRealm, location) -> {
-          if (location != null) {
-            LocationRealm locationRealm = new LocationRealm();
-            locationRealm.setLatitude(location.getLatitude());
-            locationRealm.setLongitude(location.getLongitude());
-            locationRealm.setHasLocation(true);
-            locationRealm.setId(userRealm.getId());
-            userRealm.setLocation(locationRealm);
-          } else {
-            userRealm.setLocation(null);
-          }
-
-          return userRealm;
-        }).doOnNext(user -> lastUserRequest.set(initRequest)).doOnNext(saveToCacheUser);
+    return this.tribeApi.getUserInfos(
+        context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
+            context.getString(R.string.groupfragment_info_members),
+            context.getString(R.string.membershipfragment_info)))
+        .doOnNext(saveToCacheUser);
   }
 
   @Override public Observable<List<FriendshipRealm>> friendships() {
@@ -535,7 +509,8 @@ public class CloudUserDataStore implements UserDataStore {
               frDB.setBlocked(newFriendship.isBlocked());
             }
             currentUser.getFriendships().add(newFriendship);
-            userCache.put(currentUser);
+            // TODO rollback
+            //userCache.put(currentUser);
             friendshipRealm = newFriendship;
           }
 
@@ -709,45 +684,14 @@ public class CloudUserDataStore implements UserDataStore {
       members = context.getString(R.string.create_group_members, idList);
     }
 
-    final String request =
-        context.getString(R.string.create_group, groupEntity.getName(), GroupRealm.PUBLIC,
-            !StringUtils.isEmpty(members) ? members : "",
-            context.getString(R.string.groupfragment_info));
-    if (groupEntity.getImgPath() == null) {
-      return this.tribeApi.createGroup(request)
-          .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-          .flatMap(groupRealm -> createMembership(groupRealm.getId()),
-              (groupRealm, newMembership) -> newMembership);
-    } else {
-      RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+    final String request = context.getString(R.string.create_group, groupEntity.getName(),
+        !StringUtils.isEmpty(members) ? members : "",
+        context.getString(R.string.groupfragment_info));
 
-      File file = new File(Uri.parse(groupEntity.getImgPath()).getPath());
-
-      if (!(file != null && file.exists() && file.length() > 0)) {
-        InputStream inputStream = null;
-        file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
-        try {
-          inputStream =
-              context.getContentResolver().openInputStream(Uri.parse(groupEntity.getImgPath()));
-          FileUtils.copyInputStreamToFile(inputStream, file);
-        } catch (FileNotFoundException e) {
-          e.printStackTrace();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-
-      RequestBody requestFile = null;
-      MultipartBody.Part body = null;
-
-      requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-      body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
-
-      return this.tribeApi.createGroupMedia(query, body)
-          .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-          .flatMap(groupRealm -> createMembership(groupRealm.getId()),
-              (groupRealm, newMembership) -> newMembership);
-    }
+    return this.tribeApi.createGroup(request)
+        .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
+        .flatMap(groupRealm -> createMembership(groupRealm.getId()),
+            (groupRealm, newMembership) -> newMembership);
   }
 
   @Override
@@ -933,7 +877,8 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
     final String request = context.getString(R.string.mutation,
-        context.getString(isGroup ? R.string.joinRoomGroup : R.string.joinRoomFriendship, id)) + "\n"
+        context.getString(isGroup ? R.string.joinRoomGroup : R.string.joinRoomFriendship, id))
+        + "\n"
         + context.getString(R.string.roomFragment_infos);
 
     return this.tribeApi.joinRoom(request);

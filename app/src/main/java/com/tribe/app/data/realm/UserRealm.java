@@ -1,215 +1,214 @@
 package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
-
 import com.google.gson.JsonObject;
-
-import java.util.Date;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import java.util.Date;
 
 /**
  * Created by tiago on 04/05/2016.
  */
 public class UserRealm extends RealmObject {
 
-    @StringDef({UPDATED_AT})
-    public @interface UserRealmAttributes {
-    }
+  @StringDef({UPDATED_AT})
+  public @interface UserRealmAttributes {
+  }
 
-    public static final String DISPLAY_NAME = "display_name";
-    public static final String USERNAME = "username";
-    public static final String PROFILE_PICTURE = "picture";
-    public static final String FBID = "fbid";
-    public static final String INVISIBLE_MODE = "invisible_mode";
-    public static final String TRIBE_SAVE = "tribe_save";
-    public static final String UPDATED_AT = "updated_at";
-    public static final String PUSH_NOTIF = "push_notif";
+  public static final String DISPLAY_NAME = "display_name";
+  public static final String USERNAME = "username";
+  public static final String PROFILE_PICTURE = "picture";
+  public static final String FBID = "fbid";
+  public static final String INVISIBLE_MODE = "invisible_mode";
+  public static final String TRIBE_SAVE = "tribe_save";
+  public static final String UPDATED_AT = "updated_at";
+  public static final String PUSH_NOTIF = "push_notif";
 
-    @PrimaryKey
-    private String id;
+  @PrimaryKey
+  private String id;
 
-    private Date created_at;
-    private Date updated_at;
-    private String display_name;
-    private String username;
-    private String phone;
-    private String fbid;
-    private String picture;
-    private LocationRealm location;
-    private boolean tribe_save = false;
-    private RealmList<FriendshipRealm> friendships;
-    private RealmList<MembershipRealm> memberships;
-    private boolean invisible_mode;
-    private boolean push_notif = true;
-    private boolean is_online = false;
-    private Date last_online;
+  private Date created_at;
+  private Date updated_at;
+  private String display_name;
+  private String username;
+  private String phone;
+  private String fbid;
+  private String picture;
+  private LocationRealm location;
+  private boolean tribe_save = false;
+  private RealmList<FriendshipRealm> friendships;
+  private RealmList<MembershipRealm> memberships;
+  private boolean invisible_mode;
+  private boolean push_notif = true;
+  private Date last_online;
 
-    @Ignore
-    private RealmList<GroupRealm> groups;
+  @Ignore
+  private RealmList<GroupRealm> groups;
 
-    @Ignore
-    private JsonObject jsonPayloadUpdate;
+  @Ignore
+  private JsonObject jsonPayloadUpdate;
 
-    public UserRealm() {
-        memberships = new RealmList<>();
-        groups = new RealmList<>();
-    }
+  @Ignore
+  private boolean is_online = false;
 
-    public String getId() {
-        return id;
-    }
+  public UserRealm() {
+    memberships = new RealmList<>();
+    groups = new RealmList<>();
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setCreatedAt(Date createdAt) {
-        this.created_at = createdAt;
-    }
+  public Date getCreatedAt() {
+    return created_at;
+  }
 
-    public Date getUpdatedAt() {
-        return updated_at;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.created_at = createdAt;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updated_at = updatedAt;
-    }
+  public Date getUpdatedAt() {
+    return updated_at;
+  }
 
-    public String getDisplayName() {
-        return display_name;
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updated_at = updatedAt;
+  }
 
-    public void setDisplayName(String displayName) {
-        this.display_name = displayName;
-    }
+  public String getDisplayName() {
+    return display_name;
+  }
 
-    public String getProfilePicture() {
-        return picture;
-    }
+  public void setDisplayName(String displayName) {
+    this.display_name = displayName;
+  }
 
-    public void setProfilePicture(String profilePicture) {
-        this.picture = profilePicture;
-    }
+  public String getProfilePicture() {
+    return picture;
+  }
 
-    public LocationRealm getLocation() {
-        return location;
-    }
+  public void setProfilePicture(String profilePicture) {
+    this.picture = profilePicture;
+  }
 
-    public void setLocation(LocationRealm location) {
-        this.location = location;
-    }
+  public LocationRealm getLocation() {
+    return location;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public void setLocation(LocationRealm location) {
+    this.location = location;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public String getPhone() {
-        return phone;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+  public String getPhone() {
+    return phone;
+  }
 
-    public RealmList<FriendshipRealm> getFriendships() {
-        return friendships;
-    }
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
 
-    public void setFriendships(RealmList<FriendshipRealm> friendships) {
-        this.friendships = friendships;
-    }
+  public RealmList<FriendshipRealm> getFriendships() {
+    return friendships;
+  }
 
-    public String getFbid() {
-        return fbid;
-    }
+  public void setFriendships(RealmList<FriendshipRealm> friendships) {
+    this.friendships = friendships;
+  }
 
-    public void setFbid(String fbid) {
-        this.fbid = fbid;
-    }
+  public String getFbid() {
+    return fbid;
+  }
 
-    public boolean isInvisibleMode() {
-        return invisible_mode;
-    }
+  public void setFbid(String fbid) {
+    this.fbid = fbid;
+  }
 
-    public void setInvisibleMode(boolean invisibleMode) {
-        this.invisible_mode = invisibleMode;
-    }
+  public boolean isInvisibleMode() {
+    return invisible_mode;
+  }
 
-    public boolean isTribeSave() {
-        return tribe_save;
-    }
+  public void setInvisibleMode(boolean invisibleMode) {
+    this.invisible_mode = invisibleMode;
+  }
 
-    public void setTribeSave(boolean tribeSave) {
-        this.tribe_save = tribeSave;
-    }
+  public boolean isTribeSave() {
+    return tribe_save;
+  }
 
-    public RealmList<MembershipRealm> getMemberships() {
-        return memberships;
-    }
+  public void setTribeSave(boolean tribeSave) {
+    this.tribe_save = tribeSave;
+  }
 
-    public void setMemberships(RealmList<MembershipRealm> memberships) {
-        this.memberships = memberships;
-    }
+  public RealmList<MembershipRealm> getMemberships() {
+    return memberships;
+  }
 
-    public RealmList<GroupRealm> getGroups() {
-        return groups;
-    }
+  public void setMemberships(RealmList<MembershipRealm> memberships) {
+    this.memberships = memberships;
+  }
 
-    public void setGroups(RealmList<GroupRealm> groups) {
-        this.groups = groups;
-    }
+  public RealmList<GroupRealm> getGroups() {
+    return groups;
+  }
 
-    public void setPushNotif(boolean pushNotif) {
-        this.push_notif = pushNotif;
-    }
+  public void setGroups(RealmList<GroupRealm> groups) {
+    this.groups = groups;
+  }
 
-    public boolean isPushNotif() {
-        return push_notif;
-    }
+  public void setPushNotif(boolean pushNotif) {
+    this.push_notif = pushNotif;
+  }
 
-    public boolean isOnline() {
-        return is_online;
-    }
+  public boolean isPushNotif() {
+    return push_notif;
+  }
 
-    public void setIsOnline(boolean isOnline) {
-        this.is_online = isOnline;
-    }
+  public boolean isOnline() {
+    return is_online;
+  }
 
-    public Date getLastOnline() {
-        return last_online;
-    }
+  public void setIsOnline(boolean isOnline) {
+    this.is_online = isOnline;
+  }
 
-    public void setLastOnline(Date lastOnline) {
-        this.last_online = lastOnline;
-    }
+  public Date getLastOnline() {
+    return last_online;
+  }
 
-    public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {
-        this.jsonPayloadUpdate = jsonPayloadUpdate;
-    }
+  public void setLastOnline(Date lastOnline) {
+    this.last_online = lastOnline;
+  }
 
-    public JsonObject getJsonPayloadUpdate() {
-        return jsonPayloadUpdate;
-    }
+  public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {
+    this.jsonPayloadUpdate = jsonPayloadUpdate;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof UserRealm)) return false;
+  public JsonObject getJsonPayloadUpdate() {
+    return jsonPayloadUpdate;
+  }
 
-        UserRealm that = (UserRealm) o;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || !(o instanceof UserRealm)) return false;
 
-        return id != null ? id.equals(that.getId()) : that.getId() == null;
-    }
+    UserRealm that = (UserRealm) o;
+
+    return id != null ? id.equals(that.getId()) : that.getId() == null;
+  }
 }

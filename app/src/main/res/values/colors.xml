@@ -24,6 +24,7 @@
 
   <!-- VIOLETS -->
   <color name="violet">#6643C1</color>
+  <color name="violet.opacity.10">#1A6643C1</color>
 
   <!-- ME -->
 
@@ -47,6 +48,7 @@
   <color name="blue.facebook">#007FFF</color>
   <color name="blue.facebook.dark">#4460A0</color>
   <color name="blue.opaque">#0099E4</color>
+  <color name="blue.new">#3DE9DA</color>
 
   <!-- VIOLET -->
   <color name="purple.group">#8161DA</color>

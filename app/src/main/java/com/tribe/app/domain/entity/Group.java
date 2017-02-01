@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import android.text.TextUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 
 import java.io.Serializable;
@@ -67,6 +68,23 @@ public class Group implements Serializable {
     }
 
     return pics;
+  }
+
+  public String getMembersNames() {
+    List<String> names = new ArrayList<>();
+
+    if (members != null) {
+      List<User> subMembers = members.subList(Math.max(members.size() - 4, 0), members.size());
+
+      if (subMembers != null) {
+        for (User user : subMembers) {
+          String url = user.getDisplayName();
+          if (!StringUtils.isEmpty(url)) names.add(url);
+        }
+      }
+    }
+
+    return TextUtils.join(", ", names);
   }
 
   public void computeGroupMembers(List<GroupMember> groupMemberList) {

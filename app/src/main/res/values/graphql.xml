@@ -5,7 +5,7 @@
             user {
                 ...UserInfos
 
-                friendships %1$s {
+                friendships {
                     id
                     status
                     tag
@@ -15,15 +15,15 @@
                     }
                 }
 
-                memberships %2$s {
+                memberships {
                     ...MembershipInfo
                 }
             }
         }
 
+        %1$s
+        %2$s
         %3$s
-        %4$s
-        %5$s
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -268,14 +268,13 @@
     <string name="create.group" translatable="false">
        mutation {
             createGroup(group: {
-                name : \"%1$s\",
-   	            type : %2$s
-            } %3$s
+                name : \"%1$s\"
+            } %2$s
             ) {
                 ...GroupInfo
             }
         }
-        %4$s
+        %3$s
     </string>
 
     <string name="create.group.members" translatable="false">

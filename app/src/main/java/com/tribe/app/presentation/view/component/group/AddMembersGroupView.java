@@ -2,9 +2,6 @@ package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -12,35 +9,31 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
-
+import android.widget.LinearLayout;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GroupMemberDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.FriendMembersLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.MembersLayoutManager;
-import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -50,7 +43,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 11/21/2016.
  */
 
-public class AddMembersGroupView extends FrameLayout {
+public class AddMembersGroupView extends LinearLayout {
 
   private int DURATION_FADE = 150;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
@@ -64,16 +57,6 @@ public class AddMembersGroupView extends FrameLayout {
 
   @BindView(R.id.recyclerViewGroupMembers) RecyclerView recyclerViewGroupMembers;
 
-  @BindView(R.id.appbar) AppBarLayout appBarLayout;
-
-  @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbarLayout;
-
-  @BindView(R.id.viewActionSettings) ActionView viewActionSettings;
-
-  @BindView(R.id.viewActionShareLink) ActionView viewActionShareLink;
-
-  @BindView(R.id.txtGroupName) TextViewFont txtGroupName;
-
   @BindView(R.id.txtMembers) TextViewFont txtMembers;
 
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
@@ -85,7 +68,6 @@ public class AddMembersGroupView extends FrameLayout {
   // VARIABLES
   private FriendMembersLayoutManager layoutManager;
   private FriendMembersAdapter adapter;
-  private GroupEntity groupEntity;
   private Membership membership;
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
@@ -94,9 +76,6 @@ public class AddMembersGroupView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions;
   private PublishSubject<List<GroupMember>> membersChanged = PublishSubject.create();
-  private PublishSubject<Void> clickShareLink = PublishSubject.create();
-  private PublishSubject<Void> clickSettings = PublishSubject.create();
-  private PublishSubject<Void> clickMembers = PublishSubject.create();
 
   public AddMembersGroupView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -110,17 +89,13 @@ public class AddMembersGroupView extends FrameLayout {
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
 
-    if (membership == null && groupEntity == null) {
+    if (membership == null) {
       Serializable serializable = ViewStackHelper.getViewStack(getContext()).getParameter(this);
 
-      if (serializable instanceof GroupEntity) {
-        groupEntity = (GroupEntity) serializable;
-      } else {
+      if (serializable instanceof Membership) {
         membership = (Membership) serializable;
       }
 
-      updateInfos();
-      initAppBar();
       init();
     }
 
@@ -155,6 +130,9 @@ public class AddMembersGroupView extends FrameLayout {
   private void init() {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    setOrientation(VERTICAL);
+
     subscriptions = new CompositeSubscription();
 
     newMembers = new ArrayList<>();
@@ -167,20 +145,11 @@ public class AddMembersGroupView extends FrameLayout {
 
     setupFriendList();
 
-    if (membership != null) {
-      subscriptions.add(viewActionSettings.onClick().subscribe(clickSettings));
-
-      subscriptions.add(viewActionShareLink.onClick().subscribe(clickShareLink));
-
-      layoutMembers.setOnClickListener(v -> clickMembers.onNext(null));
-    }
-
     recyclerView.setAdapter(adapter);
     recyclerView.addItemDecoration(
-        new DividerFirstLastItemDecoration(screenUtils.dpToPx(2.5f), screenUtils.dpToPx(10), 0));
-    recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 50);
+        new DividerFirstLastItemDecoration(screenUtils.dpToPx(15f), screenUtils.dpToPx(10), 1));
     recyclerView.setHasFixedSize(true);
-    recyclerView.setNestedScrollingEnabled(groupEntity == null);
+    recyclerView.setNestedScrollingEnabled(membership != null);
 
     subscriptions.add(
         RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
@@ -188,8 +157,13 @@ public class AddMembersGroupView extends FrameLayout {
         }));
 
     subscriptions.add(adapter.clickAdd()
-        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-        .subscribe(groupMember -> {
+        .map(view -> {
+          int position = recyclerView.getChildLayoutPosition(view);
+          adapter.notifyItemChanged(position);
+          return adapter.getItemAtPosition(position);
+        })
+        .subscribe(obj -> {
+          GroupMember groupMember = (GroupMember) obj;
           boolean add = membersAdapter.compute(groupMember);
           if (add) {
             newMembers.add(groupMember);
@@ -199,12 +173,6 @@ public class AddMembersGroupView extends FrameLayout {
           membersChanged.onNext(newMembers);
           refactorMembers();
         }));
-
-    editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
-      if (hasFocus) {
-        appBarLayout.setExpanded(false, true);
-      }
-    });
 
     setupMembers();
     refactorMembers();
@@ -230,31 +198,6 @@ public class AddMembersGroupView extends FrameLayout {
       membership.getGroup().setPicture(group.getPicture());
       membership.getGroup().setName(group.getName());
     }
-
-    updateInfos();
-  }
-
-  private void updateInfos() {
-    txtGroupName.setText(groupName());
-
-    if (membership != null) {
-      viewActionShareLink.setBody("");
-    }
-  }
-
-  private void initAppBar() {
-    appBarLayout.setExpanded(groupEntity == null);
-
-    CoordinatorLayout.LayoutParams params =
-        (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
-    AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
-    behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
-      @Override public boolean canDrag(AppBarLayout appBarLayout) {
-        return groupEntity == null;
-      }
-    });
-    params.setBehavior(behavior);
-    appBarLayout.setLayoutParams(params);
   }
 
   private void setupMembers() {
@@ -269,7 +212,7 @@ public class AddMembersGroupView extends FrameLayout {
 
     membersAdapter = new MembersAdapter(getContext());
 
-    if (groupEntity != null) {
+    if (membership == null) {
       GroupMember groupMember = new GroupMember(user);
       groupMember.setOgMember(true);
       groupMember.setMember(true);
@@ -282,14 +225,12 @@ public class AddMembersGroupView extends FrameLayout {
     recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
     recyclerViewGroupMembers.setHasFixedSize(true);
     //recyclerViewGroupMembers.addItemDecoration(new MemberListLastItemDecoration(getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)));
-
-    subscriptions.add(membersAdapter.onClick().subscribe(clickMembers));
   }
 
   private void refactorMembers() {
     txtMembers.setText(membersAdapter.getItemCount() + " " +
         (membersAdapter.getItemCount() > 1 ? getResources().getString(R.string.group_members)
-            : getResources().getString(R.string.group_member)));
+            : getResources().getString(R.string.group_member)) + " " + "\uD83D\uDD25");
   }
 
   private void filter(String text) {
@@ -297,23 +238,11 @@ public class AddMembersGroupView extends FrameLayout {
   }
 
   private String groupName() {
-    return groupEntity == null ? membership.getDisplayName() : groupEntity.getName();
+    return membership != null ? membership.getDisplayName() : "";
   }
 
   // OBSERVABLES
   public Observable<List<GroupMember>> onMembersChanged() {
     return membersChanged;
-  }
-
-  public Observable<Void> onClickSettings() {
-    return clickSettings;
-  }
-
-  public Observable<Void> onClickShareLink() {
-    return clickShareLink;
-  }
-
-  public Observable<Void> onClickMembers() {
-    return clickMembers;
   }
 }

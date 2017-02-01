@@ -172,6 +172,7 @@ public class HomeActivity extends BaseActivity
         homeGridPresenter.onViewAttached(this);
 
         if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+            homeGridPresenter.syncFriendList();
             syncContacts();
         }
     }
@@ -345,20 +346,9 @@ public class HomeActivity extends BaseActivity
     private void initTopBar() {
 
         subscriptions.add(topBarContainer.onClickNew()
-                .flatMap(aVoid -> DialogFactory.showBottomSheetForInvites(this), ((aVoid, labelType) -> {
-                    if (labelType.getTypeDef().equals(LabelType.SEARCH)) {
-                        navigateToSearch(null);
-                    } else if (labelType.getTypeDef().equals(LabelType.INVITE_SMS)) {
-                        navigateToInvitesSMS();
-                    } else if (labelType.getTypeDef().equals(LabelType.INVITE_WHATSAPP)) {
-                        navigateToInvitesWhatsapp();
-                    } else if (labelType.getTypeDef().equals(LabelType.INVITE_MESSENGER)) {
-                        navigateToInvitesMessenger();
-                    }
-
-                    return null;
-                }))
-                .subscribe());
+                .subscribe(aVoid -> {
+                    navigateToCreateGroup();
+                }));
 
         subscriptions.add(topBarContainer.onSearch().subscribe());
 
@@ -496,31 +486,12 @@ public class HomeActivity extends BaseActivity
         navigator.navigateToProfile(HomeActivity.this);
     }
 
-
     private void navigateToSettings() {
         navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
     }
 
     private void navigateToSearch(String username) {
         navigator.navigateToSearchUser(HomeActivity.this, username);
-    }
-
-    private void navigateToInvitesSMS() {
-        shouldOverridePendingTransactions = true;
-        HomeActivity.this.navigator.openSms(
-                EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), this);
-    }
-
-    private void navigateToInvitesMessenger() {
-        shouldOverridePendingTransactions = true;
-        HomeActivity.this.navigator.openFacebookMessenger(
-                EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), this);
-    }
-
-    private void navigateToInvitesWhatsapp() {
-        shouldOverridePendingTransactions = true;
-        HomeActivity.this.navigator.openWhatsApp(
-                EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), this);
     }
 
     private void navigateToCreateGroup() {

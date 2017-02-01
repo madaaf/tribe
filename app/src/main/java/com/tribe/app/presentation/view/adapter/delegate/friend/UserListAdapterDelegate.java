@@ -85,18 +85,18 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
             animateAddSuccessful(vh);
         } else {
             if (user.isFriend() || user.isNewFriend()) {
-                vh.imgPicto.setVisibility(View.VISIBLE);
-                vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-                vh.btnAddBG.setVisibility(View.VISIBLE);
-                vh.progressBarAdd.setVisibility(View.GONE);
-            } else if (user.isInvisibleMode()) {
-                vh.btnAdd.setVisibility(View.GONE);
-                vh.imgGhost.setVisibility(View.VISIBLE);
-            } else {
-                vh.imgPicto.setVisibility(View.VISIBLE);
-                vh.imgPicto.setImageResource(R.drawable.picto_add);
-                vh.btnAddBG.setVisibility(View.GONE);
-                vh.progressBarAdd.setVisibility(View.GONE);
+            //    vh.imgPicto.setVisibility(View.VISIBLE);
+            //    vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+            //    vh.btnAddBG.setVisibility(View.VISIBLE);
+            //    vh.progressBarAdd.setVisibility(View.GONE);
+            //} else if (user.isInvisibleMode()) {
+            //    vh.btnAdd.setVisibility(View.GONE);
+            //    vh.imgGhost.setVisibility(View.VISIBLE);
+            //} else {
+            //    vh.imgPicto.setVisibility(View.VISIBLE);
+            //    vh.imgPicto.setImageResource(R.drawable.picto_add);
+            //    vh.btnAddBG.setVisibility(View.GONE);
+            //    vh.progressBarAdd.setVisibility(View.GONE);
             }
         }
 

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <ImageView
+      android:id="@+id/imgAvatar"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_gravity="left|center_vertical"
+      android:background="@null"
+      android:scaleType="centerCrop"
+      />
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginLeft="55dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        style="@style/Title.1.Black"
+        />
+
+    <ImageView
+        android:id="@+id/imgGhost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/txtName"
+        android:src="@drawable/picto_ghost_small"
+        android:visibility="gone"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtName"
+        android:layout_marginTop="5dp"
+        android:singleLine="true"
+        style="@style/Body.One.Blue.New"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtName"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="6.5dp"
+        android:layout_toRightOf="@id/txtUsername"
+        android:singleLine="true"
+        android:text="\u2022"
+        android:visibility="gone"
+        style="@style/Body.One.Black40"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtFriend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtName"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/txtBubble"
+        android:maxLines="1"
+        android:text="@string/group_add_members_already_friend"
+        android:visibility="gone"
+        style="@style/Body.One.Black40"
+        />
+  </RelativeLayout>
+</merge>

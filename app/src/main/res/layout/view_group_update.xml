@@ -1,52 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.tribe.app.presentation.view.component.group.UpdateGroupView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
     tools:context=".presentation.view.activity.GroupActivity"
-    android:background="@color/grey.background.profile_info"
-    android:orientation="vertical">
+    >
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:focusableInTouchMode="true"
-        android:focusable="true">
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:focusable="true"
+      android:focusableInTouchMode="true"
+      >
 
-        <requestFocus />
-    </LinearLayout>
+    <requestFocus/>
+  </LinearLayout>
 
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="76dp"
+      android:background="@android:color/white"
+      android:paddingLeft="@dimen/horizontal_margin_small"
+      android:paddingRight="@dimen/horizontal_margin_small"
+      >
 
-    <FrameLayout
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/avatarView"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:background="@null"
+        />
+
+    <ImageView
+        android:id="@+id/imgInd"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@id/avatarView"
+        android:layout_alignRight="@id/avatarView"
+        android:layout_marginRight="-5dp"
+        android:layout_marginBottom="-5dp"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_oval_white"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_change_avatar"
+        />
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editGroupName"
         android:layout_width="match_parent"
-        android:layout_height="63.5dp"
-        android:paddingLeft="@dimen/horizontal_margin_small"
-        android:background="@android:color/white">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="62.5dp"
+        android:layout_marginStart="55dp"
+        android:background="@null"
+        android:gravity="center"
+        android:hint="@string/group_identification_custom_name_placeholder"
+        android:imeOptions="actionDone"
+        android:inputType="textCapWords|textNoSuggestions"
+        android:singleLine="true"
+        android:textColorHint="@color/black.opacity.40"
+        style="@style/Title.1.Black"
+        />
+  </RelativeLayout>
 
-        <com.tribe.app.presentation.view.widget.avatar.AvatarView
-            android:id="@+id/avatarView"
-            android:layout_width="@dimen/avatar_size_small"
-            android:layout_height="@dimen/avatar_size_small"
-            android:layout_gravity="center_vertical"
-            android:background="@null" />
+  <include layout="@layout/view_separator_simple"/>
 
-        <com.tribe.app.presentation.view.widget.EditTextFont
-            android:id="@+id/editGroupName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginStart="55dp"
-            android:layout_marginEnd="62.5dp"
-            android:background="@null"
-            android:gravity="left|center_vertical"
-            android:hint="@string/group_identification_custom_name_placeholder"
-            style="@style/Title.1.Black"
-            android:textColorHint="@color/black.opacity.40"
-            android:singleLine="true"
-            android:imeOptions="actionDone"
-            android:inputType="textCapWords|textNoSuggestions" />
-    </FrameLayout>
+  <com.tribe.app.presentation.view.component.ActionView
+      android:id="@+id/viewActionNotifications"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@android:color/white"
+      app:actionTitle="@string/group_details_notifications_title"
+      app:actionType="toggle"
+      />
 
-    <include layout="@layout/view_separator_simple" />
+  <include layout="@layout/view_separator_simple"/>
+
+  <com.tribe.app.presentation.view.component.ActionView
+      android:id="@+id/viewActionLeaveGroup"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@android:color/white"
+      app:actionTitle="@string/group_details_leave_title"
+      app:actionType="regular"
+      />
+
+  <include layout="@layout/view_separator_simple"/>
 
 </com.tribe.app.presentation.view.component.group.UpdateGroupView>

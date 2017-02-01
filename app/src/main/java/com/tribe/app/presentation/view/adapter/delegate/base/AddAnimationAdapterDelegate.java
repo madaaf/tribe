@@ -5,22 +5,21 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.drawable.TransitionDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
-
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import java.util.HashMap;
 import java.util.Map;
-
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
 /**
- * Created by horatiothomas on 9/7/16.
+ * Created by tiago on 01/31/17.
  */
 public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T> {
 
@@ -28,6 +27,7 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
 
   protected LayoutInflater layoutInflater;
   protected Context context;
+  private int actionButtonHeight, marginSmall;
 
   // RX SUBSCRIPTIONS / SUBJECTS
   private final PublishSubject<View> clickAdd = PublishSubject.create();
@@ -39,6 +39,8 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    actionButtonHeight = context.getResources().getDimensionPixelSize(R.dimen.action_button_height);
+    marginSmall = context.getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
   }
 
   protected void onClick(AddAnimationViewHolder vh) {
@@ -49,33 +51,16 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
   protected AnimatorSet animate(AddAnimationViewHolder vh) {
     AnimatorSet animatorSet = new AnimatorSet();
 
-    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", 0f, 45f);
-    rotationAnim.setDuration(DURATION);
-    rotationAnim.setInterpolator(new DecelerateInterpolator());
-
-    ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.imgPicto, "alpha", 1f, 0f);
-    alphaAnimAdd.setDuration(DURATION);
-    alphaAnimAdd.setInterpolator(new DecelerateInterpolator());
-    alphaAnimAdd.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        vh.imgPicto.setRotation(0);
-        vh.imgPicto.setAlpha(1f);
-        vh.imgPicto.setVisibility(View.GONE);
-      }
-    });
+    ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 1f, 0f);
 
     ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
-    alphaAnimProgress.setDuration(DURATION);
-    alphaAnimProgress.setStartDelay(150);
-    alphaAnimProgress.setInterpolator(new DecelerateInterpolator());
-    alphaAnimProgress.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        vh.progressBarAdd.setAlpha(0f);
-        vh.progressBarAdd.setVisibility(View.VISIBLE);
-      }
-    });
 
-    animatorSet.play(rotationAnim).with(alphaAnimAdd).with(alphaAnimProgress);
+    Animator animator =
+        AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(), actionButtonHeight);
+
+    animatorSet.setDuration(DURATION);
+    animatorSet.setInterpolator(new DecelerateInterpolator());
+    animatorSet.play(alphaAnimAdd).with(alphaAnimProgress).with(animator);
     animatorSet.start();
     return animatorSet;
   }
@@ -83,36 +68,24 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
   protected void animateAddSuccessful(AddAnimationViewHolder vh) {
     AnimatorSet animatorSet = new AnimatorSet();
 
-    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(vh.imgPicto, "rotation", -45f, 0f);
-    rotationAnim.setDuration(DURATION);
-    rotationAnim.setInterpolator(new DecelerateInterpolator());
-    rotationAnim.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-        vh.imgPicto.setVisibility(View.VISIBLE);
-        vh.progressBarAdd.setVisibility(View.GONE);
-      }
-    });
+    ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 0f, 1f);
 
-    ObjectAnimator scaleXAnim = ObjectAnimator.ofFloat(vh.imgPicto, "scaleX", 0.2f, 1f);
-    scaleXAnim.setDuration(DURATION);
-    scaleXAnim.setInterpolator(new DecelerateInterpolator());
+    ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 1f, 0f);
 
-    ObjectAnimator scaleYAnim = ObjectAnimator.ofFloat(vh.imgPicto, "scaleY", 0.2f, 1f);
-    scaleYAnim.setDuration(DURATION);
-    scaleYAnim.setInterpolator(new DecelerateInterpolator());
+    vh.txtAction.setText(R.string.action_hang_live);
+    vh.txtAction.measure(0, 0);
 
-    ObjectAnimator alphaBG = ObjectAnimator.ofFloat(vh.btnAddBG, "alpha", 0f, 1f);
-    alphaBG.setDuration(DURATION);
-    alphaBG.setInterpolator(new DecelerateInterpolator());
-    alphaBG.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        vh.btnAddBG.setVisibility(View.VISIBLE);
-      }
-    });
+    Animator animator =
+        AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(), vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
 
-    animatorSet.play(rotationAnim).with(scaleXAnim).with(scaleYAnim).with(alphaBG);
+
+    animatorSet.setDuration(DURATION);
+    animatorSet.setInterpolator(new DecelerateInterpolator());
+    animatorSet.play(alphaAnimAdd).with(alphaAnimProgress).with(animator);
     animatorSet.start();
+
+    ((TransitionDrawable) vh.btnAdd.getBackground()).startTransition(DURATION);
+
     animations.put(vh, animatorSet);
   }
 

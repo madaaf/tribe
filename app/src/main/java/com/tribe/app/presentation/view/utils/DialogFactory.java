@@ -128,22 +128,12 @@ public final class DialogFactory {
     });
   }
 
-  public static Observable<LabelType> showBottomSheetForGroupMembers(Context context,
-      GroupMember groupMember) {
-    return createBottomSheet(context, generateLabelsForGroupMember(context, groupMember));
+  public static Observable<LabelType> showBottomSheetForGroupMembers(Context context) {
+    return createBottomSheet(context, generateLabelsForGroupMember(context));
   }
 
-  private static List<LabelType> generateLabelsForGroupMember(Context context,
-      GroupMember groupMember) {
+  private static List<LabelType> generateLabelsForGroupMember(Context context) {
     List<LabelType> labelTypeList = new ArrayList<>();
-
-    if (groupMember.isAdmin()) {
-      labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_remove_admin),
-          LabelType.REMOVE_FROM_ADMIN));
-    } else {
-      labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_add_admin),
-          LabelType.SET_AS_ADMIN));
-    }
 
     labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_remove_member),
         LabelType.REMOVE_FROM_GROUP));

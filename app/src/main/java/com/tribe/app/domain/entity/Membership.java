@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,13 @@ public class Membership extends Recipient {
   }
 
   @Override public String getDisplayName() {
-    return group.getName();
+    String name = group.getName();
+
+    if (StringUtils.isEmpty(name)) {
+      return group.getMembersNames();
+    } else {
+      return group.getName();
+    }
   }
 
   @Override public String getUsername() {

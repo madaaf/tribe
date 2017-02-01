@@ -32,6 +32,7 @@ public class LivePresenter implements Presenter {
 
   @Override public void onViewDetached() {
     diskFriendshipList.unsubscribe();
+    joinRoom.unsubscribe();
   }
 
   @Override public void onViewAttached(MVPView v) {

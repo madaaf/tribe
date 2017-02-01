@@ -77,18 +77,18 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
         if (searchResult.isShouldAnimateAdd()) {
             animateAddSuccessful(vh);
         } else {
-            if (searchResult.getFriendship() != null && !searchResult.getFriendship()
-                    .isBlockedOrHidden()) {
-                vh.imgPicto.setVisibility(View.VISIBLE);
-                vh.imgPicto.setImageResource(R.drawable.picto_done_white);
-                vh.btnAddBG.setVisibility(View.VISIBLE);
-                vh.progressBarAdd.setVisibility(View.GONE);
-            } else {
-                vh.imgPicto.setVisibility(View.VISIBLE);
-                vh.imgPicto.setImageResource(R.drawable.picto_add);
-                vh.btnAddBG.setVisibility(View.GONE);
-                vh.progressBarAdd.setVisibility(View.GONE);
-            }
+            //if (searchResult.getFriendship() != null && !searchResult.getFriendship()
+            //        .isBlockedOrHidden()) {
+            //    vh.imgPicto.setVisibility(View.VISIBLE);
+            //    vh.imgPicto.setImageResource(R.drawable.picto_done_white);
+            //    vh.btnAddBG.setVisibility(View.VISIBLE);
+            //    vh.progressBarAdd.setVisibility(View.GONE);
+            //} else {
+            //    vh.imgPicto.setVisibility(View.VISIBLE);
+            //    vh.imgPicto.setImageResource(R.drawable.picto_add);
+            //    vh.btnAddBG.setVisibility(View.GONE);
+            //    vh.progressBarAdd.setVisibility(View.GONE);
+            //}
         }
 
         if (!StringUtils.isEmpty(searchResult.getDisplayName())) {

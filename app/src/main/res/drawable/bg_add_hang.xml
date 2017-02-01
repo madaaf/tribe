@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transition xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bg1" android:drawable="@drawable/shape_rect_rounded_100_blue_new" />
+    <item android:id="@+id/bg2" android:drawable="@drawable/shape_rect_rounded_100_red" />
+</transition>
