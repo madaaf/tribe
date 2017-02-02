@@ -170,8 +170,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status) {
-    return userCache.updateFriendship(friendshipId, status);
+      List<Pair<String, String>> values) {
+    return null;
   }
 
   @Override public Observable<String> getHeadDeepLink(String url) {
@@ -197,6 +197,14 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
   }
 }

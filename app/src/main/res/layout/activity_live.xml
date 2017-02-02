@@ -1,38 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.activity.LiveActivity"
+    android:animateLayoutChanges="true"
     android:background="@null"
     android:orientation="vertical"
-    android:animateLayoutChanges="true">
+    tools:context=".presentation.view.activity.LiveActivity"
+    >
 
-    <com.tribe.app.presentation.view.component.live.LiveContainer
-        android:id="@+id/viewLiveContainer"
+  <com.tribe.app.presentation.view.component.live.LiveContainer
+      android:id="@+id/viewLiveContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      >
+
+    <com.tribe.app.presentation.view.component.live.LiveInviteView
+        android:id="@+id/viewInviteLive"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null">
+        android:layout_gravity="right"
+        />
 
-        <com.tribe.app.presentation.view.component.live.LiveInviteView
-            android:id="@+id/viewInviteLive"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="right" />
+    <com.tribe.app.presentation.view.component.live.LiveView
+        android:id="@+id/viewLive"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        />
 
-        <com.tribe.app.presentation.view.component.live.LiveView
-            android:id="@+id/viewLive"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null" />
+    <View
+        android:id="@+id/viewShadowRight"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:layout_marginRight="-10dp"
+        android:background="@drawable/shadow_right"
+        />
 
-        <View
-            android:id="@+id/viewShadowRight"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:layout_marginRight="-10dp"
-            android:layout_gravity="right"
-            android:background="@drawable/shadow_right" />
+  </com.tribe.app.presentation.view.component.live.LiveContainer>
 
-    </com.tribe.app.presentation.view.component.live.LiveContainer>
-</LinearLayout>
+  <com.tribe.app.presentation.view.widget.LiveNotificationContainer
+      android:id="@+id/layoutNotifications"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="top"
+      android:visibility="gone"
+      >
+
+  </com.tribe.app.presentation.view.widget.LiveNotificationContainer>
+</FrameLayout>

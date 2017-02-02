@@ -2,104 +2,107 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
-
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Created by tiago on 05/08/2016.
  */
 public abstract class Recipient implements Serializable {
 
-    public static final String ID_EMPTY = "EMPTY";
-    public static final String ID_HEADER = "HEADER";
+  public static final String ID_EMPTY = "EMPTY";
+  public static final String ID_HEADER = "HEADER";
 
-    public static final String DISPLAY_NAME = "DISPLAY_NAME";
-    public static final String PROFILE_PICTURE = "PROFILE_PICTURE";
-    public static final String IS_LIVE = "IS_LIVE";
-    public static final String IS_ONLINE = "IS_ONLINE";
-    public static final String LAST_ONLINE = "LAST_ONLINE";
+  public static final String DISPLAY_NAME = "DISPLAY_NAME";
+  public static final String PROFILE_PICTURE = "PROFILE_PICTURE";
+  public static final String IS_LIVE = "IS_LIVE";
+  public static final String IS_ONLINE = "IS_ONLINE";
+  public static final String LAST_ONLINE = "LAST_ONLINE";
 
-    protected Date created_at;
-    protected Date updated_at;
+  protected Date created_at;
+  protected Date updated_at;
 
-    protected int position;
+  protected boolean mute;
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+  protected int position;
 
-    public void setCreatedAt(Date createdAt) {
-        this.created_at = createdAt;
-    }
+  public Date getCreatedAt() {
+    return created_at;
+  }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updated_at = updatedAt;
-    }
+  public void setCreatedAt(Date createdAt) {
+    this.created_at = createdAt;
+  }
 
-    public void setPosition(int position) {
-        this.position = position;
-    }
+  public void setUpdatedAt(Date updatedAt) {
+    this.updated_at = updatedAt;
+  }
 
-    public int getPosition() {
-        return position;
-    }
+  public void setPosition(int position) {
+    this.position = position;
+  }
 
-    public static int nullSafeComparator(final Recipient one, final Recipient two) {
-        int res = ((Boolean) two.isLive()).compareTo(one.isLive());
-        if (res != 0) return res;
+  public int getPosition() {
+    return position;
+  }
 
-        res = ((Boolean) two.isOnline()).compareTo(one.isOnline());
-        if (res != 0) return res;
+  public static int nullSafeComparator(final Recipient one, final Recipient two) {
+    int res = ((Boolean) two.isLive()).compareTo(one.isLive());
+    if (res != 0) return res;
 
-        return DateUtils.compareDateNullSafe(two.getLastOnline(), one.getLastOnline());
-    }
+    res = ((Boolean) two.isOnline()).compareTo(one.isOnline());
+    if (res != 0) return res;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
+    return DateUtils.compareDateNullSafe(two.getLastOnline(), one.getLastOnline());
+  }
 
-        if (obj == null)
-            return false;
+  @Override public boolean equals(Object obj) {
+    if (this == obj) return true;
 
-        if (getClass() != obj.getClass())
-            return false;
+    if (obj == null) return false;
 
-        Recipient recipient = (Recipient) obj;
+    if (getClass() != obj.getClass()) return false;
 
-        return ObjectUtils.nullSafeEquals(getDisplayName(), recipient.getDisplayName())
-                && ObjectUtils.nullSafeEquals(getLastOnline(), recipient.getLastOnline())
-                && ObjectUtils.nullSafeEquals(getProfilePicture(), recipient.getProfilePicture())
-                && ObjectUtils.nullSafeEquals(isLive(), recipient.isLive())
-                && ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline());
-    }
+    Recipient recipient = (Recipient) obj;
 
-    public abstract String getDisplayName();
+    return ObjectUtils.nullSafeEquals(getDisplayName(), recipient.getDisplayName())
+        && ObjectUtils.nullSafeEquals(getLastOnline(), recipient.getLastOnline())
+        && ObjectUtils.nullSafeEquals(getProfilePicture(), recipient.getProfilePicture())
+        && ObjectUtils.nullSafeEquals(isLive(), recipient.isLive())
+        && ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline());
+  }
 
-    public abstract String getUsername();
+  public abstract String getDisplayName();
 
-    public abstract String getUsernameDisplay();
+  public abstract String getUsername();
 
-    public abstract String getProfilePicture();
+  public abstract String getUsernameDisplay();
 
-    public abstract String getSubId();
+  public abstract String getProfilePicture();
 
-    public abstract String getId();
+  public abstract String getSubId();
 
-    public abstract Date getUpdatedAt();
+  public abstract String getId();
 
-    public abstract boolean isLive();
+  public abstract Date getUpdatedAt();
 
-    public abstract boolean isOnline();
+  public abstract boolean isLive();
 
-    public abstract Date getLastOnline();
+  public abstract boolean isOnline();
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (getId() != null ? getId().hashCode() : 0);
-        return result;
-    }
+  public abstract Date getLastOnline();
+
+  public boolean isMute() {
+    return mute;
+  }
+
+  public void setMute(boolean mute) {
+    this.mute = mute;
+  }
+
+  @Override public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getId() != null ? getId().hashCode() : 0);
+    return result;
+  }
 }

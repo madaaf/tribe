@@ -54,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        style="@style/Title.2.Black"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -62,6 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        style="@style/Title.2.Black"
         />
 
     <ImageView

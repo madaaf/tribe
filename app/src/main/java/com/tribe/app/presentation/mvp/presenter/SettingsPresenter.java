@@ -4,7 +4,6 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
-import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
@@ -12,7 +11,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
-import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
@@ -34,7 +32,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
 
     private SettingsMVPView settingsView;
 
-    private final DiskUpdateFriendship diskUpdateFriendship;
     private final GetBlockedFriendshipList getBlockedFriendshipList;
     private final RemoveInstall removeInstall;
     private final UseCase synchroContactList;
@@ -54,7 +51,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
                       JobManager jobManager,
                       @Named("diskContactList") UseCaseDisk getDiskContactList,
                       @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
-                      DiskUpdateFriendship diskUpdateFriendship,
                       GetBlockedFriendshipList getBlockedFriendshipList) {
         super(updateUser, lookupUsername, rxFacebook);
         this.removeInstall = removeInstall;
@@ -62,7 +58,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
         this.jobManager = jobManager;
         this.getDiskContactList = getDiskContactList;
         this.getDiskFBContactList = getDiskFBContactList;
-        this.diskUpdateFriendship = diskUpdateFriendship;
         this.getBlockedFriendshipList = getBlockedFriendshipList;
     }
 
@@ -72,7 +67,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
         synchroContactList.unsubscribe();
         getDiskContactList.unsubscribe();
         getDiskFBContactList.unsubscribe();
-        diskUpdateFriendship.unsubscribe();
         getBlockedFriendshipList.unsubscribe();
         super.onViewDetached();
     }
@@ -219,24 +213,15 @@ public class SettingsPresenter extends UpdateUserPresenter {
 
     private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
 
-        @Override
-        public void onCompleted() {
+        @Override public void onCompleted() {
         }
 
-        @Override
-        public void onError(Throwable e) {
+        @Override public void onError(Throwable e) {
         }
 
-        @Override
-        public void onNext(List<Friendship> friendshipList) {
+        @Override public void onNext(List<Friendship> friendshipList) {
             settingsView.renderBlockedFriendshipList(friendshipList);
         }
-    }
-
-    public void updateFriendship(String friendshipId) {
-        diskUpdateFriendship.prepare(friendshipId, FriendshipRealm.DEFAULT);
-        diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
-        jobManager.addJobInBackground(new UpdateFriendshipJob(friendshipId, FriendshipRealm.DEFAULT));
     }
 
     private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {

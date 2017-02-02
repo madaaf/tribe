@@ -181,6 +181,10 @@ public class Room {
     return state;
   }
 
+  public TribeLiveOptions getOptions() {
+    return options;
+  }
+
   public static @WebSocketMessageType String getWebSocketMessageType(String a) {
     if (a.equals(MESSAGE_JOIN)) {
       return MESSAGE_JOIN;

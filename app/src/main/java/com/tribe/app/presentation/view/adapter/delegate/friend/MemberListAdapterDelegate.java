@@ -18,6 +18,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import javax.inject.Inject;
@@ -65,7 +66,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
       animations.get(holder).cancel();
     }
 
-    vh.btnAdd.setVisibility((!user.equals(groupMember.getUser()) || groupMember.getUser().isInvisibleMode()) ? View.VISIBLE : View.GONE);
+    vh.btnAdd.setVisibility((!user.equals(groupMember.getUser()) && !groupMember.getUser().isInvisibleMode()) ? View.VISIBLE : View.GONE);
     vh.imgGhost.setVisibility(groupMember.getUser().isInvisibleMode() ? View.VISIBLE : View.GONE);
 
     setFriendLabel(vh, groupMember.isFriend());
@@ -74,6 +75,9 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
       animateAddSuccessful(vh);
       groupMember.setAnimateAdd(false);
     } else {
+      vh.txtAction.setAlpha(1);
+      vh.progressBarAdd.setAlpha(0);
+
       if (!groupMember.isFriend()) {
         setAddFriendStyle(vh);
       } else {
@@ -119,12 +123,16 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
 
   private void setHangLiveStyle(GroupMemberViewHolder vh) {
     vh.txtAction.setText(R.string.action_hang_live);
+    vh.txtAction.measure(0, 0);
+    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
     vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_red);
     setAppearance(vh.txtAction);
   }
 
   private void setAddFriendStyle(GroupMemberViewHolder vh) {
     vh.txtAction.setText(R.string.action_add_friend);
+    vh.txtAction.measure(0, 0);
+    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
     vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_blue_new);
     setAppearance(vh.txtAction);
   }

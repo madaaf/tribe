@@ -24,6 +24,7 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
+import com.tribe.app.data.network.deserializer.FriendshipRealmDeserializer;
 import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
@@ -39,6 +40,7 @@ import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
@@ -150,6 +152,7 @@ import timber.log.Timber;
         }.getType(), new InstallsDeserializer())
         .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
         .registerTypeAdapter(RoomConfiguration.class, new RoomConfigurationDeserializer())
+        .registerTypeAdapter(FriendshipRealm.class, new FriendshipRealmDeserializer())
         .create();
   }
 

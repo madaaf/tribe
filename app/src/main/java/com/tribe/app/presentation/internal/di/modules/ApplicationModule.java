@@ -7,7 +7,6 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.f2prateek.rx.preferences.Preference;
 import com.google.gson.Gson;
-import com.jenzz.appstate.RxAppStateMonitor;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
 import com.tribe.app.data.cache.LiveCache;
@@ -27,7 +26,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.CloudUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
@@ -52,8 +50,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
-import com.tribe.tribelivesdk.back.IceConfig;
-import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Module;
 import dagger.Provides;
@@ -61,8 +57,6 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import javax.inject.Named;
@@ -261,11 +255,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   @Provides @Named("refreshHowManyFriends") UseCase provideRefreshHowManyFriends(
       RefreshHowManyFriends refreshHowManyFriends) {
     return refreshHowManyFriends;
-  }
-
-  @Provides @Named("cloudUpdateFriendship") CloudUpdateFriendship provideCloudUpdateFriendship(
-      CloudUpdateFriendship cloudUpdateFriendship) {
-    return cloudUpdateFriendship;
   }
 
   @Provides @Singleton JobManager provideJobManager() {

@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.adapter.delegate.base;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -27,7 +26,7 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
 
   protected LayoutInflater layoutInflater;
   protected Context context;
-  private int actionButtonHeight, marginSmall;
+  protected int actionButtonHeight, marginSmall;
 
   // RX SUBSCRIPTIONS / SUBJECTS
   private final PublishSubject<View> clickAdd = PublishSubject.create();
@@ -75,16 +74,17 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
     vh.txtAction.setText(R.string.action_hang_live);
     vh.txtAction.measure(0, 0);
 
-    Animator animator =
-        AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(), vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-
+    Animator animator = AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(),
+        vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
 
     animatorSet.setDuration(DURATION);
     animatorSet.setInterpolator(new DecelerateInterpolator());
     animatorSet.play(alphaAnimAdd).with(alphaAnimProgress).with(animator);
     animatorSet.start();
 
-    ((TransitionDrawable) vh.btnAdd.getBackground()).startTransition(DURATION);
+    if (vh.btnAdd.getBackground() instanceof TransitionDrawable) {
+      ((TransitionDrawable) vh.btnAdd.getBackground()).startTransition(DURATION);
+    }
 
     animations.put(vh, animatorSet);
   }

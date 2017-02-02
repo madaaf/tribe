@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
@@ -17,17 +19,19 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
+import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -45,8 +49,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject User user;
-
   @Inject LivePresenter livePresenter;
 
   @BindView(R.id.viewLive) LiveView viewLive;
@@ -55,10 +57,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
+  @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
+
   // VARIABLES
   private Unbinder unbinder;
   private Recipient recipient;
   private int color;
+  private NotificationReceiver notificationReceiver;
+  private boolean receiverRegistered = false;
 
   // RESOURCES
   // OBSERVABLES
@@ -90,9 +96,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Override protected void onResume() {
     super.onResume();
+
+    if (!receiverRegistered) {
+      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+
+      registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+      receiverRegistered = true;
+    }
   }
 
   @Override protected void onPause() {
+    if (receiverRegistered) {
+      unregisterReceiver(notificationReceiver);
+      receiverRegistered = false;
+    }
+
     super.onPause();
   }
 
@@ -145,9 +164,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
-      if (shouldJoin) livePresenter.joinRoom(recipient);
-      else finish();
+      if (shouldJoin) {
+        livePresenter.joinRoom(recipient);
+      } else {
+        finish();
+      }
     }));
+
+    subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
+      livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
+    }));
+
+    subscriptions.add(
+        viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
+          livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(),
+              recipient.getSubId());
+        }));
   }
 
   @Override public void finish() {
@@ -166,5 +198,31 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     Timber.d("Room configuration : " + roomConfiguration);
     viewLive.joinRoom(roomConfiguration);
+    livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());
+  }
+
+  /////////////////
+  //  BROADCAST  //
+  /////////////////
+
+  class NotificationReceiver extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE
+        NotificationPayload notificationPayload =
+            (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
+        LiveNotificationView notificationView =
+            NotificationUtils.getNotificationViewFromPayload(context, getCurrentUser(), notificationPayload);
+
+        if (notificationView != null) {
+          subscriptions.add(notificationView.onClickAction().subscribe(s -> {
+            layoutNotifications.dismissNotification(notificationView);
+          }));
+
+          notificationView.show(LiveActivity.this, layoutNotifications);
+        }
+      }
+    }
   }
 }

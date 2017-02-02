@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,7 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.f2prateek.rx.preferences.Preference;
 import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
@@ -22,7 +25,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
@@ -32,7 +34,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
-import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
@@ -43,6 +45,8 @@ import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -51,15 +55,11 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
-
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
@@ -68,438 +68,439 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 public class HomeActivity extends BaseActivity
-        implements HasComponent<UserComponent>, HomeGridMVPView,
-        GoogleApiClient.OnConnectionFailedListener {
+    implements HasComponent<UserComponent>, HomeGridMVPView,
+    GoogleApiClient.OnConnectionFailedListener {
 
-    private static final long TWENTY_FOUR_HOURS = 86400000;
+  private static final long TWENTY_FOUR_HOURS = 86400000;
 
-    public static final int SETTINGS_RESULT = 101;
+  public static final int SETTINGS_RESULT = 101;
 
-    public static Intent getCallingIntent(Context context) {
-        return new Intent(context, HomeActivity.class);
+  public static Intent getCallingIntent(Context context) {
+    return new Intent(context, HomeActivity.class);
+  }
+
+  @Inject HomeGridPresenter homeGridPresenter;
+
+  @Inject HomeGridAdapter homeGridAdapter;
+
+  @Inject ScreenUtils screenUtils;
+
+  @Inject PaletteGrid paletteGrid;
+
+  @Inject TutorialManager tutorialManager;
+
+  @Inject @LastOnlineNotification Preference<Long> lastOnlineNotification;
+
+  @Inject @AddressBook Preference<Boolean> addressBook;
+
+  @Inject @LastVersionCode Preference<Integer> lastVersion;
+
+  @Inject @LastSync Preference<Long> lastSync;
+
+  @Inject SoundManager soundManager;
+
+  @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
+
+  @BindView(android.R.id.content) ViewGroup rootView;
+
+  @BindView(R.id.topBarContainer) TopBarContainer topBarContainer;
+
+  @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
+
+  // OBSERVABLES
+  private UserComponent userComponent;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Scheduler singleThreadExecutor;
+  private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
+
+  // VARIABLES
+  private HomeLayoutManager layoutManager;
+  private Tutorial tutorial;
+  private List<Recipient> latestRecipientList;
+  private boolean shouldOverridePendingTransactions = false;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private NotificationReceiver notificationReceiver;
+  private boolean receiverRegistered = false;
+
+  // DIMEN
+
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    getWindow().setBackgroundDrawableResource(android.R.color.black);
+
+    super.onCreate(savedInstanceState);
+
+    initDependencyInjector();
+    init();
+    initUi();
+    initDimensions();
+    initRegistrationToken();
+    initRecyclerView();
+    initTopBar();
+    initRemoteConfig();
+    manageDeepLink(getIntent());
+
+    startService(WSService.getCallingIntent(this));
+  }
+
+  @Override protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    manageDeepLink(intent);
+  }
+
+  @Override protected void onStart() {
+    super.onStart();
+    tagManager.onStart(this);
+    homeGridPresenter.onViewAttached(this);
+
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+      //homeGridPresenter.syncFriendList();
+      syncContacts();
+    }
+  }
+
+  @Override protected void onStop() {
+    tagManager.onStop(this);
+    homeGridPresenter.onViewDetached();
+    super.onStop();
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+
+    if (shouldOverridePendingTransactions) {
+      overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+      shouldOverridePendingTransactions = false;
     }
 
-    @Inject
-    HomeGridPresenter homeGridPresenter;
+    if (!receiverRegistered) {
+      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
 
-    @Inject
-    HomeGridAdapter homeGridAdapter;
+      registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+      receiverRegistered = true;
+    }
+  }
 
-    @Inject
-    ScreenUtils screenUtils;
+  @Override protected void onPostResume() {
+    super.onPostResume();
 
-    @Inject
-    PaletteGrid paletteGrid;
+    firebaseRemoteConfig.fetch(BuildConfig.DEBUG ? 1 : 3600).addOnSuccessListener(aVoid -> {
+      firebaseRemoteConfig.activateFetched();
+    }).addOnFailureListener(exception -> Log.d("Tribe", "Fetch failed"));
+  }
 
-    @Inject
-    TutorialManager tutorialManager;
+  @Override protected void onPause() {
+    cleanTutorial();
 
-    @Inject
-    @LastOnlineNotification
-    Preference<Long> lastOnlineNotification;
-
-    @Inject
-    @AddressBook
-    Preference<Boolean> addressBook;
-
-    @Inject
-    @LastVersionCode
-    Preference<Integer> lastVersion;
-
-    @Inject
-    @LastSync
-    Preference<Long> lastSync;
-
-    @Inject
-    SoundManager soundManager;
-
-    @BindView(R.id.recyclerViewFriends)
-    RecyclerView recyclerViewFriends;
-
-    @BindView(android.R.id.content)
-    ViewGroup rootView;
-
-    @BindView(R.id.topBarContainer)
-    TopBarContainer topBarContainer;
-
-    @BindView(R.id.layoutNotifications)
-    LiveNotificationContainer layoutNotifications;
-
-    // OBSERVABLES
-    private UserComponent userComponent;
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private Scheduler singleThreadExecutor;
-    private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
-
-    // VARIABLES
-    private HomeLayoutManager layoutManager;
-    private Tutorial tutorial;
-    private List<Recipient> latestRecipientList;
-    private boolean shouldOverridePendingTransactions = false;
-    private FirebaseRemoteConfig firebaseRemoteConfig;
-
-    // DIMEN
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setBackgroundDrawableResource(android.R.color.black);
-
-        super.onCreate(savedInstanceState);
-
-        initDependencyInjector();
-        init();
-        initUi();
-        initDimensions();
-        initRegistrationToken();
-        initRecyclerView();
-        initTopBar();
-        initRemoteConfig();
-        manageDeepLink(getIntent());
-
-        startService(WSService.getCallingIntent(this));
+    if (receiverRegistered) {
+      unregisterReceiver(notificationReceiver);
+      receiverRegistered = false;
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        manageDeepLink(intent);
-    }
+    super.onPause();
+  }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        tagManager.onStart(this);
-        homeGridPresenter.onViewAttached(this);
+  @Override protected void onDestroy() {
+    recyclerViewFriends.setAdapter(null);
 
-        if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-            homeGridPresenter.syncFriendList();
-            syncContacts();
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+
+    Intent i = new Intent(this, WSService.class);
+    stopService(i);
+    super.onDestroy();
+  }
+
+  private void init() {
+    singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
+    latestRecipientList = new ArrayList<>();
+  }
+
+  private void initUi() {
+    setContentView(R.layout.activity_home);
+    ButterKnife.bind(this);
+  }
+
+  private void initDimensions() {
+  }
+
+  private void initRecyclerView() {
+    layoutManager = new HomeLayoutManager(context());
+    layoutManager.setAutoMeasureEnabled(false);
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
+    homeGridAdapter.setItems(new ArrayList<>());
+    recyclerViewFriends.setAdapter(homeGridAdapter);
+
+    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+      @Override public int getSpanSize(int position) {
+        switch (homeGridAdapter.getItemViewType(position)) {
+          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+            return layoutManager.getSpanCount();
+          default:
+            return 1;
         }
-    }
+      }
+    });
 
-    @Override
-    protected void onStop() {
-        tagManager.onStop(this);
-        homeGridPresenter.onViewDetached();
-        super.onStop();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (shouldOverridePendingTransactions) {
-            overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
-            shouldOverridePendingTransactions = false;
-        }
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
-        firebaseRemoteConfig.fetch(BuildConfig.DEBUG ? 1 : 3600).addOnSuccessListener(aVoid -> {
-            firebaseRemoteConfig.activateFetched();
-        }).addOnFailureListener(exception -> Log.d("Tribe", "Fetch failed"));
-    }
-
-    @Override
-    protected void onPause() {
-        cleanTutorial();
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        recyclerViewFriends.setAdapter(null);
-
-        if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-
-        Intent i = new Intent(this, WSService.class);
-        stopService(i);
-        super.onDestroy();
-    }
-
-
-    private void init() {
-        singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
-        latestRecipientList = new ArrayList<>();
-    }
-
-    private void initUi() {
-        setContentView(R.layout.activity_home);
-        ButterKnife.bind(this);
-    }
-
-    private void initDimensions() {
-    }
-
-    private void initRecyclerView() {
-        layoutManager = new HomeLayoutManager(context());
-        layoutManager.setAutoMeasureEnabled(false);
-        recyclerViewFriends.setLayoutManager(layoutManager);
-        recyclerViewFriends.setItemAnimator(null);
-        homeGridAdapter.setItems(new ArrayList<>());
-        recyclerViewFriends.setAdapter(homeGridAdapter);
-
-        // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-        recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
-
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                switch (homeGridAdapter.getItemViewType(position)) {
-                    case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-                        return layoutManager.getSpanCount();
-                    default:
-                        return 1;
-                }
+    subscriptions.add(homeGridAdapter.onClickMore()
+        .map(view -> homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .flatMap(recipient -> {
+          if (recipient instanceof Membership) {
+            Membership membership = (Membership) recipient;
+            navigator.navigateToGroupDetails(this, membership);
+            return Observable.empty();
+          } else {
+            return DialogFactory.showBottomSheetForRecipient(this, recipient);
+          }
+        }, ((recipient, labelType) -> {
+          if (labelType != null) {
+            // TODO Block / Hide again
+            //if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+            //    .equals(LabelType.BLOCK_HIDE)) {
+            //  tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
+            //  homeGridPresenter.updateFriendship((Friendship) recipient,
+            //      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+            //          : FriendshipRealm.HIDDEN);
+            //} else
+            if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+              recipient.setMute(true);
+              homeGridPresenter.updateFriendship(recipient.getId(), true);
+            } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+              recipient.setMute(false);
+              homeGridPresenter.updateFriendship(recipient.getId(), false);
+            } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
+              Membership membership = (Membership) recipient;
+              navigator.navigateToGroupDetails(this, membership);
+            } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
+              homeGridPresenter.leaveGroup(recipient.getId());
             }
-        });
+          }
 
-        subscriptions.add(homeGridAdapter.onClickMore()
-                .map(view -> homeGridAdapter.getItemAtPosition(
-                        recyclerViewFriends.getChildLayoutPosition(view)))
-                .flatMap(recipient -> {
-                    if (recipient instanceof Membership) {
-                        Membership membership = (Membership) recipient;
-                        navigator.navigateToGroupDetails(this, membership);
-                        return Observable.empty();
-                    } else {
-                        return DialogFactory.showBottomSheetForRecipient(this, recipient);
-                    }
-                }, ((recipient, labelType) -> {
-                    if (labelType != null) {
-                        if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                                .equals(LabelType.BLOCK_HIDE)) {
-                            tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
-                            homeGridPresenter.updateFriendship((Friendship) recipient,
-                                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                                            : FriendshipRealm.HIDDEN);
-                        } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
-                            Membership membership = (Membership) recipient;
-                            navigator.navigateToGroupDetails(this, membership);
-                        } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
-                            homeGridPresenter.leaveGroup(recipient.getId());
-                        }
-                    }
+          return recipient;
+        }))
+        .subscribe());
 
-                    return recipient;
-                }))
-                .subscribe());
-
-        subscriptions.add(homeGridAdapter.onClick()
-                .map(view -> homeGridAdapter.getItemAtPosition(
-                        recyclerViewFriends.getChildLayoutPosition(view)))
-                .subscribe(recipient -> {
-                    navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
-                }));
-
-        subscriptions.add(onRecipientUpdates
-                .subscribeOn(singleThreadExecutor)
-                .map(recipientList -> {
-                    DiffUtil.DiffResult diffResult = null;
-
-                    List<Recipient> temp = new ArrayList<>();
-                    temp.add(new Friendship(Recipient.ID_HEADER));
-                    temp.addAll(recipientList);
-                    ListUtils.addEmptyItems(screenUtils, temp);
-
-                    if (latestRecipientList.size() != 0) {
-                        diffResult =
-                                DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-                        homeGridAdapter.setItems(temp);
-                    }
-
-                    latestRecipientList.clear();
-                    latestRecipientList.addAll(temp);
-                    return diffResult;
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(diffResult -> {
-                    if (diffResult != null) {
-                        diffResult.dispatchUpdatesTo(homeGridAdapter);
-                    } else {
-                        homeGridAdapter.setItems(latestRecipientList);
-                        homeGridAdapter.notifyDataSetChanged();
-                    }
-                }));
-    }
-
-    private void initDependencyInjector() {
-        this.userComponent = DaggerUserComponent.builder()
-                .applicationComponent(getApplicationComponent())
-                .activityModule(getActivityModule())
-                .build();
-
-        DaggerUserComponent.builder()
-                .activityModule(getActivityModule())
-                .applicationComponent(getApplicationComponent())
-                .build()
-                .inject(this);
-    }
-
-
-    private void initTopBar() {
-
-        subscriptions.add(topBarContainer.onClickNew()
-                .subscribe(aVoid -> {
-                    navigateToCreateGroup();
-                }));
-
-        subscriptions.add(topBarContainer.onSearch().subscribe());
-
-        subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
-            navigateToProfile();
+    subscriptions.add(homeGridAdapter.onClick()
+        .map(view -> homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .subscribe(recipient -> {
+          navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
         }));
-    }
 
-    private void initRemoteConfig() {
-        firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings =
-                new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-                        .build();
-        firebaseRemoteConfig.setConfigSettings(configSettings);
-        firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
-    }
+    subscriptions.add(onRecipientUpdates.subscribeOn(singleThreadExecutor).map(recipientList -> {
+      DiffUtil.DiffResult diffResult = null;
 
-    @Override
-    public void onDeepLink(String url) {
-        if (!StringUtils.isEmpty(url)) {
-            Uri uri = Uri.parse(url);
+      List<Recipient> temp = new ArrayList<>();
+      temp.add(new Friendship(Recipient.ID_HEADER));
+      temp.addAll(recipientList);
+      ListUtils.addEmptyItems(screenUtils, temp);
 
-            if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
-                if (uri.getPath().startsWith("/u/")) {
-                    navigateToSearch(StringUtils.getLastBitFromUrl(url));
-                } else if (uri.getPath().startsWith("/g/")) {
-                    homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
-                }
-            }
+      if (latestRecipientList.size() != 0) {
+        diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+        homeGridAdapter.setItems(temp);
+      }
+
+      latestRecipientList.clear();
+      latestRecipientList.addAll(temp);
+      return diffResult;
+    }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+      if (diffResult != null) {
+        diffResult.dispatchUpdatesTo(homeGridAdapter);
+      } else {
+        homeGridAdapter.setItems(latestRecipientList);
+        homeGridAdapter.notifyDataSetChanged();
+      }
+    }));
+  }
+
+  private void initDependencyInjector() {
+    this.userComponent = DaggerUserComponent.builder()
+        .applicationComponent(getApplicationComponent())
+        .activityModule(getActivityModule())
+        .build();
+
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
+
+  private void initTopBar() {
+
+    subscriptions.add(topBarContainer.onClickNew().subscribe(aVoid -> {
+      navigateToCreateGroup();
+    }));
+
+    subscriptions.add(topBarContainer.onSearch().subscribe());
+
+    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
+      navigateToProfile();
+    }));
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
+  }
+
+  @Override public void onDeepLink(String url) {
+    if (!StringUtils.isEmpty(url)) {
+      Uri uri = Uri.parse(url);
+
+      if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
+        if (uri.getPath().startsWith("/u/")) {
+          navigateToSearch(StringUtils.getLastBitFromUrl(url));
+        } else if (uri.getPath().startsWith("/g/")) {
+          homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
         }
+      }
     }
+  }
 
-    @Override
-    public void renderRecipientList(List<Recipient> recipientList) {
-        if (recipientList != null && tutorial == null) {
-            Bundle bundle = new Bundle();
-            bundle.putInt(TagManagerConstants.COUNT_FRIENDS, getCurrentUser().getFriendships().size());
-            bundle.putInt(TagManagerConstants.COUNT_GROUPS, getCurrentUser().getFriendships().size());
-            tagManager.setProperty(bundle);
+  @Override public void renderRecipientList(List<Recipient> recipientList) {
+    if (recipientList != null && tutorial == null) {
+      Bundle bundle = new Bundle();
+      bundle.putInt(TagManagerConstants.COUNT_FRIENDS, getCurrentUser().getFriendships().size());
+      bundle.putInt(TagManagerConstants.COUNT_GROUPS, getCurrentUser().getFriendships().size());
+      tagManager.setProperty(bundle);
 
-            onRecipientUpdates.onNext(recipientList);
+      onRecipientUpdates.onNext(recipientList);
+    }
+  }
+
+  @Override public void refreshGrid() {
+
+  }
+
+  @Override public void onFriendshipUpdated(Friendship friendship) {
+
+  }
+
+  @Override public void successFacebookLogin() {
+    homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
+    syncContacts();
+  }
+
+  @Override public void errorFacebookLogin() {
+  }
+
+  @Override public void onMembershipCreated(Membership membership) {
+
+  }
+
+  private void initRegistrationToken() {
+    String token = FirebaseInstanceId.getInstance().getToken();
+    if (token != null) homeGridPresenter.sendToken(token);
+  }
+
+  private void manageDeepLink(Intent intent) {
+    if (intent != null) {
+      if (intent.getData() != null) {
+        homeGridPresenter.getHeadDeepLink(intent.getDataString());
+      }
+    }
+  }
+
+  @Override public void onBackPressed() {
+    super.onBackPressed();
+
+    if (!topBarContainer.isSearchMode()) {
+      // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
+      // and transparent floating activity and auto finishes)
+      startActivity(new Intent(this, DummyActivity.class));
+      finish();
+    } else {
+      topBarContainer.closeSearch();
+    }
+  }
+
+  @Override public UserComponent getComponent() {
+    return userComponent;
+  }
+
+  @Override public void showLoading() {
+
+  }
+
+  @Override public void hideLoading() {
+  }
+
+  @Override public void showError(String message) {
+  }
+
+  @Override public Context context() {
+    return this;
+  }
+
+  @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
+    Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
+        Toast.LENGTH_SHORT).show();
+  }
+
+  private void cleanTutorial() {
+    if (tutorial != null) {
+      tutorial.cleanUp();
+      tutorial = null;
+    }
+  }
+
+  private void navigateToProfile() {
+    navigator.navigateToProfile(HomeActivity.this);
+  }
+
+  private void navigateToSettings() {
+    navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
+  }
+
+  private void navigateToSearch(String username) {
+    navigator.navigateToSearchUser(HomeActivity.this, username);
+  }
+
+  private void navigateToCreateGroup() {
+    HomeActivity.this.navigator.navigateToCreateGroup(this);
+  }
+
+  private void syncContacts() {
+    homeGridPresenter.lookupContacts();
+    lastSync.set(System.currentTimeMillis());
+  }
+
+  /////////////////
+  //  BROADCAST  //
+  /////////////////
+
+  class NotificationReceiver extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE
+        NotificationPayload notificationPayload =
+            (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
+        LiveNotificationView notificationView =
+            NotificationUtils.getNotificationViewFromPayload(context, getCurrentUser(),
+                notificationPayload);
+
+        if (notificationView != null) {
+          subscriptions.add(notificationView.onClickAction().subscribe(s -> {
+            layoutNotifications.dismissNotification(notificationView);
+          }));
+
+          notificationView.show(HomeActivity.this, layoutNotifications);
         }
+      }
     }
-
-    @Override
-    public void refreshGrid() {
-
-    }
-
-    @Override
-    public void onFriendshipUpdated(Friendship friendship) {
-
-    }
-
-    @Override
-    public void successFacebookLogin() {
-        homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
-        syncContacts();
-    }
-
-    @Override
-    public void errorFacebookLogin() {
-    }
-
-    @Override
-    public void onMembershipCreated(Membership membership) {
-
-    }
-
-    private void initRegistrationToken() {
-        String token = FirebaseInstanceId.getInstance().getToken();
-        if (token != null) homeGridPresenter.sendToken(token);
-    }
-
-    private void manageDeepLink(Intent intent) {
-        if (intent != null) {
-            if (intent.getData() != null) {
-                homeGridPresenter.getHeadDeepLink(intent.getDataString());
-            }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        if (!topBarContainer.isSearchMode()) {
-            // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
-            // and transparent floating activity and auto finishes)
-            startActivity(new Intent(this, DummyActivity.class));
-            finish();
-        } else {
-            topBarContainer.closeSearch();
-        }
-    }
-
-    @Override
-    public UserComponent getComponent() {
-        return userComponent;
-    }
-
-    @Override
-    public void showLoading() {
-
-    }
-
-    @Override
-    public void hideLoading() {
-    }
-
-    @Override
-    public void showError(String message) {
-    }
-
-    @Override
-    public Context context() {
-        return this;
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
-                Toast.LENGTH_SHORT).show();
-    }
-
-    private void cleanTutorial() {
-        if (tutorial != null) {
-            tutorial.cleanUp();
-            tutorial = null;
-        }
-    }
-
-    private void navigateToProfile() {
-        navigator.navigateToProfile(HomeActivity.this);
-    }
-
-    private void navigateToSettings() {
-        navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
-    }
-
-    private void navigateToSearch(String username) {
-        navigator.navigateToSearchUser(HomeActivity.this, username);
-    }
-
-    private void navigateToCreateGroup() {
-        HomeActivity.this.navigator.navigateToCreateGroup(this);
-    }
-
-    private void syncContacts() {
-        homeGridPresenter.lookupContacts();
-        lastSync.set(System.currentTimeMillis());
-    }
+  }
 }

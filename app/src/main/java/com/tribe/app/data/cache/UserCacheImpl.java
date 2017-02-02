@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -17,6 +18,7 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -137,6 +139,7 @@ public class UserCacheImpl implements UserCache {
             .findFirst();
 
         if (friendshipDB != null) {
+          friendshipDB.setMute(friendshipRealm.isMute());
           updateUser(obsRealm, friendshipRealm.getFriend(), friendshipDB.getFriend());
         } else {
           friendshipRealm.getFriend().setUpdatedAt(new Date());
@@ -286,7 +289,7 @@ public class UserCacheImpl implements UserCache {
         } else {
           GroupRealm groupRealmDB =
               realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-          updateGroup(groupRealm, groupRealmDB);
+          updateGroup(realm1, groupRealm, groupRealmDB);
         }
       });
     } finally {
@@ -294,14 +297,44 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  private void updateGroup(GroupRealm from, GroupRealm to) {
+  private void updateGroup(Realm otherRealm, GroupRealm from, GroupRealm to) {
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(GroupRealm.NAME)) {
       to.setName(from.getName());
     }
+
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
         .has(GroupRealm.PICTURE)) {
       to.setPicture(from.getPicture());
     }
+
+    if (from.getMembers() != null && from.getMembers().size() > 0) {
+      RealmList<GroupMemberRealm> groupMemberRealmList = new RealmList<>();
+
+      for (GroupMemberRealm gmr : from.getMembers()) {
+        GroupMemberRealm gmrDB =
+            otherRealm.where(GroupMemberRealm.class).equalTo("id", gmr.getId()).findFirst();
+
+        if (gmrDB == null) {
+          otherRealm.insert(gmr);
+          gmrDB =
+              otherRealm.where(GroupMemberRealm.class).equalTo("id", gmr.getId()).findFirst();
+        } else {
+          updateGroupMember(gmr, gmrDB);
+        }
+
+        groupMemberRealmList.add(gmrDB);
+      }
+
+      to.setMembers(groupMemberRealmList);
+    }
+  }
+
+  private void updateGroupMember(GroupMemberRealm from, GroupMemberRealm to) {
+    to.setDisplayName(from.getDisplayName());
+    to.setInvisibleMode(from.isInvisibleMode());
+    to.setProfilePicture(from.getProfilePicture());
+    to.setUsername(from.getUsername());
+    to.setUpdatedAt(from.getUpdatedAt());
   }
 
   @Override
@@ -427,32 +460,19 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  @Override
-  public Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status) {
-    return Observable.create((Observable.OnSubscribe<FriendshipRealm>) subscriber -> {
-      Realm otherRealm = Realm.getDefaultInstance();
-      try {
-        otherRealm.beginTransaction();
-        FriendshipRealm friendshipRealm =
-            otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
-        if (friendshipRealm != null) {
-          friendshipRealm.setStatus(status);
-        }
+  @Override public void updateFriendship(FriendshipRealm friendshipRealm) {
+    Realm realm = Realm.getDefaultInstance();
 
-        otherRealm.commitTransaction();
-
-        if (subscriber != null && friendshipRealm != null) {
-          subscriber.onNext(otherRealm.copyFromRealm(friendshipRealm));
-          subscriber.onCompleted();
-        }
-      } catch (IllegalStateException ex) {
-        if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
-        ex.printStackTrace();
-      } finally {
-        otherRealm.close();
-      }
-    });
+    try {
+      realm.executeTransaction(realm1 -> {
+        FriendshipRealm friendshipRealmDB =
+            realm1.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
+        Timber.d("FriendshipRealm isMute : " + friendshipRealm.isMute());
+        friendshipRealmDB.setMute(friendshipRealm.isMute());
+      });
+    } finally {
+      realm.close();
+    }
   }
 
   @Override
@@ -509,7 +529,7 @@ public class UserCacheImpl implements UserCache {
         for (GroupRealm groupRealm : groupRealmList) {
           GroupRealm groupRealmDB =
               realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-          updateGroup(groupRealm, groupRealmDB);
+          updateGroup(realm1, groupRealm, groupRealmDB);
         }
       });
     } finally {

@@ -63,7 +63,6 @@ public class LiveView extends FrameLayout {
 
   // VARIABLES
   private Recipient recipient;
-  private int color;
   private LocalPeerView viewLocalPeer;
   private Room room;
   private LiveRowView latestView;
@@ -78,6 +77,7 @@ public class LiveView extends FrameLayout {
   private Subscription subscriptionJoinRoom;
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Boolean> onShouldJoinRoom = PublishSubject.create();
+  private PublishSubject<Void> onNotify = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -182,6 +182,10 @@ public class LiveView extends FrameLayout {
     onOpenInvite.onNext(null);
   }
 
+  @OnClick(R.id.btnNotify) void onClickNotify() {
+    onNotify.onNext(null);
+  }
+
   ///////////////////
   //    PUBLIC     //
   ///////////////////
@@ -247,6 +251,10 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  public Room getRoom() {
+    return room;
+  }
+
   ////////////////
   //  PRIVATE   //
   ////////////////
@@ -255,9 +263,8 @@ public class LiveView extends FrameLayout {
     liveRowView.setColor(color);
     liveRowView.setRecipient(recipient);
     liveRowView.setRoomType(viewRoom.getType());
-    ViewGroup.LayoutParams params =
-        new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT);
     viewRoom.addView(liveRowView, params);
   }
 
@@ -272,7 +279,8 @@ public class LiveView extends FrameLayout {
       liveRowView.setRoomType(viewRoom.getType());
       liveRowView.setPeerView(remotePeer.getPeerView());
       ViewGroup.LayoutParams params =
-          new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+          new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.MATCH_PARENT);
       viewRoom.addView(liveRowView, params);
     }
   }
@@ -287,6 +295,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Boolean> onShouldJoinRoom() {
     return onShouldJoinRoom;
+  }
+
+  public Observable<Void> onNotify() {
+    return onNotify;
   }
 }
 

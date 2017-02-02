@@ -159,7 +159,7 @@ public interface UserRepository {
   Observable<Void> leaveGroup(String membershipId);
 
   Observable<Friendship> updateFriendship(final String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status);
+      List<Pair<String, String>> values);
 
   Observable<List<Friendship>> getBlockedFriendshipList();
 
@@ -170,4 +170,8 @@ public interface UserRepository {
   Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
 
   Observable<RoomConfiguration> joinRoom(String id, boolean isGroup);
+
+  Observable<Boolean> inviteUserToRoom(String roomId, String userId);
+
+  Observable<Boolean> buzzRoom(String roomId);
 }

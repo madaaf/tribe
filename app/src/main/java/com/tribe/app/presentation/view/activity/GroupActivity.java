@@ -319,23 +319,6 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     }));
   }
 
-  //private void setupMemberListGroupView() {
-  //  viewMembersGroup =
-  //      (MembersGroupView) viewStack.pushWithParameter(R.layout.view_group_members, membership);
-  //  subscriptions.add(viewMembersGroup.onClickAddFriend().subscribe(user -> {
-  //    groupPresenter.createFriendship(user.getId());
-  //  }));
-  //
-  //  subscriptions.add(viewMembersGroup.onClickRemoveFromGroup().map(groupMember -> {
-  //    membership.getGroup().getMembers().remove(groupMember.getUser());
-  //    if (viewStack.getTopView() instanceof MembersGroupView) {
-  //      currentTitle.setText(getTitleForMembers());
-  //    }
-  //    updateGroup(membership.getGroup(), true);
-  //    return groupMember.getUser();
-  //  }).subscribe(user -> groupPresenter.removeMembersFromGroup(membership.getSubId(), user)));
-  //}
-
   private void computeTitle(boolean forward, View to) {
     if (to instanceof GroupDetailsView) {
       setupTitle(membership.getDisplayName(), forward);

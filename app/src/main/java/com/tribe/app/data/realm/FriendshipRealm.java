@@ -19,6 +19,8 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
   public static final String HIDDEN = "HIDDEN";
   public static final String BLOCKED = "BLOCKED";
 
+  public static final String MUTE = "mute";
+
   @PrimaryKey
   private String id;
 
@@ -31,6 +33,7 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
   private UserRealm friend;
   private Date created_at;
   private Date updated_at;
+  private boolean mute;
 
   @Ignore
   private boolean is_live;
@@ -120,5 +123,13 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
 
   public void setLive(boolean isLive) {
     this.is_live = isLive;
+  }
+
+  public boolean isMute() {
+    return mute;
+  }
+
+  public void setMute(boolean mute) {
+    this.mute = mute;
   }
 }

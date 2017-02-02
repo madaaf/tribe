@@ -249,8 +249,8 @@
 	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
-	<string name="grid_menu_friendship_mute">Notifications: On &#128276;</string>
-	<string name="grid_menu_friendship_unmute">Notifications: Off &#128277;</string>
+	<string name="grid_menu_friendship_mute">Notifications On :bell:</string>
+	<string name="grid_menu_friendship_unmute">Notifications Off :no_bell:</string>
 	<string name="grid_menu_friendship_report">Report %1$s</string>
 	<string name="grid_menu_friendship_report_success">Reported</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
@@ -817,4 +817,8 @@
 	<string name="hiddenblocked_empty_title">Nobody blocked or hidden</string>
 	<string name="hidden_title">%1$d hidden</string>
 	<string name="hidden_empty_title">Nobody hidden</string>
+	
+	<!-- Add Friend -->
+	<string name="add_friend_error_myself">You can\'t add yourself as a friend</string>
+	<string name="add_friend_error_invisible">You can\'t add %1$s as a friend</string>
 </resources>

@@ -8,7 +8,6 @@ public class Membership extends Recipient {
 
   private String id;
   private Group group;
-  private boolean mute;
   private Date created_at;
   private Date updated_at;
 
@@ -72,14 +71,6 @@ public class Membership extends Recipient {
 
   public void setGroup(Group group) {
     this.group = group;
-  }
-
-  public boolean isMute() {
-    return mute;
-  }
-
-  public void setMute(boolean mute) {
-    this.mute = mute;
   }
 
   public Date getCreatedAt() {

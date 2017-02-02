@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.notification;
 
+import android.support.annotation.StringDef;
 import java.io.Serializable;
 
 /**
@@ -7,6 +8,15 @@ import java.io.Serializable;
  */
 
 public class NotificationPayload implements Serializable {
+
+  @StringDef({ CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP })
+  public @interface ClickActionType {
+  }
+
+  public static final String CLICK_ACTION_ONLINE = "online";
+  public static final String CLICK_ACTION_FRIENDSHIP = "friendship";
+  public static final String CLICK_ACTION_LIVE = "live";
+  public static final String CLICK_ACTION_BUZZ = "buzz";
 
   private String user_id;
   private String body;
@@ -17,7 +27,8 @@ public class NotificationPayload implements Serializable {
   private String session_id;
   private String group_id;
   private String group_name;
-  private String others_display_names;
+  private String other_user_display_names;
+  private String profile_picture;
 
   public void setUserId(String userId) {
     this.user_id = userId;
@@ -91,11 +102,19 @@ public class NotificationPayload implements Serializable {
     this.group_name = group_name;
   }
 
-  public String getOthersDisplayNames() {
-    return others_display_names;
+  public String getOtherUserDisplayNames() {
+    return other_user_display_names;
   }
 
-  public void setOthersDisplayNames(String others_display_names) {
-    this.others_display_names = others_display_names;
+  public void setOtherUserDisplayNames(String otherUserDisplayNames) {
+    this.other_user_display_names = otherUserDisplayNames;
+  }
+
+  public void setProfilePicture(String profilePicture) {
+    this.profile_picture = profilePicture;
+  }
+
+  public String getProfilePicture() {
+    return profile_picture;
   }
 }

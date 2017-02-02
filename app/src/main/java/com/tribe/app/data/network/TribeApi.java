@@ -106,4 +106,10 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<RoomConfiguration> joinRoom(
       @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(
+      @Field("query") String query);
 }

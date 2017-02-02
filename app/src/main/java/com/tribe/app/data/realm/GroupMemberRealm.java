@@ -18,7 +18,6 @@ public class GroupMemberRealm extends RealmObject {
   private String display_name;
   private String username;
   private String picture;
-  private int score;
   private boolean invisible_mode;
 
   public GroupMemberRealm() {
@@ -55,14 +54,6 @@ public class GroupMemberRealm extends RealmObject {
 
   public void setProfilePicture(String profilePicture) {
     this.picture = profilePicture;
-  }
-
-  public int getScore() {
-    return score;
-  }
-
-  public void setScore(int score) {
-    this.score = score;
   }
 
   public String getUsername() {

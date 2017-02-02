@@ -36,7 +36,6 @@ import io.realm.RealmList;
       user.setDisplayName(groupMemberRealm.getDisplayName());
       user.setUsername(groupMemberRealm.getUsername());
       user.setProfilePicture(groupMemberRealm.getProfilePicture());
-      user.setScore(groupMemberRealm.getScore());
       user.setInvisibleMode(groupMemberRealm.isInvisibleMode());
     }
 
@@ -82,7 +81,6 @@ import io.realm.RealmList;
       groupMemberRealm.setDisplayName(user.getDisplayName());
       groupMemberRealm.setUsername(user.getUsername());
       groupMemberRealm.setProfilePicture(user.getProfilePicture());
-      groupMemberRealm.setScore(user.getScore());
       groupMemberRealm.setInvisibleMode(user.isInvisibleMode());
     }
 

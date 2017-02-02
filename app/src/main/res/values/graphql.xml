@@ -351,15 +351,18 @@
         }
     </string>
 
-    <string name="user.update.friendship" translatable="false">
-        mutation {
-            updateFriendship(friendshipId : \"%1$s\", friendship : {
-                status : %2$s
-            }) {
-                id
-            }
-        }
+    <string name="update.friendship" translatable="false">
+      mutation {
+          updateFriendship(friendshipId : \"%1$s\",
+              friendship : { %2$s }
+          ) {
+              id
+              mute
+          }
+      }
+
     </string>
+
 
     <string name="notify.facebook" translatable="false">
         mutation {
@@ -429,5 +432,13 @@
         }
       }
     }
+  </string>
+
+  <string name="inviteToRoom" translatable="false">
+    inviteToRoom(roomId : \"%1$s\", userId : \"%2$s\")
+  </string>
+
+  <string name="buzzRoom" translatable="false">
+    buzzRoom(roomId : \"%1$s\")
   </string>
 </resources>

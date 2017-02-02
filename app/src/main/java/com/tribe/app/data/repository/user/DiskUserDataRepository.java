@@ -273,11 +273,8 @@ import rx.Observable;
   }
 
   @Override public Observable<Friendship> updateFriendship(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.updateFriendship(friendshipId, status)
-        .map(friendshipRealm -> userRealmDataMapper.getFriendshipRealmDataMapper()
-            .transform(friendshipRealm));
+      List<Pair<String, String>> values) {
+    return null;
   }
 
   @Override public Observable<List<Friendship>> getBlockedFriendshipList() {
@@ -323,6 +320,14 @@ import rx.Observable;
   }
 
   @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
   }
 }

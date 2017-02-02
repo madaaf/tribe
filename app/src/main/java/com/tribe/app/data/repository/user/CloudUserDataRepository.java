@@ -4,7 +4,6 @@ import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
@@ -245,12 +244,11 @@ import rx.Observable;
   }
 
   @Override public Observable<Friendship> updateFriendship(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status) {
+      List<Pair<String, String>> values) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.updateFriendship(friendshipId, status)
-        .map(friendshipRealm -> this.userRealmDataMapper.getFriendshipRealmDataMapper()
-            .transform(friendshipRealm));
+    return cloudDataStore.updateFriendship(friendshipId, values)
+        .map(this.userRealmDataMapper.getFriendshipRealmDataMapper()::transform);
   }
 
   @Override public Observable<List<Friendship>> getBlockedFriendshipList() {
@@ -279,5 +277,17 @@ import rx.Observable;
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.joinRoom(id, isGroup);
+  }
+
+  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.inviteUserToRoom(roomId, userId);
+  }
+
+  @Override public Observable<Boolean> buzzRoom(String roomId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.buzzRoom(roomId);
   }
 }

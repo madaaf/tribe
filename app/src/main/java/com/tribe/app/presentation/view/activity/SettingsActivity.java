@@ -369,10 +369,10 @@ public class SettingsActivity extends BaseActivity implements SettingsMVPView {
         viewSettingsBlockedHidden = (SettingsBlockedHiddenView) viewStack.push(R.layout.view_settings_blocked_hidden);
         viewSettingsBlockedHidden.renderBlockedFriendshipList(blockedFriendshipList);
 
-        subscriptions.add(viewSettingsBlockedHidden
-                .onUpdateFriendship()
-                .subscribe(id -> settingsPresenter.updateFriendship(id))
-        );
+        //subscriptions.add(viewSettingsBlockedHidden
+        //        .onUpdateFriendship()
+        //        .subscribe(id -> settingsPresenter.updateFriendship(id))
+        //);
     }
 
     private void computeTitle(boolean forward, View to) {

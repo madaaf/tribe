@@ -509,8 +509,7 @@ public class CloudUserDataStore implements UserDataStore {
               frDB.setBlocked(newFriendship.isBlocked());
             }
             currentUser.getFriendships().add(newFriendship);
-            // TODO rollback
-            //userCache.put(currentUser);
+            userCache.put(currentUser);
             friendshipRealm = newFriendship;
           }
 
@@ -835,9 +834,31 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status) {
-    return tribeApi.updateFriendship(
-        context.getString(R.string.user_update_friendship, friendshipId, status));
+      List<Pair<String, String>> values) {
+    StringBuilder friendshipInputBuilder = new StringBuilder();
+
+    for (Pair<String, String> value : values) {
+      if (value.first.equals(FriendshipRealm.MUTE)) {
+        friendshipInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
+        friendshipInputBuilder.append(",");
+      } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
+        friendshipInputBuilder.append(value.first + ": \"" + value.second + "\"");
+        friendshipInputBuilder.append(",");
+      }
+    }
+
+    String friendshipInput =
+        friendshipInputBuilder.length() > 0 ? friendshipInputBuilder.substring(0,
+            friendshipInputBuilder.length() - 1) : "";
+
+    String request = context.getString(R.string.update_friendship, friendshipId, friendshipInput);
+
+    if (!StringUtils.isEmpty(friendshipInput)) {
+      return this.tribeApi.updateFriendship(request)
+          .doOnNext(friendshipRealm -> userCache.updateFriendship(friendshipRealm));
+    } else {
+      return Observable.empty();
+    }
   }
 
   @Override public Observable<String> getHeadDeepLink(String url) {
@@ -882,6 +903,20 @@ public class CloudUserDataStore implements UserDataStore {
         + context.getString(R.string.roomFragment_infos);
 
     return this.tribeApi.joinRoom(request);
+  }
+
+  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+    final String request = context.getString(R.string.mutation,
+        context.getString(R.string.inviteToRoom, roomId, userId));
+
+    return this.tribeApi.inviteUserToRoom(request);
+  }
+
+  @Override public Observable<Boolean> buzzRoom(String roomId) {
+    final String request = context.getString(R.string.mutation,
+        context.getString(R.string.buzzRoom, roomId));
+
+    return this.tribeApi.buzzRoom(request);
   }
 }
 

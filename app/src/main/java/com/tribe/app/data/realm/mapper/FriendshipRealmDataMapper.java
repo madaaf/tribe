@@ -42,6 +42,7 @@ import io.realm.RealmList;
       friendship.setCreatedAt(friendshipRealm.getCreatedAt());
       friendship.setUpdatedAt(friendshipRealm.getUpdatedAt());
       friendship.setIsLive(friendshipRealm.isLive());
+      friendship.setMute(friendshipRealm.isMute());
     }
 
     return friendship;
@@ -86,6 +87,7 @@ import io.realm.RealmList;
       friendshipRealm.setCreatedAt(friendship.getCreatedAt());
       friendshipRealm.setUpdatedAt(friendship.getUpdatedAt());
       friendshipRealm.setLive(friendship.isLive());
+      friendshipRealm.setMute(friendship.isMute());
     }
 
     return friendshipRealm;

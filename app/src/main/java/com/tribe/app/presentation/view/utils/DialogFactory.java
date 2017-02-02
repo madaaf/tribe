@@ -163,9 +163,18 @@ public final class DialogFactory {
     List<LabelType> moreTypeList = new ArrayList<>();
 
     if (recipient instanceof Friendship) {
+      if (!recipient.isMute()) {
+        moreTypeList.add(
+            new LabelType(EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)), LabelType.MUTE));
+      } else {
+        moreTypeList.add(
+            new LabelType(EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)), LabelType.UNMUTE));
+      }
+
       moreTypeList.add(new LabelType(
           context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
           LabelType.HIDE));
+
       moreTypeList.add(new LabelType(
           context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
           LabelType.BLOCK_HIDE));

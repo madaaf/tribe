@@ -29,7 +29,9 @@
         android:id="@+id/imgGhost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@id/txtName"
+        android:layout_toEndOf="@id/txtName"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
         android:src="@drawable/picto_ghost_small"
         android:visibility="gone"
         />

@@ -12,7 +12,6 @@ import com.tribe.app.domain.interactor.user.CreateFriendships;
 import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
-import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
@@ -206,12 +205,6 @@ public class UserModule {
     @Named("lookupByUsername")
     LookupUsername provideLookupUsername(LookupUsername lookupUsername) {
         return lookupUsername;
-    }
-
-    @Provides
-    @PerActivity
-    DiskUpdateFriendship provideDiskBlockHide(DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
-        return new DiskUpdateFriendship(diskUserDataRepository, postExecutionThread);
     }
 
     @Provides

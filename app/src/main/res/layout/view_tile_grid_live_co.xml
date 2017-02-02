@@ -10,8 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@null"
-        app:pulseCount="3"
-        app:pulseDuration="3500"
+        app:pulseCount="2"
+        app:pulseDuration="3000"
         app:pulseColor="@android:color/white">
 
         <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView

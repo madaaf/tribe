@@ -134,20 +134,6 @@ public class GroupDetailsView extends LinearLayout {
           return groupMember.getFriendship();
         })
         .subscribe(onHangLive));
-
-    //subscriptions.add(adapter.longClick()
-    //    .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-    //    .filter(groupMember -> !groupMember.getUser().equals(currentUser))
-    //    .flatMap(
-    //        groupMember -> DialogFactory.showBottomSheetForGroupMembers(getContext()),
-    //        (groupMember, genericType) -> {
-    //          if (genericType.getTypeDef().equals(LabelType.REMOVE_FROM_GROUP)) {
-    //            clickRemoveFromGroup.onNext(groupMember);
-    //          }
-    //
-    //          return groupMember.getUser();
-    //        })
-    //    .subscribe());
   }
 
   public void updateGroup(Group group) {

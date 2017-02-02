@@ -92,6 +92,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
     this.items.addAll(items);
+    notifyDataSetChanged();
   }
 
   public Recipient getItemAtPosition(int position) {

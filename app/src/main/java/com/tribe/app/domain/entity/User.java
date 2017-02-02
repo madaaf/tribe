@@ -287,21 +287,6 @@ public class User implements Serializable {
     setFriendships(null);
   }
 
-  public boolean hasOnlySupport() {
-    boolean hasOnlySupport = false;
-
-    List<Recipient> result = getFriendshipList();
-    if (result != null && result.size() == 1) {
-      for (Recipient fr : result) {
-        if (fr.getSubId() != null && fr.getSubId().equals(Constants.SUPPORT_ID)) {
-          hasOnlySupport = true;
-        }
-      }
-    }
-
-    return hasOnlySupport;
-  }
-
   public List<GroupMember> getUserList() {
     List<GroupMember> userList = new ArrayList<>();
 
@@ -345,6 +330,16 @@ public class User implements Serializable {
     }
 
     return count;
+  }
+
+  public User getFromFriendships(String userId) {
+    for (Friendship friendship : friendships) {
+      if (friendship.getSubId().equals(userId)) {
+        return friendship.getFriend();
+      }
+    }
+
+    return null;
   }
 
   @Override public int hashCode() {

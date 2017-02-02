@@ -1,12 +1,11 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
-import com.tribe.app.data.network.job.UpdateFriendshipJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
@@ -18,12 +17,12 @@ import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.CreateMembership;
-import com.tribe.app.domain.interactor.user.DiskUpdateFriendship;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.domain.interactor.user.SendToken;
+import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
@@ -31,333 +30,302 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 public class HomeGridPresenter implements Presenter {
 
-    // VIEW ATTACHED
-    private HomeGridMVPView homeGridView;
+  // VIEW ATTACHED
+  private HomeGridMVPView homeGridView;
 
-    // USECASES
-    private JobManager jobManager;
-    private GetDiskUserInfos diskUserInfosUsecase;
-    private DiskUpdateFriendship diskUpdateFriendship;
-    private LeaveGroup leaveGroup;
-    private RemoveGroup removeGroup;
-    private SendToken sendTokenUseCase;
-    private GetHeadDeepLink getHeadDeepLink;
-    private CreateMembership createMembership;
-    private UseCase cloudUserInfos;
-    private UpdateUser updateUser;
-    private RxFacebook rxFacebook;
-    private UseCase synchroContactList;
+  // USECASES
+  private JobManager jobManager;
+  private GetDiskUserInfos diskUserInfosUsecase;
+  private UpdateFriendship updateFriendship;
+  private LeaveGroup leaveGroup;
+  private RemoveGroup removeGroup;
+  private SendToken sendTokenUseCase;
+  private GetHeadDeepLink getHeadDeepLink;
+  private CreateMembership createMembership;
+  private UseCase cloudUserInfos;
+  private UpdateUser updateUser;
+  private RxFacebook rxFacebook;
+  private UseCase synchroContactList;
 
-    // SUBSCRIBERS
-    private FriendListSubscriber diskFriendListSubscriber;
-    private FriendListSubscriber cloudFriendListSubscriber;
-    private LookupContactsSubscriber lookupContactsSubscriber;
+  // SUBSCRIBERS
+  private FriendListSubscriber diskFriendListSubscriber;
+  private FriendListSubscriber cloudFriendListSubscriber;
+  private LookupContactsSubscriber lookupContactsSubscriber;
 
-    @Inject
-    public HomeGridPresenter(JobManager jobManager,
-                             @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
-                             LeaveGroup leaveGroup,
-                             RemoveGroup removeGroup,
-                             DiskUpdateFriendship diskUpdateFriendship,
-                             @Named("sendToken") SendToken sendToken,
-                             GetHeadDeepLink getHeadDeepLink,
-                             CreateMembership createMembership,
-                             @Named("cloudUserInfos") UseCase cloudUserInfos,
-                             UpdateUser updateUser,
-                             RxFacebook rxFacebook,
-                             @Named("synchroContactList") UseCase synchroContactList) {
-        this.jobManager = jobManager;
-        this.diskUserInfosUsecase = diskUserInfos;
-        this.leaveGroup = leaveGroup;
-        this.removeGroup = removeGroup;
-        this.diskUpdateFriendship = diskUpdateFriendship;
-        this.sendTokenUseCase = sendToken;
-        this.getHeadDeepLink = getHeadDeepLink;
-        this.createMembership = createMembership;
-        this.cloudUserInfos = cloudUserInfos;
-        this.updateUser = updateUser;
-        this.rxFacebook = rxFacebook;
-        this.synchroContactList = synchroContactList;
+  @Inject public HomeGridPresenter(JobManager jobManager,
+      @Named("diskUserInfos") GetDiskUserInfos diskUserInfos, LeaveGroup leaveGroup,
+      RemoveGroup removeGroup, UpdateFriendship updateFriendship,
+      @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
+      CreateMembership createMembership, @Named("cloudUserInfos") UseCase cloudUserInfos,
+      UpdateUser updateUser, RxFacebook rxFacebook,
+      @Named("synchroContactList") UseCase synchroContactList) {
+    this.jobManager = jobManager;
+    this.diskUserInfosUsecase = diskUserInfos;
+    this.leaveGroup = leaveGroup;
+    this.removeGroup = removeGroup;
+    this.updateFriendship = updateFriendship;
+    this.sendTokenUseCase = sendToken;
+    this.getHeadDeepLink = getHeadDeepLink;
+    this.createMembership = createMembership;
+    this.cloudUserInfos = cloudUserInfos;
+    this.updateUser = updateUser;
+    this.rxFacebook = rxFacebook;
+    this.synchroContactList = synchroContactList;
+  }
+
+  @Override public void onViewDetached() {
+    sendTokenUseCase.unsubscribe();
+    leaveGroup.unsubscribe();
+    removeGroup.unsubscribe();
+    getHeadDeepLink.unsubscribe();
+    createMembership.unsubscribe();
+    cloudUserInfos.unsubscribe();
+    updateUser.unsubscribe();
+  }
+
+  @Override public void onViewAttached(MVPView v) {
+    homeGridView = (HomeGridMVPView) v;
+    reload();
+  }
+
+  public void reload() {
+    showViewLoading();
+    loadFriendList();
+    syncFriendList();
+  }
+
+  public void loadFriendList() {
+    if (diskFriendListSubscriber != null) {
+      diskFriendListSubscriber.unsubscribe();
     }
 
-    @Override
-    public void onViewDetached() {
-        sendTokenUseCase.unsubscribe();
-        leaveGroup.unsubscribe();
-        removeGroup.unsubscribe();
-        getHeadDeepLink.unsubscribe();
-        createMembership.unsubscribe();
-        cloudUserInfos.unsubscribe();
-        updateUser.unsubscribe();
+    diskFriendListSubscriber = new FriendListSubscriber(false);
+    diskUserInfosUsecase.prepare(null);
+    diskUserInfosUsecase.execute(diskFriendListSubscriber);
+  }
+
+  public void syncFriendList() {
+    if (cloudFriendListSubscriber != null) {
+      cloudFriendListSubscriber.unsubscribe();
     }
 
-    @Override
-    public void onViewAttached(MVPView v) {
-        homeGridView = (HomeGridMVPView) v;
-        reload();
+    cloudFriendListSubscriber = new FriendListSubscriber(true);
+    cloudUserInfos.execute(cloudFriendListSubscriber);
+  }
+
+  private void showFriendCollectionInView(List<Recipient> recipientList) {
+    this.homeGridView.renderRecipientList(recipientList);
+  }
+
+  public void updateFriendship(String friendshipId, boolean mute) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(FriendshipRealm.MUTE, String.valueOf(mute)));
+
+    if (values.size() > 0) {
+      updateFriendship.prepare(friendshipId, values);
+      updateFriendship.execute(new DefaultSubscriber());
+    }
+  }
+
+  public void leaveGroup(String membershipId) {
+    leaveGroup.prepare(membershipId);
+    leaveGroup.execute(new LeaveGroupSubscriber());
+  }
+
+  public void removeGroup(String groupId) {
+    removeGroup.prepare(groupId);
+    removeGroup.execute(new RemoveGroupSubscriber());
+  }
+
+  public void getHeadDeepLink(String url) {
+    getHeadDeepLink.prepare(url);
+    getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
+  }
+
+  public void createMembership(String groupId) {
+    createMembership.setGroupId(groupId);
+    createMembership.execute(new CreateMembershipSubscriber());
+  }
+
+  public void sendToken(String token) {
+    sendTokenUseCase.setToken(token);
+    sendTokenUseCase.execute(new SendTokenSubscriber());
+  }
+
+  protected void showViewLoading() {
+    homeGridView.showLoading();
+  }
+
+  protected void hideViewLoading() {
+    homeGridView.hideLoading();
+  }
+
+  protected void showErrorMessage(ErrorBundle errorBundle) {
+    if (homeGridView != null && homeGridView.context() != null) {
+      String errorMessage =
+          ErrorMessageFactory.create(homeGridView.context(), errorBundle.getException());
+      homeGridView.showError(errorMessage);
+    }
+  }
+
+  private final class FriendListSubscriber extends DefaultSubscriber<User> {
+
+    private boolean cloud = false;
+
+    public FriendListSubscriber(boolean cloud) {
+      this.cloud = cloud;
     }
 
-    public void reload() {
-        showViewLoading();
-        loadFriendList();
+    @Override public void onCompleted() {
     }
 
-    public void loadFriendList() {
-        if (diskFriendListSubscriber != null) {
-            diskFriendListSubscriber.unsubscribe();
-        }
-
-        diskFriendListSubscriber = new FriendListSubscriber(false);
-        diskUserInfosUsecase.prepare(null);
-        diskUserInfosUsecase.execute(diskFriendListSubscriber);
+    @Override public void onError(Throwable e) {
+      if (cloud) showErrorMessage(new DefaultErrorBundle((Exception) e));
     }
 
-    public void syncFriendList() {
-        if (cloudFriendListSubscriber != null) {
-            cloudFriendListSubscriber.unsubscribe();
-        }
+    @Override public void onNext(User user) {
+      if (!cloud) {
+        List<Recipient> recipients = user.getFriendshipList();
+        showFriendCollectionInView(recipients);
+      }
+    }
+  }
 
-        cloudFriendListSubscriber = new FriendListSubscriber(true);
-        cloudUserInfos.execute(cloudFriendListSubscriber);
+  private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
+    @Override public void onCompleted() {
     }
 
-    private void showFriendCollectionInView(List<Recipient> recipientList) {
-        this.homeGridView.renderRecipientList(recipientList);
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    public void updateFriendship(Friendship friendship, @FriendshipRealm.FriendshipStatus String status) {
-        diskUpdateFriendship.prepare(friendship.getId(), status);
-        diskUpdateFriendship.execute(new UpdateFriendshipSubscriber());
-        jobManager.addJobInBackground(new UpdateFriendshipJob(friendship.getId(), status));
+    @Override public void onNext(Void aVoid) {
+      homeGridView.refreshGrid();
+    }
+  }
+
+  private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
+    @Override public void onCompleted() {
     }
 
-    public void leaveGroup(String membershipId) {
-        leaveGroup.prepare(membershipId);
-        leaveGroup.execute(new LeaveGroupSubscriber());
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    public void removeGroup(String groupId) {
-        removeGroup.prepare(groupId);
-        removeGroup.execute(new RemoveGroupSubscriber());
+    @Override public void onNext(Void aVoid) {
+      homeGridView.refreshGrid();
+    }
+  }
+
+  private final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+    @Override public void onCompleted() {
     }
 
-    public void getHeadDeepLink(String url) {
-        getHeadDeepLink.prepare(url);
-        getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
+    @Override public void onError(Throwable e) {
     }
 
-    public void createMembership(String groupId) {
-        createMembership.setGroupId(groupId);
-        createMembership.execute(new CreateMembershipSubscriber());
+    @Override public void onNext(Friendship friendship) {
+      homeGridView.onFriendshipUpdated(friendship);
+      loadFriendList();
+    }
+  }
+
+  private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
+
+    @Override public void onCompleted() {
     }
 
-    public void sendToken(String token) {
-        sendTokenUseCase.setToken(token);
-        sendTokenUseCase.execute(new SendTokenSubscriber());
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    protected void showViewLoading() {
-        homeGridView.showLoading();
+    @Override public void onNext(String url) {
+      if (!StringUtils.isEmpty(url)) homeGridView.onDeepLink(url);
+    }
+  }
+
+  private final class CreateMembershipSubscriber extends DefaultSubscriber<Membership> {
+
+    @Override public void onCompleted() {
     }
 
-    protected void hideViewLoading() {
-        homeGridView.hideLoading();
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    protected void showErrorMessage(ErrorBundle errorBundle) {
-        if (homeGridView != null && homeGridView.context() != null) {
-            String errorMessage = ErrorMessageFactory.create(homeGridView.context(),
-                    errorBundle.getException());
-            homeGridView.showError(errorMessage);
-        }
+    @Override public void onNext(Membership membership) {
+      homeGridView.onMembershipCreated(membership);
+    }
+  }
+
+  private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
+
+    @Override public void onCompleted() {
     }
 
-    private final class FriendListSubscriber extends DefaultSubscriber<User> {
-
-        private boolean cloud = false;
-
-        public FriendListSubscriber(boolean cloud) {
-            this.cloud = cloud;
-        }
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            if (cloud) showErrorMessage(new DefaultErrorBundle((Exception) e));
-        }
-
-        @Override
-        public void onNext(User user) {
-            if (!cloud) {
-                List<Recipient> recipients = user.getFriendshipList();
-                showFriendCollectionInView(recipients);
-            }
-        }
+    @Override public void onError(Throwable e) {
     }
 
-    private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Void aVoid) {
-            homeGridView.refreshGrid();
-        }
+    @Override public void onNext(Installation installation) {
     }
+  }
 
-    private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
-        @Override
-        public void onCompleted() {
-        }
+  public void updateUserFacebook(String fbid) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(UserRealm.FBID, String.valueOf(fbid)));
+    updateUser.prepare(values);
+    updateUser.execute(new DefaultSubscriber() {
+      @Override public void onError(Throwable e) {
+        super.onError(e);
+        System.out.println("ON ERROR" + e.getMessage());
+      }
 
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
+      @Override public void onNext(Object o) {
+        super.onNext(o);
+        System.out.println("ON NEXT");
+      }
+    });
+  }
 
-        @Override
-        public void onNext(Void aVoid) {
-            homeGridView.refreshGrid();
-        }
-    }
-
-    private final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(Friendship friendship) {
-            homeGridView.onFriendshipUpdated(friendship);
-            loadFriendList();
-        }
-    }
-
-    private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(String url) {
-            if (!StringUtils.isEmpty(url)) homeGridView.onDeepLink(url);
-        }
-    }
-
-    private final class CreateMembershipSubscriber extends DefaultSubscriber<Membership> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Membership membership) {
-            homeGridView.onMembershipCreated(membership);
-        }
-    }
-
-    private final class SendTokenSubscriber extends DefaultSubscriber<Installation> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(Installation installation) {
-        }
-    }
-
-    public void updateUserFacebook(String fbid) {
-        List<Pair<String, String>> values = new ArrayList<>();
-        values.add(new Pair<>(UserRealm.FBID, String.valueOf(fbid)));
-        updateUser.prepare(values);
-        updateUser.execute(new DefaultSubscriber() {
-            @Override
-            public void onError(Throwable e) {
-                super.onError(e);
-                System.out.println("ON ERROR" + e.getMessage());
-            }
-
-            @Override
-            public void onNext(Object o) {
-                super.onNext(o);
-                System.out.println("ON NEXT");
-            }
-        });
-    }
-
-    public void loginFacebook() {
-        if (!FacebookUtils.isLoggedIn()) {
-            rxFacebook.requestLogin().subscribe(loginResult -> {
-                if (FacebookUtils.isLoggedIn()) {
-                    homeGridView.successFacebookLogin();
-                } else {
-                    homeGridView.errorFacebookLogin();
-                }
-            });
+  public void loginFacebook() {
+    if (!FacebookUtils.isLoggedIn()) {
+      rxFacebook.requestLogin().subscribe(loginResult -> {
+        if (FacebookUtils.isLoggedIn()) {
+          homeGridView.successFacebookLogin();
         } else {
-            homeGridView.successFacebookLogin();
+          homeGridView.errorFacebookLogin();
         }
+      });
+    } else {
+      homeGridView.successFacebookLogin();
+    }
+  }
+
+  public void lookupContacts() {
+    if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+    lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.execute(lookupContactsSubscriber);
+  }
+
+  private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
     }
 
-    public void lookupContacts() {
-        if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
-        lookupContactsSubscriber = new LookupContactsSubscriber();
-        synchroContactList.execute(lookupContactsSubscriber);
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
     }
 
-    private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(List<Contact> contactList) {
-            jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
-        }
+    @Override public void onNext(List<Contact> contactList) {
+      jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
     }
+  }
 }

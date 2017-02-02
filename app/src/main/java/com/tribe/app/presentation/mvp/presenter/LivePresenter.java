@@ -5,7 +5,9 @@ import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
+import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -20,14 +22,17 @@ public class LivePresenter implements Presenter {
   // USECASES
   private GetDiskFriendshipList diskFriendshipList;
   private JoinRoom joinRoom;
+  private BuzzRoom buzzRoom;
+  private InviteUserToRoom inviteUserToRoom;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
-  private JoinRoomSubscriber joinRoomSubscriber;
 
-  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom) {
+  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom, BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
+    this.buzzRoom = buzzRoom;
+    this.inviteUserToRoom = inviteUserToRoom;
   }
 
   @Override public void onViewDetached() {
@@ -81,5 +86,15 @@ public class LivePresenter implements Presenter {
     @Override public void onNext(RoomConfiguration roomConfiguration) {
       liveMVPView.onJoinedRoom(roomConfiguration);
     }
+  }
+
+  public void buzzRoom(String roomId) {
+    buzzRoom.setup(roomId);
+    buzzRoom.execute(new DefaultSubscriber());
+  }
+
+  public void inviteUserToRoom(String roomId, String userId) {
+    inviteUserToRoom.setup(roomId, userId);
+    inviteUserToRoom.execute(new DefaultSubscriber());
   }
 }
