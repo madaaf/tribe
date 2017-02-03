@@ -397,15 +397,23 @@
   </string>
 
   <string name="subscription.friendshipRemoved" translatable="false">
-      %1$s : friendshipRemoved
+    %1$s : friendshipRemoved
   </string>
 
   <string name="subscription.membershipCreated" translatable="false">
-      %1$s : membershipCreated
+    %1$s : membershipCreated
   </string>
 
   <string name="subscription.membershipRemoved" translatable="false">
-      %1$s : membershipRemoved
+    %1$s : membershipRemoved
+  </string>
+
+  <string name="subscription.inviteCreated" translatable="false">
+    %1$s : inviteCreated
+  </string>
+
+  <string name="subscription.inviteRemoved" translatable="false">
+    %1$s : inviteRemoved
   </string>
 
   <string name="joinRoomFriendship" translatable="false">

@@ -19,17 +19,11 @@ public class NotificationUtils {
   public static final String ACTION_HANG_LIVE = "hang";
   public static final String ACTION_LEAVE = "leave";
 
-  public static LiveNotificationView getNotificationViewFromPayload(Context context, User user,
+  public static LiveNotificationView getNotificationViewFromPayload(Context context,
       NotificationPayload notificationPayload) {
     boolean isGrid = context instanceof HomeActivity;
 
-    User userFromNotification = user.getFromFriendships(notificationPayload.getUserId());
-
     LiveNotificationView notificationView = null;
-
-    if (userFromNotification == null) return null;
-
-    notificationPayload.setProfilePicture(userFromNotification.getProfilePicture());
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
         && !isGrid) {
@@ -42,19 +36,19 @@ public class NotificationUtils {
       // A friend entered live - 1o1
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
 
-      if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
-        if (isGrid) {
-          builder = addHangLiveAction(context, builder, notificationPayload);
-        } else {
-          builder = addLiveActions(context, builder, notificationPayload);
-        }
+      //if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
+      if (isGrid) {
+        builder = addHangLiveAction(context, builder, notificationPayload);
       } else {
-        if (isGrid) {
-          builder = addHangLiveAction(context, builder, notificationPayload);
-        } else {
-          builder = addLeaveAction(context, builder, notificationPayload);
-        }
+        builder = addLiveActions(context, builder, notificationPayload);
       }
+      //} else {
+      //  if (isGrid) {
+      //    builder = addHangLiveAction(context, builder, notificationPayload);
+      //  } else {
+      //    builder = addLeaveAction(context, builder, notificationPayload);
+      //  }
+      //}
 
       notificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
@@ -98,23 +92,23 @@ public class NotificationUtils {
   private static LiveNotificationView.Builder getCommonBuilder(Context context,
       NotificationPayload notificationPayload) {
     return new LiveNotificationView.Builder(context, LiveNotificationView.LIVE).imgUrl(
-        notificationPayload.getProfilePicture()).title(notificationPayload.getBody());
+        notificationPayload.getUserPicture()).title(notificationPayload.getBody());
   }
 
   private static LiveNotificationView.Builder addHangLiveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
     if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
+      //if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
         return builder.addAction(ACTION_HANG_LIVE,
             context.getString(R.string.live_notification_action_hang_live_friend,
                 notificationPayload.getUserDisplayName()),
             getIntentForLive(context, notificationPayload));
-      } else {
-        return builder.addAction(ACTION_HANG_LIVE,
-            context.getString(R.string.live_notification_action_hang_live_guests,
-                notificationPayload.getUserDisplayName()),
-            getIntentForLive(context, notificationPayload));
-      }
+      //} else {
+      //  return builder.addAction(ACTION_HANG_LIVE,
+      //      context.getString(R.string.live_notification_action_hang_live_guests,
+      //          notificationPayload.getUserDisplayName()),
+      //      getIntentForLive(context, notificationPayload));
+      //}
     } else {
       return builder.addAction(ACTION_HANG_LIVE,
           context.getString(R.string.live_notification_action_hang_live_group,
@@ -135,16 +129,16 @@ public class NotificationUtils {
 
   private static LiveNotificationView.Builder addLeaveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-    if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
+    //if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
       return builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
           notificationPayload.getUserDisplayName()),
           getIntentForLive(context, notificationPayload));
-    } else {
-      return builder.addAction(ACTION_LEAVE,
-          context.getString(R.string.live_notification_leave_guests,
-              notificationPayload.getUserDisplayName()),
-          getIntentForLive(context, notificationPayload));
-    }
+    //} else {
+    //  return builder.addAction(ACTION_LEAVE,
+    //      context.getString(R.string.live_notification_leave_guests,
+    //          notificationPayload.getUserDisplayName()),
+    //      getIntentForLive(context, notificationPayload));
+    //}
   }
 
   public static Intent getIntentForLive(Context context, NotificationPayload payload) {

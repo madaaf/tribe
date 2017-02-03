@@ -1,5 +1,6 @@
 package com.tribe.app.data.cache;
 
+import com.tribe.app.domain.entity.Invite;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -18,4 +19,6 @@ import rx.Observable;
   void putOnlineMap(Map<String, Boolean> onlineMap);
 
   void putLiveMap(Map<String, Boolean> liveMap);
+
+  void putInvites(Map<String, Invite> inviteList);
 }

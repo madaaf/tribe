@@ -9,6 +9,7 @@ import com.tribe.app.data.network.entity.SubscriptionResponse;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,8 @@ import javax.inject.Singleton;
       SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
       List<UserRealm> updatedUserList = new ArrayList<>();
       List<GroupRealm> updatedGroupList = new ArrayList<>();
+      List<Invite> inviteCreatedList = new ArrayList<>();
+      List<Invite> inviteRemovedList = new ArrayList<>();
       Map<String, Boolean> onlineMap = new HashMap<>();
       Map<String, Boolean> liveMap = new HashMap<>();
 
@@ -64,10 +67,12 @@ import javax.inject.Singleton;
               }
 
               updatedUserList.add(userRealm);
+
             } else if (entry.getKey().contains(WSService.GROUP_SUFFIX)) {
               GroupRealm groupRealm = gson.fromJson(entry.getValue().toString(), GroupRealm.class);
               groupRealm.setJsonPayloadUpdate(jo);
               updatedGroupList.add(groupRealm);
+
             } else if (entry.getKey().contains(WSService.FRIENDSHIP_UDPATED_SUFFIX)) {
               boolean shouldUpdateLiveStatus = false;
 
@@ -79,6 +84,11 @@ import javax.inject.Singleton;
               if (shouldUpdateLiveStatus) {
                 liveMap.put(friendshipRealm.getId(), friendshipRealm.isLive());
               }
+
+            } else if (entry.getKey().contains(WSService.INVITE_CREATED_SUFFIX)) {
+              Invite invite = gson.fromJson(entry.getValue().toString(), Invite.class);
+              inviteCreatedList.add(invite);
+
             }
           }
         }

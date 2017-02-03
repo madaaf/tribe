@@ -23,12 +23,11 @@ public class NotificationPayload implements Serializable {
   private String click_action;
   private String user_display_name;
   private String sound;
-  private String user_display_names;
   private String session_id;
   private String group_id;
   private String group_name;
-  private String other_user_display_names;
-  private String profile_picture;
+  private String user_picture;
+  private String group_picture;
 
   public void setUserId(String userId) {
     this.user_id = userId;
@@ -70,14 +69,6 @@ public class NotificationPayload implements Serializable {
     this.user_display_name = userDisplayName;
   }
 
-  public String getUserDisplayNames() {
-    return user_display_names;
-  }
-
-  public void setUser_display_names(String userDisplayNames) {
-    this.user_display_names = userDisplayNames;
-  }
-
   public String getSessionId() {
     return session_id;
   }
@@ -102,19 +93,19 @@ public class NotificationPayload implements Serializable {
     this.group_name = group_name;
   }
 
-  public String getOtherUserDisplayNames() {
-    return other_user_display_names;
+  public void setGroupPicture(String groupPicture) {
+    this.group_picture = groupPicture;
   }
 
-  public void setOtherUserDisplayNames(String otherUserDisplayNames) {
-    this.other_user_display_names = otherUserDisplayNames;
+  public String getGroupPicture() {
+    return group_picture;
   }
 
-  public void setProfilePicture(String profilePicture) {
-    this.profile_picture = profilePicture;
+  public void setUserPicture(String userPicture) {
+    this.user_picture = userPicture;
   }
 
-  public String getProfilePicture() {
-    return profile_picture;
+  public String getUserPicture() {
+    return user_picture;
   }
 }

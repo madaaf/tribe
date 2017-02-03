@@ -4,6 +4,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Invite;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,15 +20,24 @@ public class SubscriptionResponse {
   private List<GroupRealm> groupUpdatedList;
   private List<MembershipRealm> membershipCreatedList;
   private List<MembershipRealm> membershipRemovedList;
-  private List<FriendshipRealm> friendshipCreated;
-  private List<FriendshipRealm> friendshipUpdated;
-  private List<FriendshipRealm> friendshipRemoved;
+  private List<FriendshipRealm> friendshipCreatedList;
+  private List<FriendshipRealm> friendshipUpdatedList;
+  private List<FriendshipRealm> friendshipRemovedList;
+  private List<Invite> invitesCreatedList;
+  private List<Invite> invitesRemovedList;
   private Map<String, Boolean> onlineMap;
   private Map<String, Boolean> liveMap;
 
   public SubscriptionResponse() {
     userUpdatedList = new ArrayList<>();
     groupUpdatedList = new ArrayList<>();
+    membershipCreatedList = new ArrayList<>();
+    membershipRemovedList = new ArrayList<>();
+    friendshipCreatedList = new ArrayList<>();
+    friendshipUpdatedList = new ArrayList<>();
+    friendshipRemovedList = new ArrayList<>();
+    invitesCreatedList = new ArrayList<>();
+    invitesRemovedList = new ArrayList<>();
     onlineMap = new HashMap<>();
     liveMap = new HashMap<>();
   }
@@ -77,34 +87,57 @@ public class SubscriptionResponse {
   }
 
   public void setMembershipCreatedList(List<MembershipRealm> membershipCreatedList) {
+    this.membershipCreatedList.clear();
     this.membershipCreatedList = membershipCreatedList;
   }
 
   public void setMembershipRemovedList(List<MembershipRealm> membershipRemovedList) {
+    this.membershipRemovedList.clear();
     this.membershipRemovedList = membershipRemovedList;
   }
 
-  public List<FriendshipRealm> getFriendshipCreated() {
-    return friendshipCreated;
+  public List<FriendshipRealm> getFriendshipCreatedList() {
+    return friendshipCreatedList;
   }
 
-  public void setFriendshipCreated(List<FriendshipRealm> friendshipCreated) {
-    this.friendshipCreated = friendshipCreated;
+  public void setFriendshipCreatedList(List<FriendshipRealm> friendshipCreatedList) {
+    this.friendshipCreatedList.clear();
+    this.friendshipCreatedList = friendshipCreatedList;
   }
 
-  public List<FriendshipRealm> getFriendshipRemoved() {
-    return friendshipRemoved;
+  public List<FriendshipRealm> getFriendshipRemovedList() {
+    return friendshipRemovedList;
   }
 
-  public void setFriendshipRemoved(List<FriendshipRealm> friendshipRemoved) {
-    this.friendshipRemoved = friendshipRemoved;
+  public void setFriendshipRemovedList(List<FriendshipRealm> friendshipRemovedList) {
+    this.friendshipRemovedList.clear();
+    this.friendshipRemovedList = friendshipRemovedList;
   }
 
-  public List<FriendshipRealm> getFriendshipUpdated() {
-    return friendshipUpdated;
+  public List<FriendshipRealm> getFriendshipUpdatedList() {
+    return friendshipUpdatedList;
   }
 
-  public void setFriendshipUpdated(List<FriendshipRealm> friendshipUpdated) {
-    this.friendshipUpdated = friendshipUpdated;
+  public void setFriendshipUpdatedList(List<FriendshipRealm> friendshipUpdatedList) {
+    this.friendshipUpdatedList.clear();
+    this.friendshipUpdatedList = friendshipUpdatedList;
+  }
+
+  public List<Invite> getInvitesCreatedList() {
+    return invitesCreatedList;
+  }
+
+  public void setInvitesCreatedList(List<Invite> invitesCreatedList) {
+    this.invitesCreatedList.clear();
+    this.invitesCreatedList = invitesCreatedList;
+  }
+
+  public List<Invite> getInvitesRemovedList() {
+    return invitesRemovedList;
+  }
+
+  public void setInvitesRemovedList(List<Invite> invitesRemovedList) {
+    this.invitesRemovedList.clear();
+    this.invitesRemovedList = invitesRemovedList;
   }
 }

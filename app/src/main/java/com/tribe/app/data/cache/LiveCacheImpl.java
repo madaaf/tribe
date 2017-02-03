@@ -2,6 +2,7 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 
 import java.util.Map;
@@ -39,5 +40,9 @@ public class LiveCacheImpl implements LiveCache {
 
   @Override public void putLiveMap(Map<String, Boolean> liveMap) {
     this.liveMap.putAll(liveMap);
+  }
+
+  @Override public void putInvites(Map<String, Invite> inviteList) {
+
   }
 }

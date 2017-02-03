@@ -244,8 +244,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
             (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
         LiveNotificationView notificationView =
-            NotificationUtils.getNotificationViewFromPayload(context, getCurrentUser(),
-                notificationPayload);
+            NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
         if (notificationView != null) {
           subscriptions.add(notificationView.onClickAction()

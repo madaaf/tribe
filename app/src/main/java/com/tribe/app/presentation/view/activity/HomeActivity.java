@@ -68,7 +68,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
@@ -501,8 +500,7 @@ public class HomeActivity extends BaseActivity
             (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
         LiveNotificationView notificationView =
-            NotificationUtils.getNotificationViewFromPayload(context, getCurrentUser(),
-                notificationPayload);
+            NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
         if (notificationView != null) {
           subscriptions.add(notificationView.onClickAction()
@@ -510,7 +508,8 @@ public class HomeActivity extends BaseActivity
               .filter(action -> action.getIntent() != null)
               .delay(500, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
+              .subscribe(
+                  action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
 
           notificationView.show(HomeActivity.this, layoutNotifications);
         }
