@@ -2,6 +2,7 @@ package com.tribe.app.presentation.internal.di.components;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v4.app.NotificationManagerCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.LiveCache;
@@ -289,6 +290,8 @@ public interface ApplicationComponent {
   TribeAudioManager tribeAudioManager();
 
   NotificationBuilder notificationBuilder();
+
+  NotificationManagerCompat notificationManagerCompat();
 
   @ShareProfile Preference<Boolean> shareProfile();
 

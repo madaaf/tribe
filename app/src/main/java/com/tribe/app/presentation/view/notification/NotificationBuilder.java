@@ -15,6 +15,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,7 +44,9 @@ import javax.inject.Singleton;
         application.sendBroadcast(intentUnique);
       } else {
         Notification notification = buildNotification(notificationPayload, "Tribos");
-        if (notification != null) notificationManager.notify(getNotificationId(notificationPayload), notification);
+        if (notification != null) {
+          notificationManager.notify(getNotificationId(notificationPayload), notification);
+        }
         //Notification summary = buildSummary(message, GROUP_KEY);
         //notificationManager.notify(SUMMARY_ID, summary);
       }
@@ -74,6 +77,8 @@ import javax.inject.Singleton;
     PendingIntent pendingIntent = getIntentFromPayload(payload);
     if (pendingIntent != null) builder.setContentIntent(pendingIntent);
 
+    builder = addActionsForPayload(builder, payload);
+
     if (StringUtils.isEmpty(payload.getSound())) {
       builder.setSound(Uri.parse(
           "android.resource://" + application.getPackageName() + "/raw/" + payload.getSound()));
@@ -95,9 +100,44 @@ import javax.inject.Singleton;
     if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       return HomeActivity.class;
-    } else {
-      return HomeActivity.class;
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+      return LiveActivity.class;
     }
+
+    return HomeActivity.class;
+  }
+
+  private NotificationCompat.Builder addActionsForPayload(NotificationCompat.Builder builder,
+      NotificationPayload payload) {
+    return addCommonActions(builder, payload);
+  }
+
+  private NotificationCompat.Builder addCommonActions(NotificationCompat.Builder builder,
+      NotificationPayload payload) {
+    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification,
+        application.getString(R.string.live_notification_action_see_online),
+            getPendingIntentForHome(payload)).build())
+        .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification,
+            application.getString(R.string.live_notification_action_hang_live),
+            getPendingIntentForLive(payload)).build());
+  }
+
+  private PendingIntent getPendingIntentForLive(NotificationPayload payload) {
+    Intent notificationIntent = NotificationUtils.getIntentForLive(application, payload);
+    notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    PendingIntent pendingIntent = PendingIntent.getActivity(application, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+    return pendingIntent;
+  }
+
+  private PendingIntent getPendingIntentForHome(NotificationPayload payload) {
+    Intent notificationIntent = NotificationUtils.getIntentForHome(application, payload);
+    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    PendingIntent pendingIntent = PendingIntent.getActivity(application, 0, notificationIntent, 0);
+
+    return pendingIntent;
   }
 
   //private Notification buildSummary(Message message, String groupKey) {

@@ -93,7 +93,6 @@ public class LiveNotificationContainer extends FrameLayout {
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(pair -> {
-              Timber.d("Emitting notifications");
               setVisibility(View.VISIBLE);
               if (latestNotificationView != null) latestNotificationView.cancelTimer();
               latestNotificationView = pair.first;

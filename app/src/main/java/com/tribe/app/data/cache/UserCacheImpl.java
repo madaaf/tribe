@@ -93,13 +93,6 @@ public class UserCacheImpl implements UserCache {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastOnline() != null) to.setLastOnline(from.getLastOnline());
-
-    if (from.getLocation() != null) {
-      LocationRealm locationRealm = copyRealm.copyToRealmOrUpdate(from.getLocation());
-      to.setLocation(locationRealm);
-    } else {
-      to.setLocation(null);
-    }
   }
 
   private void updateFriendships(Realm obsRealm, UserRealm userRealm, UserRealm userDB) {

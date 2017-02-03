@@ -273,10 +273,10 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.joinRoom(id, isGroup);
+    return cloudDataStore.joinRoom(id, isGroup, roomId);
   }
 
   @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {

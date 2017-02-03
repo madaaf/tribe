@@ -89,14 +89,18 @@ public class LiveView extends FrameLayout {
     init(context, attrs);
   }
 
-  @Override protected void onDetachedFromWindow() {
-    unbinder.unbind();
+  public void onDestroy() {
+    if (room != null) {
+      room.leaveRoom();
+      viewRoom.removeAllViews();
+      room = null;
+    }
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
     }
 
-    super.onDetachedFromWindow();
+    unbinder.unbind();
   }
 
   @Override protected void onFinishInflate() {
@@ -147,7 +151,7 @@ public class LiveView extends FrameLayout {
         .roomId(roomConfiguration.getRoomId())
         .build();
 
-    room = tribeLiveSDK.getRoom();
+    room = tribeLiveSDK.newRoom();
     room.initLocalStream(viewLocalPeer);
 
     subscriptions.add(room.onRoomStateChanged().subscribe(state -> {

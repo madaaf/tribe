@@ -168,9 +168,11 @@ public class Room {
   }
 
   public void leaveRoom() {
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+
     options = null;
+    webRTCClient.dispose();
     webSocketConnection.disconnect(false);
-    webRTCClient.leaveRoom();
   }
 
   public void switchCamera() {

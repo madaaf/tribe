@@ -13,9 +13,9 @@ import butterknife.Unbinder;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -31,19 +31,34 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView {
 
-  private static final String EXTRA_RECIPIENT = "EXTRA_RECIPIENT";
+  private static final String EXTRA_RECIPIENT_ID = "EXTRA_RECIPIENT_ID";
+  private static final String EXTRA_IS_GROUP = "EXTRA_IS_GROUP";
+  private static final String EXTRA_SESSION_ID = "EXTRA_SESSION_ID";
   private static final String EXTRA_COLOR = "EXTRA_COLOR";
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
-    intent.putExtra(EXTRA_RECIPIENT, recipient);
+    intent.putExtra(EXTRA_RECIPIENT_ID,
+        recipient.getSubId()); // We pass the userId for a friendship or the groupId
+    intent.putExtra(EXTRA_IS_GROUP, recipient instanceof Membership);
     intent.putExtra(EXTRA_COLOR, color);
+    return intent;
+  }
+
+  public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
+      String sessionId) {
+    Intent intent = new Intent(context, LiveActivity.class);
+    intent.putExtra(EXTRA_RECIPIENT_ID, recipientId);
+    intent.putExtra(EXTRA_IS_GROUP, isGroup);
+    intent.putExtra(EXTRA_SESSION_ID, sessionId);
     return intent;
   }
 
@@ -61,6 +76,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   // VARIABLES
   private Unbinder unbinder;
+  private String recipientId;
+  private boolean isGroup;
+  private String sessionId;
   private Recipient recipient;
   private int color;
   private NotificationReceiver notificationReceiver;
@@ -77,11 +95,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     unbinder = ButterKnife.bind(this);
 
     initDependencyInjector();
-    if (getIntent().hasExtra(EXTRA_RECIPIENT)) initParams();
+    initParams();
     init();
     initResources();
     initPermissions();
-    initSubscriptions();
   }
 
   @Override protected void onStart() {
@@ -116,13 +133,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   }
 
   @Override protected void onDestroy() {
+    viewLive.onDestroy();
+
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
   }
 
   private void initParams() {
-    this.recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_RECIPIENT);
+    this.recipientId = getIntent().getStringExtra(EXTRA_RECIPIENT_ID);
+    this.sessionId = getIntent().getStringExtra(EXTRA_SESSION_ID);
+    this.isGroup = getIntent().getBooleanExtra(EXTRA_IS_GROUP, false);
     this.color = getIntent().getIntExtra(EXTRA_COLOR, Color.BLACK);
   }
 
@@ -132,7 +153,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     viewInviteLive.setLayoutParams(params);
     viewInviteLive.requestLayout();
 
-    viewLive.setRecipient(recipient, color);
+    livePresenter.loadRecipient(recipientId, isGroup);
   }
 
   private void initDependencyInjector() {
@@ -165,14 +186,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       if (shouldJoin) {
-        livePresenter.joinRoom(recipient);
+        livePresenter.joinRoom(recipient, sessionId);
       } else {
         finish();
       }
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
-      livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
+      if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
+        livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
+      }
     }));
 
     subscriptions.add(
@@ -191,6 +214,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   //   PUBLIC   //
   ////////////////
 
+  @Override public void onRecipientInfos(Recipient recipient) {
+    this.recipient = recipient;
+    viewLive.setRecipient(recipient, color);
+    initSubscriptions();
+  }
+
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
     viewInviteLive.renderFriendshipList(friendshipList);
   }
@@ -198,7 +227,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     Timber.d("Room configuration : " + roomConfiguration);
     viewLive.joinRoom(roomConfiguration);
-    livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());
+    if (recipient instanceof Friendship) {
+      livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());
+    }
   }
 
   /////////////////
@@ -213,12 +244,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
             (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
         LiveNotificationView notificationView =
-            NotificationUtils.getNotificationViewFromPayload(context, getCurrentUser(), notificationPayload);
+            NotificationUtils.getNotificationViewFromPayload(context, getCurrentUser(),
+                notificationPayload);
 
         if (notificationView != null) {
-          subscriptions.add(notificationView.onClickAction().subscribe(s -> {
-            layoutNotifications.dismissNotification(notificationView);
-          }));
+          subscriptions.add(notificationView.onClickAction()
+              .doOnNext(action -> layoutNotifications.dismissNotification(notificationView))
+              .filter(action -> action.getIntent() != null)
+              .delay(500, TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(action -> {
+                navigator.navigateToIntent(LiveActivity.this, action.getIntent());
+                finish();
+              }));
 
           notificationView.show(LiveActivity.this, layoutNotifications);
         }

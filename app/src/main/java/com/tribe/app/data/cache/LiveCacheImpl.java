@@ -26,11 +26,11 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
-    return onlineMap.getMapObservable();
+    return onlineMap.getMapObservable().startWith(onlineMap.getMap());
   }
 
   @Override public Observable<Map<String, Boolean>> liveMap() {
-    return liveMap.getMapObservable();
+    return liveMap.getMapObservable().startWith(liveMap.getMap());
   }
 
   @Override public void putOnlineMap(Map<String, Boolean> onlineMap) {

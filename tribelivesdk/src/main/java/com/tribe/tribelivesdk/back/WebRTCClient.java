@@ -77,6 +77,7 @@ import static android.R.attr.id;
       return;
     }
 
+    LogUtil.d(getClass(), "Attemp to addPeerConnection : " + localMediaStream);
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
     remotePeer.getPeerConnection().addStream(localMediaStream);
@@ -181,8 +182,20 @@ import static android.R.attr.id;
     tribePeerConnection.setRemoteDescription(sdp);
   }
 
-  public void leaveRoom() {
+  public void dispose() {
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+
+    if (peerConnections != null && peerConnections.size() > 0) {
+      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
+        tribePeerConnection.dispose(localMediaStream);
+      }
+
+      peerConnections.clear();
+    }
+
     streamManager.dispose();
+
+    localMediaStream = null;
   }
   //
   //    public void setLocalAudioEnabled(boolean bool) {

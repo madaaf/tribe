@@ -409,13 +409,19 @@
   </string>
 
   <string name="joinRoomFriendship" translatable="false">
-    joinRoom(friendshipId : \"%1$s\") {
+    getRoomParameters(friendshipId : \"%1$s\") {
       ...RoomInfos
     }
   </string>
 
   <string name="joinRoomGroup" translatable="false">
-    joinRoom(groupId : \"%1$s\") {
+    getRoomParameters(groupId : \"%1$s\") {
+      ...RoomInfos
+    }
+  </string>
+
+  <string name="joinRoomWithId" translatable="false">
+    getRoomParameters(roomId : \"%1$s\") {
       ...RoomInfos
     }
   </string>

@@ -15,7 +15,7 @@ public class RoomConfigurationDeserializer implements JsonDeserializer<RoomConfi
   @Override public RoomConfiguration deserialize(JsonElement je, Type typeOfT,
       JsonDeserializationContext context) throws JsonParseException {
     JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
-    JsonElement toParse = results.getAsJsonObject("joinRoom");
+    JsonElement toParse = results.getAsJsonObject("getRoomParameters");
 
     return new Gson().fromJson(toParse, typeOfT);
   }

@@ -121,8 +121,7 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.getUserInfos(
         context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
             context.getString(R.string.groupfragment_info_members),
-            context.getString(R.string.membershipfragment_info)))
-        .doOnNext(saveToCacheUser);
+            context.getString(R.string.membershipfragment_info))).doOnNext(saveToCacheUser);
   }
 
   @Override public Observable<List<FriendshipRealm>> friendships() {
@@ -896,11 +895,18 @@ public class CloudUserDataStore implements UserDataStore {
     if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
-    final String request = context.getString(R.string.mutation,
-        context.getString(isGroup ? R.string.joinRoomGroup : R.string.joinRoomFriendship, id))
-        + "\n"
-        + context.getString(R.string.roomFragment_infos);
+  @Override
+  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+    String body;
+
+    if (!StringUtils.isEmpty(roomId)) {
+      body = context.getString(R.string.joinRoomWithId, roomId);
+    } else {
+      body = context.getString(isGroup ? R.string.joinRoomGroup : R.string.joinRoomFriendship, id);
+    }
+
+    final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
+        R.string.roomFragment_infos);
 
     return this.tribeApi.joinRoom(request);
   }
@@ -913,8 +919,8 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {
-    final String request = context.getString(R.string.mutation,
-        context.getString(R.string.buzzRoom, roomId));
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.buzzRoom, roomId));
 
     return this.tribeApi.buzzRoom(request);
   }

@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -59,6 +60,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
@@ -66,6 +68,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
@@ -78,6 +81,8 @@ public class HomeActivity extends BaseActivity
   public static Intent getCallingIntent(Context context) {
     return new Intent(context, HomeActivity.class);
   }
+
+  @Inject NotificationManagerCompat notificationManager;
 
   @Inject HomeGridPresenter homeGridPresenter;
 
@@ -156,6 +161,12 @@ public class HomeActivity extends BaseActivity
       //homeGridPresenter.syncFriendList();
       syncContacts();
     }
+  }
+
+  @Override protected void onRestart() {
+    super.onRestart();
+
+    notificationManager.cancelAll();
   }
 
   @Override protected void onStop() {
@@ -494,9 +505,12 @@ public class HomeActivity extends BaseActivity
                 notificationPayload);
 
         if (notificationView != null) {
-          subscriptions.add(notificationView.onClickAction().subscribe(s -> {
-            layoutNotifications.dismissNotification(notificationView);
-          }));
+          subscriptions.add(notificationView.onClickAction()
+              .doOnNext(action -> layoutNotifications.dismissNotification(notificationView))
+              .filter(action -> action.getIntent() != null)
+              .delay(500, TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
 
           notificationView.show(HomeActivity.this, layoutNotifications);
         }

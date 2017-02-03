@@ -573,6 +573,10 @@
 	<string name="live_friend_buzzed">%1$s buzzed!</string>
 	<string name="live_friends_buzzed">%1$s buzzed!</string>
 	<string name="live_friends_more_buzzed">%1$s &amp; %2$d more buzzed!</string>
+	<string name="live_dismiss_invitation_title">Remove guest :skull:</string>
+	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
+	<string name="live_dismiss_invitation_cancel">Never mind</string>
+	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
@@ -820,5 +824,8 @@
 	
 	<!-- Add Friend -->
 	<string name="add_friend_error_myself">You can\'t add yourself as a friend</string>
-	<string name="add_friend_error_invisible">You can\'t add %1$s as a friend</string>
+	<string name="add_friend_error_invisible">Only this person can add you as a friend. You can\'t. :see_no_evil:</string>
+	<string name="add_friend_error_invisible_cancel">Never mind</string>
+	<string name="add_friend_error_invisible_invite_ios">Ask on iMessage</string>
+	<string name="add_friend_error_invisible_invite_android">Ask by SMS</string>
 </resources>

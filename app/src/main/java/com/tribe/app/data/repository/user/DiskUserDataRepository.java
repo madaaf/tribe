@@ -319,7 +319,7 @@ import rx.Observable;
     });
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
     return null;
   }
 

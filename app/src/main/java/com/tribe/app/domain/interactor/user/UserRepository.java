@@ -169,7 +169,7 @@ public interface UserRepository {
 
   Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
 
-  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup);
+  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId);
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 

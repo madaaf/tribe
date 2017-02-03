@@ -33,21 +33,4 @@ public class RemotePeerView extends PeerView {
             super.onAttachedToWindow();
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onDetachedFromWindow() {
-        try {
-            // Generally, OpenGL is only necessary while this View is attached
-            // to a window so there is no point in having the whole rendering
-            // infrastructure hooked up while this View is not attached to a
-            // window. Additionally, a memory leak was solved in a similar way
-            // on iOS.
-            removeRendererFromVideoTrack();
-        } finally {
-            super.onDetachedFromWindow();
-        }
-    }
 }

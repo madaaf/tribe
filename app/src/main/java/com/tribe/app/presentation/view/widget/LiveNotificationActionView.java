@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -12,6 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Observable;
+import rx.functions.Action;
 import rx.subjects.PublishSubject;
 
 public class LiveNotificationActionView extends LinearLayout {
@@ -23,11 +25,11 @@ public class LiveNotificationActionView extends LinearLayout {
 
   // VARIABLES
   private Unbinder unbinder;
-  private String id;
+  private Action action;
   private boolean last;
 
   // OBSERVABLES
-  private PublishSubject<String> onClick = PublishSubject.create();
+  private PublishSubject<Action> onClick = PublishSubject.create();
 
   public LiveNotificationActionView(Context context, boolean isLast) {
     super(context);
@@ -47,14 +49,12 @@ public class LiveNotificationActionView extends LinearLayout {
   public static class Builder {
 
     private final Context context;
-    private String title;
-    private String id;
+    private Action action;
     private boolean last;
 
-    public Builder(Context context, String id, String title) {
+    public Builder(Context context, Action action) {
       this.context = context;
-      this.id = id;
-      this.title = title;
+      this.action = action;
     }
 
     public Builder isLast(boolean isLast) {
@@ -64,8 +64,7 @@ public class LiveNotificationActionView extends LinearLayout {
 
     public LiveNotificationActionView build() {
       LiveNotificationActionView view = new LiveNotificationActionView(context, last);
-      view.setTitle(title);
-      view.setId(id);
+      view.setAction(action);
       return view;
     }
   }
@@ -86,22 +85,47 @@ public class LiveNotificationActionView extends LinearLayout {
   }
 
   @OnClick(R.id.txtTitle) void click() {
-    onClick.onNext(id);
+    onClick.onNext(action);
   }
 
-  public void setTitle(String title) {
-    txtTitle.setText(title);
-  }
-
-  public void setId(String id) {
-    this.id = id;
+  public void setAction(Action action) {
+    this.action = action;
+    this.txtTitle.setText(action.getTitle());
   }
 
   ////////////////
   // OBSERVABLE //
   ////////////////
 
-  public Observable<String> onClick() {
+  public Observable<Action> onClick() {
     return onClick;
+  }
+
+  ///////////////
+  //  ACTION   //
+  ///////////////
+
+  public static class Action {
+    private String id;
+    private String title;
+    private Intent intent;
+
+    Action(String id, String title, Intent intent) {
+      this.id = id;
+      this.title = title;
+      this.intent = intent;
+    }
+
+    public Intent getIntent() {
+      return intent;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public String getTitle() {
+      return title;
+    }
   }
 }

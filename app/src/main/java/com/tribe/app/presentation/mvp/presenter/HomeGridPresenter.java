@@ -98,7 +98,7 @@ public class HomeGridPresenter implements Presenter {
   public void reload() {
     showViewLoading();
     loadFriendList();
-    syncFriendList();
+    //syncFriendList(); // TODO think about this
   }
 
   public void loadFriendList() {

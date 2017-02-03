@@ -38,7 +38,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
    *
    * @param userCache A {@link UserCache} to retrieve the data.
    * @param accessToken A {@link AccessToken} that contains the current user id.
-   * @param contactCache A {@link ContactCache} that contains the cached data of the user's possible
+   * @param contactCache A {@link ContactCache} that contains the cached data of the user's
+   * possible
    * contacts
    */
   public DiskUserDataStore(UserCache userCache, LiveCache liveCache, AccessToken accessToken,
@@ -196,7 +197,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.liveMap();
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup) {
+  @Override
+  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
     return null;
   }
 

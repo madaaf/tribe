@@ -5,11 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -93,7 +93,7 @@ public class LiveNotificationView extends LinearLayout {
   private PublishSubject<Float> onExpandChange = PublishSubject.create();
   private PublishSubject<Void> onExpanded = PublishSubject.create();
   private PublishSubject<Void> onDismissed = PublishSubject.create();
-  private PublishSubject<String> onClickAction = PublishSubject.create();
+  private PublishSubject<LiveNotificationActionView.Action> onClickAction = PublishSubject.create();
   private Subscription timerToDismiss;
 
   private LiveNotificationView(Context context, @LiveNotificationType int type) {
@@ -133,13 +133,13 @@ public class LiveNotificationView extends LinearLayout {
     private String imgUrl;
     private String title;
     private boolean expandable = true;
-    private List<Pair<String, String>> pairActions;
+    private List<LiveNotificationActionView.Action> actionList;
     private @LiveNotificationType int type;
 
     public Builder(Context context, @LiveNotificationType int type) {
       this.context = context;
       this.type = type;
-      pairActions = new ArrayList<>();
+      this.actionList = new ArrayList<>();
     }
 
     public Builder imgUrl(String imgUrl) {
@@ -157,8 +157,8 @@ public class LiveNotificationView extends LinearLayout {
       return this;
     }
 
-    public Builder addAction(String id, String title) {
-      this.pairActions.add(new Pair<>(id, title));
+    public Builder addAction(String id, String title, Intent intent) {
+      this.actionList.add(new LiveNotificationActionView.Action(id, title, intent));
       return this;
     }
 
@@ -172,8 +172,8 @@ public class LiveNotificationView extends LinearLayout {
 
         int count = 0;
 
-        for (Pair<String, String> action : pairActions) {
-          view.addAction(action.first, action.second, (count == (pairActions.size() - 1)));
+        for (LiveNotificationActionView.Action action : actionList) {
+          view.addAction(action, (count == (actionList.size() - 1)));
 
           count++;
         }
@@ -236,12 +236,15 @@ public class LiveNotificationView extends LinearLayout {
     this.expandable = expandable;
   }
 
-  @SuppressLint("NewApi") public void addAction(String id, String title, boolean isLast) {
+  @SuppressLint("NewApi")
+  public void addAction(LiveNotificationActionView.Action action, boolean isLast) {
     int sizeActionItem =
         getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
 
     LiveNotificationActionView actionView =
-        new LiveNotificationActionView.Builder(getContext(), id, title).isLast(isLast).build();
+        new LiveNotificationActionView.Builder(getContext(), action)
+            .isLast(isLast)
+            .build();
 
     ViewGroup.LayoutParams params =
         new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sizeActionItem);
@@ -425,7 +428,7 @@ public class LiveNotificationView extends LinearLayout {
   //    OBSERVABLES    //
   ///////////////////////
 
-  public Observable<String> onClickAction() {
+  public Observable<LiveNotificationActionView.Action> onClickAction() {
     return onClickAction;
   }
 }

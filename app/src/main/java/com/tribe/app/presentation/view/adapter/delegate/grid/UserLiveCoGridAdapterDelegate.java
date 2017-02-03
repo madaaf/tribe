@@ -2,12 +2,10 @@ package com.tribe.app.presentation.view.adapter.delegate.grid;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.utils.Constants;
-
 import java.util.List;
 
 /**
@@ -26,8 +24,7 @@ public class UserLiveCoGridAdapterDelegate extends RecipientGridAdapterDelegate 
         .equals(Constants.SUPPORT_ID)
         && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
         && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-        && (items.get(position).isOnline());
-    //|| items.get(position).isConnected());
+        && (items.get(position).isOnline() || items.get(position).isLive());
   }
 
   @Override protected int getLayoutId() {

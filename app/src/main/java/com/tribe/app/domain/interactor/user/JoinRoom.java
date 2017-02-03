@@ -14,6 +14,7 @@ public class JoinRoom extends UseCase {
 
   private String id;
   private boolean isGroup;
+  private String roomId;
   private UserRepository userRepository;
 
   @Inject public JoinRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
@@ -22,12 +23,13 @@ public class JoinRoom extends UseCase {
     this.userRepository = userRepository;
   }
 
-  public void setup(String id, boolean isGroup) {
+  public void setup(String id, boolean isGroup, String roomId) {
     this.id = id;
     this.isGroup = isGroup;
+    this.roomId = roomId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.joinRoom(id, isGroup);
+    return this.userRepository.joinRoom(id, isGroup, roomId);
   }
 }

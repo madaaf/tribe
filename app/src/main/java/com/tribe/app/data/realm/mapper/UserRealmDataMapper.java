@@ -106,8 +106,6 @@ public class UserRealmDataMapper {
             userRealm.setFbid(user.getFbid());
             userRealm.setPhone(user.getPhone());
             userRealm.setPushNotif(user.isPushNotif());
-            if (user.getLocation() != null)
-                userRealm.setLocation(locationRealmDataMapper.transform(user.getLocation()));
             userRealm.setTribeSave(user.isTribeSave());
             userRealm.setIsOnline(user.isOnline());
             userRealm.setLastOnline(user.getLastOnline());

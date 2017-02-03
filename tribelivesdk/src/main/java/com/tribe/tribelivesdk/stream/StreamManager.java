@@ -3,101 +3,113 @@ package com.tribe.tribelivesdk.stream;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-
+import com.tribe.tribelivesdk.core.TribePeerConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
-
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
-
 import rx.Observable;
 
-public final class StreamManager {
+public class StreamManager {
 
-    private Context context;
-    private TribeLiveLocalStream liveLocalStream;
-    private PeerView localStreamView;
-    private final ObservableRxHashMap<String, RemotePeer> remotePeerMap = new ObservableRxHashMap<>();
+  private Context context;
+  private TribeLiveLocalStream liveLocalStream;
+  private PeerView localStreamView;
+  private final ObservableRxHashMap<String, RemotePeer> remotePeerMap = new ObservableRxHashMap<>();
 
-    public StreamManager(Context context) {
-        this.context = context;
+  public StreamManager(Context context) {
+    this.context = context;
+  }
+
+  public void initLocalStreamView(PeerView localStreamView,
+      PeerConnectionFactory peerConnectionFactory) {
+    this.localStreamView = localStreamView;
+    generateLocalStream(context, peerConnectionFactory);
+    liveLocalStream.startVideoCapture();
+  }
+
+  public MediaStream generateLocalStream(Context context,
+      PeerConnectionFactory peerConnectionFactory) {
+    if (peerConnectionFactory == null) {
+      throw new IllegalArgumentException(
+          "Attempt to generateLocalStream but PeerConnectionFactory is null");
     }
 
-    public void initLocalStreamView(PeerView localStreamView, PeerConnectionFactory peerConnectionFactory) {
-        this.localStreamView = localStreamView;
-        generateLocalStream(context, peerConnectionFactory);
-        liveLocalStream.startVideoCapture();
+    if (localStreamView == null) {
+      throw new IllegalStateException("Attempt to generateLocalStream but view has not been set");
     }
 
-    public MediaStream generateLocalStream(Context context, PeerConnectionFactory peerConnectionFactory) {
-        if (peerConnectionFactory == null) {
-            throw new IllegalArgumentException("Attempt to generateLocalStream but PeerConnectionFactory is null");
-        }
-
-        if (localStreamView == null) {
-            throw new IllegalStateException("Attempt to generateLocalStream but view has not been set");
-        }
-
-        if (liveLocalStream == null) {
-            liveLocalStream = new TribeLiveLocalStream(context, localStreamView, peerConnectionFactory);
-        }
-
-        return liveLocalStream.asNativeMediaStream();
+    if (liveLocalStream == null) {
+      liveLocalStream = new TribeLiveLocalStream(context, localStreamView, peerConnectionFactory);
     }
 
-    public void generateNewRemotePeer(TribeSession session) {
-        if (session == null) {
-            LogUtil.e(getClass(), "Attempt to generate remote stream with null peerId.");
-            return;
-        }
+    return liveLocalStream.asNativeMediaStream();
+  }
 
-        LogUtil.d(getClass(), "Generating new remote peer : " + session.getPeerId());
-        RemotePeer remotePeer = new RemotePeer(session);
-        RemotePeerView remotePeerView = new RemotePeerView(context);
-        remotePeer.setPeerView(remotePeerView);
-
-        remotePeerMap.put(session.getPeerId(), remotePeer);
+  public void generateNewRemotePeer(TribeSession session) {
+    if (session == null) {
+      LogUtil.e(getClass(), "Attempt to generate remote stream with null peerId.");
+      return;
     }
 
-    public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
-        if (TextUtils.isEmpty(peerId)) {
-            LogUtil.e(getClass(), "We found a null peerId it doesn't make sense!");
-            return;
-        }
+    LogUtil.d(getClass(), "Generating new remote peer : " + session.getPeerId());
+    RemotePeer remotePeer = new RemotePeer(session);
+    RemotePeerView remotePeerView = new RemotePeerView(context);
+    remotePeer.setPeerView(remotePeerView);
 
-        if (mediaStream == null) {
-            LogUtil.e(getClass(), "Cannot set a null mediaStream to peerId: " + mediaStream);
-            return;
-        }
+    remotePeerMap.put(session.getPeerId(), remotePeer);
+  }
 
-        RemotePeer remotePeer = remotePeerMap.get(peerId);
-        if (remotePeer == null) {
-            LogUtil.e(getClass(), "Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
-            return;
-        }
-
-        LogUtil.d(getClass(), "Setting the stream to peer : " + peerId);
-        remotePeer.getPeerView().setStream(mediaStream);
+  public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
+    if (TextUtils.isEmpty(peerId)) {
+      LogUtil.e(getClass(), "We found a null peerId it doesn't make sense!");
+      return;
     }
 
-    public void switchCamera() {
-        if (liveLocalStream == null) {
-            LogUtil.d(getClass(), "Live Local Stream is null");
-        }
-
-        liveLocalStream.switchCamera();
+    if (mediaStream == null) {
+      LogUtil.e(getClass(), "Cannot set a null mediaStream to peerId: " + mediaStream);
+      return;
     }
 
-    public void dispose() {
-        liveLocalStream.dispose();
-        localStreamView.dispose();
+    RemotePeer remotePeer = remotePeerMap.get(peerId);
+    if (remotePeer == null) {
+      LogUtil.e(getClass(), "Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
+      return;
     }
 
-    public Observable<ObservableRxHashMap.RxHashMap<String, RemotePeer>> onRemotePeersChanged() {
-        return remotePeerMap.getObservable();
+    LogUtil.d(getClass(), "Setting the stream to peer : " + peerId);
+    remotePeer.getPeerView().setStream(mediaStream);
+  }
+
+  public void switchCamera() {
+    if (liveLocalStream == null) {
+      LogUtil.d(getClass(), "Live Local Stream is null");
     }
+
+    liveLocalStream.switchCamera();
+  }
+
+  public void dispose() {
+    localStreamView.dispose();
+    localStreamView = null;
+
+    liveLocalStream.dispose();
+    liveLocalStream = null;
+
+    if (remotePeerMap != null && remotePeerMap.size() > 0) {
+      for (RemotePeer remotePeer : remotePeerMap.getMap().values()) {
+        remotePeer.dispose();
+      }
+
+      remotePeerMap.clear();
+    }
+  }
+
+  public Observable<ObservableRxHashMap.RxHashMap<String, RemotePeer>> onRemotePeersChanged() {
+    return remotePeerMap.getObservable();
+  }
 }

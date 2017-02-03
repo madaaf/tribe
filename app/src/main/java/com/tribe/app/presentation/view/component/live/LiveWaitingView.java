@@ -30,6 +30,10 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveWaitingView extends FrameLayout {
 
+  @Inject ScreenUtils screenUtils;
+
+  @Inject PaletteGrid paletteGrid;
+
   private Rect rect = new Rect();
   private Paint circlePaint = new Paint();
   private CircleView circleView;
@@ -41,9 +45,8 @@ public class LiveWaitingView extends FrameLayout {
   private @LiveRoomView.TribeRoomViewType int type = LiveRoomView.GRID;
   private TextViewFont txtDropInTheLive;
 
+  // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-
-  @Inject ScreenUtils screenUtils;
 
   public LiveWaitingView(Context context) {
     super(context);
@@ -164,7 +167,7 @@ public class LiveWaitingView extends FrameLayout {
 
   public void setColor(int color) {
     circleView.setBackgroundColor(color);
-    circlePaint.setColor(PaletteGrid.getRandomColorExcluding(color));
+    circlePaint.setColor(paletteGrid.getRandomColorExcluding(color));
   }
 
   public void setRecipient(Recipient recipient) {

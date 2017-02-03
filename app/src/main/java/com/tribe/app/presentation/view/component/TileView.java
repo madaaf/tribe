@@ -84,6 +84,8 @@ public class TileView extends SquareCardView {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject PaletteGrid paletteGrid;
+
   @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
 
   @Nullable @BindView(R.id.viewShadowAvatar) public View viewShadowAvatar;
@@ -343,7 +345,10 @@ public class TileView extends SquareCardView {
       //                imgInd.setVisibility(View.VISIBLE);
       //                imgInd.setImageResource(R.drawable.picto_live);
       //            } else
-      if (recipient.isOnline()) {
+      if (recipient.isLive()) {
+        imgInd.setVisibility(View.VISIBLE);
+        imgInd.setImageResource(R.drawable.picto_live);
+      } else if (recipient.isOnline()) {
         imgInd.setVisibility(View.VISIBLE);
         imgInd.setImageResource(R.drawable.picto_online);
       } else {
@@ -375,7 +380,10 @@ public class TileView extends SquareCardView {
     //                ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
     //                txtStatus.setText(R.string.grid_status_live);
     //            } else
-    if (recipient.isOnline()) {
+    if (recipient.isLive()) {
+      ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
+      txtStatus.setText(R.string.grid_status_live);
+    } else if (recipient.isOnline()) {
       ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
       txtStatus.setText(R.string.grid_status_connected);
     } else {
@@ -412,7 +420,7 @@ public class TileView extends SquareCardView {
   }
 
   public int getBackgroundColor() {
-    return PaletteGrid.get(position);
+    return paletteGrid.get(position);
   }
 
   public void startDrag() {

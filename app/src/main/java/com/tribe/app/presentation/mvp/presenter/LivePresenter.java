@@ -7,6 +7,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
+import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -24,20 +25,27 @@ public class LivePresenter implements Presenter {
   private JoinRoom joinRoom;
   private BuzzRoom buzzRoom;
   private InviteUserToRoom inviteUserToRoom;
+  private GetRecipientInfos getRecipientInfos;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
+  private RecipientInfosSubscriber recipientInfosSubscriber;
 
-  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom, BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom) {
+  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
+      BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
     this.inviteUserToRoom = inviteUserToRoom;
+    this.getRecipientInfos = getRecipientInfos;
   }
 
   @Override public void onViewDetached() {
     diskFriendshipList.unsubscribe();
     joinRoom.unsubscribe();
+    buzzRoom.unsubscribe();
+    inviteUserToRoom.unsubscribe();
+    getRecipientInfos.unsubscribe();
   }
 
   @Override public void onViewAttached(MVPView v) {
@@ -68,9 +76,28 @@ public class LivePresenter implements Presenter {
     }
   }
 
-  public void joinRoom(Recipient recipient) {
+  public void loadRecipient(String recipientId, boolean isGroup) {
+    getRecipientInfos.prepare(recipientId, isGroup);
+    getRecipientInfos.execute(new RecipientInfosSubscriber());
+  }
+
+  private final class RecipientInfosSubscriber extends DefaultSubscriber<Recipient> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Recipient recipient) {
+      liveMVPView.onRecipientInfos(recipient);
+    }
+  }
+
+  public void joinRoom(Recipient recipient, String roomId) {
     boolean isGroup = recipient instanceof Membership;
-    joinRoom.setup(!isGroup ? recipient.getId() : recipient.getSubId(), isGroup);
+    joinRoom.setup(!isGroup ? recipient.getId() : recipient.getSubId(), isGroup, roomId);
     joinRoom.execute(new JoinRoomSubscriber());
   }
 

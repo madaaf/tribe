@@ -31,4 +31,8 @@ public class RemotePeer extends Peer {
   public void setPeerView(RemotePeerView peerView) {
     this.peerView = peerView;
   }
+
+  public void dispose() {
+    if (peerView != null) peerView.dispose();
+  }
 }
