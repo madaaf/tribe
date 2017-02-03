@@ -1,6 +1,5 @@
 package com.tribe.tribelivesdk.core;
 
-import android.util.Log;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
@@ -61,8 +60,12 @@ public class TribePeerConnection {
     subscriptions.add(
         peerConnectionObserver.onShouldCreateOffer().subscribe(aVoid -> sdpObserver.createOffer()));
 
-    subscriptions.add(peerConnectionObserver.onReceivedIceCandidates()
-        .map(iceCandidates -> new TribeCandidate(new TribeSession(id, userId), iceCandidates))
+    //subscriptions.add(peerConnectionObserver.onReceivedIceCandidates()
+    //    .map(iceCandidates -> new TribeCandidate(new TribeSession(id, userId), iceCandidates))
+    //    .subscribe(onReceivedTribeCandidate));
+
+    subscriptions.add(peerConnectionObserver.onReceivedIceCandidate()
+        .map(iceCandidate -> new TribeCandidate(new TribeSession(id, userId), iceCandidate))
         .subscribe(onReceivedTribeCandidate));
 
     subscriptions.add(peerConnectionObserver.onReceivedMediaStream()
@@ -76,6 +79,8 @@ public class TribePeerConnection {
       return;
     }
 
+    String description = MediaConstraints.preferVideoCodec(sessionDescription.description,
+        MediaConstraints.VIDEO_CODEC_H264);
     peerConnection.setRemoteDescription(sdpObserver, sessionDescription);
   }
 
@@ -109,6 +114,7 @@ public class TribePeerConnection {
       peerConnection.removeStream(mediaStream);
       peerConnection.close();
       peerConnection.dispose();
+      sdpObserver.dropPeerConnection();
     }
   }
 

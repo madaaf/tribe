@@ -148,12 +148,12 @@ public class Room {
         }));
 
     subscriptions.add(webRTCClient.onReceivedTribeCandidate().subscribe(tribeCandidate -> {
-      List<IceCandidate> candidateList = tribeCandidate.getIceCandidateList();
+      //List<IceCandidate> candidateList = tribeCandidate.getIceCandidateList();
 
-      for (IceCandidate iceCandidate : candidateList) {
-        JSONObject payload = getCandidatePayload(tribeCandidate.getSession().getPeerId(), iceCandidate);
+      //for (IceCandidate iceCandidate : candidateList) {
+        JSONObject payload = getCandidatePayload(tribeCandidate.getSession().getPeerId(), tribeCandidate.getIceCandidate());
         webSocketConnection.send(payload.toString());
-      }
+      //}
     }));
 
     subscriptions.add(webRTCClient.onRemotePeersChanged().doOnNext(rxRemotePeer -> {
