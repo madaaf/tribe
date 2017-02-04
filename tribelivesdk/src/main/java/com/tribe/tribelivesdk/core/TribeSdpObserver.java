@@ -63,8 +63,8 @@ public class TribeSdpObserver implements SdpObserver {
 
     LogUtil.d(getClass(), "On Create Success : " + sdp);
 
-    String description = com.tribe.tribelivesdk.core.MediaConstraints.preferVideoCodec(sdp.description,
-        com.tribe.tribelivesdk.core.MediaConstraints.VIDEO_CODEC_H264);
+    String description = com.tribe.tribelivesdk.core.MediaConstraints.removeVideoCodec(sdp.description,
+        com.tribe.tribelivesdk.core.MediaConstraints.VIDEO_CODEC_VP9);
 
     SessionDescription localSessionDescription = new SessionDescription(sdp.type, description);
 

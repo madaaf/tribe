@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
 import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
@@ -15,16 +14,19 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
-
 import java.util.UUID;
-
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
 import rx.Observable;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -45,6 +47,10 @@ import timber.log.Timber;
     return intent;
   }
 
+  @Inject User user;
+
+  @Inject TribeApi tribeApi;
+
   @Inject UserCache userCache;
 
   @Inject LiveCache liveCache;
@@ -55,8 +61,10 @@ import timber.log.Timber;
 
   @Inject @Named("webSocketApi") WebSocketConnection webSocketConnection;
 
-  // VARIABLES
+  // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Invite> onCreatedInvite = PublishSubject.create();
+  private PublishSubject<Invite> onRemovedInvite = PublishSubject.create();
 
   @Nullable @Override public IBinder onBind(Intent intent) {
     return null;
@@ -110,6 +118,12 @@ import timber.log.Timber;
         liveCache.putLiveMap(subscriptionResponse.getLiveMap());
         userCache.updateAll(subscriptionResponse.getUserUpdatedList(),
             subscriptionResponse.getGroupUpdatedList());
+        if (subscriptionResponse.getInviteCreated() != null) {
+          onCreatedInvite.onNext(subscriptionResponse.getInviteCreated());
+        }
+        if (subscriptionResponse.getInviteRemoved() != null) {
+          onRemovedInvite.onNext(subscriptionResponse.getInviteRemoved());
+        }
       }
     }));
   }
@@ -187,6 +201,36 @@ import timber.log.Timber;
 
           webSocketConnection.send(req);
         });
+
+    subscriptions.add(
+        onCreatedInvite.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+            .filter(invite -> !liveCache.getInviteMap().containsKey(invite.getRoomId()))
+            .flatMap(invite -> this.tribeApi.invites(
+                getApplicationContext().getString(R.string.invites_infos,
+                    getApplicationContext().getString(R.string.userfragment_infos),
+                    getApplicationContext().getString(R.string.groupfragment_info_members))),
+                (invite, invites) -> {
+                  if (invites != null) {
+                    for (Invite newInvite : invites) {
+                      boolean shouldAdd = true;
+                      if (newInvite.getFriendships() != null) {
+                        for (Friendship friendship : invite.getFriendships()) {
+                          if (friendship.getFriend().equals(user)) {
+                            shouldAdd = false;
+                          }
+                        }
+                      }
+
+                      if (shouldAdd) liveCache.putInvite(newInvite);
+                    }
+                  }
+                  return null;
+                })
+            .subscribe());
+
+    subscriptions.add(
+        onRemovedInvite.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+            .subscribe(invite -> liveCache.removeInvite(invite)));
   }
 
   private void append(StringBuffer buffer, String str) {

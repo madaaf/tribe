@@ -23,8 +23,8 @@ public class SubscriptionResponse {
   private List<FriendshipRealm> friendshipCreatedList;
   private List<FriendshipRealm> friendshipUpdatedList;
   private List<FriendshipRealm> friendshipRemovedList;
-  private List<Invite> invitesCreatedList;
-  private List<Invite> invitesRemovedList;
+  private Invite inviteCreated;
+  private Invite inviteRemoved;
   private Map<String, Boolean> onlineMap;
   private Map<String, Boolean> liveMap;
 
@@ -36,8 +36,6 @@ public class SubscriptionResponse {
     friendshipCreatedList = new ArrayList<>();
     friendshipUpdatedList = new ArrayList<>();
     friendshipRemovedList = new ArrayList<>();
-    invitesCreatedList = new ArrayList<>();
-    invitesRemovedList = new ArrayList<>();
     onlineMap = new HashMap<>();
     liveMap = new HashMap<>();
   }
@@ -123,21 +121,19 @@ public class SubscriptionResponse {
     this.friendshipUpdatedList = friendshipUpdatedList;
   }
 
-  public List<Invite> getInvitesCreatedList() {
-    return invitesCreatedList;
+  public void setInviteCreated(Invite inviteCreated) {
+    this.inviteCreated = inviteCreated;
   }
 
-  public void setInvitesCreatedList(List<Invite> invitesCreatedList) {
-    this.invitesCreatedList.clear();
-    this.invitesCreatedList = invitesCreatedList;
+  public Invite getInviteCreated() {
+    return inviteCreated;
   }
 
-  public List<Invite> getInvitesRemovedList() {
-    return invitesRemovedList;
+  public void setInviteRemoved(Invite inviteRemoved) {
+    this.inviteRemoved = inviteRemoved;
   }
 
-  public void setInvitesRemovedList(List<Invite> invitesRemovedList) {
-    this.invitesRemovedList.clear();
-    this.invitesRemovedList = invitesRemovedList;
+  public Invite getInviteRemoved() {
+    return inviteRemoved;
   }
 }

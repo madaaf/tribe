@@ -72,7 +72,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     setFriendLabel(vh, groupMember.isFriend());
 
     if (groupMember.isAnimateAdd()) {
-      animateAddSuccessful(vh);
+      animateAddSuccessful(vh, R.string.action_hang_live);
       groupMember.setAnimateAdd(false);
     } else {
       vh.txtAction.setAlpha(1);

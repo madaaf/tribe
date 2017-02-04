@@ -18,6 +18,12 @@ import org.webrtc.VideoTrack;
 
 public class TribeLiveLocalStream {
 
+  private static final String AUDIO_ECHO_CANCELLATION_CONSTRAINT = "googEchoCancellation";
+  private static final String AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT = "googAutoGainControl";
+  private static final String AUDIO_HIGH_PASS_FILTER_CONSTRAINT = "googHighpassFilter";
+  private static final String AUDIO_NOISE_SUPPRESSION_CONSTRAINT = "googNoiseSuppression";
+  private static final String AUDIO_LEVEL_CONTROL_CONSTRAINT = "levelControl";
+
   private Context context;
   private boolean isReattachingCamera = false;
   private MediaStream mediaStream;
@@ -49,7 +55,20 @@ public class TribeLiveLocalStream {
   }
 
   private void addAudioTrackToMediaStream() {
-    AudioSource localAudioSource = peerConnectionFactory.createAudioSource(new MediaConstraints());
+    MediaConstraints audioConstraints = new MediaConstraints();
+
+    audioConstraints.mandatory.add(
+        new MediaConstraints.KeyValuePair(AUDIO_ECHO_CANCELLATION_CONSTRAINT, "true"));
+    audioConstraints.mandatory.add(
+        new MediaConstraints.KeyValuePair(AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT, "true"));
+    audioConstraints.mandatory.add(
+        new MediaConstraints.KeyValuePair(AUDIO_HIGH_PASS_FILTER_CONSTRAINT, "true"));
+    audioConstraints.mandatory.add(
+        new MediaConstraints.KeyValuePair(AUDIO_NOISE_SUPPRESSION_CONSTRAINT, "true"));
+    audioConstraints.mandatory.add(
+        new MediaConstraints.KeyValuePair(AUDIO_LEVEL_CONTROL_CONSTRAINT, "true"));
+
+    AudioSource localAudioSource = peerConnectionFactory.createAudioSource(audioConstraints);
     audioTrack = peerConnectionFactory.createAudioTrack("APPEARa0", localAudioSource);
     mediaStream.addTrack(audioTrack);
   }

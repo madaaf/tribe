@@ -62,7 +62,7 @@ public class BlockedFriendAdapterDelegate extends AddAnimationAdapterDelegate<Li
         }
 
         if (friendship.isShouldAnimateAdd()) {
-            animateAddSuccessful(vh);
+            //animateAddSuccessful(vh);
             friendship.setShouldAnimateAdd(false);
         } else if (friendship.getStatus().equals(FriendshipRealm.DEFAULT)) {
             //vh.imgPicto.setVisibility(View.VISIBLE);

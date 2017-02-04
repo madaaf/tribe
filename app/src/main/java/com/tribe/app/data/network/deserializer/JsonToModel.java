@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 27/01/2017.
@@ -40,8 +41,6 @@ import javax.inject.Singleton;
       SubscriptionResponse subscriptionResponse = new SubscriptionResponse();
       List<UserRealm> updatedUserList = new ArrayList<>();
       List<GroupRealm> updatedGroupList = new ArrayList<>();
-      List<Invite> inviteCreatedList = new ArrayList<>();
-      List<Invite> inviteRemovedList = new ArrayList<>();
       Map<String, Boolean> onlineMap = new HashMap<>();
       Map<String, Boolean> liveMap = new HashMap<>();
 
@@ -86,8 +85,14 @@ import javax.inject.Singleton;
               }
 
             } else if (entry.getKey().contains(WSService.INVITE_CREATED_SUFFIX)) {
+              Timber.d("Invite created : " + entry.getValue().toString());
               Invite invite = gson.fromJson(entry.getValue().toString(), Invite.class);
-              inviteCreatedList.add(invite);
+              subscriptionResponse.setInviteCreated(invite);
+
+            } else if (entry.getKey().contains(WSService.INVITE_REMOVED_SUFFIX)) {
+              Timber.d("Invite removed : " + entry.getValue().toString());
+              Invite invite = gson.fromJson(entry.getValue().toString(), Invite.class);
+              subscriptionResponse.setInviteRemoved(invite);
 
             }
           }

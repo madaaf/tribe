@@ -20,5 +20,13 @@ import rx.Observable;
 
   void putLiveMap(Map<String, Boolean> liveMap);
 
-  void putInvites(Map<String, Invite> inviteList);
+  void putInvites(Map<String, Invite> inviteMap);
+
+  void putInvite(Invite invite);
+
+  void removeInvite(Invite invite);
+
+  Observable<Map<String, Invite>> inviteMap();
+
+  Map<String, Invite> getInviteMap();
 }

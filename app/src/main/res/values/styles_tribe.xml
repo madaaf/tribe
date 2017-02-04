@@ -134,6 +134,10 @@
     <item name="android:textColor">@color/blue.text</item>
   </style>
 
+  <style name="Title.2.BlueNew" parent="@style/Title.2">
+    <item name="android:textColor">@color/blue.new</item>
+  </style>
+
   <style name="Title.2.FB" parent="@style/Title.2">
     <item name="android:textColor">@color/blue.facebook.dark</item>
   </style>
@@ -168,6 +172,10 @@
 
   <style name="Title.1.Blue" parent="@style/Title.1">
     <item name="android:textColor">@color/blue.text</item>
+  </style>
+
+  <style name="Title.1.BlueNew" parent="@style/Title.1">
+    <item name="android:textColor">@color/blue.new</item>
   </style>
 
   <style name="Title.1.Black40" parent="@style/Title.1">
@@ -215,7 +223,7 @@
   </style>
 
   <style name="Headline.Blue" parent="Headline">
-    <item name="android:textColor">@color/blue.text</item>
+    <item name="android:textColor">@color/blue.new</item>
   </style>
 
   <style name="Giant">

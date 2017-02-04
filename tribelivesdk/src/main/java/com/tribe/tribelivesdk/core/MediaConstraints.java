@@ -14,6 +14,7 @@ import org.webrtc.CameraEnumerationAndroid;
 public class MediaConstraints {
 
   public static final String VIDEO_CODEC_H264 = "H264";
+  public static final String VIDEO_CODEC_VP9 = "VP9";
 
   private Boolean hasVideo;
   private Boolean hasAudio;
@@ -219,5 +220,77 @@ public class MediaConstraints {
     }
 
     return newSdpDescription.toString();
+  }
+
+  public static String removeVideoCodec(String sdpDescription, String codec) {
+    String[] lines = sdpDescription.split("\r\n");
+    int mLineIndex = -1;
+    int mLineToRemove = -1;
+    String codecRtpMap = null;
+    // a=rtpmap:<payload type> <encoding name>/<clock rate> [/<encoding parameters>]
+    String regex = "^a=rtpmap:(\\d+) " + codec + "(/\\d+)+[\r]?$";
+    Pattern codecPattern = Pattern.compile(regex);
+    String mediaDescription = "m=video ";
+
+    for (int i = 0; (i < lines.length) && (mLineIndex == -1 || codecRtpMap == null); i++) {
+      if (lines[i].startsWith(mediaDescription)) {
+        mLineIndex = i;
+        continue;
+      }
+
+      Matcher codecMatcher = codecPattern.matcher(lines[i]);
+
+      if (codecMatcher.matches()) {
+        mLineToRemove = i;
+        codecRtpMap = codecMatcher.group(1);
+      }
+    }
+
+    if (mLineIndex == -1) {
+      LogUtil.d(MediaConstraints.class, "No " + mediaDescription + " line, so can't prefer " + codec);
+      return sdpDescription;
+    }
+
+    if (codecRtpMap == null || mLineToRemove == -1) {
+      LogUtil.d(MediaConstraints.class, "No rtpmap for " + codec);
+      return sdpDescription;
+    }
+
+    LogUtil.d(MediaConstraints.class,
+        "Found " + codec + " rtpmap " + codecRtpMap + ", prefer at " + lines[mLineIndex]);
+
+    String[] origMLineParts = lines[mLineIndex].split(" ");
+
+    if (origMLineParts.length > 3) {
+      StringBuilder newMLine = new StringBuilder();
+      int origPartIndex = 0;
+      // Format is: m=<media> <port> <proto> <fmt> ...
+      newMLine.append(origMLineParts[origPartIndex++]).append(" ");
+      newMLine.append(origMLineParts[origPartIndex++]).append(" ");
+      newMLine.append(origMLineParts[origPartIndex++]);
+
+      for (; origPartIndex < origMLineParts.length; origPartIndex++) {
+        if (!origMLineParts[origPartIndex].equals(codecRtpMap)) {
+          newMLine.append(" ").append(origMLineParts[origPartIndex]);
+        }
+      }
+
+      lines[mLineIndex] = newMLine.toString();
+      LogUtil.d(MediaConstraints.class, "Change media description: " + lines[mLineIndex]);
+    } else {
+      LogUtil.e(MediaConstraints.class, "Wrong SDP media description format: " + lines[mLineIndex]);
+    }
+
+    StringBuilder newSdpDescription = new StringBuilder();
+    int count = 0;
+    for (String line : lines) {
+      if (count != mLineToRemove) {
+        newSdpDescription.append(line).append("\r\n");
+      }
+      count++;
+    }
+
+    return sdpDescription;
+    //return newSdpDescription.toString(); TODO handle remove of the codec
   }
 }

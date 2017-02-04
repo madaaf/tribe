@@ -14,7 +14,11 @@ import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-
+import android.widget.ImageView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -23,13 +27,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
@@ -53,6 +51,8 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.btnNew) View btnNew;
 
+  @BindView(R.id.btnInvite) ImageView btnInvite;
+
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
@@ -74,6 +74,7 @@ public class TopBarView extends FrameLayout {
   private PublishSubject<Void> clickNew = PublishSubject.create();
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
+  private PublishSubject<Void> clickInvite = PublishSubject.create();
 
   public TopBarView(Context context) {
     super(context);
@@ -116,15 +117,19 @@ public class TopBarView extends FrameLayout {
 
     editTextSearch.setEnabled(false);
 
-    btnSearch.getViewTreeObserver()
+    getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
           @Override public void onGlobalLayout() {
-            btnSearch.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            getViewTreeObserver().removeOnGlobalLayoutListener(this);
             MarginLayoutParams params = (MarginLayoutParams) btnSearch.getLayoutParams();
-            params.rightMargin = btnNew.getWidth() + 2 * marginSmall;
-            params.leftMargin = viewAvatar.getWidth() + 2 * marginSmall;
+            params.rightMargin = getMarginRightSearch();
+            params.leftMargin = getMarginLeftSearch();
             btnSearch.setLayoutParams(params);
+
+            params = (MarginLayoutParams) btnNew.getLayoutParams();
+            params.rightMargin = getMarginRightBtnNew();
+            btnNew.setLayoutParams(params);
           }
         });
 
@@ -154,6 +159,9 @@ public class TopBarView extends FrameLayout {
           } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
+          } else if (isAClickInView(btnInvite, (int) startX, (int) startY)) {
+            btnInvite.onTouchEvent(event);
+            btnInvite.performClick();
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
             btnSearch.performClick();
@@ -176,6 +184,8 @@ public class TopBarView extends FrameLayout {
           viewAvatar.onTouchEvent(event);
         } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
           btnNew.onTouchEvent(event);
+        } else if (isAClickInView(btnInvite, (int) event.getRawX(), (int) event.getRawY())) {
+          btnInvite.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
           btnSearch.onTouchEvent(event);
         } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
@@ -192,8 +202,12 @@ public class TopBarView extends FrameLayout {
     clickProfile.onNext(null);
   }
 
-  @OnClick(R.id.btnNew) void launchInvites() {
+  @OnClick(R.id.btnNew) void launchNew() {
     clickNew.onNext(null);
+  }
+
+  @OnClick(R.id.btnInvite) void launchInvite() {
+    clickInvite.onNext(null);
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
@@ -208,6 +222,7 @@ public class TopBarView extends FrameLayout {
       }
     });
     hideView(btnNew, false);
+    hideView(btnInvite, false);
     hideView(viewAvatar, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
@@ -224,12 +239,25 @@ public class TopBarView extends FrameLayout {
     btnSearch.setClickable(true);
 
     showView(btnNew, null);
+    showView(btnInvite, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
 
-    AnimationUtils.animateLeftMargin(btnSearch, viewAvatar.getWidth() + 2 * marginSmall, DURATION,
+    AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION,
         null);
-    AnimationUtils.animateRightMargin(btnSearch, btnNew.getWidth() + 2 * marginSmall, DURATION);
+    AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
+  }
+
+  private int getMarginRightSearch() {
+    return btnNew.getWidth() + btnInvite.getWidth() + ((int) 3f * marginSmall);
+  }
+
+  private int getMarginLeftSearch() {
+    return viewAvatar.getWidth() + 2 * marginSmall;
+  }
+
+  private int getMarginRightBtnNew() {
+    return btnInvite.getWidth() + 2 * marginSmall;
   }
 
   private void hideView(View view, boolean left) {
@@ -307,6 +335,10 @@ public class TopBarView extends FrameLayout {
 
   public Observable<Void> onClickProfile() {
     return clickProfile;
+  }
+
+  public Observable<Void> onClickInvite() {
+    return clickInvite;
   }
 }
 

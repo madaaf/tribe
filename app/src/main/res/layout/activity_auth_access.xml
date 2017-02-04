@@ -33,7 +33,7 @@
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtAction"
-            style="@style/Title.2.Blue"
+            style="@style/Title.2.BlueNew"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="right|center_vertical"
@@ -50,7 +50,7 @@
             android:visibility="gone"
             app:cpv_animAutostart="true"
             app:cpv_indeterminate="true"
-            app:cpv_color="@color/blue.text"
+            app:cpv_color="@color/blue.new"
             app:cpv_thickness="2dp" />
 
     </FrameLayout>

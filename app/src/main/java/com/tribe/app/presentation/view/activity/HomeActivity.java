@@ -36,6 +36,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
@@ -353,6 +354,10 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
       navigateToProfile();
+    }));
+
+    subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
+      navigator.shareGenericText(EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), context());
     }));
   }
 

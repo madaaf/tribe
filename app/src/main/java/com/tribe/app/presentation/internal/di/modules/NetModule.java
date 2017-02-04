@@ -28,6 +28,7 @@ import com.tribe.app.data.network.deserializer.FriendshipRealmDeserializer;
 import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
+import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
@@ -46,6 +47,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
@@ -153,6 +155,8 @@ import timber.log.Timber;
         .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
         .registerTypeAdapter(RoomConfiguration.class, new RoomConfigurationDeserializer())
         .registerTypeAdapter(FriendshipRealm.class, new FriendshipRealmDeserializer())
+        .registerTypeAdapter(new TypeToken<List<Invite>>() {
+        }.getType(), new InvitesListDeserializer<>())
         .create();
   }
 

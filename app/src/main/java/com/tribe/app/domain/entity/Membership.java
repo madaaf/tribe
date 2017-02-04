@@ -8,8 +8,6 @@ public class Membership extends Recipient {
 
   private String id;
   private Group group;
-  private Date created_at;
-  private Date updated_at;
 
   public Membership(String id) {
     this.id = id;
@@ -71,18 +69,6 @@ public class Membership extends Recipient {
 
   public void setGroup(Group group) {
     this.group = group;
-  }
-
-  public Date getCreatedAt() {
-    return created_at;
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    this.created_at = createdAt;
-  }
-
-  public void setUpdatedAt(Date updatedAt) {
-    this.updated_at = updatedAt;
   }
 
   public List<String> getMembersPic() {

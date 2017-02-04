@@ -64,14 +64,14 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
     return animatorSet;
   }
 
-  protected void animateAddSuccessful(AddAnimationViewHolder vh) {
+  protected void animateAddSuccessful(AddAnimationViewHolder vh, int textEnd) {
     AnimatorSet animatorSet = new AnimatorSet();
 
     ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 0f, 1f);
 
     ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 1f, 0f);
 
-    vh.txtAction.setText(R.string.action_hang_live);
+    vh.txtAction.setText(textEnd);
     vh.txtAction.measure(0, 0);
 
     Animator animator = AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(),

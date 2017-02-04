@@ -2,13 +2,13 @@ package com.tribe.app.data.network;
 
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
-import com.tribe.app.data.network.entity.ScoreEntity;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import java.util.List;
 import okhttp3.MultipartBody;
@@ -110,6 +110,7 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
       @Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(
-      @Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<List<Invite>> invites(@Field("query") String query);
 }

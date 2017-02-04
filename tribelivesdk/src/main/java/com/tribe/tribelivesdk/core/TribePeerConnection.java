@@ -79,9 +79,11 @@ public class TribePeerConnection {
       return;
     }
 
-    String description = MediaConstraints.preferVideoCodec(sessionDescription.description,
-        MediaConstraints.VIDEO_CODEC_H264);
-    peerConnection.setRemoteDescription(sdpObserver, sessionDescription);
+    String description = MediaConstraints.removeVideoCodec(sessionDescription.description,
+        MediaConstraints.VIDEO_CODEC_VP9);
+
+    peerConnection.setRemoteDescription(sdpObserver,
+        new SessionDescription(sessionDescription.type, description));
   }
 
   public void addIceCandidate(final IceCandidate iceCandidate) {

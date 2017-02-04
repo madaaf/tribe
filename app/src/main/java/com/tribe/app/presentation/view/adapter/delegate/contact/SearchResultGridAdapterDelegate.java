@@ -75,7 +75,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
         }
 
         if (searchResult.isShouldAnimateAdd()) {
-            animateAddSuccessful(vh);
+            //animateAddSuccessful(vh);
         } else {
             //if (searchResult.getFriendship() != null && !searchResult.getFriendship()
             //        .isBlockedOrHidden()) {

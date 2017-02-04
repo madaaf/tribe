@@ -12,78 +12,27 @@
     android:padding="@dimen/horizontal_margin_small"
     >
 
-  <ImageView
-      android:id="@+id/imgAvatar"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
-      android:layout_gravity="left|center_vertical"
-      android:background="@drawable/shape_oval_black40"
-      android:scaleType="centerCrop"
-      />
-
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_vertical"
-      android:layout_marginLeft="55dp"
-      >
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        style="@style/Title.1.Black"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtUsername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txtName"
-        android:layout_marginTop="5dp"
-        android:singleLine="true"
-        style="@style/Body.One.Blue"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtPoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/txtName"
-        android:singleLine="true"
-        style="@style/Points.Reg.Yellow"
-        />
-  </RelativeLayout>
+  <include layout="@layout/item_user_base" />
 
   <FrameLayout
       android:id="@+id/btnAdd"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
-      android:layout_gravity="right"
-      android:background="@drawable/shape_oval_grey"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/action_button_height"
+      android:layout_gravity="center_vertical|end"
+      android:background="@drawable/shape_rect_rounded_100_blue_new"
       android:clickable="true"
-      android:clipToPadding="false"
-      android:foreground="@drawable/selectable_button_oval"
       >
 
-    <View
-        android:id="@+id/btnAddBG"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@drawable/shape_circle_blue"
-        android:visibility="gone"
-        />
-
-    <ImageView
-        android:id="@+id/imgPicto"
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_add"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:maxLines="1"
+        android:text="@string/action_add_friend"
+        style="@style/Body.Two.White"
         />
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
@@ -91,34 +40,11 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="center"
-        android:visibility="gone"
+        android:alpha="0"
         app:cpv_animAutostart="true"
-        app:cpv_color="@color/grey.light"
+        app:cpv_color="@android:color/white"
         app:cpv_indeterminate="true"
         app:cpv_thickness="2dp"
         />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtAction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:maxLines="1"
-        android:text="@string/action_add_friend"
-        style="@style/Body.Two.White"
-        />
   </FrameLayout>
-
-  <ImageView
-      android:id="@+id/imgGhost"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
-      android:layout_gravity="right"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_phantom"
-      android:visibility="gone"
-      />
-
 </FrameLayout>

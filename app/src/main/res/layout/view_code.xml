@@ -152,7 +152,7 @@
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:gravity="center"
-        android:src="@drawable/picto_connected_icon" />
+        android:src="@drawable/picto_connected" />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtConnected"

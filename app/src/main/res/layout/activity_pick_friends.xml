@@ -53,7 +53,7 @@
             android:visibility="gone"
             app:cpv_animAutostart="true"
             app:cpv_indeterminate="true"
-            app:cpv_color="@color/blue.text"
+            app:cpv_color="@color/blue.new"
             app:cpv_thickness="2dp" />
 
     </FrameLayout>
@@ -73,7 +73,7 @@
             android:clickable="true"
             android:foreground="@drawable/selectable_button_light"
             app:pickAllTitle="@string/onboarding_friends_to_add_shortcut_title"
-            app:pickAllBGColor="@color/blue.text" />
+            app:pickAllBGColor="@color/blue.new" />
 
         <LinearLayout
             android:id="@+id/viewSeparatorLarge"

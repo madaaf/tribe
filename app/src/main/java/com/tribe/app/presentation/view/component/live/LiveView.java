@@ -128,6 +128,9 @@ public class LiveView extends FrameLayout {
     setBackgroundColor(Color.BLACK);
     viewLocalPeer = new LocalPeerView(getContext());
     viewRoom.addView(viewLocalPeer);
+
+    room = tribeLiveSDK.newRoom();
+    room.initLocalStream(viewLocalPeer);
   }
 
   private void initResources() {
@@ -150,9 +153,6 @@ public class LiveView extends FrameLayout {
         .iceServers(roomConfiguration.getRtcPeerConfiguration().getIceServers())
         .roomId(roomConfiguration.getRoomId())
         .build();
-
-    room = tribeLiveSDK.newRoom();
-    room.initLocalStream(viewLocalPeer);
 
     subscriptions.add(room.onRoomStateChanged().subscribe(state -> {
       Timber.d("Room state change : " + state);

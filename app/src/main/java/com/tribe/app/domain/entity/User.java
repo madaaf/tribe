@@ -34,8 +34,8 @@ public class User implements Serializable {
   private boolean is_online = false;
   private Date last_online;
 
-  private boolean isFriend = false;
   private boolean isNewFriend = false;
+  private boolean isFriend = false;
   private boolean animateAdd = false;
 
   public User(String id) {
@@ -220,20 +220,20 @@ public class User implements Serializable {
     isFriend = friend;
   }
 
-  public boolean isNewFriend() {
-    return isNewFriend;
-  }
-
-  public void setNewFriend(boolean newFriend) {
-    isNewFriend = newFriend;
-  }
-
   public boolean isAnimateAdd() {
     return animateAdd;
   }
 
   public void setAnimateAdd(boolean animateAdd) {
     this.animateAdd = animateAdd;
+  }
+
+  public boolean isNewFriend() {
+    return isNewFriend;
+  }
+
+  public void setNewFriend(boolean newFriend) {
+    isNewFriend = newFriend;
   }
 
   @Override public boolean equals(Object o) {

@@ -19,11 +19,13 @@ public class LiveCacheImpl implements LiveCache {
   private Context context;
   private ObservableRxHashMap<String, Boolean> onlineMap;
   private ObservableRxHashMap<String, Boolean> liveMap;
+  private ObservableRxHashMap<String, Invite> inviteMap;
 
   @Inject public LiveCacheImpl(Context context) {
     this.context = context;
     onlineMap = new ObservableRxHashMap<>();
     liveMap = new ObservableRxHashMap<>();
+    inviteMap = new ObservableRxHashMap<>();
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
@@ -43,6 +45,22 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public void putInvites(Map<String, Invite> inviteList) {
+    this.inviteMap.putAll(inviteList);
+  }
 
+  @Override public void putInvite(Invite invite) {
+    this.inviteMap.put(invite.getRoomId(), invite);
+  }
+
+  @Override public void removeInvite(Invite invite) {
+    this.inviteMap.remove(invite.getRoomId());
+  }
+
+  @Override public Observable<Map<String, Invite>> inviteMap() {
+    return inviteMap.getMapObservable().startWith(inviteMap.getMap());
+  }
+
+  @Override public Map<String, Invite> getInviteMap() {
+    return inviteMap.getMap();
   }
 }

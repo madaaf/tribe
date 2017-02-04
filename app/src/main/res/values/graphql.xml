@@ -455,4 +455,30 @@
   <string name="buzzRoom" translatable="false">
     buzzRoom(roomId : \"%1$s\")
   </string>
+
+    <string name="invites.infos" translatable="false">
+        {
+            user {
+                invites {
+                    room_id
+                    group {
+                        ...GroupInfo
+                    }
+
+                    friendships {
+                        id
+                        status
+                        tag
+                        category
+                        friend {
+                            ...UserInfos
+                        }
+                    }
+                }
+            }
+        }
+
+        %1$s
+        %2$s
+    </string>
 </resources>

@@ -7,7 +7,7 @@
     </item>
     <item android:id="@+id/bg2">
         <shape>
-            <solid android:color="@color/blue.text" />
+            <solid android:color="@color/blue.new" />
         </shape>
     </item>
     <item android:id="@+id/bg1">

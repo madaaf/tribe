@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
@@ -28,12 +29,14 @@ public class UserListAdapter extends RecyclerView.Adapter {
   protected RxAdapterDelegatesManager<List<Object>> delegatesManager;
   private UserListAdapterDelegate userListAdapterDelegate;
 
+  private Context context;
   private List<Object> items;
   private List<Object> itemsFiltered;
   private boolean hasFilter = false;
   private UserListFilter filter;
 
   @Inject public UserListAdapter(Context context) {
+    this.context = context;
     delegatesManager = new RxAdapterDelegatesManager<>();
 
     userListAdapterDelegate = new UserListAdapterDelegate(context);
@@ -136,7 +139,7 @@ public class UserListAdapter extends RecyclerView.Adapter {
 
   private void computeHeaders(List<Object> from, List<Object> to) {
     to.add(from == null || from.size() == 0 ? R.string.search_no_friends_to_add
-        : R.string.search_add_friends);
+        : EmojiParser.demojizedText(context.getString(R.string.search_already_friends)));
     if (from == null || from.size() == 0) {
       User user = new User(User.ID_EMPTY);
       to.add(user);
