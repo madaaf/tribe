@@ -90,7 +90,6 @@ public class TribeSdpObserver implements SdpObserver {
         && peerConnection.getRemoteDescription() == null) {
       LogUtil.d(getClass(), "onSetSuccess: created offer, setting local desc");
 
-
       onReadyToSendSdpOffer.onNext(peerConnection.getLocalDescription());
     } else if (peerConnection.getLocalDescription() == null
         && peerConnection.getRemoteDescription().type == SessionDescription.Type.OFFER) {

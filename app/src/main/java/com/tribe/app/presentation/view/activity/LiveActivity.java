@@ -13,6 +13,7 @@ import butterknife.Unbinder;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
@@ -39,6 +40,7 @@ import timber.log.Timber;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView {
 
+  private static final String EXTRA_RECIPIENT = "EXTRA_RECIPIENT";
   private static final String EXTRA_RECIPIENT_ID = "EXTRA_RECIPIENT_ID";
   private static final String EXTRA_IS_GROUP = "EXTRA_IS_GROUP";
   private static final String EXTRA_SESSION_ID = "EXTRA_SESSION_ID";
@@ -46,6 +48,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
+
+    if (recipient instanceof Invite) {
+      intent.putExtra(EXTRA_RECIPIENT, recipient);
+    }
+
     intent.putExtra(EXTRA_RECIPIENT_ID,
         recipient.getSubId()); // We pass the userId for a friendship or the groupId
     intent.putExtra(EXTRA_IS_GROUP, recipient instanceof Membership);
@@ -141,10 +148,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   }
 
   private void initParams() {
-    this.recipientId = getIntent().getStringExtra(EXTRA_RECIPIENT_ID);
-    this.sessionId = getIntent().getStringExtra(EXTRA_SESSION_ID);
-    this.isGroup = getIntent().getBooleanExtra(EXTRA_IS_GROUP, false);
-    this.color = getIntent().getIntExtra(EXTRA_COLOR, Color.BLACK);
+    if (getIntent().hasExtra(EXTRA_RECIPIENT)) {
+      recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_RECIPIENT);
+    } else {
+      recipientId = getIntent().getStringExtra(EXTRA_RECIPIENT_ID);
+      sessionId = getIntent().getStringExtra(EXTRA_SESSION_ID);
+      isGroup = getIntent().getBooleanExtra(EXTRA_IS_GROUP, false);
+      color = getIntent().getIntExtra(EXTRA_COLOR, Color.BLACK);
+    }
   }
 
   private void init() {
@@ -153,7 +164,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     viewInviteLive.setLayoutParams(params);
     viewInviteLive.requestLayout();
 
-    livePresenter.loadRecipient(recipientId, isGroup);
+    if (recipient == null) {
+      livePresenter.loadRecipient(recipientId, isGroup);
+    } else {
+      onRecipientInfos(recipient);
+    }
   }
 
   private void initDependencyInjector() {
@@ -186,7 +201,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       if (shouldJoin) {
-        livePresenter.joinRoom(recipient, sessionId);
+        livePresenter.joinRoom(recipient, recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
       } else {
         finish();
       }

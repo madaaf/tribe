@@ -48,7 +48,7 @@ public class Membership extends Recipient {
   }
 
   @Override public boolean isLive() {
-    return false;
+    return group.isLive();
   }
 
   @Override public boolean isOnline() {

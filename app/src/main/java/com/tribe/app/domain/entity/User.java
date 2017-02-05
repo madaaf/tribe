@@ -3,6 +3,7 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.presentation.view.utils.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -15,8 +16,8 @@ public class User implements Serializable {
   public static final String ID_EMPTY = "EMPTY";
 
   private String id;
-  private String profilePicture;
-  private String displayName;
+  private String picture;
+  private String display_name;
   private Date created_at;
   private Date updated_at;
   private String username;
@@ -27,6 +28,7 @@ public class User implements Serializable {
   private List<Friendship> friendships;
   private List<Membership> membershipList;
   private List<Recipient> friendshipList;
+  private List<Invite> inviteList;
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
@@ -40,6 +42,7 @@ public class User implements Serializable {
 
   public User(String id) {
     this.id = id;
+    this.inviteList = new ArrayList<>();
   }
 
   public int getScore() {
@@ -83,19 +86,19 @@ public class User implements Serializable {
   }
 
   public String getProfilePicture() {
-    return profilePicture;
+    return picture;
   }
 
   public void setProfilePicture(String profilePicture) {
-    this.profilePicture = profilePicture;
+    this.picture = profilePicture;
   }
 
   public String getDisplayName() {
-    return displayName;
+    return display_name;
   }
 
   public void setDisplayName(String displayName) {
-    this.displayName = displayName;
+    this.display_name = displayName;
   }
 
   public Date getCreatedAt() {
@@ -137,7 +140,7 @@ public class User implements Serializable {
   }
 
   public List<Membership> getMembershipList() {
-    if (friendships == null) return new ArrayList<>();
+    if (membershipList == null) return new ArrayList<>();
 
     return membershipList;
   }
@@ -190,6 +193,7 @@ public class User implements Serializable {
     }
 
     if (membershipList != null) friendshipList.addAll(membershipList);
+    if (inviteList != null) friendshipList.addAll(inviteList);
 
     Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
@@ -234,6 +238,15 @@ public class User implements Serializable {
 
   public void setNewFriend(boolean newFriend) {
     isNewFriend = newFriend;
+  }
+
+  public void setInviteList(Collection<Invite> inviteList) {
+    this.inviteList.clear();
+    this.inviteList.addAll(inviteList);
+  }
+
+  public List<Invite> getInviteList() {
+    return inviteList;
   }
 
   @Override public boolean equals(Object o) {
@@ -293,7 +306,7 @@ public class User implements Serializable {
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {
-      if (!friendship.getSubId().equals(Constants.SUPPORT_ID) && !friendship.getSubId()
+      if (!friendship.getSubId()
           .equals(Recipient.ID_EMPTY) && !friendship.getSubId().equals(this.id)) {
         GroupMember groupMember = new GroupMember(friendship.getFriend());
         groupMember.setFriend(true);

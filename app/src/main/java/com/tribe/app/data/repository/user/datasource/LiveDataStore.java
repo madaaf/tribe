@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import com.tribe.app.domain.entity.Invite;
 import java.util.Map;
 
 import rx.Observable;
@@ -13,4 +14,6 @@ public interface LiveDataStore {
   Observable<Map<String, Boolean>> onlineMap();
 
   Observable<Map<String, Boolean>> liveMap();
+
+  Observable<Map<String, Invite>> inviteMap();
 }

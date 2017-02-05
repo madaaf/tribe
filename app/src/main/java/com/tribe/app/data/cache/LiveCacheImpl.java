@@ -36,16 +36,20 @@ public class LiveCacheImpl implements LiveCache {
     return liveMap.getMapObservable().startWith(liveMap.getMap());
   }
 
-  @Override public void putOnlineMap(Map<String, Boolean> onlineMap) {
-    this.onlineMap.putAll(onlineMap);
+  @Override public void putOnline(String id) {
+    onlineMap.put(id, true);
   }
 
-  @Override public void putLiveMap(Map<String, Boolean> liveMap) {
-    this.liveMap.putAll(liveMap);
+  @Override public void removeOnline(String id) {
+    onlineMap.remove(id);
   }
 
-  @Override public void putInvites(Map<String, Invite> inviteList) {
-    this.inviteMap.putAll(inviteList);
+  @Override public void putLive(String id) {
+    liveMap.put(id, true);
+  }
+
+  @Override public void removeLive(String id) {
+    liveMap.remove(id);
   }
 
   @Override public void putInvite(Invite invite) {

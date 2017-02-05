@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.StringSignature;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -26,6 +27,7 @@ import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.RoundedCornerLayout;
 import java.io.File;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -114,38 +116,44 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
       }
     } else if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
+      loadGroupAvatar(membership.getProfilePicture(), previousAvatar, membership.getSubId(), membership.getMembersPic());
+    } else if (recipient instanceof Invite) {
+      Invite invite = (Invite) recipient;
+      loadGroupAvatar(invite.getProfilePicture(), previousAvatar, invite.getId(), invite.getMembersPic());
+    }
+  }
 
-      if (StringUtils.isEmpty(recipient.getProfilePicture())) {
-        File groupAvatarFile =
-            FileUtils.getAvatarForGroupId(getContext(), recipient.getSubId(), FileUtils.PHOTO);
+  private void loadGroupAvatar(String url, String previousUrl, String groupId, List<String> membersPic) {
+    if (StringUtils.isEmpty(url)) {
+      File groupAvatarFile =
+          FileUtils.getAvatarForGroupId(getContext(), groupId, FileUtils.PHOTO);
 
-        if ((StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(
-            groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
-          setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
+      if ((StringUtils.isEmpty(previousUrl) || !previousUrl.equals(
+          groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
+        setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
 
-          Glide.with(getContext())
-              .load(groupAvatarFile)
-              .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
-              .crossFade()
-              .into(imgAvatar);
-        } else if (!groupAvatarFile.exists()) {
-          if (!groupAvatarFile.exists()
-              && membership.getMembersPic() != null
-              && membership.getMembersPic().size() > 0) {
-            createImageSubscription =
-                ImageUtils.createGroupAvatar(getContext(), membership.getSubId(),
-                    membership.getMembersPic(), avatarSize)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .doOnError(throwable -> System.out.println("Error"))
-                    .subscribe(bitmap -> imgAvatar.setImageBitmap(bitmap));
-          }
-
-          loadPlaceholder();
+        Glide.with(getContext())
+            .load(groupAvatarFile)
+            .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
+            .crossFade()
+            .into(imgAvatar);
+      } else if (!groupAvatarFile.exists()) {
+        if (!groupAvatarFile.exists()
+            && membersPic != null
+            && membersPic.size() > 0) {
+          createImageSubscription =
+              ImageUtils.createGroupAvatar(getContext(), groupId,
+                  membersPic, avatarSize)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribeOn(Schedulers.io())
+                  .doOnError(throwable -> System.out.println("Error"))
+                  .subscribe(bitmap -> imgAvatar.setImageBitmap(bitmap));
         }
-      } else {
-        load(recipient.getProfilePicture());
+
+        loadPlaceholder();
       }
+    } else {
+      load(url);
     }
   }
 

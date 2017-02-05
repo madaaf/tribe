@@ -92,13 +92,12 @@ public class HomeGridPresenter implements Presenter {
 
   @Override public void onViewAttached(MVPView v) {
     homeGridView = (HomeGridMVPView) v;
-    reload();
   }
 
-  public void reload() {
+  public void reload(boolean sync) {
     showViewLoading();
     loadFriendList();
-    //syncFriendList(); // TODO think about this
+    if (!sync) syncFriendList();
   }
 
   public void loadFriendList() {

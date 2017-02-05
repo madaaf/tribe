@@ -6,17 +6,23 @@
                 ...UserInfos
 
                 friendships {
-                    id
-                    status
-                    tag
-                    category
-                    friend {
-                        ...UserInfos
-                    }
+                    ...FriendshipInfos
                 }
 
                 memberships {
-                    ...MembershipInfo
+                    ...MembershipInfos
+                }
+
+                invites {
+                    room_id
+
+                    group {
+                        ...GroupInfos
+                    }
+
+                    friendships {
+                        ...FriendshipInfos
+                    }
                 }
             }
         }
@@ -24,6 +30,19 @@
         %1$s
         %2$s
         %3$s
+        %4$s
+    </string>
+
+    <string name="friendshipfragment.info" translatable="false">
+        fragment FriendshipInfos on Friendship {
+            id
+            status
+            tag
+            category
+            friend {
+                ...UserInfos
+            }
+        }
     </string>
 
     <string name="user.infos.list" translatable="false">
@@ -198,20 +217,22 @@
     </string>
 
     <string name="groupfragment.info" translatable="false">
-        fragment GroupInfo on Group {
+        fragment GroupInfos on Group {
             id
             name
             picture
             created_at
+            is_live
         }
     </string>
 
     <string name="groupfragment.info.members" translatable="false">
-        fragment GroupInfo on Group {
+        fragment GroupInfos on Group {
             id
             name
             picture
             created_at
+            is_live
             members {
                 ...UserInfos
             }
@@ -219,10 +240,10 @@
     </string>
 
     <string name="membershipfragment.info" translatable="false">
-        fragment MembershipInfo on Membership {
+        fragment MembershipInfos on Membership {
             id
             group {
-                ...GroupInfo
+                ...GroupInfos
             }
             mute
             created_at
@@ -231,7 +252,7 @@
     </string>
 
     <string name="membershipfragment.info.light" translatable="false">
-        fragment MembershipInfo on Membership {
+        fragment MembershipInfos on Membership {
             id
             mute
             created_at
@@ -242,7 +263,7 @@
     <string name="get.group.infos" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
-                ...GroupInfo
+                ...GroupInfos
             }
         }
 
@@ -253,7 +274,7 @@
     <string name="get.group.members" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
-                ...GroupInfo
+                ...GroupInfos
 
                 members {
                     ...UserInfos
@@ -271,7 +292,7 @@
                 name : \"%1$s\"
             } %2$s
             ) {
-                ...GroupInfo
+                ...GroupInfos
             }
         }
         %3$s
@@ -286,7 +307,7 @@
             updateGroup(id : \"%1$s\",
                 group : { %2$s }
             ) {
-                ...GroupInfo
+                ...GroupInfos
             }
         }
 
@@ -298,7 +319,7 @@
             updateMembership(membershipId : \"%1$s\",
                 membership : { %2$s }
             ) {
-                ...MembershipInfo
+                ...MembershipInfos
             }
         }
 
@@ -336,7 +357,7 @@
     <string name="create.membership" translatable="false">
         mutation {
             createMembership(groupId: \"%1$s\") {
-                ...MembershipInfo
+                ...MembershipInfos
             }
         }
 
@@ -382,12 +403,13 @@
 
     <string name="subscription.groupUpdated" translatable="false">
         %1$s : groupUpdated ( id : \"%2$s\" ) {
-            ...GroupInfo
+            ...GroupInfos
         }
     </string>
 
   <string name="subscription.friendshipUpdated" translatable="false">
       %1$s : friendshipUpdated ( id : \"%2$s\" ) {
+        id
         is_live
       }
   </string>
@@ -462,17 +484,11 @@
                 invites {
                     room_id
                     group {
-                        ...GroupInfo
+                        ...GroupInfos
                     }
 
                     friendships {
-                        id
-                        status
-                        tag
-                        category
-                        friend {
-                            ...UserInfos
-                        }
+                        ...FriendshipInfos
                     }
                 }
             }
@@ -480,5 +496,6 @@
 
         %1$s
         %2$s
+        %3$s
     </string>
 </resources>

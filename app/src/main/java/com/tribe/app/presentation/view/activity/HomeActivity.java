@@ -126,6 +126,7 @@ public class HomeActivity extends BaseActivity
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
+  private boolean hasSynced = false;
 
   // DIMEN
 
@@ -156,6 +157,8 @@ public class HomeActivity extends BaseActivity
     super.onStart();
     tagManager.onStart(this);
     homeGridPresenter.onViewAttached(this);
+    homeGridPresenter.reload(hasSynced);
+    if (!hasSynced) hasSynced = true;
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       //homeGridPresenter.syncFriendList();
@@ -305,30 +308,34 @@ public class HomeActivity extends BaseActivity
           navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
         }));
 
-    subscriptions.add(onRecipientUpdates.subscribeOn(singleThreadExecutor).map(recipientList -> {
-      DiffUtil.DiffResult diffResult = null;
+    subscriptions.add(onRecipientUpdates.onBackpressureBuffer()
+        .subscribeOn(singleThreadExecutor)
+        .map(recipientList -> {
+          DiffUtil.DiffResult diffResult = null;
 
-      List<Recipient> temp = new ArrayList<>();
-      temp.add(new Friendship(Recipient.ID_HEADER));
-      temp.addAll(recipientList);
-      ListUtils.addEmptyItems(screenUtils, temp);
+          List<Recipient> temp = new ArrayList<>();
+          temp.add(new Friendship(Recipient.ID_HEADER));
+          temp.addAll(recipientList);
+          ListUtils.addEmptyItems(screenUtils, temp);
 
-      if (latestRecipientList.size() != 0) {
-        diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-        homeGridAdapter.setItems(temp);
-      }
+          if (latestRecipientList.size() != 0) {
+            diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+            homeGridAdapter.setItems(temp);
+          }
 
-      latestRecipientList.clear();
-      latestRecipientList.addAll(temp);
-      return diffResult;
-    }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
-      if (diffResult != null) {
-        diffResult.dispatchUpdatesTo(homeGridAdapter);
-      } else {
-        homeGridAdapter.setItems(latestRecipientList);
-        homeGridAdapter.notifyDataSetChanged();
-      }
-    }));
+          latestRecipientList.clear();
+          latestRecipientList.addAll(temp);
+          return diffResult;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(diffResult -> {
+          if (diffResult != null) {
+            diffResult.dispatchUpdatesTo(homeGridAdapter);
+          } else {
+            homeGridAdapter.setItems(latestRecipientList);
+            homeGridAdapter.notifyDataSetChanged();
+          }
+        }));
   }
 
   private void initDependencyInjector() {
@@ -357,7 +364,8 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
-      navigator.shareGenericText(EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), context());
+      navigator.shareGenericText(
+          EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), context());
     }));
   }
 

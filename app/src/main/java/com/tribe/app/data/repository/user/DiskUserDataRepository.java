@@ -35,6 +35,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * {@link DiskUserDataRepository} for retrieving user data.
@@ -83,33 +84,34 @@ import rx.Observable;
 
     return Observable.combineLatest(userDataStore.userInfos(null),
         userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), (userRealm, onlineMap, liveMap) -> {
+        userDataStore.liveMap().startWith(new HashMap<>()),
+        userDataStore.inviteMap(), (userRealm, onlineMap, liveMap, inviteMap) -> {
           if (userRealm != null && userRealm.getFriendships() != null) {
             RealmList<FriendshipRealm> resultFr = new RealmList<>();
 
             for (FriendshipRealm fr : userRealm.getFriendships()) {
               if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
-                  .equals(FriendshipRealm.DEFAULT) && !fr.getFriend()
-                  .getId()
-                  .equals(Constants.SUPPORT_ID)) {
+                  .equals(FriendshipRealm.DEFAULT)) {
 
-                if (onlineMap.containsKey(fr.getSubId())) {
-                  fr.getFriend().setIsOnline(onlineMap.get(fr.getSubId()));
-                }
-
-                if (liveMap.containsKey(fr.getId())) {
-                  fr.setLive(liveMap.get(fr.getId()));
-                }
+                fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
+                fr.setLive(liveMap.containsKey(fr.getId()));
 
                 resultFr.add(fr);
               }
             }
 
             userRealm.setFriendships(resultFr);
+
+            for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
+              membershipRealm.getGroup().setIsLive(liveMap.containsKey(membershipRealm.getSubId()));
+            }
           }
 
-          return userRealm;
-        }).map(userRealm -> userRealmDataMapper.transform(userRealm, true));
+          User user = userRealmDataMapper.transform(userRealm, true);
+          if (user != null && inviteMap != null) user.setInviteList(inviteMap.values());
+
+          return user;
+        });
   }
 
   @Override public Observable<List<Friendship>> friendships() {
@@ -120,8 +122,7 @@ import rx.Observable;
 
       for (FriendshipRealm fr : friendshipRealmList) {
         if (!StringUtils.isEmpty(fr.getStatus())
-            && fr.getStatus().equals(FriendshipRealm.DEFAULT)
-            && !fr.getFriend().getId().equals(Constants.SUPPORT_ID)) {
+            && fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
           result.add(fr);
         }
       }

@@ -37,7 +37,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     protected RxAdapterDelegatesManager delegatesManager;
     private UserGridAdapterDelegate userGridAdapterDelegate;
     private UserLiveCoGridAdapterDelegate userLiveCoGridAdapterDelegate;
-    private GroupGridAdapterDelegate groupGridAdapterDelegate;
 
     // VARIABLES
     private List<Recipient> items;
@@ -60,9 +59,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
         userLiveCoGridAdapterDelegate = new UserLiveCoGridAdapterDelegate(context);
         delegatesManager.addDelegate(userLiveCoGridAdapterDelegate);
-
-        groupGridAdapterDelegate = new GroupGridAdapterDelegate(context);
-        delegatesManager.addDelegate(groupGridAdapterDelegate);
 
         items = new ArrayList<>();
 
@@ -108,12 +104,11 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
     }
 
     public Observable<View> onClickMore() {
-        return Observable.merge(userGridAdapterDelegate.onClickMore(),
-                groupGridAdapterDelegate.onClickMore(), userLiveCoGridAdapterDelegate.onClickMore());
+        return Observable.merge(userGridAdapterDelegate.onClickMore(), userLiveCoGridAdapterDelegate.onClickMore());
     }
 
     public Observable<View> onClick() {
-        return Observable.merge(userGridAdapterDelegate.onClick(), groupGridAdapterDelegate.onClick(),
+        return Observable.merge(userGridAdapterDelegate.onClick(),
                 userLiveCoGridAdapterDelegate.onClick());
     }
 

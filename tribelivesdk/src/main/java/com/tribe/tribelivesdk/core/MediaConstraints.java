@@ -284,13 +284,14 @@ public class MediaConstraints {
     StringBuilder newSdpDescription = new StringBuilder();
     int count = 0;
     for (String line : lines) {
-      if (count != mLineToRemove) {
+      //if (count != mLineToRemove) {
         newSdpDescription.append(line).append("\r\n");
-      }
+      //}
       count++;
     }
 
     return sdpDescription;
-    //return newSdpDescription.toString(); TODO handle remove of the codec
+    // return newSdpDescription.toString();
+    // TODO handle remove of the codec
   }
 }

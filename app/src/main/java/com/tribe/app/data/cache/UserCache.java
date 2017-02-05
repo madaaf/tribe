@@ -13,14 +13,15 @@ import rx.Observable;
 /**
  * Created by tiago on 05/05/2016.
  */
-@Singleton
-public interface UserCache {
+@Singleton public interface UserCache {
 
   boolean isExpired();
 
   boolean isCached(int userId);
 
   void put(UserRealm userRealm);
+
+  void updateCurrentUser(UserRealm userRealm);
 
   void put(AccessToken accessToken);
 
@@ -61,5 +62,15 @@ public interface UserCache {
 
   MembershipRealm membershipInfos(String membershipId);
 
-  void updateAll(List<UserRealm> userRealm, List<GroupRealm> groupRealmList);
+  void updateUserRealmList(List<UserRealm> userRealm);
+
+  void updateGroupRealmList(List<GroupRealm> groupRealmList);
+
+  void addFriendship(FriendshipRealm friendshipRealm);
+
+  void removeFriendship(FriendshipRealm friendshipRealm);
+
+  void addMembership(MembershipRealm membershipRealm);
+
+  void removeMembership(String id);
 }

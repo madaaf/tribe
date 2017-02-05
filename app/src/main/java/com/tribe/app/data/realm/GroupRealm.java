@@ -33,6 +33,8 @@ public class GroupRealm extends RealmObject {
 
   @Ignore private JsonObject jsonPayloadUpdate;
 
+  @Ignore private boolean is_live;
+
   public GroupRealm() {
     this.members = new RealmList<>();
   }
@@ -83,6 +85,14 @@ public class GroupRealm extends RealmObject {
 
   public void setMembers(RealmList<GroupMemberRealm> members) {
     this.members = members;
+  }
+
+  public void setIsLive(boolean isLive) {
+    this.is_live = isLive;
+  }
+
+  public boolean isLive() {
+    return is_live;
   }
 
   public List<String> getMembersPics() {

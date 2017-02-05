@@ -185,8 +185,6 @@ public class TileView extends SquareCardView {
     if (!isDragging) {
       setUseCompatPadding(false);
       setPreventCornerOverlap(true);
-
-      if (type == TYPE_GRID_LIVE_CO) layoutPulse.start();
     }
 
     if (!isGrid()) {
@@ -359,6 +357,9 @@ public class TileView extends SquareCardView {
 
   public void setRecipient(Recipient recipient) {
     this.recipient = recipient;
+
+    if (type == TYPE_GRID_LIVE_CO && recipient.isLive() && !layoutPulse.isStarted()) layoutPulse.start();
+    else if (layoutPulse != null && layoutPulse.isStarted()) layoutPulse.stop();
   }
 
   public void setAvatar() {

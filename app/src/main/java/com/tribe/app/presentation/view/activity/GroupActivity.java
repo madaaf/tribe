@@ -117,6 +117,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   @Override protected void onDestroy() {
+    screenUtils.hideKeyboard(this);
     if (viewAddMembersGroup != null) viewAddMembersGroup.onDestroy();
     if (viewUpdateGroup != null) viewUpdateGroup.onDestroy();
     if (viewDetailsGroup != null) viewDetailsGroup.onDestroy();

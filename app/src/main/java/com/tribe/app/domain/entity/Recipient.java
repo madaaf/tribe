@@ -22,7 +22,7 @@ public abstract class Recipient implements Serializable {
   protected Date created_at;
   protected Date updated_at;
 
-  protected boolean mute;
+  protected Boolean mute;
 
   protected int position;
 

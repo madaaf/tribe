@@ -34,13 +34,13 @@ public class ObservableRxHashMap<T, R> {
   public void put(T key, R value) {
     map.put(key, value);
     subject.onNext(new RxHashMap<>(ADD, key, value));
-    mapSubject.onNext(this.map);
+    mapSubject.onNext(map);
   }
 
   public void putAll(Map<T, R> map) {
     this.map.putAll(map);
     subject.onNext(new RxHashMap<>(ADD_ALL, null, null));
-    mapSubject.onNext(this.map);
+    mapSubject.onNext(map);
   }
 
   public void update(T key, R value) {
@@ -56,8 +56,11 @@ public class ObservableRxHashMap<T, R> {
   }
 
   public void remove(T key) {
-    R r = map.remove(key);
-    subject.onNext(new RxHashMap<>(REMOVE, key, r));
+    if (map.containsKey(key)) {
+      R r = map.remove(key);
+      subject.onNext(new RxHashMap<>(REMOVE, key, r));
+      mapSubject.onNext(map);
+    }
   }
 
   public R get(T key) {
@@ -94,12 +97,6 @@ public class ObservableRxHashMap<T, R> {
       this.changeType = changeType;
       this.key = key;
       this.item = item;
-    }
-
-    public RxHashMap() {
-      this.changeType = INIT;
-      this.key = null;
-      this.item = null;
     }
   }
 }

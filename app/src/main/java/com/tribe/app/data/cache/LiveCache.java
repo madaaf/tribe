@@ -16,11 +16,13 @@ import rx.Observable;
 
   Observable<Map<String, Boolean>> liveMap();
 
-  void putOnlineMap(Map<String, Boolean> onlineMap);
+  void putOnline(String id);
 
-  void putLiveMap(Map<String, Boolean> liveMap);
+  void removeOnline(String id);
 
-  void putInvites(Map<String, Invite> inviteMap);
+  void putLive(String id);
+
+  void removeLive(String id);
 
   void putInvite(Invite invite);
 

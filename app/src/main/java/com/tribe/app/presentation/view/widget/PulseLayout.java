@@ -110,7 +110,6 @@ public class PulseLayout extends RelativeLayout {
         }
 
         animatorSet.start();
-
     }
 
     /**

@@ -17,6 +17,7 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.GroupEntity;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,5 +209,9 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
+  }
+
+  @Override public Observable<Map<String, Invite>> inviteMap() {
+    return liveCache.inviteMap();
   }
 }

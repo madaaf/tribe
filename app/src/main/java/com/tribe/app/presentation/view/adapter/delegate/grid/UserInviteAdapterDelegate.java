@@ -21,9 +21,6 @@ public class UserInviteAdapterDelegate extends RecipientGridAdapterDelegate {
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     return items.get(position) instanceof Friendship
-        && !items.get(position)
-        .getSubId()
-        .equals(Constants.SUPPORT_ID)
         && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
         && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
         && !items.get(position).isOnline()

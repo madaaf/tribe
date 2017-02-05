@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class Invite extends Recipient {
     return room_id;
   }
 
-  public void setRoom_id(String roomId) {
+  public void setRoomId(String roomId) {
     this.room_id = roomId;
   }
 
@@ -84,10 +86,28 @@ public class Invite extends Recipient {
   private String getFriendshipsName() {
     String name = "";
 
+    int count = 0;
     for (Friendship friendship : friendships) {
+      if (count == 0) name += ", ";
       name += friendship.getDisplayName();
+      count++;
     }
 
     return name;
+  }
+
+  public List<String> getMembersPic() {
+    List<String> pics = new ArrayList<>();
+
+    if (isGroup()) {
+      return group.getMembersPics();
+    } else if (friendships != null) {
+      for (Friendship friendship : friendships) {
+        String url = friendship.getProfilePicture();
+        if (!StringUtils.isEmpty(url)) pics.add(url);
+      }
+    }
+
+    return pics;
   }
 }

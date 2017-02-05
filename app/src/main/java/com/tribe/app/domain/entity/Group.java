@@ -20,6 +20,7 @@ public class Group implements Serializable {
   private String picture;
   private String name;
   private List<User> members;
+  private boolean is_live;
 
   public String getId() {
     return id;
@@ -51,6 +52,14 @@ public class Group implements Serializable {
 
   public void setMembers(List<User> members) {
     this.members = members;
+  }
+
+  public void setIsLive(boolean isLive) {
+    this.is_live = isLive;
+  }
+
+  public boolean isLive() {
+    return is_live;
   }
 
   public List<String> getMembersPics() {

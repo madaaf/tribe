@@ -15,7 +15,7 @@ public class InvitesListDeserializer<Invite> implements JsonDeserializer<Invite>
     public Invite deserialize(JsonElement je, Type typeOfT,
                          JsonDeserializationContext context) throws JsonParseException {
 
-        JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("invites");
+        JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user").getAsJsonArray("invites");
 
         return new Gson().fromJson(results, typeOfT);
     }
