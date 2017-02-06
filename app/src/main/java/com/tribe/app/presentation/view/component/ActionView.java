@@ -175,6 +175,7 @@ public class ActionView extends FrameLayout {
 
       if (type == CRITICAL) {
         TextViewCompat.setTextAppearance(txtTitle, R.style.Title_1_Red);
+        txtTitle.setCustomFont(getContext(), "Roboto-Bold.ttf");
       }
     }
   }
