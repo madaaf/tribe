@@ -11,6 +11,7 @@ import com.tribe.tribelivesdk.util.LogUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import org.w3c.dom.Text;
 import org.webrtc.MediaStream;
 import org.webrtc.RendererCommon;
 import org.webrtc.RendererCommon.RendererEvents;
@@ -65,19 +66,19 @@ public abstract class PeerView extends ViewGroup {
 
   /**
    * The height of the last video frame rendered by
-   * {@link #surfaceViewRenderer}.
+   * {@link #textureViewRenderer}.
    */
   protected int frameHeight;
 
   /**
    * The rotation (degree) of the last video frame rendered by
-   * {@link #surfaceViewRenderer}.
+   * {@link #textureViewRenderer}.
    */
   protected int frameRotation;
 
   /**
    * The width of the last video frame rendered by
-   * {@link #surfaceViewRenderer}.
+   * {@link #textureViewRenderer}.
    */
   protected int frameWidth;
 
@@ -96,7 +97,7 @@ public abstract class PeerView extends ViewGroup {
 
   /**
    * The {@code RendererEvents} which listens to rendering events reported by
-   * {@link #surfaceViewRenderer}.
+   * {@link #textureViewRenderer}.
    */
   protected final RendererEvents rendererEvents = new RendererEvents() {
     @Override public void onFirstFrameRendered() {
@@ -109,15 +110,12 @@ public abstract class PeerView extends ViewGroup {
 
   /**
    * The {@code Runnable} representation of
-   * {@link #requestSurfaceViewRendererLayout()}. Explicitly defined in order
+   * {@link #requestTextureViewRendererLayout()} ()}. Explicitly defined in order
    * to allow the use of the latter with {@link #post(Runnable)} without
    * initializing new instances on every (method) call.
    */
-  protected final Runnable requestSurfaceViewRendererLayoutRunnable = new Runnable() {
-    @Override public void run() {
-      requestSurfaceViewRendererLayout();
-    }
-  };
+  protected final Runnable requestSurfaceViewRendererLayoutRunnable =
+      () -> requestTextureViewRendererLayout();
 
   /**
    * The scaling type this {@code PeerView} is to apply to the video
@@ -130,7 +128,7 @@ public abstract class PeerView extends ViewGroup {
    * The {@link View} and {@link VideoRenderer} implementation which
    * actually renders {@link #videoTrack} on behalf of this instance.
    */
-  protected SurfaceViewRenderer surfaceViewRenderer;
+  protected TextureViewRenderer textureViewRenderer;
 
   /**
    * The {@code VideoRenderer}, if any, which renders {@link #videoTrack} on
@@ -145,18 +143,18 @@ public abstract class PeerView extends ViewGroup {
 
   public PeerView(Context context) {
     super(context);
-    surfaceViewRenderer = new SurfaceViewRenderer(context);
+    textureViewRenderer = new TextureViewRenderer(context);
     init(context);
   }
 
   public PeerView(Context context, AttributeSet attributeSet) {
     super(context, attributeSet);
-    surfaceViewRenderer = new SurfaceViewRenderer(context);
+    textureViewRenderer = new TextureViewRenderer(context);
     init(context);
   }
 
   protected void init(Context context) {
-    addView(surfaceViewRenderer);
+    addView(textureViewRenderer);
     setMirror(false);
     setScalingType(DEFAULT_SCALING_TYPE);
   }
@@ -171,8 +169,8 @@ public abstract class PeerView extends ViewGroup {
    *
    * @return The {@code SurfaceViewRenderer} which renders {@code videoTrack}.
    */
-  protected final SurfaceViewRenderer getSurfaceViewRenderer() {
-    return surfaceViewRenderer;
+  protected final TextureViewRenderer getTextureViewRenderer() {
+    return textureViewRenderer;
   }
 
   /**
@@ -201,7 +199,7 @@ public abstract class PeerView extends ViewGroup {
   }
 
   /**
-   * Callback fired by {@link #surfaceViewRenderer} when the resolution or
+   * Callback fired by {@link #textureViewRenderer} when the resolution or
    * rotation of the frame it renders has changed.
    *
    * @param videoWidth The new width of the rendered video frame.
@@ -254,7 +252,7 @@ public abstract class PeerView extends ViewGroup {
         scalingType = this.scalingType;
       }
 
-      SurfaceViewRenderer surfaceViewRenderer = getSurfaceViewRenderer();
+      TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
 
       switch (scalingType) {
         case SCALE_ASPECT_FILL:
@@ -289,7 +287,7 @@ public abstract class PeerView extends ViewGroup {
           break;
       }
     }
-    surfaceViewRenderer.layout(l, t, r, b);
+    textureViewRenderer.layout(l, t, r, b);
   }
 
   /**
@@ -304,7 +302,7 @@ public abstract class PeerView extends ViewGroup {
       videoRenderer.dispose();
       videoRenderer = null;
 
-      getSurfaceViewRenderer().release();
+      getTextureViewRenderer().release();
 
       // Since this PeerView is no longer rendering anything, make sure
       // surfaceViewRenderer displays nothing as well.
@@ -314,19 +312,19 @@ public abstract class PeerView extends ViewGroup {
         frameWidth = 0;
       }
 
-      requestSurfaceViewRendererLayout();
+      requestTextureViewRendererLayout();
     }
   }
 
   /**
-   * Request that {@link #surfaceViewRenderer} be laid out (as soon as
+   * Request that {@link #textureViewRenderer} be laid out (as soon as
    * possible) because layout-related state either of this instance or of
    * {@code surfaceViewRenderer} has changed.
    */
-  protected void requestSurfaceViewRendererLayout() {
+  protected void requestTextureViewRendererLayout() {
     // Google/WebRTC just call requestLayout() on surfaceViewRenderer when
     // they change the value of its mirror or surfaceType property.
-    getSurfaceViewRenderer().requestLayout();
+    getTextureViewRenderer().requestLayout();
     // The above is not enough though when the video frame's dimensions or
     // rotation change. The following will suffice.
     if (!invokeIsInLayout()) {
@@ -346,12 +344,12 @@ public abstract class PeerView extends ViewGroup {
     if (this.mirror != mirror) {
       this.mirror = mirror;
 
-      SurfaceViewRenderer surfaceViewRenderer = getSurfaceViewRenderer();
+      TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
 
-      surfaceViewRenderer.setMirror(mirror);
+      textureViewRenderer.setMirror(mirror);
       // SurfaceViewRenderer takes the value of its mirror property into
       // account upon its layout.
-      requestSurfaceViewRendererLayout();
+      requestTextureViewRendererLayout();
     }
   }
 
@@ -373,7 +371,7 @@ public abstract class PeerView extends ViewGroup {
   }
 
   protected void setScalingType(ScalingType scalingType) {
-    SurfaceViewRenderer surfaceViewRenderer;
+    TextureViewRenderer textureViewRenderer;
 
     synchronized (layoutSyncRoot) {
       if (this.scalingType == scalingType) {
@@ -382,12 +380,12 @@ public abstract class PeerView extends ViewGroup {
 
       this.scalingType = scalingType;
 
-      surfaceViewRenderer = getSurfaceViewRenderer();
-      surfaceViewRenderer.setScalingType(scalingType);
+      textureViewRenderer = getTextureViewRenderer();
+      textureViewRenderer.setScalingType(scalingType);
     }
     // Both this instance ant its SurfaceViewRenderer take the value of
     // their scalingType properties into account upon their layouts.
-    requestSurfaceViewRendererLayout();
+    requestTextureViewRendererLayout();
   }
 
   /**
@@ -435,40 +433,16 @@ public abstract class PeerView extends ViewGroup {
   }
 
   /**
-   * Sets the z-order of this {@link PeerView} in the stacking space of all
-   * {@code PeerView}s. For more details, refer to the documentation of the
-   * {@code zOrder} property of the JavaScript counterpart of
-   * {@code PeerView} i.e. {@code RTCView}.
-   *
-   * @param zOrder The z-order to set on this {@code PeerView}.
-   */
-  public void setZOrder(int zOrder) {
-    SurfaceViewRenderer surfaceViewRenderer = getSurfaceViewRenderer();
-
-    switch (zOrder) {
-      case 0:
-        surfaceViewRenderer.setZOrderMediaOverlay(false);
-        break;
-      case 1:
-        surfaceViewRenderer.setZOrderMediaOverlay(true);
-        break;
-      case 2:
-        surfaceViewRenderer.setZOrderOnTop(true);
-        break;
-    }
-  }
-
-  /**
    * Starts rendering {@link #videoTrack} if rendering is not in progress and
    * all preconditions for the start of rendering are met.
    */
   protected void tryAddRendererToVideoTrack() {
     if (videoRenderer == null && videoTrack != null) {
-      SurfaceViewRenderer surfaceViewRenderer = getSurfaceViewRenderer();
+      TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
 
-      surfaceViewRenderer.init(/* sharedContext */ null, rendererEvents);
+      textureViewRenderer.init(/* sharedContext */ null, rendererEvents);
 
-      videoRenderer = new VideoRenderer(surfaceViewRenderer);
+      videoRenderer = new VideoRenderer(textureViewRenderer);
       videoTrack.addRenderer(videoRenderer);
     }
   }

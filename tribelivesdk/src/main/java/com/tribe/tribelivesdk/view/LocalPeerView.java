@@ -18,9 +18,9 @@ public class LocalPeerView extends PeerView {
   }
 
   private void initVideoRenderer() {
-    SurfaceViewRenderer surfaceViewRenderer = getSurfaceViewRenderer();
-    surfaceViewRenderer.init(null, rendererEvents);
-    videoRenderer = new VideoRenderer(surfaceViewRenderer);
+    TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
+    textureViewRenderer.init(null, rendererEvents);
+    videoRenderer = new VideoRenderer(textureViewRenderer);
     setMirror(true);
   }
 }
