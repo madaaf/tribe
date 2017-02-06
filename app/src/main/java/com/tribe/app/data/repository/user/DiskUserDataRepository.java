@@ -27,15 +27,14 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.Constants;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * {@link DiskUserDataRepository} for retrieving user data.
@@ -84,8 +83,8 @@ import timber.log.Timber;
 
     return Observable.combineLatest(userDataStore.userInfos(null),
         userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()),
-        userDataStore.inviteMap(), (userRealm, onlineMap, liveMap, inviteMap) -> {
+        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
+        (userRealm, onlineMap, liveMap, inviteMap) -> {
           if (userRealm != null && userRealm.getFriendships() != null) {
             RealmList<FriendshipRealm> resultFr = new RealmList<>();
 
@@ -121,8 +120,8 @@ import timber.log.Timber;
       RealmList<FriendshipRealm> result = new RealmList<>();
 
       for (FriendshipRealm fr : friendshipRealmList) {
-        if (!StringUtils.isEmpty(fr.getStatus())
-            && fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+        if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+            .equals(FriendshipRealm.DEFAULT)) {
           result.add(fr);
         }
       }
@@ -189,6 +188,44 @@ import timber.log.Timber;
         })
         .map(collection -> contactRealmDataMapper.transform(
             new ArrayList<ContactInterface>(collection)));
+  }
+
+  @Override public Observable<List<Object>> searchLocally(String s) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return Observable.combineLatest(userDataStore.userInfos(null)
+            .map(userRealm -> userRealmDataMapper.transform(userRealm, true)),
+        userDataStore.contactsOnApp()
+            .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
+        userDataStore.contactsToInvite()
+            .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
+        (user, contactOnAppList, contactInviteList) -> {
+          List<Object> result = new ArrayList<>();
+          Map<String, User> mapUsersAdded = new HashMap<>();
+
+          for (Recipient recipient : user.getFriendshipList()) {
+            if (recipient instanceof Friendship) {
+              Friendship fr = (Friendship) recipient;
+              mapUsersAdded.put(fr.getSubId(), fr.getFriend());
+            }
+
+            result.add(recipient);
+          }
+
+          for (Contact contact : contactInviteList) {
+            boolean shouldAdd = true;
+            if (contact.getUserList() != null) {
+              for (User userInList : contact.getUserList()) {
+                if (mapUsersAdded.containsKey(userInList)) {
+                  shouldAdd = false;
+                }
+              }
+            }
+
+            if (shouldAdd) result.add(contact);
+          }
+
+          return result;
+        });
   }
 
   @Override public Observable<Void> howManyFriends() {
@@ -320,7 +357,8 @@ import timber.log.Timber;
     });
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+  @Override
+  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
     return null;
   }
 

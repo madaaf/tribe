@@ -383,6 +383,7 @@ public class UserCacheImpl implements UserCache {
             realm1.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
         Timber.d("FriendshipRealm isMute : " + friendshipRealm.isMute());
         friendshipRealmDB.setMute(friendshipRealm.isMute());
+        friendshipRealmDB.setStatus(friendshipRealm.getStatus());
       });
     } finally {
       realm.close();

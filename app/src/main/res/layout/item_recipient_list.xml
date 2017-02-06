@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:clickable="true"
+    android:foreground="@drawable/selectable_button"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/horizontal_margin_small"
+    >
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size_smaller"
+      android:layout_height="@dimen/avatar_size_smaller"
+      android:layout_gravity="left|center_vertical"
+      android:background="@null"
+      />
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginLeft="55dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        style="@style/Body.Two.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtName"
+        android:layout_marginTop="5dp"
+        android:singleLine="true"
+        style="@style/Body.One.Blue.New"
+        />
+  </RelativeLayout>
+
+  <FrameLayout
+      android:id="@+id/btnAdd"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/action_button_height"
+      android:layout_gravity="center_vertical|end"
+      android:background="@drawable/shape_rect_rounded_100_red"
+      android:clickable="true"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:maxLines="1"
+        android:text="@string/action_hang_live"
+        style="@style/Body.Two.White"
+        />
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progressBarAdd"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:alpha="0"
+        app:cpv_animAutostart="true"
+        app:cpv_color="@android:color/white"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2dp"
+        />
+  </FrameLayout>
+</FrameLayout>

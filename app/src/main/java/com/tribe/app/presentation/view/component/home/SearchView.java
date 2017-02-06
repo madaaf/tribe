@@ -25,6 +25,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -96,12 +97,15 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private SearchResult searchResult;
   private String username;
   private boolean isSearchMode = false;
+  private String search;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onGone = PublishSubject.create();
   private PublishSubject<Void> onShow = PublishSubject.create();
-  private PublishSubject<Void> onHangLive = PublishSubject.create();
+  private PublishSubject<Recipient> onHangLive = PublishSubject.create();
+  private PublishSubject<ContactAB> onInvite = PublishSubject.create();
+  private PublishSubject<Recipient> onUnblock = PublishSubject.create();
 
   public SearchView(Context context) {
     super(context);
@@ -189,8 +193,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         .subscribe(o -> {
           if (o instanceof ContactAB) {
             ContactAB contact = (ContactAB) o;
-            //shouldOverridePendingTransactions = true;
-            //navigator.invite(contact.getPhone(), contact.getHowManyFriends(), this);
+            onInvite.onNext(contact);
           }
         }));
 
@@ -199,7 +202,17 @@ public class SearchView extends FrameLayout implements SearchMVPView {
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
+          if (o instanceof Recipient) {
+            onHangLive.onNext((Recipient) o);
+          }
+        }));
 
+    subscriptions.add(contactAdapter.onUnblock()
+        .map(view -> contactAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)))
+        .doOnError(throwable -> throwable.printStackTrace())
+        .subscribe(o -> {
+          onUnblock.onNext((Recipient) o);
         }));
   }
 
@@ -222,42 +235,36 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private void refactorContacts(List<Object> contactList) {
     this.filteredContactList.clear();
 
-    int count = 0;
-    boolean headerOnAppDone = false;
-    boolean headerInviteDone = false;
-
-    Contact contact = null;
+    boolean hasDoneSuggested = false, hasDoneContacts = false;
 
     for (Object obj : contactList) {
-      contact = (Contact) obj;
+      boolean shouldAdd = false;
+      if (obj instanceof Contact) {
+        Contact contact = (Contact) obj;
+        if (contact.getName().toLowerCase().startsWith(search)) {
+          shouldAdd = true;
+        }
+      } else if (obj instanceof Recipient) {
+        Recipient recipient = (Recipient) obj;
+        if (recipient.getDisplayName().toLowerCase().startsWith(search) || (recipient.getUsername() != null && recipient.getUsername()
+            .toLowerCase()
+            .startsWith(search))) {
+          shouldAdd = true;
+        }
+      }
 
-      if (!isSearchMode || (isSearchMode && contact.getName()
-          .toLowerCase()
-          .startsWith(searchResult.getUsername().toString().toLowerCase()))) {
-        if (count == 0
-            && (contact.getUserList() != null && contact.getUserList().size() > 0)
-            && !headerOnAppDone) {
+      if (shouldAdd) {
+        if (!hasDoneSuggested && obj instanceof Recipient) {
+          hasDoneSuggested = true;
           this.filteredContactList.add(
-              EmojiParser.demojizedText(getContext().getString(R.string.search_suggest_friends)));
-
-          User user = contact.getUserList().get(0);
-
-          for (Friendship friendship : user.getFriendships()) {
-            if (friendship.getFriend().equals(user)) {
-              user.setAnimateAdd(true);
-              user.setFriend(true);
-            }
-          }
-
-          headerOnAppDone = true;
-        } else if ((contact.getUserList() == null || contact.getUserList().size() == 0)
-            && !headerInviteDone) {
-          this.filteredContactList.add(new String());
-          this.filteredContactList.add(R.string.search_invite_contacts);
-          headerInviteDone = true;
+              EmojiParser.demojizedText(getContext().getString(R.string.search_already_friends)));
+        } else if (!hasDoneContacts && obj instanceof Contact) {
+          this.filteredContactList.add(
+              EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
+          hasDoneContacts = true;
         }
 
-        this.filteredContactList.add(contact);
+        this.filteredContactList.add(obj);
       }
     }
   }
@@ -285,7 +292,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
     if (permissionsContact && permissionsFB) {
       recyclerViewContacts.setPadding(0, 0, 0, 0);
-      searchPresenter.loadContacts();
+      searchPresenter.loadContacts(search);
       return;
     }
 
@@ -302,7 +309,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
     }
 
     if (permissionsContact || permissionsFB) {
-      searchPresenter.loadContacts();
+      searchPresenter.loadContacts(search);
     }
 
     if (!permissionsContact) {
@@ -364,6 +371,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   public void initSearchTextSubscription(Observable<String> obs) {
     subscriptions.add(obs.map(CharSequence::toString).doOnNext(s -> {
+      search = s;
       if (StringUtils.isEmpty(s)) {
         isSearchMode = false;
         filter();
@@ -378,6 +386,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   }
 
   public void show() {
+    if (recyclerViewContacts.getVisibility() == View.VISIBLE) return;
+
     onShow.onNext(null);
     ValueAnimator colorAnimation =
         ValueAnimator.ofObject(new ArgbEvaluator(), Color.TRANSPARENT, Color.WHITE);
@@ -394,6 +404,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   }
 
   public void hide() {
+    search = "";
     recyclerViewContacts.setVisibility(View.GONE);
 
     ValueAnimator colorAnimation =
@@ -424,6 +435,18 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   public Observable<Void> onGone() {
     return onGone;
+  }
+
+  public Observable<Recipient> onHangLive() {
+    return onHangLive;
+  }
+
+  public Observable<ContactAB> onInvite() {
+    return onInvite;
+  }
+
+  public Observable<Recipient> onUnblock() {
+    return onUnblock;
   }
 
   @Override public void onAddSuccess(Friendship friendship) {

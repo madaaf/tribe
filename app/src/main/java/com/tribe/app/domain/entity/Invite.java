@@ -88,7 +88,7 @@ public class Invite extends Recipient {
 
     int count = 0;
     for (Friendship friendship : friendships) {
-      if (count == 0) name += ", ";
+      if (count > 0) name += ", ";
       name += friendship.getDisplayName();
       count++;
     }

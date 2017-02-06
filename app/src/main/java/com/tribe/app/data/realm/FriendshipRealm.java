@@ -11,8 +11,7 @@ import java.util.Date;
  */
 public class FriendshipRealm extends RealmObject implements RecipientRealmInterface {
 
-  @StringDef({DEFAULT, HIDDEN, BLOCKED})
-  public @interface FriendshipStatus {
+  @StringDef({ DEFAULT, HIDDEN, BLOCKED }) public @interface FriendshipStatus {
   }
 
   public static final String DEFAULT = "DEFAULT";
@@ -20,13 +19,11 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
   public static final String BLOCKED = "BLOCKED";
 
   public static final String MUTE = "mute";
+  public static final String STATUS = "status";
 
-  @PrimaryKey
-  private String id;
+  @PrimaryKey private String id;
 
-  private
-  @FriendshipStatus
-  String status;
+  private @FriendshipStatus String status;
   private String tag;
   private boolean blocked;
   private String category;
@@ -35,8 +32,7 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
   private Date updated_at;
   private boolean mute;
 
-  @Ignore
-  private boolean is_live;
+  @Ignore private boolean is_live;
 
   public String getId() {
     return id;
@@ -94,14 +90,11 @@ public class FriendshipRealm extends RealmObject implements RecipientRealmInterf
     this.updated_at = updated_at;
   }
 
-  @Override
-  public String getSubId() {
+  @Override public String getSubId() {
     return friend.getId();
   }
 
-  public
-  @FriendshipStatus
-  String getStatus() {
+  public @FriendshipStatus String getStatus() {
     return status;
   }
 

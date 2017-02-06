@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
@@ -13,13 +12,11 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdap
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SeparatorAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
@@ -35,6 +32,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
   private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
   private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
   private UserListAdapterDelegate userListAdapterDelegate;
+  private RecipientListAdapterDelegate recipientListAdapterDelegate;
 
   // VARIABLES
   private List<Object> items;
@@ -56,7 +54,9 @@ public class ContactAdapter extends RecyclerView.Adapter {
     userListAdapterDelegate = new UserListAdapterDelegate(context);
     delegatesManager.addDelegate(userListAdapterDelegate);
 
-    delegatesManager.addDelegate(new SeparatorAdapterDelegate(context));
+    recipientListAdapterDelegate = new RecipientListAdapterDelegate(context);
+    delegatesManager.addDelegate(recipientListAdapterDelegate);
+
     delegatesManager.addDelegate(HEADER_TYPE, new ContactsHeaderAdapterDelegate(context));
 
     setHasStableIds(true);
@@ -111,7 +111,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
     this.items.clear();
     this.items.add(R.string.search_usernames);
     this.items.add(searchResult);
-    this.items.add(new String());
 
     if (contactList != null && contactList.size() > 0) {
       this.items.addAll(contactList);
@@ -146,6 +145,11 @@ public class ContactAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<View> onHangLive() {
-    return searchResultGridAdapterDelegate.onHangLive();
+    return Observable.merge(searchResultGridAdapterDelegate.onHangLive(),
+        recipientListAdapterDelegate.onHangLive());
+  }
+
+  public Observable<View> onUnblock() {
+    return recipientListAdapterDelegate.onUnblock();
   }
 }

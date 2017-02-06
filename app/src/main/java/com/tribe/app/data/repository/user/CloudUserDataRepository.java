@@ -127,6 +127,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<List<Object>> searchLocally(String s) {
+    return null;
+  }
+
   @Override public Observable<Void> howManyFriends() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.howManyFriends();

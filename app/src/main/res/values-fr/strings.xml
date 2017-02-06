@@ -548,7 +548,7 @@
 	<string name="search_add_addressbook_title">Afficher votre carnet d\'adresses</string>
 	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to hang live again!</string>
-	<string name="search_unblock_alert_cancel">Stay blocked</string>
+	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
 	
 	<!-- Spring Cleaning -->

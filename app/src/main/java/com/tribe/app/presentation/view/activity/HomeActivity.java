@@ -27,6 +27,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
@@ -281,19 +282,21 @@ public class HomeActivity extends BaseActivity
         }, ((recipient, labelType) -> {
           if (labelType != null) {
             // TODO Block / Hide again
-            //if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-            //    .equals(LabelType.BLOCK_HIDE)) {
-            //  tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
-            //  homeGridPresenter.updateFriendship((Friendship) recipient,
-            //      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-            //          : FriendshipRealm.HIDDEN);
-            //} else
-            if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-              recipient.setMute(true);
-              homeGridPresenter.updateFriendship(recipient.getId(), true);
+            if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                .equals(LabelType.BLOCK_HIDE)) {
+              tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
+              Friendship friendship = (Friendship) recipient;
+              homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+                  labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+                      : FriendshipRealm.HIDDEN);
+            } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+              Friendship friendship = (Friendship) recipient;
+              friendship.setMute(true);
+              homeGridPresenter.updateFriendship(friendship.getId(), true, friendship.getStatus());
             } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-              recipient.setMute(false);
-              homeGridPresenter.updateFriendship(recipient.getId(), false);
+              Friendship friendship = (Friendship) recipient;
+              friendship.setMute(false);
+              homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
             } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
               Membership membership = (Membership) recipient;
               navigator.navigateToGroupDetails(this, membership);
@@ -390,6 +393,22 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(searchView.onGone().subscribe(aVoid -> {
       searchView.setVisibility(View.GONE);
+    }));
+
+    subscriptions.add(searchView.onHangLive().subscribe(recipient -> {
+      navigator.navigateToLive(this, recipient, PaletteGrid.get(0));
+    }));
+
+    subscriptions.add(searchView.onInvite().subscribe(contact -> {
+      shouldOverridePendingTransactions = true;
+      navigator.invite(contact.getPhone(), contact.getHowManyFriends(), this);
+    }));
+
+    subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
+      if (recipient instanceof Friendship) {
+        Friendship fr = (Friendship) recipient;
+        homeGridPresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
+      }
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());

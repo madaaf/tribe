@@ -229,7 +229,7 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
 
     if (permissionsContact && permissionsFB) {
       recyclerViewContacts.setPadding(0, 0, 0, 0);
-      searchPresenter.loadContacts();
+      searchPresenter.loadContacts("");
       return;
     }
 
@@ -246,7 +246,7 @@ public class SearchUserActivity extends BaseActivity implements SearchMVPView {
     }
 
     if (permissionsContact || permissionsFB) {
-      searchPresenter.loadContacts();
+      searchPresenter.loadContacts("");
     }
 
     if (!permissionsContact) {

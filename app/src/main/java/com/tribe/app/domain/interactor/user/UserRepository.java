@@ -96,6 +96,8 @@ public interface UserRepository {
 
   Observable<List<Contact>> contactsInvite();
 
+  Observable<List<Object>> searchLocally(String s);
+
   /**
    * Get an {@link Observable} which will emit
    */

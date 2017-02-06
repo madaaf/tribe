@@ -123,9 +123,10 @@ public class HomeGridPresenter implements Presenter {
     this.homeGridView.renderRecipientList(recipientList);
   }
 
-  public void updateFriendship(String friendshipId, boolean mute) {
+  public void updateFriendship(String friendshipId, boolean mute, @FriendshipRealm.FriendshipStatus String status) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(FriendshipRealm.MUTE, String.valueOf(mute)));
+    values.add(new Pair<>(FriendshipRealm.STATUS, status));
 
     if (values.size() > 0) {
       updateFriendship.prepare(friendshipId, values);

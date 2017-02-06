@@ -825,6 +825,9 @@ public class CloudUserDataStore implements UserDataStore {
       if (value.first.equals(FriendshipRealm.MUTE)) {
         friendshipInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         friendshipInputBuilder.append(",");
+      } else if (value.first.equals(FriendshipRealm.STATUS)) {
+        friendshipInputBuilder.append(value.first + ": " + value.second);
+        friendshipInputBuilder.append(",");
       } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
         friendshipInputBuilder.append(value.first + ": \"" + value.second + "\"");
         friendshipInputBuilder.append(",");

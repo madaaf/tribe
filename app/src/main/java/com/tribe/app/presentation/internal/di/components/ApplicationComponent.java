@@ -57,6 +57,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
@@ -200,6 +201,8 @@ public interface ApplicationComponent {
   void inject(LiveRowView liveRowView);
 
   void inject(LiveNotificationContainer liveNotificationContainer);
+
+  void inject(RecipientListAdapterDelegate recipientListAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);
