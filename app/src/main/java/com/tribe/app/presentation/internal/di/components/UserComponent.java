@@ -25,6 +25,7 @@ import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.common.PickAllView;
+import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -39,87 +40,87 @@ import com.tribe.app.presentation.view.component.settings.SettingsThemeView;
 import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
-
 import dagger.Component;
 
 /**
  * A scope {@link PerActivity} component.
  * Injects user specific Fragments / Activities.
  */
-@PerActivity
-@Component(dependencies = ApplicationComponent.class, modules = {ActivityModule.class, UserModule.class})
-public interface UserComponent extends ActivityComponent {
+@PerActivity @Component(dependencies = ApplicationComponent.class, modules = {
+    ActivityModule.class, UserModule.class
+}) public interface UserComponent extends ActivityComponent {
 
-    void inject(DebugActivity debugActivity);
+  void inject(DebugActivity debugActivity);
 
-    void inject(FacebookHiddenActivity facebookHiddenActivity);
+  void inject(FacebookHiddenActivity facebookHiddenActivity);
 
-    void inject(CountryActivity countryActivity);
+  void inject(CountryActivity countryActivity);
 
-    void inject(HomeActivity homeActivity);
+  void inject(HomeActivity homeActivity);
 
-    void inject(ProfileInfoView profileInfoView);
+  void inject(ProfileInfoView profileInfoView);
 
-    void inject(GroupPresenter groupPresenter);
+  void inject(GroupPresenter groupPresenter);
 
-    void inject(MediaHiddenActivity mediaHiddenActivity);
+  void inject(MediaHiddenActivity mediaHiddenActivity);
 
-    void inject(AuthenticationDialogFragment authenticationDialogFragment);
+  void inject(AuthenticationDialogFragment authenticationDialogFragment);
 
-    void inject(ShareDialogProfileFragment shareDialogProfileFragment);
+  void inject(ShareDialogProfileFragment shareDialogProfileFragment);
 
-    void inject(GroupActivity groupActivity);
+  void inject(GroupActivity groupActivity);
 
-    void inject(SearchUserActivity searchUserActivity);
+  void inject(SearchUserActivity searchUserActivity);
 
-    void inject(SearchPresenter searchPresenter);
+  void inject(SearchPresenter searchPresenter);
 
-    void inject(SettingsActivity settingsActivity);
+  void inject(SettingsActivity settingsActivity);
 
-    void inject(SettingsPresenter settingsPresenter);
+  void inject(SettingsPresenter settingsPresenter);
 
-    void inject(SettingsThemeView settingsThemeView);
+  void inject(SettingsThemeView settingsThemeView);
 
-    void inject(SettingsFilterView settingsFilterView);
+  void inject(SettingsFilterView settingsFilterView);
 
-    void inject(SettingsView settingsView);
+  void inject(SettingsView settingsView);
 
-    void inject(SettingsProfileView settingsProfileView);
+  void inject(SettingsProfileView settingsProfileView);
 
-    void inject(SettingsFilterThemeView settingsFilterThemeView);
+  void inject(SettingsFilterThemeView settingsFilterThemeView);
 
-    void inject(SettingsParametersView settingsParametersView);
+  void inject(SettingsParametersView settingsParametersView);
 
-    void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
+  void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
 
+  void inject(ProfileActivity profileActivity);
 
-    void inject(ProfileActivity profileActivity);
+  void inject(ProfileView profileView);
 
-    void inject(ProfileView profileView);
+  void inject(AuthActivity authActivity);
 
-    void inject(AuthActivity authActivity);
+  void inject(PhoneNumberView phoneNumberView);
 
-    void inject(PhoneNumberView phoneNumberView);
+  void inject(StatusView statusView);
 
-    void inject(StatusView statusView);
+  void inject(CodeView codeView);
 
-    void inject(CodeView codeView);
+  void inject(AuthProfileActivity authProfileActivity);
 
-    void inject(AuthProfileActivity authProfileActivity);
+  void inject(AuthAccessActivity authAccessActivity);
 
-    void inject(AuthAccessActivity authAccessActivity);
+  void inject(AccessView accessView);
 
-    void inject(AccessView accessView);
+  void inject(PickYourFriendsActivity pickYourFriendsActivity);
 
-    void inject(PickYourFriendsActivity pickYourFriendsActivity);
+  void inject(LoadFriendsView loadFriendsView);
 
-    void inject(LoadFriendsView loadFriendsView);
+  void inject(PickAllView pickAllView);
 
-    void inject(PickAllView pickAllView);
+  void inject(TileView tileView);
 
-    void inject(TileView tileView);
+  void inject(LiveActivity liveActivity);
 
-    void inject(LiveActivity liveActivity);
+  void inject(LiveTestActivity liveTestActivity);
 
-    void inject(LiveTestActivity liveTestActivity);
+  void inject(SearchView searchView);
 }

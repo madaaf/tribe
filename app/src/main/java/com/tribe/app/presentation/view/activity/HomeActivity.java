@@ -12,6 +12,7 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -47,6 +48,7 @@ import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
+import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.tutorial.Tutorial;
@@ -112,6 +114,8 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
 
+  @BindView(R.id.searchView) SearchView searchView;
+
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -142,6 +146,7 @@ public class HomeActivity extends BaseActivity
     initRegistrationToken();
     initRecyclerView();
     initTopBar();
+    initSearch();
     initRemoteConfig();
     manageDeepLink(getIntent());
 
@@ -352,12 +357,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initTopBar() {
-
     subscriptions.add(topBarContainer.onClickNew().subscribe(aVoid -> {
       navigateToCreateGroup();
     }));
-
-    subscriptions.add(topBarContainer.onSearch().subscribe());
 
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
       navigateToProfile();
@@ -367,6 +369,30 @@ public class HomeActivity extends BaseActivity
       navigator.shareGenericText(
           EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), context());
     }));
+
+    subscriptions.add(topBarContainer.onOpenCloseSearch().subscribe(open -> {
+      if (open) {
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+        layoutManager.setScrollEnabled(false);
+        searchView.show();
+      } else {
+        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+        layoutManager.setScrollEnabled(true);
+        searchView.hide();
+      }
+    }));
+  }
+
+  private void initSearch() {
+    subscriptions.add(searchView.onShow().subscribe(aVoid -> {
+      searchView.setVisibility(View.VISIBLE);
+    }));
+
+    subscriptions.add(searchView.onGone().subscribe(aVoid -> {
+      searchView.setVisibility(View.GONE);
+    }));
+
+    searchView.initSearchTextSubscription(topBarContainer.onSearch());
   }
 
   private void initRemoteConfig() {

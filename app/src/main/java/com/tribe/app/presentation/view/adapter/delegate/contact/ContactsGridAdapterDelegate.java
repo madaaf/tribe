@@ -54,7 +54,7 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
         ContactViewHolder vh =
                 new ContactViewHolder(layoutInflater.inflate(R.layout.item_contact, parent, false));
 
-        vh.imgPicto.setOnClickListener(v -> onClickInvite.onNext(vh.itemView));
+        vh.btnAdd.setOnClickListener(v -> onClickInvite.onNext(vh.itemView));
 
         return vh;
     }
@@ -89,8 +89,8 @@ public class ContactsGridAdapterDelegate extends RxAdapterDelegate<List<Object>>
         @BindView(R.id.txtDescription)
         TextViewFont txtDescription;
 
-        @BindView(R.id.imgPicto)
-        ImageView imgPicto;
+        @BindView(R.id.btnAdd)
+        View btnAdd;
 
         public ContactViewHolder(View itemView) {
             super(itemView);

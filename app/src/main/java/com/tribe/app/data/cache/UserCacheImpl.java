@@ -468,7 +468,7 @@ public class UserCacheImpl implements UserCache {
         FriendshipRealm friendshipRealmDB =
             realm1.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
         if (friendshipRealmDB == null) {
-          realm1.insertOrUpdate(friendshipRealmDB);
+          realm1.insertOrUpdate(friendshipRealm);
           friendshipRealmDB = realm1.where(FriendshipRealm.class)
               .equalTo("id", friendshipRealm.getId())
               .findFirst();

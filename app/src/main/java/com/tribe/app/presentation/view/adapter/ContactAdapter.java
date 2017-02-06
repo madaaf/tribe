@@ -144,4 +144,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
   public Observable<View> onClickInvite() {
     return contactsGridAdapterDelegate.onClickInvite();
   }
+
+  public Observable<View> onHangLive() {
+    return searchResultGridAdapterDelegate.onHangLive();
+  }
 }

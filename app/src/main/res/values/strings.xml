@@ -21,6 +21,7 @@
 	<string name="action_member_added">Added</string>
 	<string name="action_group_member">Member</string>
 	<string name="action_nevermind">Nevermind</string>
+	<string name="action_invite">Invite</string>
 	
 	<!-- User -->
 	<string name="user_friend">friend</string>

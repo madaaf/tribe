@@ -142,4 +142,8 @@ public class TopBarContainer extends FrameLayout {
   public Observable<Void> onClickInvite() {
     return topBarView.onClickInvite();
   }
+
+  public Observable<Boolean> onOpenCloseSearch() {
+    return topBarView.onOpenCloseSearch();
+  }
 }

@@ -501,8 +501,8 @@ public class CloudUserDataStore implements UserDataStore {
           if (createFriendshipEntity != null
               && createFriendshipEntity.getNewFriendshipList() != null
               && createFriendshipEntity.getNewFriendshipList().size() > 0) {
-            FriendshipRealm newFriendship = createFriendshipEntity.getNewFriendshipList().get(0);
-            userCache.addFriendship(newFriendship);
+            friendshipRealm = createFriendshipEntity.getNewFriendshipList().get(0);
+            userCache.addFriendship(friendshipRealm);
           }
 
           return friendshipRealm;

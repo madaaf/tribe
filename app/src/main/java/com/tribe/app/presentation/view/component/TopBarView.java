@@ -75,6 +75,7 @@ public class TopBarView extends FrameLayout {
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
   private PublishSubject<Void> clickInvite = PublishSubject.create();
+  private PublishSubject<Boolean> onOpenCloseSearch = PublishSubject.create();
 
   public TopBarView(Context context) {
     super(context);
@@ -211,6 +212,8 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
+    onOpenCloseSearch.onNext(true);
+
     searchMode = true;
     btnSearch.setClickable(false);
 
@@ -230,7 +233,8 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.imgClose) public void closeSearch() {
-    onSearch.onNext(null);
+    onOpenCloseSearch.onNext(false);
+    onSearch.onNext("");
 
     searchMode = false;
     screenUtils.hideKeyboard(editTextSearch);
@@ -339,6 +343,10 @@ public class TopBarView extends FrameLayout {
 
   public Observable<Void> onClickInvite() {
     return clickInvite;
+  }
+
+  public Observable<Boolean> onOpenCloseSearch() {
+    return onOpenCloseSearch;
   }
 }
 
