@@ -31,7 +31,9 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
@@ -82,6 +84,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
 
   // VARIABLES
+  private TribeAudioManager audioManager;
   private Unbinder unbinder;
   private String recipientId;
   private boolean isGroup;
@@ -142,6 +145,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @Override protected void onDestroy() {
     viewLive.onDestroy();
 
+    if (audioManager != null) {
+      audioManager.stop();
+      audioManager = null;
+    }
+
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
@@ -169,6 +177,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     } else {
       onRecipientInfos(recipient);
     }
+
+    audioManager = TribeAudioManager.create(this);
+    audioManager.start((audioDevice, availableAudioDevices) -> {
+
+    });
   }
 
   private void initDependencyInjector() {
@@ -201,7 +214,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       if (shouldJoin) {
-        livePresenter.joinRoom(recipient, recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
+        livePresenter.joinRoom(recipient,
+            recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
       } else {
         finish();
       }
@@ -211,6 +225,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
       if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
         livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
       }
+    }));
+
+    subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
+      finish();
     }));
 
     subscriptions.add(

@@ -195,12 +195,26 @@ public class TribeLiveLocalStream {
     audioTrack.setEnabled(enabled);
   }
 
+  public boolean isAudioEnabled() {
+    if (audioTrack == null || isReattachingCamera)
+      return false;
+
+    return audioTrack.enabled();
+  }
+
   public void setCameraEnabled(boolean enabled) {
     if (videoTrack == null || isReattachingCamera) {
       return;
     }
 
     videoTrack.setEnabled(enabled);
+  }
+
+  public boolean isCameraEnabled() {
+    if (videoTrack == null || isReattachingCamera)
+      return false;
+
+    return videoTrack.enabled();
   }
 
   public void switchCamera() {

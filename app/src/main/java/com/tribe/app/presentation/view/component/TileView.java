@@ -44,16 +44,18 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/06/2016.
  */
 public class TileView extends SquareCardView {
 
-  public final static int TYPE_GRID_LIVE_CO = 0;
-  public final static int TYPE_INVITE_LIVE_CO = 1;
-  public final static int TYPE_NORMAL = 2;
-  public final static int TYPE_INVITE = 3;
+  public final static int TYPE_GRID_LIVE = 0;
+  public final static int TYPE_GRID_CONNECTED = 1;
+  public final static int TYPE_INVITE_LIVE_CO = 2;
+  public final static int TYPE_NORMAL = 3;
+  public final static int TYPE_INVITE = 4;
 
   private final float SCALE_FACTOR = 1.75f;
   private final float SCALE_TILE_FACTOR = 1.3f;
@@ -151,8 +153,12 @@ public class TileView extends SquareCardView {
     int resLayout = 0;
 
     switch (type) {
-      case TYPE_GRID_LIVE_CO:
-        resLayout = R.layout.view_tile_grid_live_co;
+      case TYPE_GRID_LIVE:
+        resLayout = R.layout.view_tile_grid_live;
+        break;
+
+      case TYPE_GRID_CONNECTED:
+        resLayout = R.layout.view_tile_grid_connected;
         break;
 
       case TYPE_INVITE_LIVE_CO:
@@ -281,7 +287,7 @@ public class TileView extends SquareCardView {
     params.height = sizeAvatar;
     avatar.setLayoutParams(params);
 
-    if (type == TYPE_GRID_LIVE_CO) {
+    if (type == TYPE_GRID_LIVE) {
       params = layoutPulse.getLayoutParams();
       params.width = sizeAvatar + screenUtils.dpToPx(90);
       params.height = sizeAvatar + screenUtils.dpToPx(90);
@@ -328,7 +334,7 @@ public class TileView extends SquareCardView {
   }
 
   private boolean isGrid() {
-    return type == TYPE_GRID_LIVE_CO || type == TYPE_NORMAL;
+    return type == TYPE_GRID_LIVE || type == TYPE_GRID_CONNECTED || type == TYPE_NORMAL;
   }
 
   public void setInfo(Recipient recipient) {
@@ -339,10 +345,6 @@ public class TileView extends SquareCardView {
     if (isGrid()) {
       setStatus();
     } else {
-      //            if (recipient.isLive()) {
-      //                imgInd.setVisibility(View.VISIBLE);
-      //                imgInd.setImageResource(R.drawable.picto_live);
-      //            } else
       if (recipient.isLive()) {
         imgInd.setVisibility(View.VISIBLE);
         imgInd.setImageResource(R.drawable.picto_live);
@@ -358,8 +360,7 @@ public class TileView extends SquareCardView {
   public void setRecipient(Recipient recipient) {
     this.recipient = recipient;
 
-    if (type == TYPE_GRID_LIVE_CO && recipient.isLive() && !layoutPulse.isStarted()) layoutPulse.start();
-    else if (layoutPulse != null && layoutPulse.isStarted()) layoutPulse.stop();
+    if (type == TYPE_GRID_LIVE) layoutPulse.start();
   }
 
   public void setAvatar() {
@@ -377,10 +378,6 @@ public class TileView extends SquareCardView {
   }
 
   public void setStatus() {
-    //            if (recipient.isLive()) {
-    //                ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
-    //                txtStatus.setText(R.string.grid_status_live);
-    //            } else
     if (recipient.isLive()) {
       ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
       txtStatus.setText(R.string.grid_status_live);

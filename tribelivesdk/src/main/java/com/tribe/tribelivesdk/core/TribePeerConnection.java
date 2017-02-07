@@ -6,8 +6,10 @@ import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
@@ -23,13 +25,18 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TribePeerConnection {
 
+  private static final String DATA_CHANNEL_PROTOCOL = "tribe-v3";
+  private static final String DATA_CHANNEL_META = "meta";
+
   private String id;
   private String userId;
   private PeerConnection peerConnection;
   private TribeSdpObserver sdpObserver;
   private TribePeerConnectionObserver peerConnectionObserver;
+  private TribeDataChannelObserver dataChannelObserver;
   private List<PeerConnection.IceServer> iceServerList;
   private List<IceCandidate> pendingIceCandidateList;
+  private DataChannel dataChannel;
 
   // OBSERVABLE
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -49,13 +56,27 @@ public class TribePeerConnection {
   }
 
   private void init(PeerConnectionFactory peerConnectionFactory, boolean isOffer) {
-
+    dataChannelObserver = new TribeDataChannelObserver();
     sdpObserver = new TribeSdpObserver();
     peerConnectionObserver = new TribePeerConnectionObserver(isOffer);
     peerConnection =
         peerConnectionFactory.createPeerConnection(iceServerList, sdpObserver.constraints,
             peerConnectionObserver);
     sdpObserver.setPeerConnection(peerConnection);
+
+    DataChannel.Init init = new DataChannel.Init();
+    init.protocol = DATA_CHANNEL_PROTOCOL;
+    dataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
+    dataChannel.registerObserver(dataChannelObserver);
+
+    subscriptions.add(dataChannelObserver.onMessage().subscribe(s -> {
+      LogUtil.d(getClass(), s);
+    }));
+
+    subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
+      dataChannel = newDataChannel;
+      dataChannel.registerObserver(dataChannelObserver);
+    }));
 
     subscriptions.add(
         peerConnectionObserver.onShouldCreateOffer().subscribe(aVoid -> sdpObserver.createOffer()));
@@ -104,6 +125,11 @@ public class TribePeerConnection {
     peerConnection.addIceCandidate(iceCandidate);
   }
 
+  public void send(String str) {
+    ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
+    dataChannel.send(new DataChannel.Buffer(buffer, false));
+  }
+
   public PeerConnection getPeerConnection() {
     return peerConnection;
   }
@@ -114,6 +140,15 @@ public class TribePeerConnection {
       peerConnection.close();
       peerConnection.dispose();
       sdpObserver.dropPeerConnection();
+    }
+
+    if (dataChannelObserver != null) {
+      dataChannelObserver = null;
+    }
+
+    if (dataChannel != null) {
+      dataChannel.dispose();
+      dataChannel = null;
     }
   }
 

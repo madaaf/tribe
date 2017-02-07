@@ -9,6 +9,7 @@ import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.PeerView;
 import java.util.List;
 import org.json.JSONException;
@@ -86,8 +87,8 @@ public class Room {
     }));
   }
 
-  public void initLocalStream(PeerView peerView) {
-    webRTCClient.setLocalStreamView(peerView);
+  public void initLocalStream(LocalPeerView localPeerView) {
+    webRTCClient.setLocalStreamView(localPeerView);
   }
 
   public void connect(TribeLiveOptions options) {
@@ -173,10 +174,6 @@ public class Room {
     options = null;
     webRTCClient.dispose();
     webSocketConnection.disconnect(false);
-  }
-
-  public void switchCamera() {
-    webRTCClient.switchCamera();
   }
 
   public @RoomState String getState() {

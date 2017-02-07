@@ -15,9 +15,10 @@
 	<string name="action_start">Start</string>
 	<string name="action_add_friend">Add Friend</string>
 	<string name="action_adding_friend">Loading...</string>
+	<string name="action_friend">Added</string>
 	<string name="action_unblock">Unblock</string>
 	<string name="action_hang_live">Hang live</string>
-	<string name="action_add_member">Add</string>
+	<string name="action_add_member">Add in group</string>
 	<string name="action_member_added">Added</string>
 	<string name="action_group_member">Member</string>
 	<string name="action_nevermind">Nevermind</string>

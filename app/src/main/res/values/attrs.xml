@@ -24,10 +24,11 @@
 
   <declare-styleable name="TileView">
     <attr name="tileType" format="enum">
-      <enum name="live_co_grid" value="0" />
-      <enum name="live_co_invite" value="1" />
-      <enum name="normal" value="2" />
-      <enum name="invite" value="3" />
+      <enum name="live_grid" value="0" />
+      <enum name="connected_grid" value="1" />
+      <enum name="live_co_invite" value="2" />
+      <enum name="normal" value="3" />
+      <enum name="invite" value="4" />
     </attr>
   </declare-styleable>
 

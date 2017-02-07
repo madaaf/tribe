@@ -15,9 +15,10 @@
 	<string name="action_start">Commencer</string>
 	<string name="action_add_friend">Ajouter en ami</string>
 	<string name="action_adding_friend">Chargement</string>
+	<string name="action_friend">Ajouté</string>
 	<string name="action_unblock">Débloquer</string>
 	<string name="action_hang_live">Démarre live</string>
-	<string name="action_add_member">Ajouter</string>
+	<string name="action_add_member">Ajouter au groupe</string>
 	<string name="action_member_added">Ajouté</string>
 	<string name="action_group_member">Membre</string>
 	<string name="action_nevermind">Non</string>

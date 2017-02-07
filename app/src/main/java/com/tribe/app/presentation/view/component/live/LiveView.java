@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -26,7 +28,6 @@ import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
-import com.tribe.tribelivesdk.view.LocalPeerView;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,8 @@ import timber.log.Timber;
  */
 public class LiveView extends FrameLayout {
 
+  private static final int DURATION = 300;
+
   @Inject User user;
 
   @Inject ScreenUtils screenUtils;
@@ -50,6 +53,8 @@ public class LiveView extends FrameLayout {
   @Inject AccessToken accessToken;
 
   @Inject TribeLiveSDK tribeLiveSDK;
+
+  @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
@@ -63,10 +68,10 @@ public class LiveView extends FrameLayout {
 
   // VARIABLES
   private Recipient recipient;
-  private LocalPeerView viewLocalPeer;
   private Room room;
   private LiveRowView latestView;
   private Map<String, LiveRowView> liveRowViewMap;
+  private boolean hiddenControls = false;
 
   // RESOURCES
   private int timeJoinRoom;
@@ -78,6 +83,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Boolean> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
+  private PublishSubject<Void> onLeave = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -126,11 +132,9 @@ public class LiveView extends FrameLayout {
 
   private void initUI() {
     setBackgroundColor(Color.BLACK);
-    viewLocalPeer = new LocalPeerView(getContext());
-    viewRoom.addView(viewLocalPeer);
 
     room = tribeLiveSDK.newRoom();
-    room.initLocalStream(viewLocalPeer);
+    room.initLocalStream(viewLocalLive.getLocalPeerView());
   }
 
   private void initResources() {
@@ -183,11 +187,27 @@ public class LiveView extends FrameLayout {
   ///////////////////
 
   @OnClick(R.id.btnInviteLive) void openInvite() {
-    onOpenInvite.onNext(null);
+    if (!hiddenControls) onOpenInvite.onNext(null);
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
-    onNotify.onNext(null);
+    if (!hiddenControls) onNotify.onNext(null);
+  }
+
+  @OnClick(R.id.btnLeave) void onClickLeave() {
+    if (!hiddenControls) onLeave.onNext(null);
+  }
+
+  @OnClick(R.id.viewLocalLive) void onClickLocalView() {
+    if (hiddenControls) {
+      displayControls(1);
+      hiddenControls = false;
+      viewLocalLive.hideControls(!hiddenControls);
+    } else {
+      displayControls(0);
+      hiddenControls = true;
+      viewLocalLive.hideControls(!hiddenControls);
+    }
   }
 
   ///////////////////
@@ -263,6 +283,25 @@ public class LiveView extends FrameLayout {
   //  PRIVATE   //
   ////////////////
 
+  private void scale(View v, int scale) {
+    v.animate().scaleX(scale).scaleY(scale).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+        v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
+        v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
+        v.animate().setListener(null).start();
+      }
+    }).start();
+  }
+
+  private void displayControls(int scale) {
+    scale(btnLeave, scale);
+    scale(btnNotify, scale);
+    scale(btnInviteLive, scale);
+  }
+
   private void addView(LiveRowView liveRowView, Recipient recipient, int color) {
     liveRowView.setColor(color);
     liveRowView.setRecipient(recipient);
@@ -303,6 +342,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onNotify() {
     return onNotify;
+  }
+
+  public Observable<Void> onLeave() {
+    return onLeave;
   }
 }
 

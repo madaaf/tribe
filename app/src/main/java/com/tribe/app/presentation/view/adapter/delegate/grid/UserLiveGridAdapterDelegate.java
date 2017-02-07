@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * Created by tiago on 01/18/2017.
  */
-public class UserLiveCoGridAdapterDelegate extends RecipientGridAdapterDelegate {
+public class UserLiveGridAdapterDelegate extends RecipientGridAdapterDelegate {
 
-  public UserLiveCoGridAdapterDelegate(Context context) {
+  public UserLiveGridAdapterDelegate(Context context) {
     super(context);
   }
 
@@ -26,10 +26,10 @@ public class UserLiveCoGridAdapterDelegate extends RecipientGridAdapterDelegate 
         .getSubId()
         .equals(Recipient.ID_HEADER)
         && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-        && (items.get(position).isOnline() || items.get(position).isLive());
+        && items.get(position).isLive();
   }
 
   @Override protected int getLayoutId() {
-    return R.layout.item_user_live_co_grid;
+    return R.layout.item_user_live_grid;
   }
 }

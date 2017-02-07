@@ -11,18 +11,22 @@ import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.stream.StreamManager;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.PeerView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -51,6 +55,7 @@ import static android.R.attr.id;
     this.streamManager = new StreamManager(context);
     this.peerConnections = new HashMap<>();
     initPeerConnectionFactory();
+    initSubscriptions();
   }
 
   private void initPeerConnectionFactory() {
@@ -60,6 +65,15 @@ import static android.R.attr.id;
 
     PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
     peerConnectionFactory = new PeerConnectionFactory(options);
+  }
+
+  private void initSubscriptions() {
+    subscriptions.add(streamManager.onMediaChanged().subscribe(aVoid -> {
+      JSONObject jsonMedia = getJSONMedia(streamManager.isLocalAudioEnabled(), streamManager.isLocalCameraEnabled());
+      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
+        tribePeerConnection.send(jsonMedia.toString());
+      }
+    }));
   }
 
   public void setIceServers(List<PeerConnection.IceServer> iceServers) {
@@ -97,7 +111,6 @@ import static android.R.attr.id;
     return new TribePeerConnection(session, peerConnectionFactory, iceServers, isOffer);
   }
 
-  //
   //    public void dropAllPeerConnections() {
   //        try {
   //            Iterator localIterator = peerConnections.values().iterator();
@@ -128,7 +141,7 @@ import static android.R.attr.id;
   //            throw throwable;
   //        }
   //    }
-  //
+
   private void initLocalStream() {
     if (localMediaStream == null) {
       localMediaStream = streamManager.generateLocalStream(context, peerConnectionFactory);
@@ -139,11 +152,22 @@ import static android.R.attr.id;
     }
   }
 
-  public void switchCamera() {
-    streamManager.switchCamera();
+  private JSONObject getJSONMedia(boolean audioEnabled, boolean videoEnabled) {
+    JSONObject obj = new JSONObject();
+    jsonPut(obj, "isAudioEnabled", audioEnabled);
+    jsonPut(obj, "isVideoEnabled", videoEnabled);
+    return obj;
   }
 
-  public void setLocalStreamView(PeerView peerView) {
+  private static void jsonPut(JSONObject json, String key, Object value) {
+    try {
+      json.put(key, value);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void setLocalStreamView(LocalPeerView peerView) {
     streamManager.initLocalStreamView(peerView, peerConnectionFactory);
     initLocalStream();
   }
@@ -159,17 +183,6 @@ import static android.R.attr.id;
     tribePeerConnection.addIceCandidate(iceCandidate);
   }
 
-  //    public void createOffer(String paramString) {
-  //        TribePeerConnection tribePeerConnection = (TribePeerConnection) peerConnections.get(paramString);
-  //
-  //        if (tribePeerConnection == null) {
-  //            LogUtil.d(getClass(), "Attempt to createOffer but client does not exist");
-  //            return;
-  //        }
-  //
-  //        tribePeerConnection.createOffer();
-  //    }
-  //
   public void setRemoteDescription(TribeSession session, SessionDescription sdp) {
     TribePeerConnection tribePeerConnection = peerConnections.get(session.getPeerId());
 
@@ -197,14 +210,6 @@ import static android.R.attr.id;
 
     localMediaStream = null;
   }
-  //
-  //    public void setLocalAudioEnabled(boolean bool) {
-  //        streamManager.setLocalAudioEnabled(bool);
-  //    }
-  //
-  //    public void setLocalCameraEnabled(boolean bool) {
-  //        // TODO streamManager.setLocalCameraEnabled(bool);
-  //    }
 
   /////////////////
   // OBSERVABLES //

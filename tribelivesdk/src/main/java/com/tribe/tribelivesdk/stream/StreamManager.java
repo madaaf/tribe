@@ -8,28 +8,43 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 public class StreamManager {
 
   private Context context;
   private TribeLiveLocalStream liveLocalStream;
-  private PeerView localStreamView;
+  private LocalPeerView localPeerView;
   private final ObservableRxHashMap<String, RemotePeer> remotePeerMap = new ObservableRxHashMap<>();
+
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onMediaChanged = PublishSubject.create();
 
   public StreamManager(Context context) {
     this.context = context;
   }
 
-  public void initLocalStreamView(PeerView localStreamView,
+  public void initLocalStreamView(LocalPeerView localPeerView,
       PeerConnectionFactory peerConnectionFactory) {
-    this.localStreamView = localStreamView;
+    this.localPeerView = localPeerView;
     generateLocalStream(context, peerConnectionFactory);
     liveLocalStream.startVideoCapture();
+
+    subscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> {
+      switchCamera();
+    }));
+
+    subscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
+      setLocalCameraEnabled(enabled);
+    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
   }
 
   public MediaStream generateLocalStream(Context context,
@@ -39,12 +54,12 @@ public class StreamManager {
           "Attempt to generateLocalStream but PeerConnectionFactory is null");
     }
 
-    if (localStreamView == null) {
+    if (localPeerView == null) {
       throw new IllegalStateException("Attempt to generateLocalStream but view has not been set");
     }
 
     if (liveLocalStream == null) {
-      liveLocalStream = new TribeLiveLocalStream(context, localStreamView, peerConnectionFactory);
+      liveLocalStream = new TribeLiveLocalStream(context, localPeerView, peerConnectionFactory);
     }
 
     return liveLocalStream.asNativeMediaStream();
@@ -93,9 +108,25 @@ public class StreamManager {
     liveLocalStream.switchCamera();
   }
 
+  private void setLocalCameraEnabled(boolean enabled) {
+    if (liveLocalStream == null) {
+        return;
+    }
+
+    liveLocalStream.setCameraEnabled(enabled);
+  }
+
+  public boolean isLocalAudioEnabled() {
+    return liveLocalStream.isAudioEnabled();
+  }
+
+  public boolean isLocalCameraEnabled() {
+    return liveLocalStream.isCameraEnabled();
+  }
+
   public void dispose() {
-    localStreamView.dispose();
-    localStreamView = null;
+    localPeerView.dispose();
+    localPeerView = null;
 
     liveLocalStream.dispose();
     liveLocalStream = null;
@@ -107,9 +138,16 @@ public class StreamManager {
 
       remotePeerMap.clear();
     }
+
+    subscriptions.clear();
   }
 
+  // OBSERVABLES
   public Observable<ObservableRxHashMap.RxHashMap<String, RemotePeer>> onRemotePeersChanged() {
     return remotePeerMap.getObservable();
+  }
+
+  public Observable<Void> onMediaChanged() {
+    return onMediaChanged;
   }
 }

@@ -175,7 +175,7 @@ import timber.log.Timber;
                   R.string.userfragment_infos) : "");
 
           String groupInfosFragment =
-              (body.contains("GroupInfo") ? "\n" + getApplicationContext().getString(
+              (body.contains("GroupInfos") ? "\n" + getApplicationContext().getString(
                   R.string.groupfragment_info_members) : "");
 
           String req = getApplicationContext().getString(R.string.subscription,
@@ -205,7 +205,6 @@ import timber.log.Timber;
                   }
 
                   if (shouldAdd) {
-                    Timber.d("Adding invite to map");
                     liveCache.putInvite(newInvite);
                   }
                 }
@@ -218,7 +217,6 @@ import timber.log.Timber;
     subscriptions.add(jsonToModel.onInviteRemoved()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .subscribe(invite -> {
-          Timber.d("Remove invite to map");
           liveCache.removeInvite(invite);
         }));
 

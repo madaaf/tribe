@@ -26,6 +26,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -123,4 +124,6 @@ import dagger.Component;
   void inject(LiveTestActivity liveTestActivity);
 
   void inject(SearchView searchView);
+
+  void inject(LiveLocalView liveLocalView);
 }

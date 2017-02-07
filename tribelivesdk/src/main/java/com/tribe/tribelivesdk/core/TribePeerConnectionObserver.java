@@ -23,6 +23,7 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   private PublishSubject<MediaStream> onReceivedMediaStream = PublishSubject.create();
   private PublishSubject<MediaStream> onRemovedMediaStream = PublishSubject.create();
   private PublishSubject<Void> onShouldCreateOffer = PublishSubject.create();
+  private PublishSubject<DataChannel> onDataChannel = PublishSubject.create();
 
   public TribePeerConnectionObserver(boolean isOffer) {
     this.isOffer = isOffer;
@@ -47,7 +48,8 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   }
 
   @Override public void onDataChannel(DataChannel dataChannel) {
-    LogUtil.d(getClass(), "(unhandled) onDataChannel");
+    LogUtil.d(getClass(), "onDataChannel : " + dataChannel);
+    onDataChannel.onNext(dataChannel);
   }
 
   @Override public void onIceCandidate(IceCandidate iceCandidate) {
@@ -128,5 +130,9 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
 
   public Observable<Void> onShouldCreateOffer() {
     return onShouldCreateOffer;
+  }
+
+  public Observable<DataChannel> onReceivedDataChannel() {
+    return onDataChannel;
   }
 }

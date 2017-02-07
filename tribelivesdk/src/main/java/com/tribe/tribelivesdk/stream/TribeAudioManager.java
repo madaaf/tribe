@@ -182,7 +182,7 @@ public class TribeAudioManager {
         amState = AudioManagerState.UNINITIALIZED;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        useSpeakerphone = SPEAKERPHONE_FALSE;
+        useSpeakerphone = SPEAKERPHONE_TRUE;
         Log.d(TAG, "useSpeakerphone: " + useSpeakerphone);
 
         if (useSpeakerphone.equals(SPEAKERPHONE_FALSE)) {

@@ -11,6 +11,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ import com.tribe.app.presentation.view.adapter.ContactAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,11 +210,17 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         }));
 
     subscriptions.add(contactAdapter.onUnblock()
-        .map(view -> contactAdapter.getItemAtPosition(
+        .map(view -> (Recipient) contactAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
-        .subscribe(o -> {
-          onUnblock.onNext((Recipient) o);
+        .flatMap(recipient -> DialogFactory.dialog(getContext(), recipient.getDisplayName(),
+            context().getString(R.string.search_unblock_alert_message),
+            context().getString(R.string.search_unblock_alert_unblock),
+            context().getString(R.string.search_unblock_alert_cancel)),
+            (recipient, aBoolean) -> new Pair<>(recipient, aBoolean))
+        .filter(pair -> pair.second == true)
+        .subscribe(pair -> {
+          onUnblock.onNext(pair.first);
         }));
   }
 
@@ -246,9 +254,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         }
       } else if (obj instanceof Recipient) {
         Recipient recipient = (Recipient) obj;
-        if (recipient.getDisplayName().toLowerCase().startsWith(search) || (recipient.getUsername() != null && recipient.getUsername()
-            .toLowerCase()
-            .startsWith(search))) {
+        if (recipient.getDisplayName().toLowerCase().startsWith(search) || (recipient.getUsername()
+            != null && recipient.getUsername().toLowerCase().startsWith(search))) {
           shouldAdd = true;
         }
       }
