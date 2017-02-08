@@ -56,6 +56,7 @@ import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
@@ -203,6 +204,8 @@ public interface ApplicationComponent {
   void inject(LiveNotificationContainer liveNotificationContainer);
 
   void inject(RecipientListAdapterDelegate recipientListAdapterDelegate);
+
+  void inject(FriendMemberAdapterDelegate friendMemberAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

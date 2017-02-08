@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -95,6 +96,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   private List<GroupMember> newMembers;
   private TextViewFont currentTitle;
 
+  // RESOURCES
+  private int margin;
+
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -106,6 +110,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     unbinder = ButterKnife.bind(this);
 
+    initResources();
     initDependencyInjector();
     init(savedInstanceState);
     initPresenter();
@@ -134,10 +139,11 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       membershipId = getIntent().getStringExtra(MEMBERSHIP_ID);
       groupName = getIntent().getStringExtra(GROUP_NAME);
       txtTitle.setText(groupName);
+      setupAction(getString(R.string.group_details_invite_link));
+      txtAction.setVisibility(View.VISIBLE);
     } else {
       tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATION_STARTED);
-
-      txtAction.setText(R.string.action_create);
+      setupAction(getString(R.string.action_create));
       txtAction.setVisibility(View.VISIBLE);
       txtTitle.setText(R.string.group_identification_title);
     }
@@ -183,6 +189,10 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         setupAddMembersView(null);
       }
     }
+  }
+
+  private void initResources() {
+    margin = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
   }
 
   private void initPresenter() {
@@ -270,11 +280,12 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       if (membershipId != null) {
         if (newMembers.size() > 0) {
           txtAction.setVisibility(View.VISIBLE);
-          txtAction.setText(getString(R.string.action_add, newMembers.size()));
+          setupAction(getString(R.string.action_add, newMembers.size()));
         } else {
           txtAction.setVisibility(View.GONE);
         }
       } else {
+        setupAction(getString(R.string.action_create) + (newMembers.size() > 0 ? " (" + newMembers.size() + ")" : ""));
         txtAction.setVisibility(View.VISIBLE);
       }
     }));
@@ -324,17 +335,19 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     if (to instanceof GroupDetailsView) {
       setupTitle(membership.getDisplayName(), forward);
       txtAction.setVisibility(View.VISIBLE);
-      txtAction.setText(R.string.group_details_invite_link);
+      setupAction(getString(R.string.group_details_invite_link));
     } else if (to instanceof AddMembersGroupView) {
       setupTitle(getString(R.string.group_add_members_title), forward);
       if (newMembers.size() > 0) {
         txtAction.setVisibility(View.VISIBLE);
-        txtAction.setText(getString(R.string.action_add, newMembers.size()));
+        setupAction(getString(R.string.action_add, newMembers.size()));
+      } else {
+        txtAction.setVisibility(View.GONE);
       }
     } else if (to instanceof UpdateGroupView) {
       setupTitle(getString(R.string.group_settings_title), forward);
       txtAction.setVisibility(View.VISIBLE);
-      txtAction.setText(getString(R.string.action_save));
+      setupAction(getString(R.string.action_save));
     }
   }
 
@@ -350,6 +363,21 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       hideTitle(txtTitleTwo, forward);
       showTitle(txtTitle, forward);
     }
+  }
+
+  private void setupAction(String action) {
+    txtAction.setText(action);
+    txtAction.measure(0, 0);
+
+    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) txtTitle.getLayoutParams();
+    params.leftMargin = txtAction.getMeasuredWidth() + margin * 2;
+    params.rightMargin = params.leftMargin;
+    txtTitle.setLayoutParams(params);
+
+    params = (ViewGroup.MarginLayoutParams) txtTitleTwo.getLayoutParams();
+    params.leftMargin = txtAction.getMeasuredWidth() + margin * 2;
+    params.rightMargin = params.leftMargin;
+    txtTitleTwo.setLayoutParams(params);
   }
 
   private void hideTitle(View view, boolean forward) {

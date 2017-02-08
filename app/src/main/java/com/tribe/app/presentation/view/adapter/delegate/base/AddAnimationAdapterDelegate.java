@@ -22,15 +22,15 @@ import rx.subjects.PublishSubject;
  */
 public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T> {
 
-  private static final int DURATION = 300;
+  public static final int DURATION = 300;
 
   protected LayoutInflater layoutInflater;
   protected Context context;
   protected int actionButtonHeight, marginSmall;
 
   // RX SUBSCRIPTIONS / SUBJECTS
-  private final PublishSubject<View> clickAdd = PublishSubject.create();
-  private final PublishSubject<View> clickRemove = PublishSubject.create();
+  protected final PublishSubject<View> clickAdd = PublishSubject.create();
+  protected final PublishSubject<View> clickRemove = PublishSubject.create();
 
   protected Map<AddAnimationViewHolder, AnimatorSet> animations = new HashMap<>();
 

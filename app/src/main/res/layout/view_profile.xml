@@ -72,7 +72,7 @@
           android:layout_height="wrap_content"
           android:background="@null"
           app:actionTitle="@string/profile_logout"
-          app:actionType="critical"
+          app:actionType="regular"
           />
 
       <include layout="@layout/view_separator_simple" />

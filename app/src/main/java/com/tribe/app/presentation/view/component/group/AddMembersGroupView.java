@@ -5,10 +5,10 @@ import android.graphics.Rect;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,13 +19,13 @@ import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GroupMemberDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.FriendMembersLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.MembersLayoutManager;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -72,10 +72,12 @@ public class AddMembersGroupView extends LinearLayout {
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
   private List<GroupMember> newMembers;
+  private String currentFilter = "";
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
   private PublishSubject<List<GroupMember>> membersChanged = PublishSubject.create();
+  private PublishSubject<Pair<Integer, GroupMember>> onRemoved = PublishSubject.create();
 
   public AddMembersGroupView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -156,23 +158,44 @@ public class AddMembersGroupView extends LinearLayout {
           filter(s);
         }));
 
-    subscriptions.add(adapter.clickAdd()
-        .map(view -> {
-          int position = recyclerView.getChildLayoutPosition(view);
-          adapter.notifyItemChanged(position);
-          return adapter.getItemAtPosition(position);
-        })
-        .subscribe(obj -> {
-          GroupMember groupMember = (GroupMember) obj;
-          boolean add = membersAdapter.compute(groupMember);
-          if (add) {
-            newMembers.add(groupMember);
-          } else {
-            newMembers.remove(groupMember);
-          }
+    subscriptions.add(adapter.clickAdd().map(view -> {
+      editTextSearch.setText("");
+      int position = recyclerView.getChildLayoutPosition(view);
+      return new Pair<>(position, (GroupMember) adapter.getItemAtPosition(position));
+    }).subscribe(pair -> {
+      GroupMember groupMember = pair.second;
+      boolean add = membersAdapter.isAdd(groupMember);
+      if (add) {
+        membersAdapter.compute(groupMember);
+        adapter.notifyItemChanged(pair.first);
+        newMembers.add(groupMember);
+        membersChanged.onNext(newMembers);
+        refactorMembers();
+      } else {
+        onRemoved.onNext(pair);
+      }
+    }));
+
+    subscriptions.add(onRemoved.flatMap(
+        pair -> DialogFactory.dialog(getContext(), pair.second.getUser().getDisplayName(),
+            getContext().getString(R.string.group_members_remove_member_alert_message),
+            getContext().getString(R.string.group_members_remove_member_alert_confirm,
+                pair.second.getUser().getDisplayName()),
+            getContext().getString(R.string.action_nevermind)),
+        (pair, aBoolean) -> new Pair<>(pair, aBoolean))
+        .filter(pair -> pair.second == true)
+        .subscribe(pair -> {
+          GroupMember groupMember = pair.first.second;
+          adapter.notifyItemChanged(pair.first.first);
+          membersAdapter.compute(groupMember);
+          newMembers.remove(groupMember);
           membersChanged.onNext(newMembers);
           refactorMembers();
         }));
+
+    subscriptions.add(onRemoved.subscribe(groupMember -> {
+
+    }));
 
     setupMembers();
     refactorMembers();
@@ -234,6 +257,9 @@ public class AddMembersGroupView extends LinearLayout {
   }
 
   private void filter(String text) {
+    if (text.equals(currentFilter)) return;
+
+    currentFilter = text;
     adapter.filterList(text);
   }
 

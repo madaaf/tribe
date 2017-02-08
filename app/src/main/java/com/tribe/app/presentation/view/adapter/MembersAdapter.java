@@ -72,6 +72,16 @@ public class MembersAdapter extends RecyclerView.Adapter {
     }
   }
 
+  public boolean isAdd(GroupMember groupMember) {
+    boolean result = false;
+
+    if (!items.contains(groupMember)) {
+      result = true;
+    }
+
+    return result;
+  }
+
   // Returns true if add, false otherwise
   public boolean compute(GroupMember groupMember) {
     boolean result = false;

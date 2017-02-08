@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.adapter.viewholder;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,5 +26,5 @@ public class AddAnimationViewHolder extends RecyclerView.ViewHolder {
 
   @BindView(R.id.txtAction) public TextViewFont txtAction;
 
-  @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
+  @Nullable @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
 }

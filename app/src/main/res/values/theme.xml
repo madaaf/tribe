@@ -1,73 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <item name="colorPrimary">@android:color/black</item>
+    <item name="colorPrimaryDark">@android:color/black</item>
+    <item name="colorAccent">@android:color/black</item>
+    <item name="actionMenuTextColor">@android:color/white</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:textColor">@android:color/black</item>
+  </style>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@android:color/black</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
-        <item name="colorAccent">@android:color/black</item>
-        <item name="actionMenuTextColor">@android:color/white</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:textColor">@android:color/black</item>
-        <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-    </style>
+  <style name="AppTheme.Black" parent="@style/AppTheme">
+    <item name="android:windowBackground">@android:color/black</item>
+  </style>
 
-    <style name="AppTheme.Black" parent="@style/AppTheme">
-        <item name="android:windowBackground">@android:color/black</item>
-    </style>
+  <style name="AppTheme.White" parent="@style/AppTheme">
+    <item name="android:windowBackground">@android:color/white</item>
+  </style>
 
-    <style name="AppTheme.BlackLight" parent="@style/AppTheme">
-        <item name="android:windowBackground">@color/black.light</item>
-    </style>
+  <style name="AppTheme.BlackLight" parent="@style/AppTheme">
+    <item name="android:windowBackground">@color/black.light</item>
+  </style>
 
-    <style name="AppTheme.Transparent" parent="AppTheme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-    </style>
+  <style name="AppTheme.Transparent" parent="AppTheme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
 
-    <style name="AppTheme.FullScreen" parent="@style/Theme.AppCompat.Light">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
+  <style name="AppTheme.FullScreen" parent="@style/Theme.AppCompat.Light">
+    <item name="windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowNoTitle">true</item>
+  </style>
 
-    <style name="AppTheme.FullScreen.Black" parent="@style/AppTheme.FullScreen">
-        <item name="android:windowBackground">@android:color/black</item>
-    </style>
+  <style name="AppTheme.FullScreen.Black" parent="@style/AppTheme.FullScreen">
+    <item name="android:windowBackground">@android:color/black</item>
+  </style>
 
-    <style name="AppTheme.FullScreen.Translucent" parent="@style/Theme.AppCompat.Light">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-    </style>
+  <style name="AppTheme.FullScreen.Translucent" parent="@style/Theme.AppCompat.Light">
+    <item name="windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
 
-    <style name="CropTheme" parent="@style/Theme.AppCompat.Light">
-        <item name="colorPrimary">@android:color/white</item>
-        <item name="titleTextColor">@android:color/black</item>
-        <item name="actionMenuTextColor">@android:color/black</item>
-        <item name="android:textColorPrimary">@android:color/black</item>
-    </style>
+  <style name="CropTheme" parent="@style/Theme.AppCompat.Light">
+    <item name="colorPrimary">@android:color/white</item>
+    <item name="titleTextColor">@android:color/black</item>
+    <item name="actionMenuTextColor">@android:color/black</item>
+    <item name="android:textColorPrimary">@android:color/black</item>
+  </style>
 
-    <style name="DialogAnimation" parent="@android:style/Animation.Activity">
-        <item name="android:windowEnterAnimation">@anim/base_dialog_fragment_enter_animation</item>
-        <item name="android:windowExitAnimation">@anim/base_dialog_fragment_exit_animation</item>
-    </style>
+  <style name="DialogAnimation" parent="@android:style/Animation.Activity">
+    <item name="android:windowEnterAnimation">@anim/base_dialog_fragment_enter_animation</item>
+    <item name="android:windowExitAnimation">@anim/base_dialog_fragment_exit_animation</item>
+  </style>
 
-    <style name="Custom.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowIsFloating">false</item>
-    </style>
+  <style name="Custom.Dialog" parent="@style/Theme.AppCompat.Light.Dialog">
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowFullscreen">true</item>
+    <item name="android:windowIsFloating">false</item>
+  </style>
 
 </resources>

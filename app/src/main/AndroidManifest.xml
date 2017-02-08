@@ -175,7 +175,7 @@
     <activity
         android:name=".presentation.view.activity.GroupActivity"
         android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"/>
+        android:theme="@style/AppTheme.White"/>
 
     <activity
         android:name=".presentation.view.activity.SearchUserActivity"
@@ -190,7 +190,7 @@
     <activity
         android:name=".presentation.view.activity.ProfileActivity"
         android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"/>
+        android:theme="@style/AppTheme.White"/>
 
     <activity
         android:name=".presentation.view.activity.LiveActivity"

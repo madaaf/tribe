@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_rect_white_rounded_top"
+    android:background="@null"
     tools:context=".presentation.view.activity.GroupActivity"
     >
 
@@ -34,6 +34,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_marginTop="@dimen/top_bar_height_small"
+      android:background="@null"
       />
 
   <View
@@ -79,13 +80,13 @@
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAction"
-        style="@style/Title.2.Blue"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right|center_vertical"
         android:layout_marginRight="@dimen/horizontal_margin"
         android:gravity="right|center_vertical"
         android:visibility="gone"
+        style="@style/Title.2.Blue"
         />
 
   </FrameLayout>
