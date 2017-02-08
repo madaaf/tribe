@@ -103,9 +103,6 @@ public class TribeAudioManager {
     // available, far from ear <=> use speaker phone).
     private TribeProximitySensor proximitySensor = null;
 
-    // Handles all tasks related to Bluetooth headset devices.
-    private final TribeBluetoothManager bluetoothManager;
-
     // Contains a list of available audio devices. A Set collection is used to
     // avoid duplicate elements.
     private Set<AudioDevice> audioDevices = new HashSet<AudioDevice>();
@@ -177,7 +174,6 @@ public class TribeAudioManager {
         ThreadUtils.checkIsOnMainThread();
         apprtcContext = context;
         audioManager = ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE));
-        bluetoothManager = TribeBluetoothManager.create(context, this);
         wiredHeadsetReceiver = new WiredHeadsetReceiver();
         amState = AudioManagerState.UNINITIALIZED;
 
@@ -289,10 +285,6 @@ public class TribeAudioManager {
         selectedAudioDevice = AudioDevice.NONE;
         audioDevices.clear();
 
-        // Initialize and start Bluetooth if a BT device is available or initiate
-        // detection of new (enabled) BT devices.
-        bluetoothManager.start();
-
         // Do initial selection of audio device. This setting can later be changed
         // either by adding/removing a BT or wired headset or by covering/uncovering
         // the proximity sensor.
@@ -314,8 +306,6 @@ public class TribeAudioManager {
         amState = AudioManagerState.UNINITIALIZED;
 
         unregisterReceiver(wiredHeadsetReceiver);
-
-        bluetoothManager.stop();
 
         // Restore previously stored audio states.
         setSpeakerphoneOn(savedIsSpeakerPhoneOn);
@@ -477,31 +467,13 @@ public class TribeAudioManager {
      */
     public void updateAudioDeviceState() {
         ThreadUtils.checkIsOnMainThread();
-        Log.d(TAG, "--- updateAudioDeviceState: "
-                + "wired headset=" + hasWiredHeadset + ", "
-                + "BT state=" + bluetoothManager.getState());
         Log.d(TAG, "Device status: "
                 + "available=" + audioDevices + ", "
                 + "selected=" + selectedAudioDevice + ", "
                 + "user selected=" + userSelectedAudioDevice);
 
-        // Check if any Bluetooth headset is connected. The internal BT state will
-        // change accordingly.
-        // TODO(henrika): perhaps wrap required state into BT manager.
-        if (bluetoothManager.getState() == TribeBluetoothManager.State.HEADSET_AVAILABLE
-                || bluetoothManager.getState() == TribeBluetoothManager.State.HEADSET_UNAVAILABLE
-                || bluetoothManager.getState() == TribeBluetoothManager.State.SCO_DISCONNECTING) {
-            bluetoothManager.updateDevice();
-        }
-
         // Update the set of available audio devices.
         Set<AudioDevice> newAudioDevices = new HashSet<>();
-
-        if (bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTED
-                || bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTING
-                || bluetoothManager.getState() == TribeBluetoothManager.State.HEADSET_AVAILABLE) {
-            newAudioDevices.add(AudioDevice.BLUETOOTH);
-        }
 
         if (hasWiredHeadset) {
             // If a wired headset is connected, then it is the only possible option.
@@ -518,12 +490,7 @@ public class TribeAudioManager {
         boolean audioDeviceSetUpdated = !audioDevices.equals(newAudioDevices);
         // Update the existing audio device set.
         audioDevices = newAudioDevices;
-        // Correct user selected audio devices if needed.
-        if (bluetoothManager.getState() == TribeBluetoothManager.State.HEADSET_UNAVAILABLE
-                && userSelectedAudioDevice == AudioDevice.BLUETOOTH) {
-            // If BT is not available, it can't be the user selection.
-            userSelectedAudioDevice = AudioDevice.NONE;
-        }
+
         if (hasWiredHeadset && userSelectedAudioDevice == AudioDevice.SPEAKER_PHONE) {
             // If user selected speaker phone, but then plugged wired headset then make
             // wired headset as user selected device.
@@ -535,53 +502,10 @@ public class TribeAudioManager {
             userSelectedAudioDevice = AudioDevice.SPEAKER_PHONE;
         }
 
-        // Need to start Bluetooth if it is available and user either selected it explicitly or
-        // user did not select any output device.
-        boolean needBluetoothAudioStart =
-                bluetoothManager.getState() == TribeBluetoothManager.State.HEADSET_AVAILABLE
-                        && (userSelectedAudioDevice == AudioDevice.NONE
-                        || userSelectedAudioDevice == AudioDevice.BLUETOOTH);
-
-        // Need to stop Bluetooth audio if user selected different device and
-        // Bluetooth SCO connection is established or in the process.
-        boolean needBluetoothAudioStop =
-                (bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTED
-                        || bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTING)
-                        && (userSelectedAudioDevice != AudioDevice.NONE
-                        && userSelectedAudioDevice != AudioDevice.BLUETOOTH);
-
-        if (bluetoothManager.getState() == TribeBluetoothManager.State.HEADSET_AVAILABLE
-                || bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTING
-                || bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTED) {
-            Log.d(TAG, "Need BT audio: start=" + needBluetoothAudioStart + ", "
-                    + "stop=" + needBluetoothAudioStop + ", "
-                    + "BT state=" + bluetoothManager.getState());
-        }
-
-        // Start or stop Bluetooth SCO connection given states set earlier.
-        if (needBluetoothAudioStop) {
-            bluetoothManager.stopScoAudio();
-            bluetoothManager.updateDevice();
-        }
-
-        if (needBluetoothAudioStart && !needBluetoothAudioStop) {
-            // Attempt to start Bluetooth SCO audio (takes a few second to start).
-            if (!bluetoothManager.startScoAudio()) {
-                // Remove BLUETOOTH from list of available devices since SCO failed.
-                audioDevices.remove(AudioDevice.BLUETOOTH);
-                audioDeviceSetUpdated = true;
-            }
-        }
-
         // Update selected audio device.
         AudioDevice newAudioDevice = selectedAudioDevice;
 
-        if (bluetoothManager.getState() == TribeBluetoothManager.State.SCO_CONNECTED) {
-            // If a Bluetooth is connected, then it should be used as output audio
-            // device. Note that it is not sufficient that a headset is available;
-            // an active SCO channel must also be up and running.
-            newAudioDevice = AudioDevice.BLUETOOTH;
-        } else if (hasWiredHeadset) {
+        if (hasWiredHeadset) {
             // If a wired headset is connected, but Bluetooth is not, then wired headset is used as
             // audio device.
             newAudioDevice = AudioDevice.WIRED_HEADSET;

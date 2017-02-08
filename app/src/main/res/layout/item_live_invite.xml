@@ -12,7 +12,7 @@
         android:layout_marginRight="@dimen/horizontal_margin_xsmall"
         android:background="@drawable/shape_rect_rounded_violet_5"
         android:clickable="true"
-        android:foreground="@drawable/selectable_button_all_rounded_white_5">
+        android:foreground="@drawable/selectable_button_all_rounded_5_black_5">
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:layout_width="wrap_content"

@@ -32,6 +32,10 @@ public class RemotePeer extends Peer {
     this.peerView = peerView;
   }
 
+  public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
+    if (peerView != null) peerView.setMediaConfiguration(mediaConfiguration);
+  }
+
   public void dispose() {
     if (peerView != null) peerView.dispose();
   }

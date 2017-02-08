@@ -27,6 +27,6 @@
 
   </com.tribe.app.presentation.view.widget.PulseLayout>
 
-  <include layout="@layout/view_tile_grid_base"/>
+  <include layout="@layout/view_tile_grid_base_online"/>
 
 </merge>

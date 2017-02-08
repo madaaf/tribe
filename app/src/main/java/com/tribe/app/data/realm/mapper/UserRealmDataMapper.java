@@ -52,7 +52,7 @@ public class UserRealmDataMapper {
             user.setTribeSave(userRealm.isTribeSave());
             user.setPushNotif(userRealm.isPushNotif());
             user.setIsOnline(userRealm.isOnline());
-            user.setLastOnline(userRealm.getLastOnline());
+            user.setLastSeenAt(userRealm.getLastSeenAt());
             if (shouldTransformFriendships) {
                 if (userRealm.getMemberships() != null)
                     user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
@@ -108,7 +108,7 @@ public class UserRealmDataMapper {
             userRealm.setPushNotif(user.isPushNotif());
             userRealm.setTribeSave(user.isTribeSave());
             userRealm.setIsOnline(user.isOnline());
-            userRealm.setLastOnline(user.getLastOnline());
+            userRealm.setLastSeenAt(user.getLastSeenAt());
             if (shouldTransformFriendships) {
                 if (user.getMembershipList() != null)
                     userRealm.setMemberships(membershipRealmDataMapper.transformMemberships(user.getMembershipList()));

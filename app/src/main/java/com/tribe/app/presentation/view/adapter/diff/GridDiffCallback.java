@@ -58,8 +58,8 @@ public class GridDiffCallback extends DiffUtil.Callback {
             diffBundle.putString(Recipient.PROFILE_PICTURE, newRecipient.getProfilePicture());
         }
 
-        if (!ObjectUtils.nullSafeEquals(newRecipient.getLastOnline(), oldRecipient.getLastOnline())) {
-            diffBundle.putSerializable(Recipient.LAST_ONLINE, newRecipient.getLastOnline());
+        if (!ObjectUtils.nullSafeEquals(newRecipient.getLastSeenAt(), oldRecipient.getLastSeenAt())) {
+            diffBundle.putSerializable(Recipient.LAST_ONLINE, newRecipient.getLastSeenAt());
         }
 
         if (newRecipient.isLive() != oldRecipient.isLive()) {

@@ -6,13 +6,14 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
+import com.tribe.tribelivesdk.model.TribeMessageDataChannel;
 import com.tribe.tribelivesdk.model.TribeOffer;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.stream.StreamManager;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
-import com.tribe.tribelivesdk.view.PeerView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -49,6 +49,8 @@ import static android.R.attr.id;
   private PublishSubject<TribeAnswer> onReadyToSendSdpAnswer = PublishSubject.create();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
   private PublishSubject<TribeMediaStream> onReceivedPeer = PublishSubject.create();
+  private PublishSubject<TribeMessageDataChannel> onReceivedDataChannelMessage =
+      PublishSubject.create();
 
   @Inject public WebRTCClient(Context context) {
     this.context = context;
@@ -69,7 +71,8 @@ import static android.R.attr.id;
 
   private void initSubscriptions() {
     subscriptions.add(streamManager.onMediaChanged().subscribe(aVoid -> {
-      JSONObject jsonMedia = getJSONMedia(streamManager.isLocalAudioEnabled(), streamManager.isLocalCameraEnabled());
+      JSONObject jsonMedia =
+          getJSONMedia(streamManager.isLocalAudioEnabled(), streamManager.isLocalCameraEnabled());
       for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
         tribePeerConnection.send(jsonMedia.toString());
       }
@@ -99,48 +102,53 @@ import static android.R.attr.id;
     subscriptions.add(remotePeer.onReadyToSendSdpOffer().subscribe(onReadyToSendSdpOffer));
     subscriptions.add(remotePeer.onReadyToSendSdpAnswer().subscribe(onReadyToSendSdpAnswer));
     subscriptions.add(remotePeer.onReceiveTribeCandidate().subscribe(onReceivedTribeCandidate));
+
     subscriptions.add(remotePeer.onReceivedMediaStream()
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(tribeMediaStream -> streamManager.generateNewRemotePeer(session))
         .doOnNext(tribeMediaStream -> streamManager.setMediaStreamForClient(session.getPeerId(),
             tribeMediaStream.getMediaStream()))
         .subscribe(onReceivedPeer));
+
+    subscriptions.add(remotePeer.onDataChannelOpened()
+        .subscribe(aVoid -> remotePeer.send(getJSONMedia(streamManager.isLocalAudioEnabled(),
+            streamManager.isLocalCameraEnabled()).toString())));
+
+    subscriptions.add(remotePeer.onDataChannelMessage().subscribe(onReceivedDataChannelMessage));
   }
 
   private TribePeerConnection createPeerConnection(TribeSession session, boolean isOffer) {
     return new TribePeerConnection(session, peerConnectionFactory, iceServers, isOffer);
   }
 
-  //    public void dropAllPeerConnections() {
-  //        try {
-  //            Iterator localIterator = peerConnections.values().iterator();
-  //            while (localIterator.hasNext()) {
-  //                ((TribePeerConnection) localIterator.next()).remove();
-  //            }
-  //
-  //            peerConnections.clear();
-  //        } catch (Throwable localThrowable) {
-  //            throw localThrowable;
-  //        }
-  //    }
-  //
-  //    private boolean removePeerConnection(String peerId) {
-  //        TribePeerConnection tribePeerConnection = peerConnections.get(peerId);
-  //
-  //        if (tribePeerConnection == null) {
-  //            LogUtil.e(getClass(), "Attempt to removePeerConnection on invalid clientId");
-  //            return false;
-  //        }
-  //
-  //        tribePeerConnection.remove();
-  //
-  //        try {
-  //            peerConnections.remove(paramString);
-  //            return true;
-  //        } catch (Throwable throwable) {
-  //            throw throwable;
-  //        }
-  //    }
+  public boolean removePeerConnection(TribeSession tribeSession) {
+    LogUtil.d(getClass(), "removePeerConnection for peerId : " + tribeSession.getPeerId());
+    TribePeerConnection tribePeerConnection = peerConnections.get(tribeSession.getPeerId());
+
+    if (tribePeerConnection == null) {
+      LogUtil.e(getClass(), "Attempt to removePeerConnection on invalid peerId");
+      return false;
+    }
+
+    tribePeerConnection.dispose(localMediaStream);
+
+    streamManager.removePeer(tribeSession);
+
+    try {
+      peerConnections.remove(tribeSession.getPeerId());
+      return true;
+    } catch (Throwable throwable) {
+      throw throwable;
+    }
+  }
+
+  public void setMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+    LogUtil.d(getClass(), "setMediaConfiguration for peerId : " + tribePeerMediaConfiguration
+        .getSession()
+        .getPeerId());
+
+    streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
+  }
 
   private void initLocalStream() {
     if (localMediaStream == null) {
@@ -195,6 +203,17 @@ import static android.R.attr.id;
     tribePeerConnection.setRemoteDescription(sdp);
   }
 
+  public void sendToPeers(JSONObject obj) {
+    if (peerConnections != null && peerConnections.size() > 0) {
+      JSONObject appMsg = new JSONObject();
+      jsonPut(appMsg, "app", obj);
+
+      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
+        tribePeerConnection.send(appMsg.toString());
+      }
+    }
+  }
+
   public void dispose() {
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
@@ -229,5 +248,9 @@ import static android.R.attr.id;
 
   public Observable<ObservableRxHashMap.RxHashMap<String, RemotePeer>> onRemotePeersChanged() {
     return streamManager.onRemotePeersChanged();
+  }
+
+  public Observable<TribeMessageDataChannel> onReceivedDataChannelMessage() {
+    return onReceivedDataChannelMessage;
   }
 }

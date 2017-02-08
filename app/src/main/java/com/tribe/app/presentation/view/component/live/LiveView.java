@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,16 +23,21 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -71,6 +77,7 @@ public class LiveView extends FrameLayout {
   private Room room;
   private LiveRowView latestView;
   private Map<String, LiveRowView> liveRowViewMap;
+  private Map<String, LiveRowView> liveInviteMap;
   private boolean hiddenControls = false;
 
   // RESOURCES
@@ -128,6 +135,7 @@ public class LiveView extends FrameLayout {
 
   private void init(Context context, AttributeSet attrs) {
     liveRowViewMap = new HashMap<>();
+    liveInviteMap = new HashMap<>();
   }
 
   private void initUI() {
@@ -162,21 +170,51 @@ public class LiveView extends FrameLayout {
       Timber.d("Room state change : " + state);
     }));
 
-    subscriptions.add(room.onRemotePeerAdded().subscribe(remotePeer -> {
-      Timber.d("Remote peer added with id : "
-          + remotePeer.getSession().getPeerId()
-          + " & view : "
-          + remotePeer.getPeerView());
-      addView(remotePeer);
-    }));
+    subscriptions.add(
+        room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
+          Timber.d("Remote peer added with id : "
+              + remotePeer.getSession().getPeerId()
+              + " & view : "
+              + remotePeer.getPeerView());
+          addView(remotePeer);
+        }));
 
-    subscriptions.add(room.onRemotePeerRemoved().subscribe(remotePeer -> {
-      Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
-    }));
+    subscriptions.add(room.onRemotePeerRemoved()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(remotePeer -> {
+          Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
+          if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
+            LiveRowView liveRowView = liveRowViewMap.remove(remotePeer.getSession().getUserId());
+            removeView(liveRowView);
+            liveRowView = null;
+          }
+        }));
 
-    subscriptions.add(room.onRemotePeerUpdated().subscribe(remotePeer -> {
-      Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId());
-    }));
+    subscriptions.add(room.onRemotePeerUpdated()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(remotePeer -> {
+          Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId());
+        }));
+
+    subscriptions.add(room.onInvitedTribeGuestList()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeGuests -> {
+          if (tribeGuests != null && tribeGuests.size() > 0) {
+            for (TribeGuest trg : tribeGuests) {
+              if (!liveInviteMap.containsKey(trg.getId()) && !liveRowViewMap.containsKey(
+                  trg.getId())) {
+                LiveRowView liveRowView = new LiveRowView(getContext());
+                liveRowView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                  @Override public void onGlobalLayout() {
+                    liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    liveRowView.startPulse();
+                  }
+                });
+                addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
+              }
+            }
+          }
+        }));
 
     Timber.d("Initiating Room");
     room.connect(options);
@@ -216,6 +254,7 @@ public class LiveView extends FrameLayout {
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     subscriptions.add(obs.subscribe(event -> {
+      viewLocalLive.setEnabled(event == LiveContainer.EVENT_OPENED ? false : true);
       viewRoom.setType(
           event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
     }));
@@ -224,7 +263,9 @@ public class LiveView extends FrameLayout {
   public void initOnStartDragSubscription(Observable<TileView> obs) {
     subscriptions.add(obs.subscribe(tileView -> {
       latestView = new LiveRowView(getContext());
-      addView(latestView, tileView.getRecipient(), tileView.getBackgroundColor());
+      TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
+          tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture());
+      addView(latestView, guest, tileView.getBackgroundColor());
     }));
   }
 
@@ -252,6 +293,9 @@ public class LiveView extends FrameLayout {
     subscriptions.add(obs.subscribe(tileView -> {
       tileView.onDrop(latestView);
 
+      liveInviteMap.put(latestView.getGuest().getId(), latestView);
+      room.sendToPeers(getInvitedPayload());
+
       subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> latestView.startPulse()));
     }));
   }
@@ -268,9 +312,11 @@ public class LiveView extends FrameLayout {
     txtName.setText(recipient.getDisplayName());
 
     if (recipient instanceof Friendship) {
+      TribeGuest guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
+          recipient.getProfilePicture());
       LiveRowView liveRowView = new LiveRowView(getContext());
-      liveRowViewMap.put(recipient.getSubId(), liveRowView);
-      addView(liveRowView, this.recipient, color);
+      liveRowViewMap.put(guest.getId(), liveRowView);
+      addView(liveRowView, guest, color);
       liveRowView.startPulse();
     }
   }
@@ -284,16 +330,21 @@ public class LiveView extends FrameLayout {
   ////////////////
 
   private void scale(View v, int scale) {
-    v.animate().scaleX(scale).scaleY(scale).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
-      }
+    v.animate()
+        .scaleX(scale)
+        .scaleY(scale)
+        .setDuration(DURATION)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationStart(Animator animation) {
+            v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
+          }
 
-      @Override public void onAnimationEnd(Animator animation) {
-        v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
-        v.animate().setListener(null).start();
-      }
-    }).start();
+          @Override public void onAnimationEnd(Animator animation) {
+            v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
+            v.animate().setListener(null).start();
+          }
+        })
+        .start();
   }
 
   private void displayControls(int scale) {
@@ -302,9 +353,9 @@ public class LiveView extends FrameLayout {
     scale(btnInviteLive, scale);
   }
 
-  private void addView(LiveRowView liveRowView, Recipient recipient, int color) {
+  private void addView(LiveRowView liveRowView, TribeGuest guest, int color) {
     liveRowView.setColor(color);
-    liveRowView.setRecipient(recipient);
+    liveRowView.setGuest(guest);
     liveRowView.setRoomType(viewRoom.getType());
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);
@@ -314,7 +365,12 @@ public class LiveView extends FrameLayout {
   private void addView(RemotePeer remotePeer) {
     LiveRowView liveRowView;
 
-    if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
+    if (liveInviteMap.containsKey(remotePeer.getSession().getUserId())) {
+      liveRowView = liveInviteMap.get(remotePeer.getSession().getUserId());
+      liveRowView.setPeerView(remotePeer.getPeerView());
+      liveInviteMap.remove(remotePeer.getSession().getUserId());
+      liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
+    } else if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
       liveRowView = liveRowViewMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
     } else {
@@ -325,6 +381,42 @@ public class LiveView extends FrameLayout {
           new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.MATCH_PARENT);
       viewRoom.addView(liveRowView, params);
+    }
+  }
+
+  private JSONObject getInvitedPayload() {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray array = new JSONArray();
+    for (LiveRowView liveRowView : liveInviteMap.values()) {
+      JSONObject invitedGuest = new JSONObject();
+      jsonPut(invitedGuest, TribeGuest.ID, liveRowView.getGuest().getId());
+      jsonPut(invitedGuest, TribeGuest.DISPLAY_NAME, liveRowView.getGuest().getDisplayName());
+      jsonPut(invitedGuest, TribeGuest.PICTURE, liveRowView.getGuest().getPicture());
+      array.put(invitedGuest);
+    }
+    jsonPut(jsonObject, Room.MESSAGE_INVITE_ADDED, array);
+    return jsonObject;
+  }
+
+  private JSONObject getRemovedPayload(TribeGuest guest) {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray array = new JSONArray();
+
+    JSONObject removedGuest = new JSONObject();
+    jsonPut(removedGuest, TribeGuest.ID, guest.getId());
+    jsonPut(removedGuest, TribeGuest.DISPLAY_NAME, guest.getDisplayName());
+    jsonPut(removedGuest, TribeGuest.PICTURE, guest.getPicture());
+    array.put(removedGuest);
+
+    jsonPut(jsonObject, Room.MESSAGE_INVITE_REMOVED, array);
+    return jsonObject;
+  }
+
+  private static void jsonPut(JSONObject json, String key, Object value) {
+    try {
+      json.put(key, value);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
     }
   }
 

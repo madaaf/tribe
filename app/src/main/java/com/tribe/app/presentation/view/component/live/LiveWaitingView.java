@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -40,7 +41,7 @@ public class LiveWaitingView extends FrameLayout {
   private FrameLayout.LayoutParams circleViewParams;
   private AvatarView viewAvatar;
   private ValueAnimator circleAnimator;
-  private Recipient recipient;
+  private TribeGuest guest;
   private Boolean isMeasuring = false;
   private @LiveRoomView.TribeRoomViewType int type = LiveRoomView.GRID;
   private TextViewFont txtDropInTheLive;
@@ -170,9 +171,9 @@ public class LiveWaitingView extends FrameLayout {
     circlePaint.setColor(paletteGrid.getRandomColorExcluding(color));
   }
 
-  public void setRecipient(Recipient recipient) {
-    this.recipient = recipient;
-    viewAvatar.load(recipient.getProfilePicture());
+  public void setGuest(TribeGuest guest) {
+    this.guest = guest;
+    viewAvatar.load(guest.getPicture());
   }
 
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {

@@ -104,8 +104,8 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     }
 
     @Override
-    public Date getLastOnline() {
-        if (friend != null) return friend.getLastOnline();
+    public Date getLastSeenAt() {
+        if (friend != null) return friend.getLastSeenAt();
         return null;
     }
 

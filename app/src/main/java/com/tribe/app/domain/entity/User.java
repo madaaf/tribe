@@ -34,7 +34,7 @@ public class User implements Serializable {
   private boolean push_notif;
 
   private boolean is_online = false;
-  private Date last_online;
+  private Date last_seen_at;
 
   private boolean isNewFriend = false;
   private boolean isFriend = false;
@@ -208,12 +208,12 @@ public class User implements Serializable {
     this.is_online = isOnline;
   }
 
-  public Date getLastOnline() {
-    return last_online;
+  public Date getLastSeenAt() {
+    return last_seen_at;
   }
 
-  public void setLastOnline(Date lastOnline) {
-    this.last_online = lastOnline;
+  public void setLastSeenAt(Date lastSeenAt) {
+    this.last_seen_at = lastSeenAt;
   }
 
   public boolean isFriend() {

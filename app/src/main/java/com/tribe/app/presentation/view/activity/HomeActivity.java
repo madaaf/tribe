@@ -268,7 +268,8 @@ public class HomeActivity extends BaseActivity
       }
     });
 
-    subscriptions.add(homeGridAdapter.onClickMore()
+    subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(),
+        homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .flatMap(recipient -> {
@@ -281,7 +282,6 @@ public class HomeActivity extends BaseActivity
           }
         }, ((recipient, labelType) -> {
           if (labelType != null) {
-            // TODO Block / Hide again
             if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
                 .equals(LabelType.BLOCK_HIDE)) {
               tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);

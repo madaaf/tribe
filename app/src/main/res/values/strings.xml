@@ -143,11 +143,11 @@
 	<string name="permission_facebook_popup_title">Find friends from Facebook</string>
 	<string name="permission_facebook_popup_message">Your Facebook friends will be countinuously synced so you can see who you already know on Tribe.</string>
 	<string name="permission_facebook_popup_ok">Perfect!</string>
-	<string name="permission_facebook_popup_ko">No friends</string>
+	<string name="permission_facebook_popup_ko">Read more</string>
 	<string name="permission_addressbook_popup_title">Find friends from your Address Book</string>
 	<string name="permission_addressbook_popup_message">Your friends from your Address Book will be countinuously synced so you can see who you already know on Tribe.</string>
 	<string name="permission_addressbook_popup_ok">Perfect!</string>
-	<string name="permission_addressbook_popup_ko">No friends</string>
+	<string name="permission_addressbook_popup_ko">Read more</string>
 	
 	<!-- Rating -->
 	<string name="rating_title">Rate us 5 starsif\nyou\'re loving Tribe!</string>
@@ -232,7 +232,7 @@
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
-	<string name="grid_status_live">Live</string>
+	<string name="grid_status_live">Hanging live!</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
 	<string name="grid_ghost">Has not joined yet</string>
@@ -564,7 +564,7 @@
 	<string name="spring_cleaning_group_delete">Delete group</string>
 	
 	<!-- Live -->
-	<string name="live_drag_friends">Drag friends!</string>
+	<string name="live_drag_friends">Drag guests!</string>
 	<string name="live_invite_link">Invite\nlink</string>
 	<string name="live_drop_friend">Drop in the live!</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
@@ -830,4 +830,30 @@
 	<string name="add_friend_error_invisible_cancel">Never mind</string>
 	<string name="add_friend_error_invisible_invite_ios">Ask on iMessage</string>
 	<string name="add_friend_error_invisible_invite_android">Ask by SMS</string>
+	
+	<!-- Tips -->
+	<string name="tips_leavingroom_title">Want to leave? :skull:</string>
+	<string name="tips_leavingroom_message">By tapping the :x: button, you will stop hanging live here.</string>
+	<string name="tips_leavingroom_action1">Leave</string>
+	<string name="tips_leavingroom_action2">No, I\'ll stay</string>
+	<string name="tips_draggingguest_title">Add friends into the live! :honeybee:</string>
+	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join and hang live with you!</string>
+	<string name="tips_draggingguest_action1">Gotcha</string>
+	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
+	<string name="tips_droppingguest_message">Congratulations on inviting your first guest to hang live! If you want your friend to join on their own next time, just create a group and add him into it. Everyone will get notified when the group is live.</string>
+	<string name="tips_droppingguest_action1">Good to know!</string>
+	<string name="tips_enterfirstlive_title">Hang live in 3 sec! :metal:</string>
+	<string name="tips_enterfirstlive_message">Tap your friends tile and start hanging live with them.</string>
+	<string name="tips_enterfirstlive_action1">Can\'t wait!</string>
+	<string name="tips_enterfirstlive_action2">Pick someone else</string>
+	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
+	<string name="tips_startfirstlive_message">At the end of the countdown your friend(s) you want to hang live with receive a push notification.</string>
+	<string name="tips_startfirstlive_action1">Gotcha</string>
+	<string name="tips_waiting5sec_title">Feeling impatient?</string>
+	<string name="tips_waiting5sec_message">Tap the :bell: button at the bottom of the screen to buzz your friend(s) and make them join faster.</string>
+	<string name="tips_waiting5sec_action1">Perfect!</string>
+	<string name="tips_waiting60sec_title">Want more? :fire:</string>
+	<string name="tips_waiting60sec_message">You can party with up to 8 people in a room.</string>
+	<string name="tips_waiting60sec_action1">Drag guests</string>
+	<string name="tips_waiting60sec_action2">Not now</string>
 </resources>

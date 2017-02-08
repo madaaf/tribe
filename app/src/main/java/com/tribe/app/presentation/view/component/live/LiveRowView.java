@@ -13,6 +13,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.view.PeerView;
 import javax.inject.Inject;
 
@@ -28,7 +29,7 @@ public class LiveRowView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private PeerView peerView;
-  private Recipient recipient;
+  private TribeGuest guest;
   private int color;
 
   public LiveRowView(Context context) {
@@ -55,7 +56,7 @@ public class LiveRowView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
-    if (recipient != null) viewWaiting.setRecipient(recipient);
+    if (guest != null) viewWaiting.setGuest(guest);
     viewWaiting.setColor(color);
 
     if (peerView != null) viewWaiting.setVisibility(View.GONE);
@@ -66,9 +67,9 @@ public class LiveRowView extends FrameLayout {
     if (viewWaiting != null) viewWaiting.setColor(color);
   }
 
-  public void setRecipient(Recipient recipient) {
-    this.recipient = recipient;
-    if (viewWaiting != null) viewWaiting.setRecipient(recipient);
+  public void setGuest(TribeGuest guest) {
+    this.guest = guest;
+    if (viewWaiting != null) viewWaiting.setGuest(guest);
   }
 
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
@@ -86,6 +87,10 @@ public class LiveRowView extends FrameLayout {
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);
     addView(this.peerView, params);
+  }
+
+  public TribeGuest getGuest() {
+    return guest;
   }
 
   public void startPulse() {

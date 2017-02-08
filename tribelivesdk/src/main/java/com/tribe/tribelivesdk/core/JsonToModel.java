@@ -1,8 +1,10 @@
 package com.tribe.tribelivesdk.core;
 
 import com.tribe.tribelivesdk.model.TribeCandidate;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribeOffer;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.LogUtil;
@@ -27,6 +29,10 @@ public class JsonToModel {
   private PublishSubject<TribeJoinRoom> onJoinRoom = PublishSubject.create();
   private PublishSubject<TribeCandidate> onCandidate = PublishSubject.create();
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
+  private PublishSubject<TribeSession> onLeaveRoom = PublishSubject.create();
+  private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
+  private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration = PublishSubject.create();
 
   private void convertToModel(String json) throws IOException {
     @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
@@ -70,7 +76,11 @@ public class JsonToModel {
 
         onCandidate.onNext(tribeCandidate);
       } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
-
+        JSONObject d = object.getJSONObject("d");
+        LogUtil.d(getClass(), Room.MESSAGE_LEAVE + " received : " + d.toString());
+        String peerId = d.getString("socketId");
+        String userId = d.getString("userId");
+        onLeaveRoom.onNext(new TribeSession(peerId, userId));
       } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
         // TODO handle userMediaConfiguration
         JSONObject r = object.getJSONObject("d");
@@ -88,15 +98,24 @@ public class JsonToModel {
 
         onJoinRoom.onNext(new TribeJoinRoom(sessionList, roomSize));
       } else if (localWebSocketType.equals(Room.MESSAGE_ERROR)) {
-        boolean success = object.getBoolean("s");
+        boolean success = object.getBoolean("success");
 
         if (!success) {
-          String error = object.getString("e");
+          String error = object.getString("error");
           onError.onNext(new WebSocketError(error, "Can't connect"));
         }
       }
     } catch (JSONException e) {
       e.printStackTrace();
+    }
+  }
+
+  public void convert(String json) {
+    try {
+      convertToModel(json);
+      return;
+    } catch (IOException ex) {
+      LogUtil.e(getClass(), ex.toString());
     }
   }
 
@@ -119,9 +138,49 @@ public class JsonToModel {
     return null;
   }
 
-  public void convert(String json) {
+  private void convertDataChannelToModel(String json, TribeSession session) throws IOException {
+    JSONObject object = null;
     try {
-      convertToModel(json);
+      object = new JSONObject(json);
+
+      if (object.has(Room.MESSAGE_APP)) {
+        JSONObject app = object.getJSONObject(Room.MESSAGE_APP);
+        if (app.has(Room.MESSAGE_INVITE_ADDED)) {
+          LogUtil.d(getClass(), "Receiving invite added");
+          List<TribeGuest> guestList = new ArrayList<>();
+          JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
+          for (int i = 0; i < arrayInvited.length(); i++) {
+            JSONObject guest = arrayInvited.getJSONObject(i);
+            guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"), guest.getString("picture")));
+          }
+          onInvitedTribeGuestList.onNext(guestList);
+
+        } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
+          LogUtil.d(getClass(), "Receiving invite removed");
+          List<TribeGuest> guestRemovedList = new ArrayList<>();
+          JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
+          for (int i = 0; i < arrayRemoved.length(); i++) {
+            JSONObject guest = arrayRemoved.getJSONObject(i);
+            guestRemovedList.add(new TribeGuest(guest.getString("id")));
+          }
+          onRemovedTribeGuestList.onNext(guestRemovedList);
+
+        }
+      } else if (object.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
+        LogUtil.d(getClass(), "Receiving media configuration");
+        TribePeerMediaConfiguration peerMediaConfiguration = new TribePeerMediaConfiguration(session);
+        peerMediaConfiguration.setAudioEnabled(object.getBoolean("isAudioEnabled"));
+        peerMediaConfiguration.setVideoEnabled(object.getBoolean("isVideoEnabled"));
+        onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void convertDataChannel(String json, TribeSession session) {
+    try {
+      convertDataChannelToModel(json, session);
       return;
     } catch (IOException ex) {
       LogUtil.e(getClass(), ex.toString());
@@ -146,5 +205,21 @@ public class JsonToModel {
 
   public Observable<WebSocketError> onError() {
     return onError;
+  }
+
+  public Observable<TribeSession> onLeaveRoom() {
+    return onLeaveRoom;
+  }
+
+  public Observable<List<TribeGuest>> onInvitedTribeGuestList() {
+    return onInvitedTribeGuestList;
+  }
+
+  public Observable<List<TribeGuest>> onRemovedTribeGuestList() {
+    return onRemovedTribeGuestList;
+  }
+
+  public Observable<TribePeerMediaConfiguration> onTribePeerMediaConfiguration() {
+    return onTribeMediaPeerConfiguration;
   }
 }

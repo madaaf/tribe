@@ -5,18 +5,19 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
-import com.tribe.tribelivesdk.view.PeerView;
 import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -37,8 +38,9 @@ public class Room {
   public static final String STATE_DISCONNECTED = "disconnected";
   public static final String STATE_ERROR = "error";
 
-  @StringDef({ MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE })
-  public @interface WebSocketMessageType {
+  @StringDef({
+      MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE, MESSAGE_NONE
+  }) public @interface WebSocketMessageType {
   }
 
   public static final String MESSAGE_ERROR = "error";
@@ -46,6 +48,17 @@ public class Room {
   public static final String MESSAGE_OFFER = "eventExchangeSdp";
   public static final String MESSAGE_CANDIDATE = "eventExchangeCandidate";
   public static final String MESSAGE_LEAVE = "eventLeave";
+  public static final String MESSAGE_NONE = "none";
+
+  @StringDef({
+      MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED, MESSAGE_INVITE_REMOVED
+  }) public @interface DataChannelMessageType {
+  }
+
+  public static final String MESSAGE_APP = "app";
+  public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
+  public static final String MESSAGE_INVITE_ADDED = "guests_invited";
+  public static final String MESSAGE_INVITE_REMOVED = "remove_guests_invited";
 
   private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;
@@ -59,6 +72,8 @@ public class Room {
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerUpdated = PublishSubject.create();
+  private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
+  private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
 
   public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
@@ -79,12 +94,29 @@ public class Room {
     }));
 
     subscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
-      webRTCClient.setRemoteDescription(tribeOffer.getSession(), tribeOffer.getSessionDescription());
+      webRTCClient.setRemoteDescription(tribeOffer.getSession(),
+          tribeOffer.getSessionDescription());
     }));
 
     subscriptions.add(jsonToModel.onCandidate().subscribe(tribeCandidate -> {
-      webRTCClient.addIceCandidate(tribeCandidate.getSession().getPeerId(), tribeCandidate.getIceCandidate());
+      webRTCClient.addIceCandidate(tribeCandidate.getSession().getPeerId(),
+          tribeCandidate.getIceCandidate());
     }));
+
+    subscriptions.add(jsonToModel.onLeaveRoom()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeSession -> {
+          webRTCClient.removePeerConnection(tribeSession);
+        }));
+
+    subscriptions.add(jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
+
+    subscriptions.add(jsonToModel.onRemovedTribeGuestList().subscribe());
+
+    subscriptions.add(
+        jsonToModel.onTribePeerMediaConfiguration().subscribe(tribePeerMediaConfiguration -> {
+          webRTCClient.setMediaConfiguration(tribePeerMediaConfiguration);
+        }));
   }
 
   public void initLocalStream(LocalPeerView localPeerView) {
@@ -137,24 +169,21 @@ public class Room {
     subscriptions.add(webRTCClient.onReadyToSendSdpOffer()
         .doOnError(Throwable::printStackTrace)
         .subscribe(tribeOffer -> {
-          webSocketConnection.send(
-              getSendSdpPayload(tribeOffer.getSession().getPeerId(), tribeOffer.getSessionDescription()).toString());
+          webSocketConnection.send(getSendSdpPayload(tribeOffer.getSession().getPeerId(),
+              tribeOffer.getSessionDescription()).toString());
         }));
 
     subscriptions.add(webRTCClient.onReadyToSendSdpAnswer()
         .doOnError(Throwable::printStackTrace)
         .subscribe(tribeAnswer -> {
-          webSocketConnection.send(getSendSdpPayload(tribeAnswer.getId(),
+          webSocketConnection.send(getSendSdpPayload(tribeAnswer.getSession().getPeerId(),
               tribeAnswer.getSessionDescription()).toString());
         }));
 
     subscriptions.add(webRTCClient.onReceivedTribeCandidate().subscribe(tribeCandidate -> {
-      //List<IceCandidate> candidateList = tribeCandidate.getIceCandidateList();
-
-      //for (IceCandidate iceCandidate : candidateList) {
-        JSONObject payload = getCandidatePayload(tribeCandidate.getSession().getPeerId(), tribeCandidate.getIceCandidate());
-        webSocketConnection.send(payload.toString());
-      //}
+      JSONObject payload = getCandidatePayload(tribeCandidate.getSession().getPeerId(),
+          tribeCandidate.getIceCandidate());
+      webSocketConnection.send(payload.toString());
     }));
 
     subscriptions.add(webRTCClient.onRemotePeersChanged().doOnNext(rxRemotePeer -> {
@@ -166,6 +195,11 @@ public class Room {
         onRemotePeerUpdated.onNext(rxRemotePeer.item);
       }
     }).subscribe());
+
+    subscriptions.add(webRTCClient.onReceivedDataChannelMessage()
+        .doOnNext(
+            message -> jsonToModel.convertDataChannel(message.getMessage(), message.getSession()))
+        .subscribe());
   }
 
   public void leaveRoom() {
@@ -174,6 +208,10 @@ public class Room {
     options = null;
     webRTCClient.dispose();
     webSocketConnection.disconnect(false);
+  }
+
+  public void sendToPeers(JSONObject obj) {
+    webRTCClient.sendToPeers(obj);
   }
 
   public @RoomState String getState() {
@@ -191,8 +229,10 @@ public class Room {
       return MESSAGE_OFFER;
     } else if (a.equals(MESSAGE_CANDIDATE)) {
       return MESSAGE_CANDIDATE;
-    } else {
+    } else if (a.equals(MESSAGE_LEAVE)) {
       return MESSAGE_LEAVE;
+    } else {
+      return MESSAGE_NONE;
     }
   }
 
@@ -259,6 +299,14 @@ public class Room {
 
   public Observable<RemotePeer> onRemotePeerUpdated() {
     return onRemotePeerUpdated;
+  }
+
+  public Observable<List<TribeGuest>> onInvitedTribeGuestList() {
+    return onInvitedTribeGuestList;
+  }
+
+  public Observable<List<TribeGuest>> onRemovedTribeGuestList() {
+    return onRemovedTribeGuestList;
   }
 
   public Observable<WebSocketError> onError() {

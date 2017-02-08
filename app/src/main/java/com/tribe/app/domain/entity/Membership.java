@@ -55,7 +55,7 @@ public class Membership extends Recipient {
     return false;
   }
 
-  @Override public Date getLastOnline() {
+  @Override public Date getLastSeenAt() {
     return null;
   }
 

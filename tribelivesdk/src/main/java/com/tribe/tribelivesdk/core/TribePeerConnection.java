@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.core;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
+import com.tribe.tribelivesdk.model.TribeMessageDataChannel;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
@@ -28,8 +29,7 @@ public class TribePeerConnection {
   private static final String DATA_CHANNEL_PROTOCOL = "tribe-v3";
   private static final String DATA_CHANNEL_META = "meta";
 
-  private String id;
-  private String userId;
+  private TribeSession session;
   private PeerConnection peerConnection;
   private TribeSdpObserver sdpObserver;
   private TribePeerConnectionObserver peerConnectionObserver;
@@ -42,11 +42,12 @@ public class TribePeerConnection {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
   private PublishSubject<TribeMediaStream> onReceivedMediaStream = PublishSubject.create();
+  private PublishSubject<Void> onDataChannelOpened = PublishSubject.create();
+  private PublishSubject<TribeMessageDataChannel> onDataChannelMessage = PublishSubject.create();
 
   public TribePeerConnection(TribeSession session, PeerConnectionFactory peerConnectionFactory,
       List<PeerConnection.IceServer> iceServerList, boolean isOffer) {
-    this.id = session.getPeerId();
-    this.userId = session.getUserId();
+    this.session = session;
     this.iceServerList = iceServerList;
     this.pendingIceCandidateList = new ArrayList<>();
 
@@ -69,8 +70,8 @@ public class TribePeerConnection {
     dataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
     dataChannel.registerObserver(dataChannelObserver);
 
-    subscriptions.add(dataChannelObserver.onMessage().subscribe(s -> {
-      LogUtil.d(getClass(), s);
+    subscriptions.add(dataChannelObserver.onMessage().subscribe(message -> {
+      onDataChannelMessage.onNext(new TribeMessageDataChannel(session, message));
     }));
 
     subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
@@ -86,11 +87,11 @@ public class TribePeerConnection {
     //    .subscribe(onReceivedTribeCandidate));
 
     subscriptions.add(peerConnectionObserver.onReceivedIceCandidate()
-        .map(iceCandidate -> new TribeCandidate(new TribeSession(id, userId), iceCandidate))
+        .map(iceCandidate -> new TribeCandidate(session, iceCandidate))
         .subscribe(onReceivedTribeCandidate));
 
     subscriptions.add(peerConnectionObserver.onReceivedMediaStream()
-        .map(mediaStream -> new TribeMediaStream(id, mediaStream))
+        .map(mediaStream -> new TribeMediaStream(session, mediaStream))
         .subscribe(onReceivedMediaStream));
   }
 
@@ -126,6 +127,7 @@ public class TribePeerConnection {
   }
 
   public void send(String str) {
+    LogUtil.d(getClass(), "Sending through dataChannel : " + str);
     ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
     dataChannel.send(new DataChannel.Buffer(buffer, false));
   }
@@ -135,11 +137,15 @@ public class TribePeerConnection {
   }
 
   public void dispose(MediaStream mediaStream) {
+    subscriptions.clear();
+
     if (peerConnection != null) {
       peerConnection.removeStream(mediaStream);
       peerConnection.close();
       peerConnection.dispose();
       sdpObserver.dropPeerConnection();
+      peerConnection = null;
+      peerConnectionObserver = null;
     }
 
     if (dataChannelObserver != null) {
@@ -158,14 +164,14 @@ public class TribePeerConnection {
 
   public Observable<TribeOffer> onReadyToSendSdpOffer() {
     return sdpObserver.onReadyToSendSdpOffer().map(sessionDescription -> {
-      TribeOffer offer = new TribeOffer(new TribeSession(id, userId), sessionDescription);
+      TribeOffer offer = new TribeOffer(session, sessionDescription);
       return offer;
     });
   }
 
   public Observable<TribeAnswer> onReadyToSendSdpAnswer() {
     return sdpObserver.onReadyToSendSdpAnswer().map(sessionDescription -> {
-      TribeAnswer answer = new TribeAnswer(id, sessionDescription);
+      TribeAnswer answer = new TribeAnswer(session, sessionDescription);
       return answer;
     });
   }
@@ -176,5 +182,13 @@ public class TribePeerConnection {
 
   public Observable<TribeMediaStream> onReceivedMediaStream() {
     return onReceivedMediaStream;
+  }
+
+  public Observable<Void> onDataChannelOpened() {
+    return onDataChannelOpened;
+  }
+
+  public Observable<TribeMessageDataChannel> onDataChannelMessage() {
+    return onDataChannelMessage;
   }
 }

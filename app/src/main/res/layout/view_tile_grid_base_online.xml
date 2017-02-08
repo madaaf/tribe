@@ -5,7 +5,7 @@
         android:id="@+id/txtStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Body.One.White"
+        style="@style/Body.Two.White"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="@dimen/horizontal_margin_small"
         android:layout_marginLeft="@dimen/horizontal_margin_small"

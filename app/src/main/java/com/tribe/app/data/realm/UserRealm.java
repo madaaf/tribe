@@ -42,7 +42,7 @@ public class UserRealm extends RealmObject {
   private RealmList<MembershipRealm> memberships;
   private boolean invisible_mode;
   private boolean push_notif = true;
-  private Date last_online;
+  private Date last_seen_at;
 
   @Ignore
   private RealmList<GroupRealm> groups;
@@ -186,12 +186,12 @@ public class UserRealm extends RealmObject {
     this.is_online = isOnline;
   }
 
-  public Date getLastOnline() {
-    return last_online;
+  public Date getLastSeenAt() {
+    return last_seen_at;
   }
 
-  public void setLastOnline(Date lastOnline) {
-    this.last_online = lastOnline;
+  public void setLastSeenAt(Date lastSeenAt) {
+    this.last_seen_at = lastSeenAt;
   }
 
   public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {

@@ -119,7 +119,10 @@ import timber.log.Timber;
       @Override public boolean shouldSkipClass(Class<?> clazz) {
         return false;
       }
-    }).registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate)).create();
+    })
+        .registerTypeAdapter(Date.class,
+            new DateDeserializer(utcSimpleDate, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
+        .create();
   }
 
   @Provides @PerApplication Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
@@ -141,7 +144,8 @@ import timber.log.Timber;
         .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
         .registerTypeAdapter(GroupRealm.class, groupDeserializer)
         .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
-        .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDateFull))
+        .registerTypeAdapter(Date.class,
+            new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
         .registerTypeAdapter(new TypeToken<List<UserRealm>>() {
         }.getType(), new UserListDeserializer<>())
         .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())

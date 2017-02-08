@@ -1,13 +1,8 @@
 package com.tribe.tribelivesdk.core;
 
-import android.util.Log;
 import com.tribe.tribelivesdk.util.LogUtil;
-import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import org.webrtc.DataChannel;
-import org.webrtc.MediaConstraints;
-import org.webrtc.PeerConnection;
-import org.webrtc.SdpObserver;
-import org.webrtc.SessionDescription;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -24,7 +19,12 @@ public class TribeDataChannelObserver implements DataChannel.Observer {
   }
 
   @Override public void onMessage(DataChannel.Buffer buffer) {
-    LogUtil.d(getClass(), "onMessage dataChannel");
+    ByteBuffer data = buffer.data;
+    byte[] bytes = new byte[data.remaining()];
+    data.get(bytes);
+    final String message = new String(bytes);
+    LogUtil.d(getClass(), "onMessage dataChannel : " + message);
+    onMessage.onNext(message);
   }
 
   @Override public void onStateChange() {

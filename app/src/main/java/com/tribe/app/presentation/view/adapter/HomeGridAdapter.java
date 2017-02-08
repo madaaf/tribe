@@ -103,6 +103,12 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
         userConnectedGridAdapterDelegate.onClick());
   }
 
+  public Observable<View> onLongClick() {
+    return Observable.merge(userGridAdapterDelegate.onLongClick(),
+        userLiveGridAdapterDelegate.onLongClick(),
+        userConnectedGridAdapterDelegate.onLongClick());
+  }
+
   public void setItems(List<Recipient> items) {
     this.items.clear();
     this.items.addAll(items);

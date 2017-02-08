@@ -44,7 +44,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/06/2016.
@@ -113,6 +112,7 @@ public class TileView extends SquareCardView {
   private final PublishSubject<View> clickMoreView = PublishSubject.create();
   private final PublishSubject<View> click = PublishSubject.create();
   private final PublishSubject<Void> onEndDrop = PublishSubject.create();
+  private final PublishSubject<View> longClick = PublishSubject.create();
 
   // RESOURCES
   private int cardRadiusMin, cardRadiusMax, diffCardRadius, cardElevationMin, cardElevationMax,
@@ -325,6 +325,10 @@ public class TileView extends SquareCardView {
   }
 
   private void prepareClickOnView() {
+    setOnLongClickListener(v -> {
+      longClick.onNext(v);
+      return true;
+    });
     setOnClickListener(v -> click.onNext(v));
   }
 
@@ -385,10 +389,9 @@ public class TileView extends SquareCardView {
       ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
       txtStatus.setText(R.string.grid_status_connected);
     } else {
-      if (recipient.getLastOnline() != null) {
-        txtStatus.setText(getContext().getString(R.string.grid_status_last_seen,
-            DateUtils.getRelativeTimeSpanString(recipient.getLastOnline().getTime(),
-                new Date().getTime(), DateUtils.MINUTE_IN_MILLIS).toString().toLowerCase()));
+      if (recipient.getLastSeenAt() != null) {
+        txtStatus.setText(DateUtils.getRelativeTimeSpanString(recipient.getLastSeenAt().getTime(),
+            new Date().getTime(), DateUtils.MINUTE_IN_MILLIS).toString().toLowerCase());
       }
     }
   }
@@ -541,6 +544,10 @@ public class TileView extends SquareCardView {
 
   public Observable<Void> onEndDrop() {
     return onEndDrop;
+  }
+
+  public Observable<View> onLongClick() {
+    return longClick;
   }
 
   private void initDependencyInjector() {

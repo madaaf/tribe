@@ -60,7 +60,7 @@ public class DateUtils {
 
     public static int compareDateNullSafe(Date one, Date two) {
         if (one == null ^ two == null) {
-            return (one == null) ? 1 : -1;
+            return (one == null) ? -1 : 1;
         }
 
         if (one == null && two == null) {

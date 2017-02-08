@@ -14,6 +14,6 @@
       app:avatarLiveType="connected"
       />
 
-  <include layout="@layout/view_tile_grid_base"/>
+  <include layout="@layout/view_tile_grid_base_online"/>
 
 </merge>

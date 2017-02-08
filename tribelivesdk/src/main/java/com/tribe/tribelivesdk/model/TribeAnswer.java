@@ -8,27 +8,27 @@ import org.webrtc.SessionDescription;
 
 public class TribeAnswer {
 
-    private SessionDescription sessionDescription;
-    private String id;
+  private SessionDescription sessionDescription;
+  private TribeSession session;
 
-    public TribeAnswer(String id, SessionDescription sessionDescription) {
-        this.id = id;
-        this.sessionDescription = sessionDescription;
-    }
+  public TribeAnswer(TribeSession session, SessionDescription sessionDescription) {
+    this.session = session;
+    this.sessionDescription = sessionDescription;
+  }
 
-    public void setSessionDescription(SessionDescription sessionDescription) {
-        this.sessionDescription = sessionDescription;
-    }
+  public void setSessionDescription(SessionDescription sessionDescription) {
+    this.sessionDescription = sessionDescription;
+  }
 
-    public SessionDescription getSessionDescription() {
-        return sessionDescription;
-    }
+  public SessionDescription getSessionDescription() {
+    return sessionDescription;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public TribeSession getSession() {
+    return session;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setSession(TribeSession session) {
+    this.session = session;
+  }
 }

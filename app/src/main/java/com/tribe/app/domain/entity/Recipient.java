@@ -53,7 +53,7 @@ public abstract class Recipient implements Serializable {
     res = ((Boolean) two.isOnline()).compareTo(one.isOnline());
     if (res != 0) return res;
 
-    return DateUtils.compareDateNullSafe(two.getLastOnline(), one.getLastOnline());
+    return DateUtils.compareDateNullSafe(two.getLastSeenAt(), one.getLastSeenAt());
   }
 
   @Override public boolean equals(Object obj) {
@@ -66,7 +66,7 @@ public abstract class Recipient implements Serializable {
     Recipient recipient = (Recipient) obj;
 
     return ObjectUtils.nullSafeEquals(getDisplayName(), recipient.getDisplayName())
-        && ObjectUtils.nullSafeEquals(getLastOnline(), recipient.getLastOnline())
+        && ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt())
         && ObjectUtils.nullSafeEquals(getProfilePicture(), recipient.getProfilePicture())
         && ObjectUtils.nullSafeEquals(isLive(), recipient.isLive())
         && ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline());
@@ -90,7 +90,7 @@ public abstract class Recipient implements Serializable {
 
   public abstract boolean isOnline();
 
-  public abstract Date getLastOnline();
+  public abstract Date getLastSeenAt();
 
   public boolean isMute() {
     return mute;

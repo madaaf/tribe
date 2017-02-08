@@ -3,8 +3,10 @@ package com.tribe.tribelivesdk.stream;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import com.tribe.tribelivesdk.core.TribePeerConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
@@ -79,6 +81,16 @@ public class StreamManager {
     remotePeerMap.put(session.getPeerId(), remotePeer);
   }
 
+  public void removePeer(TribeSession tribeSession) {
+    if (remotePeerMap != null && remotePeerMap.size() > 0) {
+      RemotePeer remotePeer = remotePeerMap.get(tribeSession.getPeerId());
+      if (remotePeer != null) remotePeer.dispose();
+      remotePeerMap.remove(tribeSession.getPeerId());
+
+      remotePeerMap.clear();
+    }
+  }
+
   public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
     if (TextUtils.isEmpty(peerId)) {
       LogUtil.e(getClass(), "We found a null peerId it doesn't make sense!");
@@ -98,6 +110,17 @@ public class StreamManager {
 
     LogUtil.d(getClass(), "Setting the stream to peer : " + peerId);
     remotePeer.getPeerView().setStream(mediaStream);
+  }
+
+  public void setPeerMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+    RemotePeer remotePeer = remotePeerMap.get(tribePeerMediaConfiguration.getSession().getPeerId());
+
+    if (remotePeer == null) {
+      LogUtil.d(getClass(), "setMediaConfiguration to a null remotePeer");
+      return;
+    }
+
+    remotePeer.setMediaConfiguration(tribePeerMediaConfiguration);
   }
 
   public void switchCamera() {

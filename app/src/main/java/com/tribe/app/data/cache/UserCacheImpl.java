@@ -87,7 +87,7 @@ public class UserCacheImpl implements UserCache {
         .has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
-    if (from.getLastOnline() != null) to.setLastOnline(from.getLastOnline());
+    if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());
   }
 
   public void put(AccessToken accessToken) {

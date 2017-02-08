@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center_horizontal"
+      android:layout_marginBottom="@dimen/horizontal_margin_small"
+      android:layout_marginLeft="@dimen/horizontal_margin_small"
+      android:layout_marginRight="@dimen/horizontal_margin_small"
+      android:singleLine="true"
+      style="@style/Body.One.White40"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|center_horizontal"
+      android:layout_marginLeft="@dimen/horizontal_margin_small"
+      android:layout_marginRight="@dimen/horizontal_margin_small"
+      android:layout_marginTop="10dp"
+      android:background="@drawable/selectable_button_all_rounded_5_black_5"
+      android:clickable="true"
+      android:drawablePadding="8.6dp"
+      android:paddingBottom="8dp"
+      android:paddingLeft="10dp"
+      android:paddingRight="10dp"
+      android:paddingTop="7dp"
+      android:singleLine="true"
+      style="@style/Body.Two.White"
+      />
+
+</merge>

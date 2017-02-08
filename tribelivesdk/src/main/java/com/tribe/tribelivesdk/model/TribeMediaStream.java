@@ -8,27 +8,27 @@ import org.webrtc.MediaStream;
 
 public class TribeMediaStream {
 
-    private MediaStream mediaStream;
-    private String id;
+  private MediaStream mediaStream;
+  private TribeSession session;
 
-    public TribeMediaStream(String id, MediaStream mediaStream) {
-        this.id = id;
-        this.mediaStream = mediaStream;
-    }
+  public TribeMediaStream(TribeSession session, MediaStream mediaStream) {
+    this.session = session;
+    this.mediaStream = mediaStream;
+  }
 
-    public MediaStream getMediaStream() {
-        return mediaStream;
-    }
+  public MediaStream getMediaStream() {
+    return mediaStream;
+  }
 
-    public void setMediaStream(MediaStream mediaStream) {
-        this.mediaStream = mediaStream;
-    }
+  public void setMediaStream(MediaStream mediaStream) {
+    this.mediaStream = mediaStream;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public TribeSession getSession() {
+    return session;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setSession(TribeSession session) {
+    this.session = session;
+  }
 }
