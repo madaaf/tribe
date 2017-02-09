@@ -63,8 +63,6 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDelegate;
-import com.tribe.app.presentation.view.camera.view.GlPreview;
-import com.tribe.app.presentation.view.camera.view.HistogramVisualizerView;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
@@ -75,7 +73,6 @@ import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
-import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -91,7 +88,6 @@ import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
-import com.tribe.app.presentation.view.widget.CameraWrapper;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
@@ -139,10 +135,6 @@ public interface ApplicationComponent {
 
   void inject(AvatarLiveView avatarLiveView);
 
-  void inject(CameraWrapper cameraWrapper);
-
-  void inject(HistogramVisualizerView visualizerView);
-
   void inject(PlayerView playerView);
 
   void inject(TribeFirebaseInstanceIDService instanceIDService);
@@ -158,8 +150,6 @@ public interface ApplicationComponent {
   void inject(TopBarContainer topBarContainer);
 
   void inject(TopBarView topBarView);
-
-  void inject(GlPreview glPreview);
 
   void inject(VisualizerView visualizerView);
 

@@ -32,6 +32,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveInviteView extends FrameLayout {
 
+  public static final int WIDTH = 106;
+
   @Inject ScreenUtils screenUtils;
 
   @Inject LiveInviteAdapter adapter;

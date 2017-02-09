@@ -141,8 +141,8 @@ public class LiveNotificationContainer extends FrameLayout {
   public void addSubscriptionNotification(Observable<Float> obs, View viewNotification) {
     subscriptions.add(obs.subscribe(percent -> {
       viewBG.setAlpha(percent);
-      txtSwipe.setTranslationY(-(1 - percent) * getTxtTranslationY());
-      viewNotification.setTranslationY(percent * margin);
+      //txtSwipe.setTranslationY(-(1 - percent) * getTxtTranslationY());
+      //viewNotification.setTranslationY(percent * margin);
     }));
   }
 

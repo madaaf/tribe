@@ -21,10 +21,9 @@ public abstract class Recipient implements Serializable {
 
   protected Date created_at;
   protected Date updated_at;
-
   protected Boolean mute;
-
   protected int position;
+  protected boolean animateAdd = false;
 
   public Date getCreatedAt() {
     return created_at;
@@ -98,6 +97,14 @@ public abstract class Recipient implements Serializable {
 
   public void setMute(boolean mute) {
     this.mute = mute;
+  }
+
+  public boolean isAnimateAdd() {
+    return animateAdd;
+  }
+
+  public void setAnimateAdd(boolean animateAdd) {
+    this.animateAdd = animateAdd;
   }
 
   @Override public int hashCode() {

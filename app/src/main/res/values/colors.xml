@@ -51,6 +51,7 @@
   <color name="blue.facebook.dark">#4460A0</color>
   <color name="blue.opaque">#0099E4</color>
   <color name="blue.new">#3DE9DA</color>
+  <color name="blue.new.opacity.10">#1A3DE9DA</color>
 
   <!-- VIOLET -->
   <color name="purple.group">#8161DA</color>
@@ -102,14 +103,14 @@
   <!-- Themes -->
 
   <!-- Classic -->
-  <color name="classic.1">#63F2FF</color>
-  <color name="classic.2">#722BFF</color>
-  <color name="classic.3">#E469FF</color>
-  <color name="classic.4">#3BDBCE</color>
-  <color name="classic.5">#FFA497</color>
-  <color name="classic.6">#007FFF</color>
-  <color name="classic.7">#B379FF</color>
-  <color name="classic.8">#9EEEFF</color>
+  <color name="classic.1">#781FFC</color>
+  <color name="classic.2">#FFB5A6</color>
+  <color name="classic.3">#FAB4FB</color>
+  <color name="classic.4">#02ADF2</color>
+  <color name="classic.5">#3DE9DA</color>
+  <color name="classic.6">#F7E467</color>
+  <color name="classic.7">#F86197</color>
+  <color name="classic.8">#007FFF</color>
 
   <!-- Blue -->
   <color name="blue.1">#20B8FC</color>

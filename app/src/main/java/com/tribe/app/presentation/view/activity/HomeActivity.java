@@ -429,7 +429,7 @@ public class HomeActivity extends BaseActivity
 
       if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
         if (uri.getPath().startsWith("/u/")) {
-          navigateToSearch(StringUtils.getLastBitFromUrl(url));
+          searchView.show();
         } else if (uri.getPath().startsWith("/g/")) {
           homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
         }
@@ -527,14 +527,6 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToProfile() {
     navigator.navigateToProfile(HomeActivity.this);
-  }
-
-  private void navigateToSettings() {
-    navigator.navigateToSettings(HomeActivity.this, SETTINGS_RESULT);
-  }
-
-  private void navigateToSearch(String username) {
-    navigator.navigateToSearchUser(HomeActivity.this, username);
   }
 
   private void navigateToCreateGroup() {

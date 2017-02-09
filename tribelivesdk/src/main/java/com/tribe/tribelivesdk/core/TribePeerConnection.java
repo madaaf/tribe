@@ -77,6 +77,7 @@ public class TribePeerConnection {
     subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
       dataChannel = newDataChannel;
       dataChannel.registerObserver(dataChannelObserver);
+      onDataChannelOpened.onNext(null);
     }));
 
     subscriptions.add(
@@ -139,10 +140,14 @@ public class TribePeerConnection {
   public void dispose(MediaStream mediaStream) {
     subscriptions.clear();
 
+    if (dataChannel != null) {
+      dataChannel.close();
+      dataChannel = null;
+    }
+
     if (peerConnection != null) {
-      peerConnection.removeStream(mediaStream);
+      if (mediaStream != null) peerConnection.removeStream(mediaStream);
       peerConnection.close();
-      peerConnection.dispose();
       sdpObserver.dropPeerConnection();
       peerConnection = null;
       peerConnectionObserver = null;
@@ -150,11 +155,6 @@ public class TribePeerConnection {
 
     if (dataChannelObserver != null) {
       dataChannelObserver = null;
-    }
-
-    if (dataChannel != null) {
-      dataChannel.dispose();
-      dataChannel = null;
     }
   }
 

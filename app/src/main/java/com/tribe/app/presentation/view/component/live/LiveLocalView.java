@@ -185,6 +185,10 @@ public class LiveLocalView extends FrameLayout {
   //   PUBLIC    //
   /////////////////
 
+  public void dispose() {
+    viewPeerLocal.dispose();
+  }
+
   public LocalPeerView getLocalPeerView() {
     return viewPeerLocal;
   }

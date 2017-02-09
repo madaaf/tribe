@@ -178,11 +178,15 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         .subscribe(o -> {
           if (o instanceof User) {
             User user = (User) o;
+
             if (newFriends.contains(user)) {
+              user.setNewFriend(false);
               newFriends.remove(user);
             } else {
+              user.setNewFriend(true);
               newFriends.add(user);
             }
+
             adapter.updateUser(user);
             refactorDone();
           }

@@ -34,17 +34,5 @@
         android:text="@string/action_add_friend"
         style="@style/Body.Two.White"
         />
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressBarAdd"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:alpha="0"
-        app:cpv_animAutostart="true"
-        app:cpv_color="@android:color/white"
-        app:cpv_indeterminate="true"
-        app:cpv_thickness="2dp"
-        />
   </FrameLayout>
 </FrameLayout>

@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -56,11 +58,9 @@ public class TileView extends SquareCardView {
   public final static int TYPE_NORMAL = 3;
   public final static int TYPE_INVITE = 4;
 
-  private final float SCALE_FACTOR = 1.75f;
-  private final float SCALE_TILE_FACTOR = 1.3f;
-  private final float SCALE_DOWN_BG_FACTOR = 1.75f;
-  private final float SCALE_DOWN_MASTER_BG_FACTOR_LOW = 0.9f;
-  private final float SCALE_DOWN_BG_FACTOR_LOW = 0.8f;
+  private final float SCALE_FACTOR = 1.80f;
+  private final float SCALE_TILE_FACTOR = 1.05f;
+  private final float SCALE_DOWN_MASTER_BG_FACTOR_LOW = 0.85f;
   private final int RADIUS_MIN = 0;
   private final int RADIUS_MAX = 5;
   private final int ELEVATION_MIN = 0;
@@ -98,10 +98,6 @@ public class TileView extends SquareCardView {
   @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
 
   @BindView(R.id.viewBG) View viewBG;
-
-  @Nullable @BindView(R.id.viewBGTransparent1) View viewBGTransparent1;
-
-  @Nullable @BindView(R.id.viewBGTransparent2) View viewBGTransparent2;
 
   @Nullable @BindView(R.id.imgInd) ImageView imgInd;
 
@@ -185,18 +181,21 @@ public class TileView extends SquareCardView {
     setCardElevation(0);
     ViewCompat.setElevation(this, 0);
     setRadius(0);
-    setBackground(null);
-    setCardBackgroundColor(Color.TRANSPARENT);
 
     if (!isDragging) {
       setUseCompatPadding(false);
       setPreventCornerOverlap(true);
+
+      if (type == TYPE_GRID_LIVE) layoutPulse.start();
     }
 
     if (!isGrid()) {
-      minSize = screenUtils.getWidthPx() / 3;
+      minSize = screenUtils.dpToPx(LiveInviteView.WIDTH);
       maxSize = (int) (minSize * SCALE_TILE_FACTOR);
       sizeDiff = maxSize - minSize;
+    } else {
+      setBackground(null);
+      setCardBackgroundColor(Color.TRANSPARENT);
     }
   }
 
@@ -262,14 +261,10 @@ public class TileView extends SquareCardView {
         setCardElevation(cardElevation);
 
         int rotation = Math.max((int) (rotationMin + (diffRotation * value)), rotationMin);
-        viewBG.setRotation(rotation);
-        avatar.setRotation(rotation);
+        setRotation(rotation);
 
         int sizeOfTile = Math.max((int) (minSize + (sizeDiff * value)), minSize);
         UIUtils.changeSizeOfView(TileView.this, sizeOfTile);
-
-        int size = Math.max((int) (minSize + ((sizeDiff / SCALE_DOWN_BG_FACTOR) * value)), minSize);
-        UIUtils.changeSizeOfView(viewBG, size);
       }
     });
 
@@ -363,8 +358,6 @@ public class TileView extends SquareCardView {
 
   public void setRecipient(Recipient recipient) {
     this.recipient = recipient;
-
-    if (type == TYPE_GRID_LIVE) layoutPulse.start();
   }
 
   public void setAvatar() {
@@ -411,12 +404,11 @@ public class TileView extends SquareCardView {
   public void setBackground(int position) {
     this.position = position;
 
-    UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
-
     if (!isGrid()) {
-      UIUtils.setBackgroundMultiple(screenUtils, viewBGTransparent1, position);
-      UIUtils.setBackgroundMultiple(screenUtils, viewBGTransparent2, position);
       UIUtils.setBackgroundInd(imgInd, position);
+      UIUtils.setBackgroundCard(this, position);
+    } else {
+      UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
     }
   }
 
@@ -438,68 +430,36 @@ public class TileView extends SquareCardView {
     getDropAnimator(true).start();
     ViewCompat.setElevation(avatar, 10);
     ViewCompat.setElevation(viewBG, 10);
-    ViewCompat.setElevation(viewBGTransparent1, 10);
-    ViewCompat.setElevation(viewBGTransparent2, 10);
+    startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.jiggle));
   }
 
   public void endDrop() {
+    clearAnimation();
     getDropAnimator(false).start();
   }
 
   private AnimatorSet getDropAnimator(boolean start) {
     AnimatorSet animatorSet = new AnimatorSet();
 
-    ValueAnimator animatorAlpha = ValueAnimator.ofFloat(start ? alphaTilesMin : alphaTilesMax,
-        start ? alphaTilesMax : alphaTilesMin);
-    animatorAlpha.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      viewBGTransparent1.setAlpha(value);
-      viewBGTransparent2.setAlpha(value);
-    });
-
-    ValueAnimator animatorRotationBG1 = ValueAnimator.ofInt(start ? rotationBG1Min : rotationBG1Max,
-        start ? rotationBG1Max : rotationBG1Min);
-    animatorRotationBG1.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      viewBGTransparent1.setRotation(value);
-    });
-
-    ValueAnimator animatorRotationBG2 = ValueAnimator.ofInt(start ? rotationBG2Min : rotationBG2Max,
-        start ? rotationBG2Max : rotationBG2Min);
-    animatorRotationBG2.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      viewBGTransparent2.setRotation(value);
-    });
-
-    ValueAnimator animatorSizeBG = ValueAnimator.ofFloat(start ? 1 : SCALE_DOWN_BG_FACTOR_LOW,
-        start ? SCALE_DOWN_BG_FACTOR_LOW : 1);
-    animatorSizeBG.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      viewBGTransparent1.setScaleX(value);
-      viewBGTransparent1.setScaleY(value);
-      viewBGTransparent2.setScaleX(value);
-      viewBGTransparent2.setScaleY(value);
-    });
-
     ValueAnimator animatorSizeMasterBG =
         ValueAnimator.ofFloat(start ? 1 : SCALE_DOWN_MASTER_BG_FACTOR_LOW,
             start ? SCALE_DOWN_MASTER_BG_FACTOR_LOW : 1);
     animatorSizeMasterBG.addUpdateListener(animation -> {
       float value = (float) animation.getAnimatedValue();
-      viewBG.setScaleX(value);
-      viewBG.setScaleY(value);
+      setScaleX(value);
+      setScaleY(value);
     });
 
     animatorSet.setInterpolator(new DecelerateInterpolator());
     animatorSet.setDuration(300);
     animatorSet.setStartDelay(0);
-    animatorSet.playTogether(animatorAlpha, animatorRotationBG1, animatorRotationBG2,
-        animatorSizeBG, animatorSizeMasterBG);
+    animatorSet.playTogether(animatorSizeMasterBG);
 
     return animatorSet;
   }
 
   public void onDrop(LiveRowView viewLiveRow) {
+    clearAnimation();
     UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
     setShouldSquare(false);
 

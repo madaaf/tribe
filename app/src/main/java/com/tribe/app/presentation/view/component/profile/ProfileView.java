@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -17,6 +18,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.ActionView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -37,6 +39,8 @@ public class ProfileView extends FrameLayout {
   @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
   @BindView(R.id.viewActionVisible) ActionView viewActionVisible;
+
+  @BindView(R.id.txtVersion) TextViewFont txtVersion;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -80,6 +84,9 @@ public class ProfileView extends FrameLayout {
         EmojiParser.demojizedText(getContext().getString(R.string.profile_logout)));
     viewActionVisible.setTitle(
         EmojiParser.demojizedText(getContext().getString(R.string.profile_invisible_mode)));
+
+    txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME,
+        String.valueOf(BuildConfig.VERSION_CODE)));
   }
 
   private void initSubscriptions() {

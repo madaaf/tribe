@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -168,7 +169,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void init() {
     ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
-    params.width = screenUtils.getWidthPx() / 3;
+    params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
     viewInviteLive.setLayoutParams(params);
     viewInviteLive.requestLayout();
 
@@ -251,10 +252,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     this.recipient = recipient;
     viewLive.setRecipient(recipient, color);
     initSubscriptions();
+    livePresenter.loadFriendshipList();
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
-    viewInviteLive.renderFriendshipList(friendshipList);
+    if (recipient != null && recipient instanceof Membership) {
+      Membership membership = (Membership) recipient;
+      List<Friendship> filteredFriendships = new ArrayList<>();
+      for (Friendship fr : friendshipList) {
+        if (!membership.getGroup().isGroupMember(fr.getFriend().getId())) {
+          filteredFriendships.add(fr);
+        }
+      }
+      viewInviteLive.renderFriendshipList(filteredFriendships);
+    } else {
+      viewInviteLive.renderFriendshipList(friendshipList);
+    }
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
@@ -275,6 +288,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
       if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE
         NotificationPayload notificationPayload =
             (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
+        if (recipient != null && recipient instanceof Membership) {
+          Membership membership = (Membership) recipient;
+          notificationPayload.setShouldDisplayDrag(!membership.getGroup().isGroupMember(notificationPayload.getUserId()));
+        }
 
         LiveNotificationView notificationView =
             NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);

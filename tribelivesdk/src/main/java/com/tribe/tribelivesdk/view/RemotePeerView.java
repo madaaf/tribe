@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.util.LogUtil;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -13,7 +14,8 @@ import rx.subjects.PublishSubject;
 public class RemotePeerView extends PeerView {
 
   // OBSERVABLES
-  private PublishSubject<TribePeerMediaConfiguration> onMediaConfiguration = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onMediaConfiguration =
+      PublishSubject.create();
 
   public RemotePeerView(Context context) {
     super(context);
@@ -40,6 +42,12 @@ public class RemotePeerView extends PeerView {
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
+    LogUtil.d(getClass(), "New media configuration for : "
+        + mediaConfiguration.getSession().getUserId()
+        + " : isAudioEnabled : "
+        + mediaConfiguration.isAudioEnabled()
+        + " isVideoEnabled : "
+        + mediaConfiguration.isVideoEnabled());
     onMediaConfiguration.onNext(mediaConfiguration);
   }
 

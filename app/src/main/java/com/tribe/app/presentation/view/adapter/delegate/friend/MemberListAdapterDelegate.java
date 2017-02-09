@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,6 +20,8 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
@@ -32,6 +36,8 @@ import timber.log.Timber;
 public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
 
   @Inject User user;
+
+  @Inject ScreenUtils screenUtils;
 
   // VARIABLES
   private int avatarSize;
@@ -51,8 +57,13 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    RecyclerView.ViewHolder vh =
+    GroupMemberViewHolder vh =
         new GroupMemberViewHolder(layoutInflater.inflate(R.layout.item_member_list, parent, false));
+
+    vh.gradientDrawable = new GradientDrawable();
+    vh.gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+    vh.gradientDrawable.setCornerRadius(screenUtils.dpToPx(100));
+    vh.btnAdd.setBackground(vh.gradientDrawable);
 
     return vh;
   }
@@ -72,7 +83,9 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     setFriendLabel(vh, groupMember.isFriend());
 
     if (groupMember.isAnimateAdd()) {
-      animateAddSuccessful(vh, R.string.action_hang_live);
+      animateAddSuccessful(vh, R.string.action_hang_live,
+          ContextCompat.getColor(context, R.color.blue_new),
+          ContextCompat.getColor(context, R.color.red));
       groupMember.setAnimateAdd(false);
     } else {
       vh.txtAction.setAlpha(1);
@@ -94,15 +107,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     }
 
     if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
-      Glide.with(context)
-          .load(groupMember.getUser().getProfilePicture())
-          .thumbnail(0.25f)
-          .error(R.drawable.picto_placeholder_avatar)
-          .placeholder(R.drawable.picto_placeholder_avatar)
-          .override(avatarSize, avatarSize)
-          .bitmapTransform(new CropCircleTransformation(context))
-          .crossFade()
-          .into(vh.imgAvatar);
+      GlideUtils.load(context, groupMember.getUser().getProfilePicture(), avatarSize, vh.imgAvatar);
     }
 
     if (!groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) {
@@ -125,7 +130,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     vh.txtAction.setText(R.string.action_hang_live);
     vh.txtAction.measure(0, 0);
     UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_red);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.red));
     setAppearance(vh.txtAction);
   }
 
@@ -133,7 +138,7 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
     vh.txtAction.setText(R.string.action_add_friend);
     vh.txtAction.measure(0, 0);
     UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_blue_new);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
     setAppearance(vh.txtAction);
   }
 

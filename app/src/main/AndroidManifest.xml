@@ -178,16 +178,6 @@
         android:theme="@style/AppTheme.White"/>
 
     <activity
-        android:name=".presentation.view.activity.SearchUserActivity"
-        android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"/>
-
-    <activity
-        android:name=".presentation.view.activity.SettingsActivity"
-        android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"/>
-
-    <activity
         android:name=".presentation.view.activity.ProfileActivity"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.White"/>

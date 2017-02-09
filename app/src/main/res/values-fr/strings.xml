@@ -536,11 +536,11 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
-	<string name="search_already_friends">Vos amis :purple_heart:</string>
+	<string name="search_already_friends">Vous les connaissez :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
-	<string name="search_suggest_friends">Vous connaissez peut-être :bee:</string>
-	<string name="search_invite_contacts">Vous devriez inviter... :love_letter:</string>
+	<string name="search_suggest_friends">Vous les connaissez peut-être :bee:</string>
+	<string name="search_invite_contacts">Vous devriez les inviter :love_letter:</string>
 	<string name="search_no_friends_to_add">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_invite">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_suggest">Aucun ami actuellement connectés</string>

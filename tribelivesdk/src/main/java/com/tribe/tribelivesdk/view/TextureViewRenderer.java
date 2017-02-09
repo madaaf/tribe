@@ -320,7 +320,6 @@ public class TextureViewRenderer extends TextureView
 
   @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
     ThreadUtils.checkIsOnMainThread();
-    logD("surfaceChanged: " + " size: " + width + "x" + height);
   }
 
   @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {

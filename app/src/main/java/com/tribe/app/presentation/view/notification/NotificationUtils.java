@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.notification;
 import android.content.Context;
 import android.content.Intent;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -99,10 +98,10 @@ public class NotificationUtils {
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
     if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
       //if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
-        return builder.addAction(ACTION_HANG_LIVE,
-            context.getString(R.string.live_notification_action_hang_live_friend,
-                notificationPayload.getUserDisplayName()),
-            getIntentForLive(context, notificationPayload));
+      return builder.addAction(ACTION_HANG_LIVE,
+          context.getString(R.string.live_notification_action_hang_live_friend,
+              notificationPayload.getUserDisplayName()),
+          getIntentForLive(context, notificationPayload));
       //} else {
       //  return builder.addAction(ACTION_HANG_LIVE,
       //      context.getString(R.string.live_notification_action_hang_live_guests,
@@ -118,9 +117,11 @@ public class NotificationUtils {
 
   private static LiveNotificationView.Builder addLiveActions(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-    builder.addAction(ACTION_ADD_AS_GUEST,
-        context.getString(R.string.live_notification_add_as_guest,
-            notificationPayload.getUserDisplayName()), null);
+    if (notificationPayload.isShouldDisplayDrag()) {
+      builder.addAction(ACTION_ADD_AS_GUEST,
+          context.getString(R.string.live_notification_add_as_guest,
+              notificationPayload.getUserDisplayName()), null);
+    }
 
     builder = addLeaveAction(context, builder, notificationPayload);
 
@@ -130,9 +131,8 @@ public class NotificationUtils {
   private static LiveNotificationView.Builder addLeaveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
     //if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
-      return builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
-          notificationPayload.getUserDisplayName()),
-          getIntentForLive(context, notificationPayload));
+    return builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
+        notificationPayload.getUserDisplayName()), getIntentForLive(context, notificationPayload));
     //} else {
     //  return builder.addAction(ACTION_LEAVE,
     //      context.getString(R.string.live_notification_leave_guests,

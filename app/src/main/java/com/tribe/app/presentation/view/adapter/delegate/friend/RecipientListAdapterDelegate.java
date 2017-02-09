@@ -1,32 +1,28 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.TextViewCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.animation.DecelerateInterpolator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
-import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
-import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -36,6 +32,8 @@ import rx.subjects.PublishSubject;
  * Created by tiago on 11/29/16.
  */
 public class RecipientListAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
+
+  @Inject ScreenUtils screenUtils;
 
   // VARIABLES
   private int avatarSize;
@@ -55,8 +53,12 @@ public class RecipientListAdapterDelegate extends AddAnimationAdapterDelegate<Li
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    RecyclerView.ViewHolder vh = new RecipientListViewHolder(
+    RecipientListViewHolder vh = new RecipientListViewHolder(
         layoutInflater.inflate(R.layout.item_recipient_list, parent, false));
+    vh.gradientDrawable = new GradientDrawable();
+    vh.gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+    vh.gradientDrawable.setCornerRadius(screenUtils.dpToPx(100));
+    vh.btnAdd.setBackground(vh.gradientDrawable);
 
     return vh;
   }
@@ -66,28 +68,36 @@ public class RecipientListAdapterDelegate extends AddAnimationAdapterDelegate<Li
     RecipientListViewHolder vh = (RecipientListViewHolder) holder;
     Recipient recipient = (Recipient) items.get(position);
 
-    if (animations.containsKey(holder)) {
-      animations.get(holder).cancel();
+    if (recipient.isLive()) {
+      vh.avatar.setType(AvatarLiveView.LIVE);
+    } else if (recipient.isOnline()) {
+      vh.avatar.setType(AvatarLiveView.CONNECTED);
+    } else {
+      vh.avatar.setType(AvatarLiveView.NONE);
     }
-
-    if (recipient.isLive()) vh.avatar.setType(AvatarLiveView.LIVE);
-    else if (recipient.isOnline()) vh.avatar.setType(AvatarLiveView.CONNECTED);
-    else vh.avatar.setType(AvatarLiveView.NONE);
 
     vh.txtName.setText(recipient.getDisplayName());
 
     if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
-      int size = membership.getGroup().getMembers() == null ? 0 : membership.getGroup().getMembers().size();
-      vh.txtDetails.setText(size + " " + (size > 1 ? context.getString(R.string.group_members) : context.getString(R.string.group_member)));
+      int size = membership.getGroup().getMembers() == null ? 0
+          : membership.getGroup().getMembers().size();
+      vh.txtDetails.setText(size + " " + (size > 1 ? context.getString(R.string.group_members)
+          : context.getString(R.string.group_member)));
       setLive(vh);
     } else {
       Friendship friendship = (Friendship) recipient;
-      if (friendship.getStatus().equals(FriendshipRealm.BLOCKED) || friendship.getStatus().equals(FriendshipRealm.HIDDEN)) {
-        setUnblock(vh);
+      if (friendship.isAnimateAdd()) {
+        friendship.setAnimateAdd(false);
+        animateAdd(vh, !friendship.isBlockedOrHidden());
       } else {
-        setLive(vh);
+        if (friendship.isBlockedOrHidden()) {
+          setUnblock(vh);
+        } else {
+          setLive(vh);
+        }
       }
+
       vh.txtDetails.setText("@" + recipient.getUsername());
     }
 
@@ -101,28 +111,46 @@ public class RecipientListAdapterDelegate extends AddAnimationAdapterDelegate<Li
 
   private void setClicks(RecipientListViewHolder vh, boolean isBlockedOrHidden) {
     if (isBlockedOrHidden) {
-      vh.btnAdd.setOnClickListener(v -> {
-        setLive(vh);
-        onUnblock.onNext(vh.itemView);
-      });
+      vh.btnAdd.setOnClickListener(v -> onUnblock.onNext(vh.itemView));
     } else {
-      vh.btnAdd.setOnClickListener(v -> {
-        setUnblock(vh);
-        onHangLive.onNext(vh.itemView);
-      });
+      vh.btnAdd.setOnClickListener(v -> onHangLive.onNext(vh.itemView));
     }
   }
 
   private void setLive(RecipientListViewHolder vh) {
     setClicks(vh, false);
     vh.txtAction.setText(R.string.action_hang_live);
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_red);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.red));
   }
 
   private void setUnblock(RecipientListViewHolder vh) {
     setClicks(vh, true);
     vh.txtAction.setText(R.string.action_unblock);
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_grey);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_unblock));
+  }
+
+  private void animateAdd(RecipientListViewHolder vh, boolean reverse) {
+    AnimatorSet animatorSet = new AnimatorSet();
+
+    vh.txtAction.setText(reverse ? R.string.action_hang_live : R.string.action_unblock);
+    vh.txtAction.measure(0, 0);
+
+    Animator animator = AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(),
+        vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
+
+    animatorSet.setDuration(DURATION);
+    animatorSet.setInterpolator(new DecelerateInterpolator());
+    animatorSet.play(animator);
+    animatorSet.start();
+
+    if (reverse) {
+      AnimationUtils.animateBGColor(vh.btnAdd,
+          ContextCompat.getColor(context, R.color.grey_unblock),
+          ContextCompat.getColor(context, R.color.red), DURATION);
+    } else {
+      AnimationUtils.animateBGColor(vh.btnAdd, ContextCompat.getColor(context, R.color.red),
+          ContextCompat.getColor(context, R.color.grey_unblock), DURATION);
+    }
   }
 
   public Observable<View> onHangLive() {

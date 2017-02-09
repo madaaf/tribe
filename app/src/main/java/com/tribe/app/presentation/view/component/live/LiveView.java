@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -104,8 +106,9 @@ public class LiveView extends FrameLayout {
 
   public void onDestroy() {
     if (room != null) {
-      room.leaveRoom();
       viewRoom.removeAllViews();
+      viewLocalLive.dispose();
+      room.leaveRoom();
       room = null;
     }
 
@@ -185,7 +188,8 @@ public class LiveView extends FrameLayout {
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
             LiveRowView liveRowView = liveRowViewMap.remove(remotePeer.getSession().getUserId());
-            removeView(liveRowView);
+            liveRowView.dispose();
+            viewRoom.removeView(liveRowView);
             liveRowView = null;
           }
         }));
@@ -271,6 +275,7 @@ public class LiveView extends FrameLayout {
 
   public void initOnEndDragSubscription(Observable<Void> obs) {
     subscriptions.add(obs.subscribe(aVoid -> {
+      latestView.dispose();
       viewRoom.removeView(latestView);
     }));
   }
@@ -381,6 +386,7 @@ public class LiveView extends FrameLayout {
           new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.MATCH_PARENT);
       viewRoom.addView(liveRowView, params);
+      liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     }
   }
 

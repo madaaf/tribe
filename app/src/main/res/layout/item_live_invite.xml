@@ -1,43 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.widget.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@null">
+    android:layout_height="90dp"
+    android:background="@null"
+    >
 
-    <FrameLayout
-        android:id="@+id/btnInvite"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/top_bar_height_small"
-        android:layout_marginLeft="@dimen/horizontal_margin_xsmall"
-        android:layout_marginRight="@dimen/horizontal_margin_xsmall"
-        android:background="@drawable/shape_rect_rounded_violet_5"
-        android:clickable="true"
-        android:foreground="@drawable/selectable_button_all_rounded_5_black_5">
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="11dp"
-            android:maxLines="2"
-            android:text="@string/live_invite_link"
-            style="@style/Body.Two.White" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom"
-            android:src="@drawable/picto_magic_wand" />
-
-    </FrameLayout>
+  <FrameLayout
+      android:id="@+id/btnInvite"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/top_bar_height_small"
+      android:layout_marginLeft="@dimen/horizontal_margin_smaller"
+      android:layout_marginRight="@dimen/horizontal_margin_smaller"
+      android:background="@drawable/shape_rect_rounded_violet_5"
+      android:clickable="true"
+      android:foreground="@drawable/selectable_button_all_rounded_5_black_5"
+      >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="11dp"
-        android:maxLines="1"
-        android:text="@string/live_drag_friends"
-        style="@style/Caption.Two.White40" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="11dp"
+        android:maxLines="2"
+        android:text="@string/live_invite_link"
+        style="@style/Body.Two.White"
+        />
 
-</com.tribe.app.presentation.view.widget.SquareFrameLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:src="@drawable/picto_magic_wand"
+        />
+
+  </FrameLayout>
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center_horizontal"
+      android:layout_marginBottom="11dp"
+      android:layout_marginLeft="11dp"
+      android:layout_marginRight="11dp"
+      android:maxLines="1"
+      android:text="@string/live_drag_friends"
+      style="@style/Caption.Two.White40"
+      />
+
+</FrameLayout>

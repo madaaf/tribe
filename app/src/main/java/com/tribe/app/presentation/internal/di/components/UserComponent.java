@@ -19,26 +19,19 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveTestActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.SearchUserActivity;
-import com.tribe.app.presentation.view.activity.SettingsActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
-import com.tribe.app.presentation.view.component.settings.SettingsBlockedHiddenView;
-import com.tribe.app.presentation.view.component.settings.SettingsFilterThemeView;
-import com.tribe.app.presentation.view.component.settings.SettingsFilterView;
-import com.tribe.app.presentation.view.component.settings.SettingsParametersView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
-import com.tribe.app.presentation.view.component.settings.SettingsThemeView;
-import com.tribe.app.presentation.view.component.settings.SettingsView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import dagger.Component;
@@ -71,27 +64,11 @@ import dagger.Component;
 
   void inject(GroupActivity groupActivity);
 
-  void inject(SearchUserActivity searchUserActivity);
-
   void inject(SearchPresenter searchPresenter);
-
-  void inject(SettingsActivity settingsActivity);
 
   void inject(SettingsPresenter settingsPresenter);
 
-  void inject(SettingsThemeView settingsThemeView);
-
-  void inject(SettingsFilterView settingsFilterView);
-
-  void inject(SettingsView settingsView);
-
   void inject(SettingsProfileView settingsProfileView);
-
-  void inject(SettingsFilterThemeView settingsFilterThemeView);
-
-  void inject(SettingsParametersView settingsParametersView);
-
-  void inject(SettingsBlockedHiddenView settingsBlockedHiddenView);
 
   void inject(ProfileActivity profileActivity);
 
@@ -126,4 +103,6 @@ import dagger.Component;
   void inject(SearchView searchView);
 
   void inject(LiveLocalView liveLocalView);
+
+  void inject(LiveAudioView liveAudioView);
 }

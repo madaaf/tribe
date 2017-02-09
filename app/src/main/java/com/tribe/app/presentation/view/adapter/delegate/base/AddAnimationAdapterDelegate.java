@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.drawable.TransitionDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -64,7 +63,8 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
     return animatorSet;
   }
 
-  protected void animateAddSuccessful(AddAnimationViewHolder vh, int textEnd) {
+  protected void animateAddSuccessful(AddAnimationViewHolder vh, int textEnd, int bgColorFrom,
+      int bgColorTo) {
     AnimatorSet animatorSet = new AnimatorSet();
 
     ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 0f, 1f);
@@ -82,8 +82,8 @@ public abstract class AddAnimationAdapterDelegate<T> extends RxAdapterDelegate<T
     animatorSet.play(alphaAnimAdd).with(alphaAnimProgress).with(animator);
     animatorSet.start();
 
-    if (vh.btnAdd.getBackground() instanceof TransitionDrawable) {
-      ((TransitionDrawable) vh.btnAdd.getBackground()).startTransition(DURATION);
+    if (vh.gradientDrawable != null) {
+      AnimationUtils.animateBGColor(vh.btnAdd, bgColorFrom, bgColorTo, DURATION);
     }
 
     animations.put(vh, animatorSet);

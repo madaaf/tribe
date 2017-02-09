@@ -126,4 +126,16 @@ public class Group implements Serializable {
 
     return groupMemberList;
   }
+
+  public boolean isGroupMember(String userId) {
+    if (members != null) {
+      for (User member : members) {
+        if (member.getId().equals(userId)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 }

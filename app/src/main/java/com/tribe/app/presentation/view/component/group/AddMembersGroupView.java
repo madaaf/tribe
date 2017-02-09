@@ -33,9 +33,11 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -158,23 +160,30 @@ public class AddMembersGroupView extends LinearLayout {
           filter(s);
         }));
 
-    subscriptions.add(adapter.clickAdd().map(view -> {
-      editTextSearch.setText("");
-      int position = recyclerView.getChildLayoutPosition(view);
-      return new Pair<>(position, (GroupMember) adapter.getItemAtPosition(position));
-    }).subscribe(pair -> {
-      GroupMember groupMember = pair.second;
-      boolean add = membersAdapter.isAdd(groupMember);
-      if (add) {
-        membersAdapter.compute(groupMember);
-        adapter.notifyItemChanged(pair.first);
-        newMembers.add(groupMember);
-        membersChanged.onNext(newMembers);
-        refactorMembers();
-      } else {
-        onRemoved.onNext(pair);
-      }
-    }));
+    subscriptions.add(adapter.clickAdd()
+        .map(view -> {
+          int position = recyclerView.getChildLayoutPosition(view);
+          return new Pair<>(position, (GroupMember) adapter.getItemAtPosition(position));
+        })
+        .doOnNext(pair -> {
+          GroupMember groupMember = pair.second;
+          boolean add = membersAdapter.isAdd(groupMember);
+          if (add) {
+            groupMember.setMember(true);
+            membersAdapter.compute(groupMember);
+            adapter.notifyItemChanged(pair.first);
+            newMembers.add(groupMember);
+            membersChanged.onNext(newMembers);
+            refactorMembers();
+          } else {
+            onRemoved.onNext(pair);
+          }
+        })
+        .delay(300, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(pair -> {
+          editTextSearch.setText("");
+        }));
 
     subscriptions.add(onRemoved.flatMap(
         pair -> DialogFactory.dialog(getContext(), pair.second.getUser().getDisplayName(),
@@ -186,16 +195,13 @@ public class AddMembersGroupView extends LinearLayout {
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
           GroupMember groupMember = pair.first.second;
+          groupMember.setMember(false);
           adapter.notifyItemChanged(pair.first.first);
           membersAdapter.compute(groupMember);
           newMembers.remove(groupMember);
           membersChanged.onNext(newMembers);
           refactorMembers();
         }));
-
-    subscriptions.add(onRemoved.subscribe(groupMember -> {
-
-    }));
 
     setupMembers();
     refactorMembers();

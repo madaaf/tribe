@@ -15,16 +15,16 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import javax.inject.Inject;
@@ -37,8 +37,7 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
   private static final int DURATION_SCALE = 350;
   private static final float OVERSHOOT = 0.45f;
 
-  @Inject
-  ScreenUtils screenUtils;
+  @Inject ScreenUtils screenUtils;
 
   // RX SUBSCRIPTIONS / SUBJECTS
 
@@ -70,20 +69,8 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
     FriendMemberViewHolder vh = (FriendMemberViewHolder) holder;
     GroupMember groupMember = (GroupMember) items.get(position);
 
-    if (animations.containsKey(holder)) {
-      animations.get(holder).cancel();
-    }
-
     if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
-      Glide.with(context)
-          .load(groupMember.getUser().getProfilePicture())
-          .placeholder(R.drawable.picto_placeholder_avatar)
-          .error(R.drawable.picto_placeholder_avatar)
-          .thumbnail(0.25f)
-          .override(avatarSize, avatarSize)
-          .bitmapTransform(new CropCircleTransformation(context))
-          .crossFade()
-          .into(vh.imgAvatar);
+      GlideUtils.load(context, groupMember.getUser().getProfilePicture(), avatarSize, vh.imgAvatar);
     }
 
     vh.txtName.setText(groupMember.getUser().getDisplayName());
@@ -118,12 +105,6 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
   }
 
   private void onClick(GroupMember groupMember, FriendMemberViewHolder vh) {
-    if (groupMember.isMember()) {
-      groupMember.setMember(false);
-    } else {
-      groupMember.setMember(true);
-    }
-
     groupMember.setAnimateAdd(true);
     clickAdd.onNext(vh.itemView);
   }
@@ -131,7 +112,8 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
   private void animateAdd(FriendMemberViewHolder vh, boolean reverse) {
     AnimatorSet animatorSet = new AnimatorSet();
 
-    vh.txtAction.setText(reverse ? R.string.group_add_members_in_group : R.string.action_member_added);
+    vh.txtAction.setText(
+        reverse ? R.string.group_add_members_in_group : R.string.action_member_added);
     vh.txtAction.measure(0, 0);
 
     Animator animator = AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(),
@@ -143,11 +125,14 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
     animatorSet.start();
 
     if (reverse) {
-      AnimationUtils.animateTextColor(vh.txtAction, ContextCompat.getColor(context, R.color.violet), Color.WHITE, DURATION);
-      AnimationUtils.animateBGColor(vh.btnAdd, ContextCompat.getColor(context, R.color.violet_opacity_10),
+      AnimationUtils.animateTextColor(vh.txtAction, ContextCompat.getColor(context, R.color.violet),
+          Color.WHITE, DURATION);
+      AnimationUtils.animateBGColor(vh.btnAdd,
+          ContextCompat.getColor(context, R.color.violet_opacity_10),
           ContextCompat.getColor(context, R.color.violet), DURATION);
     } else {
-      AnimationUtils.animateTextColor(vh.txtAction, Color.WHITE, ContextCompat.getColor(context, R.color.violet), DURATION);
+      AnimationUtils.animateTextColor(vh.txtAction, Color.WHITE,
+          ContextCompat.getColor(context, R.color.violet), DURATION);
       AnimationUtils.animateBGColor(vh.btnAdd, ContextCompat.getColor(context, R.color.violet),
           ContextCompat.getColor(context, R.color.violet_opacity_10), DURATION);
     }
@@ -155,6 +140,8 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
 
   private void setAddInGroupStyle(FriendMemberViewHolder vh) {
     vh.txtAction.setText(R.string.group_add_members_in_group);
+    vh.txtAction.measure(0, 0);
+    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
     TextViewCompat.setTextAppearance(vh.txtAction, R.style.Body_Two_White);
     vh.txtAction.setCustomFont(context, "Roboto-Bold.ttf");
     vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.violet));
@@ -162,6 +149,8 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
 
   private void setAddedInGroupStyle(FriendMemberViewHolder vh) {
     vh.txtAction.setText(R.string.group_add_members_added);
+    vh.txtAction.measure(0, 0);
+    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
     TextViewCompat.setTextAppearance(vh.txtAction, R.style.Body_Two_Purple);
     vh.txtAction.setCustomFont(context, "Roboto-Bold.ttf");
     vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.violet_opacity_10));
@@ -189,8 +178,6 @@ public class FriendMemberAdapterDelegate extends AddAnimationAdapterDelegate<Lis
     @BindView(R.id.txtFriend) TextViewFont txtFriend;
 
     @BindView(R.id.txtBubble) TextViewFont txtBubble;
-
-    GradientDrawable gradientDrawable;
 
     public FriendMemberViewHolder(View itemView) {
       super(itemView);

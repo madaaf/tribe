@@ -23,6 +23,7 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.Friendship;
@@ -59,6 +60,7 @@ import rx.subscriptions.CompositeSubscription;
 public class SearchView extends FrameLayout implements SearchMVPView {
 
   private final static int DURATION = 300;
+  private final static int DURATION_FAST = 100;
 
   @Inject User user;
 
@@ -178,9 +180,14 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         .subscribe(o -> {
           if (o instanceof SearchResult) {
             SearchResult searchResult = (SearchResult) o;
-            if (searchResult.getUsername() != null && !searchResult.getUsername()
-                .equals(user.getUsername())) {
-              searchPresenter.createFriendship(searchResult.getId());
+            if (searchResult.getFriendship() == null) {
+              if (searchResult.getUsername() != null && !searchResult.getUsername()
+                  .equals(user.getUsername())) {
+                searchPresenter.createFriendship(searchResult.getId());
+              }
+            } else {
+              searchResult.getFriendship().setStatus(FriendshipRealm.DEFAULT);
+              onUnblock.onNext(searchResult.getFriendship());
             }
           } else {
             Contact contact = (Contact) o;
@@ -210,17 +217,24 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         }));
 
     subscriptions.add(contactAdapter.onUnblock()
-        .map(view -> (Recipient) contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view)))
+        .map(view -> {
+          int position = recyclerViewContacts.getChildLayoutPosition(view);
+          Recipient recipient = (Recipient) contactAdapter.getItemAtPosition(position);
+          return new Pair<>(position, recipient);
+        })
         .doOnError(throwable -> throwable.printStackTrace())
-        .flatMap(recipient -> DialogFactory.dialog(getContext(), recipient.getDisplayName(),
+        .flatMap(pairPositionRecipient -> DialogFactory.dialog(getContext(), pairPositionRecipient.second.getDisplayName(),
             context().getString(R.string.search_unblock_alert_message),
-            context().getString(R.string.search_unblock_alert_unblock),
+            context().getString(R.string.search_unblock_alert_unblock, pairPositionRecipient.second.getDisplayName()),
             context().getString(R.string.search_unblock_alert_cancel)),
-            (recipient, aBoolean) -> new Pair<>(recipient, aBoolean))
+            (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
-          onUnblock.onNext(pair.first);
+          Friendship friendship = (Friendship) pair.first.second;
+          onUnblock.onNext(pair.first.second);
+          friendship.setStatus(FriendshipRealm.DEFAULT);
+          friendship.setAnimateAdd(true);
+          contactAdapter.notifyItemChanged(pair.first.first);
         }));
   }
 
@@ -400,7 +414,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         ValueAnimator.ofObject(new ArgbEvaluator(), Color.TRANSPARENT, Color.WHITE);
     colorAnimation.addUpdateListener(
         animator -> background.setColor((Integer) animator.getAnimatedValue()));
-    colorAnimation.setDuration(DURATION);
+    colorAnimation.setDuration(DURATION_FAST);
     colorAnimation.setInterpolator(new DecelerateInterpolator());
     colorAnimation.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
@@ -418,7 +432,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         ValueAnimator.ofObject(new ArgbEvaluator(), Color.WHITE, Color.TRANSPARENT);
     colorAnimation.addUpdateListener(
         animator -> background.setColor((Integer) animator.getAnimatedValue()));
-    colorAnimation.setDuration(DURATION);
+    colorAnimation.setDuration(DURATION_FAST);
     colorAnimation.setInterpolator(new DecelerateInterpolator());
     colorAnimation.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
@@ -480,14 +494,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   @Override public void renderSearchResult(SearchResult searchResult) {
     if (isSearchMode) {
-      if (this.searchResult != null
-          && this.searchResult.getFriendship() == null
-          && searchResult.getFriendship() != null
-          && this.searchResult.getUsername().equals(searchResult.getUsername())
-          && this.searchResult.isSearchDone()) {
-        searchResult.setShouldAnimateAdd(true);
-      }
-
+      searchResult.setShouldAnimateAdd(this.searchResult.isShouldAnimateAdd());
       this.searchResult = searchResult;
       this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
           .equals(user.getUsername()));

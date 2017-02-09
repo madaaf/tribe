@@ -1,15 +1,20 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
@@ -17,7 +22,9 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
@@ -29,6 +36,8 @@ import javax.inject.Inject;
 public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
 
   @Inject User user;
+
+  @Inject ScreenUtils screenUtils;
 
   // VARIABLES
   private int avatarSize;
@@ -51,8 +60,13 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    RecyclerView.ViewHolder vh = new UserListViewHolder(
-        layoutInflater.inflate(R.layout.item_user_list, parent, false));
+    UserListViewHolder vh =
+        new UserListViewHolder(layoutInflater.inflate(R.layout.item_user_list, parent, false));
+
+    vh.gradientDrawable = new GradientDrawable();
+    vh.gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+    vh.gradientDrawable.setCornerRadius(screenUtils.dpToPx(100));
+    vh.btnAdd.setBackground(vh.gradientDrawable);
 
     return vh;
   }
@@ -64,26 +78,19 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
         items.get(position) instanceof Contact ? ((Contact) items.get(position)).getUserList()
             .get(0) : (User) items.get(position);
 
-    if (animations.containsKey(holder)) {
-      animations.get(holder).cancel();
-    }
-
-    vh.btnAdd.setVisibility(
-        (!user.isInvisibleMode() && !user.isFriend())
-            ? View.VISIBLE : View.GONE);
+    vh.btnAdd.setVisibility((!user.isInvisibleMode()) ? View.VISIBLE : View.GONE);
     vh.imgGhost.setVisibility(user.isInvisibleMode() ? View.VISIBLE : View.GONE);
 
     setFriendLabel(vh, user.isFriend());
 
     if (user.isAnimateAdd()) {
-      animateAddSuccessful(vh, R.string.action_member_added);
+      animateAdd(vh, !user.isNewFriend());
       user.setAnimateAdd(false);
     } else {
-      vh.txtAction.setAlpha(1);
-      vh.progressBarAdd.setAlpha(0);
-
       if (!user.isFriend()) {
         setAddFriendStyle(vh);
+      } else {
+        setAddedFriendStyle(vh);
       }
     }
 
@@ -96,30 +103,15 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
     }
 
     if (!StringUtils.isEmpty(user.getProfilePicture())) {
-      Glide.with(context)
-          .load(user.getProfilePicture())
-          .thumbnail(0.25f)
-          .error(R.drawable.picto_placeholder_avatar)
-          .placeholder(R.drawable.picto_placeholder_avatar)
-          .override(avatarSize, avatarSize)
-          .bitmapTransform(new CropCircleTransformation(context))
-          .crossFade()
-          .into(vh.imgAvatar);
+      GlideUtils.load(context, user.getProfilePicture(), avatarSize, vh.imgAvatar);
     }
 
-    if (!user.isNewFriend() && !user.isFriend() && !user.isInvisibleMode()) {
+    if (!user.isFriend() && !user.isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
         user.setAnimateAdd(true);
-        user.setNewFriend(true);
-        onClick(vh);
+        clickAdd.onNext(vh.itemView);
       });
-    } else if (user.isNewFriend()) {
-      vh.btnAdd.setOnClickListener(v -> {
-        user.setNewFriend(false);
-        user.setFriend(false);
-        onClick(vh);
-      });
-    } else if (!user.isNewFriend()) {
+    } else if (user.isFriend()) {
       vh.btnAdd.setOnClickListener(null);
     }
   }
@@ -131,19 +123,58 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
 
   private void setAddFriendStyle(UserListViewHolder vh) {
     vh.txtAction.setText(R.string.action_add_friend);
-    vh.txtAction.measure(0, 0);
-    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_blue_new);
+    measure(vh);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
+    TextViewCompat.setTextAppearance(vh.txtAction, R.style.Body_Two_White);
     setAppearance(vh.txtAction);
   }
 
+  private void setAddedFriendStyle(UserListViewHolder vh) {
+    vh.txtAction.setText(R.string.action_member_added);
+    measure(vh);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_10));
+    TextViewCompat.setTextAppearance(vh.txtAction, R.style.Body_Two_BlueNew);
+    setAppearance(vh.txtAction);
+  }
+
+  private void measure(UserListViewHolder vh) {
+    vh.txtAction.measure(0, 0);
+    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
+  }
+
+  private void animateAdd(UserListViewHolder vh, boolean reverse) {
+    AnimatorSet animatorSet = new AnimatorSet();
+
+    vh.txtAction.setText(reverse ? R.string.action_add_friend : R.string.action_member_added);
+    vh.txtAction.measure(0, 0);
+
+    Animator animator = AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(),
+        vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
+
+    animatorSet.setDuration(DURATION);
+    animatorSet.setInterpolator(new DecelerateInterpolator());
+    animatorSet.play(animator);
+    animatorSet.start();
+
+    if (reverse) {
+      AnimationUtils.animateTextColor(vh.txtAction,
+          ContextCompat.getColor(context, R.color.blue_new), Color.WHITE, DURATION);
+      AnimationUtils.animateBGColor(vh.btnAdd,
+          ContextCompat.getColor(context, R.color.blue_new_opacity_10),
+          ContextCompat.getColor(context, R.color.blue_new), DURATION);
+    } else {
+      AnimationUtils.animateTextColor(vh.txtAction, Color.WHITE,
+          ContextCompat.getColor(context, R.color.blue_new), DURATION);
+      AnimationUtils.animateBGColor(vh.btnAdd, ContextCompat.getColor(context, R.color.blue_new),
+          ContextCompat.getColor(context, R.color.blue_new_opacity_10), DURATION);
+    }
+  }
+
   private void setAppearance(TextViewFont txt) {
-    TextViewCompat.setTextAppearance(txt, R.style.Body_Two_White);
     txt.setCustomFont(context, "Roboto-Bold.ttf");
   }
 
-  private void setFriendLabel(UserListViewHolder vh,
-      boolean isFriend) {
+  private void setFriendLabel(UserListViewHolder vh, boolean isFriend) {
     int visibility = isFriend ? View.VISIBLE : View.GONE;
     vh.txtFriend.setVisibility(visibility);
     vh.txtBubble.setVisibility(visibility);
@@ -162,6 +193,8 @@ public class UserListAdapterDelegate extends AddAnimationAdapterDelegate<List<Ob
     @BindView(R.id.txtBubble) TextViewFont txtBubble;
 
     @BindView(R.id.txtFriend) TextViewFont txtFriend;
+
+    GradientDrawable gradientDrawable;
 
     public UserListViewHolder(View itemView) {
       super(itemView);

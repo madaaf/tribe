@@ -130,9 +130,9 @@ import static android.R.attr.id;
       return false;
     }
 
-    tribePeerConnection.dispose(localMediaStream);
-
     streamManager.removePeer(tribeSession);
+
+    tribePeerConnection.dispose(localMediaStream);
 
     try {
       peerConnections.remove(tribeSession.getPeerId());

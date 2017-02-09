@@ -29,7 +29,6 @@ public class LivePresenter implements Presenter {
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
-  private RecipientInfosSubscriber recipientInfosSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos) {
@@ -50,7 +49,6 @@ public class LivePresenter implements Presenter {
 
   @Override public void onViewAttached(MVPView v) {
     liveMVPView = (LiveMVPView) v;
-    loadFriendshipList();
   }
 
   public void loadFriendshipList() {

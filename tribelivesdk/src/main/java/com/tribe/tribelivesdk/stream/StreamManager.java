@@ -86,8 +86,6 @@ public class StreamManager {
       RemotePeer remotePeer = remotePeerMap.get(tribeSession.getPeerId());
       if (remotePeer != null) remotePeer.dispose();
       remotePeerMap.remove(tribeSession.getPeerId());
-
-      remotePeerMap.clear();
     }
   }
 

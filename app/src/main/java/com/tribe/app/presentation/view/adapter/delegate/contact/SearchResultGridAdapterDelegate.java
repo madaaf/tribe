@@ -2,7 +2,9 @@ package com.tribe.app.presentation.view.adapter.delegate.contact;
 
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -62,6 +65,10 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     SearchResultViewHolder vh =
         new SearchResultViewHolder(layoutInflater.inflate(R.layout.item_search, parent, false));
+    vh.gradientDrawable = new GradientDrawable();
+    vh.gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+    vh.gradientDrawable.setCornerRadius(screenUtils.dpToPx(100));
+    vh.btnAdd.setBackground(vh.gradientDrawable);
     return vh;
   }
 
@@ -80,7 +87,9 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
     vh.imgGhost.setVisibility(searchResult.isInvisibleMode() ? View.VISIBLE : View.GONE);
 
     if (searchResult.isShouldAnimateAdd()) {
-      animateAddSuccessful(vh, R.string.action_hang_live);
+      animateAddSuccessful(vh, R.string.action_hang_live,
+          ContextCompat.getColor(context, R.color.blue_new),
+          ContextCompat.getColor(context, R.color.red));
       searchResult.setShouldAnimateAdd(false);
     } else {
       vh.txtAction.setAlpha(1);
@@ -88,7 +97,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
 
       if (!StringUtils.isEmpty(searchResult.getDisplayName())) {
         if (searchResult.getFriendship() != null && !searchResult.getFriendship()
-            .isBlockedOrHidden()) { // TODO handle blocked / unblock
+            .isBlockedOrHidden()) {
           setHangLiveStyle(vh);
         } else {
           setAddFriendStyle(vh);
@@ -98,13 +107,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
         vh.txtUsername.setText("@" + searchResult.getUsername());
 
         if (!StringUtils.isEmpty(searchResult.getPicture())) {
-          Glide.with(context)
-              .load(searchResult.getPicture())
-              .thumbnail(0.25f)
-              .override(avatarSize, avatarSize)
-              .bitmapTransform(new CropCircleTransformation(context))
-              .crossFade()
-              .into(vh.imgAvatar);
+          GlideUtils.load(context, searchResult.getPicture(), avatarSize, vh.imgAvatar);
         }
       } else {
         if (searchResult.isSearchDone()) {
@@ -115,13 +118,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
 
         vh.txtUsername.setText("@" + searchResult.getUsername());
 
-        Glide.with(context)
-            .load(R.drawable.picto_placeholder_avatar)
-            .thumbnail(0.25f)
-            .override(avatarSize, avatarSize)
-            .bitmapTransform(new CropCircleTransformation(context))
-            .crossFade()
-            .into(vh.imgAvatar);
+        GlideUtils.load(context, avatarSize, vh.imgAvatar);
       }
     }
 
@@ -132,23 +129,20 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
         onClick(vh);
       });
     } else {
-      vh.btnAdd.setOnClickListener(v -> {
-        onHangLive.onNext(vh.itemView);
-      });
+      vh.btnAdd.setOnClickListener(v -> onHangLive.onNext(vh.itemView));
     }
   }
 
   @Override
   public void onBindViewHolder(@NonNull List<Object> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
-
   }
 
   private void setHangLiveStyle(SearchResultViewHolder vh) {
     vh.txtAction.setText(R.string.action_hang_live);
     vh.txtAction.measure(0, 0);
     UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_red);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.red));
     setAppearance(vh.txtAction);
   }
 
@@ -156,7 +150,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
     vh.txtAction.setText(R.string.action_add_friend);
     vh.txtAction.measure(0, 0);
     UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-    vh.btnAdd.setBackgroundResource(R.drawable.shape_rect_rounded_100_blue_new);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
     setAppearance(vh.txtAction);
   }
 

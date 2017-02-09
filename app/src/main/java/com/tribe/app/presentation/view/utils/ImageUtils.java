@@ -14,8 +14,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.FutureTarget;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.view.camera.utils.BitmapFactoryUtils;
 
+import com.tribe.app.presentation.view.camera.utils.BitmapFactoryUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;

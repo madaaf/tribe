@@ -1,5 +1,6 @@
 package com.tribe.tribelivesdk.model;
 
+import android.view.ViewGroup;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
 
@@ -37,6 +38,9 @@ public class RemotePeer extends Peer {
   }
 
   public void dispose() {
-    if (peerView != null) peerView.dispose();
+    if (peerView != null) {
+      ((ViewGroup) peerView.getParent()).removeView(peerView);
+      peerView.dispose();
+    }
   }
 }

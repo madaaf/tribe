@@ -15,6 +15,7 @@ import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -60,15 +61,7 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
     if (!groupMember.isOgMember()) vh.viewRing.setVisibility(View.VISIBLE);
 
     if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
-      Glide.with(context)
-          .load(groupMember.getUser().getProfilePicture())
-          .thumbnail(0.25f)
-          .error(R.drawable.picto_placeholder_avatar)
-          .placeholder(R.drawable.picto_placeholder_avatar)
-          .override(avatarSize, avatarSize)
-          .bitmapTransform(new CropCircleTransformation(context))
-          .crossFade()
-          .into(vh.imgAvatar);
+      GlideUtils.load(context, groupMember.getUser().getProfilePicture(), avatarSize, vh.imgAvatar);
     }
   }
 
