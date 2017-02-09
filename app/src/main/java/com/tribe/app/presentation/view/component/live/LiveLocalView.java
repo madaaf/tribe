@@ -2,13 +2,9 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +16,19 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.view.LocalPeerView;
-import com.tribe.tribelivesdk.view.PeerView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
@@ -39,22 +37,21 @@ public class LiveLocalView extends FrameLayout {
 
   private static final int DURATION = 300;
 
+  @Inject User user;
+
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.viewPeerLocal)
-  LocalPeerView viewPeerLocal;
+  @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
-  @BindView(R.id.btnCameraEnable)
-  ImageView btnCameraEnable;
+  @BindView(R.id.btnCameraEnable) ImageView btnCameraEnable;
 
-  @BindView(R.id.btnCameraDisable)
-  ImageView btnCameraDisable;
+  @BindView(R.id.btnCameraDisable) ImageView btnCameraDisable;
 
-  @BindView(R.id.btnCameraSwitch)
-  ImageView btnCameraSwitch;
+  @BindView(R.id.btnCameraSwitch) ImageView btnCameraSwitch;
 
-  @BindView(R.id.layoutCameraControls)
-  ViewGroup layoutCameraControls;
+  @BindView(R.id.layoutCameraControls) ViewGroup layoutCameraControls;
+
+  private LocalPeerView viewPeerLocal;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -86,8 +83,15 @@ public class LiveLocalView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_local, this);
     unbinder = ButterKnife.bind(this);
 
+    viewPeerLocal = new LocalPeerView(getContext());
+    viewPeerLocal.setBackgroundColor(Color.BLACK);
+    addView(viewPeerLocal, 1, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
+
+    viewAudio.setGuest(new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture()));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -102,35 +106,53 @@ public class LiveLocalView extends FrameLayout {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
         .applicationComponent(getApplicationComponent())
-        .build().inject(this);
+        .build()
+        .inject(this);
   }
 
   /////////////////
   //   CLICKS    //
   /////////////////
 
-  @OnClick(R.id.btnCameraEnable)
-  void clickEnableCamera() {
+  @OnClick(R.id.btnCameraEnable) void clickEnableCamera() {
     if (!hiddenControls) {
       cameraEnabled = true;
       onEnableCamera.onNext(cameraEnabled);
       alpha(btnCameraSwitch, 1);
       animateEnableCamera(cameraEnabled);
+
+      UIUtils.showReveal(viewPeerLocal, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          viewAudio.setVisibility(View.GONE);
+        }
+
+        @Override public void onAnimationStart(Animator animation) {
+          viewPeerLocal.setVisibility(View.VISIBLE);
+        }
+      });
     }
   }
 
-  @OnClick(R.id.btnCameraDisable)
-  void clickDisableCamera() {
+  @OnClick(R.id.btnCameraDisable) void clickDisableCamera() {
     if (!hiddenControls) {
       cameraEnabled = false;
       onEnableCamera.onNext(cameraEnabled);
       alpha(btnCameraSwitch, 0);
       animateEnableCamera(cameraEnabled);
+
+      UIUtils.hideReveal(viewPeerLocal, new AnimatorListenerAdapter() {
+        @Override public void onAnimationStart(Animator animation) {
+          viewAudio.setVisibility(View.VISIBLE);
+        }
+
+        @Override public void onAnimationEnd(Animator animation) {
+          viewPeerLocal.setVisibility(View.GONE);
+        }
+      });
     }
   }
 
-  @OnClick(R.id.btnCameraSwitch)
-  void clickCameraSwitch() {
+  @OnClick(R.id.btnCameraSwitch) void clickCameraSwitch() {
     if (!hiddenControls) {
       rotateSwitchCamera();
       onSwitchCamera.onNext(null);
@@ -165,20 +187,28 @@ public class LiveLocalView extends FrameLayout {
   }
 
   private void scale(View v, int scale) {
-    v.animate().scaleX(scale).scaleY(scale).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
-      }
+    v.animate()
+        .scaleX(scale)
+        .scaleY(scale)
+        .setDuration(DURATION)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationStart(Animator animation) {
+            v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
+          }
 
-      @Override public void onAnimationEnd(Animator animation) {
-        v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
-        v.animate().setListener(null).start();
-      }
-    }).start();
+          @Override public void onAnimationEnd(Animator animation) {
+            v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
+            v.animate().setListener(null).start();
+          }
+        })
+        .start();
   }
 
   private void rotateSwitchCamera() {
-    btnCameraSwitch.animate().rotation(btnCameraSwitch.getRotation() == 0 ? 180 : 0).setDuration(DURATION).start();
+    btnCameraSwitch.animate()
+        .rotation(btnCameraSwitch.getRotation() == 0 ? 180 : 0)
+        .setDuration(DURATION)
+        .start();
   }
 
   /////////////////

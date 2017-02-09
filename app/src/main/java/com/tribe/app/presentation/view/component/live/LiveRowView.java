@@ -105,7 +105,6 @@ public class LiveRowView extends FrameLayout {
           if (tribePeerMediaConfiguration.isVideoEnabled()) {
             UIUtils.showReveal(remotePeerView, new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
-                Timber.d("onAnimationEnd");
                 viewAudio.setVisibility(View.GONE);
               }
 
@@ -116,7 +115,6 @@ public class LiveRowView extends FrameLayout {
           } else {
             UIUtils.hideReveal(remotePeerView, new AnimatorListenerAdapter() {
               @Override public void onAnimationStart(Animator animation) {
-                Timber.d("onAnimationStart");
                 viewAudio.setVisibility(View.VISIBLE);
               }
 

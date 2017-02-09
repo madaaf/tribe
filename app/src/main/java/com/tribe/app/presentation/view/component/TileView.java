@@ -58,7 +58,7 @@ public class TileView extends SquareCardView {
   public final static int TYPE_NORMAL = 3;
   public final static int TYPE_INVITE = 4;
 
-  private final float SCALE_FACTOR = 1.80f;
+  private final float SCALE_FACTOR = 1.75f;
   private final float SCALE_TILE_FACTOR = 1.05f;
   private final float SCALE_DOWN_MASTER_BG_FACTOR_LOW = 0.85f;
   private final int RADIUS_MIN = 0;

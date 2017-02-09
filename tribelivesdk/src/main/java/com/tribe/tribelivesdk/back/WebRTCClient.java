@@ -17,6 +17,7 @@ import com.tribe.tribelivesdk.view.LocalPeerView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.json.JSONException;
@@ -111,6 +112,7 @@ import static android.R.attr.id;
         .subscribe(onReceivedPeer));
 
     subscriptions.add(remotePeer.onDataChannelOpened()
+        .delay(1000, TimeUnit.MILLISECONDS)
         .subscribe(aVoid -> remotePeer.send(getJSONMedia(streamManager.isLocalAudioEnabled(),
             streamManager.isLocalCameraEnabled()).toString())));
 

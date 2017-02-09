@@ -17,6 +17,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 public class UIUtils {
 
+  private static final int DURATION_REVEAL = 450;
+
   public static void setBackgroundGrid(ScreenUtils screenUtils, View v, int position,
       boolean hasCorners) {
     Drawable background = v.getBackground();
@@ -109,7 +111,7 @@ public class UIUtils {
               Math.max(v.getWidth(), v.getHeight()));
       anim.setInterpolator(new AccelerateDecelerateInterpolator());
       anim.addListener(listenerAdapter);
-      anim.setDuration(300);
+      anim.setDuration(DURATION_REVEAL);
       anim.setStartDelay(500);
       anim.start();
     } else {
@@ -126,7 +128,7 @@ public class UIUtils {
           ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
               (int) (v.getY() + v.getHeight() / 2), initialRadius, 0);
       anim.setInterpolator(new AccelerateDecelerateInterpolator());
-      anim.setDuration(300);
+      anim.setDuration(DURATION_REVEAL);
       anim.addListener(listenerAdapter);
       anim.start();
     } else {
