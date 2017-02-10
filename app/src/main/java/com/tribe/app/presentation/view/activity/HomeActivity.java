@@ -151,6 +151,10 @@ public class HomeActivity extends BaseActivity
     initRemoteConfig();
     manageDeepLink(getIntent());
 
+    homeGridPresenter.onViewAttached(this);
+    homeGridPresenter.reload(hasSynced);
+    if (!hasSynced) hasSynced = true;
+
     startService(WSService.getCallingIntent(this));
   }
 
@@ -162,9 +166,6 @@ public class HomeActivity extends BaseActivity
   @Override protected void onStart() {
     super.onStart();
     tagManager.onStart(this);
-    homeGridPresenter.onViewAttached(this);
-    homeGridPresenter.reload(hasSynced);
-    if (!hasSynced) hasSynced = true;
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       //homeGridPresenter.syncFriendList();
@@ -180,7 +181,6 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onStop() {
     tagManager.onStop(this);
-    homeGridPresenter.onViewDetached();
     super.onStop();
   }
 
@@ -222,6 +222,8 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onDestroy() {
     recyclerViewFriends.setAdapter(null);
+
+    homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
 

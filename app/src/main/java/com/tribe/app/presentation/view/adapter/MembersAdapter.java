@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.tribe.app.domain.entity.GroupMember;
@@ -102,6 +103,11 @@ public class MembersAdapter extends RecyclerView.Adapter {
     notifyItemRemoved(position);
   }
 
+  public void remove(int position) {
+    items.remove(position);
+    notifyItemRemoved(position);
+  }
+
   public void add(GroupMember groupMember) {
     items.add(groupMember);
     int position = items.size() - 1;
@@ -112,7 +118,7 @@ public class MembersAdapter extends RecyclerView.Adapter {
     return items;
   }
 
-  public Observable<Void> onClick() {
+  public Observable<View> onClick() {
     return memberAdapterDelegate.onClick();
   }
 }

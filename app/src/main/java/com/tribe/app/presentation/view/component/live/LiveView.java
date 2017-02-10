@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +25,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -53,6 +52,8 @@ import timber.log.Timber;
 public class LiveView extends FrameLayout {
 
   private static final int DURATION = 300;
+
+  @Inject SoundManager soundManager;
 
   @Inject User user;
 
@@ -93,6 +94,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Boolean> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -107,7 +109,6 @@ public class LiveView extends FrameLayout {
   public void onDestroy() {
     if (room != null) {
       viewRoom.removeAllViews();
-      viewLocalLive.dispose();
       room.leaveRoom();
       room = null;
     }
@@ -139,6 +140,11 @@ public class LiveView extends FrameLayout {
   private void init(Context context, AttributeSet attrs) {
     liveRowViewMap = new HashMap<>();
     liveInviteMap = new HashMap<>();
+
+    Observable.timer(2000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            aLong -> soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MAX));
   }
 
   private void initUI() {
@@ -159,7 +165,49 @@ public class LiveView extends FrameLayout {
           subscriptionJoinRoom.unsubscribe();
           onShouldJoinRoom.onNext(true);
         });
+
+    subscriptions.add(onHiddenControls().doOnNext(aBoolean -> {
+      hiddenControls = aBoolean;
+      viewLocalLive.hideControls(!hiddenControls);
+    }).subscribe());
+
+    subscriptions.add(viewLocalLive.onClick().subscribe(aVoid -> {
+      if (hiddenControls) {
+        displayControls(1);
+        onHiddenControls.onNext(false);
+      } else {
+        displayControls(0);
+        onHiddenControls.onNext(true);
+      }
+    }));
   }
+
+  ///////////////////
+  //    CLICKS     //
+  ///////////////////
+
+  @OnClick(R.id.btnInviteLive) void openInvite() {
+    if (!hiddenControls) onOpenInvite.onNext(null);
+  }
+
+  @OnClick(R.id.btnNotify) void onClickNotify() {
+    if (!hiddenControls) onNotify.onNext(null);
+  }
+
+  @OnClick(R.id.btnLeave) void onClickLeave() {
+    if (!hiddenControls) onLeave.onNext(null);
+  }
+
+  @OnClick(R.id.viewRoom) void onClickRoom() {
+    if (hiddenControls) {
+      displayControls(1);
+      onHiddenControls.onNext(false);
+    }
+  }
+
+  ///////////////////
+  //    PUBLIC     //
+  ///////////////////
 
   public void joinRoom(RoomConfiguration roomConfiguration) {
     TribeLiveOptions options = new TribeLiveOptions.TribeLiveOptionsBuilder(getContext()).wsUrl(
@@ -175,6 +223,8 @@ public class LiveView extends FrameLayout {
 
     subscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
+          soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
+
           Timber.d("Remote peer added with id : "
               + remotePeer.getSession().getPeerId()
               + " & view : "
@@ -185,6 +235,8 @@ public class LiveView extends FrameLayout {
     subscriptions.add(room.onRemotePeerRemoved()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
+          soundManager.playSound(SoundManager.QUIT_CALL, SoundManager.SOUND_MAX);
+
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
             LiveRowView liveRowView = liveRowViewMap.remove(remotePeer.getSession().getUserId());
@@ -208,12 +260,13 @@ public class LiveView extends FrameLayout {
               if (!liveInviteMap.containsKey(trg.getId()) && !liveRowViewMap.containsKey(
                   trg.getId())) {
                 LiveRowView liveRowView = new LiveRowView(getContext());
-                liveRowView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                  @Override public void onGlobalLayout() {
-                    liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    liveRowView.startPulse();
-                  }
-                });
+                liveRowView.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                      @Override public void onGlobalLayout() {
+                        liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        liveRowView.startPulse();
+                      }
+                    });
                 addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
               }
             }
@@ -223,38 +276,6 @@ public class LiveView extends FrameLayout {
     Timber.d("Initiating Room");
     room.connect(options);
   }
-
-  ///////////////////
-  //    CLICKS     //
-  ///////////////////
-
-  @OnClick(R.id.btnInviteLive) void openInvite() {
-    if (!hiddenControls) onOpenInvite.onNext(null);
-  }
-
-  @OnClick(R.id.btnNotify) void onClickNotify() {
-    if (!hiddenControls) onNotify.onNext(null);
-  }
-
-  @OnClick(R.id.btnLeave) void onClickLeave() {
-    if (!hiddenControls) onLeave.onNext(null);
-  }
-
-  @OnClick(R.id.viewLocalLive) void onClickLocalView() {
-    if (hiddenControls) {
-      displayControls(1);
-      hiddenControls = false;
-      viewLocalLive.hideControls(!hiddenControls);
-    } else {
-      displayControls(0);
-      hiddenControls = true;
-      viewLocalLive.hideControls(!hiddenControls);
-    }
-  }
-
-  ///////////////////
-  //    PUBLIC     //
-  ///////////////////
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     subscriptions.add(obs.subscribe(event -> {
@@ -444,6 +465,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onLeave() {
     return onLeave;
+  }
+
+  public Observable<Boolean> onHiddenControls() {
+    return onHiddenControls;
   }
 }
 

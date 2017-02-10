@@ -254,6 +254,29 @@ public class AddMembersGroupView extends LinearLayout {
     recyclerViewGroupMembers.getRecycledViewPool().setMaxRecycledViews(0, 50);
     recyclerViewGroupMembers.setHasFixedSize(true);
     //recyclerViewGroupMembers.addItemDecoration(new MemberListLastItemDecoration(getContext().getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)));
+
+    subscriptions.add(membersAdapter.onClick()
+        .map(view -> {
+          int position = recyclerViewGroupMembers.getChildLayoutPosition(view);
+          return new Pair<>(position, membersAdapter.getItemAtPosition(position));
+        })
+        .filter(pair -> !pair.second.isOgMember())
+        .flatMap(pair -> DialogFactory.dialog(getContext(), pair.second.getUser().getDisplayName(),
+            getContext().getString(R.string.group_members_remove_member_alert_message),
+            getContext().getString(R.string.group_members_remove_member_alert_confirm,
+                pair.second.getUser().getDisplayName()),
+            getContext().getString(R.string.action_nevermind)),
+            (pair, aBoolean) -> new Pair<>(pair, aBoolean))
+        .filter(pair -> pair.second == true)
+        .subscribe(pair -> {
+          GroupMember groupMember = pair.first.second;
+          groupMember.setMember(false);
+          adapter.update(groupMember);
+          membersAdapter.remove(pair.first.first);
+          newMembers.remove(groupMember);
+          membersChanged.onNext(newMembers);
+          refactorMembers();
+        }));
   }
 
   private void refactorMembers() {

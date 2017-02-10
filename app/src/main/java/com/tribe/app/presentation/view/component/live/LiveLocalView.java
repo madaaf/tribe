@@ -5,8 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,7 +31,6 @@ import com.tribe.tribelivesdk.view.LocalPeerView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
@@ -57,10 +59,12 @@ public class LiveLocalView extends FrameLayout {
   private Unbinder unbinder;
   private boolean hiddenControls = false;
   private boolean cameraEnabled = true;
+  private GestureDetectorCompat gestureDetector;
 
   // OBSERVABLES
   private PublishSubject<Boolean> onEnableCamera = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
+  private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {
     super(context);
@@ -83,6 +87,8 @@ public class LiveLocalView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_local, this);
     unbinder = ButterKnife.bind(this);
 
+    gestureDetector = new GestureDetectorCompat(getContext(), new TapGestureListener());
+
     viewPeerLocal = new LocalPeerView(getContext());
     viewPeerLocal.setBackgroundColor(Color.BLACK);
     addView(viewPeerLocal, 1, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -91,7 +97,8 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
 
-    viewAudio.setGuest(new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture()));
+    viewAudio.setGuest(
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture()));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -108,6 +115,13 @@ public class LiveLocalView extends FrameLayout {
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  private void switchCamera() {
+    if (!hiddenControls) {
+      rotateSwitchCamera();
+      onSwitchCamera.onNext(null);
+    }
   }
 
   /////////////////
@@ -153,10 +167,12 @@ public class LiveLocalView extends FrameLayout {
   }
 
   @OnClick(R.id.btnCameraSwitch) void clickCameraSwitch() {
-    if (!hiddenControls) {
-      rotateSwitchCamera();
-      onSwitchCamera.onNext(null);
-    }
+    switchCamera();
+  }
+
+  @Override public boolean onTouchEvent(MotionEvent event) {
+    gestureDetector.onTouchEvent(event);
+    return super.onTouchEvent(event);
   }
 
   ////////////////
@@ -241,5 +257,22 @@ public class LiveLocalView extends FrameLayout {
 
   public Observable<Void> onSwitchCamera() {
     return onSwitchCamera;
+  }
+
+  public Observable<Void> onClick() {
+    return onClick;
+  }
+
+  class TapGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+    @Override public boolean onDoubleTap(MotionEvent e) {
+      switchCamera();
+      return true;
+    }
+
+    @Override public boolean onSingleTapConfirmed(MotionEvent e) {
+      if (isEnabled()) onClick.onNext(null);
+      return true;
+    }
   }
 }

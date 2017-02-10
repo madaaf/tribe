@@ -31,7 +31,7 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
   private Context context;
   private LayoutInflater layoutInflater;
 
-  private PublishSubject<Void> click = PublishSubject.create();
+  private PublishSubject<View> click = PublishSubject.create();
 
   public MemberAdapterDelegate(Context context) {
     this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
@@ -48,7 +48,7 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
     RecyclerView.ViewHolder vh =
         new MemberViewHolder(layoutInflater.inflate(R.layout.item_member, parent, false));
 
-    vh.itemView.setOnClickListener(v -> click.onNext(null));
+    vh.itemView.setOnClickListener(v -> click.onNext(vh.itemView));
 
     return vh;
   }
@@ -82,7 +82,7 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
     }
   }
 
-  public Observable<Void> onClick() {
+  public Observable<View> onClick() {
     return click;
   }
 }

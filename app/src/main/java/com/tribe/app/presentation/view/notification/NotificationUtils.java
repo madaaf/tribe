@@ -6,6 +6,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 
 /**
@@ -29,6 +30,7 @@ public class NotificationUtils {
       // A friend opened the app and is online
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder = addLiveActions(context, builder, notificationPayload);
+      builder.sound(SoundManager.FRIEND_ONLINE);
       notificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         && StringUtils.isEmpty(notificationPayload.getGroupId())) {
@@ -48,7 +50,6 @@ public class NotificationUtils {
       //    builder = addLeaveAction(context, builder, notificationPayload);
       //  }
       //}
-
       notificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         && !StringUtils.isEmpty(notificationPayload.getGroupId())) {
@@ -69,7 +70,7 @@ public class NotificationUtils {
       } else {
         builder = addHangLiveAction(context, builder, notificationPayload);
       }
-
+      builder.sound(SoundManager.WIZZ);
       notificationView = builder.build();
     } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
@@ -82,6 +83,7 @@ public class NotificationUtils {
         builder = addLiveActions(context, builder, notificationPayload);
       }
 
+      builder.sound(SoundManager.FRIEND_ONLINE);
       notificationView = builder.build();
     }
 

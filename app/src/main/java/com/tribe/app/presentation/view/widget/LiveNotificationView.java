@@ -30,6 +30,7 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.util.ArrayList;
@@ -57,6 +58,8 @@ public class LiveNotificationView extends LinearLayout {
   private static final int INVALID_POINTER = -1;
   private static final SpringConfig ORIGAMI_SPRING_CONFIG =
       SpringConfig.fromBouncinessAndSpeed(5f, 20f);
+
+  @Inject SoundManager soundManager;
 
   @Inject ScreenUtils screenUtils;
 
@@ -86,6 +89,7 @@ public class LiveNotificationView extends LinearLayout {
   private VelocityTracker velocityTracker;
   private int touchSlop;
   private boolean expanded = false;
+  private int sound = -1;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -135,6 +139,7 @@ public class LiveNotificationView extends LinearLayout {
     private boolean expandable = true;
     private List<LiveNotificationActionView.Action> actionList;
     private @LiveNotificationType int type;
+    private int sound;
 
     public Builder(Context context, @LiveNotificationType int type) {
       this.context = context;
@@ -162,10 +167,16 @@ public class LiveNotificationView extends LinearLayout {
       return this;
     }
 
+    public Builder sound(int sound) {
+      this.sound = sound;
+      return this;
+    }
+
     public LiveNotificationView build() {
       LiveNotificationView view = new LiveNotificationView(context, type);
       view.setImgUrl(imgUrl);
       view.setTitle(title);
+      view.setSound(sound);
 
       if (type != ERROR) {
         view.setExpandable(expandable);
@@ -222,6 +233,10 @@ public class LiveNotificationView extends LinearLayout {
 
   public void setTitle(String title) {
     txtTitle.setText(title);
+  }
+
+  public void setSound(int sound) {
+    this.sound = sound;
   }
 
   public void setImgUrl(String url) {
@@ -291,6 +306,7 @@ public class LiveNotificationView extends LinearLayout {
             .setDuration(DURATION)
             .setListener(new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
+                if (sound != -1) soundManager.playSound(sound, SoundManager.SOUND_MAX);
                 onAnimationDone.onNext(LiveNotificationView.this);
                 onAnimationDone.onCompleted();
                 animate().setListener(null).start();

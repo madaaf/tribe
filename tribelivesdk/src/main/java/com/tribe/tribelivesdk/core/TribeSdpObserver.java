@@ -28,6 +28,7 @@ public class TribeSdpObserver implements SdpObserver {
   private void setConstraints() {
     constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
     constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"));
+    constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
   }
 
   public void createOffer() {

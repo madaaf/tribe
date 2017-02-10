@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.media.SoundPool;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.text.format.DateUtils;
@@ -183,8 +184,14 @@ public class TileView extends SquareCardView {
     setRadius(0);
 
     if (!isDragging) {
-      setUseCompatPadding(false);
-      setPreventCornerOverlap(true);
+      if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
+        setMaxCardElevation(0);
+        setUseCompatPadding(true);
+        setPreventCornerOverlap(false);
+      } else {
+        setUseCompatPadding(false);
+        setPreventCornerOverlap(true);
+      }
 
       if (type == TYPE_GRID_LIVE) layoutPulse.start();
     }

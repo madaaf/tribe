@@ -112,6 +112,19 @@ public class FriendMembersAdapter extends RecyclerView.Adapter {
     }
   }
 
+  public void update(GroupMember groupMember) {
+    for (Object o : items) {
+      if (o instanceof GroupMember) {
+        GroupMember gr = (GroupMember) o;
+        if (gr.equals(groupMember)) {
+          gr.setMember(groupMember.isMember());
+          gr.setAnimateAdd(true);
+        }
+        notifyItemChanged(items.indexOf(gr));
+      }
+    }
+  }
+
   public Observable<View> clickAdd() {
     return friendMemberAdapterDelegate.clickAdd();
   }

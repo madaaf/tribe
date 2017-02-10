@@ -26,6 +26,8 @@ import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
+import com.tribe.app.presentation.view.component.live.LiveWaitingView;
+import com.tribe.app.presentation.view.component.live.ThreeDotsView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -105,4 +107,8 @@ import dagger.Component;
   void inject(LiveLocalView liveLocalView);
 
   void inject(LiveAudioView liveAudioView);
+
+  void inject(LiveWaitingView liveWaitingView);
+
+  void inject(ThreeDotsView threeDotsView);
 }

@@ -172,8 +172,7 @@ public class CloudUserDataStore implements UserDataStore {
     String req =
         installation == null || StringUtils.isEmpty(installation.getToken()) ? context.getString(
             R.string.install_create, base)
-            : context.getString(R.string.install_update, installation.getId(), base,
-                utcSimpleDate.format(new Date()));
+            : context.getString(R.string.install_update, installation.getId(), base);
     return this.tribeApi.createOrUpdateInstall(req).onErrorResumeNext(throwable -> {
       this.installation.setToken("");
       this.installation.setId("");

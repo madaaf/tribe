@@ -233,6 +233,7 @@
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
 	<string name="grid_status_live">Live!</string>
+	<string name="grid_status_live_with_guests">Live avec des invités!</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
@@ -566,7 +567,7 @@
 	<!-- Live -->
 	<string name="live_drag_friends">Glissez des invités !</string>
 	<string name="live_invite_link">Lien pour\ninviter</string>
-	<string name="live_drop_friend">Relachez dans le live !</string>
+	<string name="live_drop_friend">Relachez votre ami dans le live !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en live en même temps !</string>
 	<string name="live_join_impossible">:lock: Seulement %1$d amis en live en même temps !</string>
 	<string name="live_event_added">%1$s ajouté !</string>
@@ -579,6 +580,7 @@
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
 	<string name="live_dismiss_invitation_validate">Supprimer %1$s</string>
+	<string name="live_title_with_guests">%1$s, et des invités</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>

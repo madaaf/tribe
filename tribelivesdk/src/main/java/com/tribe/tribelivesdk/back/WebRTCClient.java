@@ -217,19 +217,24 @@ import static android.R.attr.id;
   }
 
   public void dispose() {
+    LogUtil.d(getClass(), "Disposing subscriptions");
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
     if (peerConnections != null && peerConnections.size() > 0) {
+      LogUtil.d(getClass(), "Iterating peer subscriptions");
       for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
         tribePeerConnection.dispose(localMediaStream);
       }
 
+      LogUtil.d(getClass(), "Clearing all peer connections");
       peerConnections.clear();
     }
 
+    LogUtil.d(getClass(), "Disposing stream manager");
     streamManager.dispose();
 
     localMediaStream = null;
+    LogUtil.d(getClass(), "End dispose success");
   }
 
   /////////////////

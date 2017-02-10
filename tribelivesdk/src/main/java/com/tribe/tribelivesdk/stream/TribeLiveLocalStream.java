@@ -156,35 +156,35 @@ public class TribeLiveLocalStream {
   }
 
   public void dispose() {
+    LogUtil.d(getClass(), "Disposing live local stream");
+    LogUtil.d(getClass(), "Stop video capture");
     stopVideoCapture();
+    LogUtil.d(getClass(), "Disposing video capturer");
     capturer.dispose();
     capturer = null;
 
-    try {
-      if (mediaStream != null) {
-        for (VideoTrack videoTrack : mediaStream.videoTracks) {
-          mediaStream.removeTrack(videoTrack);
-        }
-
-        for (AudioTrack audioTrack : mediaStream.audioTracks) {
-          mediaStream.removeTrack(audioTrack);
-        }
-      }
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
     if (videoSource != null) {
+      LogUtil.d(getClass(), "Disposing video source");
       videoSource.dispose();
     }
 
+    //try {
+    //  if (mediaStream != null) {
+    //    for (VideoTrack videoTrack : mediaStream.videoTracks) {
+    //      mediaStream.removeTrack(videoTrack);
+    //    }
+    //
+    //    for (AudioTrack audioTrack : mediaStream.audioTracks) {
+    //      mediaStream.removeTrack(audioTrack);
+    //    }
+    //  }
+    //} catch (Exception ex) {
+    //  ex.printStackTrace();
+    //}
+
     audioTrack = null;
     videoTrack = null;
-
-    if (mediaStream != null) {
-      mediaStream.dispose();
-      mediaStream = null;
-    }
+    LogUtil.d(getClass(), "End disposing live local stream");
   }
 
   public void setAudioEnabled(boolean enabled) {

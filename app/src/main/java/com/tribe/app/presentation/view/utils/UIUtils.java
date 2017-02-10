@@ -101,7 +101,7 @@ public class UIUtils {
   }
 
   public static void showReveal(View v, AnimatorListenerAdapter listenerAdapter) {
-    if (v.getVisibility() == View.VISIBLE);
+    if (v.getVisibility() == View.VISIBLE) return;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       int initialRadius = 0;

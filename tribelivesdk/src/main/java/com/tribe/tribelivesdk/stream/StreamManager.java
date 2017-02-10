@@ -146,21 +146,28 @@ public class StreamManager {
   }
 
   public void dispose() {
-    localPeerView.dispose();
-    localPeerView = null;
-
-    liveLocalStream.dispose();
-    liveLocalStream = null;
+    subscriptions.clear();
 
     if (remotePeerMap != null && remotePeerMap.size() > 0) {
+      LogUtil.d(getClass(), "Iterating remote peers");
       for (RemotePeer remotePeer : remotePeerMap.getMap().values()) {
+        LogUtil.d(getClass(), "Disposing remote peer");
         remotePeer.dispose();
       }
 
+      LogUtil.d(getClass(), "Clearing remote peer map");
       remotePeerMap.clear();
     }
 
-    subscriptions.clear();
+    LogUtil.d(getClass(), "Disposing stream manager");
+    localPeerView.dispose();
+    localPeerView = null;
+
+    LogUtil.d(getClass(), "Disposing live local stream");
+    liveLocalStream.dispose();
+    liveLocalStream = null;
+
+    LogUtil.d(getClass(), "End disposing stream manager");
   }
 
   // OBSERVABLES

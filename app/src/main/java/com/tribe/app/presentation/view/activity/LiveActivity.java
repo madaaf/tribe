@@ -29,6 +29,7 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -71,6 +72,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     intent.putExtra(EXTRA_SESSION_ID, sessionId);
     return intent;
   }
+
+  @Inject SoundManager soundManager;
 
   @Inject ScreenUtils screenUtils;
 
@@ -224,6 +227,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
       if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
+        soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MAX);
         livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
       }
     }));

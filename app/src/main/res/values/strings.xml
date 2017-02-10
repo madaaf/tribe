@@ -75,7 +75,7 @@
 	<string name="permission_location_disabled_alert_cancel">No, thanks</string>
 	<string name="permission_camera_enable_button_title">Enable\ncamera</string>
 	<string name="permission_popup_push_onboarding_title">Get notified!</string>
-	<string name="permission_popup_push_onboarding_description">Receive a push notification when friends join Tribe.</string>
+	<string name="permission_popup_push_onboarding_description">Receive a notification when friends join Tribe.</string>
 	<string name="permission_popup_push_onboarding_points">Enabling notifications</string>
 	<string name="permission_popup_push_onboarding_no">Stay alone</string>
 	<string name="permission_popup_push_onboarding_yes">Notify me</string>
@@ -112,7 +112,7 @@
 	<string name="permission_camera_disabled_alert_title">Camera or Microphone permission denied</string>
 	<string name="permission_camera_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_camera_disabled_alert_redirect">Go to Settings</string>
-	<string name="permission_camera_disabled_alert_cancel">Stay blocked</string>
+	<string name="permission_camera_disabled_alert_cancel">Keep it blocked</string>
 	<string name="permission_screen_camera_mic_next_popup_title">Camera and mic disabled!</string>
 	<string name="permission_screen_camera_mic_next_popup_description">If you don\'t enable the camera and mic, you won\'t be able to send messages.</string>
 	<string name="permission_screen_camera_mic_next_popup_cancel">Stay blocked</string>
@@ -128,7 +128,7 @@
 	<string name="permission_photos_disabled_alert_title">Photo Album permission denied</string>
 	<string name="permission_photos_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_photos_disabled_alert_redirect">Go to Settings</string>
-	<string name="permission_photos_disabled_alert_cancel">Stay blocked</string>
+	<string name="permission_photos_disabled_alert_cancel">Keep it blocked</string>
 	<string name="permission_global_title">Congratulations!</string>
 	<string name="permission_global_shortcut_title">Enable all features and enter!</string>
 	<string name="permission_global_shortcut_subtitle">Everything works and you\'re good to go.</string>
@@ -205,7 +205,7 @@
 	<string name="live_notification_leave_guests">Leave to hang live with %1$s and guests(s)</string>
 	<string name="live_notification_peer_joined">%1$s joined!</string>
 	<string name="live_notification_peer_left">%1$s left!</string>
-	<string name="live_notification_buzzed">Buzz sent!</string>
+	<string name="live_notification_buzzed">Buzzing notification sent!</string>
 	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Viewed by</string>
@@ -233,6 +233,7 @@
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
 	<string name="grid_status_live">Hanging live!</string>
+	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
 	<string name="grid_ghost">Has not joined yet</string>
@@ -566,7 +567,7 @@
 	<!-- Live -->
 	<string name="live_drag_friends">Drag guests!</string>
 	<string name="live_invite_link">Invite\nlink</string>
-	<string name="live_drop_friend">Drop in the live!</string>
+	<string name="live_drop_friend">Drop here to add your friend</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
 	<string name="live_join_impossible">:lock: Only %1$d friends at the same time!</string>
 	<string name="live_event_added">%1$s added!</string>
@@ -579,6 +580,7 @@
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
+	<string name="live_title_with_guests">%1$s, and guests</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>

@@ -33,10 +33,12 @@ public class TribePeerConnection {
   private PeerConnection peerConnection;
   private TribeSdpObserver sdpObserver;
   private TribePeerConnectionObserver peerConnectionObserver;
-  private TribeDataChannelObserver dataChannelObserver;
   private List<PeerConnection.IceServer> iceServerList;
   private List<IceCandidate> pendingIceCandidateList;
-  private DataChannel dataChannel;
+  private DataChannel localDataChannel;
+  private DataChannel remoteDataChannel;
+  private TribeDataChannelObserver localDataChannelObserver;
+  private TribeDataChannelObserver remoteDataChannelObserver;
 
   // OBSERVABLE
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -57,7 +59,8 @@ public class TribePeerConnection {
   }
 
   private void init(PeerConnectionFactory peerConnectionFactory, boolean isOffer) {
-    dataChannelObserver = new TribeDataChannelObserver();
+    localDataChannelObserver = new TribeDataChannelObserver();
+    remoteDataChannelObserver = new TribeDataChannelObserver();
     sdpObserver = new TribeSdpObserver();
     peerConnectionObserver = new TribePeerConnectionObserver(isOffer);
     peerConnection =
@@ -65,31 +68,37 @@ public class TribePeerConnection {
             peerConnectionObserver);
     sdpObserver.setPeerConnection(peerConnection);
 
+    LogUtil.d(getClass(), "Connected now creating local data channel");
     DataChannel.Init init = new DataChannel.Init();
     init.protocol = DATA_CHANNEL_PROTOCOL;
-    dataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
-    dataChannel.registerObserver(dataChannelObserver);
+    localDataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
+    localDataChannel.registerObserver(localDataChannelObserver);
 
-    subscriptions.add(dataChannelObserver.onMessage().subscribe(message -> {
-      onDataChannelMessage.onNext(new TribeMessageDataChannel(session, message));
-    }));
+    subscriptions.add(localDataChannelObserver.onStateChanged().subscribe(aVoid -> LogUtil.d(getClass(), "New state : " + localDataChannel.state())));
+    LogUtil.d(getClass(), "Local data channel created");
 
     subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
-      dataChannel = newDataChannel;
-      dataChannel.registerObserver(dataChannelObserver);
+      LogUtil.d(getClass(), "Received data channel");
+      remoteDataChannel = newDataChannel;
+      remoteDataChannel.registerObserver(remoteDataChannelObserver);
+
+      subscriptions.add(remoteDataChannelObserver.onMessage().subscribe(message -> {
+        onDataChannelMessage.onNext(new TribeMessageDataChannel(session, message));
+      }));
+
       onDataChannelOpened.onNext(null);
     }));
 
     subscriptions.add(
         peerConnectionObserver.onShouldCreateOffer().subscribe(aVoid -> sdpObserver.createOffer()));
 
-    //subscriptions.add(peerConnectionObserver.onReceivedIceCandidates()
-    //    .map(iceCandidates -> new TribeCandidate(new TribeSession(id, userId), iceCandidates))
-    //    .subscribe(onReceivedTribeCandidate));
-
     subscriptions.add(peerConnectionObserver.onReceivedIceCandidate()
         .map(iceCandidate -> new TribeCandidate(session, iceCandidate))
         .subscribe(onReceivedTribeCandidate));
+
+    subscriptions.add(peerConnectionObserver.onIceConnectionChanged().subscribe(iceConnectionState -> {
+
+    }));
 
     subscriptions.add(peerConnectionObserver.onReceivedMediaStream()
         .map(mediaStream -> new TribeMediaStream(session, mediaStream))
@@ -130,7 +139,8 @@ public class TribePeerConnection {
   public void send(String str) {
     LogUtil.d(getClass(), "Sending through dataChannel : " + str);
     ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
-    dataChannel.send(new DataChannel.Buffer(buffer, false));
+    boolean success = localDataChannel.send(new DataChannel.Buffer(buffer, false));
+    LogUtil.d(getClass(), "Success sending to dataChannel : " + success);
   }
 
   public PeerConnection getPeerConnection() {
@@ -140,22 +150,41 @@ public class TribePeerConnection {
   public void dispose(MediaStream mediaStream) {
     subscriptions.clear();
 
-    if (dataChannel != null) {
-      dataChannel.close();
-      dataChannel = null;
+    LogUtil.d(getClass(), "Disposing peer connection for peer : " + session.getPeerId());
+    if (localDataChannel != null) {
+      LogUtil.d(getClass(), "Closing local datachannel for peer : " + session.getPeerId());
+      localDataChannel.close();
+      localDataChannel = null;
+    }
+
+    if (remoteDataChannel != null) {
+      LogUtil.d(getClass(), "Closing remote datachannel for peer : " + session.getPeerId());
+      remoteDataChannel.close();
+      remoteDataChannel = null;
     }
 
     if (peerConnection != null) {
-      if (mediaStream != null) peerConnection.removeStream(mediaStream);
+      if (mediaStream != null) {
+        LogUtil.d(getClass(), "Removing mediaStream for peer : " + session.getPeerId());
+        peerConnection.removeStream(mediaStream);
+      }
+      LogUtil.d(getClass(), "Closing peer connection for peer : " + session.getPeerId());
       peerConnection.close();
+      LogUtil.d(getClass(), "Dropping sdpObserver for peer : " + session.getPeerId());
       sdpObserver.dropPeerConnection();
       peerConnection = null;
       peerConnectionObserver = null;
     }
 
-    if (dataChannelObserver != null) {
-      dataChannelObserver = null;
+    if (localDataChannelObserver != null) {
+      localDataChannelObserver = null;
     }
+
+    if (remoteDataChannelObserver != null) {
+      remoteDataChannelObserver = null;
+    }
+
+    LogUtil.d(getClass(), "End disposing for peer : " + session.getPeerId());
   }
 
   /////////////////

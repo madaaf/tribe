@@ -127,12 +127,6 @@
                 id
                 token
             }
-
-            updateU : updateUser(user: {
-                last_seen_at : \"%3$s\"
-            }) {
-                id
-            }
         }
     </string>
 

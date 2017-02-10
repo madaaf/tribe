@@ -22,6 +22,8 @@ public class GroupMember implements Serializable {
     if (this == o) return true;
     if (o == null) return false;
 
+    if (getClass() != o.getClass()) return false;
+
     GroupMember that = (GroupMember) o;
 
     return user.getId() != null ? user.getId().equals(that.user.getId())

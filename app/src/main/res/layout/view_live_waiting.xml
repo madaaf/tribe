@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <com.tribe.app.presentation.view.widget.CircleView
+      android:id="@+id/viewCircle"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtDropInTheLive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center_horizontal"
+      android:layout_margin="@dimen/horizontal_margin_small"
+      android:text="@string/live_drop_friend"
+      android:gravity="center"
+      android:singleLine="true"
+      style="@style/Body.One.White40"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size_big"
+      android:layout_height="@dimen/avatar_size_big"
+      android:layout_gravity="center"
+      android:layout_margin="@dimen/horizontal_margin_small"
+      android:background="@null"
+      android:foreground="@drawable/shape_oval_black40"
+      android:visibility="gone"
+      />
+
+  <com.tribe.app.presentation.view.component.live.ThreeDotsView
+      android:id="@+id/viewThreeDots"
+      android:layout_width="@dimen/avatar_size_big"
+      android:layout_height="@dimen/avatar_size_big"
+      android:layout_gravity="center"
+      android:background="@null"
+      />
+</merge>

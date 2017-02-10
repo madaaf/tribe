@@ -10,6 +10,8 @@ public class TribeDataChannelObserver implements DataChannel.Observer {
 
   private PublishSubject<String> onMessage = PublishSubject.create();
 
+  private PublishSubject<Void> onStateChange = PublishSubject.create();
+
   public TribeDataChannelObserver() {
 
   }
@@ -29,6 +31,7 @@ public class TribeDataChannelObserver implements DataChannel.Observer {
 
   @Override public void onStateChange() {
     LogUtil.d(getClass(), "onStateChange");
+    onStateChange.onNext(null);
   }
 
   /////////////////
@@ -37,5 +40,9 @@ public class TribeDataChannelObserver implements DataChannel.Observer {
 
   public Observable<String> onMessage() {
     return onMessage;
+  }
+
+  public Observable<Void> onStateChanged() {
+    return onStateChange;
   }
 }

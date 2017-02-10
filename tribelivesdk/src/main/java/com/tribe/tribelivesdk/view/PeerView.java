@@ -296,12 +296,16 @@ public abstract class PeerView extends ViewGroup {
    */
   protected void removeRendererFromVideoTrack() {
     if (videoRenderer != null) {
+      LogUtil.d(getClass(), "Disposing renderer from video track");
       if (videoTrack != null) {
+        LogUtil.d(getClass(), "Removing videoRenderer from videoTrack");
         videoTrack.removeRenderer(videoRenderer);
       }
+      LogUtil.d(getClass(), "videoRenderer dispose");
       videoRenderer.dispose();
       videoRenderer = null;
 
+      LogUtil.d(getClass(), "Releasing texture");
       getTextureViewRenderer().release();
 
       // Since this PeerView is no longer rendering anything, make sure
@@ -312,7 +316,9 @@ public abstract class PeerView extends ViewGroup {
         frameWidth = 0;
       }
 
+      LogUtil.d(getClass(), "Request renderer layout");
       requestTextureViewRendererLayout();
+      LogUtil.d(getClass(), "End disposing renderer from video track");
     }
   }
 
