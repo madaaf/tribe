@@ -46,7 +46,11 @@ public class StreamManager {
 
     subscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
       setLocalCameraEnabled(enabled);
-    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
+    }).map(aBoolean -> {
+      return null;
+    }).subscribe(o -> {
+      onMediaChanged.onNext(null);
+    }));
   }
 
   public MediaStream generateLocalStream(Context context,

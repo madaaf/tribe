@@ -12,7 +12,7 @@
       android:id="@+id/viewDot2"
       android:layout_height="9dp"
       android:layout_width="9dp"
-      android:layout_marginLeft="5dp"
+      android:layout_marginLeft="7.5dp"
       android:background="@drawable/shape_oval_white"
       />
 
@@ -20,7 +20,7 @@
       android:id="@+id/viewDot3"
       android:layout_height="9dp"
       android:layout_width="9dp"
-      android:layout_marginLeft="5dp"
+      android:layout_marginLeft="7.5dp"
       android:background="@drawable/shape_oval_white"
       />
 </merge>

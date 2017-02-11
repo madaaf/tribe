@@ -2,6 +2,8 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +80,7 @@ public class LiveView extends FrameLayout {
 
   // VARIABLES
   private Recipient recipient;
+  private int color;
   private Room room;
   private LiveRowView latestView;
   private Map<String, LiveRowView> liveRowViewMap;
@@ -141,10 +145,15 @@ public class LiveView extends FrameLayout {
     liveRowViewMap = new HashMap<>();
     liveInviteMap = new HashMap<>();
 
-    Observable.timer(2000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            aLong -> soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MAX));
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        Observable.timer(2000, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                aLong -> soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MAX));
+      }
+    });
   }
 
   private void initUI() {
@@ -191,7 +200,41 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
-    if (!hiddenControls) onNotify.onNext(null);
+    if (!hiddenControls) {
+      btnNotify.setEnabled(false);
+
+      //for (LiveRowView liveRowView : liveInviteMap.values()) {
+      //  liveRowView.buzz();
+      //}
+      //
+      //for (LiveRowView liveRowView : liveRowViewMap.values()) {
+      //  if (liveRowView.isWaiting()) liveRowView.buzz();
+      //}
+
+      btnNotify.animate().scaleX(1.25f).scaleY(1.25f).translationY(-screenUtils.dpToPx(10)).rotation(10).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).setListener(
+          new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+              ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
+              animatorRotation.setDuration(150);
+              animatorRotation.setRepeatCount(3);
+              animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
+              animatorRotation.addListener(new AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(Animator animation) {
+                  btnNotify.animate().scaleX(1).scaleY(1).rotation(0).translationY(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).setListener(
+                      new AnimatorListenerAdapter() {
+                        @Override public void onAnimationEnd(Animator animation) {
+                          btnNotify.setEnabled(true);
+                          btnNotify.animate().setListener(null);
+                        }
+                      });
+                }
+              });
+              animatorRotation.start();
+            }
+          }).start();
+
+      onNotify.onNext(null);
+    }
   }
 
   @OnClick(R.id.btnLeave) void onClickLeave() {
@@ -230,6 +273,7 @@ public class LiveView extends FrameLayout {
               + " & view : "
               + remotePeer.getPeerView());
           addView(remotePeer);
+          refactorNotifyButton();
         }));
 
     subscriptions.add(room.onRemotePeerRemoved()
@@ -244,6 +288,11 @@ public class LiveView extends FrameLayout {
             viewRoom.removeView(liveRowView);
             liveRowView = null;
           }
+
+          if (liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && recipient != null) {
+            setRecipient(recipient, color);
+          }
+          refactorNotifyButton();
         }));
 
     subscriptions.add(room.onRemotePeerUpdated()
@@ -328,6 +377,7 @@ public class LiveView extends FrameLayout {
 
   public void setRecipient(Recipient recipient, int color) {
     this.recipient = recipient;
+    this.color = color;
 
     if (recipient instanceof Membership) {
       txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
@@ -354,6 +404,15 @@ public class LiveView extends FrameLayout {
   ////////////////
   //  PRIVATE   //
   ////////////////
+
+  private void refactorNotifyButton() {
+    boolean enable = !isThereSomebody();
+
+    if (enable != btnNotify.isEnabled()) {
+      btnNotify.setEnabled(!isThereSomebody());
+      btnNotify.animate().alpha(enable ? 1 : 0.2f).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+    }
+  }
 
   private void scale(View v, int scale) {
     v.animate()
@@ -439,12 +498,26 @@ public class LiveView extends FrameLayout {
     return jsonObject;
   }
 
-  private static void jsonPut(JSONObject json, String key, Object value) {
+  private void jsonPut(JSONObject json, String key, Object value) {
     try {
       json.put(key, value);
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private boolean isThereSomebody() {
+    boolean result = false;
+
+    if (liveRowViewMap.size() >= 2) {
+      result = true;
+    } else {
+      for (LiveRowView liveRowView : liveRowViewMap.values()) {
+        if (!liveRowView.isWaiting()) result = true;
+      }
+    }
+
+    return result;
   }
 
   //////////////////////

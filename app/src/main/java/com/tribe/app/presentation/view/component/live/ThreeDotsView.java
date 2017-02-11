@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
@@ -53,6 +54,35 @@ public class ThreeDotsView extends LinearLayout {
     init();
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+
+    subscriptions.add(Observable.interval((DURATION >> 1) * viewDots.size(), TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          for (int i = 0; i < viewDots.size(); i++) {
+            View viewDot = viewDots.get(i);
+            ValueAnimator animator = ValueAnimator.ofFloat(1f, 1.5f, 1f);
+            animator.setDuration(DURATION);
+            animator.setStartDelay(i * (DURATION >> 1));
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.addUpdateListener(animation -> {
+              float value = (float) animation.getAnimatedValue();
+              viewDot.setScaleX(value);
+              viewDot.setScaleY(value);
+            });
+            animator.start();
+          }
+        }));
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    subscriptions.clear();
+
+    super.onDetachedFromWindow();
+  }
+
   private void init() {
     initDependencyInjector();
 
@@ -63,24 +93,6 @@ public class ThreeDotsView extends LinearLayout {
     setOrientation(HORIZONTAL);
     setGravity(Gravity.CENTER);
     setClipToPadding(false);
-
-    subscriptions.add(Observable.interval((DURATION >> 1) * viewDots.size(), TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          for (int i = 0; i < viewDots.size(); i++) {
-            View viewDot = viewDots.get(i);
-            ValueAnimator animator = ValueAnimator.ofFloat(1f, 1.25f, 1f);
-            animator.setDuration(DURATION);
-            animator.setStartDelay(i * (DURATION >> 1));
-            animator.addUpdateListener(animation -> {
-              float value = (float) animation.getAnimatedValue();
-              viewDot.setScaleX(value);
-              viewDot.setScaleY(value);
-            });
-            animator.start();
-          }
-        }));
   }
 
   protected ApplicationComponent getApplicationComponent() {

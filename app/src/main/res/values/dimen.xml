@@ -28,6 +28,7 @@
   <dimen name="vertical_margin_large">25dp</dimen>
   <dimen name="vertical_margin_xlarge">30dp</dimen>
   <dimen name="margin_end_action_view">70dp</dimen>
+  <dimen name="margin_buzz">75dp</dimen>
 
   <!-- PADDING -->
   <dimen name="icons_padding">3.75dp</dimen>
@@ -49,8 +50,9 @@
   <!-- WIDTHS -->
 
   <!-- SIZES -->
-  <dimen name="avatar_size">75dp</dimen>
   <dimen name="avatar_size_big">100dp</dimen>
+  <dimen name="avatar_size_big_shadow">125dp</dimen>
+  <dimen name="avatar_size">75dp</dimen>
   <dimen name="avatar_size_with_shadow">82dp</dimen>
   <dimen name="avatar_size_scaled">110dp</dimen>
   <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
@@ -82,4 +84,8 @@
   <!-- TRANSLATIONS -->
   <dimen name="transition_grid_back_to_top">150dp</dimen>
   <dimen name="transition_replace">40dp</dimen>
+  <dimen name="translation_bolt_min">60dp</dimen>
+  <dimen name="translation_bolt_max">90dp</dimen>
+  <dimen name="translation_bolt_min_negative">-60dp</dimen>
+  <dimen name="translation_bolt_max_negative">-90dp</dimen>
 </resources>

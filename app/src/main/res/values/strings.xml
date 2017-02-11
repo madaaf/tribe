@@ -416,6 +416,11 @@
 	<string name="settings_intro_video_subtitle">See how the app works in 30”!</string>
 	
 	<!-- Onboarding -->
+	<string name="onboarding_new_version_popup_title">SURPRISE!</string>
+	<string name="onboarding_new_version_popup_message">This update brings you a whole new way to tribe. Login to find your friends online!</string>
+	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
+	
+	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
@@ -429,6 +434,7 @@
 	<string name="onboarding_user_title">Set your profile</string>
 	<string name="onboarding_user_avatar_library">Camera roll</string>
 	<string name="onboarding_user_avatar_selfie">Selfie camera</string>
+	<string name="onboarding_user_mandatory_avatar">Profile picture required</string>
 	<string name="onboarding_user_displayname_placeholder">Display name</string>
 	<string name="onboarding_user_username_placeholder">\@username</string>
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
@@ -835,27 +841,27 @@
 	
 	<!-- Tips -->
 	<string name="tips_leavingroom_title">Want to leave? :skull:</string>
-	<string name="tips_leavingroom_message">By tapping the :x: button, you will stop hanging live here.</string>
+	<string name="tips_leavingroom_message">By tapping the :x: button, your live hangout will be finished.</string>
 	<string name="tips_leavingroom_action1">Leave</string>
 	<string name="tips_leavingroom_action2">No, I\'ll stay</string>
-	<string name="tips_draggingguest_title">Add friends into the live! :honeybee:</string>
-	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join and hang live with you!</string>
+	<string name="tips_draggingguest_title">Add friends to the live!</string>
+	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the live hangout!</string>
 	<string name="tips_draggingguest_action1">Gotcha</string>
 	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
-	<string name="tips_droppingguest_message">Congratulations on inviting your first guest to hang live! If you want your friend to join on their own next time, just create a group and add him into it. Everyone will get notified when the group is live.</string>
-	<string name="tips_droppingguest_action1">Good to know!</string>
-	<string name="tips_enterfirstlive_title">Hang live in 3 sec! :metal:</string>
-	<string name="tips_enterfirstlive_message">Tap your friends tile and start hanging live with them.</string>
+	<string name="tips_droppingguest_message">Congrats on inviting your friends guest to hang live! Add them to the group from your grid if you want them to be a permanent member of this group.</string>
+	<string name="tips_droppingguest_action1">OK, great!</string>
+	<string name="tips_enterfirstlive_title">Hang live with your friends now!</string>
+	<string name="tips_enterfirstlive_message">Simply tap a friend\'s tile to start hanging live with them.</string>
 	<string name="tips_enterfirstlive_action1">Can\'t wait!</string>
-	<string name="tips_enterfirstlive_action2">Pick someone else</string>
+	<string name="tips_enterfirstlive_action2">Choose someone else</string>
 	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
-	<string name="tips_startfirstlive_message">At the end of the countdown your friend(s) you want to hang live with receive a push notification.</string>
-	<string name="tips_startfirstlive_action1">Gotcha</string>
+	<string name="tips_startfirstlive_message">Your friends will now be receiving a notification that you want to hang live with them!</string>
+	<string name="tips_startfirstlive_action1">OK, great!</string>
 	<string name="tips_waiting5sec_title">Feeling impatient?</string>
-	<string name="tips_waiting5sec_message">Tap the :bell: button at the bottom of the screen to buzz your friend(s) and make them join faster.</string>
+	<string name="tips_waiting5sec_message">Tap the :bell: button below to buzz your friends so that they’ll join faster!</string>
 	<string name="tips_waiting5sec_action1">Perfect!</string>
 	<string name="tips_waiting60sec_title">Want more? :fire:</string>
-	<string name="tips_waiting60sec_message">You can party with up to 8 people in a room.</string>
-	<string name="tips_waiting60sec_action1">Drag guests</string>
+	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
+	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Not now</string>
 </resources>

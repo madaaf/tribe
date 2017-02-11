@@ -2,19 +2,17 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +28,10 @@ import com.tribe.app.presentation.view.widget.CircleView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -38,7 +39,15 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveWaitingView extends FrameLayout {
 
-  private final static int DURATION_PULSE = 3000;
+  private final static int DURATION_PULSE_FAST = 150;
+  private final static int DURATION_PULSE = 300;
+  private final static int DURATION_SCALE = 1000;
+  private final static int SCALE_DELAY = 250;
+  private final static int DURATION_BUZZ = 300;
+
+  private final static float OVERSHOOT_SCALE = 2f;
+
+  private final static float SCALE_AVATAR = 1.15f;
 
   @Inject ScreenUtils screenUtils;
 
@@ -46,19 +55,33 @@ public class LiveWaitingView extends FrameLayout {
 
   @BindView(R.id.avatar) AvatarView avatar;
 
+  @BindView(R.id.viewShadowAvatar) View viewShadow;
+
   @BindView(R.id.viewCircle) CircleView viewCircle;
 
-  @BindView(R.id.txtDropInTheLive)
-  TextViewFont txtDropInTheLive;
+  @BindView(R.id.viewForegroundAvatar) View viewForegroundAvatar;
+
+  @BindView(R.id.txtDropInTheLive) TextViewFont txtDropInTheLive;
+
+  @BindView(R.id.viewThreeDots) ThreeDotsView viewThreeDots;
+
+  @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
   // VARIABLES
   private Unbinder unbinder;
   private Rect rect = new Rect();
   private Paint circlePaint = new Paint();
-  private ValueAnimator circleAnimator;
   private TribeGuest guest;
-  private Boolean isMeasuring = false;
   private @LiveRoomView.TribeRoomViewType int type = LiveRoomView.GRID;
+  private ValueAnimator animatorPulse;
+  private AnimatorSet animatorScaleAvatar;
+  private ValueAnimator animatorScaleUp;
+  private ValueAnimator animatorScaleDown;
+  private AnimatorSet animatorTransition;
+  private ValueAnimator animatorAlpha;
+  private ValueAnimator animatorScaleUpTransition;
+  private ValueAnimator animatorAlphaTransition;
+  private boolean hasPulsed = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -92,6 +115,14 @@ public class LiveWaitingView extends FrameLayout {
     circlePaint.setAntiAlias(true);
 
     setBackground(null);
+
+    subscriptions.add(viewBuzz.onBuzzCompleted()
+        .doOnNext(aVoid -> endBuzz())
+        .delay(DURATION_BUZZ, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          startPulse();
+        }));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -117,7 +148,7 @@ public class LiveWaitingView extends FrameLayout {
   @Override protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
 
-    if (circleAnimator == null || viewCircle.getRect() == null) {
+    if (animatorPulse == null || viewCircle.getRect() == null) {
       rect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
 
       viewCircle.setRect(rect);
@@ -131,38 +162,187 @@ public class LiveWaitingView extends FrameLayout {
 
   public void startPulse() {
     txtDropInTheLive.setVisibility(View.GONE);
+    viewThreeDots.setVisibility(View.VISIBLE);
     avatar.setVisibility(View.VISIBLE);
+    viewForegroundAvatar.setVisibility(View.VISIBLE);
+    viewShadow.setVisibility(View.VISIBLE);
+    viewBuzz.setVisibility(View.VISIBLE);
 
+    clearAnimator(animatorAlpha);
+    clearViewAnimations();
+
+    animateScaleAvatar();
+  }
+
+  private void animateScaleAvatar() {
+    updateScaleWithValue(SCALE_AVATAR);
+
+    animatorScaleAvatar = new AnimatorSet();
+
+    animatorScaleUp = ValueAnimator.ofFloat(1, SCALE_AVATAR);
+    animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+    animatorScaleUp.setDuration(DURATION_SCALE);
+    animatorScaleUp.setStartDelay(SCALE_DELAY);
+    animatorScaleUp.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      updateScaleWithValue(value);
+    });
+    animatorScaleUp.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationCancel(Animator animation) {
+        animatorScaleUp.removeAllListeners();
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
+        animatorScaleAvatar.start();
+      }
+    });
+
+    animatorScaleDown = ValueAnimator.ofFloat(SCALE_AVATAR, 1f);
+    animatorScaleDown.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      if (value < 1f && !hasPulsed) {
+        animatePulse(DURATION_PULSE);
+        hasPulsed = true;
+      }
+
+      updateScaleWithValue(value);
+    });
+    animatorScaleDown.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+    animatorScaleDown.setDuration(DURATION_SCALE >> 1);
+    animatorScaleDown.setStartDelay(SCALE_DELAY);
+    animatorScaleDown.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationCancel(Animator animation) {
+        animatorScaleDown.removeAllListeners();
+      }
+
+      @Override public void onAnimationStart(Animator animation) {
+        hasPulsed = false;
+      }
+    });
+
+    animatorScaleAvatar.play(animatorScaleDown).before(animatorScaleUp);
+    animatorScaleAvatar.start();
+  }
+
+  private void updateScaleWithValue(float value) {
+    avatar.setScaleX(value);
+    avatar.setScaleY(value);
+    viewShadow.setScaleX(value);
+    viewShadow.setScaleY(value);
+    viewForegroundAvatar.setScaleX(value);
+    viewForegroundAvatar.setScaleY(value);
+  }
+
+  private void animatePulse(int duration) {
     int finalHeight = screenUtils.getHeightPx() >> 1;
 
-    circleAnimator = ValueAnimator.ofInt(0, finalHeight);
-    circleAnimator.setDuration(DURATION_PULSE);
-    circleAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-    circleAnimator.setRepeatMode(ValueAnimator.RESTART);
-    circleAnimator.setRepeatCount(ValueAnimator.INFINITE);
-    circleAnimator.addUpdateListener(animation -> {
+    clearAnimator(animatorPulse);
+
+    animatorPulse = ValueAnimator.ofInt(avatar.getWidth() >> 1, finalHeight);
+    animatorPulse.setDuration(duration);
+    animatorPulse.addUpdateListener(animation -> {
       Integer value = (Integer) animation.getAnimatedValue();
       viewCircle.setRadius(value);
     });
 
-    circleAnimator.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationRepeat(Animator animation) {
+    animatorPulse.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationCancel(Animator animation) {
+        animatorPulse.removeAllListeners();
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
         setColor(circlePaint.getColor());
       }
     });
 
-    circleAnimator.start();
+    animatorPulse.start();
   }
 
   public void stopPulse() {
-    if (circleAnimator != null) {
-      circleAnimator.cancel();
-      circleAnimator.removeAllListeners();
+    clearAnimator(animatorPulse);
+    clearAnimator(animatorScaleAvatar);
+    clearAnimator(animatorScaleUp);
+    clearAnimator(animatorScaleAvatar);
+    clearAnimator(animatorScaleDown);
+    clearAnimator(animatorScaleUpTransition);
+    clearAnimator(animatorAlphaTransition);
+    clearAnimator(animatorAlpha);
+    clearViewAnimations();
+  }
+
+  private void clearViewAnimations() {
+    avatar.clearAnimation();
+    viewShadow.clearAnimation();
+    viewForegroundAvatar.clearAnimation();
+    viewCircle.clearAnimation();
+  }
+
+  private void clearAnimator(Animator animator) {
+    if (animator != null) {
+      animator.cancel();
+      animator.removeAllListeners();
     }
+  }
+
+  public void buzz() {
+    stopPulse();
+    readyForTransition();
+    viewBuzz.buzz();
+  }
+
+  public void readyForTransition() {
+    animatorTransition = new AnimatorSet();
+
+    animatorScaleUpTransition = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
+    animatorScaleUpTransition.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+    animatorScaleUpTransition.setDuration(DURATION_BUZZ);
+    animatorScaleUpTransition.setStartDelay(200);
+    animatorScaleUpTransition.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      updateScaleWithValue(value);
+    });
+
+    animatorAlphaTransition = ValueAnimator.ofFloat(1f, 0);
+    animatorAlphaTransition.setDuration(DURATION_BUZZ);
+    animatorAlphaTransition.setStartDelay(200);
+    animatorAlphaTransition.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      viewForegroundAvatar.setAlpha(value);
+      viewThreeDots.setAlpha(value);
+    });
+
+    animatorTransition.playTogether(animatorScaleUpTransition, animatorAlphaTransition);
+    animatorTransition.start();
+  }
+
+  private void endBuzz() {
+    clearAnimator(animatorTransition);
+    clearAnimator(animatorAlphaTransition);
+    clearAnimator(animatorScaleUpTransition);
+    clearViewAnimations();
+
+    animatorAlpha = ValueAnimator.ofFloat(0f, 1f);
+    animatorAlpha.setDuration(DURATION_BUZZ);
+    animatorAlpha.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      viewForegroundAvatar.setAlpha(value);
+      viewThreeDots.setAlpha(value);
+    });
+    animatorAlpha.start();
+  }
+
+  public void incomingPeer() {
+    stopPulse();
+    subscriptions.add(Observable.interval(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          animatePulse(DURATION_PULSE_FAST);
+        }));
   }
 
   public void setColor(int color) {
     viewCircle.setBackgroundColor(color);
+    viewCircle.setRadius(0);
     circlePaint.setColor(paletteGrid.getRandomColorExcluding(color));
   }
 
@@ -176,11 +356,7 @@ public class LiveWaitingView extends FrameLayout {
   }
 
   public void release() {
-    if (viewCircle != null) viewCircle.clearAnimation();
-
-    if (circleAnimator != null) {
-      circleAnimator.removeAllUpdateListeners();
-      circleAnimator.cancel();
-    }
+    subscriptions.clear();
+    stopPulse();
   }
 }

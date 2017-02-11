@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
@@ -111,4 +112,6 @@ import dagger.Component;
   void inject(LiveWaitingView liveWaitingView);
 
   void inject(ThreeDotsView threeDotsView);
+
+  void inject(BuzzView buzzView);
 }

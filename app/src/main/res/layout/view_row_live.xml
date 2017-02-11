@@ -16,4 +16,13 @@
       android:layout_gravity="center"
       />
 
+  <LinearLayout
+      android:id="@+id/layoutStream"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal"
+      android:visibility="gone">
+
+  </LinearLayout>
+
 </merge>

@@ -70,11 +70,11 @@ public class TribePeerConnection {
 
     LogUtil.d(getClass(), "Connected now creating local data channel");
     DataChannel.Init init = new DataChannel.Init();
-    init.protocol = DATA_CHANNEL_PROTOCOL;
     localDataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
     localDataChannel.registerObserver(localDataChannelObserver);
 
-    subscriptions.add(localDataChannelObserver.onStateChanged().subscribe(aVoid -> LogUtil.d(getClass(), "New state : " + localDataChannel.state())));
+    subscriptions.add(localDataChannelObserver.onStateChanged()
+        .subscribe(aVoid -> LogUtil.d(getClass(), "New state : " + localDataChannel.state())));
     LogUtil.d(getClass(), "Local data channel created");
 
     subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
@@ -96,9 +96,10 @@ public class TribePeerConnection {
         .map(iceCandidate -> new TribeCandidate(session, iceCandidate))
         .subscribe(onReceivedTribeCandidate));
 
-    subscriptions.add(peerConnectionObserver.onIceConnectionChanged().subscribe(iceConnectionState -> {
+    subscriptions.add(
+        peerConnectionObserver.onIceConnectionChanged().subscribe(iceConnectionState -> {
 
-    }));
+        }));
 
     subscriptions.add(peerConnectionObserver.onReceivedMediaStream()
         .map(mediaStream -> new TribeMediaStream(session, mediaStream))
