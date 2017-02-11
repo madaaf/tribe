@@ -55,6 +55,7 @@ public class BuzzView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private List<Pair<Float, Float>> listTranslations;
+  private boolean hasSentEndBuzz = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -127,6 +128,8 @@ public class BuzzView extends FrameLayout {
   //////////////
 
   public void buzz() {
+    hasSentEndBuzz = false;
+
     for (int i = 0; i < viewBolts.size(); i++) {
       View view = viewBolts.get(i);
       view.clearAnimation();
@@ -163,7 +166,10 @@ public class BuzzView extends FrameLayout {
     Random r = new Random();
     int randomDelay = r.nextInt(DELAY - 0) + 0;
 
-    buzzCompleted.onNext(null);
+    if (!hasSentEndBuzz) {
+      hasSentEndBuzz = true;
+      buzzCompleted.onNext(null);
+    }
 
     view.clearAnimation();
     view.animate()

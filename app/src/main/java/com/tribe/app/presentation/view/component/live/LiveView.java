@@ -55,6 +55,7 @@ import timber.log.Timber;
 public class LiveView extends FrameLayout {
 
   private static final int DURATION = 300;
+  private static final int LIVE_MAX = 8;
 
   @Inject SoundManager soundManager;
 
@@ -203,19 +204,19 @@ public class LiveView extends FrameLayout {
     if (!hiddenControls) {
       btnNotify.setEnabled(false);
 
-      //for (LiveRowView liveRowView : liveInviteMap.values()) {
-      //  liveRowView.buzz();
-      //}
-      //
-      //for (LiveRowView liveRowView : liveRowViewMap.values()) {
-      //  if (liveRowView.isWaiting()) liveRowView.buzz();
-      //}
+      for (LiveRowView liveRowView : liveInviteMap.values()) {
+        liveRowView.buzz();
+      }
+
+      for (LiveRowView liveRowView : liveRowViewMap.values()) {
+        if (liveRowView.isWaiting()) liveRowView.buzz();
+      }
 
       btnNotify.animate().scaleX(1.25f).scaleY(1.25f).translationY(-screenUtils.dpToPx(10)).rotation(10).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).setListener(
           new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
               ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
-              animatorRotation.setDuration(150);
+              animatorRotation.setDuration(100);
               animatorRotation.setRepeatCount(3);
               animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
               animatorRotation.addListener(new AnimatorListenerAdapter() {
@@ -406,10 +407,10 @@ public class LiveView extends FrameLayout {
   ////////////////
 
   private void refactorNotifyButton() {
-    boolean enable = !isThereSomebody();
+    boolean enable = shouldEnableBuzz();
 
     if (enable != btnNotify.isEnabled()) {
-      btnNotify.setEnabled(!isThereSomebody());
+      btnNotify.setEnabled(shouldEnableBuzz());
       btnNotify.animate().alpha(enable ? 1 : 0.2f).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
     }
   }
@@ -506,18 +507,43 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  private boolean isThereSomebody() {
-    boolean result = false;
+  private boolean shouldEnableBuzz() {
+    boolean result = true;
+    int nbLiveInRoom = nbLiveInRoom();
 
-    if (liveRowViewMap.size() >= 2) {
-      result = true;
-    } else {
-      for (LiveRowView liveRowView : liveRowViewMap.values()) {
-        if (!liveRowView.isWaiting()) result = true;
-      }
+    if (recipient == null) return false;
+    if (nbLiveInRoom == LIVE_MAX) return false;
+
+    if (recipient instanceof Membership) {
+      Membership membership = (Membership) recipient;
+      if (membership.getGroup().getMembers().size() == nbLiveInRoom()) result = false;
+    } else if (!areTherePeopleWaiting()) {
+      result = false;
     }
 
     return result;
+  }
+
+  private int nbLiveInRoom() {
+    int count = 0;
+
+    for (LiveRowView liveRowView : liveRowViewMap.values()) {
+      if (!liveRowView.isWaiting()) count++;
+    }
+
+    return count;
+  }
+
+  private boolean areTherePeopleWaiting() {
+    boolean waiting = false;
+
+    for (LiveRowView liveRowView : liveRowViewMap.values()) {
+      if (liveRowView.isWaiting()) waiting = true;
+    }
+
+    if (!waiting) waiting = liveInviteMap.size() > 0;
+
+    return waiting;
   }
 
   //////////////////////
