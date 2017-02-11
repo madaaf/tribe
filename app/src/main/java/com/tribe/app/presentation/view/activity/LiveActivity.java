@@ -217,17 +217,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
-      if (shouldJoin) {
-        livePresenter.joinRoom(recipient,
-            recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
-      } else {
-        finish();
-      }
+      soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
+      livePresenter.joinRoom(recipient,
+          recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
       if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
-        soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MAX);
+        soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
         livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
       }
     }));

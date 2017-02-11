@@ -37,13 +37,11 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -94,9 +92,8 @@ public class LiveView extends FrameLayout {
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription subscriptionJoinRoom;
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
-  private PublishSubject<Boolean> onShouldJoinRoom = PublishSubject.create();
+  private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
@@ -145,19 +142,11 @@ public class LiveView extends FrameLayout {
   private void init(Context context, AttributeSet attrs) {
     liveRowViewMap = new HashMap<>();
     liveInviteMap = new HashMap<>();
-
-    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override public void onGlobalLayout() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        Observable.timer(2000, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                aLong -> soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MAX));
-      }
-    });
   }
 
   private void initUI() {
+    btnNotify.setEnabled(false);
+
     setBackgroundColor(Color.BLACK);
 
     room = tribeLiveSDK.newRoom();
@@ -169,13 +158,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void initSubscriptions() {
-    subscriptionJoinRoom = Observable.timer(timeJoinRoom, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          subscriptionJoinRoom.unsubscribe();
-          onShouldJoinRoom.onNext(true);
-        });
-
     subscriptions.add(onHiddenControls().doOnNext(aBoolean -> {
       hiddenControls = aBoolean;
       viewLocalLive.hideControls(!hiddenControls);
@@ -212,8 +194,14 @@ public class LiveView extends FrameLayout {
         if (liveRowView.isWaiting()) liveRowView.buzz();
       }
 
-      btnNotify.animate().scaleX(1.25f).scaleY(1.25f).translationY(-screenUtils.dpToPx(10)).rotation(10).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).setListener(
-          new AnimatorListenerAdapter() {
+      btnNotify.animate()
+          .scaleX(1.25f)
+          .scaleY(1.25f)
+          .translationY(-screenUtils.dpToPx(10))
+          .rotation(10)
+          .setDuration(DURATION)
+          .setInterpolator(new DecelerateInterpolator())
+          .setListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
               ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
               animatorRotation.setDuration(100);
@@ -221,8 +209,14 @@ public class LiveView extends FrameLayout {
               animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
               animatorRotation.addListener(new AnimatorListenerAdapter() {
                 @Override public void onAnimationEnd(Animator animation) {
-                  btnNotify.animate().scaleX(1).scaleY(1).rotation(0).translationY(0).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).setListener(
-                      new AnimatorListenerAdapter() {
+                  btnNotify.animate()
+                      .scaleX(1)
+                      .scaleY(1)
+                      .rotation(0)
+                      .translationY(0)
+                      .setDuration(DURATION)
+                      .setInterpolator(new DecelerateInterpolator())
+                      .setListener(new AnimatorListenerAdapter() {
                         @Override public void onAnimationEnd(Animator animation) {
                           btnNotify.setEnabled(true);
                           btnNotify.animate().setListener(null);
@@ -232,7 +226,8 @@ public class LiveView extends FrameLayout {
               });
               animatorRotation.start();
             }
-          }).start();
+          })
+          .start();
 
       onNotify.onNext(null);
     }
@@ -314,6 +309,7 @@ public class LiveView extends FrameLayout {
                     .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                       @Override public void onGlobalLayout() {
                         liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        liveRowView.showGuest(false);
                         liveRowView.startPulse();
                       }
                     });
@@ -372,7 +368,10 @@ public class LiveView extends FrameLayout {
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload());
 
-      subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> latestView.startPulse()));
+      subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
+        latestView.showGuest(false);
+        latestView.startPulse();
+      }));
     }));
   }
 
@@ -394,7 +393,11 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = new LiveRowView(getContext());
       liveRowViewMap.put(guest.getId(), liveRowView);
       addView(liveRowView, guest, color);
-      liveRowView.startPulse();
+      liveRowView.showGuest(true);
+      liveRowView.onShouldJoinRoom()
+          .distinct()
+          .doOnNext(aVoid -> btnNotify.setEnabled(true))
+          .subscribe(onShouldJoinRoom);
     }
   }
 
@@ -411,7 +414,11 @@ public class LiveView extends FrameLayout {
 
     if (enable != btnNotify.isEnabled()) {
       btnNotify.setEnabled(shouldEnableBuzz());
-      btnNotify.animate().alpha(enable ? 1 : 0.2f).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
+      btnNotify.animate()
+          .alpha(enable ? 1 : 0.2f)
+          .setDuration(DURATION)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
     }
   }
 
@@ -554,7 +561,7 @@ public class LiveView extends FrameLayout {
     return onOpenInvite;
   }
 
-  public Observable<Boolean> onShouldJoinRoom() {
+  public Observable<Void> onShouldJoinRoom() {
     return onShouldJoinRoom;
   }
 

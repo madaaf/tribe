@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -89,17 +90,17 @@ public class LiveRowView extends FrameLayout {
 
   public void setColor(int color) {
     this.color = color;
-    if (viewWaiting != null) viewWaiting.setColor(color);
+    viewWaiting.setColor(color);
   }
 
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
-    if (viewWaiting != null) viewWaiting.setGuest(guest);
-    if (viewAudio != null) viewAudio.setGuest(guest);
+    viewWaiting.setGuest(guest);
+    viewAudio.setGuest(guest);
   }
 
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
-    if (viewWaiting != null) viewWaiting.setRoomType(type);
+    viewWaiting.setRoomType(type);
   }
 
   public void setPeerView(PeerView peerView) {
@@ -148,10 +149,9 @@ public class LiveRowView extends FrameLayout {
           }
         }));
 
-    if (viewWaiting != null) {
-      isWaiting = false;
-      viewWaiting.incomingPeer();
-    }
+
+    isWaiting = false;
+    viewWaiting.incomingPeer();
 
     subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -171,14 +171,26 @@ public class LiveRowView extends FrameLayout {
     return isWaiting;
   }
 
+  public void showGuest(boolean hasCountDown) {
+    viewWaiting.showGuest();
+    if (hasCountDown) viewWaiting.startCountdown();
+    isWaiting = true;
+  }
+
   public void startPulse() {
-    if (viewWaiting != null) {
-      viewWaiting.startPulse();
-      isWaiting = true;
-    }
+    viewWaiting.startPulse();
+    isWaiting = true;
   }
 
   public void buzz() {
-    if (viewWaiting != null) viewWaiting.buzz();
+    viewWaiting.buzz();
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Void> onShouldJoinRoom() {
+    return viewWaiting.onShouldJoinRoom().distinct().doOnNext(aVoid -> viewWaiting.startPulse());
   }
 }

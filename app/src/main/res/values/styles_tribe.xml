@@ -246,6 +246,18 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="Medium">
+    <item name="android:textSize">26sp</item>
+  </style>
+
+  <style name="Medium.1" parent="Medium">
+    <item name="customFont">Roboto-Bold.ttf</item>
+  </style>
+
+  <style name="Medium.1.White" parent="Medium.1">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
   <style name="Points">
     <item name="customFont">SBNav.ttf</item>
   </style>

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -12,8 +13,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -32,13 +35,16 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
  */
 public class LiveWaitingView extends FrameLayout {
 
+  private final static int DELAY_COUNTDOWN = 500;
   private final static int DURATION_PULSE_FAST = 150;
   private final static int DURATION_PULSE = 300;
   private final static int DURATION_SCALE = 1000;
@@ -67,6 +73,10 @@ public class LiveWaitingView extends FrameLayout {
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
+  @BindView(R.id.txtCountdown) TextViewFont txtCountdown;
+
+  @BindView(R.id.progressBar) ProgressBar progressBar;
+
   // VARIABLES
   private Unbinder unbinder;
   private Rect rect = new Rect();
@@ -82,9 +92,14 @@ public class LiveWaitingView extends FrameLayout {
   private ValueAnimator animatorScaleUpTransition;
   private ValueAnimator animatorAlphaTransition;
   private boolean hasPulsed = false;
+  private ObjectAnimator countDownAnimator;
+
+  // RESOURCES
+  private int timeTapToCancel;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
 
   public LiveWaitingView(Context context) {
     super(context);
@@ -107,6 +122,7 @@ public class LiveWaitingView extends FrameLayout {
 
   private void init() {
     initDependencyInjector();
+    initResources();
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_waiting, this);
     unbinder = ButterKnife.bind(this);
@@ -123,6 +139,10 @@ public class LiveWaitingView extends FrameLayout {
         .subscribe(aVoid -> {
           startPulse();
         }));
+  }
+
+  private void initResources() {
+    timeTapToCancel = getContext().getResources().getInteger(R.integer.time_tap_to_cancel);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -160,16 +180,50 @@ public class LiveWaitingView extends FrameLayout {
   //  PUBLIC  //
   //////////////
 
-  public void startPulse() {
+  public void showGuest() {
     txtDropInTheLive.setVisibility(View.GONE);
-    viewThreeDots.setVisibility(View.VISIBLE);
     avatar.setVisibility(View.VISIBLE);
-    viewForegroundAvatar.setVisibility(View.VISIBLE);
     viewShadow.setVisibility(View.VISIBLE);
+    viewForegroundAvatar.setVisibility(View.VISIBLE);
     viewBuzz.setVisibility(View.VISIBLE);
+  }
 
+  public void startCountdown() {
+    countDownAnimator = ObjectAnimator.ofInt(progressBar, "progress", timeTapToCancel, 0);
+    countDownAnimator.setDuration(timeTapToCancel);
+    countDownAnimator.setInterpolator(new DecelerateInterpolator());
+    countDownAnimator.setStartDelay(DELAY_COUNTDOWN);
+    countDownAnimator.addUpdateListener(animation -> {
+      int value = (int) animation.getAnimatedValue();
+      Timber.d("Value : " + value);
+      txtCountdown.setText("" + (int) Math.ceil((float) value / 1000));
+    });
+    countDownAnimator.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        onShouldJoinRoom.onNext(null);
+        txtCountdown.setVisibility(View.GONE);
+        progressBar.animate().scaleX(0).scaleY(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            progressBar.setVisibility(View.GONE);
+            progressBar.animate().setListener(null).start();
+          }
+        }).start();
+      }
+    });
+    countDownAnimator.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationCancel(Animator animation) {
+        countDownAnimator.removeAllListeners();
+      }
+    });
+    countDownAnimator.start();
+  }
+
+  public void startPulse() {
     clearAnimator(animatorAlpha);
     clearViewAnimations();
+
+    viewThreeDots.setVisibility(View.VISIBLE);
+    viewForegroundAvatar.setVisibility(View.VISIBLE);
 
     animateScaleAvatar();
   }
@@ -358,5 +412,13 @@ public class LiveWaitingView extends FrameLayout {
   public void release() {
     subscriptions.clear();
     stopPulse();
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Void> onShouldJoinRoom() {
+    return onShouldJoinRoom;
   }
 }
