@@ -175,6 +175,8 @@ public class LiveContainer extends FrameLayout {
 
     subscriptions.add(viewLive.onHiddenControls().subscribe(aBoolean -> hiddenControls = aBoolean));
 
+    subscriptions.add(viewLive.onShouldCloseInvites().subscribe(aVoid -> closeInviteView()));
+
     subscriptions.add(viewInviteLive.onScrollStateChanged().subscribe(newState -> {
       if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
         overallScrollY = 0;

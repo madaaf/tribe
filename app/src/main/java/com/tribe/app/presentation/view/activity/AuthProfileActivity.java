@@ -182,10 +182,14 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     }));
 
     subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
-      if (FacebookUtils.isLoggedIn()) {
-        getInfoFromFacebook();
+      if (isReady()) {
+        nextStep();
       } else {
-        profileInfoPresenter.loginFacebook();
+        if (FacebookUtils.isLoggedIn()) {
+          getInfoFromFacebook();
+        } else {
+          profileInfoPresenter.loginFacebook();
+        }
       }
     }));
 
@@ -213,28 +217,36 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   @OnClick(R.id.txtAction) void onClickAction() {
-    if (profileInfoView.isUsernameSelected()
-        && profileInfoView.isDisplayNameSelected()
-        && profileInfoView.isAvatarSelected()) {
-      screenUtils.hideKeyboard(this);
-
-      if (StringUtils.isEmpty(user.getId())) {
-        profileInfoPresenter.register(profileInfoView.getDisplayName(),
-            profileInfoView.getUsername(), loginEntity);
-      } else {
-        tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
-        showLoading();
-        profileInfoPresenter.updateUser(profileInfoView.getUsername(),
-            profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
-            facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())
-                ? facebookEntity.getId() : null);
-      }
+    if (isReady()) {
+      nextStep();
     } else if (!profileInfoView.isAvatarSelected()) {
       profileInfoView.shakeAvatar();
     } else if (!profileInfoView.isDisplayNameSelected()) {
       profileInfoView.shakeDisplayName();
     } else if (!profileInfoView.isUsernameSelected()) {
       profileInfoView.shakeUsername();
+    }
+  }
+
+  private boolean isReady() {
+    return profileInfoView.isUsernameSelected()
+        && profileInfoView.isDisplayNameSelected()
+        && profileInfoView.isAvatarSelected();
+  }
+
+  private void nextStep() {
+    screenUtils.hideKeyboard(this);
+
+    if (StringUtils.isEmpty(user.getId())) {
+      profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(),
+          loginEntity);
+    } else {
+      tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
+      showLoading();
+      profileInfoPresenter.updateUser(profileInfoView.getUsername(),
+          profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
+          facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())
+              ? facebookEntity.getId() : null);
     }
   }
 

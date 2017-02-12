@@ -271,7 +271,7 @@ public class LiveLocalView extends FrameLayout {
     }
 
     @Override public boolean onSingleTapConfirmed(MotionEvent e) {
-      if (isEnabled()) onClick.onNext(null);
+      onClick.onNext(null);
       return true;
     }
   }

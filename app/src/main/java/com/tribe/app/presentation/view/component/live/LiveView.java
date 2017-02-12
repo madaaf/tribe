@@ -85,6 +85,7 @@ public class LiveView extends FrameLayout {
   private Map<String, LiveRowView> liveRowViewMap;
   private Map<String, LiveRowView> liveInviteMap;
   private boolean hiddenControls = false;
+  private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
 
   // RESOURCES
   private int timeJoinRoom;
@@ -97,6 +98,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
+  private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -163,7 +165,11 @@ public class LiveView extends FrameLayout {
       viewLocalLive.hideControls(!hiddenControls);
     }).subscribe());
 
-    subscriptions.add(viewLocalLive.onClick().subscribe(aVoid -> {
+    subscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
+      if (stateContainer == LiveContainer.EVENT_OPENED) {
+        onShouldCloseInvites.onNext(null);
+      }
+    }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
       if (hiddenControls) {
         displayControls(1);
         onHiddenControls.onNext(false);
@@ -238,6 +244,7 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.viewRoom) void onClickRoom() {
+    if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
     if (hiddenControls) {
       displayControls(1);
       onHiddenControls.onNext(false);
@@ -325,7 +332,7 @@ public class LiveView extends FrameLayout {
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     subscriptions.add(obs.subscribe(event -> {
-      viewLocalLive.setEnabled(event == LiveContainer.EVENT_OPENED ? false : true);
+      stateContainer = event;
       viewRoom.setType(
           event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
     }));
@@ -575,6 +582,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Boolean> onHiddenControls() {
     return onHiddenControls;
+  }
+
+  public Observable<Void> onShouldCloseInvites() {
+    return onShouldCloseInvites;
   }
 }
 

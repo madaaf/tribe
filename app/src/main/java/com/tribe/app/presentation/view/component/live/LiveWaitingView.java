@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -91,6 +92,7 @@ public class LiveWaitingView extends FrameLayout {
   private ValueAnimator animatorAlpha;
   private ValueAnimator animatorScaleUpTransition;
   private ValueAnimator animatorAlphaTransition;
+  private ObjectAnimator animatorBuzzAvatar;
   private boolean hasPulsed = false;
   private ObjectAnimator countDownAnimator;
 
@@ -195,7 +197,6 @@ public class LiveWaitingView extends FrameLayout {
     countDownAnimator.setStartDelay(DELAY_COUNTDOWN);
     countDownAnimator.addUpdateListener(animation -> {
       int value = (int) animation.getAnimatedValue();
-      Timber.d("Value : " + value);
       txtCountdown.setText("" + (int) Math.ceil((float) value / 1000));
     });
     countDownAnimator.addListener(new AnimatorListenerAdapter() {
@@ -321,6 +322,8 @@ public class LiveWaitingView extends FrameLayout {
     clearAnimator(animatorScaleUpTransition);
     clearAnimator(animatorAlphaTransition);
     clearAnimator(animatorAlpha);
+    clearAnimator(animatorBuzzAvatar);
+    viewCircle.setRadius(0);
     clearViewAnimations();
   }
 
@@ -349,16 +352,26 @@ public class LiveWaitingView extends FrameLayout {
 
     animatorScaleUpTransition = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
     animatorScaleUpTransition.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-    animatorScaleUpTransition.setDuration(DURATION_BUZZ);
-    animatorScaleUpTransition.setStartDelay(200);
+    animatorScaleUpTransition.setDuration(100);
     animatorScaleUpTransition.addUpdateListener(animation -> {
       float value = (float) animation.getAnimatedValue();
       updateScaleWithValue(value);
     });
 
+    animatorBuzzAvatar = ObjectAnimator.ofFloat(avatar, TRANSLATION_X, 7, -7);
+    animatorBuzzAvatar.setDuration(60);
+    animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
+    animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
+    animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationCancel(Animator animation) {
+        animatorBuzzAvatar.removeAllListeners();
+        avatar.setTranslationX(0);
+      }
+    });
+    animatorBuzzAvatar.start();
+
     animatorAlphaTransition = ValueAnimator.ofFloat(1f, 0);
-    animatorAlphaTransition.setDuration(DURATION_BUZZ);
-    animatorAlphaTransition.setStartDelay(200);
+    animatorAlphaTransition.setDuration(100);
     animatorAlphaTransition.addUpdateListener(animation -> {
       float value = (float) animation.getAnimatedValue();
       viewForegroundAvatar.setAlpha(value);
@@ -373,6 +386,7 @@ public class LiveWaitingView extends FrameLayout {
     clearAnimator(animatorTransition);
     clearAnimator(animatorAlphaTransition);
     clearAnimator(animatorScaleUpTransition);
+    clearAnimator(animatorBuzzAvatar);
     clearViewAnimations();
 
     animatorAlpha = ValueAnimator.ofFloat(0f, 1f);

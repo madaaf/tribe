@@ -41,6 +41,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
+  private static final int TIMER_START = 3000;
+
   public static Intent getCallingIntent(Context context) {
     Intent intent = new Intent(context, AuthAccessActivity.class);
     return intent;
@@ -69,6 +71,8 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Subscription lookupSubscription;
+  private Subscription startSubscription;
+  private Subscription endSubscription;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -96,11 +100,15 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (lookupSubscription != null) lookupSubscription.unsubscribe();
+    if (startSubscription != null) startSubscription.unsubscribe();
+    if (endSubscription != null) endSubscription.unsubscribe();
     super.onDestroy();
   }
 
   private void init() {
-
+    startSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> start());
   }
 
   private void initDependencyInjector() {
@@ -129,21 +137,18 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   @OnClick(R.id.txtAction) void onClickAction() {
     if (viewAccess.getStatus() == AccessView.NONE) {
-      viewAccess.showLoading(0);
-      txtAction.setVisibility(View.GONE);
-      lookupContacts();
+      start();
     } else if (viewAccess.getStatus() == AccessView.LOADING) {
       showCongrats();
     } else if (viewAccess.getStatus() == AccessView.DONE) {
+      endSubscription.unsubscribe();
       navigator.navigateToPickYourFriends(this, deepLink);
     }
   }
 
   @OnClick(R.id.viewAccess) void onClickAccess() {
     if (viewAccess.getStatus() == AccessView.NONE) {
-      viewAccess.showLoading(0);
-      txtAction.setVisibility(View.GONE);
-      lookupContacts();
+      start();
     }
   }
 
@@ -189,6 +194,13 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   }
 
+  private void start() {
+    startSubscription.unsubscribe();
+    viewAccess.showLoading(0);
+    txtAction.setVisibility(View.GONE);
+    lookupContacts();
+  }
+
   private void lookupContacts() {
     RxPermissions.getInstance(this)
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
@@ -210,6 +222,10 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   private void showCongrats() {
     txtAction.setText(R.string.action_next);
     txtAction.setVisibility(View.VISIBLE);
+
+    endSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+      navigator.navigateToPickYourFriends(this, deepLink);
+    });
 
     CommonConfetti.rainingConfetti(layoutConfettis, new int[] {
         ContextCompat.getColor(this, R.color.confetti_1),
