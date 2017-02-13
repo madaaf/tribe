@@ -47,7 +47,7 @@ ext {
   facebookVersion = '4.19.0'
   multiDexVersion = '1.0.0'
   confettiVersion = '1.0.0'
-  amplitudeVersion = '2.9.2'
+  mixpanelVersion = '4.9.3'
   imageCropperVersion = '2.3.1'
   firebaseRemoteVersion = '9.4.0'
   firebaseMessagingVersion = '9.4.0'
@@ -111,7 +111,7 @@ ext {
                               glideOKHttp             : "com.github.bumptech.glide:okhttp3-integration:${glideOKHttpVersion}",
                               multiDex                : "com.android.support:multidex:${multiDexVersion}",
                               confetti                : "com.github.jinatonic.confetti:confetti:${confettiVersion}",
-                              amplitude               : "com.amplitude:android-sdk:${amplitudeVersion}",
+                              mixpanel                : "com.mixpanel.android:mixpanel-android:${mixpanelVersion}",
                               imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
                               firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
                               firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",

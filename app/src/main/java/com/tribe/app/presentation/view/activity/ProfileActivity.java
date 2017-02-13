@@ -24,6 +24,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -226,6 +227,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
             getString(R.string.settings_logout_title), getString(R.string.action_cancel)))
         .filter(x -> x == true)
         .subscribe(aVoid -> {
+          tagManager.trackEvent(TagManagerConstants.KPI_Settings_Logout);
           ProgressDialog pd = new ProgressDialog(this);
           pd.setTitle(R.string.settings_logout_wait);
           pd.show();

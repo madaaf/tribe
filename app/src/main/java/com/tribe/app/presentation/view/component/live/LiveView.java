@@ -19,7 +19,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
@@ -394,18 +393,17 @@ public class LiveView extends FrameLayout {
 
     txtName.setText(recipient.getDisplayName());
 
-    if (recipient instanceof Friendship) {
-      TribeGuest guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
-          recipient.getProfilePicture());
-      LiveRowView liveRowView = new LiveRowView(getContext());
-      liveRowViewMap.put(guest.getId(), liveRowView);
-      addView(liveRowView, guest, color);
-      liveRowView.showGuest(true);
-      liveRowView.onShouldJoinRoom()
-          .distinct()
-          .doOnNext(aVoid -> btnNotify.setEnabled(true))
-          .subscribe(onShouldJoinRoom);
-    }
+    TribeGuest guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
+        recipient.getProfilePicture());
+    LiveRowView liveRowView = new LiveRowView(getContext());
+    liveRowViewMap.put(guest.getId(), liveRowView);
+    addView(liveRowView, guest, color);
+    liveRowView.showGuest(true);
+
+    subscriptions.add(liveRowView.onShouldJoinRoom()
+        .distinct()
+        .doOnNext(aVoid -> btnNotify.setEnabled(true))
+        .subscribe(onShouldJoinRoom));
   }
 
   public Room getRoom() {

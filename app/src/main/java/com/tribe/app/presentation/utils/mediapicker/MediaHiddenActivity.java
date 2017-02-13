@@ -118,7 +118,7 @@ public class MediaHiddenActivity extends BaseActivity {
         .request(PermissionUtils.PERMISSIONS_CAMERA)
         .subscribe(granted -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.CAMERA_ENABLED, granted);
+          bundle.putBoolean(TagManagerConstants.user_camera_enabled, granted);
           this.getTagManager().setProperty(bundle);
 
           if (granted) {

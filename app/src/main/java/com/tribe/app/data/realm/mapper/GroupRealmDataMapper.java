@@ -43,6 +43,7 @@ import io.realm.RealmList;
       group.setName(groupRealm.getName());
       group.setPicture(groupRealm.getPicture());
       group.setIsLive(groupRealm.isLive());
+      group.setLastSeenAt(groupRealm.getLastSeenAt());
       group.setMembers(groupMemberRealmDataMapper.transform(groupRealm.getMembers()));
     }
 
@@ -83,6 +84,7 @@ import io.realm.RealmList;
       groupRealm.setPicture(group.getPicture());
       groupRealm.setName(group.getName());
       groupRealm.setIsLive(group.isLive());
+      groupRealm.setLastSeenAt(group.getLastSeenAt());
       groupRealm.setMembers(groupMemberRealmDataMapper.transformList(group.getMembers()));
     }
 

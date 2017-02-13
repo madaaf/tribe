@@ -217,6 +217,7 @@
             name
             picture
             created_at
+            last_seen_at
             is_live
         }
     </string>
@@ -227,6 +228,7 @@
             name
             picture
             created_at
+            last_seen_at
             is_live
             members {
                 ...UserInfos

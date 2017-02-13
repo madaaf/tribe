@@ -5,6 +5,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public class Group implements Serializable {
   private String name;
   private List<User> members;
   private boolean is_live;
+  private Date last_seen_at;
 
   public String getId() {
     return id;
@@ -60,6 +62,14 @@ public class Group implements Serializable {
 
   public boolean isLive() {
     return is_live;
+  }
+
+  public Date getLastSeenAt() {
+    return last_seen_at;
+  }
+
+  public void setLastSeenAt(Date lastSeenAt) {
+    this.last_seen_at = lastSeenAt;
   }
 
   public List<String> getMembersPics() {

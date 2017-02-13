@@ -113,8 +113,6 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     initResources();
     manageDeepLink(getIntent());
     initRecyclerView();
-
-    tagManager.trackEvent(TagManagerConstants.ONBOARDING_SHOW_ADD_FRIENDS);
   }
 
   @Override protected void onStart() {
@@ -271,7 +269,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
         .subscribe(hasPermission -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+          bundle.putBoolean(TagManagerConstants.user_address_book_enabled, hasPermission);
           tagManager.setProperty(bundle);
 
           if (hasPermission) {
@@ -284,20 +282,18 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
   }
 
   private void sync() {
-    tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
     friendsPresenter.lookupContacts();
   }
 
   private void navigateToHome() {
-    tagManager.trackEvent(TagManagerConstants.ONBOARDING_COMPLETED);
+    Bundle bundle = new Bundle();
+    bundle.putBoolean(TagManagerConstants.user_onboarding_completed, true);
+    tagManager.setProperty(bundle);
     navigator.navigateToHome(this, false, deepLink);
     finish();
   }
 
   private void addUsers(List<User> userList) {
-    Bundle bundle = new Bundle();
-    bundle.putInt(TagManagerConstants.TOTAL, userList.size());
-    tagManager.trackEvent(TagManagerConstants.ONBOARDING_DID_INVITE_FRIENDS, bundle);
     friendsPresenter.createFriendships(userList);
   }
 
@@ -319,6 +315,8 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
   }
 
   @OnClick(R.id.txtAction) void onClickAction() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsDone);
+
     if (newFriends.size() == 0) {
       if (countFriends > 0 || contactList.size() == 0) {
         navigateToHome();
@@ -339,6 +337,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
   }
 
   @OnClick(R.id.viewPickAll) void onPickAll() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsSelectAll);
     addUsers(contactList);
   }
 

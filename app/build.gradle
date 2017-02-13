@@ -106,7 +106,7 @@ android {
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
       buildConfigField "String", "TRIBE_API", "\"https://api.tribedev.pm\""
       buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribedev.pm\""
-      buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_debug}\""
+      buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_debug}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""
     }
@@ -122,7 +122,7 @@ android {
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
       buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
       buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
-      buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_prod}\""
+      buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_tribe2}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_tribe2}\""
     }
@@ -139,7 +139,7 @@ android {
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
       buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
       buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
-      buildConfigField "String", "AMPLITUDE_KEY", "\"${amplitude_prod}\""
+      buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
     }
@@ -193,7 +193,7 @@ dependencies {
   compile presentationDependencies.facebook
   compile presentationDependencies.multiDex
   compile presentationDependencies.confetti
-  compile presentationDependencies.amplitude
+  compile presentationDependencies.mixpanel
   compile presentationDependencies.imageCropper
   compile presentationDependencies.firebaseInvites
   compile presentationDependencies.recyclerViewAnimators

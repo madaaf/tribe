@@ -142,7 +142,6 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       setupAction(getString(R.string.group_details_invite_link));
       txtAction.setVisibility(View.VISIBLE);
     } else {
-      tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATION_STARTED);
       setupAction(getString(R.string.action_create));
       txtAction.setVisibility(View.VISIBLE);
       txtTitle.setText(R.string.group_identification_title);
@@ -157,9 +156,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         }
 
         Bundle bundle = new Bundle();
-        bundle.putString(TagManagerConstants.TEMPLATE, TagManagerConstants.TEMPLATE_CUSTOM);
-        tagManager.trackEvent(TagManagerConstants.KPI_GROUP_CREATED, bundle);
-        tagManager.increment(TagManagerConstants.COUNT_GROUPS_CREATED);
+        bundle.putInt(TagManagerConstants.Members_Count, newMembers.size());
+        tagManager.trackEvent(TagManagerConstants.KPI_Groups_CreateGroup, bundle);
+        tagManager.increment(TagManagerConstants.user_groups_count);
 
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setMembersId(membersId);
@@ -169,10 +168,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         if (viewStack.getTopView() instanceof UpdateGroupView) {
           groupPresenter.updateGroup(membership.getSubId(), viewUpdateGroup.getGroupEntity());
         } else if (viewStack.getTopView() instanceof AddMembersGroupView) {
-          tagManager.trackEvent(TagManagerConstants.KPI_GROUP_MEMBERS_ADDED);
           groupPresenter.addMembersToGroup(membership.getSubId(), newMembers);
         } else if (viewStack.getTopView() instanceof GroupDetailsView) {
-          tagManager.trackEvent(TagManagerConstants.KPI_GROUP_LINK_SHARED);
           navigator.shareGenericText("", this);
         }
       }
@@ -472,11 +469,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   @Override public void onUserAddSuccess(Friendship friendship) {
     user.getFriendships().add(friendship);
 
-    viewDetailsGroup.postDelayed(new Runnable() {
-      @Override public void run() {
-        if (viewStack.getTopView() instanceof GroupDetailsView) {
-          viewDetailsGroup.updateGroup(membership.getGroup());
-        }
+    viewDetailsGroup.postDelayed(() -> {
+      if (viewStack.getTopView() instanceof GroupDetailsView) {
+        viewDetailsGroup.updateGroup(membership.getGroup());
       }
     }, 1000);
   }

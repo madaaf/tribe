@@ -28,6 +28,7 @@ public class GroupRealm extends RealmObject {
   private String picture;
   private Date created_at;
   private Date updated_at;
+  private Date last_seen_at;
 
   private RealmList<GroupMemberRealm> members;
 
@@ -77,6 +78,14 @@ public class GroupRealm extends RealmObject {
 
   public void setUpdatedAt(Date updated_at) {
     this.updated_at = updated_at;
+  }
+
+  public void setLastSeenAt(Date lastSeenAt) {
+    this.last_seen_at = lastSeenAt;
+  }
+
+  public Date getLastSeenAt() {
+    return last_seen_at;
   }
 
   public RealmList<GroupMemberRealm> getMembers() {

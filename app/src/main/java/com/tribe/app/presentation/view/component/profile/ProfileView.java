@@ -94,7 +94,7 @@ public class ProfileView extends FrameLayout {
 
     subscriptions.add(viewActionVisible.onChecked().subscribe(isChecked -> {
       Bundle bundle = new Bundle();
-      bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, isChecked);
+      bundle.putBoolean(TagManagerConstants.user_invisible_enabled, isChecked);
       tagManager.setProperty(bundle);
       onChangeVisible.onNext(!isChecked);
     }));

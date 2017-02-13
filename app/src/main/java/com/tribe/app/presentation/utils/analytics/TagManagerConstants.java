@@ -8,94 +8,84 @@ public class TagManagerConstants {
   /**
    * GENERAL
    */
-  public static final String ONBOARDING_START = "Onboarding - Start";
-  public static final String ONBOARDING_SEND_PIN = "Onboarding - Send Pin";
-  public static final String ONBOARDING_CONNECTION = "Onboarding - Connection";
-  public static final String ONBOARDING_REGISTRATION = "Onboarding - Registration";
-  public static final String ONBOARDING_REGISTRATION_FACEBOOK =
-      "Onboarding - Registration Facebook Connect";
-  public static final String ONBOARDING_CONTACTS_SYNC = "Onboarding - Contacts Sync";
-  public static final String ONBOARDING_COMPLETED = "Onboarding - Completed";
-  public static final String ONBOARDING_SMS_NOT_RECEIVED = "Onboarding - SMS Not Received";
-  public static final String ONBOARDING_RESEND_PIN = "Onboarding - Resend Pin";
-  public static final String ONBOARDING_PIN_ERROR = "Onboarding - Pin Error";
-  public static final String ONBOARDING_SHOW_ADD_FRIENDS = "Onboarding - Show Add Friends";
-  public static final String ONBOARDING_DID_INVITE_FRIENDS = "Onboarding - Did Add Friends";
-  public static final String KPI_TRIBES_OPENED = "KPI - Tribes Opened";
-  public static final String KPI_TRIBES_SENT = "KPI - Tribes Sent";
-  public static final String KPI_CHAT_OPENED = "KPI - Chat Opened";
-  public static final String KPI_CHAT_SENT = "KPI - Chat Sent";
-  public static final String KPI_SMS_INVITATION_OPENED = "KPI - SMS Invitation Opened";
-  public static final String KPI_SMS_INVITATION_SENT = "KPI - SMS Invitation Sent";
-  public static final String KPI_GROUP_CREATION_STARTED = "KPI - Group Creation Started";
-  public static final String KPI_GROUP_TEMPLATE_SELECTED = "KPI - Group Template Selected";
-  public static final String KPI_GROUP_CREATED = "KPI - Group Created";
-  public static final String KPI_GROUP_LINK_SHARED = "KPI - Group Link Shared";
-  public static final String KPI_GROUP_MEMBERS_ADDED = "KPI - Group Members Added";
-  public static final String USER_SHARE_PROFILE = "User - Share Profile";
-  public static final String USER_TILE_HIDDEN = "User - Tile Hidden";
-  public static final String TOKEN_DISCONNECT = "Token - DisconnectUser";
-  public static final String SCORE_SHARE = "Score - Share";
-  public static final String SCORE_CHECK_RULES = "Score - Check Rules";
-  public static final String SCORE_OPEN_METADATA = "Score - Open Metadata";
-  public static final String FILTER_FACEBOOK_SYNC = "Filter - Facebook Sync";
-  public static final String FILTER_ADDRESSBOOK_SYNC = "Filter - AddressBook Sync";
+  public static final String KPI_Onboarding_Start = "KPI_Onboarding_Start";
+  public static final String KPI_Onboarding_SystemNotifications = "KPI_Onboarding_SystemNotifications";
+  public static final String KPI_Onboarding_VideoSkipped = "KPI_Onboarding_VideoSkipped";
+  public static final String KPI_Onboarding_VideoFinished = "KPI_Onboarding_VideoFinished";
+  public static final String KPI_Onboarding_PinRequested = "KPI_Onboarding_PinRequested";
+  public static final String KPI_Onboarding_PinModified = "KPI_Onboarding_PinModified";
+  public static final String KPI_Onboarding_PinConfirmed = "KPI_Onboarding_PinConfirmed";
+  public static final String KPI_Onboarding_PinSubmitted = "KPI_Onboarding_PinSubmitted";
+  public static final String KPI_Onboarding_PinFailed = "KPI_Onboarding_PinFailed";
+  public static final String KPI_Onboarding_PinSucceeded = "KPI_Onboarding_PinSucceeded";
+  public static final String KPI_Onboarding_ProfileFilledWithFacebook = "KPI_Onboarding_ProfileFilledWithFacebook";
+  public static final String KPI_Onboarding_ProfileConfigured = "KPI_Onboarding_ProfileConfigured";
+  public static final String KPI_Onboarding_FindFriendsStart = "KPI_Onboarding_FindFriendsStart";
+  public static final String KPI_Onboarding_SystemContacts = "KPI_Onboarding_SystemContacts";
+  public static final String KPI_Onboarding_FindFriendsNext = "KPI_Onboarding_FindFriendsNext";
+  public static final String KPI_Onboarding_FindFriendsSelectAll = "KPI_Onboarding_FindFriendsSelectAll";
+  public static final String KPI_Onboarding_FindFriendsDone = "KPI_Onboarding_FindFriendsDone";
+  public static final String KPI_Onboarding_HomeScreen = "KPI_Onboarding_HomeScreen";
+  public static final String KPI_Onboarding_SystemCamera = "KPI_Onboarding_SystemCamera";
+  public static final String KPI_Onboarding_SystemMicrophone = "KPI_Onboarding_SystemMicrophone";
+  public static final String KPI_Groups_NewGroup = "KPI_Groups_NewGroup";
+  public static final String KPI_Groups_AddFriend = "KPI_Groups_AddFriend";
+  public static final String KPI_Groups_RemoveFriend = "KPI_Groups_RemoveFriend";
+  public static final String KPI_Groups_CreateGroup = "KPI_Groups_CreateGroup";
+  public static final String KPI_Groups_BackGroup = "KPI_Groups_BackGroup";
+  public static final String KPI_Invites_HomeScreenSMSInviteButton = "KPI_Invites_HomeScreenSMSInviteButton";
+  public static final String KPI_Invites_HomeScreenSMSInviteCancelled = "KPI_Invites_HomeScreenSMSInviteCancelled";
+  public static final String KPI_Invites_HomeScreenSMSInviteSent = "KPI_Invites_HomeScreenSMSInviteSent";
+  public static final String KPI_Invites_SearchScreenSMSInviteButton = "KPI_Invites_SearchScreenSMSInviteButton";
+  public static final String KPI_Invites_SearchScreenSMSInviteCancelled = "KPI_Invites_SearchScreenSMSInviteCancelled";
+  public static final String KPI_Invites_SearchScreenSMSInviteSent = "KPI_Invites_SearchScreenSMSInviteSent";
+  public static final String KPI_Calls_StartedButton = "KPI_Calls_StartedButton";
+  public static final String KPI_Calls_LeaveButton = "KPI_Calls_LeaveButton";
+  public static final String KPI_Calls_MissedButton = "KPI_Calls_MissedButton";
+  public static final String KPI_Calls_EndedButton = "KPI_Calls_EndedButton";
+  public static final String KPI_Calls_WizzedButton = "KPI_Calls_WizzedButton";
+  public static final String KPI_Calls_InviteAction = "KPI_Calls_InviteAction";
+  public static final String KPI_Calls_LinkButton = "KPI_Calls_LinkButton";
+  public static final String KPI_Calls_LinkCancelled = "KPI_Calls_LinkCancelled";
+  public static final String KPI_Calls_LinkSent = "KPI_Calls_LinkSent";
+  public static final String KPI_Calls_DragAndDrop = "KPI_Calls_DragAndDrop";
+  public static final String KPI_Settings_Logout = "KPI_Settings_Logout";
 
   /**
    * ERRORS
    */
-  public static final String ONBOARDING_SMS_ERROR = "Onboarding - SMS Error";
-  public static final String TRIBE_PENDING_ERROR = "Tribe - Pending";
+  public static final String ERROR = "ERROR";
+  public static final String TOKEN_DISCONNECT = "TOKEN_DISCONNECT";
 
   /**
    * EVENT PROPERTIES
    */
-  public static final String ERROR = "Error";
-  public static final String TYPE = "Type";
-  public static final String TEMPLATE = "Template";
-  public static final String TEMPLATE_CUSTOM = "Custom";
-  public static final String ERROR_TYPE = "Error Type";
-  public static final String TYPE_TRIBE_USER = "User";
-  public static final String TYPE_TRIBE_GROUP = "Group";
-  public static final String TYPE_GROUP_PRIVATE = "Private";
-  public static final String TYPE_GROUP_PUBLIC = "Public";
-  public static final String TYPE_ERROR_NETWORK = "Network";
-  public static final String TYPE_ERROR_TECHNICAL = "Technical";
-  public static final String TYPE_PHONE = "Phone";
-  public static final String TYPE_DEEPLINK = "Deeplink";
-  public static final String TYPE_DEEPLINK_NONE = "None";
-  public static final String TYPE_DEEPLINK_USER = "User";
-  public static final String TYPE_DEEPLINK_GROUP = "Group";
-  public static final String TYPE_INVITE_MESSENGER = "Messenger";
-  public static final String TYPE_INVITE_SMS = "SMS";
-  public static final String TYPE_INVITE_WHATSAPP = "WhatsApp";
-  public static final String TOTAL = "Total";
-  public static final String SYNCED_FRIENDS = "Sync Friends";
+  public static final String Accepted = "accepted";
+  public static final String Success = "success";
+  public static final String Fail = "fail";
+  public static final String Members_Count = "members_count";
+  public static final String Button = "button";
+  public static final String Swipe = "swipe";
 
   /**
    * USER PROPERTIES
    */
-  public static final String COUNT_TRIBES_SENT = "Tribes Sent";
-  public static final String COUNT_CHAT_SENT = "Chat Sent";
-  public static final String COUNT_FRIENDS = "Friends";
-  public static final String COUNT_GROUPS = "Groups";
-  public static final String COUNT_GROUPS_CREATED = "Groups Created";
-  public static final String COUNT_PROFILE_SHARES = "Profile Shares";
-  public static final String COUNT_INVITATIONS_SENT = "Invitations Sent";
-  public static final String FILTER_ENABLED = "Filter Enabled";
-  public static final String FILTER_NONE = "None";
-  public static final String FILTER_TAN = "Tan";
-  public static final String FILTER_BLACK_WHITE = "BlackWhite";
-  public static final String FILTER_PIXEL = "Pixel";
-  public static final String MEMORIES_ENABLED = "Memories Enabled";
-  public static final String LOCATION_ENABLED = "Location Enabled";
-  public static final String AUDIO_ONLY_ENABLED = "Audio Only Enabled";
-  public static final String PRELOAD_ENABLED = "Preload Enabled";
-  public static final String FACEBOOK_CONNECTED = "Facebook Connected";
-  public static final String ADDRESS_BOOK_ENABLED = "Address Book Enabled";
-  public static final String INVISIBLE_MODE_ENABLED = "Invisible Mode Enabled";
-  public static final String CAMERA_ENABLED = "Camera Enabled";
-  public static final String PUSH_ENABLED = "Push Enabled";
-  public static final String MICROPHONE_ENABLED = "Microphone Enabled";
-  public static final String USERNAME = "username";
+
+  public static final String user_address_book_enabled = "user_address_book_enabled";
+  public static final String user_notifications_enabled = "user_notifications_enabled";
+  public static final String user_microphone_enabled = "user_microphone_enabled";
+  public static final String user_camera_enabled = "user_camera_enabled";
+  public static final String user_display_name = "user_display_name";
+  public static final String user_email = "user_email";
+  public static final String user_username = "user_username";
+  public static final String user_facebook_connected = "user_facebook_connected";
+  public static final String user_friends_count = "user_friends_count";
+  public static final String user_groups_count = "user_groups_count";
+  public static final String user_invisible_enabled = "user_invisible_enabled";
+  public static final String user_calls_count = "user_calls_count";
+  public static final String user_calls_minutes = "user_calls_minutes";
+  public static final String user_calls_missed_count = "user_calls_missed_count";
+  public static final String user_invites_sent_count = "user_invites_sent_count";
+  public static final String user_has_profile_picture = "user_has_profile_picture";
+  public static final String user_onboarding_completed = "user_onboarding_completed";
 }

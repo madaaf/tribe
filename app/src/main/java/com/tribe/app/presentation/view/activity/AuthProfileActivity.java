@@ -22,6 +22,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -185,6 +186,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       if (isReady()) {
         nextStep();
       } else {
+        tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_ProfileFilledWithFacebook);
         if (FacebookUtils.isLoggedIn()) {
           getInfoFromFacebook();
         } else {
@@ -241,7 +243,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(),
           loginEntity);
     } else {
-      tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
       showLoading();
       profileInfoPresenter.updateUser(profileInfoView.getUsername(),
           profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
@@ -254,24 +255,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     this.user.copy(user);
 
     Bundle bundle = new Bundle();
-    if (deepLink != null && !StringUtils.isEmpty(deepLink.getPath())) {
-      if (deepLink.getPath().startsWith("/u/")) {
-        bundle.putString(TagManagerConstants.TYPE_DEEPLINK, TagManagerConstants.TYPE_DEEPLINK_USER);
-      } else if (deepLink.getPath().startsWith("/g/")) {
-        bundle.putString(TagManagerConstants.TYPE_DEEPLINK,
-            TagManagerConstants.TYPE_DEEPLINK_GROUP);
-      }
-    } else {
-      bundle.putString(TagManagerConstants.TYPE_DEEPLINK, TagManagerConstants.TYPE_DEEPLINK_NONE);
-    }
-
-    if (facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())) {
-      tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION_FACEBOOK, bundle);
-    } else {
-      tagManager.trackEvent(TagManagerConstants.ONBOARDING_REGISTRATION, bundle);
-    }
-
-    tagManager.setProperty(bundle);
+    bundle.putBoolean(TagManagerConstants.Success, true);
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_ProfileConfigured, bundle);
 
     profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(),
         profileInfoView.getImgUri(),
@@ -284,7 +269,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
     if (this.user != null) {
       Bundle bundleUser = new Bundle();
-      bundleUser.putString(TagManagerConstants.USERNAME, this.user.getUsername());
+      bundleUser.putString(TagManagerConstants.user_username, this.user.getUsername());
       tagManager.setProperty(bundleUser);
       tagManager.setUserId(user.getId());
     }

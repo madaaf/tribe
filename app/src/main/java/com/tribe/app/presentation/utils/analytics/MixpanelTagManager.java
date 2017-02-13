@@ -3,11 +3,9 @@ package com.tribe.app.presentation.utils.analytics;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
-
-import com.amplitude.api.Amplitude;
-import com.amplitude.api.AmplitudeClient;
-import com.amplitude.api.Identify;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -20,26 +18,21 @@ import javax.inject.Singleton;
 /**
  * Created by tiago on 22/09/2016.
  */
-@Singleton public class AmplitudeTagManager implements TagManager {
+@Singleton public class MixpanelTagManager implements TagManager {
 
-  private AmplitudeClient amplitude;
+  private MixpanelAPI mixpanelAPI;
 
-  public AmplitudeTagManager(Context context, User user) {
-    if (user != null && StringUtils.isEmpty(user.getId())) {
-      amplitude = Amplitude.getInstance()
-          .initialize(context, BuildConfig.AMPLITUDE_KEY)
-          .enableForegroundTracking((Application) context.getApplicationContext());
-    } else {
-      amplitude = Amplitude.getInstance()
-          .initialize(context, BuildConfig.AMPLITUDE_KEY, user.getId())
-          .enableForegroundTracking((Application) context.getApplicationContext());
+  public MixpanelTagManager(Context context, User user) {
+    mixpanelAPI = MixpanelAPI.getInstance(context, BuildConfig.MIXPANEL_TOKEN);
+
+    if (user != null && !StringUtils.isEmpty(user.getId())) {
+      setUserId(user.getId());
     }
-
-    amplitude.trackSessionEvents(true);
   }
 
   @Override public void setUserId(String userId) {
-
+    mixpanelAPI.identify(userId);
+    mixpanelAPI.getPeople().identify(userId);
   }
 
   @Override public void onStart(Activity activity) {
@@ -55,34 +48,27 @@ import javax.inject.Singleton;
   }
 
   @Override public void trackEvent(String event) {
-    amplitude.logEvent(event);
+    mixpanelAPI.track(event);
   }
 
   @Override public void trackEvent(String event, Bundle properties) {
-    amplitude.logEvent(event, buildProperties(properties));
+    mixpanelAPI.track(event, buildProperties(properties));
   }
 
   @Override public void setProperty(Bundle properties) {
-    amplitude.setUserProperties(buildProperties(properties));
+    mixpanelAPI.getPeople().set(buildProperties(properties));
   }
 
   @Override public void setPropertyOnce(Bundle properties) {
-    Identify identify = new Identify();
-
-    for (String key : properties.keySet()) {
-      buildProperty(key, properties.get(key));
-    }
-
-    amplitude.identify(identify);
+    mixpanelAPI.getPeople().setOnce(buildProperties(properties));
   }
 
   @Override public void increment(String properties) {
-    Identify identify = new Identify().add(properties, 1);
-    amplitude.identify(identify);
+    mixpanelAPI.getPeople().increment(properties, 1);
   }
 
   @Override public void clear() {
-    amplitude.clearUserProperties();
+    mixpanelAPI.reset();
   }
 
   private JSONObject buildProperties(Bundle properties) {

@@ -22,6 +22,7 @@ import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -217,22 +218,28 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
+      tagManager.trackEvent(TagManagerConstants.KPI_Calls_StartedButton);
       joinRoom();
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
       if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
+        tagManager.trackEvent(TagManagerConstants.KPI_Calls_WizzedButton);
         soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
         livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
       }
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
+      tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
       finish();
     }));
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
+          Bundle bundle = new Bundle();
+          bundle.putBoolean(TagManagerConstants.Swipe, true);
+          tagManager.trackEvent(TagManagerConstants.KPI_Calls_InviteAction, bundle);
           livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(),
               recipient.getSubId());
         }));
@@ -258,8 +265,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     viewLive.setRecipient(recipient, color);
     initSubscriptions();
     livePresenter.loadFriendshipList();
-
-    if (recipient instanceof Membership) joinRoom();
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {

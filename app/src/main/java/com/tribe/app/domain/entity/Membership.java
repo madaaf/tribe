@@ -56,7 +56,7 @@ public class Membership extends Recipient {
   }
 
   @Override public Date getLastSeenAt() {
-    return null;
+    return group.getLastSeenAt();
   }
 
   public void setId(String id) {

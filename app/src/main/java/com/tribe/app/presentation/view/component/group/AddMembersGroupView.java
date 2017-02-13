@@ -19,6 +19,8 @@ import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
@@ -50,6 +52,8 @@ public class AddMembersGroupView extends LinearLayout {
   private int DURATION_FADE = 150;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
+
+  @Inject TagManager tagManager;
 
   @Inject User user;
 
@@ -166,6 +170,7 @@ public class AddMembersGroupView extends LinearLayout {
           return new Pair<>(position, (GroupMember) adapter.getItemAtPosition(position));
         })
         .doOnNext(pair -> {
+          tagManager.trackEvent(TagManagerConstants.KPI_Groups_AddFriend);
           GroupMember groupMember = pair.second;
           boolean add = membersAdapter.isAdd(groupMember);
           if (add) {
@@ -194,6 +199,7 @@ public class AddMembersGroupView extends LinearLayout {
         (pair, aBoolean) -> new Pair<>(pair, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
+          tagManager.trackEvent(TagManagerConstants.KPI_Groups_RemoveFriend);
           GroupMember groupMember = pair.first.second;
           groupMember.setMember(false);
           adapter.notifyItemChanged(pair.first.first);

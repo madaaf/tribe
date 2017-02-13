@@ -24,6 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
@@ -39,6 +40,7 @@ import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
@@ -155,6 +157,30 @@ public class HomeActivity extends BaseActivity
     homeGridPresenter.reload(hasSynced);
     if (!hasSynced) hasSynced = true;
 
+    subscriptions.add(Observable.
+        from(PermissionUtils.PERMISSIONS_CAMERA)
+        .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
+        .toList()
+        .subscribe(grantedList -> {
+          boolean areAllGranted = true;
+
+          for (Boolean granted : grantedList) {
+            if (!granted) areAllGranted = false;
+          }
+
+          if (areAllGranted) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerConstants.user_camera_enabled, areAllGranted);
+            bundle.putBoolean(TagManagerConstants.user_microphone_enabled, areAllGranted);
+            tagManager.setProperty(bundle);
+
+            Bundle bundleBis = new Bundle();
+            bundleBis.putBoolean(TagManagerConstants.Accepted, true);
+            tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_SystemCamera, bundleBis);
+            tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_SystemMicrophone, bundleBis);
+          }
+        }));
+
     startService(WSService.getCallingIntent(this));
   }
 
@@ -270,8 +296,7 @@ public class HomeActivity extends BaseActivity
       }
     });
 
-    subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(),
-        homeGridAdapter.onLongClick())
+    subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .flatMap(recipient -> {
@@ -286,7 +311,6 @@ public class HomeActivity extends BaseActivity
           if (labelType != null) {
             if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
                 .equals(LabelType.BLOCK_HIDE)) {
-              tagManager.trackEvent(TagManagerConstants.USER_TILE_HIDDEN);
               Friendship friendship = (Friendship) recipient;
               homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                   labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -442,10 +466,11 @@ public class HomeActivity extends BaseActivity
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null && tutorial == null) {
       Bundle bundle = new Bundle();
-      bundle.putInt(TagManagerConstants.COUNT_FRIENDS, getCurrentUser().getFriendships().size());
-      bundle.putInt(TagManagerConstants.COUNT_GROUPS, getCurrentUser().getFriendships().size());
+      bundle.putInt(TagManagerConstants.user_friends_count,
+          getCurrentUser().getFriendships().size());
+      bundle.putInt(TagManagerConstants.user_groups_count,
+          getCurrentUser().getMembershipList().size());
       tagManager.setProperty(bundle);
-
       onRecipientUpdates.onNext(recipientList);
     }
   }
@@ -532,6 +557,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToCreateGroup() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Groups_NewGroup);
     HomeActivity.this.navigator.navigateToCreateGroup(this);
   }
 

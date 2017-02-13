@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.AudioDefault;
 import com.tribe.app.presentation.utils.preferences.Filter;
@@ -31,99 +32,85 @@ import javax.inject.Singleton;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
-  private AmplitudeTagManager amplitude;
+  private MixpanelTagManager mixpanel;
   private BranchTagManager branch;
 
   @Inject public AnalyticsManager(Context context, @Named("userThreadSafe") User user) {
-    this.amplitude = new AmplitudeTagManager(context, user);
+    this.mixpanel = new MixpanelTagManager(context, user);
     this.branch = new BranchTagManager(context);
 
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
     Bundle bundle = new Bundle();
 
-    switch (filter.get()) {
-      case 1:
-        bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_TAN);
-        break;
-      case 2:
-        bundle.putString(TagManagerConstants.FILTER_ENABLED,
-            TagManagerConstants.FILTER_BLACK_WHITE);
-        break;
-      case 3:
-        bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_PIXEL);
-        break;
-      default:
-        bundle.putString(TagManagerConstants.FILTER_ENABLED, TagManagerConstants.FILTER_NONE);
-        break;
-    }
-
-    bundle.putBoolean(TagManagerConstants.LOCATION_ENABLED, locationContext.get());
-    bundle.putBoolean(TagManagerConstants.AUDIO_ONLY_ENABLED, audioDefault.get());
-    bundle.putBoolean(TagManagerConstants.FACEBOOK_CONNECTED, FacebookUtils.isLoggedIn());
-    bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED,
-        addressBook.get() && PermissionUtils.hasPermissionsContact(context));
     if (user != null) {
-      bundle.putBoolean(TagManagerConstants.INVISIBLE_MODE_ENABLED, user.isInvisibleMode());
-      bundle.putBoolean(TagManagerConstants.MEMORIES_ENABLED, user.isTribeSave());
+      bundle.putBoolean(TagManagerConstants.user_invisible_enabled, user.isInvisibleMode());
+      bundle.putString(TagManagerConstants.user_username, user.getUsername());
+      bundle.putString(TagManagerConstants.user_display_name, user.getUsername());
+      bundle.putString(TagManagerConstants.user_username, user.getUsername());
+      bundle.putBoolean(TagManagerConstants.user_facebook_connected, FacebookUtils.isLoggedIn());
+      bundle.putBoolean(TagManagerConstants.user_has_profile_picture, !StringUtils.isEmpty(user.getProfilePicture()));
     }
-    bundle.putBoolean(TagManagerConstants.CAMERA_ENABLED,
-        PermissionUtils.hasPermissionsCamera(context));
-    bundle.putBoolean(TagManagerConstants.MICROPHONE_ENABLED,
-        PermissionUtils.hasPermissionsCamera(context));
-    bundle.putBoolean(TagManagerConstants.PUSH_ENABLED,
-        user.isPushNotif()); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
 
-    if (user != null) bundle.putString(TagManagerConstants.USERNAME, user.getUsername());
+    bundle.putBoolean(TagManagerConstants.user_address_book_enabled,
+        addressBook.get() && PermissionUtils.hasPermissionsContact(context));
+    bundle.putBoolean(TagManagerConstants.user_camera_enabled,
+        PermissionUtils.hasPermissionsCamera(context));
+    bundle.putBoolean(TagManagerConstants.user_microphone_enabled,
+        PermissionUtils.hasPermissionsCamera(context));
+    bundle.putBoolean(TagManagerConstants.user_notifications_enabled,
+        true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
 
     setProperty(bundle);
   }
 
   @Override public void setUserId(String userId) {
-    amplitude.setUserId(userId);
+    mixpanel.setUserId(userId);
     branch.setUserId(userId);
   }
 
   @Override public void onStart(Activity activity) {
+    mixpanel.onStart(activity);
     branch.onStart(activity);
   }
 
   @Override public void onStop(Activity activity) {
+    mixpanel.onStop(activity);
     branch.onStop(activity);
   }
 
   @Override public void trackInstall() {
-    amplitude.trackInstall();
+    mixpanel.trackInstall();
     branch.trackInstall();
   }
 
   @Override public void trackEvent(String event) {
-    amplitude.trackEvent(event);
+    mixpanel.trackEvent(event);
     branch.trackEvent(event);
   }
 
   @Override public void trackEvent(String event, Bundle properties) {
-    amplitude.trackEvent(event, properties);
+    mixpanel.trackEvent(event, properties);
     branch.trackEvent(event, properties);
   }
 
   @Override public void setProperty(Bundle properties) {
-    amplitude.setProperty(properties);
+    mixpanel.setProperty(properties);
     branch.setProperty(properties);
   }
 
   @Override public void setPropertyOnce(Bundle properties) {
-    amplitude.setPropertyOnce(properties);
+    mixpanel.setPropertyOnce(properties);
     branch.setPropertyOnce(properties);
   }
 
   @Override public void increment(String properties) {
-    amplitude.increment(properties);
+    mixpanel.increment(properties);
     branch.increment(properties);
   }
 
   @Override public void clear() {
-    amplitude.clear();
+    mixpanel.clear();
     branch.clear();
   }
 }

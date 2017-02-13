@@ -85,19 +85,8 @@ public class AndroidApplication extends Application {
 
   private void initRealm() {
     Realm.init(this);
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(4)
-        .migration((realm, oldVersion, newVersion) -> {
-          RealmSchema schema = realm.getSchema();
-
-          if (oldVersion == 2) {
-            RealmObjectSchema userSchema = schema.get("UserRealm");
-
-            userSchema.addField("live", boolean.class);
-            userSchema.addField("connected", boolean.class);
-            userSchema.addField("last_online", Date.class);
-            oldVersion++;
-          }
-        })
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(5)
+        .deleteRealmIfMigrationNeeded()
         .build();
     Realm.setDefaultConfiguration(realmConfiguration);
   }

@@ -109,6 +109,8 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     startSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> start());
+
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsStart);
   }
 
   private void initDependencyInjector() {
@@ -137,6 +139,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   @OnClick(R.id.txtAction) void onClickAction() {
     if (viewAccess.getStatus() == AccessView.NONE) {
+      tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsNext);
       start();
     } else if (viewAccess.getStatus() == AccessView.LOADING) {
       showCongrats();
@@ -206,12 +209,15 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
         .subscribe(hasPermission -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+          bundle.putBoolean(TagManagerConstants.user_address_book_enabled, hasPermission);
           tagManager.setProperty(bundle);
+
+          Bundle bundleBis = new Bundle();
+          bundleBis.putBoolean(TagManagerConstants.Accepted, true);
+          tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_SystemContacts, bundleBis);
 
           if (hasPermission) {
             addressBook.set(true);
-            tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
             accessPresenter.lookupContacts();
           } else {
             renderFriendList(new ArrayList<>());

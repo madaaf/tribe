@@ -68,7 +68,8 @@ public abstract class Recipient implements Serializable {
         && ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt())
         && ObjectUtils.nullSafeEquals(getProfilePicture(), recipient.getProfilePicture())
         && ObjectUtils.nullSafeEquals(isLive(), recipient.isLive())
-        && ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline());
+        && ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline())
+        && ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt());
   }
 
   public abstract String getDisplayName();
