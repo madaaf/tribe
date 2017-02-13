@@ -1,16 +1,23 @@
 package com.tribe.tribelivesdk.back;
 
 import android.support.annotation.StringDef;
+import android.util.Log;
+import com.neovisionaries.ws.client.OpeningHandshakeException;
+import com.neovisionaries.ws.client.PayloadGenerator;
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketException;
+import com.neovisionaries.ws.client.WebSocketFactory;
+import com.neovisionaries.ws.client.WebSocketFrame;
+import com.neovisionaries.ws.client.WebSocketListener;
+import com.neovisionaries.ws.client.WebSocketState;
 import com.tribe.tribelivesdk.util.LogUtil;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -29,10 +36,15 @@ import rx.subjects.PublishSubject;
   public static final String STATE_DISCONNECTED = "disconnected";
   public static final String STATE_ERROR = "error";
 
+  public static final String PROTOCOL = "Sec-WebSocket-Protocol";
+  public static final String VERSION = "Sec-WebSocket-Version";
+  public static final String AUTHORIZATION = "Authorization";
+  public static final String USER_AGENT = "User-Agent";
+  public static final String CONTENT_TYPE = "Content-Type";
+
   private @WebSocketState String state;
-  private WebSocketClient webSocketClient;
-  private WebSocketClient.WebSocketClientFactory clientFactory;
-  private Draft draft;
+  private WebSocket webSocketClient;
+  private WebSocketFactory clientFactory;
   private Map<String, String> headers;
   private final Object closeLock = new Object();
   private boolean close;
@@ -42,10 +54,9 @@ import rx.subjects.PublishSubject;
   private PublishSubject<String> onError = PublishSubject.create();
 
   @Inject
-  public WebSocketConnection(WebSocketClient.WebSocketClientFactory clientFactory, Draft draft,
+  public WebSocketConnection(WebSocketFactory clientFactory,
       Map<String, String> headers) {
     state = STATE_NEW;
-    this.draft = draft;
     this.clientFactory = clientFactory;
     this.headers = headers;
   }
@@ -68,49 +79,168 @@ import rx.subjects.PublishSubject;
 
     LogUtil.d(getClass(), "Connecting WebSocket to: " + url);
 
-    if (draft == null) draft = new Draft_17();
+    try {
+      webSocketClient = clientFactory.createSocket(uri, CONNECT_TIMEOUT);
 
-    webSocketClient = new WebSocketClient(uri, draft, this.headers, CONNECT_TIMEOUT) {
-      @Override public void onOpen(ServerHandshake serverHandshake) {
-        LogUtil.d(getClass(), "WebSocket connection opened to: " + url);
-        state = STATE_CONNECTED;
-        onStateChanged.onNext(state);
-      }
+      if (headers != null) {
+        if (headers.containsKey(PROTOCOL)) webSocketClient.addProtocol(headers.get(PROTOCOL));
 
-      @Override public void onMessage(String s) {
-        if (state == STATE_CONNECTED) {
-          onMessage.onNext(s);
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+          if (!entry.getKey().equals(PROTOCOL) && !entry.getKey().equals(VERSION)) {
+            webSocketClient.addHeader(entry.getKey(), entry.getValue());
+          }
         }
       }
 
-      @Override public void onClose(int i, String s, boolean b) {
-        LogUtil.d(getClass(), "Closed " + s + " state : " + state);
-
-        synchronized (closeLock) {
-          close = true;
-          closeLock.notify();
+      webSocketClient.addListener(new WebSocketListener() {
+        @Override public void onStateChanged(WebSocket websocket,
+            com.neovisionaries.ws.client.WebSocketState newState) throws Exception {
+          LogUtil.d(getClass(), "WebSocket stateChanged: " + newState.name());
         }
 
-        if (state != STATE_DISCONNECTED) {
-          state = STATE_DISCONNECTED;
+        @Override public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket connection opened to: " + url);
+          state = STATE_CONNECTED;
           onStateChanged.onNext(state);
         }
-      }
 
-      @Override public void onError(Exception e) {
-        LogUtil.e(getClass(), "Error " + e.getMessage());
+        @Override public void onConnectError(WebSocket websocket, WebSocketException cause)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket onConnectError: " + cause.getMessage());
+        }
 
-        state = STATE_ERROR;
-        onError.onNext(e.getMessage());
-      }
+        @Override public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
+            WebSocketFrame clientCloseFrame, boolean closedByServer) throws Exception {
+          LogUtil.d(getClass(), "WebSocket onDisconnected");
 
-      @Override public void onClosing(int code, String reason, boolean remote) {
-        LogUtil.d(getClass(), "Code : " + code + ", Reason : " + reason + ", Remote : " + remote);
-      }
-    };
+          synchronized (closeLock) {
+            close = true;
+            closeLock.notify();
+          }
 
-    webSocketClient.setWebSocketFactory(clientFactory);
-    webSocketClient.connect();
+          if (state != STATE_DISCONNECTED) {
+            state = STATE_DISCONNECTED;
+            onStateChanged.onNext(state);
+          }
+        }
+
+        @Override public void onFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+
+        }
+
+        @Override public void onContinuationFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+
+        }
+
+        @Override public void onTextFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+
+        }
+
+        @Override public void onBinaryFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+
+        }
+
+        @Override public void onCloseFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket onCloseFrame");
+        }
+
+        @Override public void onPingFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+        }
+
+        @Override public void onPongFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+        }
+
+        @Override public void onTextMessage(WebSocket websocket, String text) throws Exception {
+          if (state == STATE_CONNECTED) {
+            onMessage.onNext(text);
+          }
+        }
+
+        @Override public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
+          LogUtil.d(getClass(), "WebSocket onBinaryMessage");
+        }
+
+        @Override public void onSendingFrame(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+
+        }
+
+        @Override public void onFrameSent(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+
+        }
+
+        @Override public void onFrameUnsent(WebSocket websocket, WebSocketFrame frame)
+            throws Exception {
+
+        }
+
+        @Override public void onError(WebSocket websocket, WebSocketException cause)
+            throws Exception {
+          LogUtil.e(getClass(), "WebSocket onError : " + cause.getError().name());
+
+          state = STATE_ERROR;
+          onError.onNext(cause.getMessage());
+        }
+
+        @Override public void onFrameError(WebSocket websocket, WebSocketException cause,
+            WebSocketFrame frame) throws Exception {
+
+        }
+
+        @Override public void onMessageError(WebSocket websocket, WebSocketException cause,
+            List<WebSocketFrame> frames) throws Exception {
+          LogUtil.d(getClass(), "WebSocket onMessageError : " + cause.getMessage());
+        }
+
+        @Override
+        public void onMessageDecompressionError(WebSocket websocket, WebSocketException cause,
+            byte[] compressed) throws Exception {
+
+        }
+
+        @Override
+        public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket onTextMessageMessageError : " + cause.getMessage());
+        }
+
+        @Override
+        public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket onSendError : " + cause.getMessage());
+        }
+
+        @Override public void onUnexpectedError(WebSocket websocket, WebSocketException cause)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket onUnexpectedError : " + cause);
+        }
+
+        @Override public void handleCallbackError(WebSocket websocket, Throwable cause)
+            throws Exception {
+          LogUtil.d(getClass(), "WebSocket handleCallbackError : " + cause.getMessage());
+        }
+
+        @Override public void onSendingHandshake(WebSocket websocket, String requestLine,
+            List<String[]> headers) throws Exception {
+          LogUtil.d(getClass(), "WebSocket onSendingHandshake : " + requestLine);
+        }
+      });
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    webSocketClient.connectAsynchronously();
+    webSocketClient.setAutoFlush(true);
+    webSocketClient.setPongInterval(60 * 1000); // 60 SECONDS
+    webSocketClient.setPongPayloadGenerator(() -> "{}".getBytes());
   }
 
   private boolean isConnected() {
@@ -122,7 +252,7 @@ import rx.subjects.PublishSubject;
 
     if (webSocketClient != null && (state == STATE_CONNECTED || state == STATE_CONNECTING)) {
       state = STATE_DISCONNECTED;
-      webSocketClient.close();
+      webSocketClient.disconnect();
 
       // Wait for WebSocket close event to prevent WS library from
       // sending any pending messages to deleted looper thread.
@@ -150,7 +280,7 @@ import rx.subjects.PublishSubject;
     }
 
     LogUtil.v(getClass(), "Sending : " + msg);
-    webSocketClient.send(msg);
+    webSocketClient.sendText(msg);
   }
 
   public @WebSocketState String getState() {

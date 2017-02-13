@@ -13,13 +13,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.jakewharton.byteunits.DecimalByteUnit;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.authorizer.Draft_Graphql;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
@@ -91,7 +91,6 @@ import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -315,7 +314,7 @@ import timber.log.Timber;
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
       httpClientBuilder.addInterceptor(loggingInterceptor);
       httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
@@ -448,13 +447,16 @@ import timber.log.Timber;
     }
 
     Map<String, String> headers = new HashMap<>();
-    headers.put("Content-type", "application/json");
-    headers.put("User-Agent", getUserAgent(context));
-    headers.put("Authorization",
+    headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
+    headers.put(WebSocketConnection.USER_AGENT, getUserAgent(context));
+    headers.put(WebSocketConnection.AUTHORIZATION,
         tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
             .getAccessToken());
+    headers.put(WebSocketConnection.VERSION, "13");
+    headers.put(WebSocketConnection.PROTOCOL, "graphql");
 
-    return new WebSocketConnection(new DefaultSSLWebSocketClientFactory(sslContext),
-        new Draft_Graphql(), headers);
+    WebSocketFactory socketFactory = new WebSocketFactory();
+    socketFactory.setSSLContext(sslContext);
+    return new WebSocketConnection(socketFactory, headers);
   }
 }

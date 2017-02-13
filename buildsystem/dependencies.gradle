@@ -58,6 +58,7 @@ ext {
   timberVersion = '4.4.0'
   blurKitVersion = '1.0.0'
   rxAppStateVersion = '2.0.0'
+  webSocketVersion = '1.31'
 
   //Testing
   robolectricVersion = '3.0'
@@ -119,7 +120,8 @@ ext {
                               branchIo                : "io.branch.sdk.android:library:${branchIoVersion}",
                               timber                  : "com.jakewharton.timber:timber:${timberVersion}",
                               blurKit                 : "com.wonderkiln:blurkit:${blurKitVersion}",
-                              rxAppState              : "com.jenzz:RxAppState:${rxAppStateVersion}"]
+                              rxAppState              : "com.jenzz:RxAppState:${rxAppStateVersion}",
+                              webSocket               : "com.neovisionaries:nv-websocket-client:${webSocketVersion}"]
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",
                                   dexmaker          : "com.google.dexmaker:dexmaker:${dexmakerVersion}",

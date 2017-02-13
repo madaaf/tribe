@@ -200,7 +200,6 @@ dependencies {
   compile presentationDependencies.firebaseRemote
   compile presentationDependencies.branchIo
   compile presentationDependencies.timber
-  compile presentationDependencies.blurKit
   compile presentationDependencies.rxAppState
 
   androidTestCompile presentationTestDependencies.mockito

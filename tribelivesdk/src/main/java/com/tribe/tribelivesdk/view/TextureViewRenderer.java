@@ -297,11 +297,9 @@ public class TextureViewRenderer extends TextureView
         rotatedFrameWidth = frame.rotatedWidth();
         rotatedFrameHeight = frame.rotatedHeight();
         frameRotation = frame.rotationDegree;
-        post(new Runnable() {
-          @Override public void run() {
-            updateSurfaceSize();
-            requestLayout();
-          }
+        post(() -> {
+          updateSurfaceSize();
+          requestLayout();
         });
       }
     }
