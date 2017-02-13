@@ -241,5 +241,7 @@
           android:name="android.support.FILE_PROVIDER_PATHS"
           android:resource="@xml/provider_paths"/>
     </provider>
+
+    <meta-data android:name="com.mixpanel.android.MPConfig.ResourcePackageName" android:value="${applicationId}" />
   </application>
 </manifest>
