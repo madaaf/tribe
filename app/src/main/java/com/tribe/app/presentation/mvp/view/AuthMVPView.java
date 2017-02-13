@@ -15,5 +15,7 @@ public interface AuthMVPView extends LoadDataMVPView {
     void loginError(ErrorLogin errorLogin);
 
     void pinError(ErrorLogin errorLogin);
+
+    void pinSucceeded();
 }
 

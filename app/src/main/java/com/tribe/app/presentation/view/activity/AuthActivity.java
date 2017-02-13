@@ -153,11 +153,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     lastUserRequest.set("");
     manageDeepLink(getIntent());
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_Start);
   }
 
   @Override protected void onResume() {
     super.onResume();
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_Start);
   }
 
   @Override protected void onPause() {
@@ -278,6 +278,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
       if (isValid) {
         cleanCountdown();
+        tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinSubmitted);
         loginEntity =
             authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(),
                 pin.getPinId());
@@ -546,6 +547,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     //Bundle bundle = new Bundle();
     //bundle.putBoolean(TagManagerConstants.TYPE_ERROR_TECHNICAL, true);
     //tagManager.trackEvent(TagManagerConstants.ONBOARDING_PIN_ERROR, bundle);
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinFailed);
+  }
+
+  @Override public void pinSucceeded() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinSucceeded);
   }
 
   @Override public void showLoading() {

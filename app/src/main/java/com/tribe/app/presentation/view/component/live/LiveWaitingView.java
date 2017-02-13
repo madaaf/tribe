@@ -13,7 +13,6 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -26,6 +25,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
@@ -38,7 +39,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
@@ -59,6 +59,8 @@ public class LiveWaitingView extends FrameLayout {
   @Inject ScreenUtils screenUtils;
 
   @Inject PaletteGrid paletteGrid;
+
+  @Inject TagManager tagManager;
 
   @BindView(R.id.avatar) AvatarView avatar;
 
@@ -183,6 +185,7 @@ public class LiveWaitingView extends FrameLayout {
   //////////////
 
   public void showGuest() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Invites_SearchScreenSMSInviteButton);
     txtDropInTheLive.setVisibility(View.GONE);
     avatar.setVisibility(View.VISIBLE);
     viewShadow.setVisibility(View.VISIBLE);
@@ -203,12 +206,17 @@ public class LiveWaitingView extends FrameLayout {
       @Override public void onAnimationEnd(Animator animation) {
         onShouldJoinRoom.onNext(null);
         txtCountdown.setVisibility(View.GONE);
-        progressBar.animate().scaleX(0).scaleY(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            progressBar.setVisibility(View.GONE);
-            progressBar.animate().setListener(null).start();
-          }
-        }).start();
+        progressBar.animate()
+            .scaleX(0)
+            .scaleY(0)
+            .setDuration(300)
+            .setListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                progressBar.setVisibility(View.GONE);
+                progressBar.animate().setListener(null).start();
+              }
+            })
+            .start();
       }
     });
     countDownAnimator.addListener(new AnimatorListenerAdapter() {
