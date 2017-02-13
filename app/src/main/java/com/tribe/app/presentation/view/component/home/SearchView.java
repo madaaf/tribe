@@ -226,8 +226,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         .flatMap(pairPositionRecipient -> DialogFactory.dialog(getContext(), pairPositionRecipient.second.getDisplayName(),
             context().getString(R.string.search_unblock_alert_message),
             context().getString(R.string.search_unblock_alert_unblock, pairPositionRecipient.second.getDisplayName()),
-            context().getString(R.string.search_unblock_alert_cancel)),
-            (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
+            context().getString(R.string.search_unblock_alert_cancel)), (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
           Friendship friendship = (Friendship) pair.first.second;

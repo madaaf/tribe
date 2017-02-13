@@ -10,7 +10,7 @@
       android:layout_marginLeft="@dimen/horizontal_margin_small"
       android:layout_marginRight="@dimen/horizontal_margin_small"
       android:singleLine="true"
-      style="@style/Body.One.White40"
+      style="@style/Body.One.Black40"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont

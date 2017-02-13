@@ -99,18 +99,6 @@ public class LiveNotificationContainer extends FrameLayout {
               liveNotificationViewMap.put(pair.first.getViewId(), pair.first);
               super.addView(pair.first, pair.second);
             });
-        //Observable.zip(onNewNotification, Observable.interval(1000, TimeUnit.MILLISECONDS).onBackpressureDrop(),
-        //    (pair, aLong) -> pair)
-        //    .subscribeOn(Schedulers.newThread())
-        //    .observeOn(AndroidSchedulers.mainThread())
-        //    .subscribe(pair -> {
-        //      Timber.d("Emitting notifications");
-        //      setVisibility(View.VISIBLE);
-        //      if (latestNotificationView != null) latestNotificationView.cancelTimer();
-        //      latestNotificationView = pair.first;
-        //      liveNotificationViewMap.put(pair.first.getViewId(), pair.first);
-        //      super.addView(pair.first, pair.second);
-        //    });
   }
 
   private void cleanUp() {
@@ -248,6 +236,11 @@ public class LiveNotificationContainer extends FrameLayout {
       }
 
       return result;
+    }
+
+    @Override public boolean onSingleTapConfirmed(MotionEvent e) {
+      if (latestNotificationView != null) dismissNotification(latestNotificationView);
+      return true;
     }
   }
 }

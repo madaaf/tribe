@@ -23,6 +23,7 @@
 	<string name="action_group_member">Member</string>
 	<string name="action_nevermind">Nevermind</string>
 	<string name="action_invite">Invite</string>
+	<string name="action_unhide">Unhide</string>
 	
 	<!-- User -->
 	<string name="user_friend">friend</string>

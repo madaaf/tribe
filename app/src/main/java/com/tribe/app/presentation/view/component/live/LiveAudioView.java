@@ -103,7 +103,7 @@ public class LiveAudioView extends FrameLayout {
   }
 
   private void loadAvatar() {
-    GlideUtils.load(getContext(), avatarSize, imgAvatar);
+    GlideUtils.load(getContext(), guest.getPicture(), avatarSize, imgAvatar);
   }
 
   ////////////

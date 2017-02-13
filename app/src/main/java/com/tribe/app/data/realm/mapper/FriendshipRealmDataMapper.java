@@ -35,7 +35,6 @@ import io.realm.RealmList;
     if (friendshipRealm != null) {
       friendship = new Friendship(friendshipRealm.getId());
       friendship.setFriend(userRealmDataMapper.transform(friendshipRealm.getFriend(), false));
-      friendship.setBlocked(friendshipRealm.isBlocked());
       friendship.setCategory(friendshipRealm.getCategory());
       friendship.setTag(friendshipRealm.getTag());
       friendship.setStatus(friendshipRealm.getStatus());

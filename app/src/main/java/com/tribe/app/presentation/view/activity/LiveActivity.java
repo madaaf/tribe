@@ -217,9 +217,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
-      soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
-      livePresenter.joinRoom(recipient,
-          recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
+      joinRoom();
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
@@ -240,6 +238,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         }));
   }
 
+  private void joinRoom() {
+    soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
+    livePresenter.joinRoom(recipient,
+        recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
+  }
+
   @Override public void finish() {
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
@@ -254,6 +258,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     viewLive.setRecipient(recipient, color);
     initSubscriptions();
     livePresenter.loadFriendshipList();
+
+    if (recipient instanceof Membership) joinRoom();
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {

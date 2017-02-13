@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
@@ -20,7 +19,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -87,8 +85,9 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
     vh.imgGhost.setVisibility(searchResult.isInvisibleMode() ? View.VISIBLE : View.GONE);
 
     if (searchResult.isShouldAnimateAdd()) {
-      animateAddSuccessful(vh, R.string.action_hang_live,
-          ContextCompat.getColor(context, R.color.blue_new),
+      animateAddSuccessful(vh, R.string.action_hang_live, ContextCompat.getColor(context,
+          (searchResult.getFriendship().isHidden() || !searchResult.getFriendship()
+              .isBlockedOrHidden()) ? R.color.blue_new : R.color.grey_unblock),
           ContextCompat.getColor(context, R.color.red));
       searchResult.setShouldAnimateAdd(false);
     } else {
@@ -96,11 +95,15 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
       vh.progressBarAdd.setAlpha(0);
 
       if (!StringUtils.isEmpty(searchResult.getDisplayName())) {
-        if (searchResult.getFriendship() != null && !searchResult.getFriendship()
+        if (searchResult.getFriendship() == null) {
+          setAddFriendStyle(vh);
+        } else if (searchResult.getFriendship() != null && !searchResult.getFriendship()
             .isBlockedOrHidden()) {
           setHangLiveStyle(vh);
-        } else {
-          setAddFriendStyle(vh);
+        } else if (searchResult.getFriendship().isBlocked()) {
+          setUnblock(vh);
+        } else if (searchResult.getFriendship().isHidden()) {
+          setUnhide(vh);
         }
 
         vh.txtName.setText(searchResult.getDisplayName());
@@ -140,17 +143,31 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
 
   private void setHangLiveStyle(SearchResultViewHolder vh) {
     vh.txtAction.setText(R.string.action_hang_live);
-    vh.txtAction.measure(0, 0);
-    UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
     vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.red));
-    setAppearance(vh.txtAction);
+    refactorAction(vh);
   }
 
   private void setAddFriendStyle(SearchResultViewHolder vh) {
     vh.txtAction.setText(R.string.action_add_friend);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
+    refactorAction(vh);
+  }
+
+  private void setUnblock(SearchResultViewHolder vh) {
+    vh.txtAction.setText(R.string.action_unblock);
+    refactorAction(vh);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_unblock));
+  }
+
+  private void setUnhide(SearchResultViewHolder vh) {
+    vh.txtAction.setText(R.string.action_unhide);
+    refactorAction(vh);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
+  }
+
+  private void refactorAction(SearchResultViewHolder vh) {
     vh.txtAction.measure(0, 0);
     UIUtils.changeWidthOfView(vh.btnAdd, vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
     setAppearance(vh.txtAction);
   }
 

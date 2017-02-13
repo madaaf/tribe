@@ -18,6 +18,7 @@ import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -91,8 +92,10 @@ public class RecipientListAdapterDelegate extends AddAnimationAdapterDelegate<Li
         friendship.setAnimateAdd(false);
         animateAdd(vh, !friendship.isBlockedOrHidden());
       } else {
-        if (friendship.isBlockedOrHidden()) {
+        if (friendship.isBlocked()) {
           setUnblock(vh);
+        } else if (friendship.isHidden()) {
+          setUnhide(vh);
         } else {
           setLive(vh);
         }
@@ -127,6 +130,12 @@ public class RecipientListAdapterDelegate extends AddAnimationAdapterDelegate<Li
     setClicks(vh, true);
     vh.txtAction.setText(R.string.action_unblock);
     vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_unblock));
+  }
+
+  private void setUnhide(RecipientListViewHolder vh) {
+    setClicks(vh, true);
+    vh.txtAction.setText(R.string.action_unhide);
+    vh.gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
   }
 
   private void animateAdd(RecipientListViewHolder vh, boolean reverse) {
