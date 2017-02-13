@@ -22,6 +22,10 @@ import io.branch.referral.Branch;
     branch = branch.getInstance(context);
   }
 
+  @Override public void alias(String userId) {
+
+  }
+
   @Override public void setUserId(String userId) {
     branch.setIdentity(userId);
   }

@@ -258,6 +258,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     bundle.putBoolean(TagManagerConstants.Success, true);
     tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_ProfileConfigured, bundle);
 
+    tagManager.alias(user.getId());
+
     profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(),
         profileInfoView.getImgUri(),
         facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())

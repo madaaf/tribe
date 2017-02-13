@@ -30,6 +30,11 @@ import javax.inject.Singleton;
     }
   }
 
+  @Override public void alias(String userId) {
+    mixpanelAPI.alias(userId, null);
+    mixpanelAPI.getPeople().identify(mixpanelAPI.getDistinctId());
+  }
+
   @Override public void setUserId(String userId) {
     mixpanelAPI.identify(userId);
     mixpanelAPI.getPeople().identify(userId);

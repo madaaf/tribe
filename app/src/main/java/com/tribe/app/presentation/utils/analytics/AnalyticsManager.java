@@ -64,6 +64,10 @@ import javax.inject.Singleton;
     setProperty(bundle);
   }
 
+  @Override public void alias(String userId) {
+
+  }
+
   @Override public void setUserId(String userId) {
     mixpanel.setUserId(userId);
     branch.setUserId(userId);

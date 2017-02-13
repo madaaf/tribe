@@ -8,23 +8,25 @@ import android.os.Bundle;
  */
 public interface TagManager {
 
-    void setUserId(String userId);
+  void alias(String userId);
 
-    void onStart(Activity activity);
+  void setUserId(String userId);
 
-    void onStop(Activity activity);
+  void onStart(Activity activity);
 
-    void trackInstall();
+  void onStop(Activity activity);
 
-    void trackEvent(String event);
+  void trackInstall();
 
-    void trackEvent(String event, Bundle properties);
+  void trackEvent(String event);
 
-    void setProperty(Bundle properties);
+  void trackEvent(String event, Bundle properties);
 
-    void setPropertyOnce(Bundle properties);
+  void setProperty(Bundle properties);
 
-    void increment(String properties);
+  void setPropertyOnce(Bundle properties);
 
-    void clear();
+  void increment(String properties);
+
+  void clear();
 }

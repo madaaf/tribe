@@ -368,7 +368,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
         .subscribe(hasPermission -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.ADDRESS_BOOK_ENABLED, hasPermission);
+          bundle.putBoolean(TagManagerConstants.user_address_book_enabled, hasPermission);
           tagManager.setProperty(bundle);
 
           if (hasPermission) {
@@ -381,7 +381,6 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   }
 
   private void sync() {
-    tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONTACTS_SYNC);
     searchPresenter.lookupContacts();
   }
 
