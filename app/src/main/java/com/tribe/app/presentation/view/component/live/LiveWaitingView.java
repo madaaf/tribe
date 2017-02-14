@@ -251,15 +251,25 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       }
 
       @Override public void onAnimationEnd(Animator animation) {
-        onShouldJoinRoom.onNext(null);
         txtCountdown.setVisibility(View.GONE);
+
+        ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
+        animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+        animatorScaleUp.setDuration(DURATION_FAST);
+        animatorScaleUp.addUpdateListener(animationScaleUp -> {
+          float value = (float) animationScaleUp.getAnimatedValue();
+          updateScaleWithValue(value);
+        });
+        animatorScaleUp.start();
+
         progressBar.animate()
             .scaleX(0)
             .scaleY(0)
             .setDuration(DURATION_FAST)
-            .setDuration(300)
             .setListener(new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
+                onShouldJoinRoom.onNext(null);
+                animatorScaleUp.cancel();
                 progressBar.setVisibility(View.GONE);
                 progressBar.animate().setListener(null).start();
               }
@@ -286,11 +296,9 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   private void animateScaleAvatar() {
-    updateScaleWithValue(SCALE_AVATAR);
-
     animatorScaleAvatar = new AnimatorSet();
 
-    animatorScaleUp = ValueAnimator.ofFloat(1, SCALE_AVATAR);
+    animatorScaleUp = ValueAnimator.ofFloat(1f, SCALE_AVATAR);
     animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
     animatorScaleUp.setDuration(DURATION_SCALE);
     animatorScaleUp.setStartDelay(SCALE_DELAY);

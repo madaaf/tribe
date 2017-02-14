@@ -32,7 +32,8 @@ public class JsonToModel {
   private PublishSubject<TribeSession> onLeaveRoom = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
-  private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
+      PublishSubject.create();
 
   private void convertToModel(String json) throws IOException {
     @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
@@ -151,24 +152,23 @@ public class JsonToModel {
           JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
           for (int i = 0; i < arrayInvited.length(); i++) {
             JSONObject guest = arrayInvited.getJSONObject(i);
-            guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"), guest.getString("picture"), false));
+            guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
+                guest.getString("picture"), false));
           }
           onInvitedTribeGuestList.onNext(guestList);
-
         } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
           LogUtil.d(getClass(), "Receiving invite removed");
           List<TribeGuest> guestRemovedList = new ArrayList<>();
           JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
           for (int i = 0; i < arrayRemoved.length(); i++) {
-            JSONObject guest = arrayRemoved.getJSONObject(i);
-            guestRemovedList.add(new TribeGuest(guest.getString("id")));
+            guestRemovedList.add(new TribeGuest(arrayRemoved.getString(i)));
           }
           onRemovedTribeGuestList.onNext(guestRemovedList);
-
         }
       } else if (object.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
         LogUtil.d(getClass(), "Receiving media configuration");
-        TribePeerMediaConfiguration peerMediaConfiguration = new TribePeerMediaConfiguration(session);
+        TribePeerMediaConfiguration peerMediaConfiguration =
+            new TribePeerMediaConfiguration(session);
         peerMediaConfiguration.setAudioEnabled(object.getBoolean("isAudioEnabled"));
         peerMediaConfiguration.setVideoEnabled(object.getBoolean("isVideoEnabled"));
         onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);

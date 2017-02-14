@@ -582,11 +582,7 @@ public class LiveView extends FrameLayout {
     JSONObject jsonObject = new JSONObject();
     JSONArray array = new JSONArray();
 
-    JSONObject removedGuest = new JSONObject();
-    jsonPut(removedGuest, TribeGuest.ID, guest.getId());
-    jsonPut(removedGuest, TribeGuest.DISPLAY_NAME, guest.getDisplayName());
-    jsonPut(removedGuest, TribeGuest.PICTURE, guest.getPicture());
-    array.put(removedGuest);
+    array.put(guest.getId());
 
     jsonPut(jsonObject, Room.MESSAGE_INVITE_REMOVED, array);
     return jsonObject;

@@ -57,8 +57,8 @@ public class Room {
 
   public static final String MESSAGE_APP = "app";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
-  public static final String MESSAGE_INVITE_ADDED = "guests_invited";
-  public static final String MESSAGE_INVITE_REMOVED = "remove_guests_invited";
+  public static final String MESSAGE_INVITE_ADDED = "invited_guests";
+  public static final String MESSAGE_INVITE_REMOVED = "remove_invited_guests";
 
   private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;

@@ -37,6 +37,19 @@
       android:visibility="gone"
       />
 
+  <ProgressBar
+      android:id="@+id/progressBar"
+      android:layout_width="95dp"
+      android:layout_height="95dp"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_ring_white10"
+      android:max="@integer/time_tap_to_cancel"
+      android:progress="0"
+      android:progressDrawable="@drawable/progress_circular"
+      android:visibility="gone"
+      style="?android:attr/progressBarStyleHorizontal"
+      />
+
   <com.tribe.app.presentation.view.widget.avatar.AvatarView
       android:id="@+id/avatar"
       android:layout_width="@dimen/avatar_size_big"
@@ -65,19 +78,6 @@
       android:visibility="gone"
       />
 
-  <ProgressBar
-      android:id="@+id/progressBar"
-      android:layout_width="95dp"
-      android:layout_height="95dp"
-      android:layout_gravity="center"
-      android:background="@drawable/shape_ring_white10"
-      android:max="@integer/time_tap_to_cancel"
-      android:progress="0"
-      android:progressDrawable="@drawable/progress_circular"
-      android:visibility="gone"
-      style="?android:attr/progressBarStyleHorizontal"
-      />
-
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtCountdown"
       android:layout_width="wrap_content"
@@ -104,9 +104,9 @@
       android:layout_gravity="center"
       android:background="@drawable/selectable_button_oval"
       android:scaleType="centerInside"
-      android:src="@drawable/picto_white_cross"
       android:scaleX="0"
       android:scaleY="0"
+      android:src="@drawable/picto_white_cross"
       android:visibility="gone"
       />
 </merge>

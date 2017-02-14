@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -154,6 +155,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @Override protected void onDestroy() {
     viewLive.onDestroy();
 
+    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
     if (audioManager != null) {
       audioManager.stop();
       audioManager = null;
@@ -176,6 +179,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   }
 
   private void init() {
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+    viewLiveContainer.setEnabled(false);
+
     ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
     params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
     viewInviteLive.setLayoutParams(params);
@@ -222,6 +229,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
+      viewLiveContainer.setEnabled(true);
       tagManager.trackEvent(TagManagerConstants.KPI_Calls_StartedButton);
       joinRoom();
     }));

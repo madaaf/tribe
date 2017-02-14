@@ -184,10 +184,12 @@ public class LiveContainer extends FrameLayout {
     }));
 
     subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
-      if (!isOpened) {
-        openInviteView();
-      } else {
-        closeInviteView();
+      if (isEnabled()) {
+        if (!isOpened) {
+          openInviteView();
+        } else {
+          closeInviteView();
+        }
       }
     }));
 
