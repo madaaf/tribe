@@ -19,6 +19,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
@@ -525,6 +526,12 @@ public class LiveView extends FrameLayout {
         }
       }
 
+      TribeGuest guest = guestFromRemotePeer(remotePeer);
+      if (guest != null) {
+        liveRowView.setGuest(guest);
+        liveRowView.showGuest(false);
+      }
+
       viewRoom.addView(liveRowView, params);
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     }
@@ -535,7 +542,6 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = liveRowViewMap.remove(id);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
-      liveRowView = null;
     }
   }
 
@@ -544,8 +550,18 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = liveInviteMap.remove(id);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
-      liveRowView = null;
     }
+  }
+
+  private TribeGuest guestFromRemotePeer(RemotePeer remotePeer) {
+    for (Friendship friendship : user.getFriendships()) {
+      if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
+        return new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
+            friendship.getProfilePicture(), false);
+      }
+    }
+
+    return null;
   }
 
   private JSONObject getInvitedPayload() {

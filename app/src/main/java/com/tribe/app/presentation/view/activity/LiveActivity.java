@@ -287,11 +287,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     if (recipient != null && recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
       List<Friendship> filteredFriendships = new ArrayList<>();
+
       for (Friendship fr : friendshipList) {
-        if (!membership.getGroup().isGroupMember(fr.getFriend().getId())) {
+        if (!membership.getGroup().isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
+            .equals(recipientId)) {
           filteredFriendships.add(fr);
         }
       }
+
       viewInviteLive.renderFriendshipList(filteredFriendships);
     } else {
       viewInviteLive.renderFriendshipList(friendshipList);
