@@ -10,22 +10,25 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.ShapeDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
@@ -35,16 +38,20 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
  */
-public class LiveWaitingView extends FrameLayout {
+public class LiveWaitingView extends FrameLayout implements View.OnClickListener {
 
+  private final static int TIMER_DISMISS_REMOVE = 5000;
+
+  private final static int DURATION_FAST_FURIOUS = 100;
+  private final static int DURATION_FAST = 300;
   private final static int DELAY_COUNTDOWN = 500;
   private final static int DURATION_PULSE_FAST = 150;
   private final static int DURATION_PULSE = 300;
@@ -52,7 +59,7 @@ public class LiveWaitingView extends FrameLayout {
   private final static int SCALE_DELAY = 250;
   private final static int DURATION_BUZZ = 300;
 
-  private final static float OVERSHOOT_SCALE = 2f;
+  private final static float OVERSHOOT_SCALE = 1.25f;
 
   private final static float SCALE_AVATAR = 1.15f;
 
@@ -78,6 +85,10 @@ public class LiveWaitingView extends FrameLayout {
 
   @BindView(R.id.progressBar) ProgressBar progressBar;
 
+  @BindView(R.id.btnRemove) View btnRemove;
+
+  @BindView(R.id.viewRing) View viewRing;
+
   // VARIABLES
   private Unbinder unbinder;
   private Rect rect = new Rect();
@@ -93,15 +104,17 @@ public class LiveWaitingView extends FrameLayout {
   private ValueAnimator animatorScaleUpTransition;
   private ValueAnimator animatorAlphaTransition;
   private ObjectAnimator animatorBuzzAvatar;
-  private boolean hasPulsed = false;
+  private boolean hasPulsed = false, removeMode = false, shouldShowRemoveAgain = true;
   private ObjectAnimator countDownAnimator;
 
   // RESOURCES
-  private int timeTapToCancel;
+  private int timeTapToCancel, strokeWidth;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription subscriptionDismissRemove;
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
+  private PublishSubject<TribeGuest> onShouldRemoveGuest = PublishSubject.create();
 
   public LiveWaitingView(Context context) {
     super(context);
@@ -133,6 +146,7 @@ public class LiveWaitingView extends FrameLayout {
     circlePaint.setAntiAlias(true);
 
     setBackground(null);
+    setOnClickListener(this);
 
     subscriptions.add(viewBuzz.onBuzzCompleted()
         .doOnNext(aVoid -> endBuzz())
@@ -145,6 +159,7 @@ public class LiveWaitingView extends FrameLayout {
 
   private void initResources() {
     timeTapToCancel = getContext().getResources().getInteger(R.integer.time_tap_to_cancel);
+    strokeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.stroke_width_ring);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -178,6 +193,34 @@ public class LiveWaitingView extends FrameLayout {
     }
   }
 
+  ///////////////
+  //  ONCLICK  //
+  ///////////////
+
+  @Override public void onClick(View v) {
+    if (!removeMode) {
+      showRemovePeer();
+    } else {
+      hideRemovePeer();
+    }
+  }
+
+  @OnClick(R.id.btnRemove) void remove() {
+    subscriptionDismissRemove.unsubscribe();
+
+    subscriptions.add(DialogFactory.dialog(getContext(),
+        EmojiParser.demojizedText(getContext().getString(R.string.live_dismiss_invitation_title)),
+        getContext().getString(R.string.live_dismiss_invitation_message),
+        getContext().getString(R.string.live_dismiss_invitation_validate, guest.getDisplayName()),
+        getContext().getString(R.string.live_dismiss_invitation_cancel)).filter(x -> {
+      if (!x) {
+        shouldShowRemoveAgain = false;
+        hideRemovePeer();
+      }
+      return x == true;
+    }).map(aBoolean -> guest).subscribe(tribeGuest -> onShouldRemoveGuest.onNext(guest)));
+  }
+
   //////////////
   //  PUBLIC  //
   //////////////
@@ -188,6 +231,7 @@ public class LiveWaitingView extends FrameLayout {
     viewShadow.setVisibility(View.VISIBLE);
     viewForegroundAvatar.setVisibility(View.VISIBLE);
     viewBuzz.setVisibility(View.VISIBLE);
+    progressBar.setVisibility(View.GONE);
   }
 
   public void startCountdown() {
@@ -199,23 +243,34 @@ public class LiveWaitingView extends FrameLayout {
       int value = (int) animation.getAnimatedValue();
       txtCountdown.setText("" + (int) Math.ceil((float) value / 1000));
     });
+
     countDownAnimator.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+        progressBar.setVisibility(View.VISIBLE);
+        txtCountdown.setVisibility(View.VISIBLE);
+      }
+
       @Override public void onAnimationEnd(Animator animation) {
         onShouldJoinRoom.onNext(null);
         txtCountdown.setVisibility(View.GONE);
-        progressBar.animate().scaleX(0).scaleY(0).setDuration(300).setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            progressBar.setVisibility(View.GONE);
-            progressBar.animate().setListener(null).start();
-          }
-        }).start();
+        progressBar.animate()
+            .scaleX(0)
+            .scaleY(0)
+            .setDuration(DURATION_FAST)
+            .setListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                progressBar.setVisibility(View.GONE);
+                progressBar.animate().setListener(null).start();
+              }
+            })
+            .start();
       }
-    });
-    countDownAnimator.addListener(new AnimatorListenerAdapter() {
+
       @Override public void onAnimationCancel(Animator animation) {
         countDownAnimator.removeAllListeners();
       }
     });
+
     countDownAnimator.start();
   }
 
@@ -286,6 +341,8 @@ public class LiveWaitingView extends FrameLayout {
     viewShadow.setScaleY(value);
     viewForegroundAvatar.setScaleX(value);
     viewForegroundAvatar.setScaleY(value);
+    viewRing.setScaleX(value);
+    viewRing.setScaleY(value);
   }
 
   private void animatePulse(int duration) {
@@ -343,23 +400,23 @@ public class LiveWaitingView extends FrameLayout {
 
   public void buzz() {
     stopPulse();
-    readyForTransition();
+    readyForBuzz();
     viewBuzz.buzz();
   }
 
-  public void readyForTransition() {
+  public void readyForBuzz() {
     animatorTransition = new AnimatorSet();
 
     animatorScaleUpTransition = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
-    animatorScaleUpTransition.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-    animatorScaleUpTransition.setDuration(100);
+    animatorScaleUpTransition.setInterpolator(new DecelerateInterpolator());
+    animatorScaleUpTransition.setDuration(DURATION_FAST);
     animatorScaleUpTransition.addUpdateListener(animation -> {
       float value = (float) animation.getAnimatedValue();
       updateScaleWithValue(value);
     });
 
     animatorBuzzAvatar = ObjectAnimator.ofFloat(avatar, TRANSLATION_X, 7, -7);
-    animatorBuzzAvatar.setDuration(60);
+    animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
     animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
     animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
     animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
@@ -371,7 +428,7 @@ public class LiveWaitingView extends FrameLayout {
     animatorBuzzAvatar.start();
 
     animatorAlphaTransition = ValueAnimator.ofFloat(1f, 0);
-    animatorAlphaTransition.setDuration(100);
+    animatorAlphaTransition.setDuration(DURATION_FAST);
     animatorAlphaTransition.addUpdateListener(animation -> {
       float value = (float) animation.getAnimatedValue();
       viewForegroundAvatar.setAlpha(value);
@@ -408,6 +465,95 @@ public class LiveWaitingView extends FrameLayout {
         }));
   }
 
+  private void showRemovePeer() {
+    if (!shouldShowRemoveAgain) return;
+
+    removeMode = true;
+    stopPulse();
+
+    subscriptions.add(Observable.timer(DURATION_FAST, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> animateRemovePeer(false)));
+
+    subscriptionDismissRemove = Observable.timer(TIMER_DISMISS_REMOVE, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          hideRemovePeer();
+        });
+  }
+
+  private void hideRemovePeer() {
+    subscriptionDismissRemove.unsubscribe();
+    removeMode = false;
+    subscriptions.add(Observable.timer(DURATION_FAST, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> startPulse()));
+    animateRemovePeer(true);
+  }
+
+  private void animateRemovePeer(boolean reverse) {
+    AnimatorSet animatorSet = new AnimatorSet();
+
+    ValueAnimator animatorScaleDownTransition =
+        ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
+    animatorScaleDownTransition.setInterpolator(new DecelerateInterpolator());
+    animatorScaleDownTransition.setDuration(DURATION_FAST);
+    animatorScaleDownTransition.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      updateScaleWithValue(value);
+    });
+
+    viewThreeDots.animate().alpha(reverse ? 1 : 0).setDuration(DURATION_FAST).start();
+
+    ValueAnimator animatorScaleUpRemove =
+        ValueAnimator.ofFloat(reverse ? 1f : 0f, reverse ? 0f : 1f);
+    animatorScaleUpRemove.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+    animatorScaleUpRemove.setStartDelay(DURATION_FAST);
+    animatorScaleUpRemove.setDuration(DURATION_FAST);
+    animatorScaleUpRemove.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      btnRemove.setScaleX(value);
+      btnRemove.setScaleY(value);
+    });
+
+    ValueAnimator animatorRing =
+        ValueAnimator.ofFloat(reverse ? strokeWidth : 0f, reverse ? 0f : strokeWidth);
+    animatorRing.setInterpolator(new DecelerateInterpolator());
+    animatorRing.setStartDelay(DURATION_FAST);
+    animatorRing.setDuration(DURATION_FAST);
+    animatorRing.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+
+      if (viewRing.getBackground() instanceof ShapeDrawable) {
+        ShapeDrawable sd = (ShapeDrawable) viewRing.getBackground();
+        sd.getPaint().setStrokeWidth(value);
+      }
+    });
+
+    animatorSet.playTogether(animatorScaleDownTransition, animatorScaleUpRemove, animatorRing);
+    animatorSet.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+        if (!reverse) {
+          viewRing.setVisibility(View.VISIBLE);
+          btnRemove.setVisibility(View.VISIBLE);
+        }
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
+        if (reverse) {
+          viewRing.setVisibility(View.GONE);
+          btnRemove.setVisibility(View.GONE);
+        }
+      }
+
+      @Override public void onAnimationCancel(Animator animation) {
+        animatorSet.removeAllListeners();
+      }
+    });
+
+    animatorSet.start();
+  }
+
   public void setColor(int color) {
     viewCircle.setBackgroundColor(color);
     viewCircle.setRadius(0);
@@ -423,7 +569,7 @@ public class LiveWaitingView extends FrameLayout {
     this.type = type;
   }
 
-  public void release() {
+  public void dispose() {
     subscriptions.clear();
     stopPulse();
   }
@@ -434,5 +580,9 @@ public class LiveWaitingView extends FrameLayout {
 
   public Observable<Void> onShouldJoinRoom() {
     return onShouldJoinRoom;
+  }
+
+  public Observable<TribeGuest> onShouldRemoveGuest() {
+    return onShouldRemoveGuest;
   }
 }

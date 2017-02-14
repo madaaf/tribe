@@ -13,15 +13,17 @@ public class TribeGuest {
   private String id;
   private String displayName;
   private String picture;
+  private boolean isGroup;
 
   public TribeGuest(String id) {
     this.id = id;
   }
 
-  public TribeGuest(String id, String displayName, String picture) {
+  public TribeGuest(String id, String displayName, String picture, boolean isGroup) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
+    this.isGroup = isGroup;
   }
 
   public String getDisplayName() {
@@ -34,5 +36,13 @@ public class TribeGuest {
 
   public String getId() {
     return id;
+  }
+
+  public boolean isGroup() {
+    return isGroup;
+  }
+
+  public void setGroup(boolean group) {
+    isGroup = group;
   }
 }

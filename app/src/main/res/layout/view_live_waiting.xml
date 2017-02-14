@@ -14,9 +14,9 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:layout_margin="@dimen/horizontal_margin_small"
-      android:text="@string/live_drop_friend"
       android:gravity="center"
       android:singleLine="true"
+      android:text="@string/live_drop_friend"
       style="@style/Body.One.Black40"
       />
 
@@ -67,16 +67,16 @@
 
   <ProgressBar
       android:id="@+id/progressBar"
-      style="?android:attr/progressBarStyleHorizontal"
-      android:layout_width="115dp"
-      android:layout_height="115dp"
+      android:layout_width="95dp"
+      android:layout_height="95dp"
       android:layout_gravity="center"
       android:background="@drawable/shape_ring_white10"
       android:max="@integer/time_tap_to_cancel"
       android:progress="0"
       android:progressDrawable="@drawable/progress_circular"
+      android:visibility="gone"
+      style="?android:attr/progressBarStyleHorizontal"
       />
-
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtCountdown"
@@ -84,7 +84,29 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:gravity="center"
+      android:visibility="gone"
       style="@style/Medium.1.White"
       />
 
+  <View
+      android:id="@+id/viewRing"
+      android:layout_width="@dimen/avatar_size_big"
+      android:layout_height="@dimen/avatar_size_big"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_ring_white"
+      android:visibility="gone"
+      />
+
+  <ImageView
+      android:id="@+id/btnRemove"
+      android:layout_width="@dimen/nav_icon_size"
+      android:layout_height="@dimen/nav_icon_size"
+      android:layout_gravity="center"
+      android:background="@drawable/selectable_button_oval"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_white_cross"
+      android:scaleX="0"
+      android:scaleY="0"
+      android:visibility="gone"
+      />
 </merge>

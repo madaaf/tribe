@@ -24,6 +24,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -284,16 +285,12 @@ public class LiveView extends FrameLayout {
           soundManager.playSound(SoundManager.QUIT_CALL, SoundManager.SOUND_MAX);
 
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
-          if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
-            LiveRowView liveRowView = liveRowViewMap.remove(remotePeer.getSession().getUserId());
-            liveRowView.dispose();
-            viewRoom.removeView(liveRowView);
-            liveRowView = null;
-          }
+          removeFromPeers(remotePeer.getSession().getUserId());
 
           if (liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && recipient != null) {
-            setRecipient(recipient, color);
+            onLeave.onNext(null);
           }
+
           refactorNotifyButton();
         }));
 
@@ -320,6 +317,19 @@ public class LiveView extends FrameLayout {
                       }
                     });
                 addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
+                liveInviteMap.put(trg.getId(), liveRowView);
+              }
+            }
+          }
+        }));
+
+    subscriptions.add(room.onRemovedTribeGuestList()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeGuests -> {
+          if (tribeGuests != null && tribeGuests.size() > 0) {
+            for (TribeGuest trg : tribeGuests) {
+              if (liveInviteMap.containsKey(trg.getId())) {
+                removeFromInvites(trg.getId());
               }
             }
           }
@@ -341,7 +351,8 @@ public class LiveView extends FrameLayout {
     subscriptions.add(obs.subscribe(tileView -> {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
-          tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture());
+          tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
+          false);
       addView(latestView, guest, tileView.getBackgroundColor());
     }));
   }
@@ -378,6 +389,12 @@ public class LiveView extends FrameLayout {
         latestView.showGuest(false);
         latestView.startPulse();
       }));
+
+      subscriptions.add(latestView.onShouldRemoveGuest()
+          .doOnNext(tribeGuest -> removeFromInvites(latestView.getGuest().getId()))
+          .subscribe(tribeGuest -> {
+            room.sendToPeers(getRemovedPayload(latestView.getGuest()));
+          }));
     }));
   }
 
@@ -394,7 +411,7 @@ public class LiveView extends FrameLayout {
     txtName.setText(recipient.getDisplayName());
 
     TribeGuest guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
-        recipient.getProfilePicture());
+        recipient.getProfilePicture(), recipient instanceof Membership);
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
     addView(liveRowView, guest, color);
@@ -463,12 +480,14 @@ public class LiveView extends FrameLayout {
   private void addView(RemotePeer remotePeer) {
     LiveRowView liveRowView;
 
-    if (liveInviteMap.containsKey(remotePeer.getSession().getUserId())) {
+    if (liveInviteMap.containsKey(
+        remotePeer.getSession().getUserId())) { // If the user was invited before joining
       liveRowView = liveInviteMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
       liveInviteMap.remove(remotePeer.getSession().getUserId());
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
-    } else if (liveRowViewMap.containsKey(remotePeer.getSession().getUserId())) {
+    } else if (liveRowViewMap.containsKey(remotePeer.getSession()
+        .getUserId())) { // If the user was already live, usually the case on 1-1 calls
       liveRowView = liveRowViewMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
     } else {
@@ -478,8 +497,34 @@ public class LiveView extends FrameLayout {
       ViewGroup.LayoutParams params =
           new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.MATCH_PARENT);
+
+      if (nbLiveInRoom() == 0) { // First user joining in a group call
+        String groupId = getGroupWaiting();
+        if (!StringUtils.isEmpty(getGroupWaiting())) {
+          removeFromPeers(groupId);
+        }
+      }
+
       viewRoom.addView(liveRowView, params);
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
+    }
+  }
+
+  private void removeFromPeers(String id) {
+    if (liveRowViewMap.containsKey(id)) {
+      LiveRowView liveRowView = liveRowViewMap.remove(id);
+      liveRowView.dispose();
+      viewRoom.removeView(liveRowView);
+      liveRowView = null;
+    }
+  }
+
+  private void removeFromInvites(String id) {
+    if (liveInviteMap.containsKey(id)) {
+      LiveRowView liveRowView = liveInviteMap.remove(id);
+      liveRowView.dispose();
+      viewRoom.removeView(liveRowView);
+      liveRowView = null;
     }
   }
 
@@ -529,7 +574,7 @@ public class LiveView extends FrameLayout {
     if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
       if (membership.getGroup().getMembers().size() == nbLiveInRoom()) result = false;
-    } else if (!areTherePeopleWaiting()) {
+    } else if (!isTherePeopleWaiting()) {
       result = false;
     }
 
@@ -546,7 +591,7 @@ public class LiveView extends FrameLayout {
     return count;
   }
 
-  private boolean areTherePeopleWaiting() {
+  private boolean isTherePeopleWaiting() {
     boolean waiting = false;
 
     for (LiveRowView liveRowView : liveRowViewMap.values()) {
@@ -556,6 +601,16 @@ public class LiveView extends FrameLayout {
     if (!waiting) waiting = liveInviteMap.size() > 0;
 
     return waiting;
+  }
+
+  private String getGroupWaiting() {
+    String id = "";
+
+    for (LiveRowView liveRowView : liveRowViewMap.values()) {
+      if (liveRowView.isWaiting() && liveRowView.isGroup()) id = liveRowView.getGuest().getId();
+    }
+
+    return id;
   }
 
   //////////////////////

@@ -111,7 +111,7 @@ public class Room {
 
     subscriptions.add(jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
 
-    subscriptions.add(jsonToModel.onRemovedTribeGuestList().subscribe());
+    subscriptions.add(jsonToModel.onRemovedTribeGuestList().subscribe(onRemovedTribeGuestList));
 
     subscriptions.add(
         jsonToModel.onTribePeerMediaConfiguration().subscribe(tribePeerMediaConfiguration -> {

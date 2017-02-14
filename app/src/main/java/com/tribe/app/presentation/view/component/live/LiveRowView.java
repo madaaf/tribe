@@ -85,6 +85,7 @@ public class LiveRowView extends FrameLayout {
   }
 
   public void dispose() {
+    viewWaiting.dispose();
     subscriptions.clear();
   }
 
@@ -108,11 +109,9 @@ public class LiveRowView extends FrameLayout {
     remotePeerView.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
-            Timber.d("On global layout");
             layoutStream.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             UIUtils.showReveal(layoutStream, new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
-                Timber.d("Reveal done");
                 viewWaiting.setVisibility(View.GONE);
               }
 
@@ -171,6 +170,10 @@ public class LiveRowView extends FrameLayout {
     return isWaiting;
   }
 
+  public boolean isGroup() {
+    return guest.isGroup();
+  }
+
   public void showGuest(boolean hasCountDown) {
     viewWaiting.showGuest();
     if (hasCountDown) viewWaiting.startCountdown();
@@ -192,5 +195,9 @@ public class LiveRowView extends FrameLayout {
 
   public Observable<Void> onShouldJoinRoom() {
     return viewWaiting.onShouldJoinRoom().distinct().doOnNext(aVoid -> viewWaiting.startPulse());
+  }
+
+  public Observable<TribeGuest> onShouldRemoveGuest() {
+    return viewWaiting.onShouldRemoveGuest();
   }
 }
