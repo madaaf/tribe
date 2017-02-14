@@ -49,6 +49,7 @@ import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
 import com.tribe.app.presentation.utils.preferences.ShareProfile;
 import com.tribe.app.presentation.utils.preferences.Theme;
+import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
@@ -101,6 +102,7 @@ import dagger.Component;
 import io.realm.Realm;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
@@ -296,6 +298,8 @@ public interface ApplicationComponent {
   @LastVersionCode Preference<Integer> lastVersionCode();
 
   @HasRatedApp Preference<Boolean> hasRatedApp();
+
+  @TribeState Preference<Set<String>> tribeState();
 
   @DebugMode Preference<Boolean> debugMode();
 

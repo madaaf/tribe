@@ -238,8 +238,8 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   }
 
   @Provides @Singleton StateManager provideStateManager(
-      @TribeState Preference<Set<String>> tutorialState) {
-    return new StateManager(tutorialState);
+      @TribeState Preference<Set<String>> tribeState) {
+    return new StateManager(tribeState);
   }
 
   @Provides @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(

@@ -1,17 +1,19 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.support.annotation.StringDef;
-import android.util.Log;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.TribeState;
+import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by madaaflak on 14/02/2017.
  */
 
-public class StateManager {
+@Singleton public class StateManager {
 
   private Preference<Set<String>> tutorialState;
 
@@ -28,14 +30,17 @@ public class StateManager {
     this.tutorialState = tutorialState;
   }
 
-  public void addTutorialKey(@StateManager.StateKey String key) {
-    Set<String> tut = tutorialState.get();
-    tut.add(key);
-    tutorialState.set(tut);
-    Log.d("ok", "ok");
+  public void addTutorialKey(@StateKey String key) {
+    if (!StringUtils.isEmpty(key)) {
+      //make a copy, update it and save it
+      Set<String> newStrSet = new HashSet<String>();
+      newStrSet.add(key);
+      newStrSet.addAll(tutorialState.get());
+      tutorialState.set(newStrSet);
+    }
   }
 
-  public boolean shouldDisplay(@StateManager.StateKey String key) {
+  public boolean shouldDisplay(@StateKey String key) {
     boolean contain = false;
 
     if (tutorialState.get().contains(key)) {
