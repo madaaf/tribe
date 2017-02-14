@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
-import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import javax.inject.Inject;
 
 /**
@@ -21,8 +19,6 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
   public static Intent getCallingIntent(Context context) {
     return new Intent(context, DebugActivity.class);
   }
-
-  @Inject TutorialManager tutorialManager;
 
   @Inject DebugPresenter debugPresenter;
 
@@ -56,10 +52,6 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
   private void initPresenter() {
     this.debugPresenter.onViewAttached(this);
-  }
-
-  @OnClick(R.id.viewClearTutorial) void clickClearTutorial() {
-    tutorialManager.clearTutorial();
   }
 
   @Override public void finish() {

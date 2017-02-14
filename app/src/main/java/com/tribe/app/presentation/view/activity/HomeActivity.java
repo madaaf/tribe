@@ -53,8 +53,6 @@ import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.tutorial.Tutorial;
-import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -96,8 +94,6 @@ public class HomeActivity extends BaseActivity
 
   @Inject PaletteGrid paletteGrid;
 
-  @Inject TutorialManager tutorialManager;
-
   @Inject @LastOnlineNotification Preference<Long> lastOnlineNotification;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
@@ -126,7 +122,6 @@ public class HomeActivity extends BaseActivity
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
-  private Tutorial tutorial;
   private List<Recipient> latestRecipientList;
   private boolean shouldOverridePendingTransactions = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
@@ -235,8 +230,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override protected void onPause() {
-    cleanTutorial();
-
     if (receiverRegistered) {
       unregisterReceiver(notificationReceiver);
       receiverRegistered = false;
@@ -464,7 +457,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
-    if (recipientList != null && tutorial == null) {
+    if (recipientList != null) {
       Bundle bundle = new Bundle();
       bundle.putInt(TagManagerConstants.user_friends_count,
           getCurrentUser().getFriendships().size());
@@ -543,13 +536,6 @@ public class HomeActivity extends BaseActivity
     Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
     Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
         Toast.LENGTH_SHORT).show();
-  }
-
-  private void cleanTutorial() {
-    if (tutorial != null) {
-      tutorial.cleanUp();
-      tutorial = null;
-    }
   }
 
   private void navigateToProfile() {

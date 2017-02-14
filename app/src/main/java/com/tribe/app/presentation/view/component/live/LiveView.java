@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -196,6 +197,8 @@ public class LiveView extends FrameLayout {
           getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
       });
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    } else {
+      Log.d("ok", "ok");
     }
   }
 

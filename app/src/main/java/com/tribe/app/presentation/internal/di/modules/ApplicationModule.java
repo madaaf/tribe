@@ -41,10 +41,9 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.Theme;
-import com.tribe.app.presentation.utils.preferences.TutorialState;
+import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
-import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -238,13 +237,8 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     return new SoundManager(context, uiSounds);
   }
 
-  @Provides @Singleton TutorialManager provideTutorialManager(ScreenUtils screenUtils,
-      @TutorialState Preference<Set<String>> tutorialState) {
-    return new TutorialManager(screenUtils, tutorialState);
-  }
-
   @Provides @Singleton StateManager provideStateManager(
-      @TutorialState Preference<Set<String>> tutorialState) {
+      @TribeState Preference<Set<String>> tutorialState) {
     return new StateManager(tutorialState);
   }
 

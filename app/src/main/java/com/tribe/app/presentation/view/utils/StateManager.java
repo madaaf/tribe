@@ -1,18 +1,17 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.support.annotation.StringDef;
+import android.util.Log;
 import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.preferences.TutorialState;
+import com.tribe.app.presentation.utils.preferences.TribeState;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Created by madaaflak on 14/02/2017.
  */
 
-@Singleton public class StateManager {
+public class StateManager {
 
   private Preference<Set<String>> tutorialState;
 
@@ -25,16 +24,15 @@ import javax.inject.Singleton;
   public static final String START_FIRST_LIVE = "START_FIRST_LIVE";
   public static final String WAINTING_FRIENDS_JOIN_LIVE = "WAINTING_FRIENDS_JOIN_LIVE";
 
-  @Inject public StateManager(@TutorialState Preference<Set<String>> tutorialState) {
+  @Inject public StateManager(@TribeState Preference<Set<String>> tutorialState) {
     this.tutorialState = tutorialState;
   }
 
   public void addTutorialKey(@StateManager.StateKey String key) {
-    if (!StringUtils.isEmpty(key)) {
-      Set<String> tut = tutorialState.get();
-      tut.add(key);
-      tutorialState.set(tut);
-    }
+    Set<String> tut = tutorialState.get();
+    tut.add(key);
+    tutorialState.set(tut);
+    Log.d("ok", "ok");
   }
 
   public boolean shouldDisplay(@StateManager.StateKey String key) {
