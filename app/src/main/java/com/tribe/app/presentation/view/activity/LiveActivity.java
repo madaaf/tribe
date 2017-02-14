@@ -21,6 +21,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.TileView;
@@ -29,6 +30,7 @@ import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
@@ -36,7 +38,6 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
@@ -231,8 +232,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
-      finish();
+      DialogFactory.dialog(this,
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
+          getString(R.string.tips_leavingroom_action1),
+          getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
+        tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
+        finish();
+      });
     }));
 
     subscriptions.add(
@@ -303,7 +310,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
         if (recipient != null && recipient instanceof Membership) {
           Membership membership = (Membership) recipient;
-          notificationPayload.setShouldDisplayDrag(!membership.getGroup().isGroupMember(notificationPayload.getUserId()));
+          notificationPayload.setShouldDisplayDrag(
+              !membership.getGroup().isGroupMember(notificationPayload.getUserId()));
         }
 
         LiveNotificationView notificationView =
