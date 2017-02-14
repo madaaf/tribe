@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -24,6 +25,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.preferences.LeavingRoomTutorialState;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -80,6 +82,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @Inject ScreenUtils screenUtils;
 
   @Inject LivePresenter livePresenter;
+
+  @Inject @LeavingRoomTutorialState Preference<Long> leavingRoomTutorialState;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -232,6 +236,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
+
       DialogFactory.dialog(this,
           EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
           EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
