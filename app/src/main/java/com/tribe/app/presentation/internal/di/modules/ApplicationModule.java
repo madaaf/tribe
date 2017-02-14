@@ -50,6 +50,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Module;
 import dagger.Provides;
@@ -242,6 +243,11 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     return new TutorialManager(screenUtils, tutorialState);
   }
 
+  @Provides @Singleton StateManager provideStateManager(
+      @TutorialState Preference<Set<String>> tutorialState) {
+    return new StateManager(tutorialState);
+  }
+
   @Provides @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(
       GetCloudUserInfos getCloudUserInfos) {
     return getCloudUserInfos;
@@ -284,7 +290,8 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     return TribeAudioManager.create(context);
   }
 
-  @Provides @Singleton public NotificationManagerCompat provideNotificationManagerCompat(Context context) {
+  @Provides @Singleton
+  public NotificationManagerCompat provideNotificationManagerCompat(Context context) {
     Context safeContext = ContextCompat.createDeviceProtectedStorageContext(context);
 
     if (safeContext == null) {
@@ -294,7 +301,8 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     return NotificationManagerCompat.from(safeContext);
   }
 
-  @Provides @Singleton public NotificationBuilder provideNotificationBuilder(NotificationManagerCompat notificationManager, Gson gson) {
+  @Provides @Singleton public NotificationBuilder provideNotificationBuilder(
+      NotificationManagerCompat notificationManager, Gson gson) {
     return new NotificationBuilder(application, notificationManager, gson);
   }
 

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -25,7 +24,6 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
-import com.tribe.app.presentation.utils.preferences.LeavingRoomTutorialState;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -35,6 +33,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -83,7 +82,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Inject LivePresenter livePresenter;
 
-  @Inject @LeavingRoomTutorialState Preference<Long> leavingRoomTutorialState;
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -236,15 +235,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-
-      DialogFactory.dialog(this,
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-          getString(R.string.tips_leavingroom_action1),
-          getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
+      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
+        DialogFactory.dialog(this,
+            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
+            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
+            getString(R.string.tips_leavingroom_action1),
+            getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
+          tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
+          finish();
+        });
+        stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
+      } else {
         tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
         finish();
-      });
+      }
     }));
 
     subscriptions.add(
