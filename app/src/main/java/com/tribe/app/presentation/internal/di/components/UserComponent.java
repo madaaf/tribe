@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
+import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import dagger.Component;
 
 /**
@@ -64,6 +65,8 @@ import dagger.Component;
   void inject(AuthenticationDialogFragment authenticationDialogFragment);
 
   void inject(ShareDialogProfileFragment shareDialogProfileFragment);
+
+  void inject(SurpriseDialogFragment surpriseDialogFragment);
 
   void inject(GroupActivity groupActivity);
 

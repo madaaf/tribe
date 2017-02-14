@@ -30,12 +30,15 @@ import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.LastUserRequest;
+import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.component.onboarding.AuthVideoView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
+import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +54,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private static int DURATION_MEDIUM = 400;
   private static int DURATION_LONG = 600;
   private static int DURATION_FAST = 150;
+  private static int TIMER_SURPRISE_DIALOG = 1000;
 
   private static final String COUNTRY_CODE = "COUNTRY_CODE";
   private static final String DEEP_LINK = "DEEP_LINK";
@@ -75,6 +79,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Inject @LastUserRequest Preference<String> lastUserRequest;
 
+  @Inject @LastVersionCode Preference<Integer> lastVersion;
+
   @BindView(R.id.viewVideoAuth) AuthVideoView authVideoView;
 
   @BindView(R.id.btnSkip) ImageView btnSkip;
@@ -98,6 +104,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   // VARIABLES
   private Unbinder unbinder;
   private Uri deepLink;
+  private SurpriseDialogFragment surpriseDialogFragment;
   private AuthenticationDialogFragment authenticationDialogFragment;
   private Pin pin;
   private ErrorLogin errorLogin;
@@ -120,23 +127,30 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       if (savedInstanceState.getParcelable(DEEP_LINK) != null) {
         deepLink = savedInstanceState.getParcelable(DEEP_LINK);
       }
+
       if (savedInstanceState.getString(COUNTRY_CODE) != null) {
         countryCode = savedInstanceState.getString(COUNTRY_CODE);
       }
+
       if (savedInstanceState.get(LOGIN_ENTITY) != null) {
         loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
       }
+
       if (savedInstanceState.get(ERROR_LOGIN) != null) {
         errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
       }
+
       if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
       if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
+
       if (savedInstanceState.get(PHONE_NUMBER) != null) {
         phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
       }
+
       if (savedInstanceState.get(COUNTDOWN) != null) {
         currentCountdown = savedInstanceState.getInt(COUNTDOWN);
       }
+
       if (savedInstanceState.get(IS_PAUSED) != null) {
         shouldPauseOnRestore = savedInstanceState.getBoolean(IS_PAUSED);
       }
@@ -153,6 +167,18 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     lastUserRequest.set("");
     manageDeepLink(getIntent());
+
+    if (lastVersion.get() != -1 && !lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
+      lastVersion.set(DeviceUtils.getVersionCode(this));
+
+      subscriptions.add(Observable.timer(TIMER_SURPRISE_DIALOG, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            surpriseDialogFragment = SurpriseDialogFragment.newInstance();
+            surpriseDialogFragment.show(getSupportFragmentManager(),
+                SurpriseDialogFragment.class.getName());
+          }));
+    }
   }
 
   @Override protected void onResume() {
@@ -238,7 +264,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           if (shouldPauseOnRestore) {
-            System.out.println("PAUSE");
             authVideoView.onPause(true);
           }
         }));

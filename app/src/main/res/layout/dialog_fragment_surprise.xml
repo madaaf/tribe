@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="0dp"
+    android:layout_marginTop="0dp"
+    android:orientation="vertical"
+    >
+
+  <LinearLayout
+      android:id="@+id/layoutParent"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@drawable/shape_rect_white_rounded_corners"
+      android:orientation="vertical"
+      >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/med_icon_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/vertical_margin_large"
+        android:scaleType="fitCenter"
+        android:src="@drawable/picto_support"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/vertical_margin_mid"
+        android:gravity="center"
+        style="@style/Headline.Black.1"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/textSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="@dimen/horizontal_margin_xlarge"
+        android:layout_marginStart="@dimen/horizontal_margin_xlarge"
+        android:layout_marginTop="@dimen/vertical_margin_smaller"
+        android:gravity="center"
+        style="@style/Title.1.Black"
+        />
+
+    <LinearLayout
+        android:id="@+id/layoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_marginTop="@dimen/vertical_margin_xlarge"
+        android:orientation="horizontal"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/textConfirm"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1"
+          android:background="@drawable/shape_rect_blue_opaque_rounded_bottom"
+          android:clickable="true"
+          android:gravity="center"
+          style="@style/Title.2.White"
+          />
+
+    </LinearLayout>
+  </LinearLayout>
+</LinearLayout>
