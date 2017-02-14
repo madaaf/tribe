@@ -227,11 +227,23 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         }));
   }
 
+  private void displayStartFirstPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.START_FIRST_LIVE)) {
+      DialogFactory.dialog(this,
+          EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
+          getString(R.string.tips_startfirstlive_message),
+          getString(R.string.tips_startfirstlive_action1), null).subscribe(a -> {
+      });
+      stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
+    }
+  }
+
   private void initSubscriptions() {
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       tagManager.trackEvent(TagManagerConstants.KPI_Calls_StartedButton);
       joinRoom();
+      displayStartFirstPopupTutorial();
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {

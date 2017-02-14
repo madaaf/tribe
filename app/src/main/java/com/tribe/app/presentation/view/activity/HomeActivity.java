@@ -58,6 +58,7 @@ import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
@@ -93,6 +94,8 @@ public class HomeActivity extends BaseActivity
   @Inject ScreenUtils screenUtils;
 
   @Inject PaletteGrid paletteGrid;
+
+  @Inject StateManager stateManager;
 
   @Inject @LastOnlineNotification Preference<Long> lastOnlineNotification;
 
@@ -331,37 +334,69 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
-          navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
-        }));
-
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer()
-        .subscribeOn(singleThreadExecutor)
-        .map(recipientList -> {
-          DiffUtil.DiffResult diffResult = null;
-
-          List<Recipient> temp = new ArrayList<>();
-          temp.add(new Friendship(Recipient.ID_HEADER));
-          temp.addAll(recipientList);
-          ListUtils.addEmptyItems(screenUtils, temp);
-
-          if (latestRecipientList.size() != 0) {
-            diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-            homeGridAdapter.setItems(temp);
-          }
-
-          latestRecipientList.clear();
-          latestRecipientList.addAll(temp);
-          return diffResult;
-        })
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(diffResult -> {
-          if (diffResult != null) {
-            diffResult.dispatchUpdatesTo(homeGridAdapter);
+          if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
+            DialogFactory.dialog(this,
+                EmojiParser.demojizedText(getString(R.string.tips_enterfirstlive_title)),
+                getString(R.string.tips_enterfirstlive_message),
+                getString(R.string.tips_enterfirstlive_action2),
+                getString(R.string.tips_enterfirstlive_action1)).subscribe(a -> {
+              navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+            });
+            stateManager.addTutorialKey(StateManager.ENTER_FIRST_LIVE);
           } else {
-            homeGridAdapter.setItems(latestRecipientList);
-            homeGridAdapter.notifyDataSetChanged();
+            navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
           }
         }));
+
+    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().
+
+        subscribeOn(singleThreadExecutor)
+
+        .
+
+            map(recipientList
+
+                    ->
+
+                {
+                  DiffUtil.DiffResult diffResult = null;
+
+                  List<Recipient> temp = new ArrayList<>();
+                  temp.add(new Friendship(Recipient.ID_HEADER));
+                  temp.addAll(recipientList);
+                  ListUtils.addEmptyItems(screenUtils, temp);
+
+                  if (latestRecipientList.size() != 0) {
+                    diffResult =
+                        DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+                    homeGridAdapter.setItems(temp);
+                  }
+
+                  latestRecipientList.clear();
+                  latestRecipientList.addAll(temp);
+                  return diffResult;
+                }
+
+            ).
+
+            observeOn(AndroidSchedulers.mainThread()
+
+            ).
+
+            subscribe(diffResult
+
+                    ->
+
+                {
+                  if (diffResult != null) {
+                    diffResult.dispatchUpdatesTo(homeGridAdapter);
+                  } else {
+                    homeGridAdapter.setItems(latestRecipientList);
+                    homeGridAdapter.notifyDataSetChanged();
+                  }
+                }
+
+            ));
   }
 
   private void initDependencyInjector() {

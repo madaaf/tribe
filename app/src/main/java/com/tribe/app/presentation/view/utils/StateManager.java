@@ -17,11 +17,13 @@ import javax.inject.Singleton;
 
   private Preference<Set<String>> tutorialState;
 
-  @StringDef({ LEAVING_ROOM, DRAGGING_GUEST }) public @interface StateKey {
+  @StringDef({ LEAVING_ROOM, DRAGGING_GUEST, DROPPING_GUEST, ENTER_FIRST_LIVE, START_FIRST_LIVE })
+  public @interface StateKey {
   }
 
   public static final String LEAVING_ROOM = "LEAVING_ROOM";
   public static final String DRAGGING_GUEST = "DRAGGING_GUEST";
+  public static final String DROPPING_GUEST = "DROPPING_GUEST";
   public static final String ENTER_FIRST_LIVE = "ENTER_FIRST_LIVE";
   public static final String START_FIRST_LIVE = "START_FIRST_LIVE";
   public static final String WAINTING_FRIENDS_JOIN_LIVE = "WAINTING_FRIENDS_JOIN_LIVE";
