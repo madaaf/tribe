@@ -2,7 +2,6 @@ package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
@@ -18,6 +17,7 @@ import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LeavingRoomTutorialState;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
 import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
@@ -28,14 +28,11 @@ import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.view.utils.Distance;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
+import java.util.HashSet;
+import java.util.Set;
+import javax.inject.Singleton;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -150,5 +147,10 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @UISounds Preference<Boolean> provideUISounds(RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesConstants.UI_SOUNDS, true);
+  }
+
+  @Provides @Singleton @LeavingRoomTutorialState
+  Preference<Set<String>> provideLeavingRoomTutorialState(RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesConstants.LEAVING_ROOM_TUTORIAL_STATE, new HashSet<>());
   }
 }
