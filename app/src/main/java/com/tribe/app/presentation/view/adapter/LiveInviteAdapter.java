@@ -2,8 +2,8 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
-
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -13,12 +13,10 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAda
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveCoInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -33,6 +31,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   protected RxAdapterDelegatesManager delegatesManager;
   private UserInviteAdapterDelegate userInviteAdapterDelegate;
   private UserLiveCoInviteAdapterDelegate userLiveCoInviteAdapterDelegate;
+  private UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate;
 
   // VARIABLES
   private List<Recipient> items;
@@ -55,6 +54,9 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
 
     userLiveCoInviteAdapterDelegate = new UserLiveCoInviteAdapterDelegate(context);
     delegatesManager.addDelegate(userLiveCoInviteAdapterDelegate);
+
+    userInviteHeaderAdapterDelegate = new UserInviteHeaderAdapterDelegate(context);
+    delegatesManager.addDelegate(userInviteHeaderAdapterDelegate);
 
     items = new ArrayList<>();
 
@@ -124,5 +126,10 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     items.remove(position);
     notifyItemRemoved(position);
     notifyItemRangeChanged(position, items.size());
+  }
+
+  // OBSERVABLES
+  public Observable<View> onInviteLiveClick() {
+    return userInviteHeaderAdapterDelegate.onInviteLiveClick();
   }
 }

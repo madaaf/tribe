@@ -9,7 +9,8 @@ public class TagManagerConstants {
    * GENERAL
    */
   public static final String KPI_Onboarding_Start = "KPI_Onboarding_Start";
-  public static final String KPI_Onboarding_SystemNotifications = "KPI_Onboarding_SystemNotifications";
+  public static final String KPI_Onboarding_SystemNotifications =
+      "KPI_Onboarding_SystemNotifications";
   public static final String KPI_Onboarding_VideoSkipped = "KPI_Onboarding_VideoSkipped";
   public static final String KPI_Onboarding_VideoFinished = "KPI_Onboarding_VideoFinished";
   public static final String KPI_Onboarding_PinRequested = "KPI_Onboarding_PinRequested";
@@ -18,12 +19,14 @@ public class TagManagerConstants {
   public static final String KPI_Onboarding_PinSubmitted = "KPI_Onboarding_PinSubmitted";
   public static final String KPI_Onboarding_PinFailed = "KPI_Onboarding_PinFailed";
   public static final String KPI_Onboarding_PinSucceeded = "KPI_Onboarding_PinSucceeded";
-  public static final String KPI_Onboarding_ProfileFilledWithFacebook = "KPI_Onboarding_ProfileFilledWithFacebook";
+  public static final String KPI_Onboarding_ProfileFilledWithFacebook =
+      "KPI_Onboarding_ProfileFilledWithFacebook";
   public static final String KPI_Onboarding_ProfileConfigured = "KPI_Onboarding_ProfileConfigured";
   public static final String KPI_Onboarding_FindFriendsStart = "KPI_Onboarding_FindFriendsStart";
   public static final String KPI_Onboarding_SystemContacts = "KPI_Onboarding_SystemContacts";
   public static final String KPI_Onboarding_FindFriendsNext = "KPI_Onboarding_FindFriendsNext";
-  public static final String KPI_Onboarding_FindFriendsSelectAll = "KPI_Onboarding_FindFriendsSelectAll";
+  public static final String KPI_Onboarding_FindFriendsSelectAll =
+      "KPI_Onboarding_FindFriendsSelectAll";
   public static final String KPI_Onboarding_FindFriendsDone = "KPI_Onboarding_FindFriendsDone";
   public static final String KPI_Onboarding_HomeScreen = "KPI_Onboarding_HomeScreen";
   public static final String KPI_Onboarding_SystemCamera = "KPI_Onboarding_SystemCamera";
@@ -33,12 +36,18 @@ public class TagManagerConstants {
   public static final String KPI_Groups_RemoveFriend = "KPI_Groups_RemoveFriend";
   public static final String KPI_Groups_CreateGroup = "KPI_Groups_CreateGroup";
   public static final String KPI_Groups_BackGroup = "KPI_Groups_BackGroup";
-  public static final String KPI_Invites_HomeScreenSMSInviteButton = "KPI_Invites_HomeScreenSMSInviteButton";
-  public static final String KPI_Invites_HomeScreenSMSInviteCancelled = "KPI_Invites_HomeScreenSMSInviteCancelled";
-  public static final String KPI_Invites_HomeScreenSMSInviteSent = "KPI_Invites_HomeScreenSMSInviteSent";
-  public static final String KPI_Invites_SearchScreenSMSInviteButton = "KPI_Invites_SearchScreenSMSInviteButton";
-  public static final String KPI_Invites_SearchScreenSMSInviteCancelled = "KPI_Invites_SearchScreenSMSInviteCancelled";
-  public static final String KPI_Invites_SearchScreenSMSInviteSent = "KPI_Invites_SearchScreenSMSInviteSent";
+  public static final String KPI_Invites_HomeScreenSMSInviteButton =
+      "KPI_Invites_HomeScreenSMSInviteButton";
+  public static final String KPI_Invites_HomeScreenSMSInviteCancelled =
+      "KPI_Invites_HomeScreenSMSInviteCancelled";
+  public static final String KPI_Invites_HomeScreenSMSInviteSent =
+      "KPI_Invites_HomeScreenSMSInviteSent";
+  public static final String KPI_Invites_SearchScreenSMSInviteButton =
+      "KPI_Invites_SearchScreenSMSInviteButton";
+  public static final String KPI_Invites_SearchScreenSMSInviteCancelled =
+      "KPI_Invites_SearchScreenSMSInviteCancelled";
+  public static final String KPI_Invites_SearchScreenSMSInviteSent =
+      "KPI_Invites_SearchScreenSMSInviteSent";
   public static final String KPI_Calls_StartedButton = "KPI_Calls_StartedButton";
   public static final String KPI_Calls_LeaveButton = "KPI_Calls_LeaveButton";
   public static final String KPI_Calls_MissedButton = "KPI_Calls_MissedButton";

@@ -209,6 +209,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   @OnClick(R.id.imgBack) void clickBack() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Groups_BackGroup);
     onBackPressed();
   }
 
@@ -282,7 +283,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           txtAction.setVisibility(View.GONE);
         }
       } else {
-        setupAction(getString(R.string.action_create) + (newMembers.size() > 0 ? " (" + newMembers.size() + ")" : ""));
+        setupAction(getString(R.string.action_create) + (newMembers.size() > 0 ? " ("
+            + newMembers.size()
+            + ")" : ""));
         txtAction.setVisibility(View.VISIBLE);
       }
     }));

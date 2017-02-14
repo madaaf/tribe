@@ -212,7 +212,7 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_HomeScreen);
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
       shouldOverridePendingTransactions = false;
@@ -395,6 +395,7 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
+      tagManager.trackEvent(TagManagerConstants.KPI_Invites_HomeScreenSMSInviteButton);
       navigator.shareGenericText(
           EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), context());
     }));
@@ -426,6 +427,7 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
+      tagManager.trackEvent(TagManagerConstants.KPI_Invites_SearchScreenSMSInviteButton);
       shouldOverridePendingTransactions = true;
       navigator.invite(contact.getPhone(), contact.getHowManyFriends(), this);
     }));

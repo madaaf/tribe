@@ -29,6 +29,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
@@ -66,6 +68,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   @Inject ScreenUtils screenUtils;
 
   @Inject PaletteGrid paletteGrid;
+
+  @Inject TagManager tagManager;
 
   @BindView(R.id.avatar) AvatarView avatar;
 
@@ -226,6 +230,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   //////////////
 
   public void showGuest() {
+    tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
     txtDropInTheLive.setVisibility(View.GONE);
     avatar.setVisibility(View.VISIBLE);
     viewShadow.setVisibility(View.VISIBLE);
@@ -257,6 +262,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
             .scaleX(0)
             .scaleY(0)
             .setDuration(DURATION_FAST)
+            .setDuration(300)
             .setListener(new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
                 progressBar.setVisibility(View.GONE);
