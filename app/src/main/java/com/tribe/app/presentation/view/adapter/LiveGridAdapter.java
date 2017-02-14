@@ -41,7 +41,6 @@ public class LiveGridAdapter extends RecyclerView.Adapter {
 
   @Override public long getItemId(int position) {
     UserLive userLive = getItemAtPosition(position);
-    System.out.println("Position : " + position + " Hash code : " + userLive.getUser().hashCode());
     return userLive.getUser().hashCode();
   }
 

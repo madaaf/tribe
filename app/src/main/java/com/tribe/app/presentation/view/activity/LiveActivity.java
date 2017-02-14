@@ -259,6 +259,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
           livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(),
               recipient.getSubId());
         }));
+
+    subscriptions.add(viewInviteLive.onInviteLiveClick().subscribe(view -> {
+      tagManager.trackEvent(TagManagerConstants.KPI_Calls_LinkButton);
+      navigator.openSmsForInvite(this);
+    }));
   }
 
   private void joinRoom() {

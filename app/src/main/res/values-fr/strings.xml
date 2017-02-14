@@ -538,6 +538,7 @@
 	<string name="share_snapchat_story_explanation_title">Snapchat</string>
 	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
+	<string name="share_invite">Ajoute moi sur Tribe!\nNom d’utilisateur: %1$s %2$s</string>
 	
 	<!-- Search -->
 	<string name="search_title">Rechercher un utilisateur</string>

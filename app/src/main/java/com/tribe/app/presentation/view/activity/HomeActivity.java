@@ -39,7 +39,6 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
@@ -396,8 +395,7 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
       tagManager.trackEvent(TagManagerConstants.KPI_Invites_HomeScreenSMSInviteButton);
-      navigator.shareGenericText(
-          EmojiParser.demojizedText(getString(R.string.share_add_friends_handle)), context());
+      navigator.openSmsForInvite(this);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch().subscribe(open -> {
@@ -429,7 +427,7 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
       tagManager.trackEvent(TagManagerConstants.KPI_Invites_SearchScreenSMSInviteButton);
       shouldOverridePendingTransactions = true;
-      navigator.invite(contact.getPhone(), contact.getHowManyFriends(), this);
+      navigator.openSmsForInvite(this);
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {

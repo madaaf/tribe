@@ -14,6 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
@@ -38,6 +39,8 @@ import javax.inject.Inject;
  * Class used to navigate through the application.
  */
 public class Navigator {
+
+  @Inject User user;
 
   public static int REQUEST_COUNTRY = 1000;
   public static String SNAPCHAT = "com.snapchat.android";
@@ -323,6 +326,16 @@ public class Navigator {
     Intent sendIntent = new Intent(Intent.ACTION_VIEW);
     sendIntent.setData(Uri.parse("sms:"));
     sendIntent.putExtra("sms_body", body);
+    activity.startActivity(sendIntent);
+    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+  }
+
+  public void openSmsForInvite(Activity activity) {
+    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+    sendIntent.setData(Uri.parse("sms:"));
+    sendIntent.putExtra("sms_body", EmojiParser.demojizedText(
+        activity.getString(R.string.share_invite, user.getUsername(),
+            BuildConfig.TRIBE_URL + "/" + user.getUsername())));
     activity.startActivity(sendIntent);
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }

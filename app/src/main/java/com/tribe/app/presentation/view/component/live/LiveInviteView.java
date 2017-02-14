@@ -13,9 +13,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
@@ -130,12 +128,7 @@ public class LiveInviteView extends FrameLayout {
       }
     });
 
-    subscriptions.add(adapter.onInviteLiveClick().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Calls_LinkButton);
-      navigator.shareGenericText(
-          EmojiParser.demojizedText(getContext().getString(R.string.share_add_friends_handle)),
-          getContext());
-    }));
+    subscriptions.add(adapter.onInviteLiveClick().subscribe(onInviteLiveClick));
   }
 
   public TileView findViewByCoords(float rawX, float rawY) {
