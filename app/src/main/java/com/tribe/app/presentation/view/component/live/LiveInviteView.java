@@ -4,25 +4,26 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -33,6 +34,10 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveInviteView extends FrameLayout {
 
   public static final int WIDTH = 106;
+
+  @Inject Navigator navigator;
+
+  @Inject TagManager tagManager;
 
   @Inject ScreenUtils screenUtils;
 
@@ -52,6 +57,7 @@ public class LiveInviteView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScroll = PublishSubject.create();
   private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
+  protected final PublishSubject<View> onInviteLiveClick = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -123,6 +129,13 @@ public class LiveInviteView extends FrameLayout {
         onScrollStateChanged.onNext(newState);
       }
     });
+
+    subscriptions.add(adapter.onInviteLiveClick().subscribe(aVoid -> {
+      tagManager.trackEvent(TagManagerConstants.KPI_Calls_LinkButton);
+      navigator.shareGenericText(
+          EmojiParser.demojizedText(getContext().getString(R.string.share_add_friends_handle)),
+          getContext());
+    }));
   }
 
   public TileView findViewByCoords(float rawX, float rawY) {
@@ -153,6 +166,10 @@ public class LiveInviteView extends FrameLayout {
 
   public Observable<Integer> onScrollStateChanged() {
     return onScrollStateChanged;
+  }
+
+  public Observable<View> onInviteLiveClick() {
+    return onInviteLiveClick;
   }
 }
 

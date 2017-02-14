@@ -185,7 +185,7 @@ public class LiveWaitingView extends FrameLayout {
   //////////////
 
   public void showGuest() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Invites_SearchScreenSMSInviteButton);
+    tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
     txtDropInTheLive.setVisibility(View.GONE);
     avatar.setVisibility(View.VISIBLE);
     viewShadow.setVisibility(View.VISIBLE);
