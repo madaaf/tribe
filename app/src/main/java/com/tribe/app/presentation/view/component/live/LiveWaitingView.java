@@ -71,10 +71,6 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   @Inject PaletteGrid paletteGrid;
 
-  @Inject TagManager tagManager;
-
-  @Inject StateManager stateManager;
-
   @BindView(R.id.avatar) AvatarView avatar;
 
   @BindView(R.id.viewShadowAvatar) View viewShadow;
@@ -232,19 +228,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   //////////////
   //  PUBLIC  //
   //////////////
-  private void displayPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
-          getContext().getString(R.string.tips_draggingguest_message),
-          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      });
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
-  }
 
   public void showGuest() {
-    displayPopupTutorial();
-    tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
     txtDropInTheLive.setVisibility(View.GONE);
     avatar.setVisibility(View.VISIBLE);
     viewShadow.setVisibility(View.VISIBLE);

@@ -25,10 +25,14 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -64,6 +68,10 @@ public class LiveView extends FrameLayout {
   @Inject AccessToken accessToken;
 
   @Inject TribeLiveSDK tribeLiveSDK;
+
+  @Inject TagManager tagManager;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
@@ -178,6 +186,16 @@ public class LiveView extends FrameLayout {
         onHiddenControls.onNext(true);
       }
     }));
+  }
+
+  private void displayPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+      DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
+          getContext().getString(R.string.tips_draggingguest_message),
+          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
+      });
+      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    }
   }
 
   ///////////////////
@@ -386,6 +404,8 @@ public class LiveView extends FrameLayout {
       room.sendToPeers(getInvitedPayload());
 
       subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
+        tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
+        displayPopupTutorial();
         latestView.showGuest(false);
         latestView.startPulse();
       }));
