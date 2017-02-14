@@ -27,8 +27,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.CircleView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -61,6 +63,8 @@ public class LiveWaitingView extends FrameLayout {
   @Inject PaletteGrid paletteGrid;
 
   @Inject TagManager tagManager;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.avatar) AvatarView avatar;
 
@@ -183,8 +187,18 @@ public class LiveWaitingView extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+  private void displayPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+      DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
+          getContext().getString(R.string.tips_draggingguest_message),
+          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
+      });
+      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    }
+  }
 
   public void showGuest() {
+    displayPopupTutorial();
     tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
     txtDropInTheLive.setVisibility(View.GONE);
     avatar.setVisibility(View.VISIBLE);
