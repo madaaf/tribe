@@ -35,6 +35,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -83,7 +84,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Inject LivePresenter livePresenter;
 
-  @Inject @LeavingRoomTutorialState Preference<Long> leavingRoomTutorialState;
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -236,15 +237,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-
-      DialogFactory.dialog(this,
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-          getString(R.string.tips_leavingroom_action1),
-          getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
+      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
+        DialogFactory.dialog(this,
+            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
+            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
+            getString(R.string.tips_leavingroom_action1),
+            getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
+          tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
+          finish();
+        });
+        stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
+      } else {
         tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
         finish();
-      });
+      }
     }));
 
     subscriptions.add(

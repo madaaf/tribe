@@ -87,6 +87,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
@@ -313,4 +314,6 @@ public interface ApplicationComponent {
   SoundManager soundManager();
 
   TutorialManager tutorialManager();
+
+  StateManager stateManager();
 }
