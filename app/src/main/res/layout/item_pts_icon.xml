@@ -5,4 +5,5 @@
     android:layout_height="30dp"
     android:layout_centerVertical="true"
     android:background="@drawable/shape_rect_white20_rounded_corners"
-    android:scaleType="centerInside" />
+    android:scaleType="centerInside"
+    />

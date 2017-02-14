@@ -6,14 +6,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.widget.FrameLayout;
-
-import com.tribe.app.R;
-import com.tribe.app.presentation.view.video.TribeMediaPlayer;
-import com.tribe.app.presentation.view.widget.video.ScalableVideoView;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.tribe.app.R;
+import com.tribe.app.presentation.view.video.TribeMediaPlayer;
+import com.tribe.app.presentation.view.widget.video.ScalableVideoView;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;

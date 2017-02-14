@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 @Singleton public class SoundManager {
 

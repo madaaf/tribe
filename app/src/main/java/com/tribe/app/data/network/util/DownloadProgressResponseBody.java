@@ -1,7 +1,6 @@
 package com.tribe.app.data.network.util;
 
 import java.io.IOException;
-
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okio.Buffer;

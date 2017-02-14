@@ -1,9 +1,8 @@
 package com.tribe.app.data.realm.helpers;
 
+import io.realm.RealmResults;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.RealmResults;
 
 /**
  * SHOUT OUT TO MY MAN @remybourgoin

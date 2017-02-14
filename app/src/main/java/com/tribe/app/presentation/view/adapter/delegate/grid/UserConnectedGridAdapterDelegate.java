@@ -26,7 +26,8 @@ public class UserConnectedGridAdapterDelegate extends RecipientGridAdapterDelega
         .getSubId()
         .equals(Recipient.ID_HEADER)
         && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-        && items.get(position).isOnline() && !items.get(position).isLive();
+        && items.get(position).isOnline()
+        && !items.get(position).isLive();
   }
 
   @Override protected int getLayoutId() {

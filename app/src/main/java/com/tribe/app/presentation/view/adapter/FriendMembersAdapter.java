@@ -4,17 +4,14 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.GroupMemberListFilter;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import rx.Observable;
 
 /**

@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/view_tile_background_invite" />
+  <include layout="@layout/view_tile_background_invite" />
 
-    <View
-        android:id="@+id/viewShadowAvatar"
-        android:layout_height="@dimen/avatar_size_with_shadow"
-        android:layout_width="@dimen/avatar_size_with_shadow"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_avatar_shadow" />
+  <View
+      android:id="@+id/viewShadowAvatar"
+      android:layout_height="@dimen/avatar_size_with_shadow"
+      android:layout_width="@dimen/avatar_size_with_shadow"
+      android:layout_gravity="center"
+      android:background="@drawable/bg_avatar_shadow"
+      />
 
-    <com.tribe.app.presentation.view.widget.avatar.AvatarView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        android:layout_gravity="center"
-        android:background="@null" />
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size"
+      android:layout_height="@dimen/avatar_size"
+      android:layout_gravity="center"
+      android:background="@null"
+      />
 
-    <include layout="@layout/view_tile_invite_base" />
+  <include layout="@layout/view_tile_invite_base" />
 
 </merge>

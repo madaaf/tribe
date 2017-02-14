@@ -118,21 +118,20 @@ public class TopBarView extends FrameLayout {
 
     editTextSearch.setEnabled(false);
 
-    getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
-          @Override public void onGlobalLayout() {
-            getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            MarginLayoutParams params = (MarginLayoutParams) btnSearch.getLayoutParams();
-            params.rightMargin = getMarginRightSearch();
-            params.leftMargin = getMarginLeftSearch();
-            btnSearch.setLayoutParams(params);
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        MarginLayoutParams params = (MarginLayoutParams) btnSearch.getLayoutParams();
+        params.rightMargin = getMarginRightSearch();
+        params.leftMargin = getMarginLeftSearch();
+        btnSearch.setLayoutParams(params);
 
-            params = (MarginLayoutParams) btnNew.getLayoutParams();
-            params.rightMargin = getMarginRightBtnNew();
-            btnNew.setLayoutParams(params);
-          }
-        });
+        params = (MarginLayoutParams) btnNew.getLayoutParams();
+        params.rightMargin = getMarginRightBtnNew();
+        btnNew.setLayoutParams(params);
+      }
+    });
 
     viewAvatar.load(user.getProfilePicture());
 
@@ -247,8 +246,7 @@ public class TopBarView extends FrameLayout {
     hideView(imgClose, false);
     showView(viewAvatar, null);
 
-    AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION,
-        null);
+    AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
   }
 

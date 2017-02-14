@@ -18,7 +18,10 @@ import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -46,17 +49,10 @@ import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;

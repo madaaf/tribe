@@ -2,7 +2,6 @@ package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.domain.entity.Invite;
 import java.util.Map;
-
 import rx.Observable;
 
 /**

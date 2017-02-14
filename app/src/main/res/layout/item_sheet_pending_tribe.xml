@@ -10,4 +10,5 @@
     android:gravity="left|center_vertical"
     android:layout_gravity="center_vertical"
     android:clickable="true"
-    style="@style/Title.1.Black" />
+    style="@style/Title.1.Black"
+    />

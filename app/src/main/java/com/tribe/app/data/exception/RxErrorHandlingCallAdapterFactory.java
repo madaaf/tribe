@@ -3,7 +3,6 @@ package com.tribe.app.data.exception;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;

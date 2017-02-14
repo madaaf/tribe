@@ -6,19 +6,15 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.SoundManager;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import rx.Observable;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 public class TopBarContainer extends FrameLayout {

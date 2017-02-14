@@ -18,7 +18,6 @@ import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;

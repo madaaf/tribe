@@ -2,9 +2,7 @@ package com.tribe.app.presentation.view.adapter.diff;
 
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
-
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
-
 import java.util.List;
 
 public class UserLiveDiffCallback extends DiffUtil.Callback {

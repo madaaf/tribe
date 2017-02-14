@@ -3,11 +3,11 @@
     android:duration="300"
     android:interpolator="@anim/my_overshoot">
 
-    <translate
-        android:fromYDelta="0"
-        android:toYDelta="-80%p" />
+  <translate
+      android:fromYDelta="0"
+      android:toYDelta="-80%p" />
 
-    <alpha
-        android:fromAlpha="1.0"
-        android:toAlpha="0.0" />
+  <alpha
+      android:fromAlpha="1.0"
+      android:toAlpha="0.0" />
 </set>

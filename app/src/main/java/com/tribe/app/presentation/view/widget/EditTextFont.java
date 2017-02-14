@@ -6,10 +6,8 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
-
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.FontCache;
-
 import rx.Observable;
 import rx.subjects.PublishSubject;
 

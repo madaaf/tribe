@@ -2,9 +2,7 @@ package com.tribe.app.presentation.view.adapter.diff;
 
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
-
 import com.tribe.app.domain.entity.GroupMember;
-
 import java.util.List;
 
 public class GroupMemberDiffCallback extends DiffUtil.Callback {

@@ -6,7 +6,6 @@ import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.PinRealm;
-
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;

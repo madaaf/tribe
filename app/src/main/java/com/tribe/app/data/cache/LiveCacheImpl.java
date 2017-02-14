@@ -1,14 +1,10 @@
 package com.tribe.app.data.cache;
 
 import android.content.Context;
-
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
-
 import java.util.Map;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
 /**

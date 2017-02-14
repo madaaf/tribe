@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.internal.di.scope;
 
 import java.io.Serializable;
-
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 

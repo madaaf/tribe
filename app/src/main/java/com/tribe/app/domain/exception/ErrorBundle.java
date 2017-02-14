@@ -7,7 +7,7 @@ package com.tribe.app.domain.exception;
  */
 public interface ErrorBundle {
 
-    Exception getException();
+  Exception getException();
 
-    String getErrorMessage();
+  String getErrorMessage();
 }

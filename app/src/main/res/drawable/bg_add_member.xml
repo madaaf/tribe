@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transition xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/bg1" android:drawable="@drawable/shape_rect_rounded_100_violet" />
-    <item android:id="@+id/bg2" android:drawable="@drawable/shape_rect_rounded_100_violet_10" />
+  <item
+      android:id="@+id/bg1"
+      android:drawable="@drawable/shape_rect_rounded_100_violet" />
+  <item
+      android:id="@+id/bg2"
+      android:drawable="@drawable/shape_rect_rounded_100_violet_10" />
 </transition>

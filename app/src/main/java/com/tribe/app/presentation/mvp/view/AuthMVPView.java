@@ -6,16 +6,16 @@ import com.tribe.app.domain.entity.User;
 
 public interface AuthMVPView extends LoadDataMVPView {
 
-    void goToCode(Pin pin);
+  void goToCode(Pin pin);
 
-    void goToHome();
+  void goToHome();
 
-    void goToConnected(User user);
+  void goToConnected(User user);
 
-    void loginError(ErrorLogin errorLogin);
+  void loginError(ErrorLogin errorLogin);
 
-    void pinError(ErrorLogin errorLogin);
+  void pinError(ErrorLogin errorLogin);
 
-    void pinSucceeded();
+  void pinSucceeded();
 }
 

@@ -3,10 +3,8 @@ package com.tribe.app.presentation.utils.mediapicker;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import rx.Observable;
 import rx.subjects.PublishSubject;
 

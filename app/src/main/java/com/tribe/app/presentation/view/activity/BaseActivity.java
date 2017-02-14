@@ -5,14 +5,12 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
-
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-
 import javax.inject.Inject;
 
 /**

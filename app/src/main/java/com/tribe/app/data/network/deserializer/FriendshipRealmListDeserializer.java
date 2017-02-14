@@ -2,7 +2,6 @@ package com.tribe.app.data.network.deserializer;
 
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.domain.entity.User;
-
 import java.text.SimpleDateFormat;
 
 /**

@@ -8,7 +8,6 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.util.Log;
-
 import java.util.List;
 
 /**

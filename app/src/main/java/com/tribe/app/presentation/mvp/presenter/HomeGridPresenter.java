@@ -5,7 +5,6 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
@@ -123,7 +122,8 @@ public class HomeGridPresenter implements Presenter {
     this.homeGridView.renderRecipientList(recipientList);
   }
 
-  public void updateFriendship(String friendshipId, boolean mute, @FriendshipRealm.FriendshipStatus String status) {
+  public void updateFriendship(String friendshipId, boolean mute,
+      @FriendshipRealm.FriendshipStatus String status) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(FriendshipRealm.MUTE, String.valueOf(mute)));
     values.add(new Pair<>(FriendshipRealm.STATUS, status));

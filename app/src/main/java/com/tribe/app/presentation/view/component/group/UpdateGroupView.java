@@ -2,10 +2,11 @@ package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.design.widget.BottomSheetDialog;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupEntity;
@@ -15,20 +16,13 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
-import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -105,8 +99,10 @@ public class UpdateGroupView extends LinearLayout {
         }));
 
     viewActionNotifications.setValue(!membership.isMute());
-    viewActionNotifications.setTitle(EmojiParser.demojizedText(getContext().getString(R.string.group_details_notifications_title)));
-    viewActionLeaveGroup.setTitle(EmojiParser.demojizedText(getContext().getString(R.string.group_details_leave_title)));
+    viewActionNotifications.setTitle(EmojiParser.demojizedText(
+        getContext().getString(R.string.group_details_notifications_title)));
+    viewActionLeaveGroup.setTitle(
+        EmojiParser.demojizedText(getContext().getString(R.string.group_details_leave_title)));
 
     subscriptions.add(viewActionLeaveGroup.onClick()
         .flatMap(x -> DialogFactory.dialog(getContext(), membership.getDisplayName(), null,
@@ -164,5 +160,4 @@ public class UpdateGroupView extends LinearLayout {
   public Observable<Boolean> onNotificationsChange() {
     return notificationsChange;
   }
-
 }

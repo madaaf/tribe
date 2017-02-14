@@ -6,7 +6,7 @@ package com.tribe.app.presentation.view.utils;
 
 public class ObjectUtils {
 
-    public static boolean nullSafeEquals(Object a, Object b) {
-        return (a == b) || (a != null && a.equals(b));
-    }
+  public static boolean nullSafeEquals(Object a, Object b) {
+    return (a == b) || (a != null && a.equals(b));
+  }
 }

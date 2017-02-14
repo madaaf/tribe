@@ -2,15 +2,12 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.domain.entity.Membership;
-
+import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import io.realm.RealmList;
 
 /**
  * Mapper class used to transform {@link com.tribe.app.data.realm.MembershipRealm} (in the data

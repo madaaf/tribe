@@ -21,8 +21,6 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
@@ -30,7 +28,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class LiveNotificationContainer extends FrameLayout {
 
@@ -88,17 +85,15 @@ public class LiveNotificationContainer extends FrameLayout {
     margin = screenUtils.dpToPx(40);
     txtSwipe.setTranslationY(-getTxtTranslationY());
 
-    notificationSubscription =
-        onNewNotification
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(pair -> {
-              setVisibility(View.VISIBLE);
-              if (latestNotificationView != null) latestNotificationView.cancelTimer();
-              latestNotificationView = pair.first;
-              liveNotificationViewMap.put(pair.first.getViewId(), pair.first);
-              super.addView(pair.first, pair.second);
-            });
+    notificationSubscription = onNewNotification.subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(pair -> {
+          setVisibility(View.VISIBLE);
+          if (latestNotificationView != null) latestNotificationView.cancelTimer();
+          latestNotificationView = pair.first;
+          liveNotificationViewMap.put(pair.first.getViewId(), pair.first);
+          super.addView(pair.first, pair.second);
+        });
   }
 
   private void cleanUp() {

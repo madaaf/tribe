@@ -1,14 +1,12 @@
 package com.tribe.app.data.network.job;
 
 import android.support.annotation.Nullable;
-
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 

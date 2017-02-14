@@ -3,18 +3,15 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
 import com.tribe.app.presentation.view.tutorial.TutorialManager;
-
 import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by tiago on 11/04/2016

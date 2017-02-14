@@ -99,6 +99,6 @@
       android:focusableInTouchMode="true"
       >
 
-    <requestFocus/>
+    <requestFocus />
   </LinearLayout>
 </com.tribe.app.presentation.view.component.group.AddMembersGroupView>

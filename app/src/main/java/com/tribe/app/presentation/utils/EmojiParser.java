@@ -55,7 +55,7 @@ public class EmojiParser {
     IEmojiMap.put(":skull:", "\uD83D\uDC80");
     IEmojiMap.put(":purple_heart:", "\uD83D\uDC9C");
     IEmojiMap.put(":bell:", "\uD83D\uDD14");
-    IEmojiMap.put(":no_bell:","\uD83D\uDD15");
+    IEmojiMap.put(":no_bell:", "\uD83D\uDD15");
     IEmojiMap.put(":hearts:", "\uD83D\uDC95");
     IEmojiMap.put(":love_letter:", "\uD83D\uDC8C");
     IEmojiMap.put(":x:", "\u274C");

@@ -2,15 +2,12 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.presentation.utils.StringUtils;
-
+import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import io.realm.RealmList;
 
 /**
  * Created by tiago on 06/05/2016.

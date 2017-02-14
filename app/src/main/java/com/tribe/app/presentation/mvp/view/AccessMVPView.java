@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
-
 import java.util.List;
 
 /**
@@ -10,9 +9,9 @@ import java.util.List;
  */
 public interface AccessMVPView extends MVPView {
 
-    void renderFriendList(List<User> userRealm);
+  void renderFriendList(List<User> userRealm);
 
-    void groupInfosFailed();
+  void groupInfosFailed();
 
-    void groupInfosSuccess(Group group);
+  void groupInfosSuccess(Group group);
 }

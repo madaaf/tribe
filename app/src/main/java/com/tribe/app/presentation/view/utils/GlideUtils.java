@@ -1,8 +1,6 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
-import android.media.Image;
-import android.view.View;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;

@@ -16,9 +16,7 @@
 package com.tribe.app.domain.interactor.common;
 
 import com.tribe.app.domain.executor.PostExecutionThread;
-
 import java.io.Serializable;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -34,39 +32,39 @@ import rx.subscriptions.Subscriptions;
  */
 public abstract class UseCaseDisk implements Serializable {
 
-    private final PostExecutionThread postExecutionThread;
+  private final PostExecutionThread postExecutionThread;
 
-    private Subscription subscription = Subscriptions.empty();
+  private Subscription subscription = Subscriptions.empty();
 
-    protected UseCaseDisk(PostExecutionThread postExecutionThread) {
-        this.postExecutionThread = postExecutionThread;
+  protected UseCaseDisk(PostExecutionThread postExecutionThread) {
+    this.postExecutionThread = postExecutionThread;
+  }
+
+  /**
+   * Builds an {@link Observable} which will be used when executing the current {@link
+   * UseCaseDisk}.
+   */
+  protected abstract Observable buildUseCaseObservable();
+
+  /**
+   * Executes the current use case.
+   *
+   * @param UseCaseSubscriber The guy who will be listen to the observable build
+   * with {@link #buildUseCaseObservable()}.
+   */
+  @SuppressWarnings("unchecked") public void execute(Subscriber UseCaseSubscriber) {
+    this.subscription = this.buildUseCaseObservable()
+        .subscribeOn(postExecutionThread.getScheduler())
+        .observeOn(postExecutionThread.getScheduler())
+        .subscribe(UseCaseSubscriber);
+  }
+
+  /**
+   * Unsubscribes from current {@link Subscription}.
+   */
+  public void unsubscribe() {
+    if (!subscription.isUnsubscribed()) {
+      subscription.unsubscribe();
     }
-
-    /**
-     * Builds an {@link Observable} which will be used when executing the current {@link UseCaseDisk}.
-     */
-    protected abstract Observable buildUseCaseObservable();
-
-    /**
-     * Executes the current use case.
-     *
-     * @param UseCaseSubscriber The guy who will be listen to the observable build
-     *                          with {@link #buildUseCaseObservable()}.
-     */
-    @SuppressWarnings("unchecked")
-    public void execute(Subscriber UseCaseSubscriber) {
-        this.subscription = this.buildUseCaseObservable()
-                .subscribeOn(postExecutionThread.getScheduler())
-                .observeOn(postExecutionThread.getScheduler())
-                .subscribe(UseCaseSubscriber);
-    }
-
-    /**
-     * Unsubscribes from current {@link Subscription}.
-     */
-    public void unsubscribe() {
-        if (!subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
-        }
-    }
+  }
 }

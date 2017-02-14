@@ -7,7 +7,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
@@ -18,16 +21,9 @@ import com.tribe.app.presentation.view.adapter.manager.LiveLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewmodel.UserLive;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
 public class LiveTestActivity extends BaseActivity {

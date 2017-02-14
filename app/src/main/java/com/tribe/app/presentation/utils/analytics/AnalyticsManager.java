@@ -3,18 +3,16 @@ package com.tribe.app.presentation.utils.analytics;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.AudioDefault;
 import com.tribe.app.presentation.utils.preferences.Filter;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
-import com.tribe.app.presentation.utils.PermissionUtils;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -49,7 +47,8 @@ import javax.inject.Singleton;
       bundle.putString(TagManagerConstants.user_display_name, user.getUsername());
       bundle.putString(TagManagerConstants.user_username, user.getUsername());
       bundle.putBoolean(TagManagerConstants.user_facebook_connected, FacebookUtils.isLoggedIn());
-      bundle.putBoolean(TagManagerConstants.user_has_profile_picture, !StringUtils.isEmpty(user.getProfilePicture()));
+      bundle.putBoolean(TagManagerConstants.user_has_profile_picture,
+          !StringUtils.isEmpty(user.getProfilePicture()));
     }
 
     bundle.putBoolean(TagManagerConstants.user_address_book_enabled,

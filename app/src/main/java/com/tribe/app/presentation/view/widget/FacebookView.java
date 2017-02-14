@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-
 import com.tribe.app.R;
 
 /**
@@ -14,24 +13,25 @@ import com.tribe.app.R;
  */
 public class FacebookView extends LinearLayout {
 
-    public FacebookView(Context context) {
-        this(context, null);
-        init(context, null);
-    }
+  public FacebookView(Context context) {
+    this(context, null);
+    init(context, null);
+  }
 
-    public FacebookView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
-    }
+  public FacebookView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context, attrs);
+  }
 
-    private void init(Context context, AttributeSet attrs) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.view_facebook, this, true);
+  private void init(Context context, AttributeSet attrs) {
+    LayoutInflater inflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.view_facebook, this, true);
 
-        setBackgroundResource(R.color.blue_facebook_dark);
-        setOrientation(VERTICAL);
-        setGravity(Gravity.CENTER);
-        setClickable(true);
-    }
+    setBackgroundResource(R.color.blue_facebook_dark);
+    setOrientation(VERTICAL);
+    setGravity(Gravity.CENTER);
+    setClickable(true);
+  }
 }
 

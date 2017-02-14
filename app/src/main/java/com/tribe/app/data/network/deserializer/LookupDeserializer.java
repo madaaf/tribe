@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.UserRealm;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;

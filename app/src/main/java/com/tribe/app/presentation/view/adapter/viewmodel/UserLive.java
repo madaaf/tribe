@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.adapter.viewmodel;
 
 import android.view.View;
-
 import com.tribe.app.domain.entity.User;
 
 /**

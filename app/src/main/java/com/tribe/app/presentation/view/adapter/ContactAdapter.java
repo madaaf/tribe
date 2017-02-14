@@ -11,7 +11,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.contact.SeparatorAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import java.util.ArrayList;

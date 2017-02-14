@@ -1,11 +1,9 @@
 package com.tribe.app.presentation;
 
 import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
-
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 

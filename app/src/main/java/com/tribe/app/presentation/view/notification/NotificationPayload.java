@@ -9,8 +9,7 @@ import java.io.Serializable;
 
 public class NotificationPayload implements Serializable {
 
-  @StringDef({ CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP })
-  public @interface ClickActionType {
+  @StringDef({ CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP }) public @interface ClickActionType {
   }
 
   public static final String CLICK_ACTION_ONLINE = "online";

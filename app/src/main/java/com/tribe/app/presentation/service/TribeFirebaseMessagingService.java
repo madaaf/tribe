@@ -12,8 +12,7 @@ import timber.log.Timber;
  */
 public class TribeFirebaseMessagingService extends FirebaseMessagingService {
 
-  @Inject
-  NotificationBuilder notificationBuilder;
+  @Inject NotificationBuilder notificationBuilder;
 
   @Override public void onCreate() {
     super.onCreate();

@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Friendship;
-
 import java.util.List;
 
 /**
@@ -9,15 +8,15 @@ import java.util.List;
  */
 public interface SettingsMVPView extends UpdateUserMVPView {
 
-    void goToLauncher();
+  void goToLauncher();
 
-    void onFBContactsSync(int count);
+  void onFBContactsSync(int count);
 
-    void onAddressBookContactSync(int count);
+  void onAddressBookContactSync(int count);
 
-    void onSuccessSync();
+  void onSuccessSync();
 
-    void friendshipUpdated(Friendship friendship);
+  void friendshipUpdated(Friendship friendship);
 
-    void renderBlockedFriendshipList(List<Friendship> friendshipList);
+  void renderBlockedFriendshipList(List<Friendship> friendshipList);
 }

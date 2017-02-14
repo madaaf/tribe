@@ -13,16 +13,13 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
-
 import java.util.Random;
-
 import javax.inject.Inject;
 
 /**

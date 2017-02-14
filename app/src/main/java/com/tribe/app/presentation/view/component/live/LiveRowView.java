@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -25,7 +24,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
@@ -147,7 +145,6 @@ public class LiveRowView extends FrameLayout {
             });
           }
         }));
-
 
     isWaiting = false;
     viewWaiting.incomingPeer();

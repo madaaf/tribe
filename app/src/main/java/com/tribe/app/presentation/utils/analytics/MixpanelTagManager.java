@@ -1,19 +1,15 @@
 package com.tribe.app.presentation.utils.analytics;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
-
+import javax.inject.Singleton;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.inject.Singleton;
 
 /**
  * Created by tiago on 22/09/2016.

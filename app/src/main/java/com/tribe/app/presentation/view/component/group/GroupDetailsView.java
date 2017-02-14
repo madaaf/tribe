@@ -10,7 +10,6 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
-import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -19,7 +18,6 @@ import com.tribe.app.presentation.view.adapter.MemberListAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.MemberListLayoutManager;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import java.io.Serializable;
@@ -29,7 +27,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 11/28/2016.
@@ -121,19 +118,17 @@ public class GroupDetailsView extends LinearLayout {
     recyclerView.addItemDecoration(
         new DividerFirstLastItemDecoration(screenUtils.dpToPx(15), screenUtils.dpToPx(10), 1));
 
-    subscriptions.add(adapter.clickAdd()
-        .map(view -> {
-          GroupMember groupMember = (GroupMember) adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view));
-          return groupMember.getUser();
-        })
-        .subscribe(clickAddFriend));
+    subscriptions.add(adapter.clickAdd().map(view -> {
+      GroupMember groupMember =
+          (GroupMember) adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view));
+      return groupMember.getUser();
+    }).subscribe(clickAddFriend));
 
-    subscriptions.add(adapter.onHangLive()
-        .map(view -> {
-          GroupMember groupMember = (GroupMember) adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view));
-          return groupMember.getFriendship();
-        })
-        .subscribe(onHangLive));
+    subscriptions.add(adapter.onHangLive().map(view -> {
+      GroupMember groupMember =
+          (GroupMember) adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view));
+      return groupMember.getFriendship();
+    }).subscribe(onHangLive));
   }
 
   public void updateGroup(Group group) {

@@ -9,22 +9,18 @@ import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Pair;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.FutureTarget;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FileUtils;
-
 import com.tribe.app.presentation.view.camera.utils.BitmapFactoryUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

@@ -4,80 +4,89 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_marginTop="0dp"
-    android:layout_marginBottom="0dp">
+    android:layout_marginBottom="0dp"
+    >
+
+  <LinearLayout
+      android:id="@+id/layoutParent"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@drawable/shape_rect_white_rounded_corners"
+      android:orientation="vertical"
+      >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/med_icon_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/vertical_margin_large"
+        android:scaleType="fitCenter"
+        android:src="@drawable/picto_support"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/textTitle"
+        style="@style/Headline.Black.1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/vertical_margin_mid"
+        android:gravity="center"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/textSummary"
+        style="@style/Title.1.Black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="@dimen/horizontal_margin_xlarge"
+        android:layout_marginStart="@dimen/horizontal_margin_xlarge"
+        android:layout_marginTop="@dimen/vertical_margin_smaller"
+        android:gravity="center"
+        />
 
     <LinearLayout
-        android:id="@+id/layoutParent"
+        android:id="@+id/layoutBottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/shape_rect_white_rounded_corners"
-        android:orientation="vertical">
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_marginTop="@dimen/vertical_margin_xlarge"
+        android:orientation="horizontal"
+        >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/med_icon_size"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/vertical_margin_large"
-            android:scaleType="fitCenter"
-            android:src="@drawable/picto_support" />
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/textCancel"
+          style="@style/Title.2.White"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1"
+          android:background="@drawable/shape_rect_grey_auth_rounded_bottom_left_corner"
+          android:gravity="center"
+          />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/textTitle"
-            style="@style/Headline.Black.1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/vertical_margin_mid"
-            android:gravity="center" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/textSummary"
-            style="@style/Title.1.Black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginEnd="@dimen/horizontal_margin_xlarge"
-            android:layout_marginStart="@dimen/horizontal_margin_xlarge"
-            android:layout_marginTop="@dimen/vertical_margin_smaller"
-            android:gravity="center" />
-
-        <LinearLayout
-            android:id="@+id/layoutBottom"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_bar_height"
-            android:layout_marginTop="@dimen/vertical_margin_xlarge"
-            android:orientation="horizontal">
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/textCancel"
-                style="@style/Title.2.White"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/shape_rect_grey_auth_rounded_bottom_left_corner"
-                android:gravity="center" />
-
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/textConfirm"
-                style="@style/Title.2.White"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/shape_rect_blue_opaue_rounded_bottom_right"
-                android:gravity="center" />
-
-        </LinearLayout>
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/textConfirm"
+          style="@style/Title.2.White"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1"
+          android:background="@drawable/shape_rect_blue_opaue_rounded_bottom_right"
+          android:gravity="center"
+          />
 
     </LinearLayout>
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/textTrans"
-        style="@style/Title.1.White"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_margin_mid"
-        android:alpha="0"
-        android:gravity="center"
-        android:text="@string/onboarding_popup_error_team_notified" />
+  </LinearLayout>
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/textTrans"
+      style="@style/Title.1.White"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/vertical_margin_mid"
+      android:alpha="0"
+      android:gravity="center"
+      android:text="@string/onboarding_popup_error_team_notified"
+      />
 
 </LinearLayout>

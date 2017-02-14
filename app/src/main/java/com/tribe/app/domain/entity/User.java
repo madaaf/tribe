@@ -1,6 +1,5 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.presentation.view.utils.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -306,8 +305,8 @@ public class User implements Serializable {
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {
-      if (!friendship.getSubId()
-          .equals(Recipient.ID_EMPTY) && !friendship.getSubId().equals(this.id)) {
+      if (!friendship.getSubId().equals(Recipient.ID_EMPTY) && !friendship.getSubId()
+          .equals(this.id)) {
         GroupMember groupMember = new GroupMember(friendship.getFriend());
         groupMember.setFriend(true);
         userList.add(groupMember);

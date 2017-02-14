@@ -4,5 +4,5 @@
 
   <stroke
       android:color="@color/white.opacity.10"
-      android:width="7.5dp"/>
+      android:width="7.5dp" />
 </shape>

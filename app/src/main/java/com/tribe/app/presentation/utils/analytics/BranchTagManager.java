@@ -3,13 +3,10 @@ package com.tribe.app.presentation.utils.analytics;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
+import io.branch.referral.Branch;
+import javax.inject.Singleton;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.inject.Singleton;
-
-import io.branch.referral.Branch;
 
 /**
  * Created by tiago on 22/09/2016.

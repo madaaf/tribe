@@ -1,13 +1,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
+  <item>
+    <shape android:shape="rectangle">
 
-            <stroke
-                android:width="@dimen/camera_stroke_width"
-                android:antialias="true"
-                android:color="@color/white.opacity.40" />
+      <stroke
+          android:width="@dimen/camera_stroke_width"
+          android:antialias="true"
+          android:color="@color/white.opacity.40" />
 
-            <solid android:color="@android:color/transparent" />
-        </shape>
-    </item>
+      <solid android:color="@android:color/transparent" />
+    </shape>
+  </item>
 </layer-list>

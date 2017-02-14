@@ -4,13 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-
-import com.tribe.app.R;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.tribe.app.R;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 
 /**
  * Created by horatiothomas on 10/18/16.

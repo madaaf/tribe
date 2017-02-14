@@ -6,17 +6,15 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-
 import java.lang.reflect.Type;
 
 public class UserListDeserializer<T> implements JsonDeserializer<T> {
 
-    @Override
-    public T deserialize(JsonElement je, Type typeOfT,
-                         JsonDeserializationContext context) throws JsonParseException {
+  @Override public T deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
 
-        JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("users");
+    JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("users");
 
-        return new Gson().fromJson(results, typeOfT);
-    }
+    return new Gson().fromJson(results, typeOfT);
+  }
 }

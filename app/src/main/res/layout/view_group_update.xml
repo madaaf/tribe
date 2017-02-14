@@ -16,7 +16,7 @@
       android:focusableInTouchMode="true"
       >
 
-    <requestFocus/>
+    <requestFocus />
   </LinearLayout>
 
   <RelativeLayout
@@ -68,7 +68,7 @@
         />
   </RelativeLayout>
 
-  <include layout="@layout/view_separator_simple"/>
+  <include layout="@layout/view_separator_simple" />
 
   <com.tribe.app.presentation.view.component.ActionView
       android:id="@+id/viewActionNotifications"
@@ -79,7 +79,7 @@
       app:actionType="toggle"
       />
 
-  <include layout="@layout/view_separator_simple"/>
+  <include layout="@layout/view_separator_simple" />
 
   <com.tribe.app.presentation.view.component.ActionView
       android:id="@+id/viewActionLeaveGroup"
@@ -90,6 +90,6 @@
       app:actionType="regular"
       />
 
-  <include layout="@layout/view_separator_simple"/>
+  <include layout="@layout/view_separator_simple" />
 
 </com.tribe.app.presentation.view.component.group.UpdateGroupView>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <include layout="@layout/view_tile_background"/>
+  <include layout="@layout/view_tile_background" />
 
   <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
       android:id="@+id/avatar"
@@ -14,6 +14,6 @@
       app:avatarLiveType="connected"
       />
 
-  <include layout="@layout/view_tile_grid_base_online"/>
+  <include layout="@layout/view_tile_grid_base_online" />
 
 </merge>

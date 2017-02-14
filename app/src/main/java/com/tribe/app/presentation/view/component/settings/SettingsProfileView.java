@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -13,11 +14,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 

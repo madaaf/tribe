@@ -1,10 +1,8 @@
 package com.tribe.app.presentation.view.adapter.filter;
 
 import android.widget.Filter;
-
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
 

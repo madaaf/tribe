@@ -15,7 +15,6 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 06/05/2016.

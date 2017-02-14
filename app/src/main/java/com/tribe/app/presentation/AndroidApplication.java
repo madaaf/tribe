@@ -20,10 +20,6 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import io.branch.referral.Branch;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmObjectSchema;
-import io.realm.RealmSchema;
-import java.util.Date;
-import rx.Subscription;
 import timber.log.Timber;
 
 /**
@@ -85,9 +81,8 @@ public class AndroidApplication extends Application {
 
   private void initRealm() {
     Realm.init(this);
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(5)
-        .deleteRealmIfMigrationNeeded()
-        .build();
+    RealmConfiguration realmConfiguration =
+        new RealmConfiguration.Builder().schemaVersion(5).deleteRealmIfMigrationNeeded().build();
     Realm.setDefaultConfiguration(realmConfiguration);
   }
 
@@ -116,13 +111,11 @@ public class AndroidApplication extends Application {
 
   private class SampleAppStateListener implements AppStateListener {
 
-    @Override
-    public void onAppDidEnterForeground() {
+    @Override public void onAppDidEnterForeground() {
       appState = AppState.FOREGROUND;
     }
 
-    @Override
-    public void onAppDidEnterBackground() {
+    @Override public void onAppDidEnterBackground() {
       appState = AppState.BACKGROUND;
     }
   }

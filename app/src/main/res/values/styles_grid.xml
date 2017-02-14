@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Text.Grid.Name">
-        <item name="customFont">Roboto-Regular.ttf</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@android:color/white</item>
-    </style>
+  <style name="Text.Grid.Name">
+    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="android:textSize">13sp</item>
+    <item name="android:singleLine">true</item>
+    <item name="android:textColor">@android:color/white</item>
+  </style>
 
-    <style name="Text.Grid.Status">
-        <item name="customFont">Roboto-Regular.ttf</item>
-        <item name="android:textSize">11sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/black.opacity.40</item>
-    </style>
+  <style name="Text.Grid.Status">
+    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="android:textSize">11sp</item>
+    <item name="android:singleLine">true</item>
+    <item name="android:textColor">@color/black.opacity.40</item>
+  </style>
 
-    <style name="Text.Grid.Me.Name">
-        <item name="customFont">Roboto-Regular.ttf</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:singleLine">false</item>
-        <item name="android:lines">2</item>
-        <item name="android:textColor">@android:color/black</item>
-    </style>
+  <style name="Text.Grid.Me.Name">
+    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="android:textSize">13sp</item>
+    <item name="android:singleLine">false</item>
+    <item name="android:lines">2</item>
+    <item name="android:textColor">@android:color/black</item>
+  </style>
 
-    <style name="Text.Grid.Me.Points">
-        <item name="customFont">Roboto-Bold.ttf</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/yellow</item>
-    </style>
+  <style name="Text.Grid.Me.Points">
+    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="android:textSize">13sp</item>
+    <item name="android:singleLine">true</item>
+    <item name="android:textColor">@color/yellow</item>
+  </style>
 
-    <style name="Text.Grid.Me.Label">
-        <item name="customFont">Roboto-Regular.ttf</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/black.opacity.40</item>
-    </style>
+  <style name="Text.Grid.Me.Label">
+    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="android:textSize">12sp</item>
+    <item name="android:singleLine">true</item>
+    <item name="android:textColor">@color/black.opacity.40</item>
+  </style>
 
-    <style name="Text.Grid" />
+  <style name="Text.Grid" />
 
-    <style name="Text.Grid.Me" />
+  <style name="Text.Grid.Me" />
 
 </resources>

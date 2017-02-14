@@ -1,165 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
-    <LinearLayout
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:focusableInTouchMode="true"
+      android:focusable="true"
+      android:clickable="true"
+      >
+
+    <requestFocus />
+  </LinearLayout>
+
+  <ImageView
+      android:id="@+id/imgBack"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="start|center_vertical"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:paddingStart="1dp"
+      android:background="@drawable/bg_skip_transition"
+      android:foreground="@drawable/selectable_button_oval_light"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_skip"
+      android:scaleX="-1"
+      />
+
+  <FrameLayout
+      android:id="@+id/layoutPin"
+      android:layout_width="116dp"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      >
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editTxtCode"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:clickable="true">
-
-        <requestFocus />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/imgBack"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="start|center_vertical"
-        android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:paddingStart="1dp"
-        android:background="@drawable/bg_skip_transition"
-        android:foreground="@drawable/selectable_button_oval_light"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_skip"
-        android:scaleX="-1" />
-
-    <FrameLayout
-        android:id="@+id/layoutPin"
-        android:layout_width="116dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
-
-        <com.tribe.app.presentation.view.widget.EditTextFont
-            android:id="@+id/editTxtCode"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@null"
-            android:textColor="@android:color/black"
-            android:maxLength="4"
-            android:layout_marginStart="-14dp"
-            android:layout_marginEnd="-14dp"
-            style="@style/Text.Message.Input"
-            android:inputType="phone"
-            android:cursorVisible="false" />
-
-        <ImageView
-            android:id="@+id/pinCircle1"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtCode1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black.Input" />
-
-        <ImageView
-            android:id="@+id/pinCircle2"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_marginStart="34dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtCode2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="34dp"
-            android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black.Input" />
-
-        <ImageView
-            android:id="@+id/pinCircle3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="68dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtCode3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="68dp"
-            android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black.Input" />
-
-        <ImageView
-            android:id="@+id/pinCircle4"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_marginStart="102dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/picto_pin_circle" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtCode4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="102dp"
-            android:layout_gravity="center_vertical"
-            style="@style/Title.1.Black.Input" />
-
-    </FrameLayout>
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressView"
-        android:layout_width="@dimen/code_progress_size"
-        android:layout_height="@dimen/code_progress_size"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:visibility="invisible"
-        app:cpv_animAutostart="true"
-        app:cpv_indeterminate="true"
-        app:cpv_color="@android:color/black"
-        app:cpv_thickness="2dp" />
-
-    <FrameLayout
-        android:id="@+id/layoutCountdown"
-        android:layout_width="@dimen/code_progress_size"
-        android:layout_height="@dimen/code_progress_size"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:visibility="gone">
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtCountdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@style/Small.2.Black" />
-
-        <ProgressBar
-            android:id="@+id/progressBarCountdown"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="@dimen/code_progress_size"
-            android:layout_height="@dimen/code_progress_size"
-            android:layout_gravity="center"
-            android:max="@integer/time_code_countdown"
-            android:progressDrawable="@drawable/progress_circular_countdown" />
-    </FrameLayout>
+        android:background="@null"
+        android:textColor="@android:color/black"
+        android:maxLength="4"
+        android:layout_marginStart="-14dp"
+        android:layout_marginEnd="-14dp"
+        style="@style/Text.Message.Input"
+        android:inputType="phone"
+        android:cursorVisible="false"
+        />
 
     <ImageView
-        android:id="@+id/imgConnected"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:gravity="center"
-        android:src="@drawable/picto_connected" />
+        android:id="@+id/pinCircle1"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/picto_pin_circle"
+        />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtConnected"
+        android:id="@+id/txtCode1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        style="@style/Title.1.Black.Input"
+        />
+
+    <ImageView
+        android:id="@+id/pinCircle2"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="34dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/picto_pin_circle"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtCode2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="34dp"
+        android:layout_gravity="center_vertical"
+        style="@style/Title.1.Black.Input"
+        />
+
+    <ImageView
+        android:id="@+id/pinCircle3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/picto_pin_circle"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtCode3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_gravity="center_vertical"
+        style="@style/Title.1.Black.Input"
+        />
+
+    <ImageView
+        android:id="@+id/pinCircle4"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="102dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/picto_pin_circle"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtCode4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="102dp"
+        android:layout_gravity="center_vertical"
+        style="@style/Title.1.Black.Input"
+        />
+
+  </FrameLayout>
+
+  <com.github.rahatarmanahmed.cpv.CircularProgressView
+      android:id="@+id/progressView"
+      android:layout_width="@dimen/code_progress_size"
+      android:layout_height="@dimen/code_progress_size"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:visibility="invisible"
+      app:cpv_animAutostart="true"
+      app:cpv_indeterminate="true"
+      app:cpv_color="@android:color/black"
+      app:cpv_thickness="2dp"
+      />
+
+  <FrameLayout
+      android:id="@+id/layoutCountdown"
+      android:layout_width="@dimen/code_progress_size"
+      android:layout_height="@dimen/code_progress_size"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:visibility="gone"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtCountdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/onboarding_connected"
-        android:background="@null"
-        style="@style/Headline.Blue" />
+        style="@style/Small.2.Black"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBarCountdown"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="@dimen/code_progress_size"
+        android:layout_height="@dimen/code_progress_size"
+        android:layout_gravity="center"
+        android:max="@integer/time_code_countdown"
+        android:progressDrawable="@drawable/progress_circular_countdown"
+        />
+  </FrameLayout>
+
+  <ImageView
+      android:id="@+id/imgConnected"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:gravity="center"
+      android:src="@drawable/picto_connected"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtConnected"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:text="@string/onboarding_connected"
+      android:background="@null"
+      style="@style/Headline.Blue"
+      />
 </merge>

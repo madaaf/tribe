@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -17,13 +16,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.activity.BaseActivity;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import javax.inject.Inject;
-
 import rx.subscriptions.CompositeSubscription;
 
 public class MediaHiddenActivity extends BaseActivity {

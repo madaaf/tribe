@@ -5,15 +5,12 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-
-import com.tribe.app.R;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.tribe.app.R;
 import rx.Observable;
-import rx.functions.Action;
 import rx.subjects.PublishSubject;
 
 public class LiveNotificationActionView extends LinearLayout {

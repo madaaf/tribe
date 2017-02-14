@@ -1,21 +1,10 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -29,13 +18,8 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.CircleView;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import javax.inject.Inject;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 01/22/17.
@@ -46,8 +30,7 @@ public class LiveAudioView extends FrameLayout {
 
   @Inject PaletteGrid paletteGrid;
 
-  @BindView(R.id.imgAvatar)
-  ImageView imgAvatar;
+  @BindView(R.id.imgAvatar) ImageView imgAvatar;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -99,7 +82,8 @@ public class LiveAudioView extends FrameLayout {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
         .applicationComponent(getApplicationComponent())
-        .build().inject(this);
+        .build()
+        .inject(this);
   }
 
   private void loadAvatar() {

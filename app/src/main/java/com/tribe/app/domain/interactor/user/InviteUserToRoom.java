@@ -16,7 +16,8 @@ public class InviteUserToRoom extends UseCase {
   private String roomId;
   private UserRepository userRepository;
 
-  @Inject public InviteUserToRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  @Inject
+  public InviteUserToRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.userRepository = userRepository;

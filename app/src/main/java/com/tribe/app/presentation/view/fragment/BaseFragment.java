@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
-
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -13,7 +12,6 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-
 import javax.inject.Inject;
 
 /**

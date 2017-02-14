@@ -5,14 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserConnectedGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -93,20 +91,17 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
   public Observable<View> onClickMore() {
     return Observable.merge(userGridAdapterDelegate.onClickMore(),
-        userConnectedGridAdapterDelegate.onClickMore(),
-        userLiveGridAdapterDelegate.onClickMore());
+        userConnectedGridAdapterDelegate.onClickMore(), userLiveGridAdapterDelegate.onClickMore());
   }
 
   public Observable<View> onClick() {
     return Observable.merge(userGridAdapterDelegate.onClick(),
-        userLiveGridAdapterDelegate.onClick(),
-        userConnectedGridAdapterDelegate.onClick());
+        userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
   }
 
   public Observable<View> onLongClick() {
     return Observable.merge(userGridAdapterDelegate.onLongClick(),
-        userLiveGridAdapterDelegate.onLongClick(),
-        userConnectedGridAdapterDelegate.onLongClick());
+        userLiveGridAdapterDelegate.onLongClick(), userConnectedGridAdapterDelegate.onLongClick());
   }
 
   public void setItems(List<Recipient> items) {

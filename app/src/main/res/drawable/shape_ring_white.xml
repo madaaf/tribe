@@ -4,5 +4,5 @@
 
   <stroke
       android:color="@android:color/white"
-      android:width="@dimen/stroke_width_ring"/>
+      android:width="@dimen/stroke_width_ring" />
 </shape>

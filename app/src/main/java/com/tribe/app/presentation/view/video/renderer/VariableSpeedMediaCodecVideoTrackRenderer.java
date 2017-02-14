@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.video.renderer;
 import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
-
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.MediaClock;
 import com.google.android.exoplayer.MediaCodecSelector;

@@ -12,19 +12,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -164,11 +160,13 @@ public final class DialogFactory {
 
     if (recipient instanceof Friendship) {
       if (!recipient.isMute()) {
-        moreTypeList.add(
-            new LabelType(EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)), LabelType.MUTE));
+        moreTypeList.add(new LabelType(
+            EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
+            LabelType.MUTE));
       } else {
-        moreTypeList.add(
-            new LabelType(EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)), LabelType.UNMUTE));
+        moreTypeList.add(new LabelType(
+            EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)),
+            LabelType.UNMUTE));
       }
 
       moreTypeList.add(new LabelType(

@@ -13,7 +13,7 @@
     android:paddingRight="@dimen/horizontal_margin_small"
     >
 
-  <include layout="@layout/item_user_base"/>
+  <include layout="@layout/item_user_base" />
 
   <FrameLayout
       android:id="@+id/btnAdd"

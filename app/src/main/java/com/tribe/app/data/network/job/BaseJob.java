@@ -22,7 +22,6 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.Params;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-
 import javax.inject.Inject;
 
 abstract public class BaseJob extends Job {

@@ -23,7 +23,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.NonNull;
-
 import java.util.LinkedList;
 import java.util.List;
 

@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.User;
@@ -19,7 +18,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.AddAnimationViewHolder;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -28,7 +26,6 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 11/29/16.
@@ -77,7 +74,9 @@ public class MemberListAdapterDelegate extends AddAnimationAdapterDelegate<List<
       animations.get(holder).cancel();
     }
 
-    vh.btnAdd.setVisibility((!user.equals(groupMember.getUser()) && !groupMember.getUser().isInvisibleMode()) ? View.VISIBLE : View.GONE);
+    vh.btnAdd.setVisibility(
+        (!user.equals(groupMember.getUser()) && !groupMember.getUser().isInvisibleMode())
+            ? View.VISIBLE : View.GONE);
     vh.imgGhost.setVisibility(groupMember.getUser().isInvisibleMode() ? View.VISIBLE : View.GONE);
 
     setFriendLabel(vh, groupMember.isFriend());

@@ -6,7 +6,6 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.presentation.view.utils.Constants;
 import java.util.List;
 
 /**

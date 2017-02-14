@@ -8,16 +8,14 @@ import android.view.LayoutInflater;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by tiago on 11/19/2016.

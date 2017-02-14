@@ -1,10 +1,8 @@
 package com.tribe.app.presentation.internal.di.components;
 
 import android.app.Activity;
-
-import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-
+import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import dagger.Component;
 
 /**

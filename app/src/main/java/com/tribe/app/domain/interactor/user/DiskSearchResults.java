@@ -3,9 +3,7 @@ package com.tribe.app.domain.interactor.user;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
 /**

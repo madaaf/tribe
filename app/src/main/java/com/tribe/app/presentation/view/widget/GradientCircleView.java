@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.util.AttributeSet;
-
 import com.tribe.app.R;
 
 public class GradientCircleView extends android.view.View {

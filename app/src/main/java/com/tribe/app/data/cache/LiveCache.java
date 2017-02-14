@@ -2,9 +2,7 @@ package com.tribe.app.data.cache;
 
 import com.tribe.app.domain.entity.Invite;
 import java.util.Map;
-
 import javax.inject.Singleton;
-
 import rx.Observable;
 
 /**

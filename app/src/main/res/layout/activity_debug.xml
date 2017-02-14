@@ -2,35 +2,40 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    >
 
-    <ScrollView
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true"
+      >
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/viewClearTutorial"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/bottom_bar_height"
+          android:layout_gravity="center"
+          android:foreground="@drawable/selectable_button"
+          android:paddingLeft="@dimen/horizontal_margin_small"
+          android:gravity="center|left"
+          android:text="Clear Tutorial"
+          android:clickable="true"
+          style="@style/Headline.Black.Regular"
+          />
 
-            <com.tribe.app.presentation.view.widget.TextViewFont
-                android:id="@+id/viewClearTutorial"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_bar_height"
-                android:layout_gravity="center"
-                android:foreground="@drawable/selectable_button"
-                android:paddingLeft="@dimen/horizontal_margin_small"
-                android:gravity="center|left"
-                android:text="Clear Tutorial"
-                android:clickable="true"
-                style="@style/Headline.Black.Regular" />
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:background="@color/grey.light" />
-
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
+  </ScrollView>
 </FrameLayout>

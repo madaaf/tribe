@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
 import android.graphics.Typeface;
-
 import java.util.HashMap;
 
 /**

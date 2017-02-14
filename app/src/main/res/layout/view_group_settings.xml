@@ -5,48 +5,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.GroupActivity"
-    android:background="@color/grey.background.profile_info">
+    android:background="@color/grey.background.profile_info"
+    >
 
-    <ScrollView
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true"
+      >
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionInfos"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionType="hierarchy_with_image"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionInfos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionType="hierarchy_with_image" />
+      <include layout="@layout/view_separator" />
 
-            <include layout="@layout/view_separator" />
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionNotifications"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/group_details_notifications_title"
+          app:actionBody="@string/group_details_notifications_subtitle"
+          app:actionType="toggle"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionNotifications"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/group_details_notifications_title"
-                app:actionBody="@string/group_details_notifications_subtitle"
-                app:actionType="toggle" />
+      <include layout="@layout/view_separator" />
 
-            <include layout="@layout/view_separator" />
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionLeaveGroup"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          app:actionTitle="@string/group_details_leave_title"
+          app:actionBody="@string/group_details_leave_subtitle"
+          app:actionType="critical"
+          />
 
-            <com.tribe.app.presentation.view.component.ActionView
-                android:id="@+id/viewActionLeaveGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:actionTitle="@string/group_details_leave_title"
-                app:actionBody="@string/group_details_leave_subtitle"
-                app:actionType="critical" />
-
-            <include layout="@layout/view_separator_simple" />
-        </LinearLayout>
-    </ScrollView>
+      <include layout="@layout/view_separator_simple" />
+    </LinearLayout>
+  </ScrollView>
 </com.tribe.app.presentation.view.component.group.SettingsGroupView>

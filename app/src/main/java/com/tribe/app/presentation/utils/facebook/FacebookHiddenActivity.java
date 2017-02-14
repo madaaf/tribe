@@ -3,7 +3,6 @@ package com.tribe.app.presentation.utils.facebook;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -11,9 +10,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.activity.BaseActivity;
-
 import java.util.Arrays;
-
 import javax.inject.Inject;
 
 public class FacebookHiddenActivity extends BaseActivity {

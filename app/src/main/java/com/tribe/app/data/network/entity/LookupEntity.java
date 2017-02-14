@@ -1,7 +1,6 @@
 package com.tribe.app.data.network.entity;
 
 import com.tribe.app.data.realm.UserRealm;
-
 import java.util.List;
 
 /**

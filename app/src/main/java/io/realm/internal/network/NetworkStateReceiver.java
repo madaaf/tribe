@@ -21,11 +21,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
+import io.realm.internal.Util;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import io.realm.internal.Util;
 
 /**
  * This class is responsible for keeping track of system events related to the network so it can

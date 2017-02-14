@@ -7,7 +7,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.media.SoundPool;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.text.format.DateUtils;
@@ -15,7 +14,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -437,7 +435,8 @@ public class TileView extends SquareCardView {
     getDropAnimator(true).start();
     ViewCompat.setElevation(avatar, 10);
     ViewCompat.setElevation(viewBG, 10);
-    startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.jiggle));
+    startAnimation(
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.jiggle));
   }
 
   public void endDrop() {

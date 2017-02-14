@@ -5,9 +5,7 @@ import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
 /**

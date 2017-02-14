@@ -13,8 +13,7 @@ import java.util.Date;
  */
 public class UserRealm extends RealmObject {
 
-  @StringDef({UPDATED_AT})
-  public @interface UserRealmAttributes {
+  @StringDef({ UPDATED_AT }) public @interface UserRealmAttributes {
   }
 
   public static final String DISPLAY_NAME = "display_name";
@@ -26,8 +25,7 @@ public class UserRealm extends RealmObject {
   public static final String UPDATED_AT = "updated_at";
   public static final String PUSH_NOTIF = "push_notif";
 
-  @PrimaryKey
-  private String id;
+  @PrimaryKey private String id;
 
   private Date created_at;
   private Date updated_at;
@@ -44,14 +42,11 @@ public class UserRealm extends RealmObject {
   private boolean push_notif = true;
   private Date last_seen_at;
 
-  @Ignore
-  private RealmList<GroupRealm> groups;
+  @Ignore private RealmList<GroupRealm> groups;
 
-  @Ignore
-  private JsonObject jsonPayloadUpdate;
+  @Ignore private JsonObject jsonPayloadUpdate;
 
-  @Ignore
-  private boolean is_online = false;
+  @Ignore private boolean is_online = false;
 
   public UserRealm() {
     memberships = new RealmList<>();
@@ -202,8 +197,7 @@ public class UserRealm extends RealmObject {
     return jsonPayloadUpdate;
   }
 
-  @Override
-  public boolean equals(Object o) {
+  @Override public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || !(o instanceof UserRealm)) return false;
 

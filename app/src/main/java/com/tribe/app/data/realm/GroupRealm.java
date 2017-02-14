@@ -2,15 +2,13 @@ package com.tribe.app.data.realm;
 
 import com.google.gson.JsonObject;
 import com.tribe.app.presentation.utils.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by tiago on 30/05/2016.

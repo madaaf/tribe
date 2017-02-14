@@ -7,11 +7,11 @@ import com.tribe.app.domain.entity.User;
  */
 public interface UpdateUserMVPView extends LoadDataMVPView {
 
-    void successUpdateUser(User user);
+  void successUpdateUser(User user);
 
-    void successFacebookLogin();
+  void successFacebookLogin();
 
-    void errorFacebookLogin();
+  void errorFacebookLogin();
 
-    void usernameResult(Boolean available);
+  void usernameResult(Boolean available);
 }

@@ -9,49 +9,49 @@ import com.tribe.app.domain.entity.Membership;
  */
 public interface GroupMVPView extends MVPView {
 
-    void onGroupInfosSuccess(Group group);
+  void onGroupInfosSuccess(Group group);
 
-    void onGroupInfosFailed();
+  void onGroupInfosFailed();
 
-    void onMembershipInfosSuccess(Membership membership);
+  void onMembershipInfosSuccess(Membership membership);
 
-    void onMembershipInfosFailed();
+  void onMembershipInfosFailed();
 
-    void onGetMembersFailed();
+  void onGetMembersFailed();
 
-    void onGroupCreatedSuccess(Membership membership);
+  void onGroupCreatedSuccess(Membership membership);
 
-    void onGroupCreatedError();
+  void onGroupCreatedError();
 
-    void onGroupUpdatedSuccess(Group group);
+  void onGroupUpdatedSuccess(Group group);
 
-    void onGroupUpdatedError();
+  void onGroupUpdatedError();
 
-    void onMemberAddedSuccess();
+  void onMemberAddedSuccess();
 
-    void onMemberAddedError();
+  void onMemberAddedError();
 
-    void onLeaveGroupSuccess();
+  void onLeaveGroupSuccess();
 
-    void onLeaveGroupError();
+  void onLeaveGroupError();
 
-    void onUserAddSuccess(Friendship friendship);
+  void onUserAddSuccess(Friendship friendship);
 
-    void onUserAddError();
+  void onUserAddError();
 
-    void onMemberRemoveError();
+  void onMemberRemoveError();
 
-    void onMemberRemoveSuccess();
+  void onMemberRemoveSuccess();
 
-    void onAddAdminError();
+  void onAddAdminError();
 
-    void onAddAdminSuccess();
+  void onAddAdminSuccess();
 
-    void onRemoveAdminError();
+  void onRemoveAdminError();
 
-    void onRemoveAdminSuccess();
+  void onRemoveAdminSuccess();
 
-    void showLoading();
+  void showLoading();
 
-    void hideLoading();
+  void hideLoading();
 }

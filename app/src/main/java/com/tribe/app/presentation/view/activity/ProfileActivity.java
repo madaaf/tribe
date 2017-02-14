@@ -10,7 +10,10 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
@@ -31,13 +34,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import rx.subscriptions.CompositeSubscription;
 
 import static android.view.View.GONE;

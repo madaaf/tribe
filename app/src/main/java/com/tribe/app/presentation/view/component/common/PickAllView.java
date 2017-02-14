@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -19,14 +21,9 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by tiago on 12/20/16.

@@ -16,13 +16,11 @@
 package com.tribe.app.data.executor;
 
 import com.tribe.app.domain.executor.ThreadExecutor;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 

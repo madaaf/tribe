@@ -37,6 +37,13 @@ public class RoomConfiguration implements Serializable {
   }
 
   @Override public String toString() {
-    return "room_id : " + room_id + "\n" + "webSocketUrl : " + websocketUrl + "\n" + rtcPeerConfiguration + "\n";
+    return "room_id : "
+        + room_id
+        + "\n"
+        + "webSocketUrl : "
+        + websocketUrl
+        + "\n"
+        + rtcPeerConfiguration
+        + "\n";
   }
 }

@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.adapter.delegate;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
-
 import rx.subscriptions.CompositeSubscription;
 
 /**

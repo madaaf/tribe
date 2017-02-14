@@ -4,15 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.presentation.view.adapter.delegate.tribe.LabelSheetAdapterDelegate;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
 /**

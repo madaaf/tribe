@@ -24,7 +24,7 @@
         app:actionType="hierarchy"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionVisible"
@@ -35,7 +35,7 @@
         app:actionType="toggle"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionRateUs"
@@ -46,7 +46,7 @@
         app:actionType="regular"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionFollow"
@@ -57,7 +57,7 @@
         app:actionType="regular"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionLogout"
@@ -68,7 +68,7 @@
         app:actionType="regular"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
   </LinearLayout>
 
   <ImageView

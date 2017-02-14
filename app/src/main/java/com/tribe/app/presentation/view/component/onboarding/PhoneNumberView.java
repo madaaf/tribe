@@ -9,7 +9,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -22,12 +24,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;

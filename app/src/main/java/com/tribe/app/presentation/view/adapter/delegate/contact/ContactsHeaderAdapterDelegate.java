@@ -47,8 +47,7 @@ public class ContactsHeaderAdapterDelegate extends RxAdapterDelegate<List<Object
       vh.txtSubLabel.setText(
           EmojiParser.demojizedText(context.getString((Integer) items.get(position))));
     } else {
-      vh.txtSubLabel.setText(
-          EmojiParser.demojizedText((String) items.get(position)));
+      vh.txtSubLabel.setText(EmojiParser.demojizedText((String) items.get(position)));
     }
   }
 

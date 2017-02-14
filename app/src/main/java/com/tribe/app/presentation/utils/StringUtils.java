@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.utils;
 
 import android.util.Patterns;
-
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;

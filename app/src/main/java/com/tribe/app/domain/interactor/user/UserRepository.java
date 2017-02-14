@@ -7,7 +7,6 @@ package com.tribe.app.domain.interactor.user;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;

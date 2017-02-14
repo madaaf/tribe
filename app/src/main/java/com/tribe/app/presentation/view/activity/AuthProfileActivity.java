@@ -22,7 +22,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;

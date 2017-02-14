@@ -2,7 +2,6 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.domain.entity.SearchResult;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 

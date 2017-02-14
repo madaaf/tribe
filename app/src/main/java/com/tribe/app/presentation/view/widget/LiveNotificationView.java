@@ -257,9 +257,7 @@ public class LiveNotificationView extends LinearLayout {
         getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
 
     LiveNotificationActionView actionView =
-        new LiveNotificationActionView.Builder(getContext(), action)
-            .isLast(isLast)
-            .build();
+        new LiveNotificationActionView.Builder(getContext(), action).isLast(isLast).build();
 
     ViewGroup.LayoutParams params =
         new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sizeActionItem);

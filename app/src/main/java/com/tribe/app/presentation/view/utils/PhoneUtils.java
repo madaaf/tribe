@@ -2,14 +2,11 @@ package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
 import android.telephony.PhoneNumberUtils;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.tribe.app.data.network.entity.LoginEntity;
-
 import java.util.LinkedList;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 

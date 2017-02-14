@@ -1,9 +1,8 @@
 package com.tribe.app.data.realm;
 
-import java.util.Date;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import java.util.Date;
 
 /**
  * Created by tiago on 11/30/2016.

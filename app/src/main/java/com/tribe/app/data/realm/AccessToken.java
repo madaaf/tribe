@@ -1,8 +1,7 @@
 package com.tribe.app.data.realm;
 
-import javax.inject.Singleton;
-
 import io.realm.RealmObject;
+import javax.inject.Singleton;
 
 @Singleton public class AccessToken extends RealmObject {
 

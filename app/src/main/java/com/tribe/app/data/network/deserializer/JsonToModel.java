@@ -7,7 +7,6 @@ import com.google.gson.JsonParser;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -132,18 +131,21 @@ import timber.log.Timber;
               onInviteRemoved.onNext(invite);
             } else if (entry.getKey().contains(WSService.FRIENDSHIP_CREATED_SUFFIX)) {
               Timber.d("Friendship created : " + entry.getValue().toString());
-              FriendshipRealm friendshipRealm = gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
+              FriendshipRealm friendshipRealm =
+                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
               //onCreatedFriendship.onNext(friendshipRealm);
             } else if (entry.getKey().contains(WSService.FRIENDSHIP_REMOVED_SUFFIX)) {
               Timber.d("Friendship removed : " + entry.getValue().toString());
-              FriendshipRealm friendshipRealm = gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
+              FriendshipRealm friendshipRealm =
+                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
               onRemovedFriendship.onNext(friendshipRealm);
             } else if (entry.getKey().contains(WSService.MEMBERSHIP_CREATED_SUFFIX)) {
               Timber.d("Membership created : " + entry.getValue().toString());
               //onCreatedMembership.onNext(entry.getValue().getAsJsonObject().get("group_id").getAsString());
             } else if (entry.getKey().contains(WSService.MEMBERSHIP_REMOVED_SUFFIX)) {
               Timber.d("Membership removed : " + entry.getValue().toString());
-              onRemovedMembership.onNext(entry.getValue().getAsJsonObject().get("id").getAsString());
+              onRemovedMembership.onNext(
+                  entry.getValue().getAsJsonObject().get("id").getAsString());
             }
           }
         }

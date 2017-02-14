@@ -10,7 +10,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.Installation;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;

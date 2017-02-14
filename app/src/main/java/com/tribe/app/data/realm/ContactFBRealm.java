@@ -1,10 +1,9 @@
 package com.tribe.app.data.realm;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import java.util.List;
 
 /**
  * Created by tiago on 05/09/2016.

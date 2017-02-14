@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.realm.FriendshipRealm;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;

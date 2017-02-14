@@ -4,64 +4,72 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@null">
+    android:background="@null"
+    >
 
-    <ImageView
+  <ImageView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="55dp"
+      android:src="@drawable/img_rating"
+      android:scaleType="centerInside"
+      />
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="181dp"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="@dimen/bottom_bar_height"
+      android:background="@android:color/white"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="55dp"
-        android:src="@drawable/img_rating"
-        android:scaleType="centerInside" />
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="40dp"
+        android:text="@string/rating_reviews"
+        android:gravity="center"
+        android:maxLines="1"
+        style="@style/Body.Two.Black40"
+        />
 
-    <FrameLayout
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtReviewOne"
         android:layout_width="match_parent"
-        android:layout_height="181dp"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/bottom_bar_height"
-        android:background="@android:color/white">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/permission_screen_location_description"
+        android:gravity="center"
+        style="@style/Headline.Black"
+        />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="40dp"
-            android:text="@string/rating_reviews"
-            android:gravity="center"
-            android:maxLines="1"
-            style="@style/Body.Two.Black40" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtReviewOne"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/permission_screen_location_description"
-            android:gravity="center"
-            style="@style/Headline.Black" />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtReviewTwo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/permission_screen_camera_mic_description"
-            android:gravity="center"
-            style="@style/Headline.Black" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="40dp"
-            android:src="@drawable/picto_stars" />
-    </FrameLayout>
-
-    <View
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtReviewTwo"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="241dp"
-        android:background="@color/grey.light" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/permission_screen_camera_mic_description"
+        android:gravity="center"
+        style="@style/Headline.Black"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="40dp"
+        android:src="@drawable/picto_stars"
+        />
+  </FrameLayout>
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="241dp"
+      android:background="@color/grey.light"
+      />
 
 </FrameLayout>

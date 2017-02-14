@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.utils;
 
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
-
 import java.util.List;
 
 /**

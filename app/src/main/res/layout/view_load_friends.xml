@@ -1,66 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
-    <FrameLayout
-        android:layout_width="@dimen/load_friends_height"
-        android:layout_height="match_parent"
-        android:background="@null">
+  <FrameLayout
+      android:layout_width="@dimen/load_friends_height"
+      android:layout_height="match_parent"
+      android:background="@null"
+      >
 
-        <com.tribe.app.presentation.view.widget.avatar.AvatarView
-            android:id="@+id/viewAvatar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="@dimen/horizontal_margin_small"
-            android:background="@drawable/shape_oval_black40" />
-
-        <LinearLayout
-            android:id="@+id/layoutBG"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="right|bottom"
-            android:layout_marginRight="@dimen/horizontal_margin_small"
-            android:layout_marginBottom="@dimen/horizontal_margin_smaller"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/imgIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerInside" />
-
-            <com.github.rahatarmanahmed.cpv.CircularProgressView
-                android:id="@+id/progressView"
-                android:layout_width="12.5dp"
-                android:layout_height="12.5dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                app:cpv_thickness="@dimen/progress_bar_thickness_small"
-                app:cpv_indeterminate="true"
-                app:cpv_color="@android:color/white"
-                app:cpv_animAutostart="true" />
-
-        </LinearLayout>
-    </FrameLayout>
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="@dimen/horizontal_margin_small"
+        android:background="@drawable/shape_oval_black40"
+        />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:paddingRight="@dimen/horizontal_margin_small">
+        android:id="@+id/layoutBG"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:layout_marginBottom="@dimen/horizontal_margin_smaller"
+        android:gravity="center"
+        >
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtTitle"
-            style="@style/Title.2.AddressBook"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+      <ImageView
+          android:id="@+id/imgIcon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:scaleType="centerInside"
+          />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtBody"
-            style="@style/Body.One.Black40"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp" />
+      <com.github.rahatarmanahmed.cpv.CircularProgressView
+          android:id="@+id/progressView"
+          android:layout_width="12.5dp"
+          android:layout_height="12.5dp"
+          android:layout_gravity="center"
+          android:visibility="gone"
+          app:cpv_thickness="@dimen/progress_bar_thickness_small"
+          app:cpv_indeterminate="true"
+          app:cpv_color="@android:color/white"
+          app:cpv_animAutostart="true"
+          />
+
     </LinearLayout>
+  </FrameLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:gravity="center_vertical"
+      android:paddingRight="@dimen/horizontal_margin_small"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        style="@style/Title.2.AddressBook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBody"
+        style="@style/Body.One.Black40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        />
+  </LinearLayout>
 </merge>

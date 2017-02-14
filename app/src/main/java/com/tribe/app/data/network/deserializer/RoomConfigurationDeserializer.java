@@ -6,7 +6,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import java.lang.reflect.Type;
 

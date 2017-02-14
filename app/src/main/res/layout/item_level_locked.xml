@@ -5,23 +5,26 @@
     android:layout_height="match_parent"
     android:background="@null"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    >
 
-    <ImageView
-        android:id="@+id/imgLevelLocked"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_centerVertical="true"
-        android:background="@drawable/shape_oval_dark_grey"
-        android:src="@drawable/picto_lock_white"
-        android:scaleType="centerInside" />
+  <ImageView
+      android:id="@+id/imgLevelLocked"
+      android:layout_width="45dp"
+      android:layout_height="45dp"
+      android:layout_centerVertical="true"
+      android:background="@drawable/shape_oval_dark_grey"
+      android:src="@drawable/picto_lock_white"
+      android:scaleType="centerInside"
+      />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtPoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:singleLine="true"
-        style="@style/Points.Reg.Black40" />
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtPoints"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:singleLine="true"
+      style="@style/Points.Reg.Black40"
+      />
 
 </com.tribe.app.presentation.view.widget.SquareLinearLayout>

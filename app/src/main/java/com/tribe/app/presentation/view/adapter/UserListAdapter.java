@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -13,12 +12,9 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAd
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListEmptyAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.filter.UserListFilter;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 
 /**

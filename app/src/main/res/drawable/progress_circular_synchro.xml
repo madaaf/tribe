@@ -4,11 +4,11 @@
     android:pivotX="50%"
     android:pivotY="50%">
 
-    <shape
-        android:innerRadiusRatio="2.3"
-        android:shape="ring"
-        android:thickness="5.5sp"
-        android:useLevel="true">
-        <solid android:color="@color/blue.new" />
-    </shape>
+  <shape
+      android:innerRadiusRatio="2.3"
+      android:shape="ring"
+      android:thickness="5.5sp"
+      android:useLevel="true">
+    <solid android:color="@color/blue.new" />
+  </shape>
 </rotate>

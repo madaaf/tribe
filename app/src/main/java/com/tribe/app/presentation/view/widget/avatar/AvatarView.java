@@ -116,17 +116,19 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
       }
     } else if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
-      loadGroupAvatar(membership.getProfilePicture(), previousAvatar, membership.getSubId(), membership.getMembersPic());
+      loadGroupAvatar(membership.getProfilePicture(), previousAvatar, membership.getSubId(),
+          membership.getMembersPic());
     } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
-      loadGroupAvatar(invite.getProfilePicture(), previousAvatar, invite.getId(), invite.getMembersPic());
+      loadGroupAvatar(invite.getProfilePicture(), previousAvatar, invite.getId(),
+          invite.getMembersPic());
     }
   }
 
-  private void loadGroupAvatar(String url, String previousUrl, String groupId, List<String> membersPic) {
+  private void loadGroupAvatar(String url, String previousUrl, String groupId,
+      List<String> membersPic) {
     if (StringUtils.isEmpty(url)) {
-      File groupAvatarFile =
-          FileUtils.getAvatarForGroupId(getContext(), groupId, FileUtils.PHOTO);
+      File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), groupId, FileUtils.PHOTO);
 
       if ((StringUtils.isEmpty(previousUrl) || !previousUrl.equals(
           groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
@@ -138,12 +140,9 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
             .crossFade()
             .into(imgAvatar);
       } else if (!groupAvatarFile.exists()) {
-        if (!groupAvatarFile.exists()
-            && membersPic != null
-            && membersPic.size() > 0) {
+        if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
           createImageSubscription =
-              ImageUtils.createGroupAvatar(getContext(), groupId,
-                  membersPic, avatarSize)
+              ImageUtils.createGroupAvatar(getContext(), groupId, membersPic, avatarSize)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribeOn(Schedulers.io())
                   .doOnError(throwable -> System.out.println("Error"))

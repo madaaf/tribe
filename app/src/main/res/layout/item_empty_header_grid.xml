@@ -5,4 +5,5 @@
     android:visibility="invisible"
     android:focusable="false"
     android:focusableInTouchMode="false"
-    android:clickable="false" />
+    android:clickable="false"
+    />

@@ -7,18 +7,14 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.TextViewUtils;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;

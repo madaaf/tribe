@@ -2,7 +2,6 @@ package com.tribe.app.domain.entity;
 
 import android.text.TextUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;

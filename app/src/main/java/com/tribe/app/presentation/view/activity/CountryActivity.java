@@ -8,7 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Country;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -17,17 +19,11 @@ import com.tribe.app.presentation.view.adapter.CountryPhoneNumberAdapter;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

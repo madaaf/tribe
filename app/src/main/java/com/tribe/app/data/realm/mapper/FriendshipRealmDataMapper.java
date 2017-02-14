@@ -2,14 +2,11 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
-
+import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.inject.Singleton;
-
-import io.realm.RealmList;
 
 /**
  * Mapper class used to transform {@link FriendshipRealm} (in the data layer) to {@link Friendship}

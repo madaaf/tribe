@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.component.group.GroupDetailsView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tribe.app.presentation.view.component.group.GroupDetailsView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,7 +16,7 @@
       app:actionType="hierarchy"
       />
 
-  <include layout="@layout/view_separator_simple"/>
+  <include layout="@layout/view_separator_simple" />
 
   <com.tribe.app.presentation.view.component.ActionView
       android:id="@+id/viewActionInfos"
@@ -27,7 +26,7 @@
       app:actionType="hierarchy"
       />
 
-  <include layout="@layout/view_separator_simple"/>
+  <include layout="@layout/view_separator_simple" />
 
   <android.support.v7.widget.RecyclerView
       android:id="@+id/recyclerView"

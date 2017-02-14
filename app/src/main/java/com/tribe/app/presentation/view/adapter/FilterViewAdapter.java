@@ -3,17 +3,13 @@ package com.tribe.app.presentation.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-
 import com.tribe.app.domain.entity.FilterEntity;
 import com.tribe.app.presentation.view.adapter.delegate.filterview.IconAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.filterview.LetterAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 

@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.

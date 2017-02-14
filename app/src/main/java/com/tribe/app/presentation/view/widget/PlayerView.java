@@ -8,14 +8,12 @@ import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import com.tribe.app.R;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.video.TribeMediaPlayer;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;

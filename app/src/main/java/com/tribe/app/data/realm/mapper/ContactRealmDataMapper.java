@@ -6,11 +6,9 @@ import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.ContactFB;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 

@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
-
 import javax.inject.Inject;
 
 public class DebugPresenter implements Presenter {

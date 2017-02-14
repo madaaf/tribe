@@ -9,7 +9,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-
 import javax.inject.Inject;
 
 /**

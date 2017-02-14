@@ -4,15 +4,10 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
-
-import android.widget.TextView;
+import butterknife.BindView;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
-
-import butterknife.BindView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import org.w3c.dom.Text;
 
 /**
  * Created by tiago on 01/10/2016.
