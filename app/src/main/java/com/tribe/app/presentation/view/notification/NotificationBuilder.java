@@ -109,20 +109,7 @@ import timber.log.Timber;
 
     return HomeActivity.class;
   }
-
-  private String getSoundFromPayload(NotificationPayload payload) {
-    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
-        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
-      return "friend_online";
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
-      return "call_ring";
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
-      return "wizz";
-    }
-
-    return null;
-  }
-
+  
   private NotificationCompat.Builder addActionsForPayload(NotificationCompat.Builder builder,
       NotificationPayload payload) {
     return addCommonActions(builder, payload);
@@ -130,10 +117,10 @@ import timber.log.Timber;
 
   private NotificationCompat.Builder addCommonActions(NotificationCompat.Builder builder,
       NotificationPayload payload) {
-    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification,
+    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_grid,
         application.getString(R.string.live_notification_action_see_online),
         getPendingIntentForHome(payload)).build())
-        .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification,
+        .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
             application.getString(R.string.live_notification_action_hang_live),
             getPendingIntentForLive(payload)).build());
   }
