@@ -53,13 +53,12 @@ import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.tutorial.Tutorial;
-import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
@@ -96,7 +95,7 @@ public class HomeActivity extends BaseActivity
 
   @Inject PaletteGrid paletteGrid;
 
-  @Inject TutorialManager tutorialManager;
+  @Inject StateManager stateManager;
 
   @Inject @LastOnlineNotification Preference<Long> lastOnlineNotification;
 
@@ -126,7 +125,6 @@ public class HomeActivity extends BaseActivity
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
-  private Tutorial tutorial;
   private List<Recipient> latestRecipientList;
   private boolean shouldOverridePendingTransactions = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
@@ -138,8 +136,9 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
-
     super.onCreate(savedInstanceState);
+
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_HomeScreen);
 
     initDependencyInjector();
     init();
@@ -211,7 +210,6 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_HomeScreen);
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
       shouldOverridePendingTransactions = false;
@@ -235,8 +233,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override protected void onPause() {
-    cleanTutorial();
-
     if (receiverRegistered) {
       unregisterReceiver(notificationReceiver);
       receiverRegistered = false;
@@ -338,14 +334,25 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
-          navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+          if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
+            DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
+                getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName(), null),
+                getString(R.string.tips_enterfirstlive_action1),
+                getString(R.string.tips_enterfirstlive_action2))
+                .filter(x -> x == true)
+                .subscribe(a -> {
+                  navigator.navigateToLive(this, recipient,
+                      PaletteGrid.get(recipient.getPosition()));
+                });
+            stateManager.addTutorialKey(StateManager.ENTER_FIRST_LIVE);
+          } else {
+            navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+          }
         }));
 
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer()
-        .subscribeOn(singleThreadExecutor)
-        .map(recipientList -> {
+    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().subscribeOn(singleThreadExecutor).
+        map(recipientList -> {
           DiffUtil.DiffResult diffResult = null;
-
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
@@ -359,16 +366,14 @@ public class HomeActivity extends BaseActivity
           latestRecipientList.clear();
           latestRecipientList.addAll(temp);
           return diffResult;
-        })
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(diffResult -> {
-          if (diffResult != null) {
-            diffResult.dispatchUpdatesTo(homeGridAdapter);
-          } else {
-            homeGridAdapter.setItems(latestRecipientList);
-            homeGridAdapter.notifyDataSetChanged();
-          }
-        }));
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+      if (diffResult != null) {
+        diffResult.dispatchUpdatesTo(homeGridAdapter);
+      } else {
+        homeGridAdapter.setItems(latestRecipientList);
+        homeGridAdapter.notifyDataSetChanged();
+      }
+    }));
   }
 
   private void initDependencyInjector() {
@@ -464,7 +469,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
-    if (recipientList != null && tutorial == null) {
+    if (recipientList != null) {
       Bundle bundle = new Bundle();
       bundle.putInt(TagManagerConstants.user_friends_count,
           getCurrentUser().getFriendships().size());
@@ -543,13 +548,6 @@ public class HomeActivity extends BaseActivity
     Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
     Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
         Toast.LENGTH_SHORT).show();
-  }
-
-  private void cleanTutorial() {
-    if (tutorial != null) {
-      tutorial.cleanUp();
-      tutorial = null;
-    }
   }
 
   private void navigateToProfile() {

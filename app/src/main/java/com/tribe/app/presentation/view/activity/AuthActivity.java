@@ -122,7 +122,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_Start);
     if (savedInstanceState != null) {
       if (savedInstanceState.getParcelable(DEEP_LINK) != null) {
         deepLink = savedInstanceState.getParcelable(DEEP_LINK);
@@ -183,7 +183,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onResume() {
     super.onResume();
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_Start);
   }
 
   @Override protected void onPause() {

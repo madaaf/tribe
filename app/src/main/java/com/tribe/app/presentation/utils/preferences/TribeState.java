@@ -5,8 +5,5 @@ import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * Created by madaaflak on 14/02/2017.
- */
-@Qualifier @Retention(RUNTIME) public @interface LeavingRoomTutorialState {
+@Qualifier @Retention(RUNTIME) public @interface TribeState {
 }

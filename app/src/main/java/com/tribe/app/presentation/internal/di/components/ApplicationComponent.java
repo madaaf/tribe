@@ -49,7 +49,7 @@ import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
 import com.tribe.app.presentation.utils.preferences.ShareProfile;
 import com.tribe.app.presentation.utils.preferences.Theme;
-import com.tribe.app.presentation.utils.preferences.TutorialState;
+import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
@@ -80,8 +80,6 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
-import com.tribe.app.presentation.view.tutorial.Tutorial;
-import com.tribe.app.presentation.view.tutorial.TutorialManager;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -117,8 +115,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 public interface ApplicationComponent {
 
   void inject(Navigator navigator);
-
-  void inject(Tutorial tutorial);
 
   void inject(BaseFragment baseFragment);
 
@@ -303,7 +299,7 @@ public interface ApplicationComponent {
 
   @HasRatedApp Preference<Boolean> hasRatedApp();
 
-  @TutorialState Preference<Set<String>> tutorialState();
+  @TribeState Preference<Set<String>> tribeState();
 
   @DebugMode Preference<Boolean> debugMode();
 
@@ -312,8 +308,6 @@ public interface ApplicationComponent {
   @UISounds Preference<Boolean> uiSounds();
 
   SoundManager soundManager();
-
-  TutorialManager tutorialManager();
 
   StateManager stateManager();
 }

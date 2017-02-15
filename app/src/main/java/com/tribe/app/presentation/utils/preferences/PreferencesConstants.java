@@ -35,5 +35,5 @@ public class PreferencesConstants {
   public static String PUSH_NOTIFICATIONS = "PUSH_NOTIFICATIONS";
 
   // LEAVE FEATURE
-  public static String LEAVING_ROOM_TUTORIAL_STATE = "LEAVING_ROOM_TUTORIAL_STATE";
+  public static String TRIBE_STATE = "TRIBE_STATE";
 }

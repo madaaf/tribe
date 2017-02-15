@@ -25,6 +25,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
@@ -62,6 +63,10 @@ public class LiveView extends FrameLayout {
 
   private static final int DURATION = 300;
   private static final int LIVE_MAX = 8;
+
+  private final int MAX_DURATION_JOIN_LIVE = 60;
+
+  private static boolean joineLive = false;
 
   @Inject SoundManager soundManager;
 
@@ -149,6 +154,10 @@ public class LiveView extends FrameLayout {
     initUI();
     initSubscriptions();
 
+    Observable.timer(MAX_DURATION_JOIN_LIVE, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> displayJoinLivePopupTutorial());
+
     super.onFinishInflate();
   }
 
@@ -202,7 +211,16 @@ public class LiveView extends FrameLayout {
     }));
   }
 
-  private void displayPopupTutorial() {
+  ///////////////////
+  //    CLICKS     //
+  ///////////////////
+
+  @OnClick(R.id.btnInviteLive) void openInvite() {
+    displayDragingGuestPopupTutorial();
+    if (!hiddenControls) onOpenInvite.onNext(null);
+  }
+
+  private void displayDragingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
       DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
           getContext().getString(R.string.tips_draggingguest_message),
@@ -210,14 +228,6 @@ public class LiveView extends FrameLayout {
       });
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
     }
-  }
-
-  ///////////////////
-  //    CLICKS     //
-  ///////////////////
-
-  @OnClick(R.id.btnInviteLive) void openInvite() {
-    if (!hiddenControls) onOpenInvite.onNext(null);
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
@@ -303,8 +313,10 @@ public class LiveView extends FrameLayout {
 
     subscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
-          soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
-
+          soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX); //
+          joineLive = true;
+          displayJoinLivePopupTutorial();
+          // TOTO
           Timber.d("Remote peer added with id : "
               + remotePeer.getSession().getPeerId()
               + " & view : "
@@ -421,7 +433,7 @@ public class LiveView extends FrameLayout {
 
       subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
         tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
-        displayPopupTutorial();
+        displayDroppingGuestPopupTutorial();
         latestView.showGuest(false);
         latestView.startPulse();
       }));
@@ -432,6 +444,17 @@ public class LiveView extends FrameLayout {
             room.sendToPeers(getRemovedPayload(latestView.getGuest()));
           }));
     }));
+  }
+
+  private void displayDroppingGuestPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.DROPPING_GUEST)) {
+      DialogFactory.dialog(getContext(),
+          EmojiParser.demojizedText(getContext().getString(R.string.tips_droppingguest_title)),
+          getContext().getString(R.string.tips_droppingguest_message),
+          getContext().getString(R.string.tips_droppingguest_action1), null).subscribe(a -> {
+      });
+      stateManager.addTutorialKey(StateManager.DROPPING_GUEST);
+    }
   }
 
   public void setRecipient(Recipient recipient, int color) {
@@ -463,9 +486,36 @@ public class LiveView extends FrameLayout {
     return room;
   }
 
+  public void displayWaitLivePopupTutorial() {
+    if (!joineLive) {
+      if (stateManager.shouldDisplay(StateManager.WAINTING_FRIENDS_LIVE)) {
+        DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_waiting5sec_title),
+            EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting5sec_message)),
+            getContext().getString(R.string.tips_waiting5sec_action1), null).subscribe(a -> {
+        });
+        stateManager.addTutorialKey(StateManager.WAINTING_FRIENDS_LIVE);
+      }
+    }
+  }
+
   ////////////////
   //  PRIVATE   //
   ////////////////
+
+  private void displayJoinLivePopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.JOIN_FRIEND_LIVE)) {
+      DialogFactory.dialog(getContext(),
+          EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_title)),
+          EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_message)),
+          getContext().getString(R.
+              string.tips_waiting60sec_action1),
+          getContext().getString(R.string.tips_waiting60sec_action2)).filter(x -> x == true).
+          subscribe(a -> {
+            if (!hiddenControls) onOpenInvite.onNext(null);
+          });
+      stateManager.addTutorialKey(StateManager.JOIN_FRIEND_LIVE);
+    }
+  }
 
   private void refactorNotifyButton() {
     boolean enable = shouldEnableBuzz();

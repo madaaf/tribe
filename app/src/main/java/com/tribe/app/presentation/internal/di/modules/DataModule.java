@@ -17,13 +17,12 @@ import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
-import com.tribe.app.presentation.utils.preferences.LeavingRoomTutorialState;
 import com.tribe.app.presentation.utils.preferences.LocationContext;
 import com.tribe.app.presentation.utils.preferences.Memories;
 import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
 import com.tribe.app.presentation.utils.preferences.ShareProfile;
 import com.tribe.app.presentation.utils.preferences.Theme;
-import com.tribe.app.presentation.utils.preferences.TutorialState;
+import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
 import com.tribe.app.presentation.utils.preferences.WeatherUnits;
@@ -131,11 +130,6 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getBoolean(PreferencesConstants.HAS_RATED_APP, false);
   }
 
-  @Provides @Singleton @TutorialState Preference<Set<String>> provideTutorialState(
-      RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesConstants.TUTORIAL_STATE, new HashSet<>());
-  }
-
   @Provides @Singleton @DebugMode Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesConstants.DEBUG_MODE, false);
   }
@@ -149,8 +143,8 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getBoolean(PreferencesConstants.UI_SOUNDS, true);
   }
 
-  @Provides @Singleton @LeavingRoomTutorialState
-  Preference<Set<String>> provideLeavingRoomTutorialState(RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesConstants.LEAVING_ROOM_TUTORIAL_STATE, new HashSet<>());
+  @Provides @Singleton @TribeState Preference<Set<String>> provideTribeState(
+      RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesConstants.TRIBE_STATE, new HashSet<>());
   }
 }
