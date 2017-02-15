@@ -335,68 +335,45 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
           if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
-            DialogFactory.dialog(this,
-                EmojiParser.demojizedText(getString(R.string.tips_enterfirstlive_title)),
-                getString(R.string.tips_enterfirstlive_message),
-                getString(R.string.tips_enterfirstlive_action2),
-                getString(R.string.tips_enterfirstlive_action1)).subscribe(a -> {
-              navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
-            });
+            DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
+                getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName(), null),
+                getString(R.string.tips_enterfirstlive_action1),
+                getString(R.string.tips_enterfirstlive_action2))
+                .filter(x -> x == true)
+                .subscribe(a -> {
+                  navigator.navigateToLive(this, recipient,
+                      PaletteGrid.get(recipient.getPosition()));
+                });
             stateManager.addTutorialKey(StateManager.ENTER_FIRST_LIVE);
           } else {
             navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
           }
         }));
 
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().
+    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().subscribeOn(singleThreadExecutor).
+        map(recipientList -> {
+          DiffUtil.DiffResult diffResult = null;
+          List<Recipient> temp = new ArrayList<>();
+          temp.add(new Friendship(Recipient.ID_HEADER));
+          temp.addAll(recipientList);
+          ListUtils.addEmptyItems(screenUtils, temp);
 
-        subscribeOn(singleThreadExecutor)
+          if (latestRecipientList.size() != 0) {
+            diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+            homeGridAdapter.setItems(temp);
+          }
 
-        .
-
-            map(recipientList
-
-                    ->
-
-                {
-                  DiffUtil.DiffResult diffResult = null;
-
-                  List<Recipient> temp = new ArrayList<>();
-                  temp.add(new Friendship(Recipient.ID_HEADER));
-                  temp.addAll(recipientList);
-                  ListUtils.addEmptyItems(screenUtils, temp);
-
-                  if (latestRecipientList.size() != 0) {
-                    diffResult =
-                        DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-                    homeGridAdapter.setItems(temp);
-                  }
-
-                  latestRecipientList.clear();
-                  latestRecipientList.addAll(temp);
-                  return diffResult;
-                }
-
-            ).
-
-            observeOn(AndroidSchedulers.mainThread()
-
-            ).
-
-            subscribe(diffResult
-
-                    ->
-
-                {
-                  if (diffResult != null) {
-                    diffResult.dispatchUpdatesTo(homeGridAdapter);
-                  } else {
-                    homeGridAdapter.setItems(latestRecipientList);
-                    homeGridAdapter.notifyDataSetChanged();
-                  }
-                }
-
-            ));
+          latestRecipientList.clear();
+          latestRecipientList.addAll(temp);
+          return diffResult;
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+      if (diffResult != null) {
+        diffResult.dispatchUpdatesTo(homeGridAdapter);
+      } else {
+        homeGridAdapter.setItems(latestRecipientList);
+        homeGridAdapter.notifyDataSetChanged();
+      }
+    }));
   }
 
   private void initDependencyInjector() {

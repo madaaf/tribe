@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -53,6 +54,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   private static final String EXTRA_IS_GROUP = "EXTRA_IS_GROUP";
   private static final String EXTRA_SESSION_ID = "EXTRA_SESSION_ID";
   private static final String EXTRA_COLOR = "EXTRA_COLOR";
+  private final int MAX_DURATION_WAITING_LIVE = 8;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -232,8 +234,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
       DialogFactory.dialog(this,
           EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
           getString(R.string.tips_startfirstlive_message),
-          getString(R.string.tips_startfirstlive_action1), null).subscribe(a -> {
-      });
+          getString(R.string.tips_startfirstlive_action1), null)
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial());
+          });
       stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
     }
   }
