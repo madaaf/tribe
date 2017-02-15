@@ -91,4 +91,8 @@
   <dimen name="translation_bolt_max">90dp</dimen>
   <dimen name="translation_bolt_min_negative">-60dp</dimen>
   <dimen name="translation_bolt_max_negative">-90dp</dimen>
+  <dimen name="translation_bolt_small_min">20dp</dimen>
+  <dimen name="translation_bolt_small_max">25dp</dimen>
+  <dimen name="translation_bolt_small_min_negative">-20dp</dimen>
+  <dimen name="translation_bolt_small_max_negative">-25dp</dimen>
 </resources>

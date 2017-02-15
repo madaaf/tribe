@@ -6,6 +6,8 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -41,6 +43,12 @@ public class BuzzView extends FrameLayout {
 
   private final static int DELAY = 200;
 
+  @IntDef({ BIG, SMALL }) public @interface BuzzType {
+  }
+
+  public static final int BIG = 0;
+  public static final int SMALL = 1;
+
   @Inject ScreenUtils screenUtils;
 
   @BindViews({
@@ -51,8 +59,10 @@ public class BuzzView extends FrameLayout {
   // RESOURCES
 
   // VARIABLES
+  private int type;
   private Unbinder unbinder;
   private List<Pair<Float, Float>> listTranslations;
+  private List<Integer> listSize;
   private boolean hasSentEndBuzz = false;
 
   // OBSERVABLES
@@ -61,17 +71,17 @@ public class BuzzView extends FrameLayout {
 
   public BuzzView(Context context) {
     super(context);
-    init();
+    init(context, null);
   }
 
   public BuzzView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init();
+    init(context, attrs);
   }
 
   public BuzzView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    init();
+    init(context, attrs);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -84,11 +94,18 @@ public class BuzzView extends FrameLayout {
     super.onDetachedFromWindow();
   }
 
-  private void init() {
+  private void init(Context context, AttributeSet attrs) {
     initDependencyInjector();
     initResources();
 
-    LayoutInflater.from(getContext()).inflate(R.layout.view_buzz, this);
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BuzzView);
+    type = a.getInt(R.styleable.BuzzView_buzzType, BIG);
+
+    setWillNotDraw(false);
+    a.recycle();
+
+    LayoutInflater.from(getContext())
+        .inflate(type == BIG ? R.layout.view_buzz : R.layout.view_buzz_small, this);
     unbinder = ButterKnife.bind(this);
 
     setBackground(null);
@@ -103,6 +120,7 @@ public class BuzzView extends FrameLayout {
 
   private void initResources() {
     listTranslations = new ArrayList<>();
+    listSize = new ArrayList<>();
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -154,7 +172,10 @@ public class BuzzView extends FrameLayout {
             animatorRotation.start();
             Observable.timer(1000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> hideBolts(view));
+                .subscribe(aLong -> {
+                  animatorRotation.cancel();
+                  hideBolts(view);
+                });
           }
         })
         .start();

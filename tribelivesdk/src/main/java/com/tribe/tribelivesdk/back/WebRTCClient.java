@@ -113,6 +113,7 @@ import static android.R.attr.id;
 
     subscriptions.add(remotePeer.onDataChannelOpened()
         .delay(1000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aVoid -> remotePeer.send(getJSONMedia(streamManager.isLocalAudioEnabled(),
             streamManager.isLocalCameraEnabled()).toString())));
 

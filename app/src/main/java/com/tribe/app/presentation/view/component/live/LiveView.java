@@ -29,12 +29,14 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.core.Room;
@@ -42,6 +44,7 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,6 +89,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.txtName) TextViewFont txtName;
 
+  @BindView(R.id.viewBuzz) BuzzView viewBuzz;
+
   // VARIABLES
   private Recipient recipient;
   private int color;
@@ -95,9 +100,10 @@ public class LiveView extends FrameLayout {
   private Map<String, LiveRowView> liveInviteMap;
   private boolean hiddenControls = false;
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
+  private AvatarView avatarView;
 
   // RESOURCES
-  private int timeJoinRoom;
+  private int timeJoinRoom, statusBarHeight, margin;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -166,6 +172,13 @@ public class LiveView extends FrameLayout {
 
   private void initResources() {
     timeJoinRoom = getResources().getInteger(R.integer.time_join_room);
+    margin = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
+
+    statusBarHeight = 0;
+    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+    }
   }
 
   private void initSubscriptions() {
@@ -210,6 +223,8 @@ public class LiveView extends FrameLayout {
   @OnClick(R.id.btnNotify) void onClickNotify() {
     if (!hiddenControls) {
       btnNotify.setEnabled(false);
+
+      viewBuzz.buzz();
 
       for (LiveRowView liveRowView : liveInviteMap.values()) {
         liveRowView.buzz();
@@ -499,7 +514,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void addView(RemotePeer remotePeer) {
-    LiveRowView liveRowView;
+    LiveRowView liveRowView = null;
 
     if (liveInviteMap.containsKey(
         remotePeer.getSession().getUserId())) { // If the user was invited before joining
@@ -512,27 +527,34 @@ public class LiveView extends FrameLayout {
       liveRowView = liveRowViewMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
     } else {
-      liveRowView = new LiveRowView(getContext());
-      liveRowView.setRoomType(viewRoom.getType());
-      liveRowView.setPeerView(remotePeer.getPeerView());
-      ViewGroup.LayoutParams params =
-          new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-              ViewGroup.LayoutParams.MATCH_PARENT);
+      TribeGuest guest = guestFromRemotePeer(remotePeer);
 
       if (nbLiveInRoom() == 0) { // First user joining in a group call
         String groupId = getGroupWaiting();
         if (!StringUtils.isEmpty(getGroupWaiting())) {
-          removeFromPeers(groupId);
+          liveRowView = liveRowViewMap.remove(groupId);
+          animateGroupAvatar(liveRowView);
+          liveRowView.setGuest(guest);
+          liveRowView.setPeerView(remotePeer.getPeerView());
         }
       }
 
-      TribeGuest guest = guestFromRemotePeer(remotePeer);
-      if (guest != null) {
-        liveRowView.setGuest(guest);
-        liveRowView.showGuest(false);
+      if (liveRowView == null) {
+        liveRowView = new LiveRowView(getContext());
+        liveRowView.setRoomType(viewRoom.getType());
+        liveRowView.setPeerView(remotePeer.getPeerView());
+        ViewGroup.LayoutParams params =
+            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+
+        if (guest != null) {
+          liveRowView.setGuest(guest);
+          liveRowView.showGuest(false);
+        }
+
+        viewRoom.addView(liveRowView, params);
       }
 
-      viewRoom.addView(liveRowView, params);
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     }
   }
@@ -643,6 +665,70 @@ public class LiveView extends FrameLayout {
     }
 
     return id;
+  }
+
+  private void animateGroupAvatar(LiveRowView liveRowView) {
+    AvatarView fromAvatarView = liveRowView.avatar();
+    avatarView = new AvatarView(getContext());
+
+    if (fromAvatarView.getRecipient() != null) {
+      avatarView.load(fromAvatarView.getRecipient());
+    } else {
+      avatarView.load(fromAvatarView.getUrl());
+    }
+
+    int[] location = new int[2];
+    fromAvatarView.getLocationOnScreen(location);
+
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(fromAvatarView.getWidth(), fromAvatarView.getHeight());
+    params.leftMargin = location[0];
+    params.topMargin = location[1] - statusBarHeight;
+    avatarView.setLayoutParams(params);
+
+    addView(avatarView);
+
+    subscriptions.add(Observable.timer(50, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          Animator animatorSize = AnimationUtils.getSizeAnimator(avatarView,
+              getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller));
+          animatorSize.setDuration(DURATION);
+          animatorSize.setInterpolator(new DecelerateInterpolator());
+          animatorSize.start();
+
+          Animator animatorTopMargin = AnimationUtils.getTopMarginAnimator(avatarView, margin);
+          animatorTopMargin.setDuration(DURATION);
+          animatorTopMargin.setInterpolator(new DecelerateInterpolator());
+          animatorTopMargin.start();
+
+          Animator animatorLeftMargin = AnimationUtils.getLeftMarginAnimator(avatarView, margin);
+          animatorLeftMargin.setDuration(DURATION);
+          animatorLeftMargin.setInterpolator(new DecelerateInterpolator());
+          animatorLeftMargin.addListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationCancel(Animator animation) {
+              animatorLeftMargin.removeAllListeners();
+            }
+
+            @Override public void onAnimationEnd(Animator animation) {
+              viewBuzz.setVisibility(View.VISIBLE);
+              viewBuzz.getViewTreeObserver()
+                  .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override public void onGlobalLayout() {
+                      viewBuzz.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                      MarginLayoutParams viewBuzzParams =
+                          (MarginLayoutParams) viewBuzz.getLayoutParams();
+                      viewBuzzParams.leftMargin =
+                          margin + (avatarView.getWidth() >> 1) - (viewBuzz.getWidth() >> 1);
+                      viewBuzzParams.topMargin =
+                          margin + (avatarView.getHeight() >> 1) - (viewBuzz.getHeight() >> 1);
+                    }
+                  });
+            }
+          });
+          animatorLeftMargin.start();
+        }));
   }
 
   //////////////////////

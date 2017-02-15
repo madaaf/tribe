@@ -578,6 +578,10 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     this.type = type;
   }
 
+  public AvatarView avatar() {
+    return avatar;
+  }
+
   public void dispose() {
     subscriptions.clear();
     stopPulse();

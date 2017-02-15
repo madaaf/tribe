@@ -16,6 +16,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
@@ -184,6 +185,10 @@ public class LiveRowView extends FrameLayout {
 
   public void buzz() {
     viewWaiting.buzz();
+  }
+
+  public AvatarView avatar() {
+    return viewWaiting.avatar();
   }
 
   /////////////////

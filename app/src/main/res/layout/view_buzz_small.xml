@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <ImageView
+      android:id="@+id/viewBolt1"
+      android:layout_width="5dp"
+      android:layout_height="5dp"
+      android:layout_gravity="center"
+      android:alpha="0.4"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="0dp"
+      android:translationY="@dimen/translation_bolt_small_max_negative"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt2"
+      android:layout_width="6dp"
+      android:layout_height="6dp"
+      android:layout_gravity="center"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="@dimen/translation_bolt_small_min"
+      android:translationY="@dimen/translation_bolt_small_min_negative"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt3"
+      android:layout_width="5dp"
+      android:layout_height="5dp"
+      android:layout_gravity="center"
+      android:alpha="0.4"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="@dimen/translation_bolt_small_max"
+      android:translationY="0dp"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt4"
+      android:layout_width="6dp"
+      android:layout_height="6dp"
+      android:layout_gravity="center"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="@dimen/translation_bolt_small_min"
+      android:translationY="@dimen/translation_bolt_small_min"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt5"
+      android:layout_width="5dp"
+      android:layout_height="5dp"
+      android:layout_gravity="center"
+      android:alpha="0.4"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="0dp"
+      android:translationY="@dimen/translation_bolt_small_max"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt6"
+      android:layout_width="6dp"
+      android:layout_height="6dp"
+      android:layout_gravity="center"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="@dimen/translation_bolt_small_min_negative"
+      android:translationY="@dimen/translation_bolt_small_min"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt7"
+      android:layout_width="5dp"
+      android:layout_height="5dp"
+      android:layout_gravity="center"
+      android:alpha="0.4"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="@dimen/translation_bolt_small_max_negative"
+      android:translationY="0dp"
+      />
+
+  <ImageView
+      android:id="@+id/viewBolt8"
+      android:layout_width="6dp"
+      android:layout_height="6dp"
+      android:layout_gravity="center"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_bolt"
+      android:translationX="@dimen/translation_bolt_small_min_negative"
+      android:translationY="@dimen/translation_bolt_small_min_negative"
+      />
+
+</merge>

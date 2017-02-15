@@ -51,6 +51,8 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
   // VARIABLES
   private int type;
   private Paint transparentPaint;
+  private String url;
+  private Recipient recipient;
 
   // RESOURCES
   private int avatarSize;
@@ -105,6 +107,8 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
   }
 
   @Override public void load(Recipient recipient) {
+    this.recipient = recipient;
+
     String previousAvatar = (String) getTag(R.id.profile_picture);
 
     if (createImageSubscription != null) createImageSubscription.unsubscribe();
@@ -157,6 +161,8 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
   }
 
   @Override public void load(String url) {
+    this.url = url;
+
     if (!StringUtils.isEmpty(url) && !url.equals(
         getContext().getString(R.string.no_profile_picture_url))) {
       setTag(R.id.profile_picture, url);
@@ -183,6 +189,14 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
 
   public int getRadius() {
     return (int) (getMeasuredWidth() * 0.2f);
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public Recipient getRecipient() {
+    return recipient;
   }
 
   public void setType(@AvatarType int type) {
