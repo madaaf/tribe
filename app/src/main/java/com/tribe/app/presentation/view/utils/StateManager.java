@@ -47,16 +47,10 @@ import javax.inject.Singleton;
 
   public boolean shouldDisplay(@StateKey String key) {
     boolean contain = false;
-
-  /*  if (tutorialState.get().contains(key)) {
+    if (tutorialState.get().contains(key)) {
       contain = true;
     }
 
-    return !contain;*/
-    if (key == JOIN_FRIEND_LIVE) {
-      return true;
-    } else {
-      return false;
-    }
+    return !contain;
   }
 }
