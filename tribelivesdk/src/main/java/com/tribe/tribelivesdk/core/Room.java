@@ -8,7 +8,6 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
-import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import java.util.List;
@@ -20,6 +19,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 13/01/2017.
@@ -131,7 +131,7 @@ public class Room {
     webSocketConnection.connect(options.getWsUrl());
 
     subscriptions.add(webSocketConnection.onStateChanged().map(state -> {
-      LogUtil.d(getClass(), "On room state changed : " + state);
+      Timber.d( "On room state changed : " + state);
 
       if (state.equals(WebSocketConnection.STATE_CONNECTED)) {
         return STATE_CONNECTED;
@@ -152,17 +152,17 @@ public class Room {
 
     subscriptions.add(webSocketConnection.onMessage().subscribe(message -> {
       if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
-        LogUtil.e(getClass(), "Got WebSocket message in non registered state.");
+        Timber.e( "Got WebSocket message in non registered state.");
       }
 
-      LogUtil.d(getClass(), "On webSocketConnection message : " + message);
+      Timber.d( "On webSocketConnection message : " + message);
 
       jsonToModel.convert(message);
     }));
   }
 
   public void joinRoom() {
-    LogUtil.d(getClass(), "Joining room");
+    Timber.d( "Joining room");
 
     webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId()).toString());
 

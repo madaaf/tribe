@@ -3,21 +3,18 @@ package com.tribe.tribelivesdk.stream;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
-import com.tribe.tribelivesdk.core.TribePeerConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
-import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
-import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class StreamManager {
 
@@ -73,11 +70,11 @@ public class StreamManager {
 
   public void generateNewRemotePeer(TribeSession session) {
     if (session == null) {
-      LogUtil.e(getClass(), "Attempt to generate remote stream with null peerId.");
+      Timber.e("Attempt to generate remote stream with null peerId.");
       return;
     }
 
-    LogUtil.d(getClass(), "Generating new remote peer : " + session.getPeerId());
+    Timber.d("Generating new remote peer : " + session.getPeerId());
     RemotePeer remotePeer = new RemotePeer(session);
     RemotePeerView remotePeerView = new RemotePeerView(context);
     remotePeer.setPeerView(remotePeerView);
@@ -95,22 +92,22 @@ public class StreamManager {
 
   public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
     if (TextUtils.isEmpty(peerId)) {
-      LogUtil.e(getClass(), "We found a null peerId it doesn't make sense!");
+      Timber.e("We found a null peerId it doesn't make sense!");
       return;
     }
 
     if (mediaStream == null) {
-      LogUtil.e(getClass(), "Cannot set a null mediaStream to peerId: " + mediaStream);
+      Timber.e("Cannot set a null mediaStream to peerId: " + mediaStream);
       return;
     }
 
     RemotePeer remotePeer = remotePeerMap.get(peerId);
     if (remotePeer == null) {
-      LogUtil.e(getClass(), "Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
+      Timber.e("Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
       return;
     }
 
-    LogUtil.d(getClass(), "Setting the stream to peer : " + peerId);
+    Timber.d("Setting the stream to peer : " + peerId);
     remotePeer.getPeerView().setStream(mediaStream);
   }
 
@@ -118,7 +115,7 @@ public class StreamManager {
     RemotePeer remotePeer = remotePeerMap.get(tribePeerMediaConfiguration.getSession().getPeerId());
 
     if (remotePeer == null) {
-      LogUtil.d(getClass(), "setMediaConfiguration to a null remotePeer");
+      Timber.d("setMediaConfiguration to a null remotePeer");
       return;
     }
 
@@ -127,7 +124,7 @@ public class StreamManager {
 
   public void switchCamera() {
     if (liveLocalStream == null) {
-      LogUtil.d(getClass(), "Live Local Stream is null");
+      Timber.d("Live Local Stream is null");
     }
 
     liveLocalStream.switchCamera();
@@ -135,7 +132,7 @@ public class StreamManager {
 
   private void setLocalCameraEnabled(boolean enabled) {
     if (liveLocalStream == null) {
-        return;
+      return;
     }
 
     liveLocalStream.setCameraEnabled(enabled);
@@ -153,25 +150,25 @@ public class StreamManager {
     subscriptions.clear();
 
     if (remotePeerMap != null && remotePeerMap.size() > 0) {
-      LogUtil.d(getClass(), "Iterating remote peers");
+      Timber.d("Iterating remote peers");
       for (RemotePeer remotePeer : remotePeerMap.getMap().values()) {
-        LogUtil.d(getClass(), "Disposing remote peer");
+        Timber.d("Disposing remote peer");
         remotePeer.dispose();
       }
 
-      LogUtil.d(getClass(), "Clearing remote peer map");
+      Timber.d("Clearing remote peer map");
       remotePeerMap.clear();
     }
 
-    LogUtil.d(getClass(), "Disposing stream manager");
+    Timber.d("Disposing stream manager");
     localPeerView.dispose();
     localPeerView = null;
 
-    LogUtil.d(getClass(), "Disposing live local stream");
+    Timber.d("Disposing live local stream");
     liveLocalStream.dispose();
     liveLocalStream = null;
 
-    LogUtil.d(getClass(), "End disposing stream manager");
+    Timber.d("End disposing stream manager");
   }
 
   // OBSERVABLES

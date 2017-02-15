@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
@@ -95,7 +96,7 @@ import timber.log.Timber;
   }
 
   private void initWebSocket() {
-    webSocketConnection.connect("wss://api.tribedev.pm");
+    webSocketConnection.connect(BuildConfig.TRIBE_WSS);
 
     subscriptions.add(webSocketConnection.onStateChanged().subscribe(newState -> {
       if (newState.equals(WebSocketConnection.STATE_CONNECTED)) {

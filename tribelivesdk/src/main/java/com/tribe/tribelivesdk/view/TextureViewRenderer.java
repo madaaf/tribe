@@ -41,9 +41,9 @@ public class TextureViewRenderer extends TextureView
   private final RendererCommon.VideoLayoutMeasure videoLayoutMeasure =
       new RendererCommon.VideoLayoutMeasure();
   private final EglRenderer eglRenderer;
+  private final Object layoutLock = new Object();
   // Callback for reporting renderer events. Read-only after initilization so no lock required.
   private RendererCommon.RendererEvents rendererEvents;
-  private final Object layoutLock = new Object();
   private boolean isFirstFrameRendered;
   private int rotatedFrameWidth;
   private int rotatedFrameHeight;

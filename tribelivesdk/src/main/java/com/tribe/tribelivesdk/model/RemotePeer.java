@@ -1,9 +1,9 @@
 package com.tribe.tribelivesdk.model;
 
 import android.view.ViewGroup;
-import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 15/01/2017.
@@ -40,10 +40,10 @@ public class RemotePeer extends Peer {
 
   public void dispose() {
     if (peerView != null) {
-      LogUtil.d(getClass(), "Disposing remote peer for peer : " + session.getPeerId());
+      Timber.d( "Disposing remote peer for peer : " + session.getPeerId());
       ((ViewGroup) peerView.getParent()).removeView(peerView);
       peerView.dispose();
-      LogUtil.d(getClass(), "End disposing remote peer for peer : " + session.getPeerId());
+      Timber.d( "End disposing remote peer for peer : " + session.getPeerId());
     }
   }
 }

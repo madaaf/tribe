@@ -11,7 +11,6 @@ import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.stream.StreamManager;
-import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static android.R.attr.id;
 
@@ -63,7 +63,7 @@ import static android.R.attr.id;
 
   private void initPeerConnectionFactory() {
     if (!PeerConnectionFactory.initializeAndroidGlobals(context, true, true, false)) {
-      LogUtil.e(getClass(), "Failed to initializeAndroidGlobals");
+      Timber.e("Failed to initializeAndroidGlobals");
     }
 
     PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
@@ -86,16 +86,16 @@ import static android.R.attr.id;
 
   public void addPeerConnection(TribeSession session, boolean isOffer) {
     if (session == null) {
-      LogUtil.e(getClass(), "Attempt to addPeerConnection with null peerId");
+      Timber.e("Attempt to addPeerConnection with null peerId");
       return;
     }
 
     if (peerConnections.get(session.getPeerId()) != null) {
-      LogUtil.i(getClass(), "Client already exists - not adding client again. " + id);
+      Timber.i("Client already exists - not adding client again. " + id);
       return;
     }
 
-    LogUtil.d(getClass(), "Attemp to addPeerConnection : " + localMediaStream);
+    Timber.d("Attemp to addPeerConnection : " + localMediaStream);
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
     remotePeer.getPeerConnection().addStream(localMediaStream);
@@ -124,11 +124,11 @@ import static android.R.attr.id;
   }
 
   public boolean removePeerConnection(TribeSession tribeSession) {
-    LogUtil.d(getClass(), "removePeerConnection for peerId : " + tribeSession.getPeerId());
+    Timber.d("removePeerConnection for peerId : " + tribeSession.getPeerId());
     TribePeerConnection tribePeerConnection = peerConnections.get(tribeSession.getPeerId());
 
     if (tribePeerConnection == null) {
-      LogUtil.e(getClass(), "Attempt to removePeerConnection on invalid peerId");
+      Timber.e("Attempt to removePeerConnection on invalid peerId");
       return false;
     }
 
@@ -145,8 +145,7 @@ import static android.R.attr.id;
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
-    LogUtil.d(getClass(), "setMediaConfiguration for peerId : " + tribePeerMediaConfiguration
-        .getSession()
+    Timber.d("setMediaConfiguration for peerId : " + tribePeerMediaConfiguration.getSession()
         .getPeerId());
 
     streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
@@ -186,7 +185,7 @@ import static android.R.attr.id;
     TribePeerConnection tribePeerConnection = peerConnections.get(peerId);
 
     if (tribePeerConnection == null) {
-      LogUtil.e(getClass(), "Attempt to addIceCandidate on invalid clientId");
+      Timber.e("Attempt to addIceCandidate on invalid clientId");
       return;
     }
 
@@ -197,7 +196,7 @@ import static android.R.attr.id;
     TribePeerConnection tribePeerConnection = peerConnections.get(session.getPeerId());
 
     if (tribePeerConnection == null) {
-      LogUtil.d(getClass(), "Peer is null, creating it");
+      Timber.d("Peer is null, creating it");
       addPeerConnection(session, false);
       tribePeerConnection = peerConnections.get(session.getPeerId());
     }
@@ -217,24 +216,24 @@ import static android.R.attr.id;
   }
 
   public void dispose() {
-    LogUtil.d(getClass(), "Disposing subscriptions");
+    Timber.d("Disposing subscriptions");
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
     if (peerConnections != null && peerConnections.size() > 0) {
-      LogUtil.d(getClass(), "Iterating peer subscriptions");
+      Timber.d("Iterating peer subscriptions");
       for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
         tribePeerConnection.dispose(localMediaStream);
       }
 
-      LogUtil.d(getClass(), "Clearing all peer connections");
+      Timber.d("Clearing all peer connections");
       peerConnections.clear();
     }
 
-    LogUtil.d(getClass(), "Disposing stream manager");
+    Timber.d("Disposing stream manager");
     streamManager.dispose();
 
     localMediaStream = null;
-    LogUtil.d(getClass(), "End dispose success");
+    Timber.d("End dispose success");
   }
 
   /////////////////

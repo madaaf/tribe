@@ -19,7 +19,6 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import timber.log.Timber;
 
 @Singleton public class NotificationBuilder {
 
@@ -82,7 +81,6 @@ import timber.log.Timber;
 
     if (!StringUtils.isEmpty(payload.getSound())) {
       String[] soundSplit = payload.getSound().split("\\.");
-      Timber.d("Sound : " + soundSplit[0]);
       builder.setSound(Uri.parse(
           "android.resource://" + application.getPackageName() + "/raw/" + soundSplit[0]));
     }
@@ -109,7 +107,7 @@ import timber.log.Timber;
 
     return HomeActivity.class;
   }
-  
+
   private NotificationCompat.Builder addActionsForPayload(NotificationCompat.Builder builder,
       NotificationPayload payload) {
     return addCommonActions(builder, payload);

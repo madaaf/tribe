@@ -5,7 +5,6 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
-import com.tribe.tribelivesdk.util.LogUtil;
 import dagger.Module;
 import dagger.Provides;
 import java.security.KeyManagementException;
@@ -16,6 +15,7 @@ import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/13/17.
@@ -31,16 +31,16 @@ import javax.net.ssl.X509TrustManager;
       sslContext.init(null, new TrustManager[] {
           new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
-              LogUtil.d(getClass(), "getAcceptedIssuers =============");
+              Timber.d("getAcceptedIssuers =============");
               return null;
             }
 
             public void checkClientTrusted(X509Certificate[] certs, String authType) {
-              LogUtil.d(getClass(), "checkClientTrusted =============");
+              Timber.d("checkClientTrusted =============");
             }
 
             public void checkServerTrusted(X509Certificate[] certs, String authType) {
-              LogUtil.d(getClass(), "checkServerTrusted =============");
+              Timber.d("checkServerTrusted =============");
             }
           }
       }, new SecureRandom());

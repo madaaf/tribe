@@ -2,7 +2,6 @@ package com.tribe.tribelivesdk.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoRenderer;
 import rx.Observable;
 

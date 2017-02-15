@@ -1,6 +1,5 @@
 package com.tribe.tribelivesdk.core;
 
-import com.tribe.tribelivesdk.util.LogUtil;
 import java.util.LinkedList;
 import java.util.List;
 import org.webrtc.DataChannel;
@@ -10,6 +9,7 @@ import org.webrtc.PeerConnection;
 import org.webrtc.RtpReceiver;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 public class TribePeerConnectionObserver implements PeerConnection.Observer {
 
@@ -30,10 +30,10 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   }
 
   @Override public void onAddStream(MediaStream mediaStream) {
-    LogUtil.d(getClass(), "onAddStream");
+    Timber.d("onAddStream");
 
     if (mediaStream.audioTracks.size() > 1 || mediaStream.videoTracks.size() > 1) {
-      LogUtil.e(getClass(), "Weird-looking stream: " + mediaStream);
+      Timber.e("Weird-looking stream: " + mediaStream);
       return;
     }
 
@@ -43,46 +43,46 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   }
 
   @Override public void onRemoveStream(MediaStream mediaStream) {
-    LogUtil.d(getClass(), "onRemoveStream");
+    Timber.d("onRemoveStream");
     onRemovedMediaStream.onNext(mediaStream);
   }
 
   @Override public void onDataChannel(DataChannel dataChannel) {
-    LogUtil.d(getClass(), "onDataChannel : " + dataChannel);
+    Timber.d("onDataChannel : " + dataChannel);
     onDataChannel.onNext(dataChannel);
   }
 
   @Override public void onIceCandidate(IceCandidate iceCandidate) {
-    LogUtil.d(getClass(), "onIceCandidate : " + iceCandidate);
+    Timber.d("onIceCandidate : " + iceCandidate);
 
     if (iceCandidate != null) {
       String type = iceCandidate.toString().split(" ")[7];
       //if (!type.equals("relay")) {
-      //    LogUtil.d(getClass(), "iceCandidate " + type + " ignored: TURN only mode.");
+      //    Timber.d( "iceCandidate " + type + " ignored: TURN only mode.");
       //    return;
       //}
-      LogUtil.d(getClass(), "iceCandidate " + type + " candidate accepted");
+      Timber.d("iceCandidate " + type + " candidate accepted");
       onReceivedIceCandidate.onNext(iceCandidate);
       //queuedLocalCandidates.add(iceCandidate);
     }
   }
 
   @Override public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
-    LogUtil.d(getClass(), "onIceCandidateRemoved. " + iceCandidates);
+    Timber.d("onIceCandidateRemoved. " + iceCandidates);
   }
 
   @Override
   public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-    LogUtil.d(getClass(), "onIceConnectionChange. " + iceConnectionState);
+    Timber.d("onIceConnectionChange. " + iceConnectionState);
     onIceConnectionChanged.onNext(iceConnectionState);
   }
 
   @Override public void onIceConnectionReceivingChange(boolean change) {
-    LogUtil.d(getClass(), "OnIceConnectionReceivingChange : " + change);
+    Timber.d("OnIceConnectionReceivingChange : " + change);
   }
 
   @Override public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
-    LogUtil.d(getClass(), "onIceGatheringChange : " + iceGatheringState.name());
+    Timber.d("onIceGatheringChange : " + iceGatheringState.name());
 
     if (iceGatheringState != PeerConnection.IceGatheringState.COMPLETE) {
       return;
@@ -94,7 +94,7 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   }
 
   @Override public void onRenegotiationNeeded() {
-    LogUtil.d(getClass(), "onRenegotiationNeeded");
+    Timber.d("onRenegotiationNeeded");
     if (isOffer) {
       onShouldCreateOffer.onNext(null);
     }
@@ -105,7 +105,7 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   }
 
   @Override public void onSignalingChange(PeerConnection.SignalingState signalingState) {
-    LogUtil.d(getClass(), "onSignalingChange : " + signalingState.name());
+    Timber.d("onSignalingChange : " + signalingState.name());
   }
 
   public Observable<PeerConnection.IceConnectionState> onIceConnectionChanged() {

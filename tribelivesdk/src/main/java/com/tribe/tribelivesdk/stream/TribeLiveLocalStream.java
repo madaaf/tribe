@@ -1,7 +1,6 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
-import com.tribe.tribelivesdk.util.LogUtil;
 import com.tribe.tribelivesdk.view.PeerView;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
@@ -15,6 +14,7 @@ import org.webrtc.VideoCapturer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
+import timber.log.Timber;
 
 public class TribeLiveLocalStream {
 
@@ -93,15 +93,15 @@ public class TribeLiveLocalStream {
     //    enumerator =
     //}
 
-    LogUtil.d(getClass(), "Creating capturer");
+    Timber.d("Creating capturer");
 
     final String[] deviceNames = enumerator.getDeviceNames();
 
     // First, try to find front facing camera
-    LogUtil.d(getClass(), "Looking for front facing cameras.");
+    Timber.d("Looking for front facing cameras.");
     for (String deviceName : deviceNames) {
       if (enumerator.isFrontFacing(deviceName)) {
-        LogUtil.d(getClass(), "Creating front facing camera capturer.");
+        Timber.d("Creating front facing camera capturer.");
         VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 
         if (videoCapturer != null) {
@@ -112,10 +112,10 @@ public class TribeLiveLocalStream {
     }
 
     // Front facing camera not found, try something else
-    LogUtil.d(getClass(), "Looking for other cameras.");
+    Timber.d("Looking for other cameras.");
     for (String deviceName : deviceNames) {
       if (!enumerator.isFrontFacing(deviceName)) {
-        LogUtil.d(getClass(), "Creating other camera capturer.");
+        Timber.d("Creating other camera capturer.");
         VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 
         if (videoCapturer != null) {
@@ -127,7 +127,7 @@ public class TribeLiveLocalStream {
 
   public void startVideoCapture() {
     if (capturer != null) {
-      LogUtil.d(getClass(), "Start video source.");
+      Timber.d("Start video source.");
       capturer.startCapture(mediaConstraints.getMaxWidth(), mediaConstraints.getMaxHeight(),
           mediaConstraints.getMaxFrameRate());
     }
@@ -135,7 +135,7 @@ public class TribeLiveLocalStream {
 
   public void stopVideoCapture() {
     if (capturer != null) {
-      LogUtil.d(getClass(), "Stop video source.");
+      Timber.d("Stop video source.");
       try {
         capturer.stopCapture();
       } catch (InterruptedException e) {
@@ -156,15 +156,15 @@ public class TribeLiveLocalStream {
   }
 
   public void dispose() {
-    LogUtil.d(getClass(), "Disposing live local stream");
-    LogUtil.d(getClass(), "Stop video capture");
+    Timber.d("Disposing live local stream");
+    Timber.d("Stop video capture");
     stopVideoCapture();
-    LogUtil.d(getClass(), "Disposing video capturer");
+    Timber.d("Disposing video capturer");
     capturer.dispose();
     capturer = null;
 
     if (videoSource != null) {
-      LogUtil.d(getClass(), "Disposing video source");
+      Timber.d("Disposing video source");
       videoSource.dispose();
     }
 
@@ -184,7 +184,7 @@ public class TribeLiveLocalStream {
 
     audioTrack = null;
     videoTrack = null;
-    LogUtil.d(getClass(), "End disposing live local stream");
+    Timber.d("End disposing live local stream");
   }
 
   public void setAudioEnabled(boolean enabled) {
@@ -196,8 +196,7 @@ public class TribeLiveLocalStream {
   }
 
   public boolean isAudioEnabled() {
-    if (audioTrack == null || isReattachingCamera)
-      return false;
+    if (audioTrack == null || isReattachingCamera) return false;
 
     return audioTrack.enabled();
   }
@@ -211,8 +210,7 @@ public class TribeLiveLocalStream {
   }
 
   public boolean isCameraEnabled() {
-    if (videoTrack == null || isReattachingCamera)
-      return false;
+    if (videoTrack == null || isReattachingCamera) return false;
 
     return videoTrack.enabled();
   }
@@ -223,11 +221,11 @@ public class TribeLiveLocalStream {
     }
 
     if (capturer instanceof CameraVideoCapturer) {
-      LogUtil.d(getClass(), "Switch camera");
+      Timber.d("Switch camera");
       CameraVideoCapturer cameraVideoCapturer = (CameraVideoCapturer) capturer;
       cameraVideoCapturer.switchCamera(null);
     } else {
-      LogUtil.d(getClass(), "Will not switch camera, video caputurer is not a camera");
+      Timber.d("Will not switch camera, video caputurer is not a camera");
     }
   }
 }

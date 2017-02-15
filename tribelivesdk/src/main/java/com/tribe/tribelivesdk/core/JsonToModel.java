@@ -7,7 +7,6 @@ import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
-import com.tribe.tribelivesdk.util.LogUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 public class JsonToModel {
 
@@ -39,7 +39,7 @@ public class JsonToModel {
     @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
 
     if (localWebSocketType == null) {
-      LogUtil.e(getClass(), "WebSocket message unhandled");
+      Timber.e("WebSocket message unhandled");
       return;
     }
 
@@ -49,7 +49,7 @@ public class JsonToModel {
 
       if (localWebSocketType.equals(Room.MESSAGE_OFFER)) {
         JSONObject data = object.getJSONObject("d");
-        LogUtil.d(getClass(), "Received challenge : " + data);
+        Timber.d("Received challenge : " + data);
         JSONObject sdpJSON = data.getJSONObject("sdp");
 
         final SessionDescription sdp = new SessionDescription(
@@ -63,7 +63,7 @@ public class JsonToModel {
         onReceivedOffer.onNext(new TribeOffer(tribeSession, sdp));
       } else if (localWebSocketType.equals(Room.MESSAGE_CANDIDATE)) {
         JSONObject data = object.getJSONObject("d");
-        LogUtil.d(getClass(), "Exchange candidate : " + data.toString());
+        Timber.d("Exchange candidate : " + data.toString());
 
         JSONObject session = data.getJSONObject("from");
         TribeSession tribeSession =
@@ -78,14 +78,14 @@ public class JsonToModel {
         onCandidate.onNext(tribeCandidate);
       } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
         JSONObject d = object.getJSONObject("d");
-        LogUtil.d(getClass(), Room.MESSAGE_LEAVE + " received : " + d.toString());
+        Timber.d(Room.MESSAGE_LEAVE + " received : " + d.toString());
         String peerId = d.getString("socketId");
         String userId = d.getString("userId");
         onLeaveRoom.onNext(new TribeSession(peerId, userId));
       } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
         // TODO handle userMediaConfiguration
         JSONObject r = object.getJSONObject("d");
-        LogUtil.d(getClass(), "Join response received : " + r.toString());
+        Timber.d("Join response received : " + r.toString());
         JSONArray jsonArray = r.getJSONArray("sessions");
 
         int roomSize = r.getInt("roomSize");
@@ -116,7 +116,7 @@ public class JsonToModel {
       convertToModel(json);
       return;
     } catch (IOException ex) {
-      LogUtil.e(getClass(), ex.toString());
+      Timber.e(ex.toString());
     }
   }
 
@@ -147,7 +147,7 @@ public class JsonToModel {
       if (object.has(Room.MESSAGE_APP)) {
         JSONObject app = object.getJSONObject(Room.MESSAGE_APP);
         if (app.has(Room.MESSAGE_INVITE_ADDED)) {
-          LogUtil.d(getClass(), "Receiving invite added");
+          Timber.d("Receiving invite added");
           List<TribeGuest> guestList = new ArrayList<>();
           JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
           for (int i = 0; i < arrayInvited.length(); i++) {
@@ -157,7 +157,7 @@ public class JsonToModel {
           }
           onInvitedTribeGuestList.onNext(guestList);
         } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
-          LogUtil.d(getClass(), "Receiving invite removed");
+          Timber.d("Receiving invite removed");
           List<TribeGuest> guestRemovedList = new ArrayList<>();
           JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
           for (int i = 0; i < arrayRemoved.length(); i++) {
@@ -166,7 +166,7 @@ public class JsonToModel {
           onRemovedTribeGuestList.onNext(guestRemovedList);
         }
       } else if (object.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
-        LogUtil.d(getClass(), "Receiving media configuration");
+        Timber.d("Receiving media configuration");
         TribePeerMediaConfiguration peerMediaConfiguration =
             new TribePeerMediaConfiguration(session);
         peerMediaConfiguration.setAudioEnabled(object.getBoolean("isAudioEnabled"));
@@ -183,7 +183,7 @@ public class JsonToModel {
       convertDataChannelToModel(json, session);
       return;
     } catch (IOException ex) {
-      LogUtil.e(getClass(), ex.toString());
+      Timber.e(ex.toString());
     }
   }
 

@@ -1,16 +1,11 @@
 package com.tribe.tribelivesdk.back;
 
 import android.support.annotation.StringDef;
-import android.util.Log;
-import com.neovisionaries.ws.client.OpeningHandshakeException;
-import com.neovisionaries.ws.client.PayloadGenerator;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import com.neovisionaries.ws.client.WebSocketListener;
-import com.neovisionaries.ws.client.WebSocketState;
-import com.tribe.tribelivesdk.util.LogUtil;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 @Singleton public class WebSocketConnection {
 
@@ -53,9 +49,7 @@ import rx.subjects.PublishSubject;
   private PublishSubject<String> onMessage = PublishSubject.create();
   private PublishSubject<String> onError = PublishSubject.create();
 
-  @Inject
-  public WebSocketConnection(WebSocketFactory clientFactory,
-      Map<String, String> headers) {
+  @Inject public WebSocketConnection(WebSocketFactory clientFactory, Map<String, String> headers) {
     state = STATE_NEW;
     this.clientFactory = clientFactory;
     this.headers = headers;
@@ -63,7 +57,7 @@ import rx.subjects.PublishSubject;
 
   public void connect(final String url) {
     if (state == STATE_CONNECTED) {
-      LogUtil.e(getClass(), "WebSocket is already connected.");
+      Timber.e("WebSocket is already connected.");
       return;
     }
 
@@ -77,7 +71,7 @@ import rx.subjects.PublishSubject;
       return;
     }
 
-    LogUtil.d(getClass(), "Connecting WebSocket to: " + url);
+    Timber.d("Connecting WebSocket to: " + url);
 
     try {
       webSocketClient = clientFactory.createSocket(uri, CONNECT_TIMEOUT);
@@ -95,24 +89,24 @@ import rx.subjects.PublishSubject;
       webSocketClient.addListener(new WebSocketListener() {
         @Override public void onStateChanged(WebSocket websocket,
             com.neovisionaries.ws.client.WebSocketState newState) throws Exception {
-          LogUtil.d(getClass(), "WebSocket stateChanged: " + newState.name());
+          Timber.d("WebSocket stateChanged: " + newState.name());
         }
 
         @Override public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket connection opened to: " + url);
+          Timber.d("WebSocket connection opened to: " + url);
           state = STATE_CONNECTED;
           onStateChanged.onNext(state);
         }
 
         @Override public void onConnectError(WebSocket websocket, WebSocketException cause)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket onConnectError: " + cause.getMessage());
+          Timber.d("WebSocket onConnectError: " + cause.getMessage());
         }
 
         @Override public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
             WebSocketFrame clientCloseFrame, boolean closedByServer) throws Exception {
-          LogUtil.d(getClass(), "WebSocket onDisconnected");
+          Timber.d("WebSocket onDisconnected");
 
           synchronized (closeLock) {
             close = true;
@@ -146,7 +140,7 @@ import rx.subjects.PublishSubject;
 
         @Override public void onCloseFrame(WebSocket websocket, WebSocketFrame frame)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket onCloseFrame");
+          Timber.d("WebSocket onCloseFrame");
         }
 
         @Override public void onPingFrame(WebSocket websocket, WebSocketFrame frame)
@@ -164,7 +158,7 @@ import rx.subjects.PublishSubject;
         }
 
         @Override public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
-          LogUtil.d(getClass(), "WebSocket onBinaryMessage");
+          Timber.d("WebSocket onBinaryMessage");
         }
 
         @Override public void onSendingFrame(WebSocket websocket, WebSocketFrame frame)
@@ -184,7 +178,7 @@ import rx.subjects.PublishSubject;
 
         @Override public void onError(WebSocket websocket, WebSocketException cause)
             throws Exception {
-          LogUtil.e(getClass(), "WebSocket onError : " + cause.getError().name());
+          Timber.e("WebSocket onError : " + cause.getError().name());
 
           state = STATE_ERROR;
           onError.onNext(cause.getMessage());
@@ -197,7 +191,7 @@ import rx.subjects.PublishSubject;
 
         @Override public void onMessageError(WebSocket websocket, WebSocketException cause,
             List<WebSocketFrame> frames) throws Exception {
-          LogUtil.d(getClass(), "WebSocket onMessageError : " + cause.getMessage());
+          Timber.d("WebSocket onMessageError : " + cause.getMessage());
         }
 
         @Override
@@ -209,28 +203,28 @@ import rx.subjects.PublishSubject;
         @Override
         public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket onTextMessageMessageError : " + cause.getMessage());
+          Timber.d("WebSocket onTextMessageMessageError : " + cause.getMessage());
         }
 
         @Override
         public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket onSendError : " + cause.getMessage());
+          Timber.d("WebSocket onSendError : " + cause.getMessage());
         }
 
         @Override public void onUnexpectedError(WebSocket websocket, WebSocketException cause)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket onUnexpectedError : " + cause);
+          Timber.d("WebSocket onUnexpectedError : " + cause);
         }
 
         @Override public void handleCallbackError(WebSocket websocket, Throwable cause)
             throws Exception {
-          LogUtil.d(getClass(), "WebSocket handleCallbackError : " + cause.getMessage());
+          Timber.d("WebSocket handleCallbackError : " + cause.getMessage());
         }
 
         @Override public void onSendingHandshake(WebSocket websocket, String requestLine,
             List<String[]> headers) throws Exception {
-          LogUtil.d(getClass(), "WebSocket onSendingHandshake : " + requestLine);
+          Timber.d("WebSocket onSendingHandshake : " + requestLine);
         }
       });
     } catch (IOException e) {
@@ -248,7 +242,7 @@ import rx.subjects.PublishSubject;
   }
 
   public void disconnect(boolean waitForComplete) {
-    LogUtil.d(getClass(), "Disconnect");
+    Timber.d("Disconnect");
 
     if (webSocketClient != null && (state == STATE_CONNECTED || state == STATE_CONNECTING)) {
       state = STATE_DISCONNECTED;
@@ -263,7 +257,7 @@ import rx.subjects.PublishSubject;
               closeLock.wait(CLOSE_TIMEOUT);
               break;
             } catch (InterruptedException e) {
-              LogUtil.e(getClass(), "Wait error: " + e.toString());
+              Timber.e("Wait error: " + e.toString());
             }
           }
         }
@@ -279,7 +273,7 @@ import rx.subjects.PublishSubject;
       return;
     }
 
-    LogUtil.v(getClass(), "Sending : " + msg);
+    Timber.v( "Sending : " + msg);
     webSocketClient.sendText(msg);
   }
 

@@ -11,20 +11,15 @@ import rx.subjects.PublishSubject;
  */
 public class ObservableRxHashMap<T, R> {
 
-  @StringDef({ INIT, ADD, ADD_ALL, REMOVE, UPDATE, CLEAR }) public @interface ChangeType {
-  }
-
   public static final String INIT = "init";
   public static final String ADD = "add";
   public static final String ADD_ALL = "add_all";
   public static final String REMOVE = "remove";
   public static final String UPDATE = "update";
   public static final String CLEAR = "clear";
-
   protected final HashMap<T, R> map;
   protected final PublishSubject<RxHashMap<T, R>> subject;
   protected final PublishSubject<Map<T, R>> mapSubject;
-
   public ObservableRxHashMap() {
     this.map = new HashMap<>();
     this.subject = PublishSubject.create();
@@ -85,6 +80,9 @@ public class ObservableRxHashMap<T, R> {
 
   public int size() {
     return map.size();
+  }
+
+  @StringDef({ INIT, ADD, ADD_ALL, REMOVE, UPDATE, CLEAR }) public @interface ChangeType {
   }
 
   public static class RxHashMap<T, R> {

@@ -4,21 +4,18 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import com.tribe.tribelivesdk.util.LogUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import org.w3c.dom.Text;
 import org.webrtc.MediaStream;
 import org.webrtc.RendererCommon;
 import org.webrtc.RendererCommon.RendererEvents;
 import org.webrtc.RendererCommon.ScalingType;
-import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoTrack;
+import timber.log.Timber;
 
 public abstract class PeerView extends ViewGroup {
 
@@ -65,36 +62,50 @@ public abstract class PeerView extends ViewGroup {
   }
 
   /**
-   * The height of the last video frame rendered by
-   * {@link #textureViewRenderer}.
-   */
-  protected int frameHeight;
-
-  /**
-   * The rotation (degree) of the last video frame rendered by
-   * {@link #textureViewRenderer}.
-   */
-  protected int frameRotation;
-
-  /**
-   * The width of the last video frame rendered by
-   * {@link #textureViewRenderer}.
-   */
-  protected int frameWidth;
-
-  /**
    * The {@code Object} which synchronizes the access to the layout-related
    * state of this instance such as {@link #frameHeight},
    * {@link #frameRotation}, {@link #frameWidth}, and {@link #scalingType}.
    */
   protected final Object layoutSyncRoot = new Object();
-
+  /**
+   * The height of the last video frame rendered by
+   * {@link #textureViewRenderer}.
+   */
+  protected int frameHeight;
+  /**
+   * The rotation (degree) of the last video frame rendered by
+   * {@link #textureViewRenderer}.
+   */
+  protected int frameRotation;
+  /**
+   * The width of the last video frame rendered by
+   * {@link #textureViewRenderer}.
+   */
+  protected int frameWidth;
   /**
    * The indicator which determines whether this {@code PeerView} is to
    * mirror the video represented by {@link #videoTrack} during its rendering.
    */
   protected boolean mirror;
-
+  /**
+   * The scaling type this {@code PeerView} is to apply to the video
+   * represented by {@link #videoTrack} during its rendering. An expression of
+   * the CSS property {@code object-fit} in the terms of WebRTC.
+   */
+  protected ScalingType scalingType;
+  /**
+   * The {@link View} and {@link VideoRenderer} implementation which
+   * actually renders {@link #videoTrack} on behalf of this instance.
+   */
+  protected TextureViewRenderer textureViewRenderer;
+  /**
+   * The {@code Runnable} representation of
+   * {@link #requestTextureViewRendererLayout()} ()}. Explicitly defined in order
+   * to allow the use of the latter with {@link #post(Runnable)} without
+   * initializing new instances on every (method) call.
+   */
+  protected final Runnable requestSurfaceViewRendererLayoutRunnable =
+      () -> requestTextureViewRendererLayout();
   /**
    * The {@code RendererEvents} which listens to rendering events reported by
    * {@link #textureViewRenderer}.
@@ -107,29 +118,6 @@ public abstract class PeerView extends ViewGroup {
       PeerView.this.onFrameResolutionChanged(videoWidth, videoHeight, rotation);
     }
   };
-
-  /**
-   * The {@code Runnable} representation of
-   * {@link #requestTextureViewRendererLayout()} ()}. Explicitly defined in order
-   * to allow the use of the latter with {@link #post(Runnable)} without
-   * initializing new instances on every (method) call.
-   */
-  protected final Runnable requestSurfaceViewRendererLayoutRunnable =
-      () -> requestTextureViewRendererLayout();
-
-  /**
-   * The scaling type this {@code PeerView} is to apply to the video
-   * represented by {@link #videoTrack} during its rendering. An expression of
-   * the CSS property {@code object-fit} in the terms of WebRTC.
-   */
-  protected ScalingType scalingType;
-
-  /**
-   * The {@link View} and {@link VideoRenderer} implementation which
-   * actually renders {@link #videoTrack} on behalf of this instance.
-   */
-  protected TextureViewRenderer textureViewRenderer;
-
   /**
    * The {@code VideoRenderer}, if any, which renders {@link #videoTrack} on
    * this {@code View}.
@@ -296,16 +284,16 @@ public abstract class PeerView extends ViewGroup {
    */
   protected void removeRendererFromVideoTrack() {
     if (videoRenderer != null) {
-      LogUtil.d(getClass(), "Disposing renderer from video track");
+      Timber.d("Disposing renderer from video track");
       if (videoTrack != null) {
-        LogUtil.d(getClass(), "Removing videoRenderer from videoTrack");
+        Timber.d("Removing videoRenderer from videoTrack");
         videoTrack.removeRenderer(videoRenderer);
       }
-      LogUtil.d(getClass(), "videoRenderer dispose");
+      Timber.d("videoRenderer dispose");
       videoRenderer.dispose();
       videoRenderer = null;
 
-      LogUtil.d(getClass(), "Releasing texture");
+      Timber.d("Releasing texture");
       getTextureViewRenderer().release();
 
       // Since this PeerView is no longer rendering anything, make sure
@@ -316,9 +304,9 @@ public abstract class PeerView extends ViewGroup {
         frameWidth = 0;
       }
 
-      LogUtil.d(getClass(), "Request renderer layout");
+      Timber.d("Request renderer layout");
       requestTextureViewRendererLayout();
-      LogUtil.d(getClass(), "End disposing renderer from video track");
+      Timber.d("End disposing renderer from video track");
     }
   }
 

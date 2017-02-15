@@ -3,9 +3,9 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
-import com.tribe.tribelivesdk.util.LogUtil;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 15/01/2017.
@@ -42,7 +42,7 @@ public class RemotePeerView extends PeerView {
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
-    LogUtil.d(getClass(), "New media configuration for : "
+    Timber.d("New media configuration for : "
         + mediaConfiguration.getSession().getUserId()
         + " : isAudioEnabled : "
         + mediaConfiguration.isAudioEnabled()

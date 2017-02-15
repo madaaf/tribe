@@ -6,7 +6,6 @@ import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeMessageDataChannel;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribeSession;
-import com.tribe.tribelivesdk.util.LogUtil;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.webrtc.SessionDescription;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 13/01/2017.
@@ -53,9 +53,9 @@ public class TribePeerConnection {
     this.iceServerList = iceServerList;
     this.pendingIceCandidateList = new ArrayList<>();
 
-    LogUtil.d(getClass(), "Initiating Peer Connection");
+    Timber.d( "Initiating Peer Connection");
     init(peerConnectionFactory, isOffer);
-    LogUtil.d(getClass(), "End initiating Peer Connection");
+    Timber.d( "End initiating Peer Connection");
   }
 
   private void init(PeerConnectionFactory peerConnectionFactory, boolean isOffer) {
@@ -68,17 +68,17 @@ public class TribePeerConnection {
             peerConnectionObserver);
     sdpObserver.setPeerConnection(peerConnection);
 
-    LogUtil.d(getClass(), "Connected now creating local data channel");
+    Timber.d( "Connected now creating local data channel");
     DataChannel.Init init = new DataChannel.Init();
     localDataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
     localDataChannel.registerObserver(localDataChannelObserver);
 
     subscriptions.add(localDataChannelObserver.onStateChanged()
-        .subscribe(aVoid -> LogUtil.d(getClass(), "New state : " + localDataChannel.state())));
-    LogUtil.d(getClass(), "Local data channel created");
+        .subscribe(aVoid -> Timber.d( "New state : " + localDataChannel.state())));
+    Timber.d( "Local data channel created");
 
     subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
-      LogUtil.d(getClass(), "Received data channel");
+      Timber.d( "Received data channel");
       remoteDataChannel = newDataChannel;
       remoteDataChannel.registerObserver(remoteDataChannelObserver);
 
@@ -108,7 +108,7 @@ public class TribePeerConnection {
 
   public void setRemoteDescription(SessionDescription sessionDescription) {
     if (sessionDescription == null) {
-      LogUtil.e(getClass(), "Attempting to setRemoteDescription to null");
+      Timber.e( "Attempting to setRemoteDescription to null");
       return;
     }
 
@@ -118,30 +118,30 @@ public class TribePeerConnection {
 
   public void addIceCandidate(final IceCandidate iceCandidate) {
     if (iceCandidate == null) {
-      LogUtil.e(getClass(), "Attempting to add null ice candidate");
+      Timber.e( "Attempting to add null ice candidate");
       return;
     }
 
     if (peerConnection == null) {
-      LogUtil.e(getClass(), "Peer connection is null can't add iceCandidate");
+      Timber.e( "Peer connection is null can't add iceCandidate");
       return;
     }
 
     if (peerConnection.getRemoteDescription() == null) {
-      LogUtil.d(getClass(), "Adding iceCandidate to pending");
+      Timber.d( "Adding iceCandidate to pending");
       pendingIceCandidateList.add(iceCandidate);
       return;
     }
 
-    LogUtil.d(getClass(), "Adding iceCandidate : " + iceCandidate);
+    Timber.d( "Adding iceCandidate : " + iceCandidate);
     peerConnection.addIceCandidate(iceCandidate);
   }
 
   public void send(String str) {
-    LogUtil.d(getClass(), "Sending through dataChannel : " + str);
+    Timber.d( "Sending through dataChannel : " + str);
     ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
     boolean success = localDataChannel.send(new DataChannel.Buffer(buffer, false));
-    LogUtil.d(getClass(), "Success sending to dataChannel : " + success);
+    Timber.d( "Success sending to dataChannel : " + success);
   }
 
   public PeerConnection getPeerConnection() {
@@ -151,27 +151,27 @@ public class TribePeerConnection {
   public void dispose(MediaStream mediaStream) {
     subscriptions.clear();
 
-    LogUtil.d(getClass(), "Disposing peer connection for peer : " + session.getPeerId());
+    Timber.d( "Disposing peer connection for peer : " + session.getPeerId());
     if (localDataChannel != null) {
-      LogUtil.d(getClass(), "Closing local datachannel for peer : " + session.getPeerId());
+      Timber.d( "Closing local datachannel for peer : " + session.getPeerId());
       localDataChannel.close();
       localDataChannel = null;
     }
 
     if (remoteDataChannel != null) {
-      LogUtil.d(getClass(), "Closing remote datachannel for peer : " + session.getPeerId());
+      Timber.d( "Closing remote datachannel for peer : " + session.getPeerId());
       remoteDataChannel.close();
       remoteDataChannel = null;
     }
 
     if (peerConnection != null) {
       if (mediaStream != null) {
-        LogUtil.d(getClass(), "Removing mediaStream for peer : " + session.getPeerId());
+        Timber.d( "Removing mediaStream for peer : " + session.getPeerId());
         peerConnection.removeStream(mediaStream);
       }
-      LogUtil.d(getClass(), "Closing peer connection for peer : " + session.getPeerId());
+      Timber.d( "Closing peer connection for peer : " + session.getPeerId());
       peerConnection.close();
-      LogUtil.d(getClass(), "Dropping sdpObserver for peer : " + session.getPeerId());
+      Timber.d( "Dropping sdpObserver for peer : " + session.getPeerId());
       sdpObserver.dropPeerConnection();
       peerConnection = null;
       peerConnectionObserver = null;
@@ -185,7 +185,7 @@ public class TribePeerConnection {
       remoteDataChannelObserver = null;
     }
 
-    LogUtil.d(getClass(), "End disposing for peer : " + session.getPeerId());
+    Timber.d( "End disposing for peer : " + session.getPeerId());
   }
 
   /////////////////

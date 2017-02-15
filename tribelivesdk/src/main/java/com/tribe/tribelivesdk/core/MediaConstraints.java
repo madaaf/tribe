@@ -1,11 +1,11 @@
 package com.tribe.tribelivesdk.core;
 
-import com.tribe.tribelivesdk.util.LogUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.webrtc.CameraEnumerationAndroid;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 13/01/2017.
@@ -179,17 +179,16 @@ public class MediaConstraints {
     }
 
     if (mLineIndex == -1) {
-      LogUtil.d(MediaConstraints.class, "No " + mediaDescription + " line, so can't prefer " + codec);
+      Timber.d("No " + mediaDescription + " line, so can't prefer " + codec);
       return sdpDescription;
     }
 
     if (codecRtpMap == null) {
-      LogUtil.d(MediaConstraints.class, "No rtpmap for " + codec);
+      Timber.d("No rtpmap for " + codec);
       return sdpDescription;
     }
 
-    LogUtil.d(MediaConstraints.class,
-        "Found " + codec + " rtpmap " + codecRtpMap + ", prefer at " + lines[mLineIndex]);
+    Timber.d("Found " + codec + " rtpmap " + codecRtpMap + ", prefer at " + lines[mLineIndex]);
 
     String[] origMLineParts = lines[mLineIndex].split(" ");
 
@@ -209,9 +208,9 @@ public class MediaConstraints {
       }
 
       lines[mLineIndex] = newMLine.toString();
-      LogUtil.d(MediaConstraints.class, "Change media description: " + lines[mLineIndex]);
+      Timber.d("Change media description: " + lines[mLineIndex]);
     } else {
-      LogUtil.e(MediaConstraints.class, "Wrong SDP media description format: " + lines[mLineIndex]);
+      Timber.e("Wrong SDP media description format: " + lines[mLineIndex]);
     }
 
     StringBuilder newSdpDescription = new StringBuilder();
@@ -247,17 +246,16 @@ public class MediaConstraints {
     }
 
     if (mLineIndex == -1) {
-      LogUtil.d(MediaConstraints.class, "No " + mediaDescription + " line, so can't prefer " + codec);
+      Timber.d("No " + mediaDescription + " line, so can't prefer " + codec);
       return sdpDescription;
     }
 
     if (codecRtpMap == null || mLineToRemove == -1) {
-      LogUtil.d(MediaConstraints.class, "No rtpmap for " + codec);
+      Timber.d("No rtpmap for " + codec);
       return sdpDescription;
     }
 
-    LogUtil.d(MediaConstraints.class,
-        "Found " + codec + " rtpmap " + codecRtpMap + ", prefer at " + lines[mLineIndex]);
+    Timber.d("Found " + codec + " rtpmap " + codecRtpMap + ", prefer at " + lines[mLineIndex]);
 
     String[] origMLineParts = lines[mLineIndex].split(" ");
 
@@ -276,16 +274,16 @@ public class MediaConstraints {
       }
 
       lines[mLineIndex] = newMLine.toString();
-      LogUtil.d(MediaConstraints.class, "Change media description: " + lines[mLineIndex]);
+      Timber.d("Change media description: " + lines[mLineIndex]);
     } else {
-      LogUtil.e(MediaConstraints.class, "Wrong SDP media description format: " + lines[mLineIndex]);
+      Timber.e("Wrong SDP media description format: " + lines[mLineIndex]);
     }
 
     StringBuilder newSdpDescription = new StringBuilder();
     int count = 0;
     for (String line : lines) {
       //if (count != mLineToRemove) {
-        newSdpDescription.append(line).append("\r\n");
+      newSdpDescription.append(line).append("\r\n");
       //}
       count++;
     }
