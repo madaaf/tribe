@@ -493,9 +493,12 @@ public class LiveView extends FrameLayout {
       DialogFactory.dialog(getContext(),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_title)),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_message)),
-          getContext().getString(R.string.tips_waiting60sec_action1),
-          getContext().getString(R.string.tips_waiting60sec_action2)).subscribe(a -> {
-      });
+          getContext().getString(R.
+              string.tips_waiting60sec_action1),
+          getContext().getString(R.string.tips_waiting60sec_action2)).filter(x -> x == true).
+          subscribe(a -> {
+            if (!hiddenControls) onOpenInvite.onNext(null);
+          });
       stateManager.addTutorialKey(StateManager.JOIN_FRIEND_LIVE);
     }
   }

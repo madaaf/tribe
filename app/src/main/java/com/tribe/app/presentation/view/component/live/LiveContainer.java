@@ -535,7 +535,12 @@ public class LiveContainer extends FrameLayout {
 
   private void openInviteView() {
     isOpened = true;
-    springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(-viewInviteLive.getWidth());
+    if (velocityTracker != null) {
+      springRight.setVelocity(velocityTracker.getXVelocity())
+          .setEndValue(-viewInviteLive.getWidth());
+    } else {
+      springRight.setEndValue(-viewInviteLive.getWidth());
+    }
   }
 
   private void closeInviteView() {
