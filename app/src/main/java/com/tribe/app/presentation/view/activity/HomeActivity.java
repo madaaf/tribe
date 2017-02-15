@@ -136,8 +136,9 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
-
     super.onCreate(savedInstanceState);
+
+    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_HomeScreen);
 
     initDependencyInjector();
     init();
@@ -209,7 +210,6 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_HomeScreen);
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
       shouldOverridePendingTransactions = false;
