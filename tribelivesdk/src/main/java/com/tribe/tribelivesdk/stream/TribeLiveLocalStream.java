@@ -32,6 +32,7 @@ public class TribeLiveLocalStream {
   private com.tribe.tribelivesdk.core.MediaConstraints mediaConstraints;
   private final VideoRenderer videoRenderer;
   private VideoSource videoSource;
+  private AudioSource audioSource;
   private VideoTrack videoTrack;
   private VideoCapturer capturer;
 
@@ -68,8 +69,8 @@ public class TribeLiveLocalStream {
     audioConstraints.mandatory.add(
         new MediaConstraints.KeyValuePair(AUDIO_LEVEL_CONTROL_CONSTRAINT, "true"));
 
-    AudioSource localAudioSource = peerConnectionFactory.createAudioSource(audioConstraints);
-    audioTrack = peerConnectionFactory.createAudioTrack("APPEARa0", localAudioSource);
+    audioSource = peerConnectionFactory.createAudioSource(audioConstraints);
+    audioTrack = peerConnectionFactory.createAudioTrack("APPEARa0", audioSource);
     mediaStream.addTrack(audioTrack);
   }
 
@@ -157,6 +158,12 @@ public class TribeLiveLocalStream {
 
   public void dispose() {
     Timber.d("Disposing live local stream");
+
+    if (audioSource != null) {
+      Timber.d("Disposing audio source");
+      audioSource.dispose();
+    }
+
     Timber.d("Stop video capture");
     stopVideoCapture();
     Timber.d("Disposing video capturer");
@@ -167,20 +174,6 @@ public class TribeLiveLocalStream {
       Timber.d("Disposing video source");
       videoSource.dispose();
     }
-
-    //try {
-    //  if (mediaStream != null) {
-    //    for (VideoTrack videoTrack : mediaStream.videoTracks) {
-    //      mediaStream.removeTrack(videoTrack);
-    //    }
-    //
-    //    for (AudioTrack audioTrack : mediaStream.audioTracks) {
-    //      mediaStream.removeTrack(audioTrack);
-    //    }
-    //  }
-    //} catch (Exception ex) {
-    //  ex.printStackTrace();
-    //}
 
     audioTrack = null;
     videoTrack = null;

@@ -131,7 +131,7 @@ public class Room {
     webSocketConnection.connect(options.getWsUrl());
 
     subscriptions.add(webSocketConnection.onStateChanged().map(state -> {
-      Timber.d( "On room state changed : " + state);
+      Timber.d("On room state changed : " + state);
 
       if (state.equals(WebSocketConnection.STATE_CONNECTED)) {
         return STATE_CONNECTED;
@@ -152,17 +152,17 @@ public class Room {
 
     subscriptions.add(webSocketConnection.onMessage().subscribe(message -> {
       if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
-        Timber.e( "Got WebSocket message in non registered state.");
+        Timber.e("Got WebSocket message in non registered state.");
       }
 
-      Timber.d( "On webSocketConnection message : " + message);
+      Timber.d("On webSocketConnection message : " + message);
 
       jsonToModel.convert(message);
     }));
   }
 
   public void joinRoom() {
-    Timber.d( "Joining room");
+    Timber.d("Joining room");
 
     webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId()).toString());
 
@@ -206,8 +206,8 @@ public class Room {
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
     options = null;
-    webRTCClient.dispose();
     webSocketConnection.disconnect(false);
+    webRTCClient.dispose();
   }
 
   public void sendToPeers(JSONObject obj) {

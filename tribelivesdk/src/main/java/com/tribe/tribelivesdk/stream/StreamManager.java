@@ -160,13 +160,13 @@ public class StreamManager {
       remotePeerMap.clear();
     }
 
-    Timber.d("Disposing stream manager");
-    localPeerView.dispose();
-    localPeerView = null;
-
     Timber.d("Disposing live local stream");
     liveLocalStream.dispose();
     liveLocalStream = null;
+
+    Timber.d("Disposing stream manager");
+    localPeerView.dispose();
+    localPeerView = null;
 
     Timber.d("End disposing stream manager");
   }
