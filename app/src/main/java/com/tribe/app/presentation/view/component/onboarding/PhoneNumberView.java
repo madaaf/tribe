@@ -15,6 +15,7 @@ import butterknife.Unbinder;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -40,6 +41,9 @@ import rx.subscriptions.CompositeSubscription;
 public class PhoneNumberView extends FrameLayout {
 
   private final static int DURATION = 200;
+  private final static String COUNTRY_CODE_DEV = "KP";
+  private final static String COUNTRY_PREFIX_DEV = "850";
+  private final static String PHONE_PREFIX_DEV = "2121";
 
   @Inject ScreenUtils screenUtils;
 
@@ -112,7 +116,14 @@ public class PhoneNumberView extends FrameLayout {
     subscriptions.add(RxTextView.textChanges(editTxtPhoneNumber)
         .map((charSequence) -> charSequence.toString())
         .filter(s -> s != null && s.length() > 2)
-        .doOnNext(s -> checkValidPhoneNumber())
+        .doOnNext(s -> {
+          if (BuildConfig.DEBUG && (countryCode.equals(COUNTRY_CODE_DEV) && s.startsWith(
+              PHONE_PREFIX_DEV) && s.length() == 8)) {
+            currentPhoneNumber = "+" + COUNTRY_PREFIX_DEV + s;
+          } else {
+            checkValidPhoneNumber();
+          }
+        })
         .map(s -> currentPhoneNumber != null)
         .subscribe(phoneNumberValid));
 

@@ -79,6 +79,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Named;
@@ -110,6 +111,10 @@ import timber.log.Timber;
 
   @Provides @PerApplication @Named("simpleGson") Gson provideSimpleGson(
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
         return f.getDeclaringClass().equals(RealmObject.class);
@@ -118,10 +123,7 @@ import timber.log.Timber;
       @Override public boolean shouldSkipClass(Class<?> clazz) {
         return false;
       }
-    })
-        .registerTypeAdapter(Date.class,
-            new DateDeserializer(utcSimpleDate, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
-        .create();
+    }).registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate, sdf)).create();
   }
 
   @Provides @PerApplication Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
