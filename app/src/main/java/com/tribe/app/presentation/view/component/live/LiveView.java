@@ -223,10 +223,10 @@ public class LiveView extends FrameLayout {
 
   private void displayDragingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
+      subscriptions.add(DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
           getContext().getString(R.string.tips_draggingguest_message),
           getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      });
+      }));
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
     }
   }
@@ -428,11 +428,11 @@ public class LiveView extends FrameLayout {
 
   private void displayDroppingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DROPPING_GUEST)) {
-      DialogFactory.dialog(getContext(),
+      subscriptions.add(DialogFactory.dialog(getContext(),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_droppingguest_title)),
           getContext().getString(R.string.tips_droppingguest_message),
           getContext().getString(R.string.tips_droppingguest_action1), null).subscribe(a -> {
-      });
+      }));
       stateManager.addTutorialKey(StateManager.DROPPING_GUEST);
     }
   }
@@ -469,10 +469,10 @@ public class LiveView extends FrameLayout {
   public void displayWaitLivePopupTutorial() {
     if (!joineLive) {
       if (stateManager.shouldDisplay(StateManager.WAINTING_FRIENDS_LIVE)) {
-        DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_waiting5sec_title),
+        subscriptions.add(DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_waiting5sec_title),
             EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting5sec_message)),
             getContext().getString(R.string.tips_waiting5sec_action1), null).subscribe(a -> {
-        });
+        }));
         stateManager.addTutorialKey(StateManager.WAINTING_FRIENDS_LIVE);
       }
     }

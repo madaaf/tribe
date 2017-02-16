@@ -238,7 +238,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void displayStartFirstPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.START_FIRST_LIVE)) {
-      DialogFactory.dialog(this,
+      subscriptions.add(DialogFactory.dialog(this,
           EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
           getString(R.string.tips_startfirstlive_message),
           getString(R.string.tips_startfirstlive_action1), null)
@@ -247,7 +247,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
             Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial());
-          });
+          }));
       stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
     }
   }
@@ -270,14 +270,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
       if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
-        DialogFactory.dialog(this,
+        subscriptions.add(DialogFactory.dialog(this,
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
             getString(R.string.tips_leavingroom_action1),
             getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
           tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
           finish();
-        });
+        }));
         stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
       } else {
         tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
@@ -360,7 +360,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   /////////////////
 
   class NotificationReceiver extends BroadcastReceiver {
-
 
     @Override public void onReceive(Context context, Intent intent) {
       if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE

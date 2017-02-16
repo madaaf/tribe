@@ -336,7 +336,7 @@ public class HomeActivity extends BaseActivity
         .subscribe(recipient -> {
           if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
             DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
-                getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName(), null),
+                getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName()),
                 getString(R.string.tips_enterfirstlive_action1),
                 getString(R.string.tips_enterfirstlive_action2))
                 .filter(x -> x == true)
