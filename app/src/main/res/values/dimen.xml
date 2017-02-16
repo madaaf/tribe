@@ -39,6 +39,7 @@
 
   <!-- HEIGHTS -->
   <dimen name="top_bar_height_small">50dp</dimen>
+  <dimen name="top_bar_notification_height_small">35dp</dimen>
   <dimen name="top_bar_height">65dp</dimen>
   <dimen name="bottom_bar_height">60dp</dimen>
   <dimen name="onboarding_choose_name_height">64dp</dimen>

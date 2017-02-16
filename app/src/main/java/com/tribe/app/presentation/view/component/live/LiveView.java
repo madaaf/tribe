@@ -120,6 +120,12 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
 
+  private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
+  private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
+  private PublishSubject<String> onNotificationRemoteWaiting = PublishSubject.create();
+  private PublishSubject<String> onNotificationRemotePeerBuzzed = PublishSubject.create();
+  private PublishSubject<String> onNotificationRemoteJoined = PublishSubject.create();
+
   public LiveView(Context context) {
     super(context);
     init(context, null);
@@ -224,16 +230,18 @@ public class LiveView extends FrameLayout {
 
   private void displayDragingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_draggingguest_title),
+      subscriptions.add(DialogFactory.dialog(getContext(),
+          getContext().getString(R.string.tips_draggingguest_title),
           getContext().getString(R.string.tips_draggingguest_message),
           getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      });
+      }));
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
     }
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
     if (!hiddenControls) {
+      onNotificationRemotePeerBuzzed.onNext(null);
       viewBuzz.buzz();
 
       for (LiveRowView liveRowView : liveInviteMap.values()) {
@@ -294,9 +302,10 @@ public class LiveView extends FrameLayout {
 
     subscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
-          soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX); //
+          soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joineLive = true;
           displayJoinLivePopupTutorial();
+
           // TOTO
           Timber.d("Remote peer added with id : "
               + remotePeer.getSession().getPeerId()
@@ -304,6 +313,16 @@ public class LiveView extends FrameLayout {
               + remotePeer.getPeerView());
           addView(remotePeer);
           refactorNotifyButton();
+          onNotificationRemoteWaiting.onNext(
+              getDisplayNameNotification(remotePeer.getSession().getUserId()));
+
+          subscriptions.add(remotePeer.getPeerView()
+              .onNotificatinRemoteJoined()
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aVoid -> {
+                onNotificationRemoteJoined.onNext(
+                    getDisplayNameNotification(remotePeer.getSession().getUserId()));
+              }));
         }));
 
     subscriptions.add(room.onRemotePeerRemoved()
@@ -319,6 +338,9 @@ public class LiveView extends FrameLayout {
           }
 
           refactorNotifyButton();
+
+          onNotificationRemotePeerRemoved.onNext(
+              getDisplayNameNotification(remotePeer.getSession().getUserId()));
         }));
 
     subscriptions.add(room.onRemotePeerUpdated()
@@ -345,6 +367,7 @@ public class LiveView extends FrameLayout {
                     });
                 addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
                 liveInviteMap.put(trg.getId(), liveRowView);
+                onNotificationRemotePeerInvited.onNext(getDisplayNameNotification(trg.getId()));
               }
             }
           }
@@ -429,11 +452,11 @@ public class LiveView extends FrameLayout {
 
   private void displayDroppingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DROPPING_GUEST)) {
-      DialogFactory.dialog(getContext(),
+      subscriptions.add(DialogFactory.dialog(getContext(),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_droppingguest_title)),
           getContext().getString(R.string.tips_droppingguest_message),
           getContext().getString(R.string.tips_droppingguest_action1), null).subscribe(a -> {
-      });
+      }));
       stateManager.addTutorialKey(StateManager.DROPPING_GUEST);
     }
   }
@@ -470,10 +493,11 @@ public class LiveView extends FrameLayout {
   public void displayWaitLivePopupTutorial() {
     if (!joineLive) {
       if (stateManager.shouldDisplay(StateManager.WAINTING_FRIENDS_LIVE)) {
-        DialogFactory.dialog(getContext(), getContext().getString(R.string.tips_waiting5sec_title),
+        subscriptions.add(DialogFactory.dialog(getContext(),
+            getContext().getString(R.string.tips_waiting5sec_title),
             EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting5sec_message)),
             getContext().getString(R.string.tips_waiting5sec_action1), null).subscribe(a -> {
-        });
+        }));
         stateManager.addTutorialKey(StateManager.WAINTING_FRIENDS_LIVE);
       }
     }
@@ -801,6 +825,25 @@ public class LiveView extends FrameLayout {
         }));
   }
 
+  private String getDisplayNameNotification(String id) {
+    String tribeGuestName = "Anonymous";
+    for (Membership membership : user.getMembershipList()) {
+      for (User member : membership.getGroup().getMembers()) {
+        if (member.getId().equals(id)) {
+          tribeGuestName = member.getDisplayName();
+        }
+      }
+    }
+
+    for (Friendship friendship : user.getFriendships()) {
+      User friend = friendship.getFriend();
+      if (friend.getId().equals(id)) {
+        tribeGuestName = friend.getDisplayName();
+      }
+    }
+    return tribeGuestName;
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -827,6 +870,26 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShouldCloseInvites() {
     return onShouldCloseInvites;
+  }
+
+  public Observable<String> onNotificationRemotePeerInvited() {
+    return onNotificationRemotePeerInvited;
+  }
+
+  public Observable<String> onNotificationRemoteWaiting() {
+    return onNotificationRemoteWaiting;
+  }
+
+  public Observable<String> onNotificationRemoteJoined() {
+    return onNotificationRemoteJoined;
+  }
+
+  public Observable<String> onNotificationonRemotePeerRemoved() {
+    return onNotificationRemotePeerRemoved;
+  }
+
+  public Observable<String> onNotificationonRemotePeerBuzzed() {
+    return onNotificationRemotePeerBuzzed;
   }
 }
 

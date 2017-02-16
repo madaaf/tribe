@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -38,6 +40,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView {
 
@@ -95,6 +100,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
   @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
+
+  @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -232,7 +239,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   private void displayStartFirstPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.START_FIRST_LIVE)) {
-      DialogFactory.dialog(this,
+      subscriptions.add(DialogFactory.dialog(this,
           EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
           getString(R.string.tips_startfirstlive_message),
           getString(R.string.tips_startfirstlive_action1), null)
@@ -241,7 +248,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
             Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial());
-          });
+          }));
       stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
     }
   }
@@ -264,14 +271,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
       if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
-        DialogFactory.dialog(this,
+        subscriptions.add(DialogFactory.dialog(this,
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
             getString(R.string.tips_leavingroom_action1),
             getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
           tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
           finish();
-        });
+        }));
         stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
       } else {
         tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
@@ -292,6 +299,33 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
       tagManager.trackEvent(TagManagerConstants.KPI_Calls_LinkButton);
       navigator.openSmsForInvite(this);
     }));
+
+    subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_added, userName));
+    }));
+
+    subscriptions.add(viewLive.onNotificationonRemotePeerRemoved().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_left, userName));
+    }));
+
+    subscriptions.add(viewLive.onNotificationRemoteWaiting().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_joining, userName));
+    }));
+
+    subscriptions.add(viewLive.onNotificationRemoteJoined().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_joined, userName)); // SOEF
+    }));
+
+    subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
+      displayNotification(getString(R.string.live_notification_buzzed));
+    }));
+  }
+
+  private void displayNotification(String txt) {
+    txtRemotePeerAdded.setText(txt);
+    txtRemotePeerAdded.setVisibility(VISIBLE);
+    Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
+    txtRemotePeerAdded.startAnimation(anim);
   }
 
   private void joinRoom() {
@@ -380,3 +414,5 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }
   }
 }
+
+
