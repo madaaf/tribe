@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -37,6 +39,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +49,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView {
 
@@ -94,6 +99,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
   @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
+
+  @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -291,6 +298,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
       tagManager.trackEvent(TagManagerConstants.KPI_Calls_LinkButton);
       navigator.openSmsForInvite(this);
     }));
+
+    subscriptions.add(viewLive.onNotificationRemotePeerAdded().subscribe(peerAddedName -> {
+      txtRemotePeerAdded.setText(getString(R.string.live_event_added, peerAddedName));
+      txtRemotePeerAdded.setVisibility(VISIBLE);
+      Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
+      txtRemotePeerAdded.startAnimation(anim);
+    }));
   }
 
   private void joinRoom() {
@@ -347,6 +361,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   class NotificationReceiver extends BroadcastReceiver {
 
+
     @Override public void onReceive(Context context, Intent intent) {
       if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE
         NotificationPayload notificationPayload =
@@ -378,3 +393,5 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }
   }
 }
+
+

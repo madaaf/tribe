@@ -119,6 +119,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
+  private PublishSubject<String> onNotificationRemotePeerAdded = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -293,6 +294,7 @@ public class LiveView extends FrameLayout {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX); //
           joineLive = true;
           displayJoinLivePopupTutorial();
+
           // TOTO
           Timber.d("Remote peer added with id : "
               + remotePeer.getSession().getPeerId()
@@ -341,6 +343,7 @@ public class LiveView extends FrameLayout {
                     });
                 addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
                 liveInviteMap.put(trg.getId(), liveRowView);
+                displayNotificationOnRemotePeerAdded(trg);
               }
             }
           }
@@ -788,6 +791,26 @@ public class LiveView extends FrameLayout {
         }));
   }
 
+  private void displayNotificationOnRemotePeerAdded(TribeGuest tribeGuest) {
+    String tribeGuestId = tribeGuest.getId();
+    String tribeGuestName = "Anonymous";
+    for (Membership membership : user.getMembershipList()) {
+      for (User member : membership.getGroup().getMembers()) {
+        if (member.getId().equals(tribeGuestId)) {
+          tribeGuestName = member.getDisplayName();
+        }
+      }
+    }
+
+    for (Friendship friendship : user.getFriendships()) {
+      User friend = friendship.getFriend();
+      if (friend.getId().equals(tribeGuestId)) {
+        tribeGuestName = friend.getDisplayName();
+      }
+    }
+    onNotificationRemotePeerAdded.onNext(tribeGuestName);
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -814,6 +837,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShouldCloseInvites() {
     return onShouldCloseInvites;
+  }
+
+  public Observable<String> onNotificationRemotePeerAdded() {
+    return onNotificationRemotePeerAdded;
   }
 }
 
