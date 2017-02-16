@@ -15,9 +15,14 @@ import org.webrtc.RendererCommon.RendererEvents;
 import org.webrtc.RendererCommon.ScalingType;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoTrack;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 public abstract class PeerView extends ViewGroup {
+
+  // OBSERVABLES
+  private PublishSubject<String> onNotificatinRemoteJoined = PublishSubject.create();
 
   /**
    * The scaling type to be utilized by default.
@@ -35,7 +40,6 @@ public abstract class PeerView extends ViewGroup {
    * video represent nothing.
    */
   protected static final ScalingType DEFAULT_SCALING_TYPE = ScalingType.SCALE_ASPECT_FILL;
-
   /**
    * {@link View#isInLayout()} as a <tt>Method</tt> to be invoked via
    * reflection in order to accommodate its lack of availability before API
@@ -112,6 +116,7 @@ public abstract class PeerView extends ViewGroup {
    */
   protected final RendererEvents rendererEvents = new RendererEvents() {
     @Override public void onFirstFrameRendered() {
+      onNotificatinRemoteJoined.onNext(null);
     }
 
     @Override public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
@@ -447,5 +452,9 @@ public abstract class PeerView extends ViewGroup {
 
   public VideoRenderer getVideoRenderer() {
     return videoRenderer;
+  }
+
+  public Observable<String> onNotificatinRemoteJoined() {
+    return onNotificatinRemoteJoined;
   }
 }

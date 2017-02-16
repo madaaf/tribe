@@ -299,12 +299,32 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
       navigator.openSmsForInvite(this);
     }));
 
-    subscriptions.add(viewLive.onNotificationRemotePeerAdded().subscribe(peerAddedName -> {
-      txtRemotePeerAdded.setText(getString(R.string.live_event_added, peerAddedName));
-      txtRemotePeerAdded.setVisibility(VISIBLE);
-      Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
-      txtRemotePeerAdded.startAnimation(anim);
+    subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_added, userName));
     }));
+
+    subscriptions.add(viewLive.onNotificationonRemotePeerRemoved().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_left, userName));
+    }));
+
+    subscriptions.add(viewLive.onNotificationRemoteWaiting().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_joining, userName));
+    }));
+
+    subscriptions.add(viewLive.onNotificationRemoteJoined().subscribe(userName -> {
+      displayNotification(getString(R.string.live_notification_peer_joined, userName)); // SOEF
+    }));
+
+    subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
+      displayNotification(getString(R.string.live_notification_buzzed));
+    }));
+  }
+
+  private void displayNotification(String txt) {
+    txtRemotePeerAdded.setText(txt);
+    txtRemotePeerAdded.setVisibility(VISIBLE);
+    Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
+    txtRemotePeerAdded.startAnimation(anim);
   }
 
   private void joinRoom() {

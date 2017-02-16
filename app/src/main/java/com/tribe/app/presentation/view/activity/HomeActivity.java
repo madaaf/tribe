@@ -335,15 +335,16 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
           if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
-            DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
-                getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName()),
-                getString(R.string.tips_enterfirstlive_action1),
-                getString(R.string.tips_enterfirstlive_action2))
-                .filter(x -> x == true)
-                .subscribe(a -> {
-                  navigator.navigateToLive(this, recipient,
-                      PaletteGrid.get(recipient.getPosition()));
-                });
+            subscriptions.add(
+                DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
+                    getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName()),
+                    getString(R.string.tips_enterfirstlive_action1),
+                    getString(R.string.tips_enterfirstlive_action2))
+                    .filter(x -> x == true)
+                    .subscribe(a -> {
+                      navigator.navigateToLive(this, recipient,
+                          PaletteGrid.get(recipient.getPosition()));
+                    }));
             stateManager.addTutorialKey(StateManager.ENTER_FIRST_LIVE);
           } else {
             navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));

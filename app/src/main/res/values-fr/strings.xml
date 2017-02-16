@@ -204,9 +204,11 @@
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
 	<string name="live_notification_leave_guests">Quitter pour rejoindre %1$s et ses invités</string>
-	<string name="live_notification_peer_joined">%1$s a rejoint le live !</string>
-	<string name="live_notification_peer_left">%1$s a quitté le live !</string>
-	<string name="live_notification_buzzed">Buzz envoyé !</string>
+	<string name="live_notification_peer_added">%1$s invité</string>
+	<string name="live_notification_peer_joining">%1$s est en train d\'arriver...</string>
+	<string name="live_notification_peer_joined">%1$s est arrivé</string>
+	<string name="live_notification_peer_left">%1$s est parti</string>
+	<string name="live_notification_buzzed">Buzz !</string>
 	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Vu par</string>
