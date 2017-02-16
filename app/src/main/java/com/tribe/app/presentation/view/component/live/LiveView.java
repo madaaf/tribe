@@ -137,6 +137,8 @@ public class LiveView extends FrameLayout {
       room = null;
     }
 
+    btnNotify.clearAnimation();
+
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
     }
@@ -252,6 +254,7 @@ public class LiveView extends FrameLayout {
               subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(aLong -> refactorNotifyButton()));
+              btnNotify.animate().setListener(null);
             }
           })
           .start();
@@ -282,6 +285,7 @@ public class LiveView extends FrameLayout {
         .tokenId(accessToken.getAccessToken())
         .iceServers(roomConfiguration.getRtcPeerConfiguration().getIceServers())
         .roomId(roomConfiguration.getRoomId())
+        .routingMode(roomConfiguration.getRoutingMode())
         .build();
 
     subscriptions.add(room.onRoomStateChanged().subscribe(state -> {
@@ -509,12 +513,16 @@ public class LiveView extends FrameLayout {
           .setInterpolator(new DecelerateInterpolator())
           .setListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
+              btnNotify.animate().setListener(null);
+
               ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
               animatorRotation.setDuration(100);
               animatorRotation.setRepeatCount(3);
               animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
               animatorRotation.addListener(new AnimatorListenerAdapter() {
                 @Override public void onAnimationEnd(Animator animation) {
+                  animatorRotation.removeAllListeners();
+
                   btnNotify.animate()
                       .scaleX(1)
                       .scaleY(1)
@@ -529,7 +537,12 @@ public class LiveView extends FrameLayout {
                         }
                       });
                 }
+
+                @Override public void onAnimationCancel(Animator animation) {
+                  animatorRotation.removeAllListeners();
+                }
               });
+
               animatorRotation.start();
             }
           })

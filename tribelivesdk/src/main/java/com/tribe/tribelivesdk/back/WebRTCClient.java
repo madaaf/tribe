@@ -6,17 +6,16 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
-import com.tribe.tribelivesdk.model.TribeMessageDataChannel;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.stream.StreamManager;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.json.JSONException;
@@ -37,6 +36,7 @@ import static android.R.attr.id;
 @Singleton public class WebRTCClient {
 
   // VARIABLES
+  private TribeLiveOptions options;
   private Context context;
   private Map<String, TribePeerConnection> peerConnections;
   private MediaStream localMediaStream;
@@ -50,8 +50,7 @@ import static android.R.attr.id;
   private PublishSubject<TribeAnswer> onReadyToSendSdpAnswer = PublishSubject.create();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
   private PublishSubject<TribeMediaStream> onReceivedPeer = PublishSubject.create();
-  private PublishSubject<TribeMessageDataChannel> onReceivedDataChannelMessage =
-      PublishSubject.create();
+  private PublishSubject<JSONObject> onSendToPeers = PublishSubject.create();
 
   @Inject public WebRTCClient(Context context) {
     this.context = context;
@@ -72,12 +71,13 @@ import static android.R.attr.id;
 
   private void initSubscriptions() {
     subscriptions.add(streamManager.onMediaChanged().subscribe(aVoid -> {
-      JSONObject jsonMedia =
-          getJSONMedia(streamManager.isLocalAudioEnabled(), streamManager.isLocalCameraEnabled());
-      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
-        tribePeerConnection.send(jsonMedia.toString());
-      }
+      JSONObject jsonMedia = getJSONMedia();
+      onSendToPeers.onNext(jsonMedia);
     }));
+  }
+
+  public void setOptions(TribeLiveOptions options) {
+    this.options = options;
   }
 
   public void setIceServers(List<PeerConnection.IceServer> iceServers) {
@@ -98,7 +98,11 @@ import static android.R.attr.id;
     Timber.d("Attemp to addPeerConnection : " + localMediaStream);
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
-    remotePeer.getPeerConnection().addStream(localMediaStream);
+
+    if (options.getRoutingMode().equals(TribeLiveOptions.P2P) || session.getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
+      remotePeer.getPeerConnection().addStream(localMediaStream);
+    }
 
     subscriptions.add(remotePeer.onReadyToSendSdpOffer().subscribe(onReadyToSendSdpOffer));
     subscriptions.add(remotePeer.onReadyToSendSdpAnswer().subscribe(onReadyToSendSdpAnswer));
@@ -110,14 +114,6 @@ import static android.R.attr.id;
         .doOnNext(tribeMediaStream -> streamManager.setMediaStreamForClient(session.getPeerId(),
             tribeMediaStream.getMediaStream()))
         .subscribe(onReceivedPeer));
-
-    subscriptions.add(remotePeer.onDataChannelOpened()
-        .delay(1000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> remotePeer.send(getJSONMedia(streamManager.isLocalAudioEnabled(),
-            streamManager.isLocalCameraEnabled()).toString())));
-
-    subscriptions.add(remotePeer.onDataChannelMessage().subscribe(onReceivedDataChannelMessage));
   }
 
   private TribePeerConnection createPeerConnection(TribeSession session, boolean isOffer) {
@@ -135,7 +131,7 @@ import static android.R.attr.id;
 
     streamManager.removePeer(tribeSession);
 
-    tribePeerConnection.dispose(localMediaStream);
+    tribePeerConnection.dispose();
 
     try {
       peerConnections.remove(tribeSession.getPeerId());
@@ -156,17 +152,6 @@ import static android.R.attr.id;
     if (localMediaStream == null) {
       localMediaStream = streamManager.generateLocalStream(context, peerConnectionFactory);
     }
-
-    for (TribePeerConnection tpc : peerConnections.values()) {
-      //tpc.addStream(localMediaStream);
-    }
-  }
-
-  private JSONObject getJSONMedia(boolean audioEnabled, boolean videoEnabled) {
-    JSONObject obj = new JSONObject();
-    jsonPut(obj, "isAudioEnabled", audioEnabled);
-    jsonPut(obj, "isVideoEnabled", videoEnabled);
-    return obj;
   }
 
   private static void jsonPut(JSONObject json, String key, Object value) {
@@ -198,22 +183,24 @@ import static android.R.attr.id;
 
     if (tribePeerConnection == null) {
       Timber.d("Peer is null, creating it");
-      addPeerConnection(session, false);
-      tribePeerConnection = peerConnections.get(session.getPeerId());
+      if (!session.equals(TribeSession.PUBLISHER_ID)) {
+        addPeerConnection(session, false);
+        tribePeerConnection = peerConnections.get(session.getPeerId());
+      }
     }
 
     tribePeerConnection.setRemoteDescription(sdp);
   }
 
-  public void sendToPeers(JSONObject obj) {
-    if (peerConnections != null && peerConnections.size() > 0) {
-      JSONObject appMsg = new JSONObject();
-      jsonPut(appMsg, "app", obj);
+  public Collection<TribePeerConnection> getPeers() {
+    return peerConnections.values();
+  }
 
-      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
-        tribePeerConnection.send(appMsg.toString());
-      }
-    }
+  public JSONObject getJSONMedia() {
+    JSONObject obj = new JSONObject();
+    jsonPut(obj, "isAudioEnabled", streamManager.isLocalAudioEnabled());
+    jsonPut(obj, "isVideoEnabled", streamManager.isLocalCameraEnabled());
+    return obj;
   }
 
   public void dispose() {
@@ -223,7 +210,7 @@ import static android.R.attr.id;
     if (peerConnections != null && peerConnections.size() > 0) {
       Timber.d("Iterating peer subscriptions");
       for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
-        tribePeerConnection.dispose(localMediaStream);
+        tribePeerConnection.dispose();
       }
 
       Timber.d("Clearing all peer connections");
@@ -257,7 +244,7 @@ import static android.R.attr.id;
     return streamManager.onRemotePeersChanged();
   }
 
-  public Observable<TribeMessageDataChannel> onReceivedDataChannelMessage() {
-    return onReceivedDataChannelMessage;
+  public Observable<JSONObject> onSendToPeers() {
+    return onSendToPeers;
   }
 }

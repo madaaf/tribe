@@ -1,5 +1,6 @@
 package com.tribe.tribelivesdk.core;
 
+import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -24,6 +25,9 @@ public class JsonToModel {
   public JsonToModel() {
   }
 
+  // VARIABLES
+  private TribeLiveOptions options;
+
   // OBSERVABLES
   private PublishSubject<TribeOffer> onReceivedOffer = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoinRoom = PublishSubject.create();
@@ -34,6 +38,10 @@ public class JsonToModel {
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
+
+  public void setOptions(TribeLiveOptions options) {
+    this.options = options;
+  }
 
   private void convertToModel(String json) throws IOException {
     @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
@@ -83,21 +91,29 @@ public class JsonToModel {
         String userId = d.getString("userId");
         onLeaveRoom.onNext(new TribeSession(peerId, userId));
       } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
-        // TODO handle userMediaConfiguration
-        JSONObject r = object.getJSONObject("d");
-        Timber.d("Join response received : " + r.toString());
-        JSONArray jsonArray = r.getJSONArray("sessions");
+        TribeJoinRoom tribeJoinRoom;
 
-        int roomSize = r.getInt("roomSize");
-        List<TribeSession> sessionList = new ArrayList<>();
+        if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
+          // TODO handle userMediaConfiguration
+          JSONObject r = object.getJSONObject("d");
+          Timber.d("Join response received : " + r.toString());
+          JSONArray jsonArray = r.getJSONArray("sessions");
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-          JSONObject session = jsonArray.getJSONObject(i);
-          sessionList.add(
-              new TribeSession(session.getString("socketId"), session.getString("userId")));
+          int roomSize = r.getInt("roomSize");
+          List<TribeSession> sessionList = new ArrayList<>();
+
+          for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject session = jsonArray.getJSONObject(i);
+            sessionList.add(
+                new TribeSession(session.getString("socketId"), session.getString("userId")));
+          }
+
+          tribeJoinRoom = new TribeJoinRoom(sessionList, roomSize);
+        } else {
+          tribeJoinRoom = new TribeJoinRoom();
         }
 
-        onJoinRoom.onNext(new TribeJoinRoom(sessionList, roomSize));
+        onJoinRoom.onNext(tribeJoinRoom);
       } else if (localWebSocketType.equals(Room.MESSAGE_ERROR)) {
         boolean success = object.getBoolean("success");
 

@@ -156,7 +156,7 @@ public class LiveRowView extends FrameLayout {
           ViewGroup.LayoutParams params =
               new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                   ViewGroup.LayoutParams.MATCH_PARENT);
-          layoutStream.addView(remotePeerView, params);
+          if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
         }));
   }
 

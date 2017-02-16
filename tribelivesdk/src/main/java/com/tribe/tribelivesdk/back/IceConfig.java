@@ -12,6 +12,15 @@ public class IceConfig {
   private String username;
   private String credential;
 
+  public IceConfig() {
+  }
+
+  public IceConfig(List<String> urls, String username, String credential) {
+    this.urls = urls;
+    this.username = username;
+    this.credential = credential;
+  }
+
   public List<String> getUrls() {
     return urls;
   }

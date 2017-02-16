@@ -40,10 +40,10 @@ public class RemotePeer extends Peer {
 
   public void dispose() {
     if (peerView != null) {
-      Timber.d( "Disposing remote peer for peer : " + session.getPeerId());
-      ((ViewGroup) peerView.getParent()).removeView(peerView);
+      Timber.d("Disposing remote peer for peer : " + session.getPeerId());
+      if (peerView.getParent() != null) ((ViewGroup) peerView.getParent()).removeView(peerView);
       peerView.dispose();
-      Timber.d( "End disposing remote peer for peer : " + session.getPeerId());
+      Timber.d("End disposing remote peer for peer : " + session.getPeerId());
     }
   }
 }

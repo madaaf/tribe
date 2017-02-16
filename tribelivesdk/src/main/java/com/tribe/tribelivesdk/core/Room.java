@@ -8,10 +8,10 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import java.util.List;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
@@ -88,9 +88,16 @@ public class Room {
     jsonToModel = new JsonToModel();
 
     subscriptions.add(jsonToModel.onJoinRoom().subscribe(joinedRoom -> {
-      for (TribeSession session : joinedRoom.getSessionList()) {
-        webRTCClient.addPeerConnection(session, true);
+      if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
+        for (TribeSession session : joinedRoom.getSessionList()) {
+          webRTCClient.addPeerConnection(session, true);
+        }
+      } else {
+        webRTCClient.addPeerConnection(
+            new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
       }
+
+      sendToPeers(webRTCClient.getJSONMedia());
     }));
 
     subscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
@@ -126,6 +133,9 @@ public class Room {
   public void connect(TribeLiveOptions options) {
     this.options = options;
 
+    jsonToModel.setOptions(options);
+
+    webRTCClient.setOptions(this.options);
     webRTCClient.setIceServers(this.options.getIceServers());
 
     webSocketConnection.connect(options.getWsUrl());
@@ -196,10 +206,14 @@ public class Room {
       }
     }).subscribe());
 
-    subscriptions.add(webRTCClient.onReceivedDataChannelMessage()
-        .doOnNext(
-            message -> jsonToModel.convertDataChannel(message.getMessage(), message.getSession()))
-        .subscribe());
+    subscriptions.add(webRTCClient.onSendToPeers().subscribe(jsonObject -> {
+      sendToPeers(jsonObject);
+    }));
+
+    //subscriptions.add(webRTCClient.onReceivedDataChannelMessage()
+    //    .doOnNext(
+    //        message -> jsonToModel.convertDataChannel(message.getMessage(), message.getSession()))
+    //    .subscribe());
   }
 
   public void leaveRoom() {
@@ -211,7 +225,12 @@ public class Room {
   }
 
   public void sendToPeers(JSONObject obj) {
-    webRTCClient.sendToPeers(obj);
+    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
+      if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+        webSocketConnection.send(
+            getSendMessagePayload(tpc.getSession().getPeerId(), obj).toString());
+      }
+    }
   }
 
   public @RoomState String getState() {
@@ -238,47 +257,49 @@ public class Room {
 
   private JSONObject getJoinPayload(String roomId, String tokenId) {
     JSONObject a = new JSONObject();
-    jsonPut(a, "a", "join");
+    JsonUtils.jsonPut(a, "a", "join");
     JSONObject d = new JSONObject();
-    jsonPut(d, "roomId", roomId);
-    jsonPut(d, "bearer", tokenId);
-    jsonPut(a, "d", d);
+    JsonUtils.jsonPut(d, "roomId", roomId);
+    JsonUtils.jsonPut(d, "bearer", tokenId);
+    JsonUtils.jsonPut(a, "d", d);
     return a;
   }
 
   private JSONObject getSendSdpPayload(String id, SessionDescription sessionDescription) {
     JSONObject a = new JSONObject();
-    jsonPut(a, "a", "exchangeSdp");
+    JsonUtils.jsonPut(a, "a", "exchangeSdp");
     JSONObject d = new JSONObject();
-    jsonPut(d, "to", id);
+    JsonUtils.jsonPut(d, "to", id);
     JSONObject sdp = new JSONObject();
-    jsonPut(sdp, "type", sessionDescription.type.toString().toLowerCase());
-    jsonPut(sdp, "sdp", sessionDescription.description);
-    jsonPut(d, "sdp", sdp);
-    jsonPut(a, "d", d);
+    JsonUtils.jsonPut(sdp, "type", sessionDescription.type.toString().toLowerCase());
+    JsonUtils.jsonPut(sdp, "sdp", sessionDescription.description);
+    JsonUtils.jsonPut(d, "sdp", sdp);
+    JsonUtils.jsonPut(a, "d", d);
     return a;
   }
 
   private JSONObject getCandidatePayload(String peerId, IceCandidate iceCandidate) {
     JSONObject a = new JSONObject();
-    jsonPut(a, "a", "exchangeCandidate");
+    JsonUtils.jsonPut(a, "a", "exchangeCandidate");
     JSONObject d = new JSONObject();
-    jsonPut(d, "to", peerId);
+    JsonUtils.jsonPut(d, "to", peerId);
     JSONObject candidateJSON = new JSONObject();
-    jsonPut(candidateJSON, "sdpMid", iceCandidate.sdpMid);
-    jsonPut(candidateJSON, "sdpMLineIndex", iceCandidate.sdpMLineIndex);
-    jsonPut(candidateJSON, "candidate", iceCandidate.sdp);
-    jsonPut(d, "candidate", candidateJSON);
-    jsonPut(a, "d", d);
+    JsonUtils.jsonPut(candidateJSON, "sdpMid", iceCandidate.sdpMid);
+    JsonUtils.jsonPut(candidateJSON, "sdpMLineIndex", iceCandidate.sdpMLineIndex);
+    JsonUtils.jsonPut(candidateJSON, "candidate", iceCandidate.sdp);
+    JsonUtils.jsonPut(d, "candidate", candidateJSON);
+    JsonUtils.jsonPut(a, "d", d);
     return a;
   }
 
-  private static void jsonPut(JSONObject json, String key, Object value) {
-    try {
-      json.put(key, value);
-    } catch (JSONException e) {
-      throw new RuntimeException(e);
-    }
+  private JSONObject getSendMessagePayload(String peerId, JSONObject message) {
+    JSONObject a = new JSONObject();
+    JsonUtils.jsonPut(a, "a", "sendMessage");
+    JSONObject d = new JSONObject();
+    JsonUtils.jsonPut(d, "to", peerId);
+    JsonUtils.jsonPut(d, "message", message);
+    JsonUtils.jsonPut(a, "d", d);
+    return a;
   }
 
   /////////////////

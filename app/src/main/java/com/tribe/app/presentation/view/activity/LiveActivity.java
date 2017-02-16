@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -335,6 +336,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     Timber.d("Room configuration : " + roomConfiguration);
+    roomConfiguration.setRoutingMode(TribeLiveOptions.ROUTED);
     viewLive.joinRoom(roomConfiguration);
     if (recipient instanceof Friendship) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());

@@ -1,6 +1,9 @@
 package com.tribe.tribelivesdk.back;
 
 import android.content.Context;
+import android.support.annotation.StringDef;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import org.webrtc.PeerConnection;
@@ -11,16 +14,24 @@ import org.webrtc.PeerConnection;
 
 public class TribeLiveOptions {
 
+  @StringDef({ P2P, ROUTED }) @Retention(RetentionPolicy.SOURCE) public @interface RoutingMode {
+  }
+
+  public static final String P2P = "p2p";
+  public static final String ROUTED = "routed";
+
   private String wsUrl;
   private List<PeerConnection.IceServer> iceServers;
   private String tokenId;
   private String room_id;
+  private @TribeLiveOptions.RoutingMode String routingMode;
 
   private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
     this.wsUrl = builder.wsUrl;
     this.iceServers = builder.iceServers;
     this.tokenId = builder.tokenId;
     this.room_id = builder.roomId;
+    this.routingMode = builder.routingMode;
   }
 
   public static class TribeLiveOptionsBuilder {
@@ -29,6 +40,7 @@ public class TribeLiveOptions {
     private List<PeerConnection.IceServer> iceServers;
     private String tokenId;
     private String roomId;
+    private @RoutingMode String routingMode;
 
     public TribeLiveOptionsBuilder(Context context) {
       this.context = context;
@@ -58,6 +70,11 @@ public class TribeLiveOptions {
 
     public TribeLiveOptionsBuilder roomId(String roomId) {
       this.roomId = roomId;
+      return this;
+    }
+
+    public TribeLiveOptionsBuilder routingMode(@RoutingMode String routingMode) {
+      this.routingMode = routingMode;
       return this;
     }
 
@@ -96,5 +113,13 @@ public class TribeLiveOptions {
 
   public void setRoomId(String roomId) {
     this.room_id = roomId;
+  }
+
+  public String getRoutingMode() {
+    return routingMode;
+  }
+
+  public void setRoutingMode(String routingMode) {
+    this.routingMode = routingMode;
   }
 }

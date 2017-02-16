@@ -3,15 +3,11 @@ package com.tribe.tribelivesdk.core;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
-import com.tribe.tribelivesdk.model.TribeMessageDataChannel;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribeSession;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
-import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
@@ -26,26 +22,17 @@ import timber.log.Timber;
 
 public class TribePeerConnection {
 
-  private static final String DATA_CHANNEL_PROTOCOL = "tribe-v3";
-  private static final String DATA_CHANNEL_META = "meta";
-
   private TribeSession session;
   private PeerConnection peerConnection;
   private TribeSdpObserver sdpObserver;
   private TribePeerConnectionObserver peerConnectionObserver;
   private List<PeerConnection.IceServer> iceServerList;
   private List<IceCandidate> pendingIceCandidateList;
-  private DataChannel localDataChannel;
-  private DataChannel remoteDataChannel;
-  private TribeDataChannelObserver localDataChannelObserver;
-  private TribeDataChannelObserver remoteDataChannelObserver;
 
   // OBSERVABLE
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
   private PublishSubject<TribeMediaStream> onReceivedMediaStream = PublishSubject.create();
-  private PublishSubject<Void> onDataChannelOpened = PublishSubject.create();
-  private PublishSubject<TribeMessageDataChannel> onDataChannelMessage = PublishSubject.create();
 
   public TribePeerConnection(TribeSession session, PeerConnectionFactory peerConnectionFactory,
       List<PeerConnection.IceServer> iceServerList, boolean isOffer) {
@@ -59,35 +46,12 @@ public class TribePeerConnection {
   }
 
   private void init(PeerConnectionFactory peerConnectionFactory, boolean isOffer) {
-    localDataChannelObserver = new TribeDataChannelObserver();
-    remoteDataChannelObserver = new TribeDataChannelObserver();
     sdpObserver = new TribeSdpObserver();
     peerConnectionObserver = new TribePeerConnectionObserver(isOffer);
     peerConnection =
         peerConnectionFactory.createPeerConnection(iceServerList, sdpObserver.constraints,
             peerConnectionObserver);
     sdpObserver.setPeerConnection(peerConnection);
-
-    Timber.d("Connected now creating local data channel");
-    DataChannel.Init init = new DataChannel.Init();
-    localDataChannel = peerConnection.createDataChannel(DATA_CHANNEL_META, init);
-    localDataChannel.registerObserver(localDataChannelObserver);
-
-    subscriptions.add(localDataChannelObserver.onStateChanged()
-        .subscribe(aVoid -> Timber.d("New state : " + localDataChannel.state())));
-    Timber.d("Local data channel created");
-
-    subscriptions.add(peerConnectionObserver.onReceivedDataChannel().subscribe(newDataChannel -> {
-      Timber.d("Received data channel");
-      remoteDataChannel = newDataChannel;
-      remoteDataChannel.registerObserver(remoteDataChannelObserver);
-
-      subscriptions.add(remoteDataChannelObserver.onMessage().subscribe(message -> {
-        onDataChannelMessage.onNext(new TribeMessageDataChannel(session, message));
-      }));
-
-      onDataChannelOpened.onNext(null);
-    }));
 
     subscriptions.add(
         peerConnectionObserver.onShouldCreateOffer().subscribe(aVoid -> sdpObserver.createOffer()));
@@ -137,32 +101,18 @@ public class TribePeerConnection {
     peerConnection.addIceCandidate(iceCandidate);
   }
 
-  public void send(String str) {
-    Timber.d("Sending through dataChannel : " + str);
-    ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
-    boolean success = localDataChannel.send(new DataChannel.Buffer(buffer, false));
-    Timber.d("Success sending to dataChannel : " + success);
-  }
-
   public PeerConnection getPeerConnection() {
     return peerConnection;
   }
 
-  public void dispose(MediaStream mediaStream) {
+  public TribeSession getSession() {
+    return session;
+  }
+
+  public void dispose() {
     subscriptions.clear();
 
     Timber.d("Disposing peer connection for peer : " + session.getPeerId());
-    if (localDataChannel != null) {
-      Timber.d("Closing local datachannel for peer : " + session.getPeerId());
-      localDataChannel.close();
-      localDataChannel = null;
-    }
-
-    if (remoteDataChannel != null) {
-      Timber.d("Closing remote datachannel for peer : " + session.getPeerId());
-      remoteDataChannel.close();
-      remoteDataChannel = null;
-    }
 
     if (peerConnection != null) {
       Timber.d("Closing peer connection for peer : " + session.getPeerId());
@@ -198,13 +148,5 @@ public class TribePeerConnection {
 
   public Observable<TribeMediaStream> onReceivedMediaStream() {
     return onReceivedMediaStream;
-  }
-
-  public Observable<Void> onDataChannelOpened() {
-    return onDataChannelOpened;
-  }
-
-  public Observable<TribeMessageDataChannel> onDataChannelMessage() {
-    return onDataChannelMessage;
   }
 }

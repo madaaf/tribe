@@ -6,19 +6,21 @@ package com.tribe.tribelivesdk.model;
 
 public class TribeSession {
 
-    private String peerId;
-    private String userId;
+  public static final String PUBLISHER_ID = "publisher";
 
-    public TribeSession(String peerId, String userId) {
-        this.peerId = peerId;
-        this.userId = userId;
-    }
+  private String peerId;
+  private String userId;
 
-    public String getPeerId() {
-        return peerId;
-    }
+  public TribeSession(String peerId, String userId) {
+    this.peerId = peerId;
+    this.userId = userId;
+  }
 
-    public String getUserId() {
-        return userId;
-    }
+  public String getPeerId() {
+    return peerId;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
 }

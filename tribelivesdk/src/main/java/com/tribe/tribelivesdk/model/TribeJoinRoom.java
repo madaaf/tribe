@@ -8,14 +8,16 @@ import java.util.List;
 
 public class TribeJoinRoom {
 
-    private int roomSize = 0;
-    private List<TribeSession> sessionList;
+  private int roomSize = 0;
+  private List<TribeSession> sessionList;
 
-    public TribeJoinRoom(List<TribeSession> sessionList, int roomSize) {
-        this.sessionList = sessionList;
-    }
+  public TribeJoinRoom(List<TribeSession> sessionList, int roomSize) {
+    this.sessionList = sessionList;
+  }
 
-    public List<TribeSession> getSessionList() {
-        return sessionList;
-    }
+  public TribeJoinRoom() {}
+
+  public List<TribeSession> getSessionList() {
+    return sessionList;
+  }
 }
