@@ -154,9 +154,9 @@ public class LiveView extends FrameLayout {
     initUI();
     initSubscriptions();
 
-    Observable.timer(MAX_DURATION_JOIN_LIVE, TimeUnit.SECONDS)
+    subscriptions.add(Observable.timer(MAX_DURATION_JOIN_LIVE, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> displayJoinLivePopupTutorial());
+        .subscribe(aLong -> displayJoinLivePopupTutorial()));
 
     super.onFinishInflate();
   }
@@ -232,8 +232,6 @@ public class LiveView extends FrameLayout {
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
     if (!hiddenControls) {
-      btnNotify.setEnabled(false);
-
       viewBuzz.buzz();
 
       for (LiveRowView liveRowView : liveInviteMap.values()) {
@@ -244,37 +242,16 @@ public class LiveView extends FrameLayout {
         if (liveRowView.isWaiting()) liveRowView.buzz();
       }
 
+      btnNotify.setEnabled(false);
       btnNotify.animate()
-          .scaleX(1.25f)
-          .scaleY(1.25f)
-          .translationY(-screenUtils.dpToPx(10))
-          .rotation(10)
+          .alpha(0.2f)
           .setDuration(DURATION)
           .setInterpolator(new DecelerateInterpolator())
           .setListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
-              ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
-              animatorRotation.setDuration(100);
-              animatorRotation.setRepeatCount(3);
-              animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
-              animatorRotation.addListener(new AnimatorListenerAdapter() {
-                @Override public void onAnimationEnd(Animator animation) {
-                  btnNotify.animate()
-                      .scaleX(1)
-                      .scaleY(1)
-                      .rotation(0)
-                      .translationY(0)
-                      .setDuration(DURATION)
-                      .setInterpolator(new DecelerateInterpolator())
-                      .setListener(new AnimatorListenerAdapter() {
-                        @Override public void onAnimationEnd(Animator animation) {
-                          btnNotify.setEnabled(true);
-                          btnNotify.animate().setListener(null);
-                        }
-                      });
-                }
-              });
-              animatorRotation.start();
+              subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aLong -> refactorNotifyButton()));
             }
           })
           .start();
@@ -504,7 +481,7 @@ public class LiveView extends FrameLayout {
 
   private void displayJoinLivePopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.JOIN_FRIEND_LIVE)) {
-      DialogFactory.dialog(getContext(),
+      subscriptions.add(DialogFactory.dialog(getContext(),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_title)),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_message)),
           getContext().getString(R.
@@ -512,7 +489,8 @@ public class LiveView extends FrameLayout {
           getContext().getString(R.string.tips_waiting60sec_action2)).filter(x -> x == true).
           subscribe(a -> {
             if (!hiddenControls) onOpenInvite.onNext(null);
-          });
+          }));
+
       stateManager.addTutorialKey(StateManager.JOIN_FRIEND_LIVE);
     }
   }
@@ -521,11 +499,40 @@ public class LiveView extends FrameLayout {
     boolean enable = shouldEnableBuzz();
 
     if (enable != btnNotify.isEnabled()) {
-      btnNotify.setEnabled(shouldEnableBuzz());
       btnNotify.animate()
-          .alpha(enable ? 1 : 0.2f)
+          .alpha(1f)
+          .scaleX(1.25f)
+          .scaleY(1.25f)
+          .translationY(-screenUtils.dpToPx(10))
+          .rotation(10)
           .setDuration(DURATION)
           .setInterpolator(new DecelerateInterpolator())
+          .setListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+              ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
+              animatorRotation.setDuration(100);
+              animatorRotation.setRepeatCount(3);
+              animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
+              animatorRotation.addListener(new AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(Animator animation) {
+                  btnNotify.animate()
+                      .scaleX(1)
+                      .scaleY(1)
+                      .rotation(0)
+                      .translationY(0)
+                      .setDuration(DURATION)
+                      .setInterpolator(new DecelerateInterpolator())
+                      .setListener(new AnimatorListenerAdapter() {
+                        @Override public void onAnimationEnd(Animator animation) {
+                          btnNotify.setEnabled(true);
+                          btnNotify.animate().setListener(null);
+                        }
+                      });
+                }
+              });
+              animatorRotation.start();
+            }
+          })
           .start();
     }
   }

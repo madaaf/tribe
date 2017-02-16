@@ -15,40 +15,38 @@
         android:scrollbars="vertical"
         android:visibility="gone"
         />
-
-    <LinearLayout
-        android:id="@+id/layoutTop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="@dimen/top_bar_height_small"
-        android:background="@null"
-        android:animateLayoutChanges="true"
-        android:orientation="vertical"
-        android:visibility="gone"
-        >
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutBottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:animateLayoutChanges="true"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:background="@null"
-        >
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:layout_marginTop="@dimen/top_bar_height_small"
-        android:background="@color/grey.light"
-        android:visibility="gone"
-        />
   </FrameLayout>
+
+  <LinearLayout
+      android:id="@+id/layoutTop"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top"
+      android:animateLayoutChanges="true"
+      android:background="@null"
+      android:orientation="vertical"
+      android:visibility="gone"
+      >
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/layoutBottom"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:animateLayoutChanges="true"
+      android:background="@null"
+      android:orientation="vertical"
+      android:visibility="gone"
+      >
+
+  </LinearLayout>
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:background="@color/grey.light"
+      android:visibility="gone"
+      />
 </merge>

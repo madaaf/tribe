@@ -50,7 +50,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   private final static int TIMER_DISMISS_REMOVE = 5000;
 
-  private final static int DURATION_FAST_FURIOUS = 100;
+  private final static int DURATION_FAST_FURIOUS = 60;
   private final static int DURATION_FAST = 300;
   private final static int DELAY_COUNTDOWN = 500;
   private final static int DURATION_PULSE_FAST = 150;
@@ -81,8 +81,6 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
-  @BindView(R.id.txtCountdown) TextViewFont txtCountdown;
-
   @BindView(R.id.progressBar) ProgressBar progressBar;
 
   @BindView(R.id.btnRemove) View btnRemove;
@@ -108,7 +106,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private ObjectAnimator countDownAnimator;
 
   // RESOURCES
-  private int timeTapToCancel, strokeWidth;
+  private int timeJoinRoom, strokeWidth;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -158,7 +156,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   private void initResources() {
-    timeTapToCancel = getContext().getResources().getInteger(R.integer.time_tap_to_cancel);
+    timeJoinRoom = getContext().getResources().getInteger(R.integer.time_join_room);
     strokeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.stroke_width_ring);
   }
 
@@ -235,24 +233,17 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public void startCountdown() {
-    countDownAnimator = ObjectAnimator.ofInt(progressBar, "progress", timeTapToCancel, 0);
-    countDownAnimator.setDuration(timeTapToCancel);
+    countDownAnimator = ObjectAnimator.ofInt(progressBar, "progress", timeJoinRoom, 0);
+    countDownAnimator.setDuration(timeJoinRoom);
     countDownAnimator.setInterpolator(new DecelerateInterpolator());
     countDownAnimator.setStartDelay(DELAY_COUNTDOWN);
-    countDownAnimator.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      txtCountdown.setText("" + (int) Math.ceil((float) value / 1000));
-    });
 
     countDownAnimator.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationStart(Animator animation) {
         progressBar.setVisibility(View.VISIBLE);
-        txtCountdown.setVisibility(View.VISIBLE);
       }
 
       @Override public void onAnimationEnd(Animator animation) {
-        txtCountdown.setVisibility(View.GONE);
-
         ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
         animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
         animatorScaleUp.setDuration(DURATION_FAST);
@@ -424,7 +415,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       updateScaleWithValue(value);
     });
 
-    animatorBuzzAvatar = ObjectAnimator.ofFloat(avatar, TRANSLATION_X, 7, -7);
+    animatorBuzzAvatar = ObjectAnimator.ofFloat(avatar, TRANSLATION_X, 3, -3);
     animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
     animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
     animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);

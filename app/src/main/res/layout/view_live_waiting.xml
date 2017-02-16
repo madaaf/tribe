@@ -81,16 +81,6 @@
       android:visibility="gone"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtCountdown"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:gravity="center"
-      android:visibility="gone"
-      style="@style/Medium.1.White"
-      />
-
   <View
       android:id="@+id/viewRing"
       android:layout_width="@dimen/avatar_size_big"

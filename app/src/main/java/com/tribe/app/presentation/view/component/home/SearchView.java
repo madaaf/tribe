@@ -213,6 +213,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         .subscribe(o -> {
           if (o instanceof Recipient) {
             onHangLive.onNext((Recipient) o);
+          } else if (o instanceof SearchResult) {
+            onHangLive.onNext(((SearchResult) o).getFriendship());
           }
         }));
 

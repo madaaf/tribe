@@ -5,7 +5,7 @@
   <integer name="time_record">60000</integer>
   <integer name="time_synchro">3000</integer>
   <integer name="time_code_countdown">60000</integer>
-  <integer name="time_join_room">3000</integer>
+  <integer name="time_join_room">2000</integer>
 
   <!-- ANIMS -->
   <integer name="long_anim">400</integer>
