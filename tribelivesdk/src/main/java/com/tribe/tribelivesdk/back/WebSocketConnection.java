@@ -153,6 +153,7 @@ import timber.log.Timber;
 
         @Override public void onTextMessage(WebSocket websocket, String text) throws Exception {
           if (state == STATE_CONNECTED) {
+            Timber.d("On websocket text message : " + text);
             onMessage.onNext(text);
           }
         }
@@ -273,7 +274,7 @@ import timber.log.Timber;
       return;
     }
 
-    Timber.v( "Sending : " + msg);
+    Timber.v("Sending : " + msg);
     webSocketClient.sendText(msg);
   }
 

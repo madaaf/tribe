@@ -12,6 +12,7 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
@@ -84,16 +85,20 @@ public class Room {
   private void initJsonToModel() {
     jsonToModel = new JsonToModel();
 
-    subscriptions.add(jsonToModel.onJoinRoom().subscribe(joinedRoom -> {
+    subscriptions.add(jsonToModel.onJoinRoom().doOnNext(joinedRoom -> {
       if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
         for (TribeSession session : joinedRoom.getSessionList()) {
           webRTCClient.addPeerConnection(session, true);
         }
       } else {
+        for (TribeSession session : joinedRoom.getSessionList()) {
+          webRTCClient.addPeerConnection(session, false);
+        }
+
         webRTCClient.addPeerConnection(
             new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
       }
-
+    }).delay(1000, TimeUnit.MILLISECONDS).subscribe(joinedRoom -> {
       sendToPeers(webRTCClient.getJSONMedia(), false);
     }));
 
@@ -208,11 +213,6 @@ public class Room {
     subscriptions.add(webRTCClient.onSendToPeers().subscribe(jsonObject -> {
       sendToPeers(jsonObject, false);
     }));
-
-    //subscriptions.add(webRTCClient.onReceivedDataChannelMessage()
-    //    .doOnNext(
-    //        message -> jsonToModel.convertDataChannel(message.getMessage(), message.getSession()))
-    //    .subscribe());
   }
 
   public void leaveRoom() {

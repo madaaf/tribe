@@ -85,6 +85,7 @@ public class JsonToModel {
 
         onCandidate.onNext(tribeCandidate);
       } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
+        Timber.d("Leave message received");
         JSONObject d = object.getJSONObject("d");
         Timber.d(Room.MESSAGE_LEAVE + " received : " + d.toString());
         String peerId = d.getString("socketId");
@@ -93,25 +94,21 @@ public class JsonToModel {
       } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
         TribeJoinRoom tribeJoinRoom;
 
-        if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
-          // TODO handle userMediaConfiguration
-          JSONObject r = object.getJSONObject("d");
-          Timber.d("Join response received : " + r.toString());
-          JSONArray jsonArray = r.getJSONArray("sessions");
+        // TODO handle userMediaConfiguration
+        JSONObject r = object.getJSONObject("d");
+        Timber.d("Join response received : " + r.toString());
+        JSONArray jsonArray = r.getJSONArray("sessions");
 
-          int roomSize = r.getInt("roomSize");
-          List<TribeSession> sessionList = new ArrayList<>();
+        int roomSize = r.getInt("roomSize");
+        List<TribeSession> sessionList = new ArrayList<>();
 
-          for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject session = jsonArray.getJSONObject(i);
-            sessionList.add(
-                new TribeSession(session.getString("socketId"), session.getString("userId")));
-          }
-
-          tribeJoinRoom = new TribeJoinRoom(sessionList, roomSize);
-        } else {
-          tribeJoinRoom = new TribeJoinRoom();
+        for (int i = 0; i < jsonArray.length(); i++) {
+          JSONObject session = jsonArray.getJSONObject(i);
+          sessionList.add(
+              new TribeSession(session.getString("socketId"), session.getString("userId")));
         }
+
+        tribeJoinRoom = new TribeJoinRoom(sessionList, roomSize);
 
         onJoinRoom.onNext(tribeJoinRoom);
       } else if (localWebSocketType.equals(Room.MESSAGE_ERROR)) {
