@@ -289,7 +289,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-
+          invite(recipient.getSubId());
         }));
 
     subscriptions.add(viewInviteLive.onInviteLiveClick().subscribe(view -> {
