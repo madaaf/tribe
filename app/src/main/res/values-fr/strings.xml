@@ -854,7 +854,7 @@
 	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
 	<string name="tips_droppingguest_message">Congrats on inviting your friends guest to hang live! Add them to the group from your grid if you want them to be a permanent member of this group.</string>
 	<string name="tips_droppingguest_action1">OK, great!</string>
-	<string name="tips_enterfirstlive_title">Hang live with your friends now!</string>
+	<string name="tips_enterfirstlive_title">About to hang live!</string>
 	<string name="tips_enterfirstlive_message">You\'re about to call %1$s!</string>
 	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
 	<string name="tips_enterfirstlive_action2">Call someone else</string>

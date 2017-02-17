@@ -363,6 +363,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
       viewInviteLive.renderFriendshipList(filteredFriendships);
     } else {
+      if (friendshipList != null) {
+        friendshipList.remove(recipient);
+      }
       viewInviteLive.renderFriendshipList(friendshipList);
     }
   }
