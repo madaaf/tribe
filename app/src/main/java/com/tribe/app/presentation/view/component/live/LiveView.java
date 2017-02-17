@@ -356,21 +356,7 @@ public class LiveView extends FrameLayout {
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
             for (TribeGuest trg : tribeGuests) {
-              if (!liveInviteMap.containsKey(trg.getId()) && !liveRowViewMap.containsKey(
-                  trg.getId())) {
-                LiveRowView liveRowView = new LiveRowView(getContext());
-                liveRowView.getViewTreeObserver()
-                    .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                      @Override public void onGlobalLayout() {
-                        liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        liveRowView.showGuest(false);
-                        liveRowView.startPulse();
-                      }
-                    });
-                addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
-                liveInviteMap.put(trg.getId(), liveRowView);
-                onNotificationRemotePeerInvited.onNext(getDisplayNameNotification(trg.getId()));
-              }
+              addTribeGuest(trg);
             }
           }
         }));
@@ -502,6 +488,24 @@ public class LiveView extends FrameLayout {
         }));
         stateManager.addTutorialKey(StateManager.WAINTING_FRIENDS_LIVE);
       }
+    }
+  }
+
+  public void addTribeGuest(TribeGuest trg) {
+    if (!liveInviteMap.containsKey(trg.getId()) && !liveRowViewMap.containsKey(trg.getId())) {
+      LiveRowView liveRowView = new LiveRowView(getContext());
+      liveRowView.getViewTreeObserver()
+          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+              liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+              liveRowView.showGuest(false);
+              liveRowView.startPulse();
+            }
+          });
+
+      addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
+      liveInviteMap.put(trg.getId(), liveRowView);
+      onNotificationRemotePeerInvited.onNext(getDisplayNameNotification(trg.getId()));
     }
   }
 

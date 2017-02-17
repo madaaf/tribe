@@ -39,8 +39,9 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -288,11 +289,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-          Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.Swipe, true);
-          tagManager.trackEvent(TagManagerConstants.KPI_Calls_InviteAction, bundle);
-          livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(),
-              recipient.getSubId());
+
         }));
 
     subscriptions.add(viewInviteLive.onInviteLiveClick().subscribe(view -> {
@@ -332,6 +329,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
     livePresenter.joinRoom(recipient,
         recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
+  }
+
+  private void invite(String userId) {
+    Bundle bundle = new Bundle();
+    bundle.putBoolean(TagManagerConstants.Swipe, true);
+    tagManager.trackEvent(TagManagerConstants.KPI_Calls_InviteAction, bundle);
+    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 
   @Override public void finish() {
@@ -403,12 +407,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         if (notificationView != null) {
           subscriptions.add(notificationView.onClickAction()
               .doOnNext(action -> layoutNotifications.dismissNotification(notificationView))
-              .filter(action -> action.getIntent() != null)
               .delay(500, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(action -> {
-                navigator.navigateToIntent(LiveActivity.this, action.getIntent());
-                finish();
+                if (action.getIntent() != null) {
+                  navigator.navigateToIntent(LiveActivity.this, action.getIntent());
+                  finish();
+                } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
+                  TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
+                      notificationPayload.getUserDisplayName(),
+                      notificationPayload.getUserPicture(), false);
+                  invite(tribeGuest.getId());
+                  viewLive.addTribeGuest(tribeGuest);
+                }
               }));
 
           notificationView.show(LiveActivity.this, layoutNotifications);

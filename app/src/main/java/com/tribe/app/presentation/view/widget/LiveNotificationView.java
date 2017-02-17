@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -251,7 +250,6 @@ public class LiveNotificationView extends LinearLayout {
     this.expandable = expandable;
   }
 
-  @SuppressLint("NewApi")
   public void addAction(LiveNotificationActionView.Action action, boolean isLast) {
     int sizeActionItem =
         getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
