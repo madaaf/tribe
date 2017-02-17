@@ -44,6 +44,8 @@ public class JsonToModel {
   }
 
   private void convertToModel(String json) throws IOException {
+    if (json == null && !json.equals("")) return;
+
     @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
 
     if (localWebSocketType == null) {

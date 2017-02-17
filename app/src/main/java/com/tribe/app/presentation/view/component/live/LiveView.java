@@ -64,7 +64,8 @@ public class LiveView extends FrameLayout {
   private static final int DURATION = 300;
   private static final int LIVE_MAX = 8;
 
-  private final int MAX_DURATION_JOIN_LIVE = 60;
+  private static final int MAX_DURATION_JOIN_LIVE = 60;
+  private static final int DURATION_FAST_FURIOUS = 60;
 
   private static boolean joineLive = false;
 
@@ -107,6 +108,7 @@ public class LiveView extends FrameLayout {
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private AvatarView avatarView;
   private ObjectAnimator animatorRotation;
+  private ObjectAnimator animatorBuzzAvatar;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -246,6 +248,18 @@ public class LiveView extends FrameLayout {
       onNotificationRemotePeerBuzzed.onNext(null);
       viewBuzz.buzz();
 
+      animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
+      animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
+      animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
+      animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
+      animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
+        @Override public void onAnimationCancel(Animator animation) {
+          animatorBuzzAvatar.removeAllListeners();
+          avatarView.setTranslationX(0);
+        }
+      });
+      animatorBuzzAvatar.start();
+
       for (LiveRowView liveRowView : liveInviteMap.values()) {
         liveRowView.buzz();
       }
@@ -261,9 +275,12 @@ public class LiveView extends FrameLayout {
           .setInterpolator(new DecelerateInterpolator())
           .setListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
+              animatorBuzzAvatar.cancel();
+
               subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(aLong -> refactorNotifyButton()));
+
               btnNotify.animate().setListener(null);
             }
           })

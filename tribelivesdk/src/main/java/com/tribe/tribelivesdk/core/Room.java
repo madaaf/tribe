@@ -56,7 +56,7 @@ public class Room {
   public static final String MESSAGE_APP = "app";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
-  public static final String MESSAGE_INVITE_REMOVED = "remove_invited_guests";
+  public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
 
   private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;
@@ -162,15 +162,18 @@ public class Room {
       }
     }).subscribe(onRoomStateChanged));
 
-    subscriptions.add(webSocketConnection.onMessage().subscribe(message -> {
-      if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
-        Timber.e("Got WebSocket message in non registered state.");
-      }
+    subscriptions.add(webSocketConnection.onMessage()
+        .doOnError(throwable -> Timber.d("HEY ON ERROR"))
+        .onErrorResumeNext(throwable -> Observable.just(""))
+        .subscribe(message -> {
+          if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
+            Timber.e("Got WebSocket message in non registered state.");
+          }
 
-      Timber.d("On webSocketConnection message : " + message);
+          Timber.d("On webSocketConnection message : " + message);
 
-      jsonToModel.convert(message);
-    }));
+          jsonToModel.convert(message);
+        }));
   }
 
   public void joinRoom() {

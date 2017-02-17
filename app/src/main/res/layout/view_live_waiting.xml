@@ -46,7 +46,7 @@
       android:layout_height="95dp"
       android:layout_gravity="center"
       android:background="@drawable/shape_ring_white10"
-      android:max="@integer/time_tap_to_cancel"
+      android:max="@integer/time_join_room"
       android:progress="0"
       android:progressDrawable="@drawable/progress_circular"
       android:visibility="gone"

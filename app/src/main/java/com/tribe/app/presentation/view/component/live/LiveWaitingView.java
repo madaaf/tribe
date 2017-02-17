@@ -233,16 +233,14 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public void startCountdown() {
+    progressBar.setVisibility(View.VISIBLE);
+    progressBar.setProgress(timeJoinRoom);
     countDownAnimator = ObjectAnimator.ofInt(progressBar, "progress", timeJoinRoom, 0);
     countDownAnimator.setDuration(timeJoinRoom);
     countDownAnimator.setInterpolator(new DecelerateInterpolator());
     countDownAnimator.setStartDelay(DELAY_COUNTDOWN);
 
     countDownAnimator.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        progressBar.setVisibility(View.VISIBLE);
-      }
-
       @Override public void onAnimationEnd(Animator animation) {
         ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
         animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
