@@ -161,12 +161,16 @@ public class StreamManager {
     }
 
     Timber.d("Disposing live local stream");
-    liveLocalStream.dispose();
-    liveLocalStream = null;
+    if (liveLocalStream != null) {
+      liveLocalStream.dispose();
+      liveLocalStream = null;
+    }
 
     Timber.d("Disposing stream manager");
-    localPeerView.dispose();
-    localPeerView = null;
+    if (localPeerView != null) {
+      localPeerView.dispose();
+      localPeerView = null;
+    }
 
     Timber.d("End disposing stream manager");
   }

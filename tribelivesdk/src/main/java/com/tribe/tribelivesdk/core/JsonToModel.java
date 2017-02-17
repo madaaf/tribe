@@ -121,6 +121,43 @@ public class JsonToModel {
           String error = object.getString("error");
           onError.onNext(new WebSocketError(error, "Can't connect"));
         }
+      } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
+        JSONObject d = object.getJSONObject("d");
+        Timber.d("Received message app");
+
+        JSONObject session = d.getJSONObject("from");
+        TribeSession tribeSession =
+            new TribeSession(session.getString("socketId"), session.getString("userId"));
+
+        if (d.has(Room.MESSAGE_APP)) {
+          JSONObject app = object.getJSONObject(Room.MESSAGE_APP);
+          if (app.has(Room.MESSAGE_INVITE_ADDED)) {
+            Timber.d("Receiving invite added");
+            List<TribeGuest> guestList = new ArrayList<>();
+            JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
+            for (int i = 0; i < arrayInvited.length(); i++) {
+              JSONObject guest = arrayInvited.getJSONObject(i);
+              guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
+                  guest.getString("picture"), false));
+            }
+            onInvitedTribeGuestList.onNext(guestList);
+          } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
+            Timber.d("Receiving invite removed");
+            List<TribeGuest> guestRemovedList = new ArrayList<>();
+            JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
+            for (int i = 0; i < arrayRemoved.length(); i++) {
+              guestRemovedList.add(new TribeGuest(arrayRemoved.getString(i)));
+            }
+            onRemovedTribeGuestList.onNext(guestRemovedList);
+          }
+        } else if (object.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
+          Timber.d("Receiving media configuration");
+          TribePeerMediaConfiguration peerMediaConfiguration =
+              new TribePeerMediaConfiguration(tribeSession);
+          peerMediaConfiguration.setAudioEnabled(object.getBoolean("isAudioEnabled"));
+          peerMediaConfiguration.setVideoEnabled(object.getBoolean("isVideoEnabled"));
+          onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
+        }
       }
     } catch (JSONException e) {
       e.printStackTrace();
@@ -159,47 +196,8 @@ public class JsonToModel {
     JSONObject object = null;
     try {
       object = new JSONObject(json);
-
-      if (object.has(Room.MESSAGE_APP)) {
-        JSONObject app = object.getJSONObject(Room.MESSAGE_APP);
-        if (app.has(Room.MESSAGE_INVITE_ADDED)) {
-          Timber.d("Receiving invite added");
-          List<TribeGuest> guestList = new ArrayList<>();
-          JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
-          for (int i = 0; i < arrayInvited.length(); i++) {
-            JSONObject guest = arrayInvited.getJSONObject(i);
-            guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                guest.getString("picture"), false));
-          }
-          onInvitedTribeGuestList.onNext(guestList);
-        } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
-          Timber.d("Receiving invite removed");
-          List<TribeGuest> guestRemovedList = new ArrayList<>();
-          JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
-          for (int i = 0; i < arrayRemoved.length(); i++) {
-            guestRemovedList.add(new TribeGuest(arrayRemoved.getString(i)));
-          }
-          onRemovedTribeGuestList.onNext(guestRemovedList);
-        }
-      } else if (object.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
-        Timber.d("Receiving media configuration");
-        TribePeerMediaConfiguration peerMediaConfiguration =
-            new TribePeerMediaConfiguration(session);
-        peerMediaConfiguration.setAudioEnabled(object.getBoolean("isAudioEnabled"));
-        peerMediaConfiguration.setVideoEnabled(object.getBoolean("isVideoEnabled"));
-        onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
-      }
     } catch (JSONException e) {
       e.printStackTrace();
-    }
-  }
-
-  public void convertDataChannel(String json, TribeSession session) {
-    try {
-      convertDataChannelToModel(json, session);
-      return;
-    } catch (IOException ex) {
-      Timber.e(ex.toString());
     }
   }
 

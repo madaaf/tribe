@@ -39,7 +39,9 @@ public class Room {
   public static final String STATE_ERROR = "error";
 
   @StringDef({
-      MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE, MESSAGE_NONE
+      MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE, MESSAGE_MESSAGE,
+      MESSAGE_NONE, MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED,
+      MESSAGE_INVITE_REMOVED
   }) public @interface WebSocketMessageType {
   }
 
@@ -48,13 +50,8 @@ public class Room {
   public static final String MESSAGE_OFFER = "eventExchangeSdp";
   public static final String MESSAGE_CANDIDATE = "eventExchangeCandidate";
   public static final String MESSAGE_LEAVE = "eventLeave";
+  public static final String MESSAGE_MESSAGE = "eventMessage";
   public static final String MESSAGE_NONE = "none";
-
-  @StringDef({
-      MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED, MESSAGE_INVITE_REMOVED
-  }) public @interface DataChannelMessageType {
-  }
-
   public static final String MESSAGE_APP = "app";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
@@ -250,6 +247,8 @@ public class Room {
       return MESSAGE_CANDIDATE;
     } else if (a.equals(MESSAGE_LEAVE)) {
       return MESSAGE_LEAVE;
+    } else if (a.equals(MESSAGE_MESSAGE)) {
+      return MESSAGE_MESSAGE;
     } else {
       return MESSAGE_NONE;
     }
@@ -297,7 +296,9 @@ public class Room {
     JsonUtils.jsonPut(a, "a", "sendMessage");
     JSONObject d = new JSONObject();
     JsonUtils.jsonPut(d, "to", peerId);
-    JsonUtils.jsonPut(d, "message", message);
+    JSONObject appJson = new JSONObject();
+    JsonUtils.jsonPut(appJson, "app", message);
+    JsonUtils.jsonPut(d, "message", appJson);
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }

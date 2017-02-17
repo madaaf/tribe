@@ -106,6 +106,7 @@ public class LiveView extends FrameLayout {
   private boolean hiddenControls = false;
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private AvatarView avatarView;
+  private ObjectAnimator animatorRotation;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -144,6 +145,7 @@ public class LiveView extends FrameLayout {
     }
 
     btnNotify.clearAnimation();
+    if (animatorRotation != null) animatorRotation.cancel();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
@@ -539,7 +541,7 @@ public class LiveView extends FrameLayout {
             @Override public void onAnimationEnd(Animator animation) {
               btnNotify.animate().setListener(null);
 
-              ObjectAnimator animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
+              animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
               animatorRotation.setDuration(100);
               animatorRotation.setRepeatCount(3);
               animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
