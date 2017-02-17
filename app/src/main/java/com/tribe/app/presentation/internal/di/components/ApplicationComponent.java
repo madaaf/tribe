@@ -34,25 +34,14 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.AudioDefault;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
-import com.tribe.app.presentation.utils.preferences.DistanceUnits;
-import com.tribe.app.presentation.utils.preferences.Filter;
-import com.tribe.app.presentation.utils.preferences.HasRatedApp;
-import com.tribe.app.presentation.utils.preferences.HasReceivedPointsForCameraPermission;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
-import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
-import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
-import com.tribe.app.presentation.utils.preferences.LocationContext;
-import com.tribe.app.presentation.utils.preferences.Memories;
-import com.tribe.app.presentation.utils.preferences.ShareProfile;
+import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
-import com.tribe.app.presentation.utils.preferences.WasAskedForPermissions;
-import com.tribe.app.presentation.utils.preferences.WeatherUnits;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
@@ -249,25 +238,11 @@ public interface ApplicationComponent {
 
   ImageUtils imageUtils();
 
-  @DistanceUnits Preference<String> distanceUnits();
-
-  @WeatherUnits Preference<String> weatherUnits();
-
-  @Memories Preference<Boolean> memories();
-
-  @AudioDefault Preference<Boolean> audioDefault();
-
-  @LocationContext Preference<Boolean> locationContext();
-
   @Theme Preference<Integer> theme();
-
-  @Filter Preference<Integer> filter();
 
   @InvisibleMode Preference<Boolean> invisibleMode();
 
   @AddressBook Preference<Boolean> addressBook();
-
-  @LastUserRequest Preference<String> lastUserRequest();
 
   RxFacebook rxFacebook();
 
@@ -287,25 +262,17 @@ public interface ApplicationComponent {
 
   NotificationManagerCompat notificationManagerCompat();
 
-  @ShareProfile Preference<Boolean> shareProfile();
-
-  @HasReceivedPointsForCameraPermission Preference<Boolean> hasReceivedPointsForCameraPermission();
-
-  @WasAskedForPermissions Preference<Boolean> wasAskedForCameraPermission();
-
   @LastSync Preference<Long> lastSync();
 
   @LastVersionCode Preference<Integer> lastVersionCode();
-
-  @HasRatedApp Preference<Boolean> hasRatedApp();
 
   @TribeState Preference<Set<String>> tribeState();
 
   @DebugMode Preference<Boolean> debugMode();
 
-  @LastOnlineNotification Preference<Long> lastOnlineNotification();
-
   @UISounds Preference<Boolean> uiSounds();
+
+  @RoutingMode Preference<String> routingMode();
 
   SoundManager soundManager();
 

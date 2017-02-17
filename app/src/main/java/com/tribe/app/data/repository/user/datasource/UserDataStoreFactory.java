@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
@@ -11,7 +10,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import java.text.SimpleDateFormat;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,14 +32,12 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   private final AccessToken accessToken;
   private final Installation installation;
   private final ReactiveLocationProvider reactiveLocationProvider;
-  private final Preference<String> lastUserRequest;
   private final SimpleDateFormat utcSimpleDate;
 
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
       LoginApi loginApi, AccessToken accessToken, Installation installation,
       ReactiveLocationProvider reactiveLocationProvider,
-      @LastUserRequest Preference<String> lastUserRequest,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
 
     if (context == null || userCache == null) {
@@ -59,7 +55,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     this.accessToken = accessToken;
     this.installation = installation;
     this.reactiveLocationProvider = reactiveLocationProvider;
-    this.lastUserRequest = lastUserRequest;
     this.utcSimpleDate = utcSimpleDate;
   }
 
@@ -76,6 +71,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   public UserDataStore createCloudDataStore() {
     return new CloudUserDataStore(this.userCache, this.contactCache, this.rxContacts,
         this.rxFacebook, this.tribeApi, this.loginApi, this.accessToken, this.installation,
-        this.reactiveLocationProvider, this.context, this.lastUserRequest, this.utcSimpleDate);
+        this.reactiveLocationProvider, this.context, this.utcSimpleDate);
   }
 }

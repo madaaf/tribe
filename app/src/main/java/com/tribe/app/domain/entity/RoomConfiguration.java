@@ -45,7 +45,7 @@ public class RoomConfiguration implements Serializable {
     return routingMode;
   }
 
-  public @TribeLiveOptions.RoutingMode void setRoutingMode(String routingMode) {
+  public void setRoutingMode(String routingMode) {
     this.routingMode = routingMode;
 
     // TODO remove when working in api

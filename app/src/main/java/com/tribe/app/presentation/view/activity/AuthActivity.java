@@ -29,7 +29,6 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
-import com.tribe.app.presentation.utils.preferences.LastUserRequest;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.component.onboarding.AuthVideoView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
@@ -76,8 +75,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Inject ScreenUtils screenUtils;
 
   @Inject AuthPresenter authPresenter;
-
-  @Inject @LastUserRequest Preference<String> lastUserRequest;
 
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
@@ -165,7 +162,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     screenUtils.hideKeyboard(this);
 
-    lastUserRequest.set("");
     manageDeepLink(getIntent());
 
     if (lastVersion.get() != -1 && !lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {

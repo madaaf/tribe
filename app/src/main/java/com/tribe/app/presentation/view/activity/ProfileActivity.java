@@ -233,6 +233,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
     subscriptions.add(viewProfile.onChangeVisible()
         .subscribe(aBoolean -> profilePresenter.updateUserInvisibleMode(aBoolean)));
+
+    subscriptions.add(viewProfile.onDebugMode().subscribe(aVoid -> {
+      navigator.navigateToDebugMode(this);
+    }));
   }
 
   private void setupProfileDetailView() {

@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.UserCache;
@@ -82,7 +81,7 @@ public class CloudUserDataStore implements UserDataStore {
   public CloudUserDataStore(UserCache userCache, ContactCache contactCache, RxContacts rxContacts,
       RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
       Installation installation, ReactiveLocationProvider reactiveLocationProvider, Context context,
-      Preference<String> lastUserRequest, SimpleDateFormat utcSimpleDate) {
+      SimpleDateFormat utcSimpleDate) {
     this.userCache = userCache;
     this.contactCache = contactCache;
     this.rxContacts = rxContacts;

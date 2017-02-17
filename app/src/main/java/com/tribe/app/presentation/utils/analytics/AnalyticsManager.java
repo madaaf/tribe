@@ -10,9 +10,6 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.AudioDefault;
-import com.tribe.app.presentation.utils.preferences.Filter;
-import com.tribe.app.presentation.utils.preferences.LocationContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -21,12 +18,6 @@ import javax.inject.Singleton;
  * Created by tiago on 19/10/2016.
  */
 @Singleton public class AnalyticsManager implements TagManager {
-
-  @Inject @Filter Preference<Integer> filter;
-
-  @Inject @LocationContext Preference<Boolean> locationContext;
-
-  @Inject @AudioDefault Preference<Boolean> audioDefault;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 

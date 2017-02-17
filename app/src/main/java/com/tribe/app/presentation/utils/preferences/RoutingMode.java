@@ -5,8 +5,8 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Qualifier;
 
 /**
- * Created by horatiothomas on 8/29/16.
+ * Created by tiago on 2/16/17.
  */
 
-@Qualifier @Retention(RetentionPolicy.RUNTIME) public @interface AudioDefault {
+@Qualifier @Retention(RetentionPolicy.RUNTIME) public @interface RoutingMode {
 }

@@ -43,7 +43,6 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.LastOnlineNotification;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
@@ -96,8 +95,6 @@ public class HomeActivity extends BaseActivity
   @Inject PaletteGrid paletteGrid;
 
   @Inject StateManager stateManager;
-
-  @Inject @LastOnlineNotification Preference<Long> lastOnlineNotification;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 

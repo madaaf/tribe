@@ -5,8 +5,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -14,6 +16,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
@@ -30,6 +33,8 @@ public class ProfileView extends FrameLayout {
 
   @Inject TagManager tagManager;
 
+  @Inject Navigator navigator;
+
   @BindView(R.id.viewActionProfile) ActionView viewActionProfile;
 
   @BindView(R.id.viewActionFollow) ActionView viewActionFollow;
@@ -42,9 +47,12 @@ public class ProfileView extends FrameLayout {
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
 
+  @BindView(R.id.imgLogo) ImageView imgLogo;
+
   // OBSERVABLES
   private CompositeSubscription subscriptions;
   private PublishSubject<Boolean> onChangeVisible = PublishSubject.create();
+  private PublishSubject<Void> onDebugMode = PublishSubject.create();
 
   public ProfileView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -70,6 +78,10 @@ public class ProfileView extends FrameLayout {
   public void onDestroy() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
+
+  /////////////
+  // PRIVATE //
+  /////////////
 
   private void initUI() {
     viewActionVisible.setValue(!user.isInvisibleMode());
@@ -116,6 +128,16 @@ public class ProfileView extends FrameLayout {
     return new ActivityModule(((Activity) getContext()));
   }
 
+  ///////////////
+  //  ONCLICK  //
+  ///////////////
+
+  @OnClick(R.id.imgLogo) void clickLogo() {
+    if (BuildConfig.DEBUG) {
+      onDebugMode.onNext(null);
+    }
+  }
+
   /**
    * OBSERVABLES
    */
@@ -138,5 +160,9 @@ public class ProfileView extends FrameLayout {
 
   public Observable<Boolean> onChangeVisible() {
     return onChangeVisible;
+  }
+
+  public Observable<Void> onDebugMode() {
+    return onDebugMode;
   }
 }

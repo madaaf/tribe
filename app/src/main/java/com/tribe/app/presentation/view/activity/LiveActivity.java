@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -27,6 +28,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -40,7 +42,6 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
@@ -93,6 +94,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   @Inject LivePresenter livePresenter;
 
   @Inject StateManager stateManager;
+
+  @Inject @RoutingMode Preference<String> routingMode;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -377,7 +380,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     Timber.d("Room configuration : " + roomConfiguration);
-    roomConfiguration.setRoutingMode(TribeLiveOptions.ROUTED);
+    roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(roomConfiguration);
     if (recipient instanceof Friendship) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());
