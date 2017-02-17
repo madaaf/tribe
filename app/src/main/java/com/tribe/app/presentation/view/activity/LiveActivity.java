@@ -45,6 +45,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -313,7 +314,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }));
 
     subscriptions.add(viewLive.onNotificationRemoteJoined().subscribe(userName -> {
-      displayNotification(getString(R.string.live_notification_peer_joined, userName)); // SOEF
+      displayNotification(getString(R.string.live_notification_peer_joined, userName));
     }));
 
     subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
@@ -358,6 +359,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
+    Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
     if (recipient != null && recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
       List<Friendship> filteredFriendships = new ArrayList<>();
@@ -368,13 +370,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
           filteredFriendships.add(fr);
         }
       }
-
       viewInviteLive.renderFriendshipList(filteredFriendships);
     } else {
-      if (friendshipList != null) {
-        friendshipList.remove(recipient);
+
+      List<Friendship> filteredFriendships = new ArrayList<>();
+      if (recipient instanceof Friendship) {
+        for (Friendship fr : friendshipList) {
+          Friendship friendship = (Friendship) recipient;
+          if (!friendship.getFriend().getId().equals(fr.getFriend().getId())) {
+            filteredFriendships.add(fr);
+          }
+        }
       }
-      viewInviteLive.renderFriendshipList(friendshipList);
+      viewInviteLive.renderFriendshipList(filteredFriendships);
     }
   }
 
@@ -431,5 +439,4 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     }
   }
 }
-
 
