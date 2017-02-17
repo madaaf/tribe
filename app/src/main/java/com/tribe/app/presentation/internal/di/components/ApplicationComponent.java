@@ -52,6 +52,7 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDelegate;
+import com.tribe.app.presentation.view.notification.Alert;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
@@ -182,6 +183,8 @@ public interface ApplicationComponent {
   void inject(RecipientListAdapterDelegate recipientListAdapterDelegate);
 
   void inject(FriendMemberAdapterDelegate friendMemberAdapterDelegate);
+
+  void inject(Alert alertView);
 
   // JOBS
   void inject(BaseJob baseJob);

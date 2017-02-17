@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.f2prateek.rx.preferences.Preference;
 import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
@@ -48,6 +49,7 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -588,6 +590,38 @@ public class HomeActivity extends BaseActivity
           notificationView.show(HomeActivity.this, layoutNotifications);
         }
       }
+
+      Alerter.create(HomeActivity.this)
+          .setTitle("Alert Title")
+          .setText("Alert text...")
+          .setActionButton1(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+              Log.e("SOO", "SOOO1");
+            }
+          })
+          .setActionButton2(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+              Log.e("SOO", "SOOO2");
+            }
+          })
+          .show();
     }
+  }
+
+  @OnClick(R.id.test) public void onClickTest() {
+    Alerter.create(this)
+        .setTitle("Alert Title")
+        .setText("Alert text...")
+        .setActionButton1(new View.OnClickListener() {
+          @Override public void onClick(View v) {
+            Log.e("SOO", "SOOO1");
+          }
+        })
+        .setActionButton2(new View.OnClickListener() {
+          @Override public void onClick(View v) {
+            Log.e("SOO", "SOOO2");
+          }
+        })
+        .show();
   }
 }
