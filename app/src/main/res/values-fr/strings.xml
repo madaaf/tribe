@@ -197,7 +197,7 @@
 	<string name="live_notification_hang_live">%1$s veut discuter en direct avec vous ! :metal:</string>
 	<string name="live_notification_hang_live_group">%1$s (%2$s) veut discuter en direct avec vous ! :metal:</string>
 	<string name="live_notification_action_see_online">Voir qui est en ligne</string>
-	<string name="live_notification_action_hang_live">Live</string>
+	<string name="live_notification_action_hang_live">Rejoindre !</string>
 	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_guests">Rejoindre %1$s et ses invités</string>

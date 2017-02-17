@@ -418,7 +418,7 @@ public class TileView extends SquareCardView {
   }
 
   public int getBackgroundColor() {
-    return paletteGrid.get(position);
+    return paletteGrid.get(position - 1);
   }
 
   public void startDrag() {

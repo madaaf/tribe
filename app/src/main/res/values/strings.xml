@@ -197,7 +197,7 @@
 	<string name="live_notification_hang_live">%1$s wants to hang live with you. :metal:</string>
 	<string name="live_notification_hang_live_group">%1$s (%2$s) wants to hang live with you. :metal:</string>
 	<string name="live_notification_action_see_online">See who\'s online</string>
-	<string name="live_notification_action_hang_live">Join</string>
+	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
 	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
 	<string name="live_notification_action_hang_live_guests">Tap to join %1$s and guests(s)</string>
