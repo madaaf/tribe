@@ -94,7 +94,7 @@ public class Room {
             new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
       }
 
-      sendToPeers(webRTCClient.getJSONMedia());
+      sendToPeers(webRTCClient.getJSONMedia(), false);
     }));
 
     subscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
@@ -171,6 +171,8 @@ public class Room {
   public void joinRoom() {
     Timber.d("Joining room");
 
+    webRTCClient.initSubscriptions();
+
     webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId()).toString());
 
     subscriptions.add(webRTCClient.onReadyToSendSdpOffer()
@@ -204,7 +206,7 @@ public class Room {
     }).subscribe());
 
     subscriptions.add(webRTCClient.onSendToPeers().subscribe(jsonObject -> {
-      sendToPeers(jsonObject);
+      sendToPeers(jsonObject, false);
     }));
 
     //subscriptions.add(webRTCClient.onReceivedDataChannelMessage()
@@ -221,11 +223,11 @@ public class Room {
     webRTCClient.dispose();
   }
 
-  public void sendToPeers(JSONObject obj) {
+  public void sendToPeers(JSONObject obj, boolean isAppMessage) {
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
       if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
         webSocketConnection.send(
-            getSendMessagePayload(tpc.getSession().getPeerId(), obj).toString());
+            getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
       }
     }
   }
@@ -291,14 +293,21 @@ public class Room {
     return a;
   }
 
-  private JSONObject getSendMessagePayload(String peerId, JSONObject message) {
+  private JSONObject getSendMessagePayload(String peerId, JSONObject message,
+      boolean isAppMessage) {
     JSONObject a = new JSONObject();
     JsonUtils.jsonPut(a, "a", "sendMessage");
     JSONObject d = new JSONObject();
     JsonUtils.jsonPut(d, "to", peerId);
-    JSONObject appJson = new JSONObject();
-    JsonUtils.jsonPut(appJson, "app", message);
-    JsonUtils.jsonPut(d, "message", appJson);
+
+    if (isAppMessage) {
+      JSONObject appJson = new JSONObject();
+      JsonUtils.jsonPut(appJson, "app", message);
+      JsonUtils.jsonPut(d, "message", appJson);
+    } else {
+      JsonUtils.jsonPut(d, "message", message);
+    }
+
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }

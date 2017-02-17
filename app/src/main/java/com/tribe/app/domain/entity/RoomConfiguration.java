@@ -48,15 +48,15 @@ public class RoomConfiguration implements Serializable {
   public void setRoutingMode(String routingMode) {
     this.routingMode = routingMode;
 
-    // TODO remove when working in api
-    if (routingMode.equals(TribeLiveOptions.ROUTED)) {
-      websocketUrl = "wss://coreos-3e7241e7-a2f8-43dc-84cd-93b162fa307e.tribedev.pm:43567/api";
-      List<IceConfig> iceServerList = new ArrayList<>();
-      List<String> urls = new ArrayList<>();
-      urls.add("turn:coreos-3e7241e7-a2f8-43dc-84cd-93b162fa307e.tribedev.pm:49921");
-      iceServerList.add(new IceConfig(urls, "gorst", "hero"));
-      rtcPeerConfiguration.setIceServers(iceServerList);
+    if (routingMode.equals(TribeLiveOptions.P2P)) {
+      websocketUrl = "wss://coreos-3e7241e7-a2f8-43dc-84cd-93b162fa307e.tribedev.pm:48521/api";
     }
+
+    List<IceConfig> iceServerList = new ArrayList<>();
+    List<String> urls = new ArrayList<>();
+    urls.add("stun: stun.l.google.com:19302");
+    iceServerList.add(new IceConfig(urls, null, null));
+    rtcPeerConfiguration.setIceServers(iceServerList);
   }
 
   @Override public String toString() {

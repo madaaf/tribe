@@ -421,7 +421,7 @@ public class LiveView extends FrameLayout {
       tileView.onDrop(latestView);
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
-      room.sendToPeers(getInvitedPayload());
+      room.sendToPeers(getInvitedPayload(), true);
 
       subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
         tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
@@ -433,7 +433,7 @@ public class LiveView extends FrameLayout {
       subscriptions.add(latestView.onShouldRemoveGuest()
           .doOnNext(tribeGuest -> removeFromInvites(latestView.getGuest().getId()))
           .subscribe(tribeGuest -> {
-            room.sendToPeers(getRemovedPayload(latestView.getGuest()));
+            room.sendToPeers(getRemovedPayload(latestView.getGuest()), true);
           }));
     }));
   }

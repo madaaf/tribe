@@ -57,7 +57,6 @@ import static android.R.attr.id;
     this.streamManager = new StreamManager(context);
     this.peerConnections = new HashMap<>();
     initPeerConnectionFactory();
-    initSubscriptions();
   }
 
   private void initPeerConnectionFactory() {
@@ -69,7 +68,7 @@ import static android.R.attr.id;
     peerConnectionFactory = new PeerConnectionFactory(options);
   }
 
-  private void initSubscriptions() {
+  public void initSubscriptions() {
     subscriptions.add(streamManager.onMediaChanged().subscribe(aVoid -> {
       JSONObject jsonMedia = getJSONMedia();
       onSendToPeers.onNext(jsonMedia);

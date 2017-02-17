@@ -129,8 +129,10 @@ public class JsonToModel {
         TribeSession tribeSession =
             new TribeSession(session.getString("socketId"), session.getString("userId"));
 
-        if (d.has(Room.MESSAGE_APP)) {
-          JSONObject app = object.getJSONObject(Room.MESSAGE_APP);
+        JSONObject message = d.getJSONObject("message");
+
+        if (message.has(Room.MESSAGE_APP)) {
+          JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
           if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
@@ -150,12 +152,12 @@ public class JsonToModel {
             }
             onRemovedTribeGuestList.onNext(guestRemovedList);
           }
-        } else if (object.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
+        } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
           Timber.d("Receiving media configuration");
           TribePeerMediaConfiguration peerMediaConfiguration =
               new TribePeerMediaConfiguration(tribeSession);
-          peerMediaConfiguration.setAudioEnabled(object.getBoolean("isAudioEnabled"));
-          peerMediaConfiguration.setVideoEnabled(object.getBoolean("isVideoEnabled"));
+          peerMediaConfiguration.setAudioEnabled(message.getBoolean("isAudioEnabled"));
+          peerMediaConfiguration.setVideoEnabled(message.getBoolean("isVideoEnabled"));
           onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
         }
       }
