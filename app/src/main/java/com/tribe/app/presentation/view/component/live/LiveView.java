@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,8 +67,9 @@ public class LiveView extends FrameLayout {
 
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
+  private static final float OVERSHOOT = 1.2f;
 
-  private static boolean joineLive = false;
+  private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
 
@@ -328,7 +330,7 @@ public class LiveView extends FrameLayout {
     subscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
-          joineLive = true;
+          joinLive = true;
           displayJoinLivePopupTutorial();
 
           // TOTO
@@ -511,7 +513,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void displayWaitLivePopupTutorial() {
-    if (!joineLive) {
+    if (!joinLive) {
       if (stateManager.shouldDisplay(StateManager.WAINTING_FRIENDS_LIVE)) {
         subscriptions.add(DialogFactory.dialog(getContext(),
             getContext().getString(R.string.tips_waiting5sec_title),
@@ -838,12 +840,12 @@ public class LiveView extends FrameLayout {
 
           Animator animatorTopMargin = AnimationUtils.getTopMarginAnimator(avatarView, margin);
           animatorTopMargin.setDuration(DURATION);
-          animatorTopMargin.setInterpolator(new DecelerateInterpolator());
+          animatorTopMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
           animatorTopMargin.start();
 
           Animator animatorLeftMargin = AnimationUtils.getLeftMarginAnimator(avatarView, margin);
           animatorLeftMargin.setDuration(DURATION);
-          animatorLeftMargin.setInterpolator(new DecelerateInterpolator());
+          animatorLeftMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
           animatorLeftMargin.addListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationCancel(Animator animation) {
               animatorLeftMargin.removeAllListeners();
