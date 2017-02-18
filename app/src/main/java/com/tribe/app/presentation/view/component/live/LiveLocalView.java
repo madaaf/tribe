@@ -98,7 +98,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
 
     viewAudio.setGuest(
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false));
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, null));
   }
 
   protected ApplicationComponent getApplicationComponent() {

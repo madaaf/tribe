@@ -139,7 +139,7 @@ public class JsonToModel {
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                  guest.getString("picture"), false));
+                  guest.getString("picture"), false, null));
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {

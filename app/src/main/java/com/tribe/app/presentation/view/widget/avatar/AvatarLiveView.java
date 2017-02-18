@@ -14,6 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import java.util.List;
 import javax.inject.Inject;
 
 /**
@@ -86,6 +87,11 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
 
   @Override public void load(String url) {
     avatar.load(url);
+  }
+
+  @Override public void loadGroupAvatar(String url, String previousUrl, String groupId,
+      List<String> membersPic) {
+    avatar.loadGroupAvatar(url, previousUrl, groupId, membersPic);
   }
 
   public void setType(int type) {

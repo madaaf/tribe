@@ -53,6 +53,8 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
   private Paint transparentPaint;
   private String url;
   private Recipient recipient;
+  private List<String> membersPic;
+  private String groupId;
 
   // RESOURCES
   private int avatarSize;
@@ -129,8 +131,13 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
     }
   }
 
-  private void loadGroupAvatar(String url, String previousUrl, String groupId,
+  @Override
+  public void loadGroupAvatar(String url, String previousUrl, String groupId,
       List<String> membersPic) {
+    this.url = url;
+    this.membersPic = membersPic;
+    this.groupId = groupId;
+
     if (StringUtils.isEmpty(url)) {
       File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), groupId, FileUtils.PHOTO);
 
@@ -197,6 +204,14 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
 
   public Recipient getRecipient() {
     return recipient;
+  }
+
+  public String getGroupId() {
+    return groupId;
+  }
+
+  public List<String> getMembersPic() {
+    return membersPic;
   }
 
   public void setType(@AvatarType int type) {

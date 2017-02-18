@@ -1,5 +1,7 @@
 package com.tribe.tribelivesdk.model;
 
+import java.util.List;
+
 /**
  * Created by tiago on 07/02/2017.
  */
@@ -14,16 +16,19 @@ public class TribeGuest {
   private String displayName;
   private String picture;
   private boolean isGroup;
+  private List<String> memberPics;
 
   public TribeGuest(String id) {
     this.id = id;
   }
 
-  public TribeGuest(String id, String displayName, String picture, boolean isGroup) {
+  public TribeGuest(String id, String displayName, String picture, boolean isGroup,
+      List<String> memberPics) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
     this.isGroup = isGroup;
+    this.memberPics = memberPics;
   }
 
   public String getDisplayName() {
@@ -44,5 +49,13 @@ public class TribeGuest {
 
   public void setGroup(boolean group) {
     isGroup = group;
+  }
+
+  public void setMemberPics(List<String> memberPics) {
+    this.memberPics = memberPics;
+  }
+
+  public List<String> getMemberPics() {
+    return memberPics;
   }
 }

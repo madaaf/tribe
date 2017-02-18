@@ -146,6 +146,10 @@ public class LiveView extends FrameLayout {
       room = null;
     }
 
+    if (animatorBuzzAvatar != null) {
+      animatorBuzzAvatar.cancel();
+    }
+
     btnNotify.clearAnimation();
     if (animatorRotation != null) animatorRotation.cancel();
 
@@ -248,17 +252,19 @@ public class LiveView extends FrameLayout {
       onNotificationRemotePeerBuzzed.onNext(null);
       viewBuzz.buzz();
 
-      animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
-      animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
-      animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
-      animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
-      animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
-        @Override public void onAnimationCancel(Animator animation) {
-          animatorBuzzAvatar.removeAllListeners();
-          avatarView.setTranslationX(0);
-        }
-      });
-      animatorBuzzAvatar.start();
+      if (avatarView != null) {
+        animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
+        animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
+        animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
+        animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
+        animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationCancel(Animator animation) {
+            animatorBuzzAvatar.removeAllListeners();
+            avatarView.setTranslationX(0);
+          }
+        });
+        animatorBuzzAvatar.start();
+      }
 
       for (LiveRowView liveRowView : liveInviteMap.values()) {
         liveRowView.buzz();
@@ -275,7 +281,7 @@ public class LiveView extends FrameLayout {
           .setInterpolator(new DecelerateInterpolator())
           .setListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
-              animatorBuzzAvatar.cancel();
+              if (animatorBuzzAvatar != null) animatorBuzzAvatar.cancel();
 
               subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                   .observeOn(AndroidSchedulers.mainThread())
@@ -407,7 +413,7 @@ public class LiveView extends FrameLayout {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
-          false);
+          false, null);
       addView(latestView, guest, tileView.getBackgroundColor());
     }));
   }
@@ -478,8 +484,17 @@ public class LiveView extends FrameLayout {
 
     txtName.setText(recipient.getDisplayName());
 
-    TribeGuest guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
-        recipient.getProfilePicture(), recipient instanceof Membership);
+    TribeGuest guest;
+
+    if (recipient instanceof Membership) {
+      Membership membership = (Membership) recipient;
+      guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
+          recipient.getProfilePicture(), true, membership.getMembersPic());
+    } else {
+      guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
+          recipient.getProfilePicture(), false, null);
+    }
+
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
     addView(liveRowView, guest, color);
@@ -579,8 +594,14 @@ public class LiveView extends FrameLayout {
                       .setInterpolator(new DecelerateInterpolator())
                       .setListener(new AnimatorListenerAdapter() {
                         @Override public void onAnimationEnd(Animator animation) {
-                          btnNotify.setEnabled(true);
-                          btnNotify.animate().setListener(null);
+                          if (btnNotify != null) {
+                            btnNotify.setEnabled(true);
+                            btnNotify.animate().setListener(null);
+                          }
+                        }
+
+                        @Override public void onAnimationCancel(Animator animation) {
+                          if (btnNotify != null) btnNotify.animate().setListener(null);
                         }
                       });
                 }
@@ -696,7 +717,7 @@ public class LiveView extends FrameLayout {
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
         return new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-            friendship.getProfilePicture(), false);
+            friendship.getProfilePicture(), false, null);
       }
     }
 
@@ -788,8 +809,9 @@ public class LiveView extends FrameLayout {
     AvatarView fromAvatarView = liveRowView.avatar();
     avatarView = new AvatarView(getContext());
 
-    if (fromAvatarView.getRecipient() != null) {
-      avatarView.load(fromAvatarView.getRecipient());
+    if (fromAvatarView.getMembersPic() != null && fromAvatarView.getMembersPic().size() > 0) {
+      avatarView.loadGroupAvatar(fromAvatarView.getUrl(), null, fromAvatarView.getGroupId(),
+          fromAvatarView.getMembersPic());
     } else {
       avatarView.load(fromAvatarView.getUrl());
     }

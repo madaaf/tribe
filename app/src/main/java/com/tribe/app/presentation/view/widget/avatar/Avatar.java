@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget.avatar;
 
 import com.tribe.app.domain.entity.Recipient;
+import java.util.List;
 
 /**
  * Created by tiago on 06/01/2017.
@@ -8,7 +9,9 @@ import com.tribe.app.domain.entity.Recipient;
 
 public interface Avatar {
 
-  public void load(Recipient recipient);
+  void load(Recipient recipient);
 
-  public void load(String url);
+  void load(String url);
+
+  void loadGroupAvatar(String url, String previousUrl, String groupId, List<String> membersPic);
 }
