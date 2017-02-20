@@ -182,6 +182,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override protected void onPause() {
+    cleanCountdown();
     shouldPauseOnRestore = true;
     screenUtils.hideKeyboard(this);
     authVideoView.onPause(true);
@@ -484,7 +485,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void resend() {
     viewStatus.showSendingCode();
 
-    //tagManager.trackEvent(TagManagerConstants.ONBOARDING_SMS_NOT_RECEIVED);
     authenticationDialogFragment = AuthenticationDialogFragment.newInstance(
         getApplicationComponent().phoneUtils()
             .formatPhoneNumberForView(viewPhoneNumber.getPhoneNumberFormatted(),
@@ -493,7 +493,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     authenticationDialogFragment.show(getSupportFragmentManager(),
         AuthenticationDialogFragment.class.getName());
     subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
-      //tagManager.trackEvent(TagManagerConstants.ONBOARDING_RESEND_PIN);
       authenticationDialogFragment.dismiss();
       requestCode();
     }));
@@ -511,7 +510,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override public void goToCode(Pin pin) {
-    //tagManager.trackEvent(TagManagerConstants.ONBOARDING_SEND_PIN);
     this.pin = pin;
 
     goToCodeView(true);
@@ -547,7 +545,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
               user.getUsername())) {
             navigator.navigateToAuthProfile(this, deepLink, loginEntity);
           } else {
-            //tagManager.trackEvent(TagManagerConstants.ONBOARDING_CONNECTION);
             navigator.navigateToAuthAccess(this, deepLink);
           }
         }));

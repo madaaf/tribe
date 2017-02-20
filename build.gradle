@@ -2,53 +2,53 @@ apply from: 'buildsystem/ci.gradle'
 apply from: 'buildsystem/dependencies.gradle'
 
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
+  repositories {
+    jcenter()
+    mavenCentral()
+  }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
-        classpath 'com.fernandocejas.frodo:frodo-plugin:0.8.1'
-        classpath 'io.realm:realm-gradle-plugin:2.1.1'
-        classpath 'com.google.gms:google-services:3.0.0'
-    }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:2.2.3'
+    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+    classpath 'com.fernandocejas.frodo:frodo-plugin:0.8.1'
+    classpath 'io.realm:realm-gradle-plugin:2.3.1'
+    classpath 'com.google.gms:google-services:3.0.0'
+  }
 }
 
 allprojects {
-    ext {
-        androidApplicationId = 'com.tribe.app'
-        androidVersionCode = 63
-        androidVersionName = "3.0"
-        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
-        testApplicationId = 'com.tribe.app.test'
-    }
+  ext {
+    androidApplicationId = 'com.tribe.app'
+    androidVersionCode = 64
+    androidVersionName = "3.0"
+    testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+    testApplicationId = 'com.tribe.app.test'
+  }
 
-    repositories {
-        maven { url "http://appboy.github.io/appboy-android-sdk/sdk" }
-    }
+  repositories {
+    maven { url "http://appboy.github.io/appboy-android-sdk/sdk" }
+  }
 }
 
 task wrapper(type: Wrapper) {
-    description 'Creates the gradle wrapper.'
-    gradleVersion '3.1'
+  description 'Creates the gradle wrapper.'
+  gradleVersion '3.1'
 }
 
 task runDomainUnitTests(dependsOn: [':domain:test']) {
-    description 'Run unit tests for the domain layer.'
+  description 'Run unit tests for the domain layer.'
 }
 
 task runDataUnitTests(dependsOn: [':data:cleanTestDebugUnitTest', ':data:testDebugUnitTest']) {
-    description 'Run unit tests for the data layer.'
+  description 'Run unit tests for the data layer.'
 }
 
 task runUnitTests(dependsOn: ['runDomainUnitTests', 'runDataUnitTests']) {
-    description 'Run unit tests for both domain and data layers.'
+  description 'Run unit tests for both domain and data layers.'
 }
 
 task runAcceptanceTests(dependsOn: [':presentation:connectedAndroidTest']) {
-    description 'Run application acceptance tests.'
+  description 'Run application acceptance tests.'
 }
 

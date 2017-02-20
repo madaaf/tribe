@@ -47,6 +47,7 @@ public class FriendsPresenter implements Presenter {
     if (contactListSubscriber != null) contactListSubscriber.unsubscribe();
     synchroContactList.unsubscribe();
     createFriendships.unsubscribe();
+    friendsMVPView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {

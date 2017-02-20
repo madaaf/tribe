@@ -101,6 +101,10 @@ public class TribePeerConnection {
     peerConnection.addIceCandidate(iceCandidate);
   }
 
+  public void createOffer() {
+    if (sdpObserver != null) sdpObserver.createOffer();
+  }
+
   public PeerConnection getPeerConnection() {
     return peerConnection;
   }

@@ -87,6 +87,9 @@ public class HomeGridPresenter implements Presenter {
     createMembership.unsubscribe();
     cloudUserInfos.unsubscribe();
     updateUser.unsubscribe();
+    diskUserInfosUsecase.unsubscribe();
+    synchroContactList.unsubscribe();
+    homeGridView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {

@@ -5,6 +5,7 @@ import com.tribe.tribelivesdk.core.TribePeerConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
+import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
@@ -145,6 +146,16 @@ import static android.R.attr.id;
         .getPeerId());
 
     streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
+  }
+
+  public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
+    streamManager.updateMediaConstraints(tribeMediaConstraints);
+
+    for (TribePeerConnection peerConnection : peerConnections.values()) {
+      if (peerConnection.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+        peerConnection.createOffer();
+      }
+    }
   }
 
   private void initLocalStream() {

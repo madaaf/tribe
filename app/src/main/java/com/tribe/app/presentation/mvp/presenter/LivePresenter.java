@@ -45,6 +45,7 @@ public class LivePresenter implements Presenter {
     buzzRoom.unsubscribe();
     inviteUserToRoom.unsubscribe();
     getRecipientInfos.unsubscribe();
+    liveMVPView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {

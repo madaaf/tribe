@@ -26,6 +26,9 @@ public class MediaConstraints {
   private int minFrameRate;
   private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
 
+  public MediaConstraints() {
+  }
+
   private MediaConstraints(MediaConstraintsBuilder builder) {
     this.hasVideo = builder.hasVideo;
     this.hasAudio = builder.hasAudio;
@@ -64,6 +67,11 @@ public class MediaConstraints {
 
     public MediaConstraintsBuilder maxWidth(int maxWidth) {
       this.maxWidth = maxWidth;
+      return this;
+    }
+
+    public MediaConstraintsBuilder minWidth(int minWidth) {
+      this.minWidth = minWidth;
       return this;
     }
 

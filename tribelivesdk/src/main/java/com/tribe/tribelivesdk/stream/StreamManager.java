@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.tribe.tribelivesdk.model.RemotePeer;
+import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
@@ -120,6 +121,10 @@ public class StreamManager {
     }
 
     remotePeer.setMediaConfiguration(tribePeerMediaConfiguration);
+  }
+
+  public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
+    liveLocalStream.updateMediaConstraints(tribeMediaConstraints);
   }
 
   public void switchCamera() {

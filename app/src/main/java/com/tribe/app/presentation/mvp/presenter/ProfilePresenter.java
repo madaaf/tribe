@@ -28,6 +28,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
 
   @Override public void onViewDetached() {
     removeInstall.unsubscribe();
+    profileView = null;
     super.onViewDetached();
   }
 

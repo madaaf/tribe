@@ -64,6 +64,8 @@ public class SearchPresenter implements Presenter {
     createFriendship.unsubscribe();
     searchLocally.unsubscribe();
     synchroContactList.unsubscribe();
+    refreshHowManyFriends.unsubscribe();
+    searchView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {

@@ -75,6 +75,8 @@ public class GroupPresenter implements Presenter {
     getGroupInfos.unsubscribe();
     createFriendship.unsubscribe();
     removeMembersFromGroup.unsubscribe();
+    updateMembership.unsubscribe();
+    groupView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {

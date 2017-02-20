@@ -502,7 +502,11 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       updateScaleWithValue(value);
     });
 
-    viewThreeDots.animate().alpha(reverse ? 1 : 0).setDuration(DURATION_FAST).start();
+    viewThreeDots.animate()
+        .alpha(reverse ? 1 : 0)
+        .setDuration(DURATION_FAST)
+        .setStartDelay(reverse ? DURATION_FAST * 2 : 0)
+        .start();
 
     ValueAnimator animatorScaleUpRemove =
         ValueAnimator.ofFloat(reverse ? 1f : 0f, reverse ? 0f : 1f);

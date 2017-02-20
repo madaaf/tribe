@@ -47,6 +47,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     doRegister.unsubscribe();
     cloudUserInfos.unsubscribe();
     updateUser.unsubscribe();
+    profileInfoView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {

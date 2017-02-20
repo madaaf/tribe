@@ -1,10 +1,13 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
+import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.view.PeerView;
+import java.util.List;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.Camera1Enumerator;
+import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.CameraEnumerator;
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.MediaConstraints;
@@ -35,6 +38,8 @@ public class TribeLiveLocalStream {
   private AudioSource audioSource;
   private VideoTrack videoTrack;
   private VideoCapturer capturer;
+  private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
+  private boolean capturing = false;
 
   public TribeLiveLocalStream(Context context, PeerView peerView,
       PeerConnectionFactory peerConnectionFactory) {
@@ -56,20 +61,7 @@ public class TribeLiveLocalStream {
   }
 
   private void addAudioTrackToMediaStream() {
-    MediaConstraints audioConstraints = new MediaConstraints();
-
-    audioConstraints.mandatory.add(
-        new MediaConstraints.KeyValuePair(AUDIO_ECHO_CANCELLATION_CONSTRAINT, "true"));
-    audioConstraints.mandatory.add(
-        new MediaConstraints.KeyValuePair(AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT, "true"));
-    audioConstraints.mandatory.add(
-        new MediaConstraints.KeyValuePair(AUDIO_HIGH_PASS_FILTER_CONSTRAINT, "true"));
-    audioConstraints.mandatory.add(
-        new MediaConstraints.KeyValuePair(AUDIO_NOISE_SUPPRESSION_CONSTRAINT, "true"));
-    audioConstraints.mandatory.add(
-        new MediaConstraints.KeyValuePair(AUDIO_LEVEL_CONTROL_CONSTRAINT, "true"));
-
-    audioSource = peerConnectionFactory.createAudioSource(audioConstraints);
+    audioSource = peerConnectionFactory.createAudioSource(new MediaConstraints());
     audioTrack = peerConnectionFactory.createAudioTrack("APPEARa0", audioSource);
     mediaStream.addTrack(audioTrack);
   }
@@ -88,12 +80,6 @@ public class TribeLiveLocalStream {
   private void generateVideoCapturer() {
     CameraEnumerator enumerator = new Camera1Enumerator(false);
 
-    //if (Camera2Enumerator.isSupported(context)) {
-    //    enumerator = new Camera2Enumerator(context);
-    //} else {
-    //    enumerator =
-    //}
-
     Timber.d("Creating capturer");
 
     final String[] deviceNames = enumerator.getDeviceNames();
@@ -104,6 +90,8 @@ public class TribeLiveLocalStream {
       if (enumerator.isFrontFacing(deviceName)) {
         Timber.d("Creating front facing camera capturer.");
         VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+
+        captureFormatList = enumerator.getSupportedFormats(deviceName);
 
         if (videoCapturer != null) {
           capturer = videoCapturer;
@@ -119,6 +107,8 @@ public class TribeLiveLocalStream {
         Timber.d("Creating other camera capturer.");
         VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 
+        captureFormatList = enumerator.getSupportedFormats(deviceName);
+
         if (videoCapturer != null) {
           capturer = videoCapturer;
         }
@@ -126,10 +116,28 @@ public class TribeLiveLocalStream {
     }
   }
 
+  private com.tribe.tribelivesdk.core.MediaConstraints generateCorrectMediaConstraints(
+      TribeMediaConstraints tribeMediaConstraints) {
+    CaptureFormatConstraints localCaptureFormatConstraints =
+        new CaptureFormatConstraints(captureFormatList);
+    return localCaptureFormatConstraints.getConstraintsClosestToDimensions(
+        tribeMediaConstraints.getMaxWidth(), tribeMediaConstraints.getMaxHeight());
+  }
+
   public void startVideoCapture() {
     if (capturer != null) {
       Timber.d("Start video source.");
+      capturing = true;
       capturer.startCapture(mediaConstraints.getMaxWidth(), mediaConstraints.getMaxHeight(),
+          mediaConstraints.getMaxFrameRate());
+    }
+  }
+
+  public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
+    Timber.d("updatingMediaConstraints : " + tribeMediaConstraints);
+    mediaConstraints = generateCorrectMediaConstraints(tribeMediaConstraints);
+    if (capturer != null && capturing) {
+      capturer.changeCaptureFormat(mediaConstraints.getMaxWidth(), mediaConstraints.getMaxHeight(),
           mediaConstraints.getMaxFrameRate());
     }
   }
@@ -138,6 +146,7 @@ public class TribeLiveLocalStream {
     if (capturer != null) {
       Timber.d("Stop video source.");
       try {
+        capturing = false;
         capturer.stopCapture();
       } catch (InterruptedException e) {
         e.printStackTrace();

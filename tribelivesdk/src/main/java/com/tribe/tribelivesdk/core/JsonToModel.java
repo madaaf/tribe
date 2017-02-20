@@ -4,6 +4,7 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
+import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -38,6 +39,7 @@ public class JsonToModel {
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
+  private PublishSubject<TribeMediaConstraints> onTribeMediaConstraints = PublishSubject.create();
 
   public void setOptions(TribeLiveOptions options) {
     this.options = options;
@@ -58,6 +60,7 @@ public class JsonToModel {
       object = new JSONObject(json);
 
       if (localWebSocketType.equals(Room.MESSAGE_OFFER)) {
+
         JSONObject data = object.getJSONObject("d");
         Timber.d("Received challenge : " + data);
         JSONObject sdpJSON = data.getJSONObject("sdp");
@@ -72,6 +75,7 @@ public class JsonToModel {
 
         onReceivedOffer.onNext(new TribeOffer(tribeSession, sdp));
       } else if (localWebSocketType.equals(Room.MESSAGE_CANDIDATE)) {
+
         JSONObject data = object.getJSONObject("d");
         Timber.d("Exchange candidate : " + data.toString());
 
@@ -87,6 +91,7 @@ public class JsonToModel {
 
         onCandidate.onNext(tribeCandidate);
       } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
+
         Timber.d("Leave message received");
         JSONObject d = object.getJSONObject("d");
         Timber.d(Room.MESSAGE_LEAVE + " received : " + d.toString());
@@ -94,6 +99,7 @@ public class JsonToModel {
         String userId = d.getString("userId");
         onLeaveRoom.onNext(new TribeSession(peerId, userId));
       } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
+
         TribeJoinRoom tribeJoinRoom;
 
         // TODO handle userMediaConfiguration
@@ -113,14 +119,27 @@ public class JsonToModel {
         tribeJoinRoom = new TribeJoinRoom(sessionList, roomSize);
 
         onJoinRoom.onNext(tribeJoinRoom);
-      } else if (localWebSocketType.equals(Room.MESSAGE_ERROR)) {
-        boolean success = object.getBoolean("success");
 
-        if (!success) {
-          String error = object.getString("error");
-          onError.onNext(new WebSocketError(error, "Can't connect"));
+        if (r.has("userMediaConfiguration")) {
+          Timber.d("Media constraints in join received");
+          JSONObject jo = r.getJSONObject("userMediaConfiguration");
+          //computeMediaConstraints(jo);
         }
+      } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
+
+        Timber.d("Leave message received");
+        JSONObject d = object.getJSONObject("d");
+        Timber.d(Room.MESSAGE_LEAVE + " received : " + d.toString());
+        String peerId = d.getString("socketId");
+        String userId = d.getString("userId");
+        onLeaveRoom.onNext(new TribeSession(peerId, userId));
+      } else if (localWebSocketType.equals(Room.MESSAGE_MEDIA_CONSTRAINTS)) {
+
+        Timber.d("User configuration message received");
+        JSONObject d = object.getJSONObject("d");
+        computeMediaConstraints(d);
       } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
+
         JSONObject d = object.getJSONObject("d");
         Timber.d("Received message app");
 
@@ -131,8 +150,10 @@ public class JsonToModel {
         JSONObject message = d.getJSONObject("message");
 
         if (message.has(Room.MESSAGE_APP)) {
+
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
           if (app.has(Room.MESSAGE_INVITE_ADDED)) {
+
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
@@ -143,6 +164,7 @@ public class JsonToModel {
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
+
             Timber.d("Receiving invite removed");
             List<TribeGuest> guestRemovedList = new ArrayList<>();
             JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
@@ -152,12 +174,20 @@ public class JsonToModel {
             onRemovedTribeGuestList.onNext(guestRemovedList);
           }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
+
           Timber.d("Receiving media configuration");
           TribePeerMediaConfiguration peerMediaConfiguration =
               new TribePeerMediaConfiguration(tribeSession);
           peerMediaConfiguration.setAudioEnabled(message.getBoolean("isAudioEnabled"));
           peerMediaConfiguration.setVideoEnabled(message.getBoolean("isVideoEnabled"));
           onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
+        }
+      } else if (object != null && object.has(Room.MESSAGE_ERROR)) {
+        boolean success = object.getBoolean("s");
+
+        if (!success) {
+          String error = object.getString("e");
+          onError.onNext(new WebSocketError(error, "Can't connect"));
         }
       }
     } catch (JSONException e) {
@@ -193,13 +223,19 @@ public class JsonToModel {
     return null;
   }
 
-  private void convertDataChannelToModel(String json, TribeSession session) throws IOException {
-    JSONObject object = null;
-    try {
-      object = new JSONObject(json);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+  private void computeMediaConstraints(JSONObject jo) throws JSONException {
+    TribeMediaConstraints tribeUserConfiguration = new TribeMediaConstraints();
+    JSONObject video = jo.getJSONObject("video");
+    JSONObject fps = video.getJSONObject("frameRate");
+    int maxWidth = video.getJSONObject("width").getInt("max");
+    int maxHeight = video.getJSONObject("height").getInt("max");
+    int minFps = fps.getInt("min");
+    int maxFps = fps.getInt("max");
+    tribeUserConfiguration.setMaxWidth(maxWidth);
+    tribeUserConfiguration.setMaxHeight(maxHeight);
+    tribeUserConfiguration.setMaxFps(maxFps);
+    tribeUserConfiguration.setMinFps(minFps);
+    onTribeMediaConstraints.onNext(tribeUserConfiguration);
   }
 
   /////////////////
@@ -236,5 +272,9 @@ public class JsonToModel {
 
   public Observable<TribePeerMediaConfiguration> onTribePeerMediaConfiguration() {
     return onTribeMediaPeerConfiguration;
+  }
+
+  public Observable<TribeMediaConstraints> onTribeMediaConstraints() {
+    return onTribeMediaConstraints;
   }
 }

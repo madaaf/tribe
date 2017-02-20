@@ -60,6 +60,7 @@ public class SettingsPresenter extends UpdateUserPresenter {
     getDiskContactList.unsubscribe();
     getDiskFBContactList.unsubscribe();
     getBlockedFriendshipList.unsubscribe();
+    settingsView = null;
     super.onViewDetached();
   }
 

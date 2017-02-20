@@ -153,6 +153,8 @@ public class LiveView extends FrameLayout {
     }
 
     btnNotify.clearAnimation();
+    btnNotify.animate().setListener(null);
+
     if (animatorRotation != null) animatorRotation.cancel();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
@@ -577,6 +579,8 @@ public class LiveView extends FrameLayout {
           .setInterpolator(new DecelerateInterpolator())
           .setListener(new AnimatorListenerAdapter() {
             @Override public void onAnimationEnd(Animator animation) {
+              if (btnNotify == null) return;
+
               btnNotify.animate().setListener(null);
 
               animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
@@ -587,25 +591,27 @@ public class LiveView extends FrameLayout {
                 @Override public void onAnimationEnd(Animator animation) {
                   animatorRotation.removeAllListeners();
 
-                  btnNotify.animate()
-                      .scaleX(1)
-                      .scaleY(1)
-                      .rotation(0)
-                      .translationY(0)
-                      .setDuration(DURATION)
-                      .setInterpolator(new DecelerateInterpolator())
-                      .setListener(new AnimatorListenerAdapter() {
-                        @Override public void onAnimationEnd(Animator animation) {
-                          if (btnNotify != null) {
-                            btnNotify.setEnabled(true);
-                            btnNotify.animate().setListener(null);
+                  if (btnNotify != null) {
+                    btnNotify.animate()
+                        .scaleX(1)
+                        .scaleY(1)
+                        .rotation(0)
+                        .translationY(0)
+                        .setDuration(DURATION)
+                        .setInterpolator(new DecelerateInterpolator())
+                        .setListener(new AnimatorListenerAdapter() {
+                          @Override public void onAnimationEnd(Animator animation) {
+                            if (btnNotify != null) {
+                              btnNotify.setEnabled(true);
+                              btnNotify.animate().setListener(null);
+                            }
                           }
-                        }
 
-                        @Override public void onAnimationCancel(Animator animation) {
-                          if (btnNotify != null) btnNotify.animate().setListener(null);
-                        }
-                      });
+                          @Override public void onAnimationCancel(Animator animation) {
+                            if (btnNotify != null) btnNotify.animate().setListener(null);
+                          }
+                        });
+                  }
                 }
 
                 @Override public void onAnimationCancel(Animator animation) {

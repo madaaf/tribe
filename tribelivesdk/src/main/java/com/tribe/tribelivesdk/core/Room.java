@@ -40,18 +40,19 @@ public class Room {
   public static final String STATE_ERROR = "error";
 
   @StringDef({
-      MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE, MESSAGE_MESSAGE,
-      MESSAGE_NONE, MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED,
-      MESSAGE_INVITE_REMOVED
+      MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE,
+      MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_APP,
+      MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED, MESSAGE_INVITE_REMOVED
   }) public @interface WebSocketMessageType {
   }
 
-  public static final String MESSAGE_ERROR = "error";
+  public static final String MESSAGE_ERROR = "e";
   public static final String MESSAGE_JOIN = "joinR";
   public static final String MESSAGE_OFFER = "eventExchangeSdp";
   public static final String MESSAGE_CANDIDATE = "eventExchangeCandidate";
   public static final String MESSAGE_LEAVE = "eventLeave";
   public static final String MESSAGE_MESSAGE = "eventMessage";
+  public static final String MESSAGE_MEDIA_CONSTRAINTS = "eventUserMediaConfiguration";
   public static final String MESSAGE_NONE = "none";
   public static final String MESSAGE_APP = "app";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
@@ -126,6 +127,10 @@ public class Room {
         jsonToModel.onTribePeerMediaConfiguration().subscribe(tribePeerMediaConfiguration -> {
           webRTCClient.setMediaConfiguration(tribePeerMediaConfiguration);
         }));
+
+    subscriptions.add(jsonToModel.onTribeMediaConstraints().subscribe(tribeMediaConstraints -> {
+      webRTCClient.updateMediaConstraints(tribeMediaConstraints);
+    }));
   }
 
   public void initLocalStream(LocalPeerView localPeerView) {
@@ -252,6 +257,8 @@ public class Room {
       return MESSAGE_CANDIDATE;
     } else if (a.equals(MESSAGE_LEAVE)) {
       return MESSAGE_LEAVE;
+    } else if (a.equals(MESSAGE_MEDIA_CONSTRAINTS)) {
+      return MESSAGE_MEDIA_CONSTRAINTS;
     } else if (a.equals(MESSAGE_MESSAGE)) {
       return MESSAGE_MESSAGE;
     } else {

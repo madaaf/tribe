@@ -42,6 +42,7 @@ public class AccessPresenter implements Presenter {
   @Override public void onViewDetached() {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+    accessView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {
