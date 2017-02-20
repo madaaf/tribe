@@ -36,13 +36,13 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -106,8 +106,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @BindView(R.id.viewInviteLive) LiveInviteView viewInviteLive;
 
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
-
-  @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
 
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
@@ -426,40 +424,28 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-      if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE
-        NotificationPayload notificationPayload =
-            (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-        if (recipient != null && recipient instanceof Membership) {
-          Membership membership = (Membership) recipient;
-          notificationPayload.setShouldDisplayDrag(
-              !membership.getGroup().isGroupMember(notificationPayload.getUserId()));
-        }
+      LiveNotificationView liveNotificationView =
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
-        LiveNotificationView notificationView =
-            NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
-
-        if (notificationView != null) {
-          subscriptions.add(notificationView.onClickAction()
-              .doOnNext(action -> layoutNotifications.dismissNotification(notificationView))
-              .delay(500, TimeUnit.MILLISECONDS)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(action -> {
-                if (action.getIntent() != null) {
-                  navigator.navigateToIntent(LiveActivity.this, action.getIntent());
-                  finish();
-                } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
-                  TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
-                      notificationPayload.getUserDisplayName(),
-                      notificationPayload.getUserPicture(), false, null);
-                  invite(tribeGuest.getId());
-                  viewLive.addTribeGuest(tribeGuest);
-                }
-              }));
-
-          notificationView.show(LiveActivity.this, layoutNotifications);
-        }
-      }
+      subscriptions.add(liveNotificationView.onClickAction()
+          .delay(500, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(action -> {
+            if (action.getIntent() != null) {
+              navigator.navigateToIntent(LiveActivity.this, action.getIntent());
+              finish();
+            } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
+              TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
+                  notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
+                  false, null);
+              invite(tribeGuest.getId());
+              viewLive.addTribeGuest(tribeGuest);
+            }
+          }));
+      Alerter.create(LiveActivity.this, liveNotificationView).show();
     }
   }
 }

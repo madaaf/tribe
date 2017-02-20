@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import com.f2prateek.rx.preferences.Preference;
 import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
@@ -49,9 +48,9 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
-import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -60,7 +59,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,8 +109,6 @@ public class HomeActivity extends BaseActivity
   @BindView(android.R.id.content) ViewGroup rootView;
 
   @BindView(R.id.topBarContainer) TopBarContainer topBarContainer;
-
-  @BindView(R.id.layoutNotifications) LiveNotificationContainer layoutNotifications;
 
   @BindView(R.id.searchView) SearchView searchView;
 
@@ -571,57 +567,23 @@ public class HomeActivity extends BaseActivity
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-      if (!layoutNotifications.isExpanded()) { // TODO CHANGE THIS WITH A QUEUE
-        NotificationPayload notificationPayload =
-            (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-        LiveNotificationView notificationView =
-            NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-        if (notificationView != null) {
-          subscriptions.add(notificationView.onClickAction()
-              .doOnNext(action -> layoutNotifications.dismissNotification(notificationView))
-              .filter(action -> action.getIntent() != null)
-              .delay(500, TimeUnit.MILLISECONDS)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
+      LiveNotificationView liveNotificationView =
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
-          notificationView.show(HomeActivity.this, layoutNotifications);
-        }
+      if (liveNotificationView != null) {
+        subscriptions.add(liveNotificationView.onClickAction()
+            .filter(action -> action.getIntent() != null)
+            .delay(500, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
+
+        Alerter.create(HomeActivity.this, liveNotificationView).show();
       }
-
-      Alerter.create(HomeActivity.this)
-          .setTitle("Alert Title")
-          .setText("Alert text...")
-          .setActionButton1(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-              Log.e("SOO", "SOOO1");
-            }
-          })
-          .setActionButton2(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-              Log.e("SOO", "SOOO2");
-            }
-          })
-          .show();
     }
-  }
-
-  @OnClick(R.id.test) public void onClickTest() {
-    Alerter.create(this)
-        .setTitle("Alert Title")
-        .setText("Alert text...")
-        .setActionButton1(new View.OnClickListener() {
-          @Override public void onClick(View v) {
-            Log.e("SOO", "SOOO1");
-          }
-        })
-        .setActionButton2(new View.OnClickListener() {
-          @Override public void onClick(View v) {
-            Log.e("SOO", "SOOO2");
-          }
-        })
-        .show();
   }
 }

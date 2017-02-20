@@ -1,32 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_notification_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
     >
 
-  <FrameLayout
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/live_notification_item_height"
+  <LinearLayout
+      android:id="@+id/view_live_notification_container"
+      android:background="@android:color/black"
+      android:clickable="true"
+      android:orientation="vertical"
+      tools:visibility="visible"
+      style="@style/AlertStyle"
       >
 
-    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size_smaller"
-        android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/horizontal_margin_small"
-        android:background="@null"
-        app:avatarLiveType="connected"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="65dp"
-        android:layout_marginRight="65dp"
-        android:gravity="center"
-        style="@style/Body.Two.White"
-        />
-  </FrameLayout>
-</merge>
+        android:layout_gravity="top"
+        android:layout_marginEnd="@dimen/alerter_activity_horizontal_margin"
+        android:layout_marginStart="@dimen/alerter_activity_horizontal_margin"
+        android:layout_marginTop="@dimen/alerter_padding_default"
+        >
+
+      <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+          android:id="@+id/avatar"
+          android:layout_width="@dimen/avatar_size_medium"
+          android:layout_height="@dimen/avatar_size_medium"
+          android:layout_marginEnd="@dimen/alerter_activity_horizontal_margin"
+          tools:src="@android:drawable/ic_menu_info_details"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/tvTitle"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:textColor="@android:color/white"
+          tools:text="Title"
+          tools:visibility="visible"
+          />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/view_live_notification_action_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:orientation="vertical"
+        >
+
+    </LinearLayout>
+  </LinearLayout>
+
+</LinearLayout>

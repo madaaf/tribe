@@ -41,16 +41,6 @@
 
   </com.tribe.app.presentation.view.component.live.LiveContainer>
 
-  <com.tribe.app.presentation.view.widget.LiveNotificationContainer
-      android:id="@+id/layoutNotifications"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="top"
-      android:visibility="gone"
-      >
-
-  </com.tribe.app.presentation.view.widget.LiveNotificationContainer>
-
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/remotePeerAdded"
       android:layout_width="match_parent"

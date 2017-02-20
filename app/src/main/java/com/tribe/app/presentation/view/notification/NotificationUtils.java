@@ -10,7 +10,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 
 /**
- * Created by tiago on 01/02/2017.
+ * Created by madaaflak on 20/02/2017.
  */
 
 public class NotificationUtils {
@@ -23,7 +23,12 @@ public class NotificationUtils {
       NotificationPayload notificationPayload) {
     boolean isGrid = context instanceof HomeActivity;
 
-    LiveNotificationView notificationView = null;
+    if (notificationPayload == null) {
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      return builder.build();
+    }
+
+    LiveNotificationView liveNotificationView = null;
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
         && !isGrid) {
@@ -31,7 +36,7 @@ public class NotificationUtils {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder = addLiveActions(context, builder, notificationPayload);
       builder.sound(SoundManager.FRIEND_ONLINE);
-      notificationView = builder.build();
+      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         && StringUtils.isEmpty(notificationPayload.getGroupId())) {
       // A friend entered live - 1o1
@@ -44,13 +49,13 @@ public class NotificationUtils {
         builder = addLiveActions(context, builder, notificationPayload);
       }
 
-      notificationView = builder.build();
+      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         && !StringUtils.isEmpty(notificationPayload.getGroupId())) {
       // A friend entered live - Group
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder = addHangLiveAction(context, builder, notificationPayload);
-      notificationView = builder.build();
+      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
       // A friend buzzing you in a group
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
@@ -65,7 +70,7 @@ public class NotificationUtils {
         builder = addHangLiveAction(context, builder, notificationPayload);
       }
       builder.sound(SoundManager.WIZZ);
-      notificationView = builder.build();
+      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       // A friend added you
@@ -78,10 +83,10 @@ public class NotificationUtils {
       }
 
       builder.sound(SoundManager.FRIEND_ONLINE);
-      notificationView = builder.build();
+      liveNotificationView = builder.build();
     }
 
-    return notificationView;
+    return liveNotificationView;
   }
 
   private static LiveNotificationView.Builder getCommonBuilder(Context context,

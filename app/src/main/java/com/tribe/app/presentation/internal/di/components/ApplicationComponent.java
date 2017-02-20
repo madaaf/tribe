@@ -52,7 +52,6 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDelegate;
-import com.tribe.app.presentation.view.notification.Alert;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
@@ -77,10 +76,9 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
-import com.tribe.app.presentation.view.widget.LiveNotificationContainer;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
@@ -164,8 +162,6 @@ public interface ApplicationComponent {
 
   void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
 
-  void inject(LiveNotificationView liveNotificationView);
-
   void inject(LiveView liveView);
 
   void inject(LiveContainer liveContainer);
@@ -178,13 +174,11 @@ public interface ApplicationComponent {
 
   void inject(LiveRowView liveRowView);
 
-  void inject(LiveNotificationContainer liveNotificationContainer);
-
   void inject(RecipientListAdapterDelegate recipientListAdapterDelegate);
 
   void inject(FriendMemberAdapterDelegate friendMemberAdapterDelegate);
 
-  void inject(Alert alertView);
+  void inject(LiveNotificationView liveNotificationView);
 
   // JOBS
   void inject(BaseJob baseJob);
