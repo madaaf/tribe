@@ -64,6 +64,7 @@ public class Room {
   private TribeLiveOptions options;
   private @Room.RoomState String state;
   private JsonToModel jsonToModel;
+  private boolean hasJoined = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -99,6 +100,8 @@ public class Room {
         webRTCClient.addPeerConnection(
             new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
       }
+
+      hasJoined = true;
     }).delay(1000, TimeUnit.MILLISECONDS).subscribe(joinedRoom -> {
       sendToPeers(webRTCClient.getJSONMedia(), false);
     }));
@@ -128,9 +131,11 @@ public class Room {
           webRTCClient.setMediaConfiguration(tribePeerMediaConfiguration);
         }));
 
-    subscriptions.add(jsonToModel.onTribeMediaConstraints().subscribe(tribeMediaConstraints -> {
-      webRTCClient.updateMediaConstraints(tribeMediaConstraints);
-    }));
+    subscriptions.add(jsonToModel.onTribeMediaConstraints()
+        .filter(tribeMediaConstraints -> hasJoined)
+        .subscribe(tribeMediaConstraints -> {
+          webRTCClient.updateMediaConstraints(tribeMediaConstraints);
+        }));
   }
 
   public void initLocalStream(LocalPeerView localPeerView) {
@@ -224,6 +229,8 @@ public class Room {
   }
 
   public void leaveRoom() {
+    hasJoined = false;
+    
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
     options = null;

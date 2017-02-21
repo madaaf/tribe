@@ -245,22 +245,33 @@ import timber.log.Timber;
       userCache.updateGroupRealmList(groupRealmList);
     }));
 
-    subscriptions.add(jsonToModel.onCreatedFriendship().subscribe(friendshipRealm -> {
-      userCache.addFriendship(friendshipRealm);
-    }));
+    subscriptions.add(jsonToModel.onCreatedFriendship()
+        .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+        .flatMap(friendshipId -> {
+          String ids = "\"" + friendshipId + "\"";
+          final String requestFriendshipsInfos =
+              getApplicationContext().getString(R.string.friendships_details, ids,
+                  getApplicationContext().getString(R.string.friendshipfragment_info),
+                  getApplicationContext().getString(R.string.userfragment_infos));
+          return this.tribeApi.getUserInfos(requestFriendshipsInfos);
+        }, (s, userRealmInfos) -> userRealmInfos)
+        .subscribe(userRealmInfos -> {
+          userCache.addFriendship(userRealmInfos.getFriendships().first());
+        }));
 
     subscriptions.add(jsonToModel.onCreatedMembership()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .flatMap(groupId -> {
-          final String requestCreateMembership =
-              getApplicationContext().getString(R.string.create_membership, groupId,
+        .flatMap(membershipId -> {
+          String ids = "\"" + membershipId + "\"";
+          final String requestMembershipInfos =
+              getApplicationContext().getString(R.string.membership_infos, ids,
                   getApplicationContext().getString(R.string.membershipfragment_info),
                   getApplicationContext().getString(R.string.groupfragment_info_members),
                   getApplicationContext().getString(R.string.userfragment_infos));
-          return this.tribeApi.createMembership(requestCreateMembership);
-        }, (s, membershipRealm) -> membershipRealm)
-        .subscribe(membershipRealm -> {
-          userCache.addMembership(membershipRealm);
+          return this.tribeApi.getUserInfos(requestMembershipInfos);
+        }, (s, userRealmInfos) -> userRealmInfos)
+        .subscribe(userRealmInfos -> {
+          userCache.addMembership(userRealmInfos.getMemberships().first());
         }));
 
     subscriptions.add(jsonToModel.onRemovedFriendship().subscribe(friendshipRealm -> {

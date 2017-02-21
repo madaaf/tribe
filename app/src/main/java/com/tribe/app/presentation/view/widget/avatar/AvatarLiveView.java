@@ -78,6 +78,7 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
 
     if (getWidth() != 0 && getHeight() != 0) {
       refactorSize();
+      invalidate();
     }
   }
 
@@ -116,8 +117,9 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
     avatar.setLayoutParams(params);
 
     params = (MarginLayoutParams) imgInd.getLayoutParams();
-    params.width = avatar.getRadius() * 2;
-    params.height = avatar.getRadius() * 2;
+    params.width = (int) (getWidth() * 0.2f * 2);
+    params.height = params.width;
+
     imgInd.setLayoutParams(params);
   }
 }

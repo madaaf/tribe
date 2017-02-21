@@ -151,9 +151,11 @@ import static android.R.attr.id;
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
     streamManager.updateMediaConstraints(tribeMediaConstraints);
 
-    for (TribePeerConnection peerConnection : peerConnections.values()) {
-      if (peerConnection.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
-        peerConnection.createOffer();
+    if (tribeMediaConstraints.isShouldCreateOffer()) {
+      for (TribePeerConnection peerConnection : peerConnections.values()) {
+        if (peerConnection.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+          peerConnection.createOffer();
+        }
       }
     }
   }

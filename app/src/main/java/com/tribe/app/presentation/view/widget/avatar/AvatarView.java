@@ -131,8 +131,7 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
     }
   }
 
-  @Override
-  public void loadGroupAvatar(String url, String previousUrl, String groupId,
+  @Override public void loadGroupAvatar(String url, String previousUrl, String groupId,
       List<String> membersPic) {
     this.url = url;
     this.membersPic = membersPic;
@@ -195,7 +194,7 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
   }
 
   public int getRadius() {
-    return (int) (getMeasuredWidth() * 0.2f);
+    return (int) (getWidth() * 0.2f);
   }
 
   public String getUrl() {

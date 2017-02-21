@@ -47,6 +47,7 @@ public class LiveInviteView extends FrameLayout {
 
   // VARIABLES
   private LiveInviteLayoutManager layoutManager;
+  private boolean dragging = false;
 
   // RESOURCES
 
@@ -142,11 +143,15 @@ public class LiveInviteView extends FrameLayout {
   }
 
   public void renderFriendshipList(List<Friendship> friendshipList) {
-    adapter.setItems(new ArrayList<>(friendshipList));
+    if (!dragging) adapter.setItems(new ArrayList<>(friendshipList));
   }
 
   public void removeItemAtPosition(int position) {
     adapter.removeItem(position);
+  }
+
+  public void setDragging(boolean dragging) {
+    this.dragging = dragging;
   }
 
   //////////////////////

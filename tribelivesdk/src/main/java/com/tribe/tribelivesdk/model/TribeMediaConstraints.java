@@ -7,6 +7,7 @@ package com.tribe.tribelivesdk.model;
 public class TribeMediaConstraints {
 
   private int maxWidth, maxHeight, minFps, maxFps;
+  private boolean shouldCreateOffer = false;
 
   public TribeMediaConstraints() {
   }
@@ -41,6 +42,14 @@ public class TribeMediaConstraints {
 
   public void setMinFps(int minFps) {
     this.minFps = minFps;
+  }
+
+  public boolean isShouldCreateOffer() {
+    return shouldCreateOffer;
+  }
+
+  public void setShouldCreateOffer(boolean shouldCreateOffer) {
+    this.shouldCreateOffer = shouldCreateOffer;
   }
 
   @Override public String toString() {

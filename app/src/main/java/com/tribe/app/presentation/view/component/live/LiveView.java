@@ -545,6 +545,11 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  public void setCameraEnabled(boolean enable) {
+    if (enable) viewLocalLive.clickEnableCamera();
+    else viewLocalLive.clickDisableCamera();
+  }
+
   ////////////////
   //  PRIVATE   //
   ////////////////

@@ -113,7 +113,7 @@ public class TileView extends SquareCardView {
   private int cardRadiusMin, cardRadiusMax, diffCardRadius, cardElevationMin, cardElevationMax,
       diffCardElevation, rotationMin, rotationMax, diffRotation, minSize, maxSize, sizeDiff,
       rotationBG1Min, rotationBG1Max, diffRotationBG1, rotationBG2Min, rotationBG2Max,
-      diffRotationBG2, smallAvatarSize;
+      diffRotationBG2, sizeAvatarBig;
   private float alphaTilesMin, alphaTilesMax, alphaTilesDiff;
 
   // VARIABLES
@@ -227,7 +227,7 @@ public class TileView extends SquareCardView {
     rotationBG2Min = ROTATION_BG_2_MIN;
     rotationBG2Max = ROTATION_BG_2_MAX;
     diffRotationBG2 = rotationBG2Max - rotationBG2Min;
-    smallAvatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_medium);
+    sizeAvatarBig = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_big);
   }
 
   private void initSprings() {
@@ -478,13 +478,10 @@ public class TileView extends SquareCardView {
     animatorSecond.playTogether(
         AnimationUtils.getHeightAnimator(this, getHeight(), viewLiveRow.getHeight()),
         AnimationUtils.getWidthAnimator(this, getWidth(), viewLiveRow.getWidth()),
-        AnimationUtils.getHeightAnimator(viewBG, viewBG.getHeight(), viewLiveRow.getHeight()),
-        AnimationUtils.getWidthAnimator(viewBG, viewBG.getWidth(), viewLiveRow.getWidth()),
         AnimationUtils.getLeftMarginAnimator(this, viewLiveRow.getLeft()),
         AnimationUtils.getTopMarginAnimator(this, viewLiveRow.getTop()),
-        AnimationUtils.getRotationAnimator(viewBG, 0),
-        AnimationUtils.getRotationAnimator(avatar, 0), AnimationUtils.getRadiusAnimator(this, 0),
-        AnimationUtils.getSizeAnimator(avatar, smallAvatarSize),
+        AnimationUtils.getRotationAnimator(this, 0),
+        AnimationUtils.getSizeAnimator(avatar, sizeAvatarBig),
         AnimationUtils.getScaleAnimator(avatar, 1));
 
     if (viewShadowAvatar != null) {
@@ -495,6 +492,10 @@ public class TileView extends SquareCardView {
     animatorFinal.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         onEndDrop.onNext(null);
+      }
+
+      @Override public void onAnimationCancel(Animator animation) {
+        if (animatorFinal != null) animatorFinal.removeAllListeners();
       }
     });
     animatorFinal.start();

@@ -363,6 +363,37 @@
         %4$s
     </string>
 
+    <string name="membership.infos" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                memberships(ids: [%1$s]) {
+                    ...MembershipInfos
+                }
+            }
+        }
+
+        %2$s
+        %3$s
+        %4$s
+    </string>
+
+    <string name="friendships.details" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                friendships(ids: [%1$s]) {
+                    ...FriendshipInfos
+                }
+            }
+        }
+
+        %2$s
+        %3$s
+    </string>
+
     <string name="boostrap.support" translatable="false">
         mutation {
             bootstrapSupport

@@ -43,8 +43,8 @@ import timber.log.Timber;
   private PublishSubject<String> onRemovedLive = PublishSubject.create();
   private PublishSubject<String> onCreatedMembership = PublishSubject.create();
   private PublishSubject<String> onRemovedMembership = PublishSubject.create();
-  private PublishSubject<FriendshipRealm> onCreatedFriendship = PublishSubject.create();
-  private PublishSubject<FriendshipRealm> onRemovedFriendship = PublishSubject.create();
+  private PublishSubject<String> onCreatedFriendship = PublishSubject.create();
+  private PublishSubject<String> onRemovedFriendship = PublishSubject.create();
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
 
@@ -133,15 +133,16 @@ import timber.log.Timber;
               Timber.d("Friendship created : " + entry.getValue().toString());
               FriendshipRealm friendshipRealm =
                   gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
-              //onCreatedFriendship.onNext(friendshipRealm);
+              onCreatedFriendship.onNext(friendshipRealm.getId());
             } else if (entry.getKey().contains(WSService.FRIENDSHIP_REMOVED_SUFFIX)) {
               Timber.d("Friendship removed : " + entry.getValue().toString());
               FriendshipRealm friendshipRealm =
                   gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
-              onRemovedFriendship.onNext(friendshipRealm);
+              onRemovedFriendship.onNext(friendshipRealm.getId());
             } else if (entry.getKey().contains(WSService.MEMBERSHIP_CREATED_SUFFIX)) {
               Timber.d("Membership created : " + entry.getValue().toString());
-              //onCreatedMembership.onNext(entry.getValue().getAsJsonObject().get("group_id").getAsString());
+              onCreatedMembership.onNext(
+                  entry.getValue().getAsJsonObject().get("id").getAsString());
             } else if (entry.getKey().contains(WSService.MEMBERSHIP_REMOVED_SUFFIX)) {
               Timber.d("Membership removed : " + entry.getValue().toString());
               onRemovedMembership.onNext(
@@ -193,11 +194,11 @@ import timber.log.Timber;
     return onRemovedMembership;
   }
 
-  public Observable<FriendshipRealm> onCreatedFriendship() {
+  public Observable<String> onCreatedFriendship() {
     return onCreatedFriendship;
   }
 
-  public Observable<FriendshipRealm> onRemovedFriendship() {
+  public Observable<String> onRemovedFriendship() {
     return onRemovedFriendship;
   }
 

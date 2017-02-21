@@ -123,7 +123,7 @@ public class JsonToModel {
         if (r.has("userMediaConfiguration")) {
           Timber.d("Media constraints in join received");
           JSONObject jo = r.getJSONObject("userMediaConfiguration");
-          //computeMediaConstraints(jo);
+          computeMediaConstraints(jo, false);
         }
       } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
 
@@ -137,7 +137,7 @@ public class JsonToModel {
 
         Timber.d("User configuration message received");
         JSONObject d = object.getJSONObject("d");
-        computeMediaConstraints(d);
+        computeMediaConstraints(d, true);
       } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
 
         JSONObject d = object.getJSONObject("d");
@@ -223,7 +223,8 @@ public class JsonToModel {
     return null;
   }
 
-  private void computeMediaConstraints(JSONObject jo) throws JSONException {
+  private void computeMediaConstraints(JSONObject jo, boolean shouldCreateOffer)
+      throws JSONException {
     TribeMediaConstraints tribeUserConfiguration = new TribeMediaConstraints();
     JSONObject video = jo.getJSONObject("video");
     JSONObject fps = video.getJSONObject("frameRate");
@@ -235,6 +236,7 @@ public class JsonToModel {
     tribeUserConfiguration.setMaxHeight(maxHeight);
     tribeUserConfiguration.setMaxFps(maxFps);
     tribeUserConfiguration.setMinFps(minFps);
+    tribeUserConfiguration.setShouldCreateOffer(shouldCreateOffer);
     onTribeMediaConstraints.onNext(tribeUserConfiguration);
   }
 

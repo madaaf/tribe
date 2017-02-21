@@ -18,7 +18,6 @@ import android.view.TextureView;
 import java.util.concurrent.CountDownLatch;
 import org.webrtc.EglBase;
 import org.webrtc.EglRenderer;
-import org.webrtc.GlRectDrawer;
 import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
 import org.webrtc.ThreadUtils;
@@ -78,7 +77,8 @@ public class TextureViewRenderer extends TextureView
    * reinitialize the renderer after a previous init()/release() cycle.
    */
   public void init(EglBase.Context sharedContext, RendererCommon.RendererEvents rendererEvents) {
-    init(sharedContext, rendererEvents, EglBase.CONFIG_PLAIN, new GlRectDrawer());
+    GlRectDrawer glRectDrawer = new GlRectDrawer();
+    init(sharedContext, rendererEvents, EglBase.CONFIG_PLAIN, glRectDrawer);
   }
 
   /**

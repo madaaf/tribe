@@ -14,6 +14,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
+import com.jenzz.appstate.AppStateListener;
+import com.jenzz.appstate.AppStateMonitor;
+import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -56,7 +59,7 @@ import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
-public class LiveActivity extends BaseActivity implements LiveMVPView {
+public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
   private static final String EXTRA_RECIPIENT = "EXTRA_RECIPIENT";
   private static final String EXTRA_RECIPIENT_ID = "EXTRA_RECIPIENT_ID";
@@ -118,6 +121,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
   private int color;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
+  private AppStateMonitor appStateMonitor;
 
   // RESOURCES
   // OBSERVABLES
@@ -134,6 +138,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     init();
     initResources();
     initPermissions();
+    initAppState();
   }
 
   @Override protected void onStart() {
@@ -169,6 +174,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
 
   @Override protected void onDestroy() {
     viewLive.onDestroy();
+
+    appStateMonitor.removeListener(this);
+    appStateMonitor.stop();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -240,6 +248,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
         .subscribe(granted -> {
 
         }));
+  }
+
+  private void initAppState() {
+    appStateMonitor = RxAppStateMonitor.create(getApplication());
+    appStateMonitor.addListener(this);
+    appStateMonitor.start();
   }
 
   private void displayStartFirstPopupTutorial() {
@@ -393,6 +407,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView {
     if (recipient instanceof Friendship) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());
     }
+  }
+
+  @Override public void onAppDidEnterForeground() {
+    Timber.d("Enter foreground");
+    if (viewLive != null) viewLive.setCameraEnabled(true);
+  }
+
+  @Override public void onAppDidEnterBackground() {
+    Timber.d("Enter background");
+    if (viewLive != null) viewLive.setCameraEnabled(false);
   }
 
   /////////////////

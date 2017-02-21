@@ -53,6 +53,7 @@ public class LiveContainer extends FrameLayout {
   private final int SCROLL_TOLERANCE = 10;
   private final int LONG_PRESS = 80;
   private final int DRAG_END_DELAY = 300;
+  private final int DRAG_END_DROP_DELAY = 450;
   private final int DURATION = 300;
 
   private static final SpringConfig ORIGAMI_SPRING_CONFIG =
@@ -374,15 +375,17 @@ public class LiveContainer extends FrameLayout {
     if (currentTileView != null) {
       if (draggedTileView != null) {
         if (!dropEnabled) {
+          viewInviteLive.setDragging(false);
+
           endTileDrag();
           AnimationUtils.animateLeftMargin(draggedTileView, tileLocationStart[0], DRAG_END_DELAY,
               new DecelerateInterpolator());
           AnimationUtils.animateTopMargin(draggedTileView, tileLocationStart[1] - statusBarHeight,
               DRAG_END_DELAY, new DecelerateInterpolator());
-          prepareRemoveTileForDrag();
+          prepareRemoveTileForDrag(DRAG_END_DELAY);
         } else {
           onDropped.onNext(draggedTileView);
-          prepareRemoveTileForDrag();
+          prepareRemoveTileForDrag(DRAG_END_DELAY);
         }
       } else {
         clearCurrentTile();
@@ -407,6 +410,8 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void createTileForDrag() {
+    viewInviteLive.setDragging(true);
+
     draggedTileView = new TileView(getContext(), currentTileView.getType());
     draggedTileView.setBackground(currentTileView.getPosition());
     draggedTileView.setInfo(currentTileView.getRecipient());
@@ -431,8 +436,8 @@ public class LiveContainer extends FrameLayout {
     onEndDrag.onNext(null);
   }
 
-  private void prepareRemoveTileForDrag() {
-    timerEndDrag = Observable.timer(DRAG_END_DELAY, TimeUnit.MILLISECONDS)
+  private void prepareRemoveTileForDrag(int delay) {
+    timerEndDrag = Observable.timer(delay, TimeUnit.MILLISECONDS)
         .onBackpressureDrop()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
