@@ -170,12 +170,12 @@ public class BuzzView extends FrameLayout {
             animatorRotation.setRepeatCount(ValueAnimator.INFINITE);
             animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
             animatorRotation.start();
-            Observable.timer(1000, TimeUnit.MILLISECONDS)
+            subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                   animatorRotation.cancel();
                   hideBolts(view);
-                });
+                }));
           }
         })
         .start();

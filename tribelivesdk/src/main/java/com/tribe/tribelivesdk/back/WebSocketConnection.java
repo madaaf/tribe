@@ -145,6 +145,7 @@ import timber.log.Timber;
 
         @Override public void onPingFrame(WebSocket websocket, WebSocketFrame frame)
             throws Exception {
+          webSocketClient.sendPong("{}".getBytes());
         }
 
         @Override public void onPongFrame(WebSocket websocket, WebSocketFrame frame)
@@ -234,8 +235,8 @@ import timber.log.Timber;
 
     webSocketClient.connectAsynchronously();
     webSocketClient.setAutoFlush(true);
-    webSocketClient.setPongInterval(60 * 1000); // 60 SECONDS
-    webSocketClient.setPongPayloadGenerator(() -> "{}".getBytes());
+    webSocketClient.setPingInterval(5 * 1000); // 60 SECONDS
+    webSocketClient.setPingPayloadGenerator(() -> "{}".getBytes());
   }
 
   private boolean isConnected() {

@@ -70,6 +70,8 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
       }
     });
 
+    setBackground(null);
+
     setWillNotDraw(false);
   }
 

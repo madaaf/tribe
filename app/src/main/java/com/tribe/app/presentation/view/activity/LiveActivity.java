@@ -141,6 +141,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initAppState();
   }
 
+  @Override protected void onNewIntent(Intent intent) {
+    Timber.d("onNewIntent : " + intent.getExtras().keySet());
+  }
+
   @Override protected void onStart() {
     super.onStart();
     livePresenter.onViewAttached(this);
@@ -264,9 +268,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           getString(R.string.tips_startfirstlive_action1), null)
           .filter(x -> x == true)
           .subscribe(a -> {
-            Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+            subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial());
+                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()));
           }));
       stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
     }
@@ -446,8 +450,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(action -> {
                 if (action.getIntent() != null) {
+                  viewLive.onLeave();
                   navigator.navigateToIntent(LiveActivity.this, action.getIntent());
-                  finish();
                 } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                   TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                       notificationPayload.getUserDisplayName(),

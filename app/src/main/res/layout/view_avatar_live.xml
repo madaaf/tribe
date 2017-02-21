@@ -18,7 +18,8 @@
       android:layout_height="wrap_content"
       android:layout_alignBottom="@id/avatarView"
       android:layout_alignRight="@id/avatarView"
-      android:src="@drawable/picto_live"
+      android:background="@null"
       android:scaleType="fitXY"
+      android:src="@drawable/picto_live"
       />
 </merge>

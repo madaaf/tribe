@@ -10,7 +10,9 @@ import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
@@ -23,9 +25,10 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.RoundedCornerLayout;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
@@ -36,7 +39,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by tiago on 17/02/2016.
  */
-public class AvatarView extends RoundedCornerLayout implements Avatar {
+public class AvatarView extends LinearLayout implements Avatar {
 
   @IntDef({ LIVE, REGULAR }) public @interface AvatarType {
   }
@@ -87,6 +90,9 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
 
     setWillNotDraw(false);
     a.recycle();
+
+    setBackground(null);
+    setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
     transparentPaint = new Paint();
     transparentPaint.setAntiAlias(true);
@@ -146,6 +152,7 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
 
         Glide.with(getContext())
             .load(groupAvatarFile)
+            .bitmapTransform(new CropCircleTransformation(getContext()))
             .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
             .crossFade()
             .into(imgAvatar);
@@ -173,24 +180,14 @@ public class AvatarView extends RoundedCornerLayout implements Avatar {
         getContext().getString(R.string.no_profile_picture_url))) {
       setTag(R.id.profile_picture, url);
 
-      Glide.with(getContext())
-          .load(url)
-          .override(avatarSize, avatarSize)
-          .error(R.drawable.picto_placeholder_avatar)
-          .centerCrop()
-          .crossFade()
-          .into(imgAvatar);
+      GlideUtils.load(getContext(), url, avatarSize, imgAvatar);
     } else {
       loadPlaceholder();
     }
   }
 
   private void loadPlaceholder() {
-    Glide.with(getContext())
-        .load(R.drawable.picto_placeholder_avatar)
-        .override(avatarSize, avatarSize)
-        .crossFade()
-        .into(imgAvatar);
+    GlideUtils.load(getContext(), avatarSize, imgAvatar);
   }
 
   public int getRadius() {
