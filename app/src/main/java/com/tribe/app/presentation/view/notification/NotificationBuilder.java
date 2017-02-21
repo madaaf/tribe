@@ -142,17 +142,6 @@ import javax.inject.Singleton;
     return pendingIntent;
   }
 
-  //private Notification buildSummary(Message message, String groupKey) {
-  //  return new NotificationCompat.Builder(context).setContentTitle("Nougat Messenger")
-  //      .setContentText("You have unread messages")
-  //      .setWhen(message.timestamp())
-  //      .setSmallIcon(R.drawable.ic_message)
-  //      .setShowWhen(true)
-  //      .setGroup(groupKey)
-  //      .setGroupSummary(true)
-  //      .build();
-  //}
-
   private int getNotificationId(NotificationPayload payload) {
     return payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) ? 0
         : (int) System.currentTimeMillis();

@@ -29,6 +29,9 @@ public class NotificationPayload implements Serializable {
   private String group_picture;
   private boolean shouldDisplayDrag = true;
 
+
+
+
   public void setUserId(String userId) {
     this.user_id = userId;
   }
