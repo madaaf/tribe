@@ -279,7 +279,7 @@
   </style>
 
   <style name="Points.Small" parent="Points">
-    <item name="android:textSize">20sp</item>
+    <item name="android:textSize">15sp</item>
   </style>
 
   <style name="Points.Small.White" parent="Points.Small">

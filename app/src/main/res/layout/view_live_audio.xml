@@ -11,15 +11,15 @@
 
   <ImageView
       android:id="@+id/imgAvatar"
-      android:layout_width="@dimen/avatar_size_medium"
-      android:layout_height="@dimen/avatar_size_medium"
+      android:layout_width="@dimen/avatar_size_big"
+      android:layout_height="@dimen/avatar_size_big"
       android:layout_gravity="center"
       android:background="@null"
       />
 
   <View
-      android:layout_width="@dimen/avatar_size_medium"
-      android:layout_height="@dimen/avatar_size_medium"
+      android:layout_width="@dimen/avatar_size_big"
+      android:layout_height="@dimen/avatar_size_big"
       android:layout_gravity="center"
       android:background="@drawable/shape_oval_black40"
       />

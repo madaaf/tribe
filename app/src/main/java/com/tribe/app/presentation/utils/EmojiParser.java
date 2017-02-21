@@ -60,6 +60,7 @@ public class EmojiParser {
     IEmojiMap.put(":love_letter:", "\uD83D\uDC8C");
     IEmojiMap.put(":x:", "\u274C");
     IEmojiMap.put(":honeybee:", "\uD83D\uDC1D");
+    IEmojiMap.put(":loud_sound:", "\uD83D\uDD0A");
   }
 
   /**

@@ -22,11 +22,11 @@
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="center"
-        android:src="@drawable/picto_camera_disabled"
-        android:scaleType="centerInside"
+        android:alpha="1"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
-        android:alpha="1"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_camera_disabled"
         />
 
     <ImageView
@@ -34,11 +34,11 @@
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="center"
-        android:src="@drawable/picto_camera_enabled"
-        android:scaleType="centerInside"
+        android:alpha="0"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
-        android:alpha="0"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_camera_enabled"
         android:visibility="gone"
         />
 
@@ -48,13 +48,24 @@
       android:id="@+id/btnCameraSwitch"
       android:layout_width="@dimen/nav_icon_size"
       android:layout_height="@dimen/nav_icon_size"
-      android:src="@drawable/picto_camera_switch"
-      android:scaleType="centerInside"
       android:layout_gravity="bottom|right"
       android:layout_margin="5dp"
       android:background="@drawable/selectable_button_oval_light"
       android:clickable="true"
+      android:scaleType="centerInside"
       android:scaleX="0"
       android:scaleY="0"
+      android:src="@drawable/picto_camera_switch"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLowConnectivity"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/top_bar_height_small"
+      android:layout_gravity="top|center_horizontal"
+      android:background="@color/red"
+      android:gravity="center"
+      android:maxLines="1"
+      style="@style/Points.Small.White"
       />
 </merge>

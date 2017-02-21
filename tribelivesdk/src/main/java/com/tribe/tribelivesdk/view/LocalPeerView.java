@@ -2,13 +2,16 @@ package com.tribe.tribelivesdk.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import org.webrtc.VideoRenderer;
 import rx.Observable;
+import rx.subjects.PublishSubject;
 
 public class LocalPeerView extends PeerView {
 
   private Observable<Void> onSwitchCamera;
   private Observable<Boolean> onEnableCamera;
+  private PublishSubject<TribePeerMediaConfiguration> shouldSwitchMode = PublishSubject.create();
 
   public LocalPeerView(Context context) {
     super(context);
@@ -39,6 +42,10 @@ public class LocalPeerView extends PeerView {
     onSwitchCamera = obs;
   }
 
+  public void shouldSwitchMode(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+    shouldSwitchMode.onNext(tribePeerMediaConfiguration);
+  }
+
   /////////////////
   // OBSERVABLES //
   /////////////////
@@ -49,5 +56,9 @@ public class LocalPeerView extends PeerView {
 
   public Observable<Void> onSwitchCamera() {
     return onSwitchCamera;
+  }
+
+  public Observable<TribePeerMediaConfiguration> onShouldSwitchMode() {
+    return shouldSwitchMode;
   }
 }

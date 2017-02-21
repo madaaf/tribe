@@ -8,6 +8,7 @@ public class TribePeerMediaConfiguration {
 
   private TribeSession session;
   private boolean audioEnabled = true, videoEnabled = true;
+  private boolean lowConnectivityMode = false;
 
   public TribePeerMediaConfiguration(TribeSession tribeSession) {
     session = tribeSession;
@@ -35,5 +36,13 @@ public class TribePeerMediaConfiguration {
 
   public boolean isVideoEnabled() {
     return videoEnabled;
+  }
+
+  public boolean isLowConnectivityMode() {
+    return lowConnectivityMode;
+  }
+
+  public void setLowConnectivityMode(boolean lowConnectivityMode) {
+    this.lowConnectivityMode = lowConnectivityMode;
   }
 }

@@ -208,6 +208,12 @@ public class TribeLiveLocalStream {
       return;
     }
 
+    if (!enabled && capturing) {
+      stopVideoCapture();
+    } else if (enabled && !capturing) {
+      startVideoCapture();
+    }
+
     videoTrack.setEnabled(enabled);
   }
 

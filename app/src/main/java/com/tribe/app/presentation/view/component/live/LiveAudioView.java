@@ -67,7 +67,7 @@ public class LiveAudioView extends FrameLayout {
   }
 
   private void initResources() {
-    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
+    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_big);
   }
 
   protected ApplicationComponent getApplicationComponent() {

@@ -40,6 +40,8 @@ public class JsonToModel {
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
   private PublishSubject<TribeMediaConstraints> onTribeMediaConstraints = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchMediaMode =
+      PublishSubject.create();
 
   public void setOptions(TribeLiveOptions options) {
     this.options = options;
@@ -102,7 +104,6 @@ public class JsonToModel {
 
         TribeJoinRoom tribeJoinRoom;
 
-        // TODO handle userMediaConfiguration
         JSONObject r = object.getJSONObject("d");
         Timber.d("Join response received : " + r.toString());
         JSONArray jsonArray = r.getJSONArray("sessions");
@@ -138,6 +139,16 @@ public class JsonToModel {
         Timber.d("User configuration message received");
         JSONObject d = object.getJSONObject("d");
         computeMediaConstraints(d, true);
+      } else if (localWebSocketType.equals(Room.MESSAGE_SWITCH_MODE)) {
+
+        Timber.d("Receiving switch mode (low connectivity)");
+        TribePeerMediaConfiguration peerMediaConfiguration = new TribePeerMediaConfiguration(
+            new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
+        JSONObject d = object.getJSONObject("d");
+        peerMediaConfiguration.setAudioEnabled(d.getBoolean("audi"));
+        peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
+        peerMediaConfiguration.setLowConnectivityMode(true);
+        onShouldSwitchMediaMode.onNext(peerMediaConfiguration);
       } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
 
         JSONObject d = object.getJSONObject("d");
@@ -278,5 +289,9 @@ public class JsonToModel {
 
   public Observable<TribeMediaConstraints> onTribeMediaConstraints() {
     return onTribeMediaConstraints;
+  }
+
+  public Observable<TribePeerMediaConfiguration> onShouldSwitchMediaMode() {
+    return onShouldSwitchMediaMode;
   }
 }

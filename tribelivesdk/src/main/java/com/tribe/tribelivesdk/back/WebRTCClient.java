@@ -148,6 +148,13 @@ import static android.R.attr.id;
     streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
   }
 
+  public void setLocalMediaConfiguation(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+    Timber.d("setMediaConfiguration for peerId : " + tribePeerMediaConfiguration.getSession()
+        .getPeerId());
+
+    streamManager.setLocalMediaConfiguration(tribePeerMediaConfiguration);
+  }
+
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
     streamManager.updateMediaConstraints(tribeMediaConstraints);
 

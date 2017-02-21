@@ -14,7 +14,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -108,7 +107,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private ObjectAnimator countDownAnimator;
 
   // RESOURCES
-  private int timeJoinRoom, strokeWidth, avatarSize;
+  private int timeJoinRoom, strokeWidth;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -160,7 +159,6 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private void initResources() {
     timeJoinRoom = getContext().getResources().getInteger(R.integer.time_join_room);
     strokeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.stroke_width_ring);
-    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_big);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -245,13 +243,12 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
     countDownAnimator.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
-        ValueAnimator animatorScaleUp =
-            ValueAnimator.ofInt(avatar.getWidth(), (int) (avatar.getWidth() * SCALE_AVATAR));
+        ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
         animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
         animatorScaleUp.setDuration(DURATION_FAST);
-        animatorScaleUp.addUpdateListener(animationSize -> {
-          int value = (int) animationSize.getAnimatedValue();
-          updateSizeWithValue(value);
+        animatorScaleUp.addUpdateListener(animationScaleUp -> {
+          float value = (float) animationScaleUp.getAnimatedValue();
+          updateScaleWithValue(value);
         });
         animatorScaleUp.start();
 
@@ -291,13 +288,13 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private void animateScaleAvatar() {
     animatorScaleAvatar = new AnimatorSet();
 
-    animatorScaleUp = ValueAnimator.ofInt(avatarSize, (int) (SCALE_AVATAR * avatarSize));
+    animatorScaleUp = ValueAnimator.ofFloat(1f, SCALE_AVATAR);
     animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
     animatorScaleUp.setDuration(DURATION_SCALE);
     animatorScaleUp.setStartDelay(SCALE_DELAY);
     animatorScaleUp.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      updateSizeWithValue(value);
+      float value = (float) animation.getAnimatedValue();
+      updateScaleWithValue(value);
     });
     animatorScaleUp.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationCancel(Animator animation) {
@@ -309,15 +306,15 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       }
     });
 
-    animatorScaleDown = ValueAnimator.ofInt((int) (SCALE_AVATAR * avatarSize), avatarSize);
+    animatorScaleDown = ValueAnimator.ofFloat(SCALE_AVATAR, 1f);
     animatorScaleDown.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      if (value < avatarSize && !hasPulsed) {
+      float value = (float) animation.getAnimatedValue();
+      if (value < 1f && !hasPulsed) {
         animatePulse(DURATION_PULSE);
         hasPulsed = true;
       }
 
-      updateSizeWithValue(value);
+      updateScaleWithValue(value);
     });
     animatorScaleDown.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
     animatorScaleDown.setDuration(DURATION_SCALE >> 1);
@@ -336,17 +333,15 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     animatorScaleAvatar.start();
   }
 
-  private void updateSizeWithValue(int value) {
-    ViewGroup.LayoutParams params = avatar.getLayoutParams();
-    params.width = params.height = value;
-    avatar.requestLayout();
-    float scaleProportion = (float) value / avatarSize;
-    viewShadow.setScaleX(scaleProportion);
-    viewShadow.setScaleY(scaleProportion);
-    viewForegroundAvatar.setScaleX(scaleProportion);
-    viewForegroundAvatar.setScaleY(scaleProportion);
-    viewRing.setScaleX(scaleProportion);
-    viewRing.setScaleY(scaleProportion);
+  private void updateScaleWithValue(float value) {
+    avatar.setScaleX(value);
+    avatar.setScaleY(value);
+    viewShadow.setScaleX(value);
+    viewShadow.setScaleY(value);
+    viewForegroundAvatar.setScaleX(value);
+    viewForegroundAvatar.setScaleY(value);
+    viewRing.setScaleX(value);
+    viewRing.setScaleY(value);
   }
 
   private void animatePulse(int duration) {
@@ -411,13 +406,12 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void readyForBuzz() {
     animatorTransition = new AnimatorSet();
 
-    animatorScaleUpTransition =
-        ValueAnimator.ofInt(avatar.getWidth(), (int) (SCALE_AVATAR * avatarSize));
+    animatorScaleUpTransition = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
     animatorScaleUpTransition.setInterpolator(new DecelerateInterpolator());
     animatorScaleUpTransition.setDuration(DURATION_FAST);
     animatorScaleUpTransition.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      updateSizeWithValue(value);
+      float value = (float) animation.getAnimatedValue();
+      updateScaleWithValue(value);
     });
 
     animatorBuzzAvatar = ObjectAnimator.ofFloat(avatar, TRANSLATION_X, 3, -3);
@@ -500,12 +494,12 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     AnimatorSet animatorSet = new AnimatorSet();
 
     ValueAnimator animatorScaleDownTransition =
-        ValueAnimator.ofInt(avatar.getWidth(), (int) (SCALE_AVATAR * avatarSize));
+        ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
     animatorScaleDownTransition.setInterpolator(new DecelerateInterpolator());
     animatorScaleDownTransition.setDuration(DURATION_FAST);
     animatorScaleDownTransition.addUpdateListener(animation -> {
-      int value = (int) animation.getAnimatedValue();
-      updateSizeWithValue(value);
+      float value = (float) animation.getAnimatedValue();
+      updateScaleWithValue(value);
     });
 
     viewThreeDots.animate()

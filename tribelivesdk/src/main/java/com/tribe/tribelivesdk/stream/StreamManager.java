@@ -123,6 +123,15 @@ public class StreamManager {
     remotePeer.setMediaConfiguration(tribePeerMediaConfiguration);
   }
 
+  public void setLocalMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+    if (localPeerView == null) {
+      Timber.d("setLocalMediaConfiguration impossible liveLocalStream isNull");
+      return;
+    }
+
+    localPeerView.shouldSwitchMode(tribePeerMediaConfiguration);
+  }
+
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
     liveLocalStream.updateMediaConstraints(tribeMediaConstraints);
   }

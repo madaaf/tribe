@@ -450,8 +450,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(action -> {
                 if (action.getIntent() != null) {
-                  viewLive.onLeave();
+                  //viewLive.onLeave();
                   navigator.navigateToIntent(LiveActivity.this, action.getIntent());
+                  finish();
                 } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                   TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                       notificationPayload.getUserDisplayName(),

@@ -6,6 +6,7 @@ import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
@@ -41,7 +42,7 @@ public class Room {
 
   @StringDef({
       MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE,
-      MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_APP,
+      MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_SWITCH_MODE, MESSAGE_APP,
       MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED, MESSAGE_INVITE_REMOVED
   }) public @interface WebSocketMessageType {
   }
@@ -53,6 +54,7 @@ public class Room {
   public static final String MESSAGE_LEAVE = "eventLeave";
   public static final String MESSAGE_MESSAGE = "eventMessage";
   public static final String MESSAGE_MEDIA_CONSTRAINTS = "eventUserMediaConfiguration";
+  public static final String MESSAGE_SWITCH_MODE = "eventSetAudioVideoMode";
   public static final String MESSAGE_NONE = "none";
   public static final String MESSAGE_APP = "app";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
@@ -87,24 +89,43 @@ public class Room {
   private void initJsonToModel() {
     jsonToModel = new JsonToModel();
 
-    subscriptions.add(jsonToModel.onJoinRoom().doOnNext(joinedRoom -> {
-      if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
-        for (TribeSession session : joinedRoom.getSessionList()) {
-          webRTCClient.addPeerConnection(session, true);
-        }
-      } else {
-        for (TribeSession session : joinedRoom.getSessionList()) {
-          webRTCClient.addPeerConnection(session, false);
-        }
+    subscriptions.add(jsonToModel.onJoinRoom()
+        .doOnNext(joinedRoom -> {
+          if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
+            for (TribeSession session : joinedRoom.getSessionList()) {
+              webRTCClient.addPeerConnection(session, true);
+            }
+          } else {
+            for (TribeSession session : joinedRoom.getSessionList()) {
+              webRTCClient.addPeerConnection(session, false);
+            }
 
-        webRTCClient.addPeerConnection(
-            new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
-      }
+            webRTCClient.addPeerConnection(
+                new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
+          }
 
-      hasJoined = true;
-    }).delay(1000, TimeUnit.MILLISECONDS).subscribe(joinedRoom -> {
-      sendToPeers(webRTCClient.getJSONMedia(), false);
-    }));
+          hasJoined = true;
+        })
+        .delay(1000, TimeUnit.MILLISECONDS)
+        .doOnNext(tribeJoinRoom -> sendToPeers(webRTCClient.getJSONMedia(), false))
+        .delay(5000, TimeUnit.MILLISECONDS)
+        .doOnNext(tribeJoinRoom -> {
+          TribePeerMediaConfiguration mediaConfiguration = new TribePeerMediaConfiguration(
+              new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
+          mediaConfiguration.setAudioEnabled(true);
+          mediaConfiguration.setVideoEnabled(false);
+          mediaConfiguration.setLowConnectivityMode(true);
+          webRTCClient.setLocalMediaConfiguation(mediaConfiguration);
+        })
+        .delay(5000, TimeUnit.MILLISECONDS)
+        .subscribe(joinedRoom -> {
+          TribePeerMediaConfiguration mediaConfiguration = new TribePeerMediaConfiguration(
+              new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
+          mediaConfiguration.setAudioEnabled(true);
+          mediaConfiguration.setVideoEnabled(true);
+          mediaConfiguration.setLowConnectivityMode(true);
+          webRTCClient.setLocalMediaConfiguation(mediaConfiguration);
+        }));
 
     subscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
       webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -135,6 +156,12 @@ public class Room {
         .filter(tribeMediaConstraints -> hasJoined)
         .subscribe(tribeMediaConstraints -> {
           webRTCClient.updateMediaConstraints(tribeMediaConstraints);
+        }));
+
+    subscriptions.add(jsonToModel.onShouldSwitchMediaMode()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeMediaConfiguration -> {
+          webRTCClient.setLocalMediaConfiguation(tribeMediaConfiguration);
         }));
   }
 
@@ -230,7 +257,7 @@ public class Room {
 
   public void leaveRoom() {
     hasJoined = false;
-    
+
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
     options = null;
@@ -266,6 +293,8 @@ public class Room {
       return MESSAGE_LEAVE;
     } else if (a.equals(MESSAGE_MEDIA_CONSTRAINTS)) {
       return MESSAGE_MEDIA_CONSTRAINTS;
+    } else if (a.equals(MESSAGE_SWITCH_MODE)) {
+      return MESSAGE_SWITCH_MODE;
     } else if (a.equals(MESSAGE_MESSAGE)) {
       return MESSAGE_MESSAGE;
     } else {
