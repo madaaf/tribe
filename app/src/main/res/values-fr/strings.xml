@@ -591,6 +591,7 @@
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
 	<string name="live_dismiss_invitation_validate">Supprimer %1$s</string>
 	<string name="live_title_with_guests">%1$s, et des invités</string>
+	<string name="live_low_connectivity">Réseau faible, audio mode activé :loud_sound:</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>

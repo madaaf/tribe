@@ -15,19 +15,10 @@ public final class Alerter {
 
   private LiveNotificationView liveNotificationView;
 
-  /**
-   * Constructor
-   */
   private Alerter() {
     //Utility classes should not be instantiated
   }
 
-  /**
-   * Creates the Alert, and maintains a reference to the calling Activity
-   *
-   * @param activity The calling Activity
-   * @return This Alerter
-   */
   public static Alerter create(@NonNull final Activity activity,
       LiveNotificationView liveNotificationView) {
     if (activity == null) {

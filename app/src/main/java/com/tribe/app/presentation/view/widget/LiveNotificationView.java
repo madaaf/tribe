@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.widget;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.ColorInt;
@@ -15,14 +13,11 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,19 +34,18 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
-public class LiveNotificationView extends FrameLayout
-    implements View.OnClickListener, Animation.AnimationListener {
+public class LiveNotificationView extends FrameLayout implements Animation.AnimationListener {
 
   @IntDef({ LIVE, ERROR }) public @interface LiveNotificationType {
   }
 
+  private static final long DISPLAY_TIME_IN_SECONDS = 3000;
   public static final int LIVE = 0;
   public static final int ERROR = 1;
   private static final int CLEAN_UP_DELAY_MILLIS = 100;
   private static final int SCREEN_SCALE_FACTOR = 6;
-  private static final int DURATION = 1000;
-  private static final float OVERSHOOT = 0.25f;
 
   // VARIABLES
   private @LiveNotificationView.LiveNotificationType int type;
@@ -59,6 +53,7 @@ public class LiveNotificationView extends FrameLayout
   private Animation slideOutAnimation;
   private boolean marginSet;
   private int sound = -1;
+  private long duration = DISPLAY_TIME_IN_SECONDS;
 
   //UI
   @BindView(R.id.view_live_notification_container) LinearLayout notificationContainer;
@@ -74,7 +69,6 @@ public class LiveNotificationView extends FrameLayout
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<LiveNotificationActionView.Action> onClickAction = PublishSubject.create();
-  private PublishSubject<LiveNotificationView> onAnimationDone = PublishSubject.create();
 
   public LiveNotificationView(@NonNull final Context context,
       @LiveNotificationView.LiveNotificationType int type) {
@@ -90,16 +84,6 @@ public class LiveNotificationView extends FrameLayout
     initView();
   }
 
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    if (subscriptions.hasSubscriptions()) subscriptions.clear();
-    super.onDetachedFromWindow();
-    slideInAnimation.setAnimationListener(null);
-  }
-
   private void initView() {
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -109,61 +93,27 @@ public class LiveNotificationView extends FrameLayout
         .inject(this);
 
     unbinder = ButterKnife.bind(this);
-
     setHapticFeedbackEnabled(true);
-    notificationContainer.setOnClickListener(this);
+
     screen.setOnClickListener(new OnClickListener() {
       @Override public void onClick(View v) {
         hide();
       }
     });
 
-    //Setup Enter Animation
-    slideInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_from_top);
-    slideOutAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_out_to_top);
-
-    slideInAnimation.setAnimationListener(this);
-
-    //Set Animation to be Run when View is added to Window
-    setAnimation(slideInAnimation);
-
-    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override public void onGlobalLayout() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        // TODO specify custom animation when there's more time ^^
-
-        animate().translationY(0)
-            .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-            .setDuration(DURATION)
-            .setListener(new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                if (sound != -1) {
-                  soundManager.playSound(sound, SoundManager.SOUND_MAX);
-                }
-                onAnimationDone.onNext(LiveNotificationView.this);
-                onAnimationDone.onCompleted();
-                animate().setListener(null).start();
-              }
-            })
-            .start();
-      }
-    });
+    setAnimation();
 
     notificationContainer.setPadding(notificationContainer.getPaddingLeft(),
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
         notificationContainer.getPaddingRight(), notificationContainer.getPaddingBottom());
   }
 
-  public void onDestroy() {
-    unbinder.unbind();
-  }
   //////////////////////
   //      INIT        //
   //////////////////////
 
   @Override protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
     if (!marginSet) {
       marginSet = true;
       // Add a negative top margin to compensate for overshoot enter animation
@@ -173,47 +123,47 @@ public class LiveNotificationView extends FrameLayout
     }
   }
 
-    /* Override Methods */
-
-  @Override public boolean onTouchEvent(final MotionEvent event) {
-    hide();
-    return super.onTouchEvent(event);
-  }
-
-  @Override public void onClick(final View v) {
-    hide();
-  }
-
-  @Override public void setOnClickListener(final OnClickListener listener) {
-    notificationContainer.setOnClickListener(listener);
-  }
-
-  @Override public void setVisibility(final int visibility) {
-    super.setVisibility(visibility);
-    for (int i = 0; i < getChildCount(); i++) {
-      getChildAt(i).setVisibility(visibility);
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (subscriptions.hasSubscriptions()) {
+      subscriptions.unsubscribe();
+      subscriptions.clear();
     }
+    slideInAnimation.setAnimationListener(null);
+    unbinder.unbind();
   }
 
-    /* Interface Method Implementations */
+  /* Interface Method Implementations */
 
   @Override public void onAnimationStart(final Animation animation) {
     if (!isInEditMode()) {
       performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-      setVisibility(View.VISIBLE);
+      if (sound != -1) {
+        soundManager.playSound(sound, SoundManager.SOUND_MAX);
+      }
     }
   }
 
   @Override public void onAnimationEnd(final Animation animation) {
+    postDelayed(new Runnable() {
+      @Override public void run() {
+        hide();
+      }
+    }, duration);
   }
 
   @Override public void onAnimationRepeat(final Animation animation) {
   }
 
-  /**
-   * Cleans up the currently showing alert view.
-   */
-  public void hide() {
+  public void setAlertBackgroundColor(@ColorInt final int color) {
+    notificationContainer.setBackgroundColor(color);
+  }
+
+  /////////////////
+  //  PRIVATE   ///
+  /////////////////
+
+  private void hide() {
     try {
       slideOutAnimation.setAnimationListener(new Animation.AnimationListener() {
         @Override public void onAnimationStart(final Animation animation) {
@@ -235,30 +185,27 @@ public class LiveNotificationView extends FrameLayout
     }
   }
 
-  /**
-   * Removes Alert View from its Parent Layout
-   */
   private void removeFromParent() {
     postDelayed(new Runnable() {
       @Override public void run() {
         try {
           if (getParent() == null) {
-            Log.e(getClass().getSimpleName(), "getParent() returning Null");
+            Timber.e("getParent() returning Null");
           } else {
             try {
               ((ViewGroup) getParent()).removeView(LiveNotificationView.this);
             } catch (Exception ex) {
-              Log.e(getClass().getSimpleName(), "Cannot remove from parent layout");
+              Timber.e("Cannot remove from parent layout");
             }
           }
         } catch (Exception ex) {
-          Log.e(getClass().getSimpleName(), Log.getStackTraceString(ex));
+          Timber.e(Log.getStackTraceString(ex));
         }
       }
     }, CLEAN_UP_DELAY_MILLIS);
   }
 
-  public void addAction(LiveNotificationActionView.Action action, boolean isLast) {
+  private void addAction(LiveNotificationActionView.Action action, boolean isLast) {
     int sizeActionItem =
         getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
 
@@ -273,26 +220,18 @@ public class LiveNotificationView extends FrameLayout
     subscriptions.add(actionView.onClick().subscribe(onClickAction));
   }
 
-  public void setAlertBackgroundColor(@ColorInt final int color) {
-    notificationContainer.setBackgroundColor(color);
-  }
-
-  public void setTitle(@NonNull final String title) {
+  private void setTitle(@NonNull final String title) {
     if (!TextUtils.isEmpty(title)) {
       txtTitle.setVisibility(VISIBLE);
       txtTitle.setText(title);
     }
   }
 
-  public void setSound(int sound) {
+  private void setSound(int sound) {
     this.sound = sound;
   }
 
-  public AvatarLiveView getIcon() {
-    return avatarLiveView;
-  }
-
-  public void setImgUrl(String url) {
+  private void setImgUrl(String url) {
     if (type == ERROR) {
       imgIcon.setImageResource(R.drawable.picto_lock);
     } else {
@@ -305,6 +244,13 @@ public class LiveNotificationView extends FrameLayout
     final DisplayMetrics metrics = new DisplayMetrics();
     wm.getDefaultDisplay().getMetrics(metrics);
     return metrics.heightPixels;
+  }
+
+  private void setAnimation() {
+    slideInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_from_top);
+    slideOutAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_out_to_top);
+    slideInAnimation.setAnimationListener(this);
+    setAnimation(slideInAnimation);
   }
 
   public static class Builder {
@@ -355,7 +301,7 @@ public class LiveNotificationView extends FrameLayout
           count++;
         }
       } else {
-
+        Timber.w("type error");
       }
       return view;
     }
