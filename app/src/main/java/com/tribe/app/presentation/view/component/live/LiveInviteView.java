@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -48,6 +49,7 @@ public class LiveInviteView extends FrameLayout {
   // VARIABLES
   private LiveInviteLayoutManager layoutManager;
   private boolean dragging = false;
+  private List<Recipient> friendshipList;
 
   // RESOURCES
 
@@ -96,7 +98,7 @@ public class LiveInviteView extends FrameLayout {
   //////////////////////
 
   private void init(Context context, AttributeSet attrs) {
-
+    friendshipList = new ArrayList<>();
   }
 
   private void initUI() {
@@ -142,15 +144,23 @@ public class LiveInviteView extends FrameLayout {
     return view;
   }
 
+  ////////////
+  // PUBLIC //
+  ///////////
+
   public void renderFriendshipList(List<Friendship> friendshipList) {
-    if (!dragging) adapter.setItems(new ArrayList<>(friendshipList));
+    this.friendshipList.clear();
+    this.friendshipList.addAll(friendshipList);
+    if (!dragging) adapter.setItems(this.friendshipList);
   }
 
   public void removeItemAtPosition(int position) {
-    adapter.removeItem(position);
+    //adapter.removeItem(position);
   }
 
   public void setDragging(boolean dragging) {
+    if (!dragging && this.dragging) recyclerViewFriends.getRecycledViewPool().clear();
+
     this.dragging = dragging;
   }
 

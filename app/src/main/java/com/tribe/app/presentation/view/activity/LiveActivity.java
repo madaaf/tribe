@@ -49,11 +49,13 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -124,8 +126,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private AppStateMonitor appStateMonitor;
 
   // RESOURCES
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -277,6 +281,46 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initSubscriptions() {
+    subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
+        viewLive.onLiveChanged().startWith(new HashMap<>()),
+        viewLive.onInvitesChanged().startWith(new HashMap<>()),
+        (friendshipList, liveMap, invitesMap) -> {
+          List<String> idsToFilter = new ArrayList<>();
+          idsToFilter.addAll(liveMap.keySet());
+          idsToFilter.addAll(invitesMap.keySet());
+
+          Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
+          List<Friendship> filteredFriendships = new ArrayList<>();
+
+          if (recipient != null && recipient instanceof Membership) {
+            Membership membership = (Membership) recipient;
+
+            for (Friendship fr : friendshipList) {
+              if (!membership.getGroup().isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
+                  .equals(recipientId) && !idsToFilter.contains(fr.getFriend().getId())) {
+                filteredFriendships.add(fr);
+              }
+            }
+          } else {
+            if (recipient instanceof Friendship) {
+              for (Friendship fr : friendshipList) {
+                Friendship friendship = (Friendship) recipient;
+                if (!friendship.getFriend().getId().equals(fr.getFriend().getId())
+                    && !idsToFilter.contains(fr.getFriend().getId())) {
+                  filteredFriendships.add(fr);
+                }
+              }
+            }
+          }
+
+          return filteredFriendships;
+        })
+        .delay(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
+
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       tagManager.trackEvent(TagManagerConstants.KPI_Calls_StartedButton);
@@ -377,31 +421,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
-    Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-    if (recipient != null && recipient instanceof Membership) {
-      Membership membership = (Membership) recipient;
-      List<Friendship> filteredFriendships = new ArrayList<>();
-
-      for (Friendship fr : friendshipList) {
-        if (!membership.getGroup().isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
-            .equals(recipientId)) {
-          filteredFriendships.add(fr);
-        }
-      }
-      viewInviteLive.renderFriendshipList(filteredFriendships);
-    } else {
-
-      List<Friendship> filteredFriendships = new ArrayList<>();
-      if (recipient instanceof Friendship) {
-        for (Friendship fr : friendshipList) {
-          Friendship friendship = (Friendship) recipient;
-          if (!friendship.getFriend().getId().equals(fr.getFriend().getId())) {
-            filteredFriendships.add(fr);
-          }
-        }
-      }
-      viewInviteLive.renderFriendshipList(filteredFriendships);
-    }
+    onUpdateFriendshipList.onNext(friendshipList);
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

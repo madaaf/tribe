@@ -6,7 +6,6 @@ import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
-import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
@@ -108,7 +107,11 @@ public class Room {
         })
         .delay(1000, TimeUnit.MILLISECONDS)
         .doOnNext(tribeJoinRoom -> sendToPeers(webRTCClient.getJSONMedia(), false))
-        .delay(5000, TimeUnit.MILLISECONDS)
+        .subscribe(joinedRoom -> {
+
+        }));
+
+    /*.delay(5000, TimeUnit.MILLISECONDS)
         .doOnNext(tribeJoinRoom -> {
           TribePeerMediaConfiguration mediaConfiguration = new TribePeerMediaConfiguration(
               new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
@@ -124,8 +127,7 @@ public class Room {
           mediaConfiguration.setAudioEnabled(true);
           mediaConfiguration.setVideoEnabled(true);
           mediaConfiguration.setLowConnectivityMode(true);
-          webRTCClient.setLocalMediaConfiguation(mediaConfiguration);
-        }));
+          webRTCClient.setLocalMediaConfiguation(mediaConfiguration);*/
 
     subscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
       webRTCClient.setRemoteDescription(tribeOffer.getSession(),

@@ -204,6 +204,14 @@ public class TileView extends SquareCardView {
     }
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+
+    if (!isGrid() && getWidth() == 0 && getParent() != null) {
+      UIUtils.changeSizeOfView(this, ((View) getParent()).getWidth());
+    }
+  }
+
   @Override protected void onFinishInflate() {
     super.onFinishInflate();
   }

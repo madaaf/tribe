@@ -374,9 +374,9 @@ public class LiveContainer extends FrameLayout {
   private void clearTouch() {
     if (currentTileView != null) {
       if (draggedTileView != null) {
-        if (!dropEnabled) {
-          viewInviteLive.setDragging(false);
+        viewInviteLive.setDragging(false);
 
+        if (!dropEnabled) {
           endTileDrag();
           AnimationUtils.animateLeftMargin(draggedTileView, tileLocationStart[0], DRAG_END_DELAY,
               new DecelerateInterpolator());
@@ -385,6 +385,7 @@ public class LiveContainer extends FrameLayout {
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         } else {
           onDropped.onNext(draggedTileView);
+          viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         }
       } else {

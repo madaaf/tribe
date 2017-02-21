@@ -50,12 +50,15 @@ public class ObservableRxHashMap<T, R> {
     mapSubject.onNext(map);
   }
 
-  public void remove(T key) {
+  public R remove(T key) {
     if (map.containsKey(key)) {
       R r = map.remove(key);
       subject.onNext(new RxHashMap<>(REMOVE, key, r));
       mapSubject.onNext(map);
+      return r;
     }
+
+    return null;
   }
 
   public R get(T key) {

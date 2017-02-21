@@ -44,7 +44,7 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
-import java.util.HashMap;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -104,8 +104,8 @@ public class LiveView extends FrameLayout {
   private int color;
   private Room room;
   private LiveRowView latestView;
-  private Map<String, LiveRowView> liveRowViewMap;
-  private Map<String, LiveRowView> liveInviteMap;
+  private ObservableRxHashMap<String, LiveRowView> liveRowViewMap;
+  private ObservableRxHashMap<String, LiveRowView> liveInviteMap;
   private boolean hiddenControls = false;
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private AvatarView avatarView;
@@ -186,8 +186,8 @@ public class LiveView extends FrameLayout {
   //////////////////////
 
   private void init(Context context, AttributeSet attrs) {
-    liveRowViewMap = new HashMap<>();
-    liveInviteMap = new HashMap<>();
+    liveRowViewMap = new ObservableRxHashMap<>();
+    liveInviteMap = new ObservableRxHashMap<>();
   }
 
   private void initUI() {
@@ -270,11 +270,11 @@ public class LiveView extends FrameLayout {
         animatorBuzzAvatar.start();
       }
 
-      for (LiveRowView liveRowView : liveInviteMap.values()) {
+      for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
         liveRowView.buzz();
       }
 
-      for (LiveRowView liveRowView : liveRowViewMap.values()) {
+      for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
         if (liveRowView.isWaiting()) liveRowView.buzz();
       }
 
@@ -393,7 +393,7 @@ public class LiveView extends FrameLayout {
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
             for (TribeGuest trg : tribeGuests) {
-              if (liveInviteMap.containsKey(trg.getId())) {
+              if (liveInviteMap.getMap().containsKey(trg.getId())) {
                 removeFromInvites(trg.getId());
               }
             }
@@ -457,11 +457,10 @@ public class LiveView extends FrameLayout {
         latestView.startPulse();
       }));
 
-      subscriptions.add(latestView.onShouldRemoveGuest()
-          .doOnNext(tribeGuest -> removeFromInvites(latestView.getGuest().getId()))
-          .subscribe(tribeGuest -> {
-            room.sendToPeers(getRemovedPayload(latestView.getGuest()), true);
-          }));
+      subscriptions.add(latestView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
+        removeFromInvites(latestView.getGuest().getId());
+        room.sendToPeers(getRemovedPayload(latestView.getGuest()), true);
+      }).subscribe());
     }));
   }
 
@@ -528,7 +527,8 @@ public class LiveView extends FrameLayout {
   }
 
   public void addTribeGuest(TribeGuest trg) {
-    if (!liveInviteMap.containsKey(trg.getId()) && !liveRowViewMap.containsKey(trg.getId())) {
+    if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
+        .containsKey(trg.getId())) {
       LiveRowView liveRowView = new LiveRowView(getContext());
       liveRowView.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -546,8 +546,11 @@ public class LiveView extends FrameLayout {
   }
 
   public void setCameraEnabled(boolean enable) {
-    if (enable) viewLocalLive.clickEnableCamera();
-    else viewLocalLive.clickDisableCamera();
+    if (enable) {
+      viewLocalLive.clickEnableCamera();
+    } else {
+      viewLocalLive.clickDisableCamera();
+    }
   }
 
   ////////////////
@@ -667,14 +670,16 @@ public class LiveView extends FrameLayout {
   private void addView(RemotePeer remotePeer) {
     LiveRowView liveRowView = null;
 
-    if (liveInviteMap.containsKey(
-        remotePeer.getSession().getUserId())) { // If the user was invited before joining
+    if (liveInviteMap.getMap()
+        .containsKey(
+            remotePeer.getSession().getUserId())) { // If the user was invited before joining
       liveRowView = liveInviteMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
       liveInviteMap.remove(remotePeer.getSession().getUserId());
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
-    } else if (liveRowViewMap.containsKey(remotePeer.getSession()
-        .getUserId())) { // If the user was already live, usually the case on 1-1 calls
+    } else if (liveRowViewMap.getMap()
+        .containsKey(remotePeer.getSession()
+            .getUserId())) { // If the user was already live, usually the case on 1-1 calls
       liveRowView = liveRowViewMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
     } else {
@@ -711,7 +716,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void removeFromPeers(String id) {
-    if (liveRowViewMap.containsKey(id)) {
+    if (liveRowViewMap.getMap().containsKey(id)) {
       LiveRowView liveRowView = liveRowViewMap.remove(id);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
@@ -719,7 +724,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void removeFromInvites(String id) {
-    if (liveInviteMap.containsKey(id)) {
+    if (liveInviteMap.getMap().containsKey(id)) {
       LiveRowView liveRowView = liveInviteMap.remove(id);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
@@ -740,7 +745,7 @@ public class LiveView extends FrameLayout {
   private JSONObject getInvitedPayload() {
     JSONObject jsonObject = new JSONObject();
     JSONArray array = new JSONArray();
-    for (LiveRowView liveRowView : liveInviteMap.values()) {
+    for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
       JSONObject invitedGuest = new JSONObject();
       jsonPut(invitedGuest, TribeGuest.ID, liveRowView.getGuest().getId());
       jsonPut(invitedGuest, TribeGuest.DISPLAY_NAME, liveRowView.getGuest().getDisplayName());
@@ -789,7 +794,7 @@ public class LiveView extends FrameLayout {
   private int nbLiveInRoom() {
     int count = 0;
 
-    for (LiveRowView liveRowView : liveRowViewMap.values()) {
+    for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       if (!liveRowView.isWaiting()) count++;
     }
 
@@ -799,7 +804,7 @@ public class LiveView extends FrameLayout {
   private boolean isTherePeopleWaiting() {
     boolean waiting = false;
 
-    for (LiveRowView liveRowView : liveRowViewMap.values()) {
+    for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       if (liveRowView.isWaiting()) waiting = true;
     }
 
@@ -811,7 +816,7 @@ public class LiveView extends FrameLayout {
   private String getGroupWaiting() {
     String id = "";
 
-    for (LiveRowView liveRowView : liveRowViewMap.values()) {
+    for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       if (liveRowView.isWaiting() && liveRowView.isGroup()) id = liveRowView.getGuest().getId();
     }
 
@@ -948,6 +953,14 @@ public class LiveView extends FrameLayout {
 
   public Observable<String> onNotificationonRemotePeerBuzzed() {
     return onNotificationRemotePeerBuzzed;
+  }
+
+  public Observable<Map<String, LiveRowView>> onInvitesChanged() {
+    return liveInviteMap.getMapObservable();
+  }
+
+  public Observable<Map<String, LiveRowView>> onLiveChanged() {
+    return liveRowViewMap.getMapObservable();
   }
 }
 
