@@ -98,7 +98,6 @@ public class NotificationUtils {
   private static LiveNotificationView.Builder addHangLiveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
     if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      //if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
       return builder.addAction(ACTION_HANG_LIVE,
           context.getString(R.string.live_notification_action_hang_live_friend,
               notificationPayload.getUserDisplayName()),
@@ -125,7 +124,6 @@ public class NotificationUtils {
 
   private static LiveNotificationView.Builder addLeaveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-    //if (StringUtils.isEmpty(notificationPayload.getOtherUserDisplayNames())) {
     return builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
         notificationPayload.getUserDisplayName()), getIntentForLive(context, notificationPayload));
   }

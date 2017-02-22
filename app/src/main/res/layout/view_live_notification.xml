@@ -6,11 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
+    android:orientation="vertical"
     >
 
   <LinearLayout
       android:id="@+id/view_live_notification_container"
-      android:background="@android:color/black"
+      android:background="@color/black.light"
       android:clickable="true"
       android:orientation="vertical"
       tools:visibility="visible"
@@ -21,16 +22,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:layout_marginEnd="@dimen/alerter_activity_horizontal_margin"
-        android:layout_marginStart="@dimen/alerter_activity_horizontal_margin"
-        android:layout_marginTop="@dimen/alerter_padding_default"
+        android:layout_marginBottom="@dimen/horizontal_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/horizontal_margin"
         >
 
       <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
           android:id="@+id/avatar"
-          android:layout_width="@dimen/avatar_size_medium"
-          android:layout_height="@dimen/avatar_size_medium"
-          android:layout_marginEnd="@dimen/alerter_activity_horizontal_margin"
+          android:layout_width="@dimen/avatar_size_small"
+          android:layout_height="@dimen/avatar_size_small"
+          android:layout_marginEnd="@dimen/horizontal_margin_small"
           tools:src="@android:drawable/ic_menu_info_details"
           />
 
@@ -39,12 +41,16 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:textColor="@android:color/white"
-          tools:text="Title"
-          tools:visibility="visible"
+          style="@style/Body.Two.White"
           />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/white.opacity.10"
+        />
 
     <LinearLayout
         android:id="@+id/view_live_notification_action_container"
@@ -57,4 +63,9 @@
     </LinearLayout>
   </LinearLayout>
 
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="10dp"
+      android:background="@drawable/shadow_bottom"
+      />
 </LinearLayout>

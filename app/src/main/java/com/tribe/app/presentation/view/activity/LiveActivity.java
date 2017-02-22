@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -447,21 +448,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       LiveNotificationView liveNotificationView =
           NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
-      subscriptions.add(liveNotificationView.onClickAction()
-          .delay(500, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(action -> {
-            if (action.getIntent() != null) {
-              navigator.navigateToIntent(LiveActivity.this, action.getIntent());
-              finish();
-            } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
-              TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
-                  notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                  false, null);
-              invite(tribeGuest.getId());
-              viewLive.addTribeGuest(tribeGuest);
-            }
-          }));
+      if (liveNotificationView != null) {
+        subscriptions.add(liveNotificationView.onClickAction()
+            .delay(500, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(action -> {
+              if (action.getIntent() != null) {
+                navigator.navigateToIntent(LiveActivity.this, action.getIntent());
+                finish();
+              } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
+                TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
+                    notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
+                    false, null);
+                invite(tribeGuest.getId());
+                viewLive.addTribeGuest(tribeGuest);
+              }
+            }));
+
+        Alerter.create(LiveActivity.this, liveNotificationView).show();
+      }
     }
   }
 }

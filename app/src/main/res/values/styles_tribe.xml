@@ -341,15 +341,4 @@
     <item name="android:paddingTop">@dimen/alerter_alert_padding</item>
     <item name="android:paddingBottom">@dimen/alerter_alert_padding</item>
   </style>
-
-  <style name="AlertStyle.TextAppearance">
-    <item name="android:fontFamily">sans-serif</item>
-    <item name="android:textColor">@android:color/white</item>
-    <item name="android:textSize">@dimen/alerter_text_small</item>
-  </style>
-
-  <style name="AlertStyle.TextAppearance.Title">
-    <item name="android:textSize">@dimen/alerter_text_medium</item>
-    <item name="android:textStyle">bold</item>
-  </style>
 </resources>

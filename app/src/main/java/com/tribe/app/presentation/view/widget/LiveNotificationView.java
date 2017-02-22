@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -26,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @IntDef({ LIVE, ERROR }) public @interface LiveNotificationType {
   }
 
-  private static final long DISPLAY_TIME_IN_SECONDS = 3000;
+  private static final long DISPLAY_TIME_IN_SECONDS = 5000;
   public static final int LIVE = 0;
   public static final int ERROR = 1;
   private static final int CLEAN_UP_DELAY_MILLIS = 100;
@@ -95,17 +95,13 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     unbinder = ButterKnife.bind(this);
     setHapticFeedbackEnabled(true);
 
-    screen.setOnClickListener(new OnClickListener() {
-      @Override public void onClick(View v) {
-        hide();
-      }
-    });
+    screen.setOnClickListener(v -> hide());
 
     setAnimation();
 
     notificationContainer.setPadding(notificationContainer.getPaddingLeft(),
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
-        notificationContainer.getPaddingRight(), notificationContainer.getPaddingBottom());
+        notificationContainer.getPaddingRight(), 0);
   }
 
   //////////////////////
@@ -145,11 +141,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   }
 
   @Override public void onAnimationEnd(final Animation animation) {
-    postDelayed(new Runnable() {
-      @Override public void run() {
-        hide();
-      }
-    }, duration);
+    postDelayed(() -> hide(), duration);
   }
 
   @Override public void onAnimationRepeat(final Animation animation) {
@@ -165,7 +157,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
   private void hide() {
     try {
-      slideOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+      slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
         @Override public void onAnimationStart(final Animation animation) {
           notificationContainer.setOnClickListener(null);
           notificationContainer.setClickable(false);
@@ -173,10 +165,6 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
         @Override public void onAnimationEnd(final Animation animation) {
           removeFromParent();
-        }
-
-        @Override public void onAnimationRepeat(final Animation animation) {
-          //Ignore
         }
       });
       startAnimation(slideOutAnimation);
@@ -186,21 +174,19 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   }
 
   private void removeFromParent() {
-    postDelayed(new Runnable() {
-      @Override public void run() {
-        try {
-          if (getParent() == null) {
-            Timber.e("getParent() returning Null");
-          } else {
-            try {
-              ((ViewGroup) getParent()).removeView(LiveNotificationView.this);
-            } catch (Exception ex) {
-              Timber.e("Cannot remove from parent layout");
-            }
+    postDelayed(() -> {
+      try {
+        if (getParent() == null) {
+          Timber.e("getParent() returning Null");
+        } else {
+          try {
+            ((ViewGroup) getParent()).removeView(LiveNotificationView.this);
+          } catch (Exception ex) {
+            Timber.e("Cannot remove from parent layout");
           }
-        } catch (Exception ex) {
-          Timber.e(Log.getStackTraceString(ex));
         }
+      } catch (Exception ex) {
+        Timber.e(Log.getStackTraceString(ex));
       }
     }, CLEAN_UP_DELAY_MILLIS);
   }

@@ -473,10 +473,8 @@ public class HomeActivity extends BaseActivity
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
       Bundle bundle = new Bundle();
-      bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT,
-          getCurrentUser().getFriendships().size());
-      bundle.putInt(TagManagerUtils.USER_GROUPS_COUNT,
-          getCurrentUser().getMembershipList().size());
+      bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
+      bundle.putInt(TagManagerUtils.USER_GROUPS_COUNT, getCurrentUser().getMembershipList().size());
       tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
     }
