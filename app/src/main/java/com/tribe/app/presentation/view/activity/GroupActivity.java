@@ -365,6 +365,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     subscriptions.add(viewUpdateGroup.onNotificationsChange().subscribe(aBoolean -> {
       tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
       tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !aBoolean);
+      membership.setMute(!aBoolean);
       groupPresenter.updateMembership(membershipId, !aBoolean);
     }));
   }

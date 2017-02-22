@@ -426,12 +426,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onAppDidEnterForeground() {
-    Timber.d("Enter foreground");
     if (viewLive != null) viewLive.setCameraEnabled(true);
   }
 
   @Override public void onAppDidEnterBackground() {
-    Timber.d("Enter background");
     if (viewLive != null) viewLive.setCameraEnabled(false);
   }
 

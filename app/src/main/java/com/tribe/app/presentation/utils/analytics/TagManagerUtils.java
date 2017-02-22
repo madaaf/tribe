@@ -2,7 +2,6 @@ package com.tribe.app.presentation.utils.analytics;
 
 import android.os.Bundle;
 import java.util.Map;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 22/09/2016.
@@ -108,8 +107,6 @@ public class TagManagerUtils {
   public static void manageTags(TagManager tagManager, Map<String, Object> tagMap) {
     Bundle bundle = new Bundle();
 
-    Timber.d("Tags : " + tagMap);
-
     for (Map.Entry<String, Object> entry : tagMap.entrySet()) {
       if (!entry.getKey().equals(TagManagerUtils.EVENT)) {
         if (entry.getValue() instanceof Integer) {
@@ -125,7 +122,6 @@ public class TagManagerUtils {
     }
 
     tagManager.trackEvent((String) tagMap.get(TagManagerUtils.EVENT), bundle);
-    Timber.d("Tags bundle : " + bundle + " / for event : " + tagMap.get(TagManagerUtils.EVENT));
     tagMap.clear();
   }
 }

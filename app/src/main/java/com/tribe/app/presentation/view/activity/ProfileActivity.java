@@ -84,6 +84,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     initPresenter();
   }
 
+  @Override protected void onStart() {
+    super.onStart();
+    profilePresenter.onViewAttached(this);
+  }
+
   @Override protected void onStop() {
     profilePresenter.onViewDetached();
     super.onStop();

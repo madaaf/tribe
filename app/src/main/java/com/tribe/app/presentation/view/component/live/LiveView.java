@@ -367,10 +367,6 @@ public class LiveView extends FrameLayout {
               totalSizeLive += nbLiveInRoom() + 1;
               averageCountLive = (double) totalSizeLive / (intervalCount + 1);
 
-              Timber.d("totalSizeLive : " + totalSizeLive);
-              Timber.d("averageCountLive : " + averageCountLive);
-              Timber.d("intervalCount : " + intervalCount + 1);
-
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
             }));
       }

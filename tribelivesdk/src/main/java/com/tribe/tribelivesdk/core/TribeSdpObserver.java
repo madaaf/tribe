@@ -62,9 +62,9 @@ public class TribeSdpObserver implements SdpObserver {
 
     Timber.d("On Create Success : " + sdp);
 
-    String description =
-        com.tribe.tribelivesdk.core.MediaConstraints.removeVideoCodec(sdp.description,
-            com.tribe.tribelivesdk.core.MediaConstraints.VIDEO_CODEC_VP9);
+    String description = sdp.description;
+    //com.tribe.tribelivesdk.core.MediaConstraints.removeVideoCodec(sdp.description,
+    //    com.tribe.tribelivesdk.core.MediaConstraints.VIDEO_CODEC_VP9);
 
     SessionDescription localSessionDescription = new SessionDescription(sdp.type, description);
 

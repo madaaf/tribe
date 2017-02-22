@@ -3,7 +3,7 @@
 
   <FrameLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/live_notification_item_height"
+      android:layout_height="@dimen/live_notification_item_height_big"
       >
 
     <ImageView

@@ -7,11 +7,9 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_gravity="end|center_vertical"
-      android:background="@drawable/selectable_button_light"
       android:clickable="true"
       android:gravity="end|center_vertical"
       android:paddingEnd="@dimen/horizontal_margin_small"
-      android:textAllCaps="true"
       style="@style/Body.Two.White"
       />
 </merge>

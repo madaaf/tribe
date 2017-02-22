@@ -41,7 +41,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @IntDef({ LIVE, ERROR }) public @interface LiveNotificationType {
   }
 
-  private static final long DISPLAY_TIME_IN_SECONDS = 5000;
+  private static final long DISPLAY_TIME_IN_SECONDS = 100000;
   public static final int LIVE = 0;
   public static final int ERROR = 1;
   private static final int CLEAN_UP_DELAY_MILLIS = 100;
@@ -191,19 +191,22 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     }, CLEAN_UP_DELAY_MILLIS);
   }
 
-  private void addAction(LiveNotificationActionView.Action action, boolean isLast) {
-    int sizeActionItem =
-        getResources().getDimensionPixelSize(R.dimen.live_notification_item_height);
+  private void addAction(LiveNotificationActionView.Action action, int count, boolean isLast) {
+    int sizeActionItem = getResources().getDimensionPixelSize(
+        count == 1 || isLast ? R.dimen.live_notification_item_height_big
+            : R.dimen.live_notification_item_height_small);
 
     LiveNotificationActionView actionView =
-        new LiveNotificationActionView.Builder(getContext(), action).isLast(isLast).build();
+        new LiveNotificationActionView.Builder(getContext(), action).isLast(isLast)
+            .count(count)
+            .build();
 
     LinearLayout.LayoutParams params =
         new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeActionItem);
     params.gravity = Gravity.CENTER_VERTICAL;
 
     actionContainer.addView(actionView, params);
-    subscriptions.add(actionView.onClick().subscribe(onClickAction));
+    subscriptions.add(actionView.onClick().doOnNext(action1 -> hide()).subscribe(onClickAction));
   }
 
   private void setTitle(@NonNull final String title) {
@@ -283,11 +286,11 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
       if (type != ERROR) {
         int count = 0;
         for (LiveNotificationActionView.Action action : actionList) {
-          view.addAction(action, (count == (actionList.size() - 1)));
+          view.addAction(action, actionList.size(), (count == (actionList.size() - 1)));
           count++;
         }
       } else {
-        Timber.w("type error");
+        Timber.w("Error type");
       }
       return view;
     }

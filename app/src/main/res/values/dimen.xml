@@ -48,7 +48,8 @@
   <dimen name="pick_all_height">72.5dp</dimen>
   <dimen name="live_notification_min_height">75.5dp</dimen>
   <dimen name="live_notification_max_height">197.5dp</dimen>
-  <dimen name="live_notification_item_height">60.5dp</dimen>
+  <dimen name="live_notification_item_height_big">60dp</dimen>
+  <dimen name="live_notification_item_height_small">40dp</dimen>
   <dimen name="action_button_height">35dp</dimen>
 
   <!-- WIDTHS -->
