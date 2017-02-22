@@ -33,22 +33,21 @@ import javax.inject.Singleton;
     Bundle bundle = new Bundle();
 
     if (user != null) {
-      bundle.putBoolean(TagManagerConstants.user_invisible_enabled, user.isInvisibleMode());
-      bundle.putString(TagManagerConstants.user_username, user.getUsername());
-      bundle.putString(TagManagerConstants.user_display_name, user.getUsername());
-      bundle.putString(TagManagerConstants.user_username, user.getUsername());
-      bundle.putBoolean(TagManagerConstants.user_facebook_connected, FacebookUtils.isLoggedIn());
-      bundle.putBoolean(TagManagerConstants.user_has_profile_picture,
+      bundle.putBoolean(TagManagerUtils.USER_INVISIBLE_ENABLED, user.isInvisibleMode());
+      bundle.putString(TagManagerUtils.USER_USERNAME, user.getUsername());
+      bundle.putString(TagManagerUtils.USER_DISPLAY_NAME, user.getUsername());
+      bundle.putBoolean(TagManagerUtils.USER_FACEBOOK_CONNECTED, FacebookUtils.isLoggedIn());
+      bundle.putBoolean(TagManagerUtils.USER_HAS_PROFILE_PICTURE,
           !StringUtils.isEmpty(user.getProfilePicture()));
     }
 
-    bundle.putBoolean(TagManagerConstants.user_address_book_enabled,
+    bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED,
         addressBook.get() && PermissionUtils.hasPermissionsContact(context));
-    bundle.putBoolean(TagManagerConstants.user_camera_enabled,
+    bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED,
         PermissionUtils.hasPermissionsCamera(context));
-    bundle.putBoolean(TagManagerConstants.user_microphone_enabled,
+    bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED,
         PermissionUtils.hasPermissionsCamera(context));
-    bundle.putBoolean(TagManagerConstants.user_notifications_enabled,
+    bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
         true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
 
     setProperty(bundle);

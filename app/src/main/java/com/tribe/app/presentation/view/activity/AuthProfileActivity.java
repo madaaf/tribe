@@ -22,7 +22,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -185,7 +185,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       if (isReady()) {
         nextStep();
       } else {
-        tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_ProfileFilledWithFacebook);
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
         if (FacebookUtils.isLoggedIn()) {
           getInfoFromFacebook();
         } else {
@@ -254,8 +254,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     this.user.copy(user);
 
     Bundle bundle = new Bundle();
-    bundle.putBoolean(TagManagerConstants.Success, true);
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_ProfileConfigured, bundle);
+    bundle.putBoolean(TagManagerUtils.SUCCESS, true);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileConfigured, bundle);
 
     tagManager.alias(user.getId());
 
@@ -270,7 +270,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
     if (this.user != null) {
       Bundle bundleUser = new Bundle();
-      bundleUser.putString(TagManagerConstants.user_username, this.user.getUsername());
+      bundleUser.putString(TagManagerUtils.USER_USERNAME, this.user.getUsername());
       tagManager.setProperty(bundleUser);
       tagManager.setUserId(user.getId());
     }

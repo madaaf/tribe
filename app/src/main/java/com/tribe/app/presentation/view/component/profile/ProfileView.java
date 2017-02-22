@@ -19,7 +19,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -106,7 +106,7 @@ public class ProfileView extends FrameLayout {
 
     subscriptions.add(viewActionVisible.onChecked().subscribe(isChecked -> {
       Bundle bundle = new Bundle();
-      bundle.putBoolean(TagManagerConstants.user_invisible_enabled, isChecked);
+      bundle.putBoolean(TagManagerUtils.USER_INVISIBLE_ENABLED, isChecked);
       tagManager.setProperty(bundle);
       onChangeVisible.onNext(!isChecked);
     }));

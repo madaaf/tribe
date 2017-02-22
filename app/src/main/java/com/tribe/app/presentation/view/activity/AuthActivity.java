@@ -28,7 +28,7 @@ import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.component.onboarding.AuthVideoView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
@@ -46,6 +46,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView {
 
@@ -119,7 +120,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_Start);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     if (savedInstanceState != null) {
       if (savedInstanceState.getParcelable(DEEP_LINK) != null) {
         deepLink = savedInstanceState.getParcelable(DEEP_LINK);
@@ -251,7 +252,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     subscriptions.add(authVideoView.videoCompleted()
         .subscribeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_VideoFinished);
+          tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_VideoFinished);
           showPhoneInput(true);
         }));
 
@@ -282,7 +283,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     }));
 
     subscriptions.add(viewPhoneNumber.nextClick().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinRequested);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinRequested);
       confirmPhoneNumber();
     }));
 
@@ -299,7 +300,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
       if (isValid) {
         cleanCountdown();
-        tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinSubmitted);
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSubmitted);
         loginEntity =
             authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(),
                 pin.getPinId());
@@ -328,7 +329,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @OnClick(R.id.btnSkip) void skip() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_VideoSkipped);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_VideoSkipped);
     showPhoneInput(true);
   }
 
@@ -456,12 +457,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         AuthenticationDialogFragment.class.getName());
     subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
       authenticationDialogFragment.dismiss();
-      tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinConfirmed);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
       requestCode();
     }));
 
     subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinModified);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinModified);
       authenticationDialogFragment.dismiss();
     }));
   }
@@ -552,23 +553,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override public void loginError(ErrorLogin errorLogin) {
     this.errorLogin = errorLogin;
-
-    //if (errorLogin != null && !errorLogin.isVerified()) {
-    //    Bundle bundle = new Bundle();
-    //    bundle.putBoolean(TagManagerConstants.TYPE_ERROR_TECHNICAL, true);
-    //    tagManager.trackEvent(TagManagerConstants.ONBOARDING_SMS_ERROR, bundle);
-    //}
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {
-    //Bundle bundle = new Bundle();
-    //bundle.putBoolean(TagManagerConstants.TYPE_ERROR_TECHNICAL, true);
-    //tagManager.trackEvent(TagManagerConstants.ONBOARDING_PIN_ERROR, bundle);
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinFailed);
+    Timber.d("Pin error");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
   }
 
   @Override public void pinSucceeded() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_PinSucceeded);
+    Timber.d("Pin succeeded");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
   }
 
   @Override public void showLoading() {

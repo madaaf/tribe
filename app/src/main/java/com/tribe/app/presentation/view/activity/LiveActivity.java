@@ -30,13 +30,12 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
-import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -321,14 +320,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
-      tagManager.trackEvent(TagManagerConstants.KPI_Calls_StartedButton);
       joinRoom();
       displayStartFirstPopupTutorial();
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
       if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
-        tagManager.trackEvent(TagManagerConstants.KPI_Calls_WizzedButton);
         soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
         livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
       }
@@ -341,12 +338,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
             getString(R.string.tips_leavingroom_action1),
             getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
-          tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
           finish();
         }));
         stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
       } else {
-        tagManager.trackEvent(TagManagerConstants.KPI_Calls_LeaveButton);
         finish();
       }
     }));
@@ -357,7 +352,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
 
     subscriptions.add(viewInviteLive.onInviteLiveClick().subscribe(view -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Calls_LinkButton);
       navigator.openSmsForInvite(this);
     }));
 
@@ -397,8 +391,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void invite(String userId) {
     Bundle bundle = new Bundle();
-    bundle.putBoolean(TagManagerConstants.Swipe, true);
-    tagManager.trackEvent(TagManagerConstants.KPI_Calls_InviteAction, bundle);
+    bundle.putBoolean(TagManagerUtils.SWIPE, true);
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 

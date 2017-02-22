@@ -163,7 +163,13 @@ public class AvatarView extends LinearLayout implements Avatar {
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribeOn(Schedulers.io())
                   .doOnError(throwable -> System.out.println("Error"))
-                  .subscribe(bitmap -> imgAvatar.setImageBitmap(bitmap));
+                  .subscribe(bitmap -> Glide.with(getContext())
+                      .load(groupAvatarFile)
+                      .bitmapTransform(new CropCircleTransformation(getContext()))
+                      .signature(
+                          new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
+                      .crossFade()
+                      .into(imgAvatar));
         }
 
         loadPlaceholder();

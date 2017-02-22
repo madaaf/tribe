@@ -41,7 +41,7 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
@@ -133,7 +133,7 @@ public class HomeActivity extends BaseActivity
     getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
 
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_HomeScreen);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 
     initDependencyInjector();
     init();
@@ -163,14 +163,14 @@ public class HomeActivity extends BaseActivity
 
           if (areAllGranted) {
             Bundle bundle = new Bundle();
-            bundle.putBoolean(TagManagerConstants.user_camera_enabled, areAllGranted);
-            bundle.putBoolean(TagManagerConstants.user_microphone_enabled, areAllGranted);
+            bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED, areAllGranted);
+            bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED, areAllGranted);
             tagManager.setProperty(bundle);
 
             Bundle bundleBis = new Bundle();
-            bundleBis.putBoolean(TagManagerConstants.Accepted, true);
-            tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_SystemCamera, bundleBis);
-            tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_SystemMicrophone, bundleBis);
+            bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+            tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemCamera, bundleBis);
+            tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone, bundleBis);
           }
         }));
 
@@ -395,7 +395,10 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Invites_HomeScreenSMSInviteButton);
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
+      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       navigator.openSmsForInvite(this);
     }));
 
@@ -426,7 +429,10 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
-      tagManager.trackEvent(TagManagerConstants.KPI_Invites_SearchScreenSMSInviteButton);
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
+      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
       navigator.openSmsForInvite(this);
     }));
@@ -467,9 +473,9 @@ public class HomeActivity extends BaseActivity
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
       Bundle bundle = new Bundle();
-      bundle.putInt(TagManagerConstants.user_friends_count,
+      bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT,
           getCurrentUser().getFriendships().size());
-      bundle.putInt(TagManagerConstants.user_groups_count,
+      bundle.putInt(TagManagerUtils.USER_GROUPS_COUNT,
           getCurrentUser().getMembershipList().size());
       tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
@@ -551,7 +557,6 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToCreateGroup() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Groups_NewGroup);
     HomeActivity.this.navigator.navigateToCreateGroup(this);
   }
 

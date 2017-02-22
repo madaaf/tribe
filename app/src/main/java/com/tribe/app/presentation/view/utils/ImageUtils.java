@@ -92,7 +92,7 @@ import rx.schedulers.Schedulers;
     return dstBmp;
   }
 
-  public static Observable<Bitmap> createGroupAvatar(Context context, String id, List<String> urls,
+  public static Observable<File> createGroupAvatar(Context context, String id, List<String> urls,
       int avatarSize) {
     List<Pair<Integer, String>> positionUrls = new ArrayList<>();
 
@@ -207,7 +207,7 @@ import rx.schedulers.Schedulers;
 
         File endFile = FileUtils.getAvatarForGroupId(context, id, FileUtils.PHOTO);
         FileUtils.bitmapToFile(base, endFile);
-        return base;
+        return endFile;
       }
 
       return null;

@@ -23,7 +23,7 @@ import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessMVPView;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -110,7 +110,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> start());
 
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsStart);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_FindFriendsStart);
   }
 
   private void initDependencyInjector() {
@@ -139,7 +139,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   @OnClick(R.id.txtAction) void onClickAction() {
     if (viewAccess.getStatus() == AccessView.NONE) {
-      tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsNext);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_FindFriendsNext);
       start();
     } else if (viewAccess.getStatus() == AccessView.LOADING) {
       showCongrats();
@@ -209,12 +209,12 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
         .subscribe(hasPermission -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.user_address_book_enabled, hasPermission);
+          bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
           tagManager.setProperty(bundle);
 
           Bundle bundleBis = new Bundle();
-          bundleBis.putBoolean(TagManagerConstants.Accepted, true);
-          tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_SystemContacts, bundleBis);
+          bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+          tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
 
           if (hasPermission) {
             addressBook.set(true);

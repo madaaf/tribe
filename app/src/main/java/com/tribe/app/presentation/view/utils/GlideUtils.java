@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
@@ -27,6 +28,18 @@ public class GlideUtils {
   public static void load(Context context, int avatarSize, ImageView img) {
     Glide.with(context)
         .load(R.drawable.picto_placeholder_avatar)
+        .thumbnail(0.25f)
+        .override(avatarSize, avatarSize)
+        .bitmapTransform(new CropCircleTransformation(context))
+        .crossFade()
+        .into(img);
+  }
+
+  public static void load(Context context, int avatarSize, Bitmap bitmap, ImageView img) {
+    Glide.with(context)
+        .load(bitmap)
+        .error(R.drawable.picto_placeholder_avatar)
+        .placeholder(R.drawable.picto_placeholder_avatar)
         .thumbnail(0.25f)
         .override(avatarSize, avatarSize)
         .bitmapTransform(new CropCircleTransformation(context))

@@ -32,7 +32,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
@@ -42,7 +42,9 @@ import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -87,6 +89,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   private AddMembersGroupView viewAddMembersGroup;
   private UpdateGroupView viewUpdateGroup;
   private GroupDetailsView viewDetailsGroup;
+  private Map<String, Object> tagMap;
 
   // VARIABLES
   private boolean disableUI = false;
@@ -134,6 +137,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
   private void init(Bundle savedInstanceState) {
     newMembers = new ArrayList<>();
+    tagMap = new HashMap<>();
 
     if (getIntent().hasExtra(MEMBERSHIP_ID)) {
       membershipId = getIntent().getStringExtra(MEMBERSHIP_ID);
@@ -142,6 +146,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       setupAction(getString(R.string.group_details_invite_link));
       txtAction.setVisibility(View.VISIBLE);
     } else {
+      tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Creation);
       setupAction(getString(R.string.action_create));
       txtAction.setVisibility(View.VISIBLE);
       txtTitle.setText(R.string.group_identification_title);
@@ -155,10 +160,10 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           membersId.add(groupMember.getUser().getId());
         }
 
-        Bundle bundle = new Bundle();
-        bundle.putInt(TagManagerConstants.Members_Count, newMembers.size());
-        tagManager.trackEvent(TagManagerConstants.KPI_Groups_CreateGroup, bundle);
-        tagManager.increment(TagManagerConstants.user_groups_count);
+        tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CREATED);
+        tagMap.put(TagManagerUtils.MEMBERS_COUNT, membersId.size());
+        TagManagerUtils.manageTags(tagManager, tagMap);
+        tagManager.increment(TagManagerUtils.USER_GROUPS_COUNT);
 
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setMembersId(membersId);
@@ -168,6 +173,12 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         if (viewStack.getTopView() instanceof UpdateGroupView) {
           groupPresenter.updateGroup(membership.getSubId(), viewUpdateGroup.getGroupEntity());
         } else if (viewStack.getTopView() instanceof AddMembersGroupView) {
+          tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
+          tagMap.put(TagManagerUtils.MEMBERS_COUNT,
+              membership.getGroup().getMembers().size() + newMembers.size());
+          tagMap.put(TagManagerUtils.MEMBERS_ADDED_COUNT, newMembers.size());
+          TagManagerUtils.manageTags(tagManager, tagMap);
+
           groupPresenter.addMembersToGroup(membership.getSubId(), newMembers);
         } else if (viewStack.getTopView() instanceof GroupDetailsView) {
           navigator.shareGenericText("", this);
@@ -209,7 +220,21 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   @OnClick(R.id.imgBack) void clickBack() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Groups_BackGroup);
+    if (!tagMap.containsKey(TagManagerUtils.ACTION) && tagMap.containsKey(TagManagerUtils.EVENT)) {
+      tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CANCELLED);
+
+      if (TagManagerUtils.Groups_Creation.equals(tagMap.get(TagManagerUtils.EVENT))) {
+        tagMap.put(TagManagerUtils.MEMBERS_COUNT, 0);
+      } else if (TagManagerUtils.Groups_Members.equals(tagMap.get(TagManagerUtils.EVENT))) {
+        tagMap.put(TagManagerUtils.MEMBERS_COUNT, membership.getGroup().getMembers().size());
+        tagMap.put(TagManagerUtils.MEMBERS_ADDED_COUNT, 0);
+      } else if (TagManagerUtils.Groups_Infos.equals(tagMap.get(TagManagerUtils.EVENT))) {
+        tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !membership.isMute());
+      }
+
+      TagManagerUtils.manageTags(tagManager, tagMap);
+    }
+
     onBackPressed();
   }
 
@@ -269,6 +294,10 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   private void setupAddMembersView(Serializable param) {
+    if (membership != null) {
+      tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Members);
+    }
+
     viewAddMembersGroup =
         (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_group_add_members, param);
     subscriptions.add(viewAddMembersGroup.onMembersChanged().subscribe(addedMembers -> {
@@ -304,29 +333,38 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     }));
 
     subscriptions.add(viewDetailsGroup.onAddMembers().subscribe(aVoid -> {
+      tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);
+      tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MEMBERS);
+      TagManagerUtils.manageTags(tagManager, tagMap);
+
       setupAddMembersView(membership);
     }));
 
     subscriptions.add(viewDetailsGroup.onGroupInfos().subscribe(aVoid -> {
+      tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);
+      tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.SETTINGS);
+      TagManagerUtils.manageTags(tagManager, tagMap);
+
       setupUpdateView();
     }));
-
-    //subscriptions.add(viewDetailsGroup.onClickRemoveFromGroup().map(groupMember -> {
-    //  membership.getGroup().getMembers().remove(groupMember.getUser());
-    //  updateGroup(membership.getGroup(), true);
-    //  return groupMember.getUser();
-    //}).subscribe(user -> groupPresenter.removeMembersFromGroup(membership.getSubId(), user)));
   }
 
   private void setupUpdateView() {
+    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);
+
     viewUpdateGroup =
         (UpdateGroupView) viewStack.pushWithParameter(R.layout.view_group_update, membership);
 
     subscriptions.add(viewUpdateGroup.onLeaveGroup().subscribe(aVoid -> {
+      tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.LEFT);
+      tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !membership.isMute());
+      TagManagerUtils.manageTags(tagManager, tagMap);
       groupPresenter.leaveGroup(membershipId);
     }));
 
     subscriptions.add(viewUpdateGroup.onNotificationsChange().subscribe(aBoolean -> {
+      tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
+      tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !aBoolean);
       groupPresenter.updateMembership(membershipId, !aBoolean);
     }));
   }

@@ -14,7 +14,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.PermissionUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -114,8 +114,15 @@ public class MediaHiddenActivity extends BaseActivity {
         .request(PermissionUtils.PERMISSIONS_CAMERA)
         .subscribe(granted -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.user_camera_enabled, granted);
-          this.getTagManager().setProperty(bundle);
+          bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED, granted);
+          bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED, granted);
+          getTagManager().setProperty(bundle);
+
+          Bundle bundleBis = new Bundle();
+          bundleBis.putBoolean(TagManagerUtils.ACCEPTED, granted);
+          getTagManager().trackEvent(TagManagerUtils.KPI_Onboarding_SystemCamera, bundleBis);
+          getTagManager().trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone,
+              bundleBis);
 
           if (granted) {
             Sources sourceType = Sources.values()[intent.getIntExtra(IMAGE_SOURCE, 0)];

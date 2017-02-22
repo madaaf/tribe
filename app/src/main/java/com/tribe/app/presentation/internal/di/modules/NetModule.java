@@ -54,7 +54,7 @@ import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
@@ -276,10 +276,10 @@ import timber.log.Timber;
           if (responseRefresh != null) {
             if (!StringUtils.isEmpty(responseRefresh.message())) {
               Bundle properties = new Bundle();
-              properties.putString(TagManagerConstants.ERROR, responseRefresh.message());
-              tagManager.trackEvent(TagManagerConstants.TOKEN_DISCONNECT, properties);
+              properties.putString(TagManagerUtils.ERROR, responseRefresh.message());
+              tagManager.trackEvent(TagManagerUtils.TOKEN_DISCONNECT, properties);
             } else {
-              tagManager.trackEvent(TagManagerConstants.TOKEN_DISCONNECT);
+              tagManager.trackEvent(TagManagerUtils.TOKEN_DISCONNECT);
             }
 
             if (responseRefresh.errorBody() != null) {

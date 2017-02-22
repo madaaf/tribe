@@ -40,7 +40,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.adapter.ContactAdapter;
@@ -373,7 +373,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
         .subscribe(hasPermission -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.user_address_book_enabled, hasPermission);
+          bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
           tagManager.setProperty(bundle);
 
           if (hasPermission) {

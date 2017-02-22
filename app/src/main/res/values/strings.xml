@@ -209,6 +209,7 @@
 	<string name="live_notification_peer_joined">%1$s joined</string>
 	<string name="live_notification_peer_left">%1$s left</string>
 	<string name="live_notification_buzzed">Buzzing!</string>
+	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
 	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Viewed by</string>

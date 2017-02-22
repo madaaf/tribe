@@ -24,7 +24,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.FriendsPresenter;
 import com.tribe.app.presentation.mvp.view.FriendsMVPView;
 import com.tribe.app.presentation.utils.PermissionUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.adapter.UserListAdapter;
@@ -269,7 +269,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         .request(PermissionUtils.PERMISSIONS_CONTACTS)
         .subscribe(hasPermission -> {
           Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerConstants.user_address_book_enabled, hasPermission);
+          bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
           tagManager.setProperty(bundle);
 
           if (hasPermission) {
@@ -287,7 +287,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
 
   private void navigateToHome() {
     Bundle bundle = new Bundle();
-    bundle.putBoolean(TagManagerConstants.user_onboarding_completed, true);
+    bundle.putBoolean(TagManagerUtils.USER_ONBOARDING_COMPLETED, true);
     tagManager.setProperty(bundle);
     navigator.navigateToHome(this, false, deepLink);
     finish();
@@ -315,7 +315,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
   }
 
   @OnClick(R.id.txtAction) void onClickAction() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsDone);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_FindFriendsDone);
 
     if (newFriends.size() == 0) {
       if (countFriends > 0 || contactList.size() == 0) {
@@ -337,7 +337,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
   }
 
   @OnClick(R.id.viewPickAll) void onPickAll() {
-    tagManager.trackEvent(TagManagerConstants.KPI_Onboarding_FindFriendsSelectAll);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_FindFriendsSelectAll);
     addUsers(contactList);
   }
 

@@ -145,7 +145,7 @@ public class JsonToModel {
         TribePeerMediaConfiguration peerMediaConfiguration = new TribePeerMediaConfiguration(
             new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
         JSONObject d = object.getJSONObject("d");
-        peerMediaConfiguration.setAudioEnabled(d.getBoolean("audi"));
+        peerMediaConfiguration.setAudioEnabled(d.getBoolean("audio"));
         peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
         peerMediaConfiguration.setLowConnectivityMode(true);
         onShouldSwitchMediaMode.onNext(peerMediaConfiguration);

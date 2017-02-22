@@ -29,7 +29,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerConstants;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -45,6 +45,7 @@ import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -53,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -111,6 +113,11 @@ public class LiveView extends FrameLayout {
   private AvatarView avatarView;
   private ObjectAnimator animatorRotation;
   private ObjectAnimator animatorBuzzAvatar;
+  private Map<String, Object> tagMap;
+  private int wizzCount = 0, invitedCount = 0, totalSizeLive = 0;
+  private double averageCountLive = 0.0D;
+  private boolean hasJoined = false;
+  private long timeStart = 0L, timeEnd = 0L;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -142,6 +149,29 @@ public class LiveView extends FrameLayout {
   }
 
   public void onDestroy() {
+    String state = TagManagerUtils.CANCELLED;
+
+    if (hasJoined && averageCountLive > 1) {
+      state = TagManagerUtils.ENDED;
+    } else if (hasJoined && averageCountLive <= 1) state = TagManagerUtils.MISSED;
+
+    double duration = 0.0D;
+
+    if (timeStart > 0) {
+      timeEnd = System.currentTimeMillis();
+      long delta = timeEnd - timeStart;
+      duration = (double) delta / 1000.0;
+    }
+
+    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
+    tagMap.put(TagManagerUtils.DURATION, duration);
+    tagMap.put(TagManagerUtils.STATE, state);
+    tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
+    tagMap.put(TagManagerUtils.WIZZ_COUNT, invitedCount);
+    tagMap.put(TagManagerUtils.TYPE,
+        recipient instanceof Membership ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
+    TagManagerUtils.manageTags(tagManager, tagMap);
+
     if (room != null) {
       viewRoom.removeAllViews();
       room.leaveRoom();
@@ -188,6 +218,7 @@ public class LiveView extends FrameLayout {
   private void init(Context context, AttributeSet attrs) {
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
+    tagMap = new HashMap<>();
   }
 
   private void initUI() {
@@ -253,6 +284,7 @@ public class LiveView extends FrameLayout {
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
     if (!hiddenControls) {
+      wizzCount++;
       onNotificationRemotePeerBuzzed.onNext(null);
       viewBuzz.buzz();
 
@@ -327,6 +359,21 @@ public class LiveView extends FrameLayout {
 
     subscriptions.add(room.onRoomStateChanged().subscribe(state -> {
       Timber.d("Room state change : " + state);
+      if (state == Room.STATE_CONNECTED) {
+        timeStart = System.currentTimeMillis();
+
+        subscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
+            .subscribe(intervalCount -> {
+              totalSizeLive += nbLiveInRoom() + 1;
+              averageCountLive = (double) totalSizeLive / (intervalCount + 1);
+
+              Timber.d("totalSizeLive : " + totalSizeLive);
+              Timber.d("averageCountLive : " + averageCountLive);
+              Timber.d("intervalCount : " + intervalCount + 1);
+
+              tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
+            }));
+      }
     }));
 
     subscriptions.add(
@@ -451,7 +498,7 @@ public class LiveView extends FrameLayout {
       room.sendToPeers(getInvitedPayload(), true);
 
       subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
-        tagManager.trackEvent(TagManagerConstants.KPI_Calls_DragAndDrop);
+        invitedCount++;
         displayDroppingGuestPopupTutorial();
         latestView.showGuest(false);
         latestView.startPulse();
@@ -503,10 +550,10 @@ public class LiveView extends FrameLayout {
     addView(liveRowView, guest, color);
     liveRowView.showGuest(true);
 
-    subscriptions.add(liveRowView.onShouldJoinRoom()
-        .distinct()
-        .doOnNext(aVoid -> btnNotify.setEnabled(true))
-        .subscribe(onShouldJoinRoom));
+    subscriptions.add(liveRowView.onShouldJoinRoom().distinct().doOnNext(aVoid -> {
+      btnNotify.setEnabled(true);
+      hasJoined = true;
+    }).subscribe(onShouldJoinRoom));
   }
 
   public Room getRoom() {
