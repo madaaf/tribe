@@ -124,7 +124,7 @@ public class LiveLocalView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(mediaConfiguration -> {
           if (!cameraEnabled && mediaConfiguration.isVideoEnabled()) {
-            enableCamera();
+            enableCamera(true);
 
             if (mediaConfiguration.isLowConnectivityMode()
                 && txtLowConnectivity.getTranslationX() == 0) {
@@ -135,7 +135,7 @@ public class LiveLocalView extends FrameLayout {
                   .start();
             }
           } else if (cameraEnabled && !mediaConfiguration.isVideoEnabled()) {
-            disableCamera();
+            disableCamera(true);
 
             if (mediaConfiguration.isLowConnectivityMode()) {
               txtLowConnectivity.animate()
@@ -176,53 +176,19 @@ public class LiveLocalView extends FrameLayout {
     }
   }
 
-  private void enableCamera() {
-    cameraEnabled = true;
-    onEnableCamera.onNext(cameraEnabled);
-    alpha(btnCameraSwitch, 1);
-    animateEnableCamera(cameraEnabled);
-
-    UIUtils.showReveal(viewPeerLocal, new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        viewAudio.setVisibility(View.GONE);
-      }
-
-      @Override public void onAnimationStart(Animator animation) {
-        viewPeerLocal.setVisibility(View.VISIBLE);
-      }
-    });
-  }
-
-  private void disableCamera() {
-    cameraEnabled = false;
-    onEnableCamera.onNext(cameraEnabled);
-    alpha(btnCameraSwitch, 0);
-    animateEnableCamera(cameraEnabled);
-
-    UIUtils.hideReveal(viewPeerLocal, new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        viewAudio.setVisibility(View.VISIBLE);
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        viewPeerLocal.setVisibility(View.GONE);
-      }
-    });
-  }
-
   /////////////////
   //   CLICKS    //
   /////////////////
 
   @OnClick(R.id.btnCameraEnable) void clickEnableCamera() {
     if (!hiddenControls) {
-      enableCamera();
+      enableCamera(true);
     }
   }
 
   @OnClick(R.id.btnCameraDisable) void clickDisableCamera() {
     if (!hiddenControls) {
-      disableCamera();
+      disableCamera(true);
     }
   }
 
@@ -238,6 +204,40 @@ public class LiveLocalView extends FrameLayout {
   ////////////////
   // ANIMATIONS //
   ////////////////
+
+  public void enableCamera(boolean animate) {
+    cameraEnabled = true;
+    onEnableCamera.onNext(cameraEnabled);
+    alpha(btnCameraSwitch, 1);
+    animateEnableCamera(cameraEnabled);
+
+    UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        viewAudio.setVisibility(View.GONE);
+      }
+
+      @Override public void onAnimationStart(Animator animation) {
+        viewPeerLocal.setVisibility(View.VISIBLE);
+      }
+    });
+  }
+
+  public void disableCamera(boolean animate) {
+    cameraEnabled = false;
+    onEnableCamera.onNext(cameraEnabled);
+    alpha(btnCameraSwitch, 0);
+    animateEnableCamera(cameraEnabled);
+
+    UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+        viewAudio.setVisibility(View.VISIBLE);
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
+        viewPeerLocal.setVisibility(View.GONE);
+      }
+    });
+  }
 
   private void animateEnableCamera(boolean enabled) {
     if (enabled) {

@@ -563,6 +563,10 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     circlePaint.setColor(paletteGrid.getRandomColorExcluding(color));
   }
 
+  public void prepareForDrop() {
+    txtDropInTheLive.setVisibility(View.GONE);
+  }
+
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     if (guest != null) {

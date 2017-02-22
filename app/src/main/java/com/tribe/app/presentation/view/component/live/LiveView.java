@@ -493,6 +493,7 @@ public class LiveView extends FrameLayout {
   public void initDropSubscription(Observable<TileView> obs) {
     subscriptions.add(obs.subscribe(tileView -> {
       tileView.onDrop(latestView);
+      latestView.prepareForDrop();
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload(), true);
@@ -594,9 +595,9 @@ public class LiveView extends FrameLayout {
 
   public void setCameraEnabled(boolean enable) {
     if (enable) {
-      viewLocalLive.clickEnableCamera();
+      viewLocalLive.enableCamera(false);
     } else {
-      viewLocalLive.clickDisableCamera();
+      viewLocalLive.disableCamera(false);
     }
   }
 

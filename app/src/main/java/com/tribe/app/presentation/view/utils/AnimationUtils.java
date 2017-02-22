@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -368,6 +369,20 @@ public class AnimationUtils {
     return animator;
   }
 
+  public static Animator getElevationAnimator(View view, float elevation) {
+    ValueAnimator animator = ValueAnimator.ofFloat(ViewCompat.getElevation(view), elevation);
+    animator.addUpdateListener(animation -> ViewCompat.setElevation(view, elevation));
+    return animator;
+  }
+
+  public static Animator getColorAnimator(View v, int colorFrom, int colorTo) {
+    ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+    colorAnimation.addUpdateListener(
+        animator -> setColorToBG(v, (Integer) animator.getAnimatedValue()));
+    colorAnimation.setInterpolator(new DecelerateInterpolator());
+    return colorAnimation;
+  }
+
   public static void scaleOldImageOutNewImageIn(ImageView imageView, Drawable oldDrawable,
       Drawable newDrawable) {
     imageView.setImageDrawable(oldDrawable);
@@ -439,17 +454,21 @@ public class AnimationUtils {
   }
 
   private static void setColorToBG(View v, int color) {
-    Drawable background = v.getBackground();
+    if (v instanceof CardView) {
+      ((CardView) v).setCardBackgroundColor(color);
+    } else {
+      Drawable background = v.getBackground();
 
-    if (background instanceof ShapeDrawable) {
-      ShapeDrawable shapeDrawable = (ShapeDrawable) background;
-      shapeDrawable.getPaint().setColor(color);
-    } else if (background instanceof GradientDrawable) {
-      GradientDrawable gradientDrawable = (GradientDrawable) background;
-      gradientDrawable.setColor(color);
-    } else if (background instanceof ColorDrawable) {
-      ColorDrawable colorDrawable = (ColorDrawable) background;
-      colorDrawable.setColor(color);
+      if (background instanceof ShapeDrawable) {
+        ShapeDrawable shapeDrawable = (ShapeDrawable) background;
+        shapeDrawable.getPaint().setColor(color);
+      } else if (background instanceof GradientDrawable) {
+        GradientDrawable gradientDrawable = (GradientDrawable) background;
+        gradientDrawable.setColor(color);
+      } else if (background instanceof ColorDrawable) {
+        ColorDrawable colorDrawable = (ColorDrawable) background;
+        colorDrawable.setColor(color);
+      }
     }
   }
 

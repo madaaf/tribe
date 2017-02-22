@@ -100,10 +100,10 @@ public class UIUtils {
     v.setLayoutParams(params);
   }
 
-  public static void showReveal(View v, AnimatorListenerAdapter listenerAdapter) {
+  public static void showReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
     if (v.getVisibility() == View.VISIBLE) return;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
       int initialRadius = 0;
       Animator anim =
           ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
@@ -119,10 +119,10 @@ public class UIUtils {
     }
   }
 
-  public static void hideReveal(View v, AnimatorListenerAdapter listenerAdapter) {
+  public static void hideReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
     if (v.getVisibility() == View.GONE) return;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
       int initialRadius = Math.max(v.getWidth(), v.getHeight());
       Animator anim =
           ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),

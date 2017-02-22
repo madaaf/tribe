@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.ViewCompat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -482,6 +483,10 @@ public class TileView extends SquareCardView {
     animatorFinal.setInterpolator(new DecelerateInterpolator());
     AnimatorSet animatorFirst = getDropAnimator(false);
 
+    Animator animatorBG = AnimationUtils.getColorAnimator(this, getBackgroundColor(),
+        ColorUtils.setAlphaComponent(getBackgroundColor(), 0));
+    animatorBG.setDuration(60);
+
     AnimatorSet animatorSecond = new AnimatorSet();
     animatorSecond.playTogether(
         AnimationUtils.getHeightAnimator(this, getHeight(), viewLiveRow.getHeight()),
@@ -490,7 +495,8 @@ public class TileView extends SquareCardView {
         AnimationUtils.getTopMarginAnimator(this, viewLiveRow.getTop()),
         AnimationUtils.getRotationAnimator(this, 0),
         AnimationUtils.getSizeAnimator(avatar, sizeAvatarBig),
-        AnimationUtils.getScaleAnimator(avatar, 1));
+        AnimationUtils.getScaleAnimator(avatar, 1), AnimationUtils.getElevationAnimator(this, 0),
+        animatorBG);
 
     if (viewShadowAvatar != null) {
       animatorSecond.playTogether(AnimationUtils.getScaleAnimator(viewShadowAvatar, 1.2f));

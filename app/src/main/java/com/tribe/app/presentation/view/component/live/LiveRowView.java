@@ -109,7 +109,7 @@ public class LiveRowView extends FrameLayout {
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
             layoutStream.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            UIUtils.showReveal(layoutStream, new AnimatorListenerAdapter() {
+            UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
                 viewWaiting.setVisibility(View.GONE);
               }
@@ -125,7 +125,7 @@ public class LiveRowView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribePeerMediaConfiguration -> {
           if (tribePeerMediaConfiguration.isVideoEnabled()) {
-            UIUtils.showReveal(remotePeerView, new AnimatorListenerAdapter() {
+            UIUtils.showReveal(remotePeerView, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
                 viewAudio.setVisibility(View.GONE);
               }
@@ -135,7 +135,7 @@ public class LiveRowView extends FrameLayout {
               }
             });
           } else {
-            UIUtils.hideReveal(remotePeerView, new AnimatorListenerAdapter() {
+            UIUtils.hideReveal(remotePeerView, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationStart(Animator animation) {
                 viewAudio.setVisibility(View.VISIBLE);
               }
@@ -170,6 +170,10 @@ public class LiveRowView extends FrameLayout {
 
   public boolean isGroup() {
     return guest.isGroup();
+  }
+
+  public void prepareForDrop() {
+    viewWaiting.prepareForDrop();
   }
 
   public void showGuest(boolean hasCountDown) {
