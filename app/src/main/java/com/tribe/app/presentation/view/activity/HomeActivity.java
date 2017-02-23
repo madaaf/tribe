@@ -145,6 +145,7 @@ public class HomeActivity extends BaseActivity
     initSearch();
     initRemoteConfig();
     manageDeepLink(getIntent());
+    initPullToRefresh();
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
@@ -260,6 +261,22 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initDimensions() {
+  }
+
+  private void initPullToRefresh() {
+/*    subscriptions.add(topBarContainer.onRefresh()
+        .filter(b -> b)
+        .doOnNext(b -> {
+          canEndRefresh = false;
+          homeGridPresenter.reload(true);
+        })
+        .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(refresh -> {
+          if (canEndRefresh) topBarContainer.setRefreshing(false, false);
+
+          canEndRefresh = true;
+        }));*/
   }
 
   private void initRecyclerView() {

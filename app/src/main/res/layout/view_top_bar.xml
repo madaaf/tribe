@@ -37,10 +37,10 @@
       android:layout_height="35dp"
       android:layout_gravity="right|center_vertical"
       android:layout_marginRight="@dimen/horizontal_margin_small"
-      android:foreground="@drawable/selectable_button_oval_light"
-      android:src="@drawable/picto_invite"
       android:clickable="true"
+      android:foreground="@drawable/selectable_button_oval_light"
       android:gravity="center_vertical"
+      android:src="@drawable/picto_invite"
       style="@style/Body.Two.White"
       />
 
@@ -93,4 +93,32 @@
         style="@style/Body.One.White"
         />
   </LinearLayout>
+
+  <RelativeLayout
+      android:id="@+id/progressRefreshBack"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_oval_white40"
+      android:visibility="gone"
+      >
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progressRefresh"
+        android:layout_width="17.5dp"
+        android:layout_height="17.5dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="6dp"
+        android:alpha="0"
+        android:background="@null"
+        app:cpv_animAutostart="true"
+        app:cpv_animDuration="3000"
+        app:cpv_color="@android:color/white"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2sp"
+        />
+  </RelativeLayout>
+
+
 </merge>
