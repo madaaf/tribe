@@ -28,9 +28,7 @@ public class NotificationPayload implements Serializable {
   private String user_picture;
   private String group_picture;
   private boolean shouldDisplayDrag = true;
-
-
-
+  private String thread;
 
   public void setUserId(String userId) {
     this.user_id = userId;
@@ -118,5 +116,13 @@ public class NotificationPayload implements Serializable {
 
   public void setShouldDisplayDrag(boolean shouldDisplayDrag) {
     this.shouldDisplayDrag = shouldDisplayDrag;
+  }
+
+  public void setThread(String thread) {
+    this.thread = thread;
+  }
+
+  public String getThread() {
+    return thread;
   }
 }

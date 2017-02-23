@@ -143,7 +143,7 @@ import javax.inject.Singleton;
   }
 
   private int getNotificationId(NotificationPayload payload) {
-    return payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) ? 0
+    return !StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
         : (int) System.currentTimeMillis();
   }
 }
