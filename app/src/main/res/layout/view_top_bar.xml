@@ -2,95 +2,129 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-
-  <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
-      android:id="@+id/viewAvatar"
-      android:layout_width="@dimen/avatar_size_smaller"
-      android:layout_height="@dimen/avatar_size_smaller"
-      android:layout_gravity="center_vertical|left"
-      android:layout_marginLeft="@dimen/horizontal_margin_small"
-      android:background="@drawable/bg_top_bar_circle"
-      android:clickable="true"
-      android:foreground="@drawable/selectable_button_oval_light"
-      android:scaleType="centerInside"
-      app:avatarLiveType="connected"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/btnNew"
-      android:layout_width="wrap_content"
-      android:layout_height="35dp"
-      android:layout_gravity="right|center_vertical"
-      android:background="@drawable/selectable_button_all_rounded_white_10"
-      android:clickable="true"
-      android:gravity="center_vertical"
-      android:paddingLeft="10dp"
-      android:paddingRight="10dp"
-      android:singleLine="true"
-      android:text="@string/topbar_new_live"
-      style="@style/Body.Two.White"
-      />
-
-  <ImageView
-      android:id="@+id/btnInvite"
-      android:layout_width="35dp"
-      android:layout_height="35dp"
-      android:layout_gravity="right|center_vertical"
-      android:layout_marginRight="@dimen/horizontal_margin_small"
-      android:foreground="@drawable/selectable_button_oval_light"
-      android:src="@drawable/picto_invite"
-      android:clickable="true"
-      android:gravity="center_vertical"
-      style="@style/Body.Two.White"
-      />
-
-  <ImageView
-      android:id="@+id/imgClose"
-      android:layout_width="@dimen/avatar_size_smaller"
-      android:layout_height="@dimen/avatar_size_smaller"
-      android:layout_gravity="right|center_vertical"
-      android:layout_marginRight="@dimen/horizontal_margin_small"
-      android:background="@drawable/bg_top_bar_circle"
-      android:clickable="true"
-      android:foreground="@drawable/selectable_button_oval_light"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_search_close"
-      />
-
-  <LinearLayout
-      android:id="@+id/btnSearch"
+  <FrameLayout
+      android:id="@+id/viewTopBarContainer"
       android:layout_width="match_parent"
-      android:layout_height="@dimen/avatar_size_smaller"
-      android:layout_gravity="center_vertical|left"
-      android:background="@drawable/shape_rect_rounded_white_10"
-      android:clickable="true"
-      android:gravity="center_vertical"
-      android:orientation="horizontal"
-      android:paddingLeft="@dimen/horizontal_margin_smaller"
-      android:paddingRight="@dimen/horizontal_margin_smaller"
+      android:layout_height="match_parent"
       >
+    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+        android:id="@+id/viewAvatar"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_gravity="center_vertical|left"
+        android:layout_marginLeft="@dimen/horizontal_margin_small"
+        android:background="@drawable/bg_top_bar_circle"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
+        android:scaleType="centerInside"
+        app:avatarLiveType="connected"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnNew"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_gravity="right|center_vertical"
+        android:background="@drawable/selectable_button_all_rounded_white_10"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:singleLine="true"
+        android:text="@string/topbar_new_live"
+        style="@style/Body.Two.White"
+        />
 
     <ImageView
-        android:id="@+id/imgSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_search_white"
+        android:id="@+id/btnInvite"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
+        android:gravity="center_vertical"
+        android:src="@drawable/picto_invite"
+        style="@style/Body.Two.White"
         />
 
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:id="@+id/editTextSearch"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:background="@null"
-        android:gravity="center_vertical"
-        android:hint="@string/topbar_search"
-        android:imeOptions="actionDone"
-        android:inputType="text|textVisiblePassword"
-        android:singleLine="true"
-        android:textColorHint="@color/white.opacity.40"
-        style="@style/Body.One.White"
+    <ImageView
+        android:id="@+id/imgClose"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
+        android:background="@drawable/bg_top_bar_circle"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_search_close"
         />
-  </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btnSearch"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_gravity="center_vertical|left"
+        android:background="@drawable/shape_rect_rounded_white_10"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/horizontal_margin_smaller"
+        android:paddingRight="@dimen/horizontal_margin_smaller"
+        >
+
+      <ImageView
+          android:id="@+id/imgSearch"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_search_white"
+          />
+
+      <com.tribe.app.presentation.view.widget.EditTextFont
+          android:id="@+id/editTextSearch"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_marginLeft="10dp"
+          android:background="@null"
+          android:gravity="center_vertical"
+          android:hint="@string/topbar_search"
+          android:imeOptions="actionDone"
+          android:inputType="text|textVisiblePassword"
+          android:singleLine="true"
+          android:textColorHint="@color/white.opacity.40"
+          style="@style/Body.One.White"
+          />
+    </LinearLayout>
+
+  </FrameLayout>
+
+  <RelativeLayout
+      android:id="@+id/progressRefreshBack"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_oval_white10"
+      android:visibility="invisible"
+      >
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progressRefresh"
+        android:layout_width="17.5dp"
+        android:layout_height="17.5dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="6dp"
+        android:alpha="0"
+        android:background="@null"
+        app:cpv_animAutostart="true"
+        app:cpv_animDuration="3000"
+        app:cpv_color="@android:color/white"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2sp"
+        />
+  </RelativeLayout>
+
+
 </merge>

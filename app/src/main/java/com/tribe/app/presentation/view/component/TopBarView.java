@@ -15,10 +15,12 @@ import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -37,7 +39,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 11/15/2016.
  */
 public class TopBarView extends FrameLayout {
-
+  private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
   private static final int DURATION = 300;
   private static final int DURATION_MEDIUM = 450;
@@ -58,6 +60,12 @@ public class TopBarView extends FrameLayout {
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
 
   @BindView(R.id.imgClose) View imgClose;
+
+  @BindView(R.id.progressRefresh) CircularProgressView progressRefresh;
+
+  @BindView(R.id.progressRefreshBack) RelativeLayout progressRefreshBack;
+
+  @BindView(R.id.viewTopBarContainer) FrameLayout viewTopBarContainer;
 
   // VARIABLES
   private float startX, startY = 0;
@@ -321,6 +329,17 @@ public class TopBarView extends FrameLayout {
     }
 
     return super.dispatchKeyEventPreIme(event);
+  }
+
+  public void showSpinner(float value) {
+    value = (value / 250);
+    progressRefresh.clearAnimation();
+    progressRefresh.setVisibility(VISIBLE);
+    progressRefreshBack.setVisibility(VISIBLE);
+
+    progressRefresh.setAlpha(value);
+    progressRefreshBack.setAlpha(value);
+    viewTopBarContainer.setAlpha(1 - value);
   }
 
   //////////////////////
