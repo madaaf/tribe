@@ -165,13 +165,13 @@ public class Room {
     subscriptions.add(jsonToModel.onShouldSwitchLocalMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> {
-          webRTCClient.setRemoteMediaConfiguration(tribeMediaConfiguration);
+          webRTCClient.setLocalMediaConfiguation(tribeMediaConfiguration);
         }));
 
     subscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> {
-          webRTCClient.setLocalMediaConfiguation(tribeMediaConfiguration);
+          webRTCClient.setRemoteMediaConfiguration(tribeMediaConfiguration);
         }));
   }
 

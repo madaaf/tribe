@@ -1,10 +1,7 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.tribelivesdk.back.IceConfig;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -51,12 +48,6 @@ public class RoomConfiguration implements Serializable {
     if (routingMode.equals(TribeLiveOptions.P2P)) {
       websocketUrl = "wss://coreos-3e7241e7-a2f8-43dc-84cd-93b162fa307e.tribedev.pm:48521/api";
     }
-
-    List<IceConfig> iceServerList = new ArrayList<>();
-    List<String> urls = new ArrayList<>();
-    urls.add("stun: stun.l.google.com:19302");
-    iceServerList.add(new IceConfig(urls, null, null));
-    rtcPeerConfiguration.setIceServers(iceServerList);
   }
 
   @Override public String toString() {
