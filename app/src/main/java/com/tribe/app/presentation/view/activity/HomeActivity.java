@@ -77,7 +77,6 @@ public class HomeActivity extends BaseActivity
     GoogleApiClient.OnConnectionFailedListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
-
   public static final int SETTINGS_RESULT = 101;
 
   public static Intent getCallingIntent(Context context) {
@@ -126,6 +125,7 @@ public class HomeActivity extends BaseActivity
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private boolean hasSynced = false;
+  private boolean canEndRefresh = false;
 
   // DIMEN
 
@@ -264,19 +264,19 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initPullToRefresh() {
-/*    subscriptions.add(topBarContainer.onRefresh()
-        .filter(b -> b)
-        .doOnNext(b -> {
-          canEndRefresh = false;
-          homeGridPresenter.reload(true);
+    subscriptions.add(topBarContainer.onRefresh()
+        .doOnNext(aVoid -> {
+          canEndRefresh = true;
         })
+        .doOnError(throwable -> throwable.printStackTrace())
         .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(refresh -> {
-          if (canEndRefresh) topBarContainer.setRefreshing(false, false);
-
-          canEndRefresh = true;
-        }));*/
+        .subscribe(aVoid -> {
+          if (canEndRefresh) {
+            homeGridPresenter.reload(true);
+            canEndRefresh = false;
+          }
+        }));
   }
 
   private void initRecyclerView() {
@@ -497,6 +497,7 @@ public class HomeActivity extends BaseActivity
           getCurrentUser().getMembershipList().size());
       tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
+      canEndRefresh = false;
     }
   }
 

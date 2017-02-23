@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +33,7 @@ public class TopBarContainer extends FrameLayout {
   private static final float DRAG_RATE = 0.5f;
   private static final int DRAG_THRESHOLD = 20;
   private static final int INVALID_POINTER = -1;
+  public static final int MIN_LENGTH = 1250; // ms
 
   @Inject SoundManager soundManager;
 
@@ -51,7 +53,6 @@ public class TopBarContainer extends FrameLayout {
   private VelocityTracker velocityTracker;
   private int touchSlop;
   private int currentOffsetTop;
-  private boolean isRefreshing = false;
 
   // SPRINGS
   private SpringSystem springSystem = null;
@@ -111,7 +112,7 @@ public class TopBarContainer extends FrameLayout {
     springTop = springSystem.createSpring();
     springTop.setSpringConfig(PULL_TO_SEARCH_SPRING_CONFIG);
     springTopListener = new TopSpringListener();
-    //touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+    touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
     recyclerView.setOnTouchListener((v, event) -> {
       int dy = recyclerView.computeVerticalScrollOffset();
@@ -220,29 +221,9 @@ public class TopBarContainer extends FrameLayout {
 
   private void translateTop(float value) {
     recyclerView.setTranslationY(value);
-    if (value > 0) {
-      topBarView.showSpinner();
-    } else {
-      topBarView.hideSpinner();
-    }
-
- /*   if (beingDragged && !isRefreshing) {
-     *//* isRefreshing = topBarView.animatePull(value, 0, getTotalDragDistance());
-      if (isRefreshing) refresh();*//*
-      topBarView.showSpinner();
-    } else {
-      topBarView.hideSpinner();
-    }*/
-  }
-
-  public void setRefreshing(boolean isRefreshing, boolean error) {
-    this.isRefreshing = isRefreshing;
-
-    if (!isRefreshing) {
-      beingDragged = false;
-      topBarView.hideSpinner();
-    } else {
-      //refresh();
+    topBarView.showSpinner(value);
+    if (value == 0) {
+      onRefresh.onNext(true);
     }
   }
 
@@ -259,7 +240,6 @@ public class TopBarContainer extends FrameLayout {
         if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
           float y = event.getY(pointerIndex) + location[1];
           float offsetY = y - lastDownY + lastDownYTr;
-
           if (offsetY >= 0) applyOffsetTopWithTension(offsetY);
 
           velocityTracker.addMovement(event);
@@ -324,13 +304,6 @@ public class TopBarContainer extends FrameLayout {
 
     return true;
   }
-
-  /*
-  private void refresh() {
-    topBarView.showSpinner();
-    onRefresh.onNext(true);
-  }
-  */
 
   ////////refresh///////////////
   //    OBSERVABLES    //

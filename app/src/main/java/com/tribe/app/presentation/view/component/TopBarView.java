@@ -65,6 +65,8 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.progressRefreshBack) RelativeLayout progressRefreshBack;
 
+  @BindView(R.id.viewTopBarContainer) FrameLayout viewTopBarContainer;
+
   // VARIABLES
   private float startX, startY = 0;
   private boolean searchMode = false;
@@ -329,31 +331,15 @@ public class TopBarView extends FrameLayout {
     return super.dispatchKeyEventPreIme(event);
   }
 
-  public void showSpinner() {
+  public void showSpinner(float value) {
+    value = (value / 250);
     progressRefresh.clearAnimation();
-    AnimationUtils.fadeIn(progressRefresh, 0);
-    setVisibilitySpinner(VISIBLE);
-    setVisibilityTopBar(INVISIBLE);
-  }
+    progressRefresh.setVisibility(VISIBLE);
+    progressRefreshBack.setVisibility(VISIBLE);
 
-  public void hideSpinner() {
-    progressRefresh.clearAnimation();
-    AnimationUtils.fadeOut(progressRefresh, DURATION_FADE);
-    setVisibilitySpinner(GONE);
-    setVisibilityTopBar(VISIBLE);
-  }
-
-  private void setVisibilitySpinner(int visibility) {
-    progressRefresh.setVisibility(visibility);
-    progressRefreshBack.setVisibility(visibility);
-  }
-
-  private void setVisibilityTopBar(int visibility) {
-    btnNew.setVisibility(visibility);
-    viewAvatar.setVisibility(visibility);
-    btnInvite.setVisibility(visibility);
-    editTextSearch.setVisibility(visibility);
-    btnSearch.setVisibility(visibility);
+    progressRefresh.setAlpha(value);
+    progressRefreshBack.setAlpha(value);
+    viewTopBarContainer.setAlpha(1 - value);
   }
 
   //////////////////////
