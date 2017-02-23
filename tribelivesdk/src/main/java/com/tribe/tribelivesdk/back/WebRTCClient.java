@@ -141,7 +141,7 @@ import static android.R.attr.id;
     }
   }
 
-  public void setMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+  public void setRemoteMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
     Timber.d("setMediaConfiguration for peerId : " + tribePeerMediaConfiguration.getSession()
         .getPeerId());
 

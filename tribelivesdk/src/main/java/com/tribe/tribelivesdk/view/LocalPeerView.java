@@ -3,14 +3,21 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import java.util.concurrent.TimeUnit;
 import org.webrtc.VideoRenderer;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 public class LocalPeerView extends PeerView {
 
   private Observable<Void> onSwitchCamera;
   private Observable<Boolean> onEnableCamera;
+  private boolean frontFacing = true;
+
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<TribePeerMediaConfiguration> shouldSwitchMode = PublishSubject.create();
 
   public LocalPeerView(Context context) {
@@ -21,6 +28,10 @@ public class LocalPeerView extends PeerView {
   public LocalPeerView(Context context, AttributeSet attributeSet) {
     super(context, attributeSet);
     initVideoRenderer();
+  }
+
+  public void onDestroy() {
+
   }
 
   private void initVideoRenderer() {
@@ -40,6 +51,10 @@ public class LocalPeerView extends PeerView {
 
   public void initSwitchCameraSubscription(Observable<Void> obs) {
     onSwitchCamera = obs;
+    subscriptions.add(onSwitchCamera.doOnNext(aVoid -> frontFacing = !frontFacing)
+        .delay(200, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> setMirror(frontFacing)));
   }
 
   public void shouldSwitchMode(TribePeerMediaConfiguration tribePeerMediaConfiguration) {

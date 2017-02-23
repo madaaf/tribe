@@ -41,8 +41,9 @@ public class Room {
 
   @StringDef({
       MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE,
-      MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_SWITCH_MODE, MESSAGE_APP,
-      MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED, MESSAGE_INVITE_REMOVED
+      MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_LOCAL_SWITCH_MODE,
+      MESSAGE_REMOTE_SWITCH_MODE, MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED,
+      MESSAGE_INVITE_REMOVED
   }) public @interface WebSocketMessageType {
   }
 
@@ -53,7 +54,8 @@ public class Room {
   public static final String MESSAGE_LEAVE = "eventLeave";
   public static final String MESSAGE_MESSAGE = "eventMessage";
   public static final String MESSAGE_MEDIA_CONSTRAINTS = "eventUserMediaConfiguration";
-  public static final String MESSAGE_SWITCH_MODE = "eventSetAudioVideoMode";
+  public static final String MESSAGE_LOCAL_SWITCH_MODE = "eventSetLocalAudioVideoMode";
+  public static final String MESSAGE_REMOTE_SWITCH_MODE = "eventSetRemoteAudioVideoMode";
   public static final String MESSAGE_NONE = "none";
   public static final String MESSAGE_APP = "app";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
@@ -151,7 +153,7 @@ public class Room {
 
     subscriptions.add(
         jsonToModel.onTribePeerMediaConfiguration().subscribe(tribePeerMediaConfiguration -> {
-          webRTCClient.setMediaConfiguration(tribePeerMediaConfiguration);
+          webRTCClient.setRemoteMediaConfiguration(tribePeerMediaConfiguration);
         }));
 
     subscriptions.add(jsonToModel.onTribeMediaConstraints()
@@ -160,7 +162,13 @@ public class Room {
           webRTCClient.updateMediaConstraints(tribeMediaConstraints);
         }));
 
-    subscriptions.add(jsonToModel.onShouldSwitchMediaMode()
+    subscriptions.add(jsonToModel.onShouldSwitchLocalMediaMode()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeMediaConfiguration -> {
+          webRTCClient.setRemoteMediaConfiguration(tribeMediaConfiguration);
+        }));
+
+    subscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> {
           webRTCClient.setLocalMediaConfiguation(tribeMediaConfiguration);
@@ -276,6 +284,15 @@ public class Room {
     }
   }
 
+  public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
+      webSocketConnection.send(
+          getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
+    }
+  }
+
   public @RoomState String getState() {
     return state;
   }
@@ -295,8 +312,10 @@ public class Room {
       return MESSAGE_LEAVE;
     } else if (a.equals(MESSAGE_MEDIA_CONSTRAINTS)) {
       return MESSAGE_MEDIA_CONSTRAINTS;
-    } else if (a.equals(MESSAGE_SWITCH_MODE)) {
-      return MESSAGE_SWITCH_MODE;
+    } else if (a.equals(MESSAGE_LOCAL_SWITCH_MODE)) {
+      return MESSAGE_LOCAL_SWITCH_MODE;
+    } else if (a.equals(MESSAGE_REMOTE_SWITCH_MODE)) {
+      return MESSAGE_REMOTE_SWITCH_MODE;
     } else if (a.equals(MESSAGE_MESSAGE)) {
       return MESSAGE_MESSAGE;
     } else {

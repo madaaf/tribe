@@ -40,7 +40,9 @@ public class JsonToModel {
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
   private PublishSubject<TribeMediaConstraints> onTribeMediaConstraints = PublishSubject.create();
-  private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchMediaMode =
+  private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchLocalMediaMode =
+      PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode =
       PublishSubject.create();
 
   public void setOptions(TribeLiveOptions options) {
@@ -139,16 +141,29 @@ public class JsonToModel {
         Timber.d("User configuration message received");
         JSONObject d = object.getJSONObject("d");
         computeMediaConstraints(d, true);
-      } else if (localWebSocketType.equals(Room.MESSAGE_SWITCH_MODE)) {
-
-        Timber.d("Receiving switch mode (low connectivity)");
+      } else if (localWebSocketType.equals(Room.MESSAGE_LOCAL_SWITCH_MODE)) {
+        Timber.d("Receiving local switch mode (low connectivity)");
         TribePeerMediaConfiguration peerMediaConfiguration = new TribePeerMediaConfiguration(
             new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
         JSONObject d = object.getJSONObject("d");
         peerMediaConfiguration.setAudioEnabled(d.getBoolean("audio"));
         peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
         peerMediaConfiguration.setLowConnectivityMode(true);
-        onShouldSwitchMediaMode.onNext(peerMediaConfiguration);
+        onShouldSwitchLocalMediaMode.onNext(peerMediaConfiguration);
+      } else if (localWebSocketType.equals(Room.MESSAGE_REMOTE_SWITCH_MODE)) {
+
+        Timber.d("Receiving remote switch mode (low connectivity)");
+        JSONObject d = object.getJSONObject("d");
+        JSONObject session = d.getJSONObject("from");
+        TribeSession tribeSession =
+            new TribeSession(session.getString("socketId"), session.getString("userId"));
+
+        TribePeerMediaConfiguration peerMediaConfiguration =
+            new TribePeerMediaConfiguration(tribeSession);
+        peerMediaConfiguration.setAudioEnabled(d.getBoolean("audio"));
+        peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
+        peerMediaConfiguration.setLowConnectivityMode(true);
+        onShouldSwitchRemoteMediaMode.onNext(peerMediaConfiguration);
       } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
 
         JSONObject d = object.getJSONObject("d");
@@ -291,7 +306,11 @@ public class JsonToModel {
     return onTribeMediaConstraints;
   }
 
-  public Observable<TribePeerMediaConfiguration> onShouldSwitchMediaMode() {
-    return onShouldSwitchMediaMode;
+  public Observable<TribePeerMediaConfiguration> onShouldSwitchLocalMediaMode() {
+    return onShouldSwitchLocalMediaMode;
+  }
+
+  public Observable<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode() {
+    return onShouldSwitchRemoteMediaMode;
   }
 }

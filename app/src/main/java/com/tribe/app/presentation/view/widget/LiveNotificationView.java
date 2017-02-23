@@ -41,7 +41,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @IntDef({ LIVE, ERROR }) public @interface LiveNotificationType {
   }
 
-  private static final long DISPLAY_TIME_IN_SECONDS = 100000;
+  private static final long DISPLAY_TIME_IN_SECONDS = 5000;
   public static final int LIVE = 0;
   public static final int ERROR = 1;
   private static final int CLEAN_UP_DELAY_MILLIS = 100;
@@ -95,7 +95,9 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     unbinder = ButterKnife.bind(this);
     setHapticFeedbackEnabled(true);
 
-    screen.setOnClickListener(v -> hide());
+    screen.setOnClickListener(v -> {
+      hide();
+    });
 
     setAnimation();
 
@@ -156,6 +158,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   /////////////////
 
   private void hide() {
+    screen.setEnabled(false);
+    
     try {
       slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
         @Override public void onAnimationStart(final Animation animation) {

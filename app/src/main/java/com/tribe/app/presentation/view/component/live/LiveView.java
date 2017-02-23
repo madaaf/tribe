@@ -372,13 +372,14 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    subscriptions.add(
-        room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
+    subscriptions.add(room.onRemotePeerAdded()
+        .doOnNext(remotePeer -> room.sendToPeer(remotePeer, getInvitedPayload(), true))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(remotePeer -> {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
           displayJoinLivePopupTutorial();
 
-          // TOTO
           Timber.d("Remote peer added with id : "
               + remotePeer.getSession().getPeerId()
               + " & view : "
