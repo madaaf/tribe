@@ -304,7 +304,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         loginEntity =
             authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(),
                 pin.getPinId());
-        //loginEntity = authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(), "");
       }
     }));
 
@@ -521,8 +520,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override public void goToConnected(User user) {
-    if (user != null && !StringUtils.isEmpty(user.getId())) tagManager.setUserId(user.getId());
-
     this.user.copy(user);
 
     viewCode.removeCountdown();
@@ -546,6 +543,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
               user.getUsername())) {
             navigator.navigateToAuthProfile(this, deepLink, loginEntity);
           } else {
+            tagManager.setUserId(user.getId());
             navigator.navigateToAuthAccess(this, deepLink);
           }
         }));

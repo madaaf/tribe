@@ -1,11 +1,12 @@
 package com.tribe.app.presentation.view.component.onboarding;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.IntDef;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -16,7 +17,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextSwitcher;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +27,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -58,7 +59,7 @@ public class AccessView extends LinearLayout {
 
   @BindView(R.id.viewPulse) View viewPulse;
 
-  @BindView(R.id.progressBar) ProgressBar progressBar;
+  @BindView(R.id.progressBar) CircularProgressBar progressBar;
 
   @BindView(R.id.imgCircle) ImageView imgCircle;
 
@@ -137,6 +138,10 @@ public class AccessView extends LinearLayout {
 
     hideView(layoutFriends, false);
 
+    progressBar.setAnimationDuration(totalTimeSynchro);
+    progressBar.setProgressColor(ContextCompat.getColor(getContext(), R.color.blue_new));
+    progressBar.setProgressWidth(screenUtils.dpToPx(5.5f));
+
     int circleSize = (int) (screenUtils.getWidthPx() * 0.4f);
     int pulseSize = circleSize + screenUtils.dpToPx(40);
 
@@ -205,10 +210,7 @@ public class AccessView extends LinearLayout {
   }
 
   public void animateProgress() {
-    ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getMax());
-    animation.setDuration(totalTimeSynchro);
-    animation.setInterpolator(new DecelerateInterpolator());
-    animation.start();
+    progressBar.setProgress(100, 0, null);
   }
 
   public @StatusType int getStatus() {
@@ -223,7 +225,7 @@ public class AccessView extends LinearLayout {
       status = LOADING;
 
       progressBar.clearAnimation();
-      progressBar.setProgress(0);
+      progressBar.setProgress(0, 0, null);
 
       txtStatus.setText(R.string.onboarding_queue_loading_description);
 

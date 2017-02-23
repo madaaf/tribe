@@ -54,7 +54,8 @@ import javax.inject.Singleton;
   }
 
   @Override public void alias(String userId) {
-
+    mixpanel.alias(userId);
+    branch.alias(userId);
   }
 
   @Override public void setUserId(String userId) {

@@ -127,12 +127,9 @@ public class AndroidApplication extends Application {
   public void logoutUser() {
     Realm realm = applicationComponent.realm();
     try {
-      realm.beginTransaction();
-      realm.deleteAll();
-      realm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      if (realm.isInTransaction()) realm.cancelTransaction();
-      ex.printStackTrace();
+      realm.executeTransaction(realm1 -> {
+        realm1.deleteAll();
+      });
     } finally {
       realm.close();
     }

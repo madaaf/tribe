@@ -8,6 +8,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -33,6 +33,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
+import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -82,7 +83,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
-  @BindView(R.id.progressBar) ProgressBar progressBar;
+  @BindView(R.id.progressBar) CircularProgressBar progressBar;
 
   @BindView(R.id.btnRemove) View btnRemove;
 
@@ -104,7 +105,6 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private ValueAnimator animatorAlphaTransition;
   private ObjectAnimator animatorBuzzAvatar;
   private boolean hasPulsed = false, removeMode = false, shouldShowRemoveAgain = true;
-  private ObjectAnimator countDownAnimator;
 
   // RESOURCES
   private int timeJoinRoom, strokeWidth;
@@ -146,6 +146,10 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
     setBackground(null);
     setOnClickListener(this);
+
+    progressBar.setAnimationDuration(timeJoinRoom);
+    progressBar.setProgressColor(Color.WHITE);
+    progressBar.setProgressWidth(screenUtils.dpToPx(7.5f));
 
     subscriptions.add(viewBuzz.onBuzzCompleted()
         .doOnNext(aVoid -> endBuzz())
@@ -235,13 +239,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   public void startCountdown() {
     progressBar.setVisibility(View.VISIBLE);
-    progressBar.setProgress(timeJoinRoom);
-    countDownAnimator = ObjectAnimator.ofInt(progressBar, "progress", timeJoinRoom, 0);
-    countDownAnimator.setDuration(timeJoinRoom);
-    countDownAnimator.setInterpolator(new DecelerateInterpolator());
-    countDownAnimator.setStartDelay(DELAY_COUNTDOWN);
-
-    countDownAnimator.addListener(new AnimatorListenerAdapter() {
+    progressBar.setProgress(100, DELAY_COUNTDOWN, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
         animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
@@ -268,11 +266,9 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       }
 
       @Override public void onAnimationCancel(Animator animation) {
-        countDownAnimator.removeAllListeners();
+        animation.removeAllListeners();
       }
     });
-
-    countDownAnimator.start();
   }
 
   public void startPulse() {

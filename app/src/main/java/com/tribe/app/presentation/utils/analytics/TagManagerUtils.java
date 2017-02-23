@@ -39,6 +39,7 @@ public class TagManagerUtils {
   public static final String Groups_Creation = "Groups_Creation";
   public static final String Groups_Infos = "Groups_Infos";
   public static final String Groups_Members = "Groups_Members";
+  public static final String Groups_Settings = "Groups_Settings";
   public static final String Invites = "Invites";
   public static final String Logout = "Logout";
   public static final String Calls = "Calls";
@@ -60,6 +61,7 @@ public class TagManagerUtils {
   public static final String SWIPE = "swipe";
   public static final String SCREEN = "screen";
   public static final String HOME = "home";
+  public static final String LIVE = "live";
   public static final String SEARCH = "search";
   public static final String GROUP = "group";
   public static final String ACTION = "action";

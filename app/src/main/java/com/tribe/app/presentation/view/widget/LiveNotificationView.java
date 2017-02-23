@@ -158,8 +158,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   /////////////////
 
   private void hide() {
-    screen.setEnabled(false);
-    
+    if (screen != null) screen.setEnabled(false);
+
     try {
       slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
         @Override public void onAnimationStart(final Animation animation) {

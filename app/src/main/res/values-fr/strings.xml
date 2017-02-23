@@ -209,6 +209,7 @@
 	<string name="live_notification_peer_joined">%1$s est arrivé</string>
 	<string name="live_notification_peer_left">%1$s est parti</string>
 	<string name="live_notification_buzzed">Buzz !</string>
+	<string name="live_notification_friend_buzzed">%1$s buzz !</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
 	
 	<!-- Tribe Recipients -->

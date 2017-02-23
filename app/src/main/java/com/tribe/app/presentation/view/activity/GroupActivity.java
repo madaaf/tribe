@@ -116,6 +116,10 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     initResources();
     initDependencyInjector();
     init(savedInstanceState);
+  }
+
+  @Override protected void onStart() {
+    super.onStart();
     initPresenter();
   }
 
@@ -171,6 +175,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         groupPresenter.createGroup(groupEntity);
       } else {
         if (viewStack.getTopView() instanceof UpdateGroupView) {
+          tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
+          tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !membership.isMute());
+          TagManagerUtils.manageTags(tagManager, tagMap);
           groupPresenter.updateGroup(membership.getSubId(), viewUpdateGroup.getGroupEntity());
         } else if (viewStack.getTopView() instanceof AddMembersGroupView) {
           tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
@@ -181,7 +188,11 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
           groupPresenter.addMembersToGroup(membership.getSubId(), newMembers);
         } else if (viewStack.getTopView() instanceof GroupDetailsView) {
-          navigator.shareGenericText("", this);
+          Bundle bundle = new Bundle();
+          bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.GROUP);
+          bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+          tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+          navigator.openSmsForInvite(this);
         }
       }
     });
@@ -228,7 +239,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       } else if (TagManagerUtils.Groups_Members.equals(tagMap.get(TagManagerUtils.EVENT))) {
         tagMap.put(TagManagerUtils.MEMBERS_COUNT, membership.getGroup().getMembers().size());
         tagMap.put(TagManagerUtils.MEMBERS_ADDED_COUNT, 0);
-      } else if (TagManagerUtils.Groups_Infos.equals(tagMap.get(TagManagerUtils.EVENT))) {
+      } else if (TagManagerUtils.Groups_Settings.equals(tagMap.get(TagManagerUtils.EVENT))) {
         tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !membership.isMute());
       }
 
@@ -350,7 +361,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   private void setupUpdateView() {
-    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);
+    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Settings);
 
     viewUpdateGroup =
         (UpdateGroupView) viewStack.pushWithParameter(R.layout.view_group_update, membership);
@@ -365,6 +376,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     subscriptions.add(viewUpdateGroup.onNotificationsChange().subscribe(aBoolean -> {
       tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
       tagMap.put(TagManagerUtils.NOTIFICATIONS_ENABLED, !aBoolean);
+      TagManagerUtils.manageTags(tagManager, tagMap);
       membership.setMute(!aBoolean);
       groupPresenter.updateMembership(membershipId, !aBoolean);
     }));

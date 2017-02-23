@@ -302,6 +302,8 @@ public class User implements Serializable {
   public List<GroupMember> getUserList() {
     List<GroupMember> userList = new ArrayList<>();
 
+    if (friendships == null) return userList;
+    
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {

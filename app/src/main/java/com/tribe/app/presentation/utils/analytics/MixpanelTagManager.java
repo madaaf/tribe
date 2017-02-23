@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.StringUtils;
 import javax.inject.Singleton;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,15 +19,10 @@ import org.json.JSONObject;
 
   public MixpanelTagManager(Context context, User user) {
     mixpanelAPI = MixpanelAPI.getInstance(context, BuildConfig.MIXPANEL_TOKEN);
-
-    if (user != null && !StringUtils.isEmpty(user.getId())) {
-      setUserId(user.getId());
-    }
   }
 
   @Override public void alias(String userId) {
-    mixpanelAPI.alias(userId, null);
-    mixpanelAPI.getPeople().identify(mixpanelAPI.getDistinctId());
+    mixpanelAPI.alias(userId, mixpanelAPI.getDistinctId());
   }
 
   @Override public void setUserId(String userId) {

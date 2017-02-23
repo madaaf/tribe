@@ -3,8 +3,8 @@
 
   <View
       android:id="@+id/viewShadowAvatar"
-      android:layout_width="70dp"
-      android:layout_height="70dp"
+      android:layout_width="93dp"
+      android:layout_height="93dp"
       android:layout_gravity="center"
       android:background="@drawable/bg_avatar_shadow"
       />
