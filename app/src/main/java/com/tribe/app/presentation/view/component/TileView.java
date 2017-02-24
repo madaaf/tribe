@@ -30,7 +30,6 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -381,9 +380,7 @@ public class TileView extends SquareCardView {
 
   public void setName() {
     if (recipient instanceof Membership) {
-      // txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
-      txtName.setText(EmojiParser.getRandomEmoji());
-      //EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts));
+      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
     } else {
       txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
     }
