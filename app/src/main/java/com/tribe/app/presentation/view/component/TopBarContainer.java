@@ -221,7 +221,7 @@ public class TopBarContainer extends FrameLayout {
 
   private void translateTop(float value) {
     recyclerView.setTranslationY(value);
-    topBarView.showSpinner(value);
+    topBarView.showSpinner(value, getTotalDragDistance());
     if (value == 0) {
       onRefresh.onNext(true);
     }

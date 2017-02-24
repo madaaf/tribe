@@ -3,8 +3,10 @@ package com.tribe.app.presentation.utils;
 import android.os.Build;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import timber.log.Timber;
 
 public class EmojiParser {
 
@@ -80,5 +82,21 @@ public class EmojiParser {
 
     // Returning text
     return returnTextString;
+  }
+
+  //   EmojiParser.getRandomEmoji()
+
+  public static String getRandomEmoji() {
+    final Map<String, String> IEmojiMap = new HashMap<>();
+    IEmojiMap.put(":hearts:", "\uD83D\uDC95");
+    IEmojiMap.put(":love_letter:", "\uD83D\uDC8C");
+    IEmojiMap.put(":x:", "\u274C");
+    IEmojiMap.put(":honeybee:", "\uD83D\uDC1D");
+    IEmojiMap.put(":loud_sound:", "\uD83D\uDD0A");
+    Random r = new Random();
+    //EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_title)):
+    int randomPosition = r.nextInt(IEmojiMap.size() - 1);
+    Timber.e("random position " + IEmojiMap.get(randomPosition));
+    return IEmojiMap.get(randomPosition);
   }
 }

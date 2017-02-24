@@ -34,6 +34,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 11/15/2016.
@@ -331,8 +332,11 @@ public class TopBarView extends FrameLayout {
     return super.dispatchKeyEventPreIme(event);
   }
 
-  public void showSpinner(float value) {
-    value = (value / 250);
+  public void showSpinner(float value, float totalDragDistance) {
+    Timber.e("totalDragDistance " + totalDragDistance);
+    Timber.e("value  " + value);
+    value = (value / totalDragDistance);
+    Timber.e("value 2 " + value);
     progressRefresh.clearAnimation();
     progressRefresh.setVisibility(VISIBLE);
     progressRefreshBack.setVisibility(VISIBLE);

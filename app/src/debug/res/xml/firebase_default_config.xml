@@ -12,4 +12,10 @@
     <key>delay_online_notifications</key>
     <value>180</value>
   </entry>
+  <defaultsMap>
+    <entry>
+      <key>group_default_names</key>
+      <value>:smile_cat::joy_cat::heart_eyes_cat::scream_cat:</value>
+    </entry>
+  </defaultsMap>
 </defaultsMap>

@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <defaultsMap>
   <entry>
-    <key>disable_invite_friends</key>
-    <value>0</value>
-  </entry>
-  <entry>
-    <key>disable_online_notifications</key>
-    <value>0</value>
-  </entry>
-  <entry>
-    <key>delay_online_notifications</key>
-    <value>180</value>
+    <key>group_default_names</key>
+    <value>:smile_cat::joy_cat::heart_eyes_cat::scream_cat:</value>
   </entry>
 </defaultsMap>
