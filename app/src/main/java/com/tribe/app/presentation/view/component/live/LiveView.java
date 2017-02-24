@@ -436,7 +436,11 @@ public class LiveView extends FrameLayout {
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
             for (TribeGuest trg : tribeGuests) {
-              addTribeGuest(trg);
+              if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
+                  .containsKey(trg.getId())) {
+                addTribeGuest(trg);
+                onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+              }
             }
           }
         }));
@@ -559,8 +563,9 @@ public class LiveView extends FrameLayout {
     if (live != null) {
       LiveRowView liveRowView = liveRowViewMap.get(live.getSubId());
       if (liveRowView != null) {
-          liveRowView.setGuest(new TribeGuest(live.getSubId(), live.getDisplayName(),
-              live.getPicture(), live.isGroup(), live.getMembersPics()));
+        liveRowView.setGuest(
+            new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(),
+                live.isGroup(), live.getMembersPics()));
       }
     }
   }
@@ -597,7 +602,6 @@ public class LiveView extends FrameLayout {
 
       addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
       liveInviteMap.put(trg.getId(), liveRowView);
-      onNotificationRemotePeerInvited.onNext(getDisplayNameNotification(trg.getId()));
     }
   }
 
