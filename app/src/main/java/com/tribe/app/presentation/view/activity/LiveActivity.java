@@ -21,6 +21,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
@@ -64,39 +65,41 @@ import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
-  private static final String EXTRA_RECIPIENT = "EXTRA_RECIPIENT";
-  private static final String EXTRA_RECIPIENT_ID = "EXTRA_RECIPIENT_ID";
-  private static final String EXTRA_IS_GROUP = "EXTRA_IS_GROUP";
-  private static final String EXTRA_SESSION_ID = "EXTRA_SESSION_ID";
-  private static final String EXTRA_COLOR = "EXTRA_COLOR";
-  private static final String EXTRA_PICTURE = "EXTRA_PICTURE";
-  private static final String EXTRA_NAME = "EXTRA_NAME";
+  private static final String EXTRA_LIVE = "EXTRA_LIVE";
   private final int MAX_DURATION_WAITING_LIVE = 8;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
 
+    Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
+        .displayName(recipient.getDisplayName())
+        .isGroup(recipient.isGroup())
+        .picture(recipient.getProfilePicture());
+
     if (recipient instanceof Invite) {
-      intent.putExtra(EXTRA_RECIPIENT, recipient);
+      Invite invite = (Invite) recipient;
+      builder.memberList(invite.getGroup().getMembers());
+      builder.sessionId(invite.getRoomId());
+    } else if (recipient instanceof Membership) {
+      Membership membership = (Membership) recipient;
+      builder.memberList(membership.getGroup().getMembers());
     }
 
-    intent.putExtra(EXTRA_RECIPIENT_ID,
-        recipient.getSubId()); // We pass the userId for a friendship or the groupId
-    intent.putExtra(EXTRA_IS_GROUP, recipient instanceof Membership);
-    intent.putExtra(EXTRA_COLOR, color);
-    intent.putExtra(EXTRA_PICTURE, recipient.getProfilePicture());
-    intent.putExtra(EXTRA_NAME, recipient.getDisplayName());
+    intent.putExtra(EXTRA_LIVE, builder.build());
     return intent;
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
       String picture, String name, String sessionId) {
     Intent intent = new Intent(context, LiveActivity.class);
-    intent.putExtra(EXTRA_RECIPIENT_ID, recipientId);
-    intent.putExtra(EXTRA_IS_GROUP, isGroup);
-    intent.putExtra(EXTRA_SESSION_ID, sessionId);
-    intent.putExtra(EXTRA_PICTURE, picture);
-    intent.putExtra(EXTRA_NAME, name);
+
+    Live live = new Live.Builder(recipientId, recipientId).displayName(name)
+        .isGroup(isGroup)
+        .picture(picture)
+        .sessionId(sessionId)
+        .build();
+    intent.putExtra(EXTRA_LIVE, live);
+
     return intent;
   }
 
@@ -121,13 +124,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   // VARIABLES
   private TribeAudioManager audioManager;
   private Unbinder unbinder;
-  private String recipientId;
-  private boolean isGroup;
-  private String sessionId;
-  private String name;
-  private String picture;
-  private Recipient recipient;
-  private int color;
+  private Live live;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
@@ -206,21 +203,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initParams() {
-    if (getIntent().hasExtra(EXTRA_RECIPIENT)) {
-      recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_RECIPIENT);
-      name = recipient.getDisplayName();
-      picture = recipient.getProfilePicture();
-      recipientId = recipient.getSubId();
-      isGroup = recipient.isGroup();
-      color = PaletteGrid.getRandomColorExcluding(Color.BLACK);
-    } else {
-      recipientId = getIntent().getStringExtra(EXTRA_RECIPIENT_ID);
-      sessionId = getIntent().getStringExtra(EXTRA_SESSION_ID);
-      isGroup = getIntent().getBooleanExtra(EXTRA_IS_GROUP, false);
-      color =
-          getIntent().getIntExtra(EXTRA_COLOR, PaletteGrid.getRandomColorExcluding(Color.BLACK));
-      name = getIntent().getStringExtra(EXTRA_NAME);
-      picture = getIntent().getStringExtra(EXTRA_PICTURE);
+    if (getIntent().hasExtra(EXTRA_LIVE)) {
+      live = (Live) getIntent().getSerializableExtra(EXTRA_LIVE);
+    }
+
+    if (live.getColor() == 0 || live.getColor() == Color.BLACK) {
+      live.setColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
     }
   }
 
@@ -233,12 +221,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
     viewInviteLive.setLayoutParams(params);
     viewInviteLive.requestLayout();
-    viewLive.start(recipientId, name, picture, isGroup);
+    viewLive.start(live);
 
-    if (recipient == null) {
-      livePresenter.loadRecipient(recipientId, isGroup);
+    if (live.isGroup()) {
+      livePresenter.loadRecipient(live);
     } else {
-      onRecipientInfos(recipient);
+      ready();
     }
 
     audioManager = TribeAudioManager.create(this);
@@ -309,23 +297,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
           List<Friendship> filteredFriendships = new ArrayList<>();
 
-          if (recipient != null && recipient instanceof Membership) {
-            Membership membership = (Membership) recipient;
-
+          if (live.getMembers() != null) {
             for (Friendship fr : friendshipList) {
-              if (!membership.getGroup().isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
-                  .equals(recipientId) && !idsToFilter.contains(fr.getFriend().getId())) {
+              if (!live.isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
+                  .equals(live.getSubId()) && !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
           } else {
-            if (recipient instanceof Friendship) {
-              for (Friendship fr : friendshipList) {
-                Friendship friendship = (Friendship) recipient;
-                if (!friendship.getFriend().getId().equals(fr.getFriend().getId())
-                    && !idsToFilter.contains(fr.getFriend().getId())) {
-                  filteredFriendships.add(fr);
-                }
+            for (Friendship fr : friendshipList) {
+              if (!live.getSubId().equals(fr.getFriend().getId()) && !idsToFilter.contains(
+                  fr.getFriend().getId())) {
+                filteredFriendships.add(fr);
               }
             }
           }
@@ -408,14 +391,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void joinRoom() {
     soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
-    livePresenter.joinRoom(recipient,
-        recipient instanceof Invite ? ((Invite) recipient).getRoomId() : sessionId);
+    livePresenter.joinRoom(live);
   }
 
   private void invite(String userId) {
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
+  }
+
+  private void ready() {
+    viewLive.update(live);
+    initSubscriptions();
+    livePresenter.loadFriendshipList();
   }
 
   @Override public void finish() {
@@ -428,10 +416,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   ////////////////
 
   @Override public void onRecipientInfos(Recipient recipient) {
-    this.recipient = recipient;
-    viewLive.setRecipient(recipient, color);
-    initSubscriptions();
-    livePresenter.loadFriendshipList();
+    if (recipient instanceof Membership) {
+      Membership membership = (Membership) recipient;
+      live.setMembers(membership.getGroup().getMembers());
+    }
+
+    ready();
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
@@ -439,11 +429,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
-    Timber.d("Room configuration : " + roomConfiguration);
     roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(roomConfiguration);
-    if (recipient instanceof Friendship) {
-      livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), recipient.getSubId());
+    if (!live.isGroup()) {
+      livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }
   }
 
@@ -465,9 +454,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (recipientId.equals(notificationPayload.getUserId()) || recipientId.equals(
-          notificationPayload.getGroupId()) || (sessionId != null && sessionId.equals(
-          notificationPayload.getSessionId()))) {
+      if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
+          .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
+          && live.getSessionId().equals(notificationPayload.getSessionId()))) {
         return;
       }
 

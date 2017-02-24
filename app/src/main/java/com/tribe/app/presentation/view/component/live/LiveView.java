@@ -21,8 +21,8 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -102,9 +102,7 @@ public class LiveView extends FrameLayout {
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
   // VARIABLES
-  private Recipient recipient;
-  private boolean isGroup;
-  private int color;
+  private Live live;
   private Room room;
   private LiveRowView latestView;
   private ObservableRxHashMap<String, LiveRowView> liveRowViewMap;
@@ -170,7 +168,7 @@ public class LiveView extends FrameLayout {
     tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
     tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
     tagMap.put(TagManagerUtils.TYPE,
-        recipient instanceof Membership ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
+        live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
     TagManagerUtils.manageTags(tagManager, tagMap);
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
@@ -417,7 +415,7 @@ public class LiveView extends FrameLayout {
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
 
-          if (liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && recipient != null) {
+          if (liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && live != null) {
             onLeave.onNext(null);
           }
 
@@ -531,22 +529,24 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  public void start(String id, String name, String picture, boolean isGroup) {
-    this.isGroup = isGroup;
+  public void start(Live live) {
+    this.live = live;
 
-    if (isGroup) {
+    if (live.isGroup()) {
       txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
     } else {
       txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
     }
 
-    txtName.setText(name);
+    txtName.setText(live.getDisplayName());
 
-    TribeGuest guest = new TribeGuest(id, name, picture, isGroup, null);
+    TribeGuest guest =
+        new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
+            live.getMembersPics());
 
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
-    addView(liveRowView, guest, color);
+    addView(liveRowView, guest, live.getColor());
     liveRowView.showGuest(true);
 
     subscriptions.add(liveRowView.onShouldJoinRoom().distinct().doOnNext(aVoid -> {
@@ -555,18 +555,12 @@ public class LiveView extends FrameLayout {
     }).subscribe(onShouldJoinRoom));
   }
 
-  public void setRecipient(Recipient recipient, int color) {
-    this.recipient = recipient;
-    this.color = color;
-
-    if (recipient != null) {
-      LiveRowView liveRowView = liveRowViewMap.get(recipient.getSubId());
+  public void update(Live live) {
+    if (live != null) {
+      LiveRowView liveRowView = liveRowViewMap.get(live.getSubId());
       if (liveRowView != null) {
-        if (recipient instanceof Membership) {
-          Membership membership = (Membership) recipient;
-          liveRowView.setGuest(new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
-              recipient.getProfilePicture(), true, membership.getMembersPic()));
-        }
+          liveRowView.setGuest(new TribeGuest(live.getSubId(), live.getDisplayName(),
+              live.getPicture(), live.isGroup(), live.getMembersPics()));
       }
     }
   }
@@ -735,7 +729,7 @@ public class LiveView extends FrameLayout {
     if (liveInviteMap.getMap()
         .containsKey(
             remotePeer.getSession().getUserId())) { // If the user was invited before joining
-      if (isGroup && nbLiveInRoom() == 0) { // First user joining in a group call
+      if (live.isGroup() && nbLiveInRoom() == 0) { // First user joining in a group call
         String groupId = getGroupWaiting();
         if (!StringUtils.isEmpty(getGroupWaiting())) {
           liveRowView = liveRowViewMap.remove(groupId);
@@ -852,12 +846,11 @@ public class LiveView extends FrameLayout {
     boolean result = true;
     int nbLiveInRoom = nbLiveInRoom();
 
-    if (recipient == null) return false;
+    if (live == null) return false;
     if (nbLiveInRoom == LIVE_MAX) return false;
 
-    if (recipient instanceof Membership) {
-      Membership membership = (Membership) recipient;
-      if (membership.getGroup().getMembers().size() == nbLiveInRoom()) result = false;
+    if (live.isGroup()) {
+      if (live.getMembers() != null && live.getMembers().size() == nbLiveInRoom()) result = false;
     } else if (!isTherePeopleWaiting()) {
       result = false;
     }

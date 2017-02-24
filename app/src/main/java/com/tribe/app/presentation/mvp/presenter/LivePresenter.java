@@ -1,7 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -14,6 +14,7 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 public class LivePresenter implements Presenter {
 
@@ -75,8 +76,8 @@ public class LivePresenter implements Presenter {
     }
   }
 
-  public void loadRecipient(String recipientId, boolean isGroup) {
-    getRecipientInfos.prepare(recipientId, isGroup);
+  public void loadRecipient(Live live) {
+    getRecipientInfos.prepare(live.getId(), live.isGroup());
     getRecipientInfos.execute(new RecipientInfosSubscriber());
   }
 
@@ -94,9 +95,10 @@ public class LivePresenter implements Presenter {
     }
   }
 
-  public void joinRoom(Recipient recipient, String roomId) {
-    boolean isGroup = recipient instanceof Membership;
-    joinRoom.setup(!isGroup ? recipient.getId() : recipient.getSubId(), isGroup, roomId);
+  public void joinRoom(Live live) {
+    Timber.d("joinRoom");
+    joinRoom.setup(!live.isGroup() ? live.getId() : live.getSubId(), live.isGroup(),
+        live.getSessionId());
     joinRoom.execute(new JoinRoomSubscriber());
   }
 
