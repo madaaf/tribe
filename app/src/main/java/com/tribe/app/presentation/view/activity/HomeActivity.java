@@ -257,6 +257,7 @@ public class HomeActivity extends BaseActivity
         })
         .doOnError(throwable -> throwable.printStackTrace())
         .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aVoid -> {
           if (canEndRefresh) {
