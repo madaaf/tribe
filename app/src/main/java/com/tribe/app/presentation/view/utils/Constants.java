@@ -11,4 +11,5 @@ public class Constants {
   public static final String FIREBASE_DISABLE_ONLINE_NOTIFICATIONS = "disable_online_notifications";
   public static final String FIREBASE_DELAY_ONLINE_NOTIFICATIONS = "delay_online_notifications";
   public static final String FIREBASE_AGENT_VERSION = "agent_version";
+  public static final String FIREBASE_GROUP_DEFAULT_NAMES = "group_default_names";
 }

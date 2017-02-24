@@ -22,10 +22,7 @@ import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -121,7 +118,6 @@ public class HomeActivity extends BaseActivity
   private HomeLayoutManager layoutManager;
   private List<Recipient> latestRecipientList;
   private boolean shouldOverridePendingTransactions = false;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private boolean hasSynced = false;
@@ -143,7 +139,6 @@ public class HomeActivity extends BaseActivity
     initRecyclerView();
     initTopBar();
     initSearch();
-    initRemoteConfig();
     manageDeepLink(getIntent());
     initPullToRefresh();
 
@@ -219,14 +214,6 @@ public class HomeActivity extends BaseActivity
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
     }
-  }
-
-  @Override protected void onPostResume() {
-    super.onPostResume();
-
-    firebaseRemoteConfig.fetch(BuildConfig.DEBUG ? 1 : 3600).addOnSuccessListener(aVoid -> {
-      firebaseRemoteConfig.activateFetched();
-    }).addOnFailureListener(exception -> Log.d("Tribe", "Fetch failed"));
   }
 
   @Override protected void onPause() {
@@ -463,15 +450,6 @@ public class HomeActivity extends BaseActivity
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
-  }
-
-  private void initRemoteConfig() {
-    firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-    firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
   }
 
   @Override public void onDeepLink(String url) {

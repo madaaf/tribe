@@ -3,10 +3,8 @@ package com.tribe.app.presentation.utils;
 import android.os.Build;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import timber.log.Timber;
 
 public class EmojiParser {
 
@@ -63,6 +61,35 @@ public class EmojiParser {
     IEmojiMap.put(":x:", "\u274C");
     IEmojiMap.put(":honeybee:", "\uD83D\uDC1D");
     IEmojiMap.put(":loud_sound:", "\uD83D\uDD0A");
+    IEmojiMap.put(":smile_cat:", "\uD83E\uDD18");
+    IEmojiMap.put(":joy_cat:", "\uD83D\uDC4A");
+    IEmojiMap.put(":heart_eyes_cat:", "\uD83E\uDD19");
+    IEmojiMap.put(":scream_cat:", "\u270C");
+
+    IEmojiMap.put(":hand1:", "\uD83E\uDD18");
+    IEmojiMap.put(":punch:", "\uD83D\uDC4A");
+    IEmojiMap.put(":hand2:", "\uD83E\uDD19");
+    IEmojiMap.put(":v:", "\u270C");
+
+    IEmojiMap.put(":smile:", "\uD83D\uDE04");
+    IEmojiMap.put(":kissing_smiling_eyes:", "\uD83D\uDE19");
+    IEmojiMap.put(":joy:", "\uD83D\uDE02");
+    IEmojiMap.put(":grin:", "\uD83D\uDE01");
+
+    IEmojiMap.put(":panda_face:", "\uD83D\uDC3C");
+    IEmojiMap.put(":tiger:", "\uD83D\uDC2F");
+    IEmojiMap.put(":dog:", "\uD83D\uDC36");
+    IEmojiMap.put(":monkey_face:", "\uD83D\uDC35");
+
+    IEmojiMap.put(":lemon:", "\uD83C\uDF4B");
+    IEmojiMap.put(":watermelon:", "\uD83C\uDF49");
+    IEmojiMap.put(":peach:", "\uD83C\uDF51");
+    IEmojiMap.put(":grapes:", "\uD83C\uDF47");
+
+    IEmojiMap.put(":popcorn:", "\uD83C\uDF7F");
+    IEmojiMap.put(":doughnut:", "\uD83C\uDF69");
+    IEmojiMap.put(":cookie:", "\uD83C\uDF6A");
+    IEmojiMap.put(":lollipop:", "\uD83C\uDF6D");
   }
 
   /**
@@ -70,7 +97,6 @@ public class EmojiParser {
    */
   public static String demojizedText(String text) {
     String returnTextString = text;
-
     // Pattern to match
     Pattern pattern = Pattern.compile("(\\:[^\\:]+\\:)");
     Matcher matcher = pattern.matcher(text);
@@ -79,24 +105,7 @@ public class EmojiParser {
       if (IEmojiMap.get(found) == null) continue;
       returnTextString = returnTextString.replace(found, IEmojiMap.get(found));
     }
-
     // Returning text
     return returnTextString;
-  }
-
-  //   EmojiParser.getRandomEmoji()
-
-  public static String getRandomEmoji() {
-    final Map<String, String> IEmojiMap = new HashMap<>();
-    IEmojiMap.put(":hearts:", "\uD83D\uDC95");
-    IEmojiMap.put(":love_letter:", "\uD83D\uDC8C");
-    IEmojiMap.put(":x:", "\u274C");
-    IEmojiMap.put(":honeybee:", "\uD83D\uDC1D");
-    IEmojiMap.put(":loud_sound:", "\uD83D\uDD0A");
-    Random r = new Random();
-    //EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_title)):
-    int randomPosition = r.nextInt(IEmojiMap.size() - 1);
-    Timber.e("random position " + IEmojiMap.get(randomPosition));
-    return IEmojiMap.get(randomPosition);
   }
 }
