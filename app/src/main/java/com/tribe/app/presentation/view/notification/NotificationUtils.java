@@ -133,7 +133,9 @@ public class NotificationUtils {
         !StringUtils.isEmpty(payload.getGroupId()) ? payload.getGroupId() : payload.getUserId();
     boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
     String sessionId = payload.getSessionId();
-    return LiveActivity.getCallingIntent(context, recipientId, isGroup, sessionId);
+    String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
+    String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
+    return LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId);
   }
 
   public static Intent getIntentForHome(Context context, NotificationPayload payload) {

@@ -116,11 +116,12 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     initResources();
     initDependencyInjector();
     init(savedInstanceState);
+    initPresenter();
   }
 
   @Override protected void onStart() {
     super.onStart();
-    initPresenter();
+    groupPresenter.onViewAttached(this);
   }
 
   @Override protected void onStop() {

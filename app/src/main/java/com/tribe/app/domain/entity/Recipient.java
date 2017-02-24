@@ -92,6 +92,8 @@ public abstract class Recipient implements Serializable {
 
   public abstract Date getLastSeenAt();
 
+  public abstract boolean isGroup();
+
   public boolean isMute() {
     return mute;
   }

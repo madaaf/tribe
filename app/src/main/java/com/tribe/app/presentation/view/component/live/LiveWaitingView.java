@@ -384,6 +384,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     viewShadow.clearAnimation();
     viewForegroundAvatar.clearAnimation();
     viewCircle.clearAnimation();
+    viewRing.clearAnimation();
+    viewThreeDots.clearAnimation();
   }
 
   private void clearAnimator(Animator animator) {

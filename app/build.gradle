@@ -139,9 +139,9 @@ android {
 
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
-      buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
-      buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
-      buildConfigField "String", "TRIBE_WSS", "\"wss://api.tribe.pm\""
+      buildConfigField "String", "TRIBE_API", "\"https://api2.tribe.pm\""
+      buildConfigField "String", "TRIBE_AUTH", "\"https://auth2.tribe.pm\""
+      buildConfigField "String", "TRIBE_WSS", "\"wss://api2.tribe.pm\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""

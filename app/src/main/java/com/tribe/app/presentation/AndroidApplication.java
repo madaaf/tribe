@@ -12,6 +12,19 @@ import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupMemberRealm;
+import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.PhoneRealm;
+import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
@@ -82,7 +95,7 @@ public class AndroidApplication extends Application {
   private void initRealm() {
     Realm.init(this);
     RealmConfiguration realmConfiguration =
-        new RealmConfiguration.Builder().schemaVersion(5).deleteRealmIfMigrationNeeded().build();
+        new RealmConfiguration.Builder().schemaVersion(6).deleteRealmIfMigrationNeeded().build();
     Realm.setDefaultConfiguration(realmConfiguration);
   }
 
@@ -128,7 +141,19 @@ public class AndroidApplication extends Application {
     Realm realm = applicationComponent.realm();
     try {
       realm.executeTransaction(realm1 -> {
-        realm1.deleteAll();
+        realm1.delete(AccessToken.class);
+        realm1.delete(ContactABRealm.class);
+        realm1.delete(ContactFBRealm.class);
+        realm1.delete(FriendshipRealm.class);
+        realm1.delete(GroupMemberRealm.class);
+        realm1.delete(GroupRealm.class);
+        realm1.delete(Installation.class);
+        realm1.delete(LocationRealm.class);
+        realm1.delete(MembershipRealm.class);
+        realm1.delete(PhoneRealm.class);
+        realm1.delete(PinRealm.class);
+        realm1.delete(SearchResultRealm.class);
+        realm1.delete(UserRealm.class);
       });
     } finally {
       realm.close();

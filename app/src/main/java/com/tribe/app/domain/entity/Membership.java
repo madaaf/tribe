@@ -59,6 +59,10 @@ public class Membership extends Recipient {
     return group.getLastSeenAt();
   }
 
+  @Override public boolean isGroup() {
+    return true;
+  }
+
   public void setId(String id) {
     this.id = id;
   }

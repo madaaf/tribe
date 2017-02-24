@@ -91,6 +91,10 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     return null;
   }
 
+  @Override public boolean isGroup() {
+    return false;
+  }
+
   public boolean isShouldAnimateAdd() {
     return shouldAnimateAdd;
   }

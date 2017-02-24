@@ -103,6 +103,7 @@ public class LiveView extends FrameLayout {
 
   // VARIABLES
   private Recipient recipient;
+  private boolean isGroup;
   private int color;
   private Room room;
   private LiveRowView latestView;
@@ -172,6 +173,14 @@ public class LiveView extends FrameLayout {
         recipient instanceof Membership ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
     TagManagerUtils.manageTags(tagManager, tagMap);
 
+    for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
+      liveRowView.dispose();
+    }
+
+    for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
+      liveRowView.dispose();
+    }
+
     if (room != null) {
       viewRoom.removeAllViews();
       room.leaveRoom();
@@ -184,6 +193,8 @@ public class LiveView extends FrameLayout {
 
     btnNotify.clearAnimation();
     btnNotify.animate().setListener(null);
+
+    viewLocalLive.dispose();
 
     if (animatorRotation != null) animatorRotation.cancel();
 
@@ -372,10 +383,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    subscriptions.add(room.onRemotePeerAdded()
-        .doOnNext(remotePeer -> room.sendToPeer(remotePeer, getInvitedPayload(), true))
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(remotePeer -> {
+    subscriptions.add(
+        room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
           displayJoinLivePopupTutorial();
@@ -388,6 +397,8 @@ public class LiveView extends FrameLayout {
           refactorNotifyButton();
           onNotificationRemoteWaiting.onNext(
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
+
+          room.sendToPeer(remotePeer, getInvitedPayload(), true);
 
           subscriptions.add(remotePeer.getPeerView()
               .onNotificatinRemoteJoined()
@@ -520,28 +531,18 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  public void setRecipient(Recipient recipient, int color) {
-    this.recipient = recipient;
-    this.color = color;
+  public void start(String id, String name, String picture, boolean isGroup) {
+    this.isGroup = isGroup;
 
-    if (recipient instanceof Membership) {
+    if (isGroup) {
       txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
     } else {
       txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
     }
 
-    txtName.setText(recipient.getDisplayName());
+    txtName.setText(name);
 
-    TribeGuest guest;
-
-    if (recipient instanceof Membership) {
-      Membership membership = (Membership) recipient;
-      guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
-          recipient.getProfilePicture(), true, membership.getMembersPic());
-    } else {
-      guest = new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
-          recipient.getProfilePicture(), false, null);
-    }
+    TribeGuest guest = new TribeGuest(id, name, picture, isGroup, null);
 
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
@@ -552,6 +553,22 @@ public class LiveView extends FrameLayout {
       btnNotify.setEnabled(true);
       hasJoined = true;
     }).subscribe(onShouldJoinRoom));
+  }
+
+  public void setRecipient(Recipient recipient, int color) {
+    this.recipient = recipient;
+    this.color = color;
+
+    if (recipient != null) {
+      LiveRowView liveRowView = liveRowViewMap.get(recipient.getSubId());
+      if (liveRowView != null) {
+        if (recipient instanceof Membership) {
+          Membership membership = (Membership) recipient;
+          liveRowView.setGuest(new TribeGuest(recipient.getSubId(), recipient.getDisplayName(),
+              recipient.getProfilePicture(), true, membership.getMembersPic()));
+        }
+      }
+    }
   }
 
   public Room getRoom() {
@@ -718,6 +735,18 @@ public class LiveView extends FrameLayout {
     if (liveInviteMap.getMap()
         .containsKey(
             remotePeer.getSession().getUserId())) { // If the user was invited before joining
+      if (isGroup && nbLiveInRoom() == 0) { // First user joining in a group call
+        String groupId = getGroupWaiting();
+        if (!StringUtils.isEmpty(getGroupWaiting())) {
+          liveRowView = liveRowViewMap.remove(groupId);
+          animateGroupAvatar(liveRowView);
+          if (liveRowView != null && liveRowView.getParent() != null) {
+            liveRowView.dispose();
+            viewRoom.removeView(liveRowView);
+          }
+        }
+      }
+
       liveRowView = liveInviteMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
       liveInviteMap.remove(remotePeer.getSession().getUserId());

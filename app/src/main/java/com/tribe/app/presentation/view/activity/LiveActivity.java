@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -68,6 +69,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private static final String EXTRA_IS_GROUP = "EXTRA_IS_GROUP";
   private static final String EXTRA_SESSION_ID = "EXTRA_SESSION_ID";
   private static final String EXTRA_COLOR = "EXTRA_COLOR";
+  private static final String EXTRA_PICTURE = "EXTRA_PICTURE";
+  private static final String EXTRA_NAME = "EXTRA_NAME";
   private final int MAX_DURATION_WAITING_LIVE = 8;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
@@ -81,15 +84,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         recipient.getSubId()); // We pass the userId for a friendship or the groupId
     intent.putExtra(EXTRA_IS_GROUP, recipient instanceof Membership);
     intent.putExtra(EXTRA_COLOR, color);
+    intent.putExtra(EXTRA_PICTURE, recipient.getProfilePicture());
+    intent.putExtra(EXTRA_NAME, recipient.getDisplayName());
     return intent;
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
-      String sessionId) {
+      String picture, String name, String sessionId) {
     Intent intent = new Intent(context, LiveActivity.class);
     intent.putExtra(EXTRA_RECIPIENT_ID, recipientId);
     intent.putExtra(EXTRA_IS_GROUP, isGroup);
     intent.putExtra(EXTRA_SESSION_ID, sessionId);
+    intent.putExtra(EXTRA_PICTURE, picture);
+    intent.putExtra(EXTRA_NAME, name);
     return intent;
   }
 
@@ -117,6 +124,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private String recipientId;
   private boolean isGroup;
   private String sessionId;
+  private String name;
+  private String picture;
   private Recipient recipient;
   private int color;
   private NotificationReceiver notificationReceiver;
@@ -199,11 +208,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void initParams() {
     if (getIntent().hasExtra(EXTRA_RECIPIENT)) {
       recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_RECIPIENT);
+      name = recipient.getDisplayName();
+      picture = recipient.getProfilePicture();
+      recipientId = recipient.getSubId();
+      isGroup = recipient.isGroup();
+      color = PaletteGrid.getRandomColorExcluding(Color.BLACK);
     } else {
       recipientId = getIntent().getStringExtra(EXTRA_RECIPIENT_ID);
       sessionId = getIntent().getStringExtra(EXTRA_SESSION_ID);
       isGroup = getIntent().getBooleanExtra(EXTRA_IS_GROUP, false);
-      color = getIntent().getIntExtra(EXTRA_COLOR, Color.BLACK);
+      color =
+          getIntent().getIntExtra(EXTRA_COLOR, PaletteGrid.getRandomColorExcluding(Color.BLACK));
+      name = getIntent().getStringExtra(EXTRA_NAME);
+      picture = getIntent().getStringExtra(EXTRA_PICTURE);
     }
   }
 
@@ -216,6 +233,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
     viewInviteLive.setLayoutParams(params);
     viewInviteLive.requestLayout();
+    viewLive.start(recipientId, name, picture, isGroup);
 
     if (recipient == null) {
       livePresenter.loadRecipient(recipientId, isGroup);
@@ -446,6 +464,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     @Override public void onReceive(Context context, Intent intent) {
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
+      if (recipientId.equals(notificationPayload.getUserId()) || recipientId.equals(
+          notificationPayload.getGroupId()) || (sessionId != null && sessionId.equals(
+          notificationPayload.getSessionId()))) {
+        return;
+      }
 
       LiveNotificationView liveNotificationView =
           NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);

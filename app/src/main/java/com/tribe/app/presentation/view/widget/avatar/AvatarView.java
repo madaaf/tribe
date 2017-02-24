@@ -152,6 +152,7 @@ public class AvatarView extends LinearLayout implements Avatar {
 
         Glide.with(getContext())
             .load(groupAvatarFile)
+            .placeholder(R.drawable.picto_placeholder_avatar)
             .bitmapTransform(new CropCircleTransformation(getContext()))
             .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
             .crossFade()
@@ -165,6 +166,7 @@ public class AvatarView extends LinearLayout implements Avatar {
                   .doOnError(throwable -> System.out.println("Error"))
                   .subscribe(bitmap -> Glide.with(getContext())
                       .load(groupAvatarFile)
+                      .placeholder(R.drawable.picto_placeholder_avatar)
                       .bitmapTransform(new CropCircleTransformation(getContext()))
                       .signature(
                           new StringSignature(String.valueOf(groupAvatarFile.lastModified())))

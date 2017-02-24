@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -89,6 +91,7 @@ public class LiveRowView extends FrameLayout {
   }
 
   public void setColor(int color) {
+    if (color == Color.BLACK || color == 0) color = PaletteGrid.getRandomColorExcluding(color);
     this.color = color;
     viewWaiting.setColor(color);
   }

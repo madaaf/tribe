@@ -292,7 +292,8 @@ public class LiveLocalView extends FrameLayout {
   /////////////////
 
   public void dispose() {
-    viewPeerLocal.dispose();
+    if (subscriptions != null) subscriptions.unsubscribe();
+    viewPeerLocal.onDestroy();
   }
 
   public LocalPeerView getLocalPeerView() {

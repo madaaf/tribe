@@ -79,7 +79,8 @@ public class Invite extends Recipient {
     return null;
   }
 
-  private boolean isGroup() {
+  @Override
+  public boolean isGroup() {
     return group != null;
   }
 
