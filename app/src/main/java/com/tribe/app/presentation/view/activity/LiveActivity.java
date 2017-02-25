@@ -59,7 +59,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
@@ -142,7 +141,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     unbinder = ButterKnife.bind(this);
 
     initDependencyInjector();
-    initParams();
+    initParams(getIntent());
     init();
     initResources();
     initPermissions();
@@ -150,7 +149,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onNewIntent(Intent intent) {
-    Timber.d("onNewIntent : " + intent.getExtras().keySet());
+    viewLive.onDestroy(true);
+    viewLive.jump();
+    initParams(intent);
+    live.setCountdown(false);
+    initRoom();
   }
 
   @Override protected void onStart() {
@@ -185,7 +188,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onDestroy() {
-    viewLive.onDestroy();
+    viewLive.onDestroy(false);
 
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
@@ -202,9 +205,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     super.onDestroy();
   }
 
-  private void initParams() {
-    if (getIntent().hasExtra(EXTRA_LIVE)) {
-      live = (Live) getIntent().getSerializableExtra(EXTRA_LIVE);
+  private void initParams(Intent intent) {
+    if (intent.hasExtra(EXTRA_LIVE)) {
+      live = (Live) intent.getSerializableExtra(EXTRA_LIVE);
     }
 
     if (live.getColor() == 0 || live.getColor() == Color.BLACK) {
@@ -215,19 +218,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void init() {
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-    viewLiveContainer.setEnabled(false);
-
-    ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
-    params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
-    viewInviteLive.setLayoutParams(params);
-    viewInviteLive.requestLayout();
-    viewLive.start(live);
-
-    if (live.isGroup()) {
-      livePresenter.loadRecipient(live);
-    } else {
-      ready();
-    }
+    initRoom();
 
     audioManager = TribeAudioManager.create(this);
     audioManager.start((audioDevice, availableAudioDevices) -> {
@@ -241,6 +232,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .activityModule(getActivityModule())
         .build()
         .inject(this);
+  }
+
+  private void initRoom() {
+    viewLiveContainer.setEnabled(false);
+
+    ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
+    params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
+    viewInviteLive.setLayoutParams(params);
+    viewInviteLive.requestLayout();
+    viewLive.start(live);
+
+    if (live.isGroup()) {
+      livePresenter.loadRecipient(live);
+    } else {
+      ready();
+    }
   }
 
   private void initResources() {
@@ -470,7 +477,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             .subscribe(action -> {
               if (action.getIntent() != null) {
                 navigator.navigateToIntent(LiveActivity.this, action.getIntent());
-                finish();
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),

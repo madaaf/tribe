@@ -222,7 +222,7 @@ import static android.R.attr.id;
     return obj;
   }
 
-  public void dispose() {
+  public void dispose(boolean shouldDisposeLocal) {
     Timber.d("Disposing subscriptions");
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
@@ -236,10 +236,9 @@ import static android.R.attr.id;
       peerConnections.clear();
     }
 
-    Timber.d("Disposing stream manager");
-    streamManager.dispose();
+    streamManager.dispose(shouldDisposeLocal);
 
-    localMediaStream = null;
+    if (shouldDisposeLocal) localMediaStream = null;
     Timber.d("End dispose success");
   }
 

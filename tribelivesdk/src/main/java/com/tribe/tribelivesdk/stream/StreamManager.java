@@ -25,7 +25,7 @@ public class StreamManager {
   private final ObservableRxHashMap<String, RemotePeer> remotePeerMap = new ObservableRxHashMap<>();
 
   // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription localSubscriptions = new CompositeSubscription();
   private PublishSubject<Void> onMediaChanged = PublishSubject.create();
 
   public StreamManager(Context context) {
@@ -38,11 +38,11 @@ public class StreamManager {
     generateLocalStream(context, peerConnectionFactory);
     liveLocalStream.startVideoCapture();
 
-    subscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> {
+    localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> {
       switchCamera();
     }));
 
-    subscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
+    localSubscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
       setLocalCameraEnabled(enabled);
     }).map(aBoolean -> {
       return null;
@@ -160,8 +160,8 @@ public class StreamManager {
     return liveLocalStream.isCameraEnabled();
   }
 
-  public void dispose() {
-    subscriptions.clear();
+  public void dispose(boolean shouldDisposeLocal) {
+    Timber.d("Init dispose StreamManager");
 
     if (remotePeerMap != null && remotePeerMap.size() > 0) {
       Timber.d("Iterating remote peers");
@@ -174,16 +174,20 @@ public class StreamManager {
       remotePeerMap.clear();
     }
 
-    Timber.d("Disposing live local stream");
-    if (liveLocalStream != null) {
-      liveLocalStream.dispose();
-      liveLocalStream = null;
-    }
+    if (shouldDisposeLocal) {
+      localSubscriptions.clear();
 
-    Timber.d("Disposing stream manager");
-    if (localPeerView != null) {
-      localPeerView.dispose();
-      localPeerView = null;
+      Timber.d("Disposing live local stream");
+      if (liveLocalStream != null) {
+        liveLocalStream.dispose();
+        liveLocalStream = null;
+      }
+
+      Timber.d("Disposing stream manager");
+      if (localPeerView != null) {
+        localPeerView.dispose();
+        localPeerView = null;
+      }
     }
 
     Timber.d("End disposing stream manager");

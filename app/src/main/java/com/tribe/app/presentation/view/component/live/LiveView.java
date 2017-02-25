@@ -123,7 +123,8 @@ public class LiveView extends FrameLayout {
 
   // OBSERVABLES
   private Unbinder unbinder;
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
+  private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
@@ -147,7 +148,11 @@ public class LiveView extends FrameLayout {
     init(context, attrs);
   }
 
-  public void onDestroy() {
+  public void jump() {
+    room.jump();
+  }
+
+  public void onDestroy(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
     if (hasJoined && averageCountLive > 1) {
@@ -173,16 +178,16 @@ public class LiveView extends FrameLayout {
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       liveRowView.dispose();
+      viewRoom.removeView(liveRowView);
     }
 
     for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
       liveRowView.dispose();
+      viewRoom.removeView(liveRowView);
     }
 
-    if (room != null) {
-      viewRoom.removeAllViews();
+    if (room != null && !isJump) {
       room.leaveRoom();
-      room = null;
     }
 
     if (animatorBuzzAvatar != null) {
@@ -192,15 +197,16 @@ public class LiveView extends FrameLayout {
     btnNotify.clearAnimation();
     btnNotify.animate().setListener(null);
 
-    viewLocalLive.dispose();
-
     if (animatorRotation != null) animatorRotation.cancel();
 
-    if (subscriptions != null && subscriptions.hasSubscriptions()) {
-      subscriptions.unsubscribe();
+    if (!isJump) {
+      persistentSubscriptions.unsubscribe();
+      tempSubscriptions.unsubscribe();
+      viewLocalLive.dispose();
+      unbinder.unbind();
+    } else {
+      tempSubscriptions.unsubscribe();
     }
-
-    unbinder.unbind();
   }
 
   @Override protected void onFinishInflate() {
@@ -213,7 +219,7 @@ public class LiveView extends FrameLayout {
     initUI();
     initSubscriptions();
 
-    subscriptions.add(Observable.timer(MAX_DURATION_JOIN_LIVE, TimeUnit.SECONDS)
+    tempSubscriptions.add(Observable.timer(MAX_DURATION_JOIN_LIVE, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> displayJoinLivePopupTutorial()));
 
@@ -251,12 +257,12 @@ public class LiveView extends FrameLayout {
   }
 
   private void initSubscriptions() {
-    subscriptions.add(onHiddenControls().doOnNext(aBoolean -> {
+    persistentSubscriptions.add(onHiddenControls().doOnNext(aBoolean -> {
       hiddenControls = aBoolean;
       viewLocalLive.hideControls(!hiddenControls);
     }).subscribe());
 
-    subscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
+    persistentSubscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
       if (stateContainer == LiveContainer.EVENT_OPENED) {
         onShouldCloseInvites.onNext(null);
       }
@@ -282,7 +288,7 @@ public class LiveView extends FrameLayout {
 
   private void displayDragingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      subscriptions.add(DialogFactory.dialog(getContext(),
+      tempSubscriptions.add(DialogFactory.dialog(getContext(),
           getContext().getString(R.string.tips_draggingguest_title),
           getContext().getString(R.string.tips_draggingguest_message),
           getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
@@ -328,7 +334,7 @@ public class LiveView extends FrameLayout {
             @Override public void onAnimationEnd(Animator animation) {
               if (animatorBuzzAvatar != null) animatorBuzzAvatar.cancel();
 
-              subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+              tempSubscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(aLong -> refactorNotifyButton()));
 
@@ -366,12 +372,12 @@ public class LiveView extends FrameLayout {
         .routingMode(roomConfiguration.getRoutingMode())
         .build();
 
-    subscriptions.add(room.onRoomStateChanged().subscribe(state -> {
+    tempSubscriptions.add(room.onRoomStateChanged().subscribe(state -> {
       Timber.d("Room state change : " + state);
       if (state == Room.STATE_CONNECTED) {
         timeStart = System.currentTimeMillis();
 
-        subscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
+        tempSubscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
             .subscribe(intervalCount -> {
               totalSizeLive += nbLiveInRoom() + 1;
               averageCountLive = (double) totalSizeLive / (intervalCount + 1);
@@ -381,7 +387,7 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    subscriptions.add(
+    tempSubscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
@@ -398,7 +404,7 @@ public class LiveView extends FrameLayout {
 
           room.sendToPeer(remotePeer, getInvitedPayload(), true);
 
-          subscriptions.add(remotePeer.getPeerView()
+          tempSubscriptions.add(remotePeer.getPeerView()
               .onNotificatinRemoteJoined()
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aVoid -> {
@@ -407,7 +413,7 @@ public class LiveView extends FrameLayout {
               }));
         }));
 
-    subscriptions.add(room.onRemotePeerRemoved()
+    tempSubscriptions.add(room.onRemotePeerRemoved()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
           soundManager.playSound(SoundManager.QUIT_CALL, SoundManager.SOUND_MAX);
@@ -425,13 +431,13 @@ public class LiveView extends FrameLayout {
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
         }));
 
-    subscriptions.add(room.onRemotePeerUpdated()
+    tempSubscriptions.add(room.onRemotePeerUpdated()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
           Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId());
         }));
 
-    subscriptions.add(room.onInvitedTribeGuestList()
+    tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
@@ -445,7 +451,7 @@ public class LiveView extends FrameLayout {
           }
         }));
 
-    subscriptions.add(room.onRemovedTribeGuestList()
+    tempSubscriptions.add(room.onRemovedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
@@ -462,7 +468,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
-    subscriptions.add(obs.subscribe(event -> {
+    persistentSubscriptions.add(obs.subscribe(event -> {
       stateContainer = event;
       viewRoom.setType(
           event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
@@ -470,7 +476,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void initOnStartDragSubscription(Observable<TileView> obs) {
-    subscriptions.add(obs.subscribe(tileView -> {
+    persistentSubscriptions.add(obs.subscribe(tileView -> {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
@@ -480,14 +486,14 @@ public class LiveView extends FrameLayout {
   }
 
   public void initOnEndDragSubscription(Observable<Void> obs) {
-    subscriptions.add(obs.subscribe(aVoid -> {
+    persistentSubscriptions.add(obs.subscribe(aVoid -> {
       latestView.dispose();
       viewRoom.removeView(latestView);
     }));
   }
 
   public void initOnAlphaSubscription(Observable<Float> obs) {
-    subscriptions.add(obs.subscribe(alpha -> {
+    persistentSubscriptions.add(obs.subscribe(alpha -> {
       btnNotify.setAlpha(alpha);
       btnInviteLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
@@ -495,27 +501,27 @@ public class LiveView extends FrameLayout {
   }
 
   public void initDropEnabledSubscription(Observable<Boolean> obs) {
-    subscriptions.add(obs.subscribe(enabled -> {
+    persistentSubscriptions.add(obs.subscribe(enabled -> {
       // TODO DO SOMETHING WITH THIS ?
     }));
   }
 
   public void initDropSubscription(Observable<TileView> obs) {
-    subscriptions.add(obs.subscribe(tileView -> {
+    persistentSubscriptions.add(obs.subscribe(tileView -> {
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload(), true);
 
-      subscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
+      tempSubscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
         invitedCount++;
         displayDroppingGuestPopupTutorial();
         latestView.showGuest(false);
         latestView.startPulse();
       }));
 
-      subscriptions.add(latestView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
+      tempSubscriptions.add(latestView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
         removeFromInvites(latestView.getGuest().getId());
         room.sendToPeers(getRemovedPayload(latestView.getGuest()), true);
       }).subscribe());
@@ -524,7 +530,7 @@ public class LiveView extends FrameLayout {
 
   private void displayDroppingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DROPPING_GUEST)) {
-      subscriptions.add(DialogFactory.dialog(getContext(),
+      tempSubscriptions.add(DialogFactory.dialog(getContext(),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_droppingguest_title)),
           getContext().getString(R.string.tips_droppingguest_message),
           getContext().getString(R.string.tips_droppingguest_action1), null).subscribe(a -> {
@@ -551,12 +557,22 @@ public class LiveView extends FrameLayout {
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
     addView(liveRowView, guest, live.getColor());
-    liveRowView.showGuest(true);
+    liveRowView.showGuest(live.isCountdown());
 
-    subscriptions.add(liveRowView.onShouldJoinRoom().distinct().doOnNext(aVoid -> {
-      btnNotify.setEnabled(true);
-      hasJoined = true;
-    }).subscribe(onShouldJoinRoom));
+    if (live.isCountdown()) {
+      tempSubscriptions.add(liveRowView.onShouldJoinRoom().distinct().doOnNext(aVoid -> {
+        onJoining();
+      }).subscribe(onShouldJoinRoom));
+    } else {
+      liveRowView.startPulse();
+      onJoining();
+      onShouldJoinRoom.onNext(null);
+    }
+  }
+
+  private void onJoining() {
+    btnNotify.setEnabled(live.isCountdown());
+    hasJoined = true;
   }
 
   public void update(Live live) {
@@ -577,7 +593,7 @@ public class LiveView extends FrameLayout {
   public void displayWaitLivePopupTutorial() {
     if (!joinLive) {
       if (stateManager.shouldDisplay(StateManager.WAINTING_FRIENDS_LIVE)) {
-        subscriptions.add(DialogFactory.dialog(getContext(),
+        tempSubscriptions.add(DialogFactory.dialog(getContext(),
             getContext().getString(R.string.tips_waiting5sec_title),
             EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting5sec_message)),
             getContext().getString(R.string.tips_waiting5sec_action1), null).subscribe(a -> {
@@ -619,7 +635,7 @@ public class LiveView extends FrameLayout {
 
   private void displayJoinLivePopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.JOIN_FRIEND_LIVE)) {
-      subscriptions.add(DialogFactory.dialog(getContext(),
+      tempSubscriptions.add(DialogFactory.dialog(getContext(),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_title)),
           EmojiParser.demojizedText(getContext().getString(R.string.tips_waiting60sec_message)),
           getContext().getString(R.
@@ -916,7 +932,7 @@ public class LiveView extends FrameLayout {
 
     addView(avatarView);
 
-    subscriptions.add(Observable.timer(50, TimeUnit.MILLISECONDS)
+    tempSubscriptions.add(Observable.timer(50, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           Animator animatorSize = AnimationUtils.getSizeAnimator(avatarView,

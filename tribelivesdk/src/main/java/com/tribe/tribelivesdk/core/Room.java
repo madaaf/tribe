@@ -70,7 +70,10 @@ public class Room {
   private boolean hasJoined = false;
 
   // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
+  // They stay when switching from Room to room
+  private CompositeSubscription tempSubscriptions = new CompositeSubscription();
+  // They are removed when switching room
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
@@ -90,8 +93,9 @@ public class Room {
   private void initJsonToModel() {
     jsonToModel = new JsonToModel();
 
-    subscriptions.add(jsonToModel.onJoinRoom()
+    persistentSubscriptions.add(jsonToModel.onJoinRoom()
         .doOnNext(joinedRoom -> {
+          Timber.d("onJoinRoom");
           if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
             for (TribeSession session : joinedRoom.getSessionList()) {
               webRTCClient.addPeerConnection(session, true);
@@ -113,62 +117,46 @@ public class Room {
 
         }));
 
-    /*.delay(5000, TimeUnit.MILLISECONDS)
-        .doOnNext(tribeJoinRoom -> {
-          TribePeerMediaConfiguration mediaConfiguration = new TribePeerMediaConfiguration(
-              new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
-          mediaConfiguration.setAudioEnabled(true);
-          mediaConfiguration.setVideoEnabled(false);
-          mediaConfiguration.setLowConnectivityMode(true);
-          webRTCClient.setLocalMediaConfiguation(mediaConfiguration);
-        })
-        .delay(5000, TimeUnit.MILLISECONDS)
-        .subscribe(joinedRoom -> {
-          TribePeerMediaConfiguration mediaConfiguration = new TribePeerMediaConfiguration(
-              new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
-          mediaConfiguration.setAudioEnabled(true);
-          mediaConfiguration.setVideoEnabled(true);
-          mediaConfiguration.setLowConnectivityMode(true);
-          webRTCClient.setLocalMediaConfiguation(mediaConfiguration);*/
-
-    subscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
+    persistentSubscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
       webRTCClient.setRemoteDescription(tribeOffer.getSession(),
           tribeOffer.getSessionDescription());
     }));
 
-    subscriptions.add(jsonToModel.onCandidate().subscribe(tribeCandidate -> {
+    persistentSubscriptions.add(jsonToModel.onCandidate().subscribe(tribeCandidate -> {
       webRTCClient.addIceCandidate(tribeCandidate.getSession().getPeerId(),
           tribeCandidate.getIceCandidate());
     }));
 
-    subscriptions.add(jsonToModel.onLeaveRoom()
+    persistentSubscriptions.add(jsonToModel.onLeaveRoom()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeSession -> {
           webRTCClient.removePeerConnection(tribeSession);
         }));
 
-    subscriptions.add(jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
+    persistentSubscriptions.add(
+        jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
 
-    subscriptions.add(jsonToModel.onRemovedTribeGuestList().subscribe(onRemovedTribeGuestList));
+    persistentSubscriptions.add(
+        jsonToModel.onRemovedTribeGuestList().subscribe(onRemovedTribeGuestList));
 
-    subscriptions.add(
+    persistentSubscriptions.add(
         jsonToModel.onTribePeerMediaConfiguration().subscribe(tribePeerMediaConfiguration -> {
           webRTCClient.setRemoteMediaConfiguration(tribePeerMediaConfiguration);
         }));
 
-    subscriptions.add(jsonToModel.onTribeMediaConstraints()
+    persistentSubscriptions.add(jsonToModel.onTribeMediaConstraints()
         .filter(tribeMediaConstraints -> hasJoined)
         .subscribe(tribeMediaConstraints -> {
           webRTCClient.updateMediaConstraints(tribeMediaConstraints);
         }));
 
-    subscriptions.add(jsonToModel.onShouldSwitchLocalMediaMode()
+    persistentSubscriptions.add(jsonToModel.onShouldSwitchLocalMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> {
           webRTCClient.setLocalMediaConfiguation(tribeMediaConfiguration);
         }));
 
-    subscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
+    persistentSubscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> {
           webRTCClient.setRemoteMediaConfiguration(tribeMediaConfiguration);
@@ -189,7 +177,7 @@ public class Room {
 
     webSocketConnection.connect(options.getWsUrl());
 
-    subscriptions.add(webSocketConnection.onStateChanged().map(state -> {
+    tempSubscriptions.add(webSocketConnection.onStateChanged().map(state -> {
       Timber.d("On room state changed : " + state);
 
       if (state.equals(WebSocketConnection.STATE_CONNECTED)) {
@@ -209,8 +197,7 @@ public class Room {
       }
     }).subscribe(onRoomStateChanged));
 
-    subscriptions.add(webSocketConnection.onMessage()
-        .doOnError(throwable -> Timber.d("HEY ON ERROR"))
+    tempSubscriptions.add(webSocketConnection.onMessage()
         .onErrorResumeNext(throwable -> Observable.just(""))
         .subscribe(message -> {
           if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
@@ -230,27 +217,27 @@ public class Room {
 
     webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId()).toString());
 
-    subscriptions.add(webRTCClient.onReadyToSendSdpOffer()
+    tempSubscriptions.add(webRTCClient.onReadyToSendSdpOffer()
         .doOnError(Throwable::printStackTrace)
         .subscribe(tribeOffer -> {
           webSocketConnection.send(getSendSdpPayload(tribeOffer.getSession().getPeerId(),
               tribeOffer.getSessionDescription()).toString());
         }));
 
-    subscriptions.add(webRTCClient.onReadyToSendSdpAnswer()
+    tempSubscriptions.add(webRTCClient.onReadyToSendSdpAnswer()
         .doOnError(Throwable::printStackTrace)
         .subscribe(tribeAnswer -> {
           webSocketConnection.send(getSendSdpPayload(tribeAnswer.getSession().getPeerId(),
               tribeAnswer.getSessionDescription()).toString());
         }));
 
-    subscriptions.add(webRTCClient.onReceivedTribeCandidate().subscribe(tribeCandidate -> {
+    tempSubscriptions.add(webRTCClient.onReceivedTribeCandidate().subscribe(tribeCandidate -> {
       JSONObject payload = getCandidatePayload(tribeCandidate.getSession().getPeerId(),
           tribeCandidate.getIceCandidate());
       webSocketConnection.send(payload.toString());
     }));
 
-    subscriptions.add(webRTCClient.onRemotePeersChanged().doOnNext(rxRemotePeer -> {
+    tempSubscriptions.add(webRTCClient.onRemotePeersChanged().doOnNext(rxRemotePeer -> {
       if (rxRemotePeer.changeType == ObservableRxHashMap.ADD) {
         onRemotePeerAdded.onNext(rxRemotePeer.item);
       } else if (rxRemotePeer.changeType == ObservableRxHashMap.REMOVE) {
@@ -260,19 +247,28 @@ public class Room {
       }
     }).subscribe());
 
-    subscriptions.add(webRTCClient.onSendToPeers().subscribe(jsonObject -> {
+    tempSubscriptions.add(webRTCClient.onSendToPeers().subscribe(jsonObject -> {
       sendToPeers(jsonObject, false);
     }));
   }
 
   public void leaveRoom() {
+    dispose(true);
+    if (persistentSubscriptions.hasSubscriptions()) persistentSubscriptions.unsubscribe();
+  }
+
+  public void jump() {
+    dispose(false);
+  }
+
+  private void dispose(boolean shouldDisposeLocal) {
     hasJoined = false;
 
-    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    if (tempSubscriptions.hasSubscriptions()) tempSubscriptions.clear();
 
     options = null;
     webSocketConnection.disconnect(false);
-    webRTCClient.dispose();
+    webRTCClient.dispose(shouldDisposeLocal);
   }
 
   public void sendToPeers(JSONObject obj, boolean isAppMessage) {

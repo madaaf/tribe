@@ -19,6 +19,7 @@ public class Live implements Serializable {
   private boolean isGroup;
   private String sessionId;
   private int color = 0;
+  private boolean countdown = true;
 
   private Live(Builder builder) {
     this.id = builder.id;
@@ -29,6 +30,7 @@ public class Live implements Serializable {
     this.sessionId = builder.sessionId;
     this.color = builder.color;
     this.subId = builder.subId;
+    this.countdown = builder.countdown;
   }
 
   public String getId() {
@@ -95,6 +97,14 @@ public class Live implements Serializable {
     this.subId = subId;
   }
 
+  public boolean isCountdown() {
+    return countdown;
+  }
+
+  public void setCountdown(boolean countdown) {
+    this.countdown = countdown;
+  }
+
   public boolean isGroupMember(String userId) {
     if (memberList != null) {
       for (User member : memberList) {
@@ -135,6 +145,7 @@ public class Live implements Serializable {
     private boolean isGroup;
     private String sessionId;
     private int color;
+    private boolean countdown = true;
 
     public Builder(String id, String subId) {
       this.id = id;
@@ -168,6 +179,11 @@ public class Live implements Serializable {
 
     public Builder color(int color) {
       this.color = color;
+      return this;
+    }
+
+    public Builder countdown(boolean countdown) {
+      this.countdown = countdown;
       return this;
     }
 

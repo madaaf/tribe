@@ -122,12 +122,14 @@ public class ContactAdapter extends RecyclerView.Adapter {
     for (Object obj : items) {
       if (obj instanceof Contact) {
         Contact c = (Contact) obj;
-        User oldUser = c.getUserList().get(0);
-        if (oldUser.equals(user)) {
-          oldUser.setAnimateAdd(true);
-          oldUser.setFriend(true);
-          notifyDataSetChanged();
-          break;
+        if (c.getUserList() != null && c.getUserList().size() > 0) {
+          User oldUser = c.getUserList().get(0);
+          if (oldUser.equals(user)) {
+            oldUser.setAnimateAdd(true);
+            oldUser.setFriend(true);
+            notifyDataSetChanged();
+            break;
+          }
         }
       }
     }
