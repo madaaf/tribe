@@ -53,6 +53,7 @@ public class TopBarContainer extends FrameLayout {
   private VelocityTracker velocityTracker;
   private int touchSlop;
   private int currentOffsetTop;
+  private boolean dropPullToRefresh = false;
 
   // SPRINGS
   private SpringSystem springSystem = null;
@@ -221,8 +222,8 @@ public class TopBarContainer extends FrameLayout {
 
   private void translateTop(float value) {
     recyclerView.setTranslationY(value);
-    topBarView.showSpinner(value);
-    if (value == 0) {
+    topBarView.showSpinner(value, getTotalDragDistance());
+    if (value > getTotalDragDistance() / 2 && dropPullToRefresh) {
       onRefresh.onNext(true);
     }
   }
@@ -241,7 +242,7 @@ public class TopBarContainer extends FrameLayout {
           float y = event.getY(pointerIndex) + location[1];
           float offsetY = y - lastDownY + lastDownYTr;
           if (offsetY >= 0) applyOffsetTopWithTension(offsetY);
-
+          dropPullToRefresh = false;
           velocityTracker.addMovement(event);
         }
 
@@ -251,7 +252,7 @@ public class TopBarContainer extends FrameLayout {
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_CANCEL: {
         final int pointerIndex = event.findPointerIndex(activePointerId);
-
+        dropPullToRefresh = true;
         activePointerId = INVALID_POINTER;
 
         if (pointerIndex != INVALID_POINTER && velocityTracker != null) {

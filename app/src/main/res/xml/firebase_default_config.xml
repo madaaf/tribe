@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <defaultsMap>
   <entry>
-    <key>disable_invite_friends</key>
-    <value>0</value>
-  </entry>
-  <entry>
-    <key>disable_online_notifications</key>
-    <value>0</value>
-  </entry>
-  <entry>
-    <key>delay_online_notifications</key>
-    <value>180</value>
+    <key>group_default_names</key>
+    <value>
+      :smile_cat::joy_cat::heart_eyes_cat::scream_cat:,:hand1::punch::hand2::v:,:smile::kissing_smiling_eyes::joy::grin:,:panda_face::tiger::dog::monkey_face:,:lemon::watermelon::peach::grapes:,:popcorn::doughnut::cookie::lollipop:
+    </value>
   </entry>
 </defaultsMap>

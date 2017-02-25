@@ -16,11 +16,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
 import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Group;
@@ -31,11 +34,13 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.view.GroupMVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
@@ -45,8 +50,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class GroupActivity extends BaseActivity implements GroupMVPView {
 
@@ -98,6 +105,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   private Membership membership;
   private List<GroupMember> newMembers;
   private TextViewFont currentTitle;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // RESOURCES
   private int margin;
@@ -106,16 +114,17 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription settingsSubscriptions = new CompositeSubscription();
+  GroupEntity groupEntity;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_group);
 
     unbinder = ButterKnife.bind(this);
-
     initResources();
     initDependencyInjector();
     init(savedInstanceState);
+    initRemoteConfig();
     initPresenter();
   }
 
@@ -170,9 +179,10 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         TagManagerUtils.manageTags(tagManager, tagMap);
         tagManager.increment(TagManagerUtils.USER_GROUPS_COUNT);
 
-        GroupEntity groupEntity = new GroupEntity();
+        groupEntity = new GroupEntity();
         groupEntity.setMembersId(membersId);
-        groupEntity.setName("");
+        groupEntity.setName(getDefaultGroupName());
+
         groupPresenter.createGroup(groupEntity);
       } else {
         if (viewStack.getTopView() instanceof UpdateGroupView) {
@@ -209,6 +219,33 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         setupAddMembersView(null);
       }
     }
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.setDefaults(R.xml.firebase_default_config);
+
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+      } else {
+        Timber.e("firebaseRemoteConfig failure");
+        groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+      }
+    });
+  }
+
+  private String getDefaultGroupName() {
+    String defaultGroupName =
+        firebaseRemoteConfig.getString(Constants.FIREBASE_GROUP_DEFAULT_NAMES);
+    String[] result = defaultGroupName.split(",");
+    Random r = new Random();
+    int randomPosition = r.nextInt(result.length - 1);
+    return result[randomPosition];
   }
 
   private void initResources() {

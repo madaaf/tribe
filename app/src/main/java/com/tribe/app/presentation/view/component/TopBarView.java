@@ -331,8 +331,8 @@ public class TopBarView extends FrameLayout {
     return super.dispatchKeyEventPreIme(event);
   }
 
-  public void showSpinner(float value) {
-    value = (value / 250);
+  public void showSpinner(float value, float totalDragDistance) {
+    value = (value / totalDragDistance);
     progressRefresh.clearAnimation();
     progressRefresh.setVisibility(VISIBLE);
     progressRefreshBack.setVisibility(VISIBLE);
