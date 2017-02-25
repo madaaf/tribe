@@ -259,7 +259,7 @@ public class HomeActivity extends BaseActivity
         .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {
+        .subscribe(bool -> {
           if (canEndRefresh) {
             homeGridPresenter.reload(false);
             canEndRefresh = false;
