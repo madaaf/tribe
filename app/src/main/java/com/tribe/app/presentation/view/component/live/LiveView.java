@@ -200,12 +200,12 @@ public class LiveView extends FrameLayout {
     if (animatorRotation != null) animatorRotation.cancel();
 
     if (!isJump) {
-      persistentSubscriptions.unsubscribe();
-      tempSubscriptions.unsubscribe();
+      persistentSubscriptions.clear();
+      tempSubscriptions.clear();
       viewLocalLive.dispose();
       unbinder.unbind();
     } else {
-      tempSubscriptions.unsubscribe();
+      tempSubscriptions.clear();
     }
   }
 

@@ -254,7 +254,7 @@ public class Room {
 
   public void leaveRoom() {
     dispose(true);
-    if (persistentSubscriptions.hasSubscriptions()) persistentSubscriptions.unsubscribe();
+    if (persistentSubscriptions.hasSubscriptions()) persistentSubscriptions.clear();
   }
 
   public void jump() {
