@@ -261,7 +261,7 @@ public class HomeActivity extends BaseActivity
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(bool -> {
           if (canEndRefresh) {
-            homeGridPresenter.reload(true);
+            homeGridPresenter.reload(false);
             canEndRefresh = false;
           }
         }));

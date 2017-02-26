@@ -11,10 +11,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 @Singleton public class WebSocketConnection {
@@ -43,8 +45,12 @@ import timber.log.Timber;
   private WebSocketFactory clientFactory;
   private Map<String, String> headers;
   private final Object closeLock = new Object();
-  private boolean close;
+  private boolean close, shouldReconnect = true;
+  private int attempts = 1;
+  private String url;
 
+  // OBSERVABLE
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onStateChanged = PublishSubject.create();
   private PublishSubject<String> onMessage = PublishSubject.create();
   private PublishSubject<String> onError = PublishSubject.create();
@@ -61,6 +67,7 @@ import timber.log.Timber;
       return;
     }
 
+    this.url = url;
     close = false;
 
     URI uri;
@@ -87,6 +94,7 @@ import timber.log.Timber;
       }
 
       webSocketClient.addListener(new WebSocketListener() {
+
         @Override public void onStateChanged(WebSocket websocket,
             com.neovisionaries.ws.client.WebSocketState newState) throws Exception {
           Timber.d("WebSocket stateChanged: " + newState.name());
@@ -95,6 +103,7 @@ import timber.log.Timber;
         @Override public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
             throws Exception {
           Timber.d("WebSocket connection opened to: " + url);
+          attempts = 1;
           state = STATE_CONNECTED;
           onStateChanged.onNext(state);
         }
@@ -102,6 +111,7 @@ import timber.log.Timber;
         @Override public void onConnectError(WebSocket websocket, WebSocketException cause)
             throws Exception {
           Timber.d("WebSocket onConnectError: " + cause.getMessage());
+          retry();
         }
 
         @Override public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
@@ -117,6 +127,8 @@ import timber.log.Timber;
             state = STATE_DISCONNECTED;
             onStateChanged.onNext(state);
           }
+
+          retry();
         }
 
         @Override public void onFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
@@ -239,12 +251,31 @@ import timber.log.Timber;
     webSocketClient.setPingPayloadGenerator(() -> "{}".getBytes());
   }
 
+  private void retry() {
+    if (shouldReconnect) {
+      int time = generateInterval(attempts);
+      Timber.d("Trying to reconnect in : " + time);
+      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+        Timber.d("Reconnecting");
+        attempts++;
+        connect(url);
+      }));
+    }
+  }
+
   private boolean isConnected() {
     return state == STATE_CONNECTED;
   }
 
+  private int generateInterval(int k) {
+    return (int) (Math.random() * (Math.min(30, (Math.pow(2, k) - 1)) * 1000));
+  }
+
   public void disconnect(boolean waitForComplete) {
     Timber.d("Disconnect");
+
+    shouldReconnect = false;
+    subscriptions.clear();
 
     if (webSocketClient != null && (state == STATE_CONNECTED || state == STATE_CONNECTING)) {
       state = STATE_DISCONNECTED;

@@ -71,6 +71,8 @@ ext {
 
   //Development
   leakCanaryVersion = '1.5'
+  taktVersion = '1.0.3'
+  androidDevMetricsVersion = '0.4'
 
   presentationDependencies = [daggerCompiler          : "com.google.dagger:dagger-compiler:${daggerVersion}",
                               dagger                  : "com.google.dagger:dagger:${daggerVersion}",
@@ -132,8 +134,10 @@ ext {
                                   jUnit             : "junit:junit:${jUnitVersion}"]
 
   developmentDependencies =
-      [leakCanary  : "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
-       stetho      : "com.facebook.stetho:stetho:${stethoVersion}",
-       stethoOkHttp: "com.facebook.stetho:stetho-okhttp3:${stethoVersion}",
-       stethoRealm : "com.uphyca:stetho_realm:${stethoRealmVersion}"]
+      [leakCanary       : "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
+       stetho           : "com.facebook.stetho:stetho:${stethoVersion}",
+       stethoOkHttp     : "com.facebook.stetho:stetho-okhttp3:${stethoVersion}",
+       stethoRealm      : "com.uphyca:stetho_realm:${stethoRealmVersion}",
+       takt             : "jp.wasabeef:takt:${taktVersion}",
+       androidDevMetrics: "com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:${androidDevMetricsVersion}"]
 }

@@ -3,6 +3,7 @@ package com.tribe.app.presentation;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.multidex.MultiDex;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -54,6 +55,7 @@ public class AndroidApplication extends Application {
     initBranch();
     initTimber();
     initAppState();
+    initTakt();
   }
 
   @Override protected void attachBaseContext(Context base) {
@@ -120,6 +122,16 @@ public class AndroidApplication extends Application {
     appStateMonitor = RxAppStateMonitor.create(this);
     appStateMonitor.addListener(new SampleAppStateListener());
     appStateMonitor.start();
+  }
+
+  private void initTakt() {
+    //Takt.stock(this)
+    //    .seat(Seat.BOTTOM_RIGHT)
+    //    .interval(250)
+    //    .color(Color.WHITE)
+    //    .size(25f)
+    //    .alpha(1f)
+    //    .play();
   }
 
   private class SampleAppStateListener implements AppStateListener {

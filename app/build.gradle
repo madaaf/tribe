@@ -35,6 +35,17 @@ android {
     javaMaxHeapSize "4g"
   }
 
+  configurations {
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
+    all*.exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+  }
+
+  configurations.all {
+    resolutionStrategy {
+      force 'com.squareup:javawriter:2.5.0'
+    }
+  }
+
   defaultConfig {
     renderscriptTargetApi globalConfiguration.getAt("androidTargetSdkVersion")
     renderscriptSupportModeEnabled true
@@ -66,6 +77,7 @@ android {
     exclude 'META-INF/ASL2.0'
     exclude 'META-INF/NOTICE'
     exclude 'META-INF/LICENSE'
+    exclude 'AUTHORS'
   }
 
   lintOptions {
@@ -234,6 +246,8 @@ dependencies {
   compile developmentDependencies.leakCanary
   compile developmentDependencies.stetho
   compile developmentDependencies.stethoOkHttp
+  //compile developmentDependencies.androidDevMetrics
+  //compile developmentDependencies.takt
 
   compile project(':AdapterDelegates')
   compile project(':ViewNavigator')

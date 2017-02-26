@@ -125,4 +125,8 @@ public class NotificationPayload implements Serializable {
   public String getThread() {
     return thread;
   }
+
+  public boolean isLive() {
+    return click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(CLICK_ACTION_LIVE);
+  }
 }

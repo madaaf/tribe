@@ -6,6 +6,7 @@ import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
+import org.webrtc.RtpReceiver;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
@@ -99,6 +100,10 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
 
   @Override public void onSignalingChange(PeerConnection.SignalingState signalingState) {
     Timber.d("onSignalingChange : " + signalingState.name());
+  }
+
+  @Override public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
+
   }
 
   public Observable<PeerConnection.IceConnectionState> onIceConnectionChanged() {

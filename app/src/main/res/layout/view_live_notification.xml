@@ -40,8 +40,6 @@
           android:id="@+id/tvTitle"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:layout_marginLeft="65dp"
           android:layout_marginRight="65dp"
           android:gravity="center"
           style="@style/Body.Two.White"

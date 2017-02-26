@@ -38,12 +38,13 @@ import timber.log.Timber;
 
 public class LiveNotificationView extends FrameLayout implements Animation.AnimationListener {
 
-  @IntDef({ LIVE, ERROR }) public @interface LiveNotificationType {
+  @IntDef({ LIVE, ONLINE, ERROR }) public @interface LiveNotificationType {
   }
 
   private static final long DISPLAY_TIME_IN_SECONDS = 5000;
   public static final int LIVE = 0;
-  public static final int ERROR = 1;
+  public static final int ONLINE = 1;
+  public static final int ERROR = 2;
   private static final int CLEAN_UP_DELAY_MILLIS = 100;
   private static final int SCREEN_SCALE_FACTOR = 6;
 
@@ -54,6 +55,9 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private boolean marginSet;
   private int sound = -1;
   private long duration = DISPLAY_TIME_IN_SECONDS;
+
+  // RESOURCES
+  private int margin;
 
   //UI
   @BindView(R.id.view_live_notification_container) LinearLayout notificationContainer;
@@ -85,6 +89,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   }
 
   private void initView() {
+    initResources();
+    
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_live_notification, this, true);
@@ -104,6 +110,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     notificationContainer.setPadding(notificationContainer.getPaddingLeft(),
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
         notificationContainer.getPaddingRight(), 0);
+  }
+
+  private void initResources() {
+    margin = getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
   }
 
   //////////////////////
@@ -196,18 +206,17 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   }
 
   private void addAction(LiveNotificationActionView.Action action, int count, boolean isLast) {
-    int sizeActionItem = getResources().getDimensionPixelSize(
-        count == 1 || isLast ? R.dimen.live_notification_item_height_big
-            : R.dimen.live_notification_item_height_small);
-
     LiveNotificationActionView actionView =
         new LiveNotificationActionView.Builder(getContext(), action).isLast(isLast)
             .count(count)
             .build();
 
     LinearLayout.LayoutParams params =
-        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeActionItem);
+        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT);
     params.gravity = Gravity.CENTER_VERTICAL;
+    params.topMargin = margin;
+    if (isLast) params.bottomMargin = margin;
 
     actionContainer.addView(actionView, params);
     subscriptions.add(actionView.onClick().doOnNext(action1 -> hide()).subscribe(onClickAction));

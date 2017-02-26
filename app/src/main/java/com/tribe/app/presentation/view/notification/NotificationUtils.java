@@ -91,8 +91,10 @@ public class NotificationUtils {
 
   private static LiveNotificationView.Builder getCommonBuilder(Context context,
       NotificationPayload notificationPayload) {
-    return new LiveNotificationView.Builder(context, LiveNotificationView.LIVE).imgUrl(
-        notificationPayload.getUserPicture()).title(notificationPayload.getBody());
+    return new LiveNotificationView.Builder(context,
+        notificationPayload.isLive() ? LiveNotificationView.LIVE
+            : LiveNotificationView.ONLINE).imgUrl(notificationPayload.getUserPicture())
+        .title(notificationPayload.getBody());
   }
 
   private static LiveNotificationView.Builder addHangLiveAction(Context context,
