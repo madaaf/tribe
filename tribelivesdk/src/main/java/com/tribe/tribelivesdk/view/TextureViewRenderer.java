@@ -121,7 +121,7 @@ public class TextureViewRenderer extends TextureView
    */
   public void addFrameListener(EglRenderer.FrameListener listener, float scale,
       final RendererCommon.GlDrawer drawer) {
-    eglRenderer.addFrameListener(listener, scale, drawer);
+    eglRenderer.addFrameListener(listener, scale);
   }
 
   /**
@@ -312,12 +312,14 @@ public class TextureViewRenderer extends TextureView
   @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
     ThreadUtils.checkIsOnMainThread();
     eglRenderer.createEglSurface(surface);
+    eglRenderer.surfaceSizeChanged(width, height);
     surfaceWidth = surfaceHeight = 0;
     updateSurfaceSize();
   }
 
   @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
     ThreadUtils.checkIsOnMainThread();
+    eglRenderer.surfaceSizeChanged(width, height);
   }
 
   @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {

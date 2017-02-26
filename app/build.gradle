@@ -145,6 +145,24 @@ android {
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
+
+      proguardFiles getDefaultProguardFile('proguard-android.txt'),
+          'proguard-google-play-services.pro',
+          'proguard-dagger.pro',
+          'proguard-butterknife.pro',
+          'proguard-crashlytics.pro',
+          'proguard-dagger.pro',
+          'proguard-gson.pro',
+          'proguard-okhttp.pro',
+          'proguard-retrolambda.pro',
+          'proguard-rxjava.pro',
+          'proguard-timber.pro',
+          'proguard-stetho.pro',
+          'proguard-appcompat-v7.pro',
+          'proguard-glide.pro',
+          'proguard-retrofit.pro',
+          'proguard-webrtc.pro',
+          'proguard-rules.pro'
     }
   }
 }

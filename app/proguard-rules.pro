@@ -15,7 +15,12 @@
 #-keepclassmembers class fqcn.of.javascript.interfaces.for.webview {
 #   public *;
 #}
+-dontwarn
 -keep public class * implements com.bumptech.glide.module.GlideModule
 
-# for DexGuard only
--keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+-dontoptimize
+-keepattributes SourceFile,LineNumberTable
+-keep class com.tribe.app.** { *; }
+-keepclassmembers class ** {
+    public void onEvent*(**);
+}
