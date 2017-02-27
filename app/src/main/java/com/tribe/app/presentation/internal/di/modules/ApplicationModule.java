@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import com.birbit.android.jobqueue.JobManager;
@@ -43,6 +44,7 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
+import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -235,6 +237,14 @@ import timber.log.Timber;
 
   @Provides @Singleton ScreenUtils provideScreenUtils(Context context) {
     return new ScreenUtils(context);
+  }
+
+  @Provides @Singleton IntentFilter provideIntentFilter() {
+    return new IntentFilter();
+  }
+
+  @Provides @Singleton SmsListener provideSmsListener(Context context, IntentFilter filter) {
+    return new SmsListener(context, filter);
   }
 
   @Provides @Singleton ReactiveLocationProvider provideReactiveLocationProvider(Context context) {

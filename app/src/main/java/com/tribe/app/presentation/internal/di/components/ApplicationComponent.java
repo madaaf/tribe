@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.internal.di.components;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationManagerCompat;
 import com.birbit.android.jobqueue.JobManager;
@@ -45,6 +46,7 @@ import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
+import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
@@ -214,6 +216,10 @@ public interface ApplicationComponent {
   AccessToken accessToken();
 
   ScreenUtils screenUtils();
+
+  IntentFilter IntentFilter();
+
+  SmsListener SmsListener();
 
   User currentUser();
 
