@@ -68,6 +68,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   // VARIABLES
   private boolean disableUI = false;
+  private ProgressDialog progressDialog;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -99,6 +100,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (viewSettingsProfile != null) viewSettingsProfile.onDestroy();
     if (viewProfile != null) viewProfile.onDestroy();
+    if (progressDialog != null) progressDialog.dismiss();
     super.onDestroy();
   }
 
@@ -230,9 +232,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         .filter(x -> x == true)
         .subscribe(aVoid -> {
           tagManager.trackEvent(TagManagerUtils.Logout);
-          ProgressDialog pd =
-              DialogFactory.createProgressDialog(this, R.string.settings_logout_wait);
-          pd.show();
+          progressDialog = DialogFactory.createProgressDialog(this, R.string.settings_logout_wait);
+          progressDialog.show();
           profilePresenter.logout();
         }));
 

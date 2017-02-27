@@ -51,6 +51,7 @@ public class GlRectDrawer implements RendererCommon.GlDrawer {
       + "  float y = texture2D(y_tex, interp_tc).r;\n"
       + "  float u = texture2D(u_tex, interp_tc).r - 0.5;\n"
       + "  float v = texture2D(v_tex, interp_tc).r - 0.5;\n"
+      //+ "  y = 1.0 - 1.1643 * (y - 0.0625);\n" // This line inverts colors
       + "  gl_FragColor = vec4(y + 1.403 * v, "
       + "                      y - 0.344 * u - 0.714 * v, "
       + "                      y + 1.77 * u, 1);\n"

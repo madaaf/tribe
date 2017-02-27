@@ -14,10 +14,10 @@
 	<string name="action_enter">Entrer</string>
 	<string name="action_start">Commencer</string>
 	<string name="action_add_friend">Ajouter en ami</string>
-	<string name="action_adding_friend">Chargement</string>
+	<string name="action_adding_friend">Ajout en cours...</string>
 	<string name="action_friend">Ajouté</string>
 	<string name="action_unblock">Débloquer</string>
-	<string name="action_hang_live">Démarre live</string>
+	<string name="action_hang_live">Demarrer un live</string>
 	<string name="action_add_member">Ajouter au groupe</string>
 	<string name="action_member_added">Ajouté</string>
 	<string name="action_group_member">Membre</string>
@@ -26,7 +26,7 @@
 	<string name="action_unhide">Démasquer</string>
 	
 	<!-- User -->
-	<string name="user_friend">amis</string>
+	<string name="user_friend">ami</string>
 	<string name="user_friends">amis</string>
 	
 	<!-- Group -->
@@ -57,26 +57,26 @@
 	<string name="contacts_section_facebook_no_os_facebook_description">Rendez-vous dans les Paramètres de votre téléphone pour connecter votre compte Facebook!</string>
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Annuler</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">C\'est noté !</string>
-	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement\nvos contacts</string>
-	<string name="contacts_section_addressbook_syncing">Synchronisation</string>
+	<string name="contacts_section_addressbook_sync_description">Synchroniser automatiquement les\ncontacts de votre carnet d\'adresses</string>
+	<string name="contacts_section_addressbook_syncing">Synchronisation en cours</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
 	<string name="contacts_section_search_usernames">Nom d\'utilisateur</string>
 	<string name="contacts_section_search_searching">Recherche en cours</string>
 	<string name="contacts_section_search_friends">Résultat(s) parmi vos amis</string>
-	<string name="contacts_section_addressbook_title">Inviter votre carnet d\'addresse</string>
+	<string name="contacts_section_addressbook_title">Inviter votre carnet d\'addresses</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Accès aux Contacts désactivé</string>
 	<string name="permission_contacts_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
 	<string name="permission_contacts_disabled_alert_redirect">Aller dans Paramètres</string>
-	<string name="permission_contacts_disabled_alert_cancel">Rester bloqué</string>
+	<string name="permission_contacts_disabled_alert_cancel">Laisser bloqué</string>
 	<string name="permission_location_disabled_alert_title">Accès à la Location désactivée</string>
 	<string name="permission_location_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
 	<string name="permission_location_disabled_alert_redirect">Aller dans Paramètres</string>
 	<string name="permission_location_disabled_alert_cancel">Non merci</string>
 	<string name="permission_camera_enable_button_title">Activer\nla caméra</string>
-	<string name="permission_popup_push_onboarding_title">Soyez notifié !</string>
-	<string name="permission_popup_push_onboarding_description">Recevez une notification lorsque vos\namis rejoignent l\'app.</string>
+	<string name="permission_popup_push_onboarding_title">Ne loupez rien de vos amis !</string>
+	<string name="permission_popup_push_onboarding_description">Recevez une notification lorsque\nvos amis sont en ligne sur l\'app.</string>
 	<string name="permission_popup_push_onboarding_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_onboarding_no">Rester seul</string>
 	<string name="permission_popup_push_onboarding_yes">Notifiez moi !</string>
@@ -85,8 +85,8 @@
 	<string name="permission_popup_push_home_points">Autoriser les notifications</string>
 	<string name="permission_popup_push_home_no">Rester seul</string>
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
-	<string name="permission_push_fake_alert_title">Veuillez activer les notifications</string>
-	<string name="permission_push_fake_alert_description">De cette manière, vous pourrez être informer lorsque vos amis sont en ligne ou live.</string>
+	<string name="permission_push_fake_alert_title">Ne loupez rien de vos amis !</string>
+	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis sont live ou connectés.</string>
 	<string name="permission_push_fake_alert_allow">Ok</string>
 	<string name="permission_push_fake_alert_cancel">En savoir plus</string>
 	<string name="permission_push_disabled_alert_title">Push désactivés</string>

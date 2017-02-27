@@ -3,6 +3,7 @@ package com.tribe.app.data.network.deserializer;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.AccessToken;
@@ -19,7 +20,9 @@ public class TribeAccessTokenDeserializer implements JsonDeserializer<AccessToke
     accessToken.setAccessToken(results.get("access_token").getAsString());
     accessToken.setRefreshToken(results.get("refresh_token").getAsString());
 
-    if (results.has("user_id")) accessToken.setUserId(results.get("user_id").getAsString());
+    JsonElement element = results.get("user_id");
+
+    if (!(element instanceof JsonNull) && element != null) accessToken.setUserId(element.getAsString());
 
     accessToken.setTokenType("Bearer");
     return accessToken;

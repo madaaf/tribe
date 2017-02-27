@@ -86,10 +86,12 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
 
     if (searchResult.isShouldAnimateAdd()) {
       animateAddSuccessful(vh, R.string.action_hang_live, ContextCompat.getColor(context,
-          (searchResult.getFriendship().isHidden() || !searchResult.getFriendship()
-              .isBlockedOrHidden()) ? R.color.blue_new : R.color.grey_unblock),
-          ContextCompat.getColor(context, R.color.red));
+          (searchResult.getFriendship() != null && (searchResult.getFriendship().isHidden()
+              || !searchResult.getFriendship().isBlockedOrHidden())) ? R.color.blue_new
+              : R.color.grey_unblock), ContextCompat.getColor(context, R.color.red));
       searchResult.setShouldAnimateAdd(false);
+
+      setInfos(searchResult, vh);
     } else {
       vh.txtAction.setAlpha(1);
       vh.progressBarAdd.setAlpha(0);
@@ -106,12 +108,7 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
           setUnhide(vh);
         }
 
-        vh.txtName.setText(searchResult.getDisplayName());
-        vh.txtUsername.setText("@" + searchResult.getUsername());
-
-        if (!StringUtils.isEmpty(searchResult.getPicture())) {
-          GlideUtils.load(context, searchResult.getPicture(), avatarSize, vh.imgAvatar);
-        }
+        setInfos(searchResult, vh);
       } else {
         if (searchResult.isSearchDone()) {
           vh.txtName.setText("No user found");
@@ -139,6 +136,15 @@ public class SearchResultGridAdapterDelegate extends AddAnimationAdapterDelegate
   @Override
   public void onBindViewHolder(@NonNull List<Object> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
+  }
+
+  private void setInfos(SearchResult searchResult, SearchResultViewHolder vh) {
+    vh.txtName.setText(searchResult.getDisplayName());
+    vh.txtUsername.setText("@" + searchResult.getUsername());
+
+    if (!StringUtils.isEmpty(searchResult.getPicture())) {
+      GlideUtils.load(context, searchResult.getPicture(), avatarSize, vh.imgAvatar);
+    }
   }
 
   private void setHangLiveStyle(SearchResultViewHolder vh) {

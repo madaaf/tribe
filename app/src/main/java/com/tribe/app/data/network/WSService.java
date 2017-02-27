@@ -65,6 +65,7 @@ import timber.log.Timber;
 
   // VARIABLES
   private Map<String, String> headers;
+  private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -89,6 +90,12 @@ import timber.log.Timber;
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+      Timber.d("webSocketState connected or connecting, no need to reconnect");
+      return Service.START_STICKY;
+    }
+
     if (subscriptions != null) subscriptions.clear();
     handleStart();
     return Service.START_STICKY;
@@ -119,6 +126,8 @@ import timber.log.Timber;
     webSocketConnection.connect(BuildConfig.TRIBE_WSS);
 
     subscriptions.add(webSocketConnection.onStateChanged().subscribe(newState -> {
+      webSocketState = newState;
+
       if (newState.equals(WebSocketConnection.STATE_CONNECTED)) {
         initSubscriptions();
       }

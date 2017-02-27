@@ -398,7 +398,7 @@ public class TileView extends SquareCardView {
     } else {
       if (recipient.getLastSeenAt() != null) {
         txtStatus.setText(DateUtils.getRelativeTimeSpanString(recipient.getLastSeenAt().getTime(),
-            new Date().getTime(), DateUtils.MINUTE_IN_MILLIS).toString().toLowerCase());
+            new Date().getTime(), DateUtils.SECOND_IN_MILLIS).toString().toLowerCase());
       }
     }
   }

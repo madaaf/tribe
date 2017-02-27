@@ -117,6 +117,11 @@ import timber.log.Timber;
           Timber.d("WebSocket onConnectError: " + cause.getMessage());
           onConnectError.onNext(cause.getMessage());
           retry();
+
+          if (!state.equals(STATE_ERROR)) {
+            state = STATE_ERROR;
+            onStateChanged.onNext(state);
+          }
         }
 
         @Override public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame,
@@ -128,7 +133,7 @@ import timber.log.Timber;
             closeLock.notify();
           }
 
-          if (state != STATE_DISCONNECTED) {
+          if (!state.equals(STATE_DISCONNECTED)) {
             state = STATE_DISCONNECTED;
             onStateChanged.onNext(state);
           }
@@ -250,6 +255,9 @@ import timber.log.Timber;
       e.printStackTrace();
     }
 
+    state = WebSocketConnection.STATE_CONNECTING;
+    onStateChanged.onNext(state);
+    
     webSocketClient.connectAsynchronously();
     webSocketClient.setAutoFlush(true);
     webSocketClient.setPingInterval(5 * 1000); // 60 SECONDS

@@ -11,6 +11,7 @@ import com.jenzz.appstate.AppState;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
+import com.squareup.leakcanary.LeakCanary;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -76,15 +77,15 @@ public class AndroidApplication extends Application {
   }
 
   private void initLeakDetection() {
-    //if (BuildConfig.DEBUG) {
-    //  if (LeakCanary.isInAnalyzerProcess(this)) {
-    //      // This process is dedicated to LeakCanary for heap analysis.
-    //      // You should not init your app in this process.
-    //      return;
-    //  }
-    //
-    //  LeakCanary.install(this);
-    //}
+    if (BuildConfig.DEBUG) {
+      if (LeakCanary.isInAnalyzerProcess(this)) {
+        // This process is dedicated to LeakCanary for heap analysis.
+        // You should not init your app in this process.
+        return;
+      }
+
+      LeakCanary.install(this);
+    }
   }
 
   private void initStetho() {
@@ -95,6 +96,10 @@ public class AndroidApplication extends Application {
 
   private void initRealm() {
     Realm.init(this);
+    prepareRealm();
+  }
+
+  private void prepareRealm() {
     RealmConfiguration realmConfiguration =
         new RealmConfiguration.Builder().schemaVersion(6).deleteRealmIfMigrationNeeded().build();
     Realm.setDefaultConfiguration(realmConfiguration);
@@ -168,6 +173,7 @@ public class AndroidApplication extends Application {
       });
     } finally {
       realm.close();
+      prepareRealm();
     }
 
     FacebookUtils.logout();

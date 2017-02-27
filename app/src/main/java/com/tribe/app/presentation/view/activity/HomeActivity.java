@@ -22,6 +22,9 @@ import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.jenzz.appstate.AppStateListener;
+import com.jenzz.appstate.AppStateMonitor;
+import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
@@ -64,16 +67,19 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
-    GoogleApiClient.OnConnectionFailedListener {
+    GoogleApiClient.OnConnectionFailedListener, AppStateListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
+  private static final long TIMER_CANCEL_SERVICE = 1 * 60 * 1000;
   public static final int SETTINGS_RESULT = 101;
 
   public static Intent getCallingIntent(Context context) {
@@ -111,6 +117,7 @@ public class HomeActivity extends BaseActivity
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription timerStopServiceSubscription;
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
 
@@ -122,6 +129,7 @@ public class HomeActivity extends BaseActivity
   private boolean receiverRegistered = false;
   private boolean hasSynced = false;
   private boolean canEndRefresh = false;
+  private AppStateMonitor appStateMonitor;
 
   // DIMEN
 
@@ -136,6 +144,7 @@ public class HomeActivity extends BaseActivity
     initUi();
     initDimensions();
     initRegistrationToken();
+    initAppState();
     initRecyclerView();
     initTopBar();
     initSearch();
@@ -169,8 +178,6 @@ public class HomeActivity extends BaseActivity
             tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone, bundleBis);
           }
         }));
-
-    startService(WSService.getCallingIntent(this));
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -183,7 +190,6 @@ public class HomeActivity extends BaseActivity
     tagManager.onStart(this);
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-      //homeGridPresenter.syncFriendList();
       syncContacts();
     }
   }
@@ -196,11 +202,14 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onStop() {
     tagManager.onStop(this);
+
     super.onStop();
   }
 
   @Override protected void onResume() {
     super.onResume();
+
+    startService(WSService.getCallingIntent(this));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -231,10 +240,22 @@ public class HomeActivity extends BaseActivity
     homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (timerStopServiceSubscription != null) {
+      Timber.d("App destroyed, we're cancelling the timer to stop the WS");
+      timerStopServiceSubscription.unsubscribe();
+    }
 
+    appStateMonitor.removeListener(this);
+    appStateMonitor.stop();
+
+    stopService();
+
+    super.onDestroy();
+  }
+
+  private void stopService() {
     Intent i = new Intent(this, WSService.class);
     stopService(i);
-    super.onDestroy();
   }
 
   private void init() {
@@ -453,6 +474,12 @@ public class HomeActivity extends BaseActivity
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
   }
 
+  private void initAppState() {
+    appStateMonitor = RxAppStateMonitor.create(getApplication());
+    appStateMonitor.addListener(this);
+    appStateMonitor.start();
+  }
+
   @Override public void onDeepLink(String url) {
     if (!StringUtils.isEmpty(url)) {
       Uri uri = Uri.parse(url);
@@ -559,6 +586,20 @@ public class HomeActivity extends BaseActivity
   private void syncContacts() {
     homeGridPresenter.lookupContacts();
     lastSync.set(System.currentTimeMillis());
+  }
+
+  @Override public void onAppDidEnterForeground() {
+    Timber.d("App in background stopping the timer");
+    if (timerStopServiceSubscription != null) timerStopServiceSubscription.unsubscribe();
+  }
+
+  @Override public void onAppDidEnterBackground() {
+    Timber.d("App in background starting the timer to stop the service");
+    timerStopServiceSubscription =
+        Observable.timer(TIMER_CANCEL_SERVICE, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+          Timber.d("Stopping WS after timer");
+          stopService();
+        });
   }
 
   /////////////////
