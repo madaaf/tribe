@@ -3,7 +3,6 @@ package com.tribe.app.presentation;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.multidex.MultiDex;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;

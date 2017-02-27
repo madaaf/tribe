@@ -10,6 +10,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.deserializer.JsonToModel;
+import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MembershipRealm;
@@ -19,6 +20,8 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -60,6 +63,9 @@ import timber.log.Timber;
 
   @Inject @Named("webSocketApi") WebSocketConnection webSocketConnection;
 
+  // VARIABLES
+  private Map<String, String> headers;
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -70,7 +76,10 @@ import timber.log.Timber;
   @Override public void onCreate() {
     super.onCreate();
 
+    headers = new HashMap<>();
+
     initDependencyInjection();
+    prepareHeaders();
   }
 
   @Override public void onDestroy() {
@@ -95,7 +104,18 @@ import timber.log.Timber;
     }
   }
 
+  private void prepareHeaders() {
+    headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
+    headers.put(WebSocketConnection.USER_AGENT,
+        TribeApiUtils.getUserAgent(getApplicationContext()));
+    headers.put(WebSocketConnection.AUTHORIZATION,
+        accessToken.getTokenType() + " " + accessToken.getAccessToken());
+    headers.put(WebSocketConnection.VERSION, "13");
+    headers.put(WebSocketConnection.PROTOCOL, "graphql");
+  }
+
   private void initWebSocket() {
+    webSocketConnection.setHeaders(headers);
     webSocketConnection.connect(BuildConfig.TRIBE_WSS);
 
     subscriptions.add(webSocketConnection.onStateChanged().subscribe(newState -> {
@@ -108,6 +128,12 @@ import timber.log.Timber;
       Timber.d("onMessage : " + message);
 
       jsonToModel.convertToSubscriptionResponse(message);
+    }));
+
+    subscriptions.add(webSocketConnection.onConnectError().subscribe(s -> {
+      Timber.d("onConnectError setting new headers : " + s);
+      prepareHeaders();
+      webSocketConnection.setHeaders(headers);
     }));
   }
 

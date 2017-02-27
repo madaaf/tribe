@@ -39,6 +39,7 @@
             status
             tag
             category
+            is_live
             friend {
                 ...UserInfos
             }

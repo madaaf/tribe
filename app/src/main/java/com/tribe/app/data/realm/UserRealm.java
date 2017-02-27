@@ -2,11 +2,13 @@ package com.tribe.app.data.realm;
 
 import android.support.annotation.StringDef;
 import com.google.gson.JsonObject;
+import com.tribe.app.domain.entity.Invite;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by tiago on 04/05/2016.
@@ -43,6 +45,7 @@ public class UserRealm extends RealmObject {
   private Date last_seen_at;
 
   @Ignore private RealmList<GroupRealm> groups;
+  @Ignore private List<Invite> invites;
 
   @Ignore private JsonObject jsonPayloadUpdate;
 
@@ -163,6 +166,14 @@ public class UserRealm extends RealmObject {
 
   public void setGroups(RealmList<GroupRealm> groups) {
     this.groups = groups;
+  }
+
+  public void setInvites(List<Invite> invites) {
+    this.invites = invites;
+  }
+
+  public List<Invite> getInvites() {
+    return invites;
   }
 
   public void setPushNotif(boolean pushNotif) {

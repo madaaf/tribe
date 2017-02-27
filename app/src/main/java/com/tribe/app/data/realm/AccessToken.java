@@ -46,6 +46,13 @@ import javax.inject.Singleton;
     this.user_id = user_id;
   }
 
+  public void copy(AccessToken accessToken) {
+    this.access_token = accessToken.access_token;
+    this.token_type = accessToken.token_type;
+    this.refresh_token = accessToken.refresh_token;
+    this.user_id = accessToken.user_id;
+  }
+
   public void clear() {
     access_token = null;
     token_type = null;

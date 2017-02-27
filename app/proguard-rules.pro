@@ -24,3 +24,6 @@
 -keepclassmembers class ** {
     public void onEvent*(**);
 }
+-keep class **.R$* {
+  <fields>;
+}

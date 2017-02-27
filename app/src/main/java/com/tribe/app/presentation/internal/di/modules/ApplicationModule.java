@@ -70,6 +70,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
   private final AndroidApplication application;
   private RealmResults<UserRealm> userRealm;
+  private RealmResults<AccessToken> accessTokenResults;
 
   public ApplicationModule(AndroidApplication application) {
     this.application = application;
@@ -118,16 +119,21 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     return new Navigator(context);
   }
 
-  @Provides @Singleton AccessToken provideAccessToken() {
-    AccessToken accessToken = new AccessToken();
-    Realm realmInst = Realm.getDefaultInstance();
+  @Provides @Singleton AccessToken provideAccessToken(Realm realm) {
+    final AccessToken accessToken = new AccessToken();
 
-    final RealmResults<AccessToken> results = realmInst.where(AccessToken.class).findAll();
-    if (results != null && results.size() > 0) {
-      accessToken = realmInst.copyFromRealm(results.get(0));
+    accessTokenResults = realm.where(AccessToken.class).findAll();
+    accessTokenResults.addChangeListener(element -> {
+      AccessToken accessTokenRes = realm.where(AccessToken.class).findFirst();
+
+      if (accessTokenRes != null) {
+        accessToken.copy(accessTokenRes);
+      }
+    });
+
+    if (accessTokenResults != null && accessTokenResults.size() > 0) {
+      accessToken.copy(accessTokenResults.get(0));
     }
-
-    realmInst.close();
 
     return accessToken;
   }

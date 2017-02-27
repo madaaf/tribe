@@ -7,6 +7,7 @@ import android.telephony.TelephonyManager;
 import android.util.Pair;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
+import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
@@ -28,7 +29,9 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.GroupEntity;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -46,7 +49,6 @@ import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -61,6 +63,7 @@ public class CloudUserDataStore implements UserDataStore {
   private final TribeApi tribeApi;
   private final LoginApi loginApi;
   private UserCache userCache = null;
+  private LiveCache liveCache = null;
   private final ContactCache contactCache;
   private final RxContacts rxContacts;
   private final RxFacebook rxFacebook;
@@ -78,9 +81,9 @@ public class CloudUserDataStore implements UserDataStore {
    * @param context the context
    * @param accessToken the access token
    */
-  public CloudUserDataStore(UserCache userCache, ContactCache contactCache, RxContacts rxContacts,
-      RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi, AccessToken accessToken,
-      Installation installation, ReactiveLocationProvider reactiveLocationProvider, Context context,
+  public CloudUserDataStore(UserCache userCache, ContactCache contactCache, LiveCache liveCache,
+      RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi,
+      AccessToken accessToken, Installation installation, Context context,
       SimpleDateFormat utcSimpleDate) {
     this.userCache = userCache;
     this.contactCache = contactCache;
@@ -92,6 +95,7 @@ public class CloudUserDataStore implements UserDataStore {
     this.accessToken = accessToken;
     this.installation = installation;
     this.utcSimpleDate = utcSimpleDate;
+    this.liveCache = liveCache;
   }
 
   @Override public Observable<PinRealm> requestCode(String phoneNumber) {
@@ -578,6 +582,43 @@ public class CloudUserDataStore implements UserDataStore {
   private final Action1<UserRealm> saveToCacheUser = userRealm -> {
     if (userRealm != null) {
       CloudUserDataStore.this.userCache.put(userRealm);
+
+      if (userRealm.getMemberships() != null) {
+        for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
+          if (membershipRealm.getGroup().isLive()) {
+            liveCache.putLive(membershipRealm.getSubId());
+          } else {
+            liveCache.removeLive(membershipRealm.getSubId());
+          }
+        }
+      }
+
+      if (userRealm.getFriendships() != null) {
+        for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
+          if (friendshipRealm.isLive()) {
+            liveCache.putLive(friendshipRealm.getId());
+          } else {
+            liveCache.removeLive(friendshipRealm.getId());
+          }
+        }
+      }
+
+      if (userRealm.getInvites() != null) {
+        for (Invite newInvite : userRealm.getInvites()) {
+          boolean shouldAdd = true;
+          if (newInvite.getFriendships() != null) {
+            for (Friendship friendship : newInvite.getFriendships()) {
+              if (friendship.getSubId().equals(accessToken.getUserId())) {
+                shouldAdd = false;
+              }
+            }
+          }
+
+          if (shouldAdd) {
+            liveCache.putInvite(newInvite);
+          }
+        }
+      }
     }
   };
 

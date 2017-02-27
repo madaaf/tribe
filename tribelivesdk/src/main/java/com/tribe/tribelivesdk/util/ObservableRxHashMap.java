@@ -27,6 +27,7 @@ public class ObservableRxHashMap<T, R> {
   }
 
   public void put(T key, R value) {
+    if (map.containsKey(key)) return;
     map.put(key, value);
     subject.onNext(new RxHashMap<>(ADD, key, value));
     mapSubject.onNext(map);

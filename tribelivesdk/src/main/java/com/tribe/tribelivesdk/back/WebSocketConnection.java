@@ -53,11 +53,15 @@ import timber.log.Timber;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onStateChanged = PublishSubject.create();
   private PublishSubject<String> onMessage = PublishSubject.create();
+  private PublishSubject<String> onConnectError = PublishSubject.create();
   private PublishSubject<String> onError = PublishSubject.create();
 
-  @Inject public WebSocketConnection(WebSocketFactory clientFactory, Map<String, String> headers) {
+  @Inject public WebSocketConnection(WebSocketFactory clientFactory) {
     state = STATE_NEW;
     this.clientFactory = clientFactory;
+  }
+
+  public void setHeaders(Map<String, String> headers) {
     this.headers = headers;
   }
 
@@ -111,6 +115,7 @@ import timber.log.Timber;
         @Override public void onConnectError(WebSocket websocket, WebSocketException cause)
             throws Exception {
           Timber.d("WebSocket onConnectError: " + cause.getMessage());
+          onConnectError.onNext(cause.getMessage());
           retry();
         }
 
@@ -328,5 +333,9 @@ import timber.log.Timber;
 
   public Observable<String> onError() {
     return onError;
+  }
+
+  public Observable<String> onConnectError() {
+    return onConnectError;
   }
 }

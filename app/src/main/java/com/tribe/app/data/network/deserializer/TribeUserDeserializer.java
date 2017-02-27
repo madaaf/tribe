@@ -14,10 +14,13 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Invite;
 import io.realm.RealmList;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
@@ -67,8 +70,10 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     JsonArray resultsFriendships = result.getAsJsonArray("friendships");
     JsonArray resultsMemberships = result.getAsJsonArray("memberships");
+    JsonArray resultsInvites = result.getAsJsonArray("invites");
     RealmList<FriendshipRealm> realmListFriendships = new RealmList();
     RealmList<MembershipRealm> realmListMemberships = new RealmList();
+    List<Invite> listInvites = new ArrayList<>();
 
     if (resultsFriendships != null) {
       for (JsonElement obj : resultsFriendships) {
@@ -104,6 +109,16 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       userRealm.setGroups(realmListGroups);
     }
 
+    if (resultsInvites != null) {
+      for (JsonElement obj : resultsInvites) {
+        if (!(obj instanceof JsonNull)) {
+          Invite invite = gson.fromJson(obj, Invite.class);
+          listInvites.add(invite);
+        }
+      }
+    }
+
+    userRealm.setInvites(listInvites);
     userRealm.setFriendships(realmListFriendships);
     userRealm.setMemberships(realmListMemberships);
 

@@ -40,6 +40,7 @@ import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
+import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
@@ -76,9 +77,7 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -404,24 +403,10 @@ import timber.log.Timber;
   }
 
   private void appendUserAgent(Context context, Request.Builder requestBuilder) {
-    requestBuilder.header("User-Agent", getUserAgent(context));
+    requestBuilder.header("User-Agent", TribeApiUtils.getUserAgent(context));
   }
 
-  private String getUserAgent(Context context) {
-    String agent = FirebaseRemoteConfig.getInstance() != null ? FirebaseRemoteConfig.getInstance()
-        .getString(Constants.FIREBASE_AGENT_VERSION) : "";
-    return context.getPackageName()
-        + "/"
-        + DeviceUtils.getVersionCode(context)
-        + " android/"
-        + Build.VERSION.RELEASE
-        + " okhttp/3.2"
-        + " Agent/"
-        + agent;
-  }
-
-  @Provides @Named("webSocketApi") @PerApplication WebSocketConnection provideWebSocketApi(
-      Context context, TribeAuthorizer tribeAuthorizer) {
+  @Provides @Named("webSocketApi") @PerApplication WebSocketConnection provideWebSocketApi() {
     SSLContext sslContext = null;
 
     try {
@@ -448,17 +433,8 @@ import timber.log.Timber;
       e.printStackTrace();
     }
 
-    Map<String, String> headers = new HashMap<>();
-    headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
-    headers.put(WebSocketConnection.USER_AGENT, getUserAgent(context));
-    headers.put(WebSocketConnection.AUTHORIZATION,
-        tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
-            .getAccessToken());
-    headers.put(WebSocketConnection.VERSION, "13");
-    headers.put(WebSocketConnection.PROTOCOL, "graphql");
-
     WebSocketFactory socketFactory = new WebSocketFactory();
     socketFactory.setSSLContext(sslContext);
-    return new WebSocketConnection(socketFactory, headers);
+    return new WebSocketConnection(socketFactory);
   }
 }

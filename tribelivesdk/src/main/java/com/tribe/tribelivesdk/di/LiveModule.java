@@ -52,7 +52,7 @@ import timber.log.Timber;
 
     WebSocketFactory factory = new WebSocketFactory();
     factory.setSSLContext(sslContext);
-    return new WebSocketConnection(factory, null);
+    return new WebSocketConnection(factory);
   }
 
   @Provides @Singleton public WebRTCClient provideWebRTCClient(Context context) {

@@ -69,8 +69,8 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
    * Create {@link UserDataStore} to retrieve data from the Cloud.
    */
   public UserDataStore createCloudDataStore() {
-    return new CloudUserDataStore(this.userCache, this.contactCache, this.rxContacts,
-        this.rxFacebook, this.tribeApi, this.loginApi, this.accessToken, this.installation,
-        this.reactiveLocationProvider, this.context, this.utcSimpleDate);
+    return new CloudUserDataStore(this.userCache, this.contactCache, this.liveCache,
+        this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi, this.accessToken,
+        this.installation, this.context, this.utcSimpleDate);
   }
 }
