@@ -25,9 +25,12 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
   private Context context;
   private ScreenUtils screenUtils;
   private boolean shouldRoundCorners = false;
+  private boolean isInviteLive;
 
-  public EmptyGridAdapterDelegate(Context context, boolean shouldRoundCorners) {
+  public EmptyGridAdapterDelegate(Context context, boolean shouldRoundCorners,
+      boolean isInviteLive) {
     this.context = context;
+    this.isInviteLive = isInviteLive;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     this.screenUtils =
@@ -48,12 +51,28 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
       @NonNull RecyclerView.ViewHolder holder) {
     EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
     UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+    if (isInviteLive) {
+      setPlaceHolderColor(items, holder, position);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
     UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+  }
+
+  private void setPlaceHolderColor(List<Recipient> items, RecyclerView.ViewHolder holder,
+      int position) {
+    if (items.get(position).getId().equals(Recipient.ID_EMPTY)) {
+      if ((position % 2) == 0) {
+        holder.itemView.setBackgroundColor(
+            context.getResources().getColor(R.color.black_dark_placeholder));
+      } else {
+        holder.itemView.setBackgroundColor(
+            context.getResources().getColor(R.color.black_light_placeholder));
+      }
+    }
   }
 
   static class EmptyGridViewHolder extends RecyclerView.ViewHolder {

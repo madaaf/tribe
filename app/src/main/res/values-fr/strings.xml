@@ -422,8 +422,8 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_new_version_popup_title">SURPRISE!</string>
-	<string name="onboarding_new_version_popup_message">This update brings you a whole new way to tribe. Login to find your friends online!</string>
-	<string name="onboarding_new_version_popup_done">Ok!</string>
+	<string name="onboarding_new_version_popup_message">Connectez-vous, ajoutez vos amis et discutez en live à plusieurs avec vos amis en ligne.</string>
+	<string name="onboarding_new_version_popup_done">C\'est parti !</string>
 	
 	<!-- Onboarding -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
@@ -510,7 +510,7 @@
 	<string name="topbar_new_friend">Ami</string>
 	<string name="topbar_new_live">Nouveau groupe</string>
 	<string name="topbar_search">Rechercher</string>
-	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter aujourd\'hui ? :tada:</string>
+	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Inviter des amis via iMessage</string>
 	<string name="topbar_invite_sms_action_android">:link: Inviter des amis via SMS</string>
