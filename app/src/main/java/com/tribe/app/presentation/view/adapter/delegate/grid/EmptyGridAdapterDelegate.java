@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter.delegate.grid;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,12 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
   private Context context;
   private ScreenUtils screenUtils;
   private boolean shouldRoundCorners = false;
+  private boolean isInviteLive;
 
-  public EmptyGridAdapterDelegate(Context context, boolean shouldRoundCorners) {
+  public EmptyGridAdapterDelegate(Context context, boolean shouldRoundCorners,
+      boolean isInviteLive) {
     this.context = context;
+    this.isInviteLive = isInviteLive;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     this.screenUtils =
@@ -47,13 +51,30 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
   @Override public void onBindViewHolder(@NonNull List<Recipient> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
-    UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+    if (isInviteLive) {
+      setPlaceHolderColor(items, holder, position);
+    } else {
+      UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
     UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+  }
+
+  private void setPlaceHolderColor(List<Recipient> items, RecyclerView.ViewHolder holder,
+      int position) {
+    if (items.get(position).getId().equals(Recipient.ID_EMPTY)) {
+      if ((position % 2) == 0) {
+        holder.itemView.setBackgroundColor(
+            ContextCompat.getColor(context, R.color.black_dark_placeholder));
+      } else {
+        holder.itemView.setBackgroundColor(
+            ContextCompat.getColor(context, R.color.black_light_placeholder));
+      }
+    }
   }
 
   static class EmptyGridViewHolder extends RecyclerView.ViewHolder {

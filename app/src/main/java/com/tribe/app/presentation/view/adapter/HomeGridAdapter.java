@@ -38,7 +38,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
   @Inject public HomeGridAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
-    delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, true));
+    delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, true, false));
     delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
         new EmptyHeaderGridAdapterDelegate(context));
 

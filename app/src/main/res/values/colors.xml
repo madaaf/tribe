@@ -13,6 +13,9 @@
   <color name="black.infos">#1A14181A</color>
   <color name="black.light">#1F2125</color>
 
+  <color name="black.dark.placeholder">#171717</color>
+  <color name="black.light.placeholder">#1C1C1C</color>
+
   <!-- WHITES -->
   <color name="white.opacity.5">#0DFFFFFF</color>
   <color name="white.opacity.10">#1AFFFFFF</color>
