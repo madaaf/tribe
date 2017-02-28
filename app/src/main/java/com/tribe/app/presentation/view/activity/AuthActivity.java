@@ -581,6 +581,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override public void showError(String message) {
     Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    if (pin == null) {
+      viewStatus.showDisclaimer();
+    }
   }
 
   @Override public Context context() {

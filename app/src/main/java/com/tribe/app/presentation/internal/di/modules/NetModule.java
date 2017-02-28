@@ -1,12 +1,10 @@
 package com.tribe.app.presentation.internal.di.modules;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -56,8 +54,6 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.view.utils.Constants;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import dagger.Module;
 import dagger.Provides;
@@ -65,6 +61,7 @@ import io.realm.RealmObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -257,48 +254,84 @@ import timber.log.Timber;
       if (isRefreshing.compareAndSet(false, true)) {
         LOCK.close();
 
-        Call<AccessToken> newAccessTokenReq =
-            loginApi.refreshToken(new RefreshEntity(accessToken.getRefreshToken()));
-        Response<AccessToken> responseRefresh = newAccessTokenReq.execute();
+        Response<AccessToken> responseRefresh = null;
 
-        if (responseRefresh.isSuccessful() && responseRefresh.body() != null) {
+        try {
+          Call<AccessToken> newAccessTokenReq =
+              loginApi.refreshToken(new RefreshEntity(accessToken.getRefreshToken()));
+          responseRefresh = newAccessTokenReq.execute();
+        } catch (SocketTimeoutException ex) {
+          Timber.d("SocketTimeOutException on refresh token");
+          Timber.e(ex);
+          clearLock();
+        } catch (IOException ex) {
+          Timber.d("IOException on refresh token");
+          Timber.e(ex);
+          clearLock();
+        } catch (Exception ex) {
+          Timber.d("Exception on refresh token");
+          Timber.e(ex);
+          clearLock();
+        }
+
+        if (responseRefresh != null
+            && responseRefresh.isSuccessful()
+            && responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
+          Timber.d("New access_token : " + newAccessToken.getAccessToken());
+          Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
           accessToken.setAccessToken(newAccessToken.getAccessToken());
           accessToken.setRefreshToken(newAccessToken.getRefreshToken());
           userCache.put(accessToken);
           tribeAuthorizer.setAccessToken(accessToken);
+
+          clearLock();
+
+          return response.request()
+              .newBuilder()
+              .header("Authorization",
+                  accessToken.getTokenType() + " " + accessToken.getAccessToken())
+              .build();
         } else {
+          Timber.d("Error in refresh");
           if (response != null && response.body() != null) {
             response.body().close();
           }
 
-          if (responseRefresh != null) {
-            if (!StringUtils.isEmpty(responseRefresh.message())) {
-              Bundle properties = new Bundle();
-              properties.putString(TagManagerUtils.ERROR, responseRefresh.message());
-              tagManager.trackEvent(TagManagerUtils.TOKEN_DISCONNECT, properties);
-            } else {
-              tagManager.trackEvent(TagManagerUtils.TOKEN_DISCONNECT);
+          if (responseRefresh != null && responseRefresh.code() == 401) {
+            if (responseRefresh != null) {
+              if (!StringUtils.isEmpty(responseRefresh.message())) {
+                Timber.d("Response refresh message : " + responseRefresh.message());
+                Bundle properties = new Bundle();
+                properties.putString(TagManagerUtils.ERROR, responseRefresh.message());
+                tagManager.trackEvent(TagManagerUtils.TOKEN_DISCONNECT, properties);
+              } else {
+                tagManager.trackEvent(TagManagerUtils.TOKEN_DISCONNECT);
+              }
+
+              if (responseRefresh.errorBody() != null) {
+                responseRefresh.errorBody().close();
+              }
             }
 
-            if (responseRefresh.errorBody() != null) {
-              responseRefresh.errorBody().close();
-            }
+            Timber.d("Got a 401 on refresh token disconnecting the user");
+
+            Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    s -> ((AndroidApplication) context.getApplicationContext()).logoutUser());
+
+            clearLock();
+
+            return null;
+          } else {
+            Timber.d("Request failed but for another reason than 401");
+
+            clearLock();
+
+            return null;
           }
-
-          Observable.just("")
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(s -> ((AndroidApplication) context.getApplicationContext()).logoutUser());
         }
-
-        LOCK.open();
-        isRefreshing.set(false);
-
-        return response.request()
-            .newBuilder()
-            .header("Authorization",
-                accessToken.getTokenType() + " " + accessToken.getAccessToken())
-            .build();
       } else {
         boolean conditionOpened = LOCK.block(60000);
         if (conditionOpened) {
@@ -329,6 +362,13 @@ import timber.log.Timber;
         .create(TribeApi.class);
   }
 
+  private void clearLock() {
+    Timber.d("Opening LOCK");
+    LOCK.open();
+    isRefreshing.set(false);
+    Timber.d("Retrying request");
+  }
+
   @Provides @PerApplication FileApi provideFileApi(
       @Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
@@ -357,7 +397,7 @@ import timber.log.Timber;
       Context context) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS);
 
     httpClientBuilder.addInterceptor(chain -> {
       Request original = chain.request();

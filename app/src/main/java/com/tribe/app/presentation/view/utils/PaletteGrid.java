@@ -115,19 +115,20 @@ import javax.inject.Singleton;
   }
 
   public static int get(int position) {
-    if (theme.get() == 0) {
-      return paletteOne[position % paletteOne.length];
-    } else if (theme.get() == 1) {
-      return paletteTwo[position % paletteTwo.length];
-    } else if (theme.get() == 2) {
-      return paletteThree[position % paletteThree.length];
-    } else if (theme.get() == 3) {
-      return paletteFour[position % paletteFour.length];
-    } else if (theme.get() == 4) {
-      return paletteFive[position % paletteFive.length];
-    } else if (theme.get() == 5) return paletteSix[position % paletteSix.length];
-
-    return Color.BLACK;
+    return paletteOne[position % paletteOne.length];
+    //if (theme.get() == 0) {
+    //
+    //} else if (theme.get() == 1) {
+    //  return paletteTwo[position % paletteTwo.length];
+    //} else if (theme.get() == 2) {
+    //  return paletteThree[position % paletteThree.length];
+    //} else if (theme.get() == 3) {
+    //  return paletteFour[position % paletteFour.length];
+    //} else if (theme.get() == 4) {
+    //  return paletteFive[position % paletteFive.length];
+    //} else if (theme.get() == 5) return paletteSix[position % paletteSix.length];
+    //
+    //return Color.BLACK;
   }
 
   public static int getLength() {

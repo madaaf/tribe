@@ -62,6 +62,7 @@ import java.util.TimeZone;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import timber.log.Timber;
 
 /**
  * Dagger module that provides objects which will live during the application lifecycle.
@@ -128,11 +129,13 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
       if (accessTokenRes != null) {
         accessToken.copy(accessTokenRes);
+        Timber.d("refresh_token : " + accessToken.getRefreshToken());
       }
     });
 
     if (accessTokenResults != null && accessTokenResults.size() > 0) {
       accessToken.copy(accessTokenResults.get(0));
+      Timber.d("refresh_token : " + accessToken.getRefreshToken());
     }
 
     return accessToken;
