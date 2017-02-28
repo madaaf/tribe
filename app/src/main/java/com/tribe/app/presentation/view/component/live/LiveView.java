@@ -545,7 +545,7 @@ public class LiveView extends FrameLayout {
     this.live = live;
 
     if (live.isGroup()) {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
+      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_live, 0, 0, 0);
     } else {
       txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
     }
