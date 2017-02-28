@@ -273,15 +273,14 @@ public class HomeActivity extends BaseActivity
 
   private void initPullToRefresh() {
     subscriptions.add(topBarContainer.onRefresh()
-        .doOnNext(aVoid -> {
-          canEndRefresh = true;
-        })
+        .doOnNext(aVoid -> canEndRefresh = true)
         .doOnError(throwable -> throwable.printStackTrace())
         .delay(TopBarContainer.MIN_LENGTH, TimeUnit.MILLISECONDS)
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(bool -> {
           if (canEndRefresh) {
+            latestRecipientList.clear();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
           }

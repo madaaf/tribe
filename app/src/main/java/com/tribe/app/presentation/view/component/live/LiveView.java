@@ -64,8 +64,9 @@ import timber.log.Timber;
  */
 public class LiveView extends FrameLayout {
 
+  public static final int LIVE_MAX = 8;
+
   private static final int DURATION = 300;
-  private static final int LIVE_MAX = 8;
 
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
@@ -629,6 +630,15 @@ public class LiveView extends FrameLayout {
     } else {
       viewLocalLive.disableCamera(false);
     }
+  }
+
+  public int nbInRoom() {
+    int count = 0;
+
+    count += liveRowViewMap.getMap().size();
+    count += liveInviteMap.getMap().size();
+
+    return count + 1;
   }
 
   ////////////////

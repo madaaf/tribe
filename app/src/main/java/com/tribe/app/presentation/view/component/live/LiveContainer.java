@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -256,9 +257,17 @@ public class LiveContainer extends FrameLayout {
                     && Math.abs(currentX - downX) < diffDown
                     && Math.abs(currentY - downY) < diffDown
                     && overallScrollY < scrollTolerance) {
-                  currentTileView = viewInviteLive.findViewByCoords(downX, downY);
-                  if (currentTileView != null) {
-                    createTileForDrag();
+                  int nbInRoom = viewLive.nbInRoom();
+
+                  if (nbInRoom == LiveView.LIVE_MAX) {
+                    Toast.makeText(getContext(),
+                        getContext().getString(R.string.live_drop_friend_impossible,
+                            LiveView.LIVE_MAX), Toast.LENGTH_SHORT).show();
+                  } else {
+                    currentTileView = viewInviteLive.findViewByCoords(downX, downY);
+                    if (currentTileView != null) {
+                      createTileForDrag();
+                    }
                   }
                 }
               });
