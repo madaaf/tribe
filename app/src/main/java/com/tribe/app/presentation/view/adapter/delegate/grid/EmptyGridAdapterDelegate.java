@@ -61,19 +61,21 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
   @Override public void onBindViewHolder(@NonNull List<Recipient> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     EmptyGridViewHolder vh = (EmptyGridViewHolder) holder;
-    UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+    if (isInviteLive) {
+      setPlaceHolderColor(items, holder, position);
+    } else {
+      UIUtils.setBackgroundGrid(screenUtils, vh.layoutContent, position, shouldRoundCorners);
+    }
   }
 
   private void setPlaceHolderColor(List<Recipient> items, RecyclerView.ViewHolder holder,
       int position) {
-    if (items.get(position).getId().equals(Recipient.ID_EMPTY)) {
-      if ((position % 2) == 0) {
-        holder.itemView.setBackgroundColor(
-            ContextCompat.getColor(context, R.color.black_dark_placeholder));
-      } else {
-        holder.itemView.setBackgroundColor(
-            ContextCompat.getColor(context, R.color.black_light_placeholder));
-      }
+    if ((position % 2) == 0) {
+      holder.itemView.setBackgroundColor(
+          ContextCompat.getColor(context, R.color.black_dark_placeholder));
+    } else {
+      holder.itemView.setBackgroundColor(
+          ContextCompat.getColor(context, R.color.black_light_placeholder));
     }
   }
 
