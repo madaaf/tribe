@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveCoInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +80,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     holder.itemView.setEnabled(isAllItemsEnabled());
+    setPlaceHolderColor(holder, position);
     delegatesManager.onBindViewHolder(items, position, holder);
   }
 
@@ -94,6 +97,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
     this.items.addAll(items);
+    ListUtils.addEmptyItems(screenUtils, this.items);
     notifyDataSetChanged();
   }
 
@@ -131,5 +135,15 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   // OBSERVABLES
   public Observable<View> onInviteLiveClick() {
     return userInviteHeaderAdapterDelegate.onInviteLiveClick();
+  }
+
+  private void setPlaceHolderColor(RecyclerView.ViewHolder holder, int position) {
+    if (items.get(position).getId().equals(Recipient.ID_EMPTY)) {
+      if ((position % 2) == 0) {
+        holder.itemView.setBackgroundColor(Color.parseColor("#171717"));
+      } else {
+        holder.itemView.setBackgroundColor(Color.parseColor("#1C1C1C"));
+      }
+    }
   }
 }
