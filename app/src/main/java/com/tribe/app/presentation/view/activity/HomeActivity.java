@@ -79,7 +79,7 @@ public class HomeActivity extends BaseActivity
     GoogleApiClient.OnConnectionFailedListener, AppStateListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
-  private static final long TIMER_CANCEL_SERVICE = 1 * 60 * 1000;
+  private static final long TIMER_CANCEL_SERVICE = 20 * 60 * 1000;
   public static final int SETTINGS_RESULT = 101;
 
   public static Intent getCallingIntent(Context context) {
@@ -589,7 +589,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onAppDidEnterForeground() {
-    Timber.d("App in background stopping the timer");
+    Timber.d("App in foreground stopping the timer");
     if (timerStopServiceSubscription != null) timerStopServiceSubscription.unsubscribe();
   }
 

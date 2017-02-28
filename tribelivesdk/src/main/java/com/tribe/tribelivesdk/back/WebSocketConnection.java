@@ -45,7 +45,7 @@ import timber.log.Timber;
   private WebSocketFactory clientFactory;
   private Map<String, String> headers;
   private final Object closeLock = new Object();
-  private boolean close, shouldReconnect = true;
+  private boolean close, shouldReconnect = true, retrying = false;
   private int attempts = 1;
   private String url;
 
@@ -72,6 +72,8 @@ import timber.log.Timber;
     }
 
     this.url = url;
+    shouldReconnect = true;
+    retrying = false;
     close = false;
 
     URI uri;
@@ -257,7 +259,7 @@ import timber.log.Timber;
 
     state = WebSocketConnection.STATE_CONNECTING;
     onStateChanged.onNext(state);
-    
+
     webSocketClient.connectAsynchronously();
     webSocketClient.setAutoFlush(true);
     webSocketClient.setPingInterval(5 * 1000); // 60 SECONDS
@@ -265,7 +267,8 @@ import timber.log.Timber;
   }
 
   private void retry() {
-    if (shouldReconnect) {
+    if (shouldReconnect && !retrying) {
+      retrying = true;
       int time = generateInterval(attempts);
       Timber.d("Trying to reconnect in : " + time);
       subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).subscribe(aLong -> {

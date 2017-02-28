@@ -387,6 +387,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
+    tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
+
     tempSubscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);

@@ -855,20 +855,20 @@
 	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the live hangout!</string>
 	<string name="tips_draggingguest_action1">Gotcha</string>
 	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
-	<string name="tips_droppingguest_message">Congrats on inviting your friends guest to hang live! Add them to the group from your grid if you want them to be a permanent member of this group.</string>
+	<string name="tips_droppingguest_message">Congrats! Add him to the group from your grid if you want him to be a permanent member of this group who\'ll be notified for every live.</string>
 	<string name="tips_droppingguest_action1">OK, great!</string>
-	<string name="tips_enterfirstlive_title">About to hang live!</string>
+	<string name="tips_enterfirstlive_title">Start a live experience!</string>
 	<string name="tips_enterfirstlive_message">You\'re about to call %1$s!</string>
 	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
 	<string name="tips_enterfirstlive_action2">Call someone else</string>
 	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
-	<string name="tips_startfirstlive_message">Your friends will now be receiving a notification that you want to hang live with them!</string>
+	<string name="tips_startfirstlive_message">Your friends included in this live that you\'re available to hang live with them!</string>
 	<string name="tips_startfirstlive_action1">OK, great!</string>
 	<string name="tips_waiting5sec_title">Feeling impatient?</string>
-	<string name="tips_waiting5sec_message">Tap the :bell: button below to buzz your friends so that they’ll join faster!</string>
+	<string name="tips_waiting5sec_message">Tap the :bell: button below to buzz your friends and make them join faster!</string>
 	<string name="tips_waiting5sec_action1">Perfect!</string>
 	<string name="tips_waiting60sec_title">Want more? :fire:</string>
 	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
-	<string name="tips_waiting60sec_action2">Not now</string>
+	<string name="tips_waiting60sec_action2">Later</string>
 </resources>

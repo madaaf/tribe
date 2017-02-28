@@ -81,6 +81,7 @@ public class Room {
   private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
+  private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
 
   public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
     this.webSocketConnection = webSocketConnection;
@@ -194,6 +195,8 @@ public class Room {
     }).doOnNext(s -> {
       if (s.equals(STATE_CONNECTED)) {
         joinRoom();
+      } else if (s.equals(STATE_DISCONNECTED)) {
+        onShouldLeaveRoom.onNext(null);
       }
     }).subscribe(onRoomStateChanged));
 
@@ -405,5 +408,9 @@ public class Room {
 
   public Observable<WebSocketError> onError() {
     return onError;
+  }
+
+  public Observable<Void> onShouldLeaveRoom() {
+    return onShouldLeaveRoom;
   }
 }

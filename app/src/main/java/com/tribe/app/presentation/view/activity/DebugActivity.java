@@ -8,6 +8,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
@@ -26,11 +28,17 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
     return new Intent(context, DebugActivity.class);
   }
 
+  @Inject UserCache userCache;
+
+  @Inject AccessToken accessToken;
+
   @Inject DebugPresenter debugPresenter;
 
   @Inject @RoutingMode Preference<String> routingMode;
 
   @BindView(R.id.viewActionRouted) ActionView viewActionRouted;
+
+  @BindView(R.id.viewActionFuckUpSomeTokens) ActionView viewActionFuckUpSomeTokens;
 
   private Unbinder unbinder;
 
@@ -58,6 +66,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
     viewActionRouted.setTitle("Routed mode");
     viewActionRouted.setValue(routingMode.get().equals(TribeLiveOptions.ROUTED));
+
+    viewActionFuckUpSomeTokens.setTitle("Fuck up some tokens");
   }
 
   private void initDependencyInjector() {
@@ -75,6 +85,11 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
   private void initSubscriptions() {
     subscriptions.add(viewActionRouted.onChecked().subscribe(aBoolean -> {
       routingMode.set(aBoolean ? TribeLiveOptions.ROUTED : TribeLiveOptions.P2P);
+    }));
+
+    subscriptions.add(viewActionFuckUpSomeTokens.onClick().subscribe(aVoid -> {
+      accessToken.setAccessToken("thisisafaketokenfortestingpurposestiago");
+      userCache.put(accessToken);
     }));
   }
 

@@ -77,7 +77,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
-      builder.memberList(invite.getGroup().getMembers());
+      if (invite.getGroup() != null) {
+        builder.memberList(invite.getGroup().getMembers());
+      }
       builder.sessionId(invite.getRoomId());
     } else if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;

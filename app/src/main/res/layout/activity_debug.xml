@@ -35,6 +35,20 @@
           android:background="@color/grey.light"
           />
 
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionFuckUpSomeTokens"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@null"
+          app:actionTitle="Fuck up some tokens"
+          app:actionType="regular"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
     </LinearLayout>
   </ScrollView>
 </FrameLayout>

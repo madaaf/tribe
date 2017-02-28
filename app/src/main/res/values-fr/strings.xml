@@ -137,15 +137,15 @@
 	<string name="permission_global_camera_description">S\'assurer que vos amis peuvent vous\nvoir sur vos messages</string>
 	<string name="permission_global_mic_title">Micro</string>
 	<string name="permission_global_mic_description">S\'assurer que vos amis peuvent vous\nentendre sur vos messages</string>
-	<string name="permission_global_popup_title">Assurez vous que tout fonctionne parfaitement !</string>
+	<string name="permission_global_popup_title">Assurez-vous que tout fonctionne parfaitement !</string>
 	<string name="permission_global_popup_message">Occupons-nous des permissions pour que vous ne manquiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
-	<string name="permission_global_popup_cancel">Rester nul</string>
+	<string name="permission_global_popup_cancel">En savoir plus</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
-	<string name="permission_facebook_popup_title">Retrouvez vos amis Facebook</string>
+	<string name="permission_facebook_popup_title">Retrouver facilement vos amis Facebook</string>
 	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">En savoir plus</string>
-	<string name="permission_addressbook_popup_title">Retrouver les contacts de votre Carnet d\'adresses</string>
+	<string name="permission_addressbook_popup_title">Retrouver facilement les contacts de votre Carnet d\'Adresses</string>
 	<string name="permission_addressbook_popup_message">Vos amis seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_addressbook_popup_ok">Parfait !</string>
 	<string name="permission_addressbook_popup_ko">En savoir plus</string>
@@ -458,7 +458,7 @@
 	<string name="onboarding_queue_valid_title">Retrouver vos amis</string>
 	<string name="onboarding_queue_valid_description">Félicitations vous\nêtes connecté !</string>
 	<string name="onboarding_queue_valid_button_title">Entrer maintenant</string>
-	<string name="onboarding_popup_confirm_description">Nous allons envoyer un code\nà ce numéro de téléphone.</string>
+	<string name="onboarding_popup_confirm_description">Nous allons envoyer un code de\nvérification à ce numéro de téléphone.</string>
 	<string name="onboarding_popup_confirm_edit_button_title">Modifier</string>
 	<string name="onboarding_popup_confirm_send_button_title">C\'est parti !</string>
 	<string name="onboarding_popup_error_title">À votre service !</string>
@@ -542,7 +542,7 @@
 	<string name="share_snapchat_story_explanation_title">Snapchat</string>
 	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
-	<string name="share_invite">Ajoute moi sur Tribe!\nNom d’utilisateur: %1$s %2$s</string>
+	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
 	
 	<!-- Search -->
 	<string name="search_title">Rechercher un utilisateur</string>
@@ -557,9 +557,9 @@
 	<string name="search_no_friends_to_add">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_invite">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_suggest">Aucun ami actuellement connectés</string>
-	<string name="search_add_facebook_title">Afficher vos amis Facebook</string>
+	<string name="search_add_facebook_title">Connecter avec vos amis Facebook</string>
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
-	<string name="search_add_addressbook_title">Afficher votre carnet d\'adresses</string>
+	<string name="search_add_addressbook_title">Connecter votre carnet d\'adresses</string>
 	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to hang live again!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
@@ -599,12 +599,12 @@
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>
 	
 	<!-- Profile -->
-	<string name="profile_title">Profile</string>
-	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
-	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
-	<string name="profile_rate_us">Rate us :hearts:</string>
-	<string name="profile_follow_us">Follow us :metal:</string>
-	<string name="profile_logout">Logout :skull:</string>
+	<string name="profile_title">Profil</string>
+	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
+	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :ghost:</string>
+	<string name="profile_rate_us">Laisser une review :hearts:</string>
+	<string name="profile_follow_us">Suivez-vous ! :metal:</string>
+	<string name="profile_logout">Deconnexion :skull:</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Donner accès à %1$s ?</string>
@@ -841,34 +841,34 @@
 	
 	<!-- Add Friend -->
 	<string name="add_friend_error_myself">Vous ne pouvez pas vous ajouter en ami</string>
-	<string name="add_friend_error_invisible">Seul cet utilisateur peut vous ajouter en ami. Vous ne pouvez pas. :see_no_evil:</string>
-	<string name="add_friend_error_invisible_cancel">Ça ne fait rien</string>
-	<string name="add_friend_error_invisible_invite_ios">Demander par iMessage</string>
+	<string name="add_friend_error_invisible">Seul cet utilisateur peut vous ajouter en ami. :see_no_evil:</string>
+	<string name="add_friend_error_invisible_cancel">Pas de problème</string>
+	<string name="add_friend_error_invisible_invite_ios">Demander sur iMessage</string>
 	<string name="add_friend_error_invisible_invite_android">Demander par SMS</string>
 	
 	<!-- Tips -->
-	<string name="tips_leavingroom_title">Want to leave? :skull:</string>
-	<string name="tips_leavingroom_message">By tapping the :x: button, your live hangout will be finished.</string>
-	<string name="tips_leavingroom_action1">Leave</string>
-	<string name="tips_leavingroom_action2">No, I\'ll stay</string>
-	<string name="tips_draggingguest_title">Add friends to the live!</string>
-	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the live hangout!</string>
-	<string name="tips_draggingguest_action1">Gotcha</string>
-	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
-	<string name="tips_droppingguest_message">Congrats on inviting your friends guest to hang live! Add them to the group from your grid if you want them to be a permanent member of this group.</string>
-	<string name="tips_droppingguest_action1">OK, great!</string>
-	<string name="tips_enterfirstlive_title">About to hang live!</string>
-	<string name="tips_enterfirstlive_message">You\'re about to call %1$s!</string>
-	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
-	<string name="tips_enterfirstlive_action2">Call someone else</string>
-	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
-	<string name="tips_startfirstlive_message">Your friends will now be receiving a notification that you want to hang live with them!</string>
-	<string name="tips_startfirstlive_action1">OK, great!</string>
-	<string name="tips_waiting5sec_title">Feeling impatient?</string>
-	<string name="tips_waiting5sec_message">Tap the :bell: button below to buzz your friends so that they’ll join faster!</string>
-	<string name="tips_waiting5sec_action1">Perfect!</string>
-	<string name="tips_waiting60sec_title">Want more? :fire:</string>
-	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
-	<string name="tips_waiting60sec_action1">Drag guests in!</string>
-	<string name="tips_waiting60sec_action2">Not now</string>
+	<string name="tips_leavingroom_title">Quitter ce live ? :skull:</string>
+	<string name="tips_leavingroom_message">En tapant le bouton :x:, vous allez quitter ce live pour revenir sur votre grille.</string>
+	<string name="tips_leavingroom_action1">Quitter</string>
+	<string name="tips_leavingroom_action2">Rester live</string>
+	<string name="tips_draggingguest_title">Inviter des amis dans ce live !</string>
+	<string name="tips_draggingguest_message">Faites glisser vos amis pour les faire rejoindre ce live.</string>
+	<string name="tips_draggingguest_action1">J\'ai compris</string>
+	<string name="tips_droppingguest_title">Premier ami invité ! :clap:</string>
+	<string name="tips_droppingguest_message">Félicitations ! Ajoutez-le au groupe depuis votre grid si vous souhaitez qu\'il devienne un membre permanent de ce groupe qui sera notifié pour chaque live.</string>
+	<string name="tips_droppingguest_action1">Super !</string>
+	<string name="tips_enterfirstlive_title">Commencer l\'expérience !</string>
+	<string name="tips_enterfirstlive_message">Vous êtes sur le point de rejoindre %1$s en live.</string>
+	<string name="tips_enterfirstlive_action1">C\'est parti !</string>
+	<string name="tips_enterfirstlive_action2">Commencer avec un autre ami</string>
+	<string name="tips_startfirstlive_title">Notifications envoyées :bell:</string>
+	<string name="tips_startfirstlive_message">Les amis inclus dans ce live ont été notifié que vous étiez disponible.</string>
+	<string name="tips_startfirstlive_action1">Parfait !</string>
+	<string name="tips_waiting5sec_title">Impatient ?</string>
+	<string name="tips_waiting5sec_message">Appuyez sur le bouton :bell: en bas de l\'écran pour buzzer vos amis et les faire venir plus rapidement.</string>
+	<string name="tips_waiting5sec_action1">Génial !</string>
+	<string name="tips_waiting60sec_title">Vous en voulez plus ? :fire:</string>
+	<string name="tips_waiting60sec_message">Vous pouvez être en live avec plus de 8 personnes simultanément.</string>
+	<string name="tips_waiting60sec_action1">Invitez des amis !</string>
+	<string name="tips_waiting60sec_action2">Plus tard</string>
 </resources>
