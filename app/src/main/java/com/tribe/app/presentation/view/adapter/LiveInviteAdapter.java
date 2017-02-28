@@ -140,7 +140,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   private void setPlaceHolderColor(RecyclerView.ViewHolder holder, int position) {
     if (items.get(position).getId().equals(Recipient.ID_EMPTY)) {
       if ((position % 2) == 0) {
-        holder.itemView.setBackgroundColor(Color.BLACK);
+        holder.itemView.setBackgroundColor(Color.parseColor("#171717"));
       } else {
         holder.itemView.setBackgroundColor(Color.parseColor("#1C1C1C"));
       }
