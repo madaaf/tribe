@@ -37,7 +37,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
   }
 
   public void logout() {
-    removeInstall.execute(new ProfilePresenter.RemoveInstallSubscriber());
+    removeInstall.execute(new RemoveInstallSubscriber());
   }
 
   @Override protected UpdateUserMVPView getUpdateUserView() {
@@ -50,6 +50,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
     }
 
     @Override public void onError(Throwable e) {
+      goToLauncher();
     }
 
     @Override public void onNext(User user) {
