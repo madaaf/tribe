@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,7 +21,6 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -108,21 +106,21 @@ public class LiveRowView extends FrameLayout {
 
   public void setPeerView(PeerView peerView) {
     remotePeerView = (RemotePeerView) peerView;
-    remotePeerView.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            layoutStream.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                viewWaiting.setVisibility(View.GONE);
-              }
 
-              @Override public void onAnimationStart(Animator animation) {
-                layoutStream.setVisibility(View.VISIBLE);
-              }
-            });
-          }
-        });
+    subscriptions.add(this.remotePeerView.onNotificatinRemoteJoined()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> {
+          UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+              viewWaiting.stopPulse();
+              viewWaiting.setVisibility(View.GONE);
+            }
+
+            @Override public void onAnimationStart(Animator animation) {
+              layoutStream.setVisibility(View.VISIBLE);
+            }
+          });
+        }));
 
     subscriptions.add(this.remotePeerView.onMediaConfiguration()
         .observeOn(AndroidSchedulers.mainThread())
@@ -153,14 +151,9 @@ public class LiveRowView extends FrameLayout {
     isWaiting = false;
     viewWaiting.incomingPeer();
 
-    subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          ViewGroup.LayoutParams params =
-              new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                  ViewGroup.LayoutParams.MATCH_PARENT);
-          if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
-        }));
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT);
+    if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
   }
 
   public TribeGuest getGuest() {
