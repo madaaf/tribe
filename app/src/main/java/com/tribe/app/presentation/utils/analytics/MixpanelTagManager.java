@@ -28,6 +28,7 @@ import org.json.JSONObject;
   @Override public void setUserId(String userId) {
     mixpanelAPI.identify(userId);
     mixpanelAPI.getPeople().identify(userId);
+    mixpanelAPI.getPeople().initPushHandling(BuildConfig.MIXPANEL_GOOGLE_API);
   }
 
   @Override public void onStart(Activity activity) {

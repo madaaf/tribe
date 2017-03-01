@@ -31,6 +31,7 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
@@ -440,7 +441,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(roomConfiguration);
-    if (!live.isGroup()) {
+    if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }
   }

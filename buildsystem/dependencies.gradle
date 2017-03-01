@@ -43,6 +43,8 @@ ext {
   circularProgressViewVersion = '2.5.0'
   rxLocationVersion = '0.9@aar'
   googlePlayLocationVersion = '9.4.0'
+  googlePlayBaseVersion = '9.4.0'
+  googlePlayGCMVersion = '9.4.0'
   rxPermissionsVersion = '0.7.0@aar'
   facebookVersion = '4.19.0'
   multiDexVersion = '1.0.0'
@@ -108,6 +110,8 @@ ext {
                               circularProgressView    : "com.github.rahatarmanahmed:circularprogressview:${circularProgressViewVersion}",
                               rxLocation              : "pl.charmas.android:android-reactive-location:${rxLocationVersion}",
                               googlePlayLocation      : "com.google.android.gms:play-services-location:${googlePlayLocationVersion}",
+                              googlePlayBase          : "com.google.android.gms:play-services-base:${googlePlayBaseVersion}",
+                              googlePlayGcm           : "com.google.android.gms:play-services-gcm:${googlePlayGCMVersion}",
                               rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}",
                               facebook                : "com.facebook.android:facebook-android-sdk:${facebookVersion}",
                               glide                   : "com.github.bumptech.glide:glide:${glideVersion}",

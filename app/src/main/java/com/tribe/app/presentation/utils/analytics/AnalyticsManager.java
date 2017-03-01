@@ -35,10 +35,17 @@ import javax.inject.Singleton;
     if (user != null) {
       bundle.putBoolean(TagManagerUtils.USER_INVISIBLE_ENABLED, user.isInvisibleMode());
       bundle.putString(TagManagerUtils.USER_USERNAME, user.getUsername());
-      bundle.putString(TagManagerUtils.USER_DISPLAY_NAME, user.getUsername());
+      bundle.putString(TagManagerUtils.USER_DISPLAY_NAME, user.getDisplayName());
       bundle.putBoolean(TagManagerUtils.USER_FACEBOOK_CONNECTED, FacebookUtils.isLoggedIn());
       bundle.putBoolean(TagManagerUtils.USER_HAS_PROFILE_PICTURE,
           !StringUtils.isEmpty(user.getProfilePicture()));
+
+      Bundle bundleMixpanel = new Bundle();
+      bundleMixpanel.putString("$name", user.getDisplayName());
+      if (!StringUtils.isEmpty(user.getPhone())) {
+        bundleMixpanel.putString("$phone", user.getPhone());
+      }
+      mixpanel.setProperty(bundleMixpanel);
     }
 
     bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED,

@@ -143,6 +143,7 @@ public class Live implements Serializable {
     private String picture;
     private List<User> memberList;
     private boolean isGroup;
+    private boolean isInvite;
     private String sessionId;
     private int color;
     private boolean countdown = true;

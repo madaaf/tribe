@@ -35,7 +35,7 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">:bird: Léger problème. Réessayez dans 30s.</string>
-	<string name="error_technical">:warning: Problème technique.</string>
+	<string name="error_technical">:warning: Problème technique</string>
 	<string name="error_no_network">:satellite: Aucune connexion.</string>
 	
 	<!-- Image Picker -->
@@ -209,8 +209,8 @@
 	<string name="live_notification_peer_joined">%1$s est arrivé</string>
 	<string name="live_notification_peer_left">%1$s est parti</string>
 	<string name="live_notification_buzzed">Buzz !</string>
-	<string name="live_notification_friend_buzzed">%1$s buzz !</string>
-	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
+	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
+	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
 	
 	<!-- Tribe Recipients -->
 	<string name="tribe_recipients_title">Vu par</string>

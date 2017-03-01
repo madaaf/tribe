@@ -422,7 +422,7 @@
 	
 	<!-- Onboarding -->
 	<string name="onboarding_new_version_popup_title">SURPRISE!</string>
-	<string name="onboarding_new_version_popup_message">This update brings you a whole new way to tribe. Connect, add your friends and hang live with your friends online.</string>
+	<string name="onboarding_new_version_popup_message">This update brings you a whole new way to tribe. Connect, see who\'s online &amp; hang live with your best friends now!</string>
 	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
 	
 	<!-- Onboarding -->
