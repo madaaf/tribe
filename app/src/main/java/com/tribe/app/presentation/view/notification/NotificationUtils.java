@@ -28,6 +28,8 @@ public class NotificationUtils {
       return builder.build();
     }
 
+    if (notificationPayload == null || notificationPayload.getClickAction() == null) return null;
+
     LiveNotificationView liveNotificationView = null;
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
