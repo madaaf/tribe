@@ -97,6 +97,7 @@ public class LiveRoomView extends FrameLayout {
 
     this.type = type;
     if (type == GRID) {
+      Timber.e("ORGANISE CODE " + "ORGANISE CODE");
       organizeGridParam();
     } else {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
@@ -145,36 +146,27 @@ public class LiveRoomView extends FrameLayout {
 
   private void organizeGridParam() {
     flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+    setRowsGridWidth();
     switch (flexboxLayout.getChildCount()) {
       case 0:
       case 1:
         break;
       case 2:
-        Timber.e("LayoutParams" + "2");
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        changeWhidth(0, flexboxLayout.getWidth());
-        changeWhidth(1, flexboxLayout.getWidth());
         setOrder(1, 1);  //B
         setOrder(0, 2);  //A
 
         break;
       case 3:
-        Timber.e("LayoutParams" + "3");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
+        setWidth(0, flexboxLayout.getWidth() / 2);
+        setWidth(1, flexboxLayout.getWidth() / 2);
+        setWidth(2, flexboxLayout.getWidth() / 2);
 
         setOrder(0, 3);  //A
         setOrder(1, 1);  //B
         setOrder(2, 2);  //C
         break;
       case 4:
-        Timber.e("LayoutParams" + "4");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
-        changeWhidth(3, flexboxLayout.getWidth() / 2);
-
         setOrder(0, 3);  //A
         setOrder(1, 1);  //B
         setOrder(2, 2);  //C
@@ -182,13 +174,6 @@ public class LiveRoomView extends FrameLayout {
         break;
 
       case 5:
-        Timber.e("LayoutParams" + "5");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
-        changeWhidth(3, flexboxLayout.getWidth() / 2);
-        changeWhidth(4, flexboxLayout.getWidth());
-
         setOrder(0, 3);  //A
         setOrder(1, 1);  //B
         setOrder(2, 2);  //C
@@ -197,14 +182,6 @@ public class LiveRoomView extends FrameLayout {
 
         break;
       case 6:
-        Timber.e("LayoutParams" + "6");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
-        changeWhidth(3, flexboxLayout.getWidth() / 2);
-        changeWhidth(4, flexboxLayout.getWidth() / 2);
-        changeWhidth(5, flexboxLayout.getWidth() / 2);
-
         setOrder(0, 3);  //A
         setOrder(1, 1);  //B
         setOrder(2, 2);  //C
@@ -214,15 +191,6 @@ public class LiveRoomView extends FrameLayout {
 
         break;
       case 7:
-        Timber.e("LayoutParams" + "7");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
-        changeWhidth(3, flexboxLayout.getWidth() / 2);
-        changeWhidth(4, flexboxLayout.getWidth() / 2);
-        changeWhidth(5, flexboxLayout.getWidth() / 2);
-        changeWhidth(6, flexboxLayout.getWidth());
-
         setOrder(0, 3);  //A
         setOrder(1, 1);  //B
         setOrder(2, 2);  //C
@@ -232,16 +200,6 @@ public class LiveRoomView extends FrameLayout {
         setOrder(6, 7);  //G
         break;
       case 8:
-        Timber.e("LayoutParams" + "69");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
-        changeWhidth(3, flexboxLayout.getWidth() / 2);
-        changeWhidth(4, flexboxLayout.getWidth() / 2);
-        changeWhidth(5, flexboxLayout.getWidth() / 2);
-        changeWhidth(6, flexboxLayout.getWidth() / 2);
-        changeWhidth(7, flexboxLayout.getWidth() / 2);
-
         setOrder(0, 3);  //A
         setOrder(1, 1);  //B
         setOrder(2, 2);  //C
@@ -260,7 +218,23 @@ public class LiveRoomView extends FrameLayout {
     view.setLayoutParams(l);
   }
 
-  private void changeWhidth(int index, int width) {
+  private void setRowsGridWidth() {
+    int peopleOnLine = flexboxLayout.getChildCount();
+    if (peopleOnLine % 2 == 0) {
+      for (int i = 0; i < flexboxLayout.getChildCount(); i++) {
+        setWidth(i, flexboxLayout.getWidth() / 2);
+      }
+    } else {
+      for (int i = 0; i < peopleOnLine; i++) {
+        setWidth(i, flexboxLayout.getWidth() / 2);
+        if (i == (peopleOnLine - 1)) {
+          setWidth(i, flexboxLayout.getWidth());
+        }
+      }
+    }
+  }
+
+  private void setWidth(int index, int width) {
     View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
     l.minWidth = width;
