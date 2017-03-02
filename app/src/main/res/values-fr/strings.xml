@@ -256,9 +256,9 @@
 	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
 	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
 	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
-	<string name="grid_menu_friendship_unblock">Ajouter %1$s</string>
-	<string name="grid_menu_friendship_mute">De-activate notifications :no_bell:</string>
-	<string name="grid_menu_friendship_unmute">Activate notifications :bell:</string>
+	<string name="grid_menu_friendship_unblock"></string>
+	<string name="grid_menu_friendship_mute">Désactiver les notifications :no_bell:</string>
+	<string name="grid_menu_friendship_unmute">Activer les notifications :bell:</string>
 	<string name="grid_menu_friendship_report">Signaler %1$s</string>
 	<string name="grid_menu_friendship_report_success">Signalé !</string>
 	<string name="grid_menu_friendship_clear_tribes">Effacer vos messages non-lus</string>
