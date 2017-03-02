@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      android:id="@+id/view_flexbox"
+  <com.google.android.flexbox.FlexboxLayout
+      android:id="@+id/flexbox_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:animateLayoutChanges="true"
+      android:background="@color/blue.3"
       app:alignContent="stretch"
       app:alignItems="stretch"
       app:flexWrap="wrap"
@@ -16,9 +16,11 @@
 
     <com.tribe.app.presentation.view.component.live.LiveLocalView
         android:id="@+id/viewLocalLive"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/red"
         android:clickable="true"
+        android:visibility="invisible"
         >
 
     </com.tribe.app.presentation.view.component.live.LiveLocalView>

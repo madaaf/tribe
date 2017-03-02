@@ -6,12 +6,10 @@ import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -21,6 +19,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import timber.log.Timber;
 
 import static com.google.android.flexbox.FlexboxLayout.ALIGN_CONTENT_STRETCH;
 
@@ -42,7 +41,9 @@ public class LiveRoomView extends FrameLayout {
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
 
-  @BindView(R.id.view_flexbox) FlexboxLayout mFlexboxLayout;
+  @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
+
+  // @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
   public LiveRoomView(Context context) {
     super(context);
@@ -64,11 +65,24 @@ public class LiveRoomView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
 
-    mFlexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-    mFlexboxLayout.setAlignContent(ALIGN_CONTENT_STRETCH);
-    mFlexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
-    mFlexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
+    flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+    flexboxLayout.setAlignContent(ALIGN_CONTENT_STRETCH);
+    flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
+    flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
     initSubscriptions();
+  }
+
+  public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
+    int viewIndex = flexboxLayout.getChildCount();
+    if (viewIndex < 8) {
+      organiseGrid(viewIndex, liveRowView);
+      // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
+
+      // exist.
+      Timber.e("ok" + "ok3");
+    }
+    //super.addView(liveRowView, params);
+    Timber.e("ok" + "ok");
   }
 
   private void initSubscriptions() {
@@ -90,10 +104,24 @@ public class LiveRoomView extends FrameLayout {
         .build()
         .inject(this);
   }
-
+ /*
   public void addView(View liveRowView, ViewGroup.LayoutParams params) {
     super.addView(liveRowView, params);
-  }
+    test.setText("SOEF");
+  if (flexboxLayout == null) {
+      return;
+    }
+    int viewIndex = flexboxLayout.getChildCount();
+    if (viewIndex < 8) {
+      organiseGrid(viewIndex);
+      // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
+
+      // exist.
+      Timber.e("ok" + "ok3");
+    }
+    //super.addView(liveRowView, params);
+    Timber.e("ok" + "ok");
+  }*/
 
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
@@ -116,7 +144,7 @@ public class LiveRoomView extends FrameLayout {
     return type;
   }
 
-  @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
+/*  @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
     if (getChildCount() > 0) {
       if (type == GRID) {
         //layoutChildrenGrid();
@@ -124,45 +152,45 @@ public class LiveRoomView extends FrameLayout {
         //layoutChildrenLinear();
       }
     }
-  }
+  }*/
 
-  private TextView createBaseFlexItemTextView(int index) {
-    TextView textView = new TextView(this);
+  private LiveRoomView createBaseFlexItemTextView(int index) {
+    LiveRoomView textView = new LiveRoomView(getContext());
     //textView.setBackgroundResource(R.drawable.flex_item_background);
     //textView.setText(String.valueOf(index + 1));
-    textView.setGravity(Gravity.CENTER);
+    // textView.setGravity(Gravity.CENTER);
     return textView;
   }
 
-  private void organiseGrid(int viewIndex) {
-    TextView textView = createBaseFlexItemTextView(viewIndex);
-    textView.setGravity(Gravity.CENTER);
+  private void organiseGrid(int viewIndex, LiveRowView textView) {
+    //LiveRoomView textView = createBaseFlexItemTextView(viewIndex, liveRowView);
+    //textView.setGravity(Gravity.CENTER);
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
 
     switch (viewIndex) {
       case 0:
-        Log.e("0", "0");
-        TextView textView1 = createBaseFlexItemTextView(viewIndex);
-        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(1, 1);
-
-        lp1.flexGrow = 1;
-        textView1.setText(viewIndex + "A: " + lp1.order);
-        textView1.setLayoutParams(lp1);
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.com_facebook_blue));
-        textView1.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.com_facebook_blue));
-        mFlexboxLayout.addView(textView1);
-        //break;
       case 1:
+        Log.e("0", "0");
+
+        LiveLocalView viewLocalLive = (LiveLocalView) flexboxLayout.getChildAt(0);
+        if (viewLocalLive.getParent() != null) {
+          ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive); // <- fix
+        }
+
+        viewLocalLive.setVisibility(VISIBLE);
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(1, 1);
+        lp1.flexGrow = 1;
+        viewLocalLive.setLayoutParams(lp1);
+        flexboxLayout.addView(viewLocalLive);
+
         Log.e("1", "1");
-
         lp.flexGrow = 1;
-
         textView.setLayoutParams(lp);
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
+        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
         textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
-        textView.setText(viewIndex + "B : " + lp.order);
-        mFlexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        mFlexboxLayout.addView(textView);
+        //  textView.setText(viewIndex + "B : " + lp.order);
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+        flexboxLayout.addView(textView);
         break;
       case 2:
         Log.e("2", "2");
@@ -171,34 +199,34 @@ public class LiveRoomView extends FrameLayout {
         lp.order = 2;    //C
         setOrfer(0, 3);  //A
 
-        changeWhidth(0, mFlexboxLayout.getWidth());
-        changeWhidth(1, mFlexboxLayout.getWidth() / 2);
-        lp.minWidth = mFlexboxLayout.getWidth() / 2; // C
+        changeWhidth(0, flexboxLayout.getWidth());
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        lp.minWidth = flexboxLayout.getWidth() / 2; // C
 
         textView.setLayoutParams(lp);
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
         textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-        textView.setText(viewIndex + "C: " + lp.order);
-        mFlexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-        mFlexboxLayout.addView(textView);
+        //  textView.setText(viewIndex + "C: " + lp.order);
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+        flexboxLayout.addView(textView);
         break;
       case 3:
         Log.e("3", "3");
-        changeWhidth(0, mFlexboxLayout.getWidth() / 2);
-        changeWhidth(1, mFlexboxLayout.getWidth() / 2);
-        changeWhidth(2, mFlexboxLayout.getWidth() / 2);
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
 
         setOrfer(0, 3);  //A
         setOrfer(1, 1);  //B
         setOrfer(2, 2);  //C
         lp.order = 4;
 
-        lp.minWidth = mFlexboxLayout.getWidth() / 2;
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
+        lp.minWidth = flexboxLayout.getWidth() / 2;
+        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
         textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
         textView.setLayoutParams(lp);
-        textView.setText(viewIndex + "D: " + lp.order);
-        mFlexboxLayout.addView(textView);
+        // textView.setText(viewIndex + "D: " + lp.order);
+        flexboxLayout.addView(textView);
         break;
       case 4:
         Log.e("4", "4");
@@ -209,17 +237,18 @@ public class LiveRoomView extends FrameLayout {
         setOrfer(3, 4);  //D
         lp.order = 5;
 
-        lp.minWidth = mFlexboxLayout.getWidth();
+        lp.minWidth = flexboxLayout.getWidth();
         textView.setLayoutParams(lp);
         lp.flexGrow = 1;
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_group));
+        flexboxLayout.setBackgroundColor(
+            ContextCompat.getColor(getContext(), R.color.purple_group));
         textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_group));
-        textView.setText(viewIndex + "E: " + lp.order);
-        mFlexboxLayout.addView(textView);
+        //textView.setText(viewIndex + "E: " + lp.order);
+        flexboxLayout.addView(textView);
         break;
       case 5:
         Log.e("5", "5");
-        changeWhidth(4, mFlexboxLayout.getWidth() / 2);
+        changeWhidth(4, flexboxLayout.getWidth() / 2);
 
         setOrfer(0, 3);  //A
         setOrfer(1, 1);  //B
@@ -229,12 +258,12 @@ public class LiveRoomView extends FrameLayout {
         lp.order = 6;
 
         //  lp.flexGrow = 1;
-        lp.minWidth = mFlexboxLayout.getWidth() / 2;
+        lp.minWidth = flexboxLayout.getWidth() / 2;
         textView.setLayoutParams(lp);
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
+        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
         textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-        textView.setText(viewIndex + "F: " + lp.order);
-        mFlexboxLayout.addView(textView);
+        // textView.setText(viewIndex + "F: " + lp.order);
+        flexboxLayout.addView(textView);
         break;
       case 6:
         Log.e("6", "6");
@@ -247,13 +276,13 @@ public class LiveRoomView extends FrameLayout {
         setOrfer(5, 6);  //F
         lp.order = 7;
 
-        lp.minWidth = mFlexboxLayout.getWidth();
+        lp.minWidth = flexboxLayout.getWidth();
         textView.setLayoutParams(lp);
         lp.flexGrow = 1;
-        mFlexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
+        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
         textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-        textView.setText(viewIndex + "G: " + lp.order);
-        mFlexboxLayout.addView(textView);
+        // textView.setText(viewIndex + "G: " + lp.order);
+        flexboxLayout.addView(textView);
         break;
       case 7:
         Log.e("7", "7");
@@ -266,16 +295,17 @@ public class LiveRoomView extends FrameLayout {
         setOrfer(5, 6);  //F
         setOrfer(6, 7);  //G
 
-        changeWhidth(6, mFlexboxLayout.getWidth() / 2);
+        changeWhidth(6, flexboxLayout.getWidth() / 2);
         lp.order = 8; //H
 
-        lp.minWidth = mFlexboxLayout.getWidth() / 2;
-        mFlexboxLayout.setBackgroundColor(
+        lp.minWidth = flexboxLayout.getWidth() / 2;
+        flexboxLayout.setBackgroundColor(
             ContextCompat.getColor(getContext(), R.color.grey_authentication));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey_authentication));
+        textView.setBackgroundColor(
+            ContextCompat.getColor(getContext(), R.color.grey_authentication));
         textView.setLayoutParams(lp);
-        textView.setText(viewIndex + "H: " + lp.order);
-        mFlexboxLayout.addView(textView);
+        //textView.setText(viewIndex + "H: " + lp.order);
+        flexboxLayout.addView(textView);
         break;
       case 8:
         Log.e("8", "8");
@@ -284,14 +314,14 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void setOrfer(int index, int order) {
-    View view = mFlexboxLayout.getChildAt(index);
+    View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
     l.order = order;
     view.setLayoutParams(l);
   }
 
   private void changeWhidth(int index, int width) {
-    View view = mFlexboxLayout.getChildAt(index);
+    View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
     l.minWidth = width;
     view.setLayoutParams(l);
