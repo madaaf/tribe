@@ -17,7 +17,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import timber.log.Timber;
 
 import static com.google.android.flexbox.FlexboxLayout.ALIGN_CONTENT_STRETCH;
 
@@ -97,7 +96,6 @@ public class LiveRoomView extends FrameLayout {
 
     this.type = type;
     if (type == GRID) {
-      Timber.e("ORGANISE CODE " + "ORGANISE CODE");
       organizeGridParam();
     } else {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
@@ -147,67 +145,32 @@ public class LiveRoomView extends FrameLayout {
   private void organizeGridParam() {
     flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
     setRowsGridWidth();
+    setRowsGridOrder();
     switch (flexboxLayout.getChildCount()) {
       case 0:
       case 1:
         break;
       case 2:
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        setOrder(1, 1);  //B
-        setOrder(0, 2);  //A
-
         break;
       case 3:
         setWidth(0, flexboxLayout.getWidth() / 2);
         setWidth(1, flexboxLayout.getWidth() / 2);
         setWidth(2, flexboxLayout.getWidth() / 2);
+        break;
+    }
+  }
 
-        setOrder(0, 3);  //A
-        setOrder(1, 1);  //B
-        setOrder(2, 2);  //C
-        break;
-      case 4:
-        setOrder(0, 3);  //A
-        setOrder(1, 1);  //B
-        setOrder(2, 2);  //C
-        setOrder(3, 4);  //D
-        break;
-
-      case 5:
-        setOrder(0, 3);  //A
-        setOrder(1, 1);  //B
-        setOrder(2, 2);  //C
-        setOrder(3, 4);  //D
-        setOrder(4, 5);  //E
-
-        break;
-      case 6:
-        setOrder(0, 3);  //A
-        setOrder(1, 1);  //B
-        setOrder(2, 2);  //C
-        setOrder(3, 4);  //D
-        setOrder(4, 5);  //E
-        setOrder(5, 6);  //F
-
-        break;
-      case 7:
-        setOrder(0, 3);  //A
-        setOrder(1, 1);  //B
-        setOrder(2, 2);  //C
-        setOrder(3, 4);  //D
-        setOrder(4, 5);  //E
-        setOrder(5, 6);  //F
-        setOrder(6, 7);  //G
-        break;
-      case 8:
-        setOrder(0, 3);  //A
-        setOrder(1, 1);  //B
-        setOrder(2, 2);  //C
-        setOrder(3, 4);  //D
-        setOrder(4, 5);  //E
-        setOrder(5, 6);  //F
-        setOrder(6, 7);  //G
-        setOrder(7, 8);  //H
+  private void setRowsGridOrder() {
+    int peopleOnLine = flexboxLayout.getChildCount();
+    for (int i = 0; i < peopleOnLine; i++) {
+      if (i == 0) {
+        setOrder(i, 3);  //A
+      } else if (i < 3) {
+        setOrder(i, i);  // B,C
+      } else {
+        setOrder(i, i + 1);  //D, E, F, G, H
+      }
     }
   }
 
@@ -221,7 +184,7 @@ public class LiveRoomView extends FrameLayout {
   private void setRowsGridWidth() {
     int peopleOnLine = flexboxLayout.getChildCount();
     if (peopleOnLine % 2 == 0) {
-      for (int i = 0; i < flexboxLayout.getChildCount(); i++) {
+      for (int i = 0; i < peopleOnLine; i++) {
         setWidth(i, flexboxLayout.getWidth() / 2);
       }
     } else {
