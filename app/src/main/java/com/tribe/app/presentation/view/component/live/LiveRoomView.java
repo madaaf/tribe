@@ -40,6 +40,7 @@ public class LiveRoomView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
+  private int width;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -58,14 +59,11 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void init() {
-    // instanev of new thikngs
-    //initResources();
     initDependencyInjector();
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
 
-    flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
     flexboxLayout.setAlignContent(ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
@@ -74,15 +72,16 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
     int viewIndex = flexboxLayout.getChildCount();
-    if (viewIndex < 8) {
-      organiseGrid(viewIndex, liveRowView);
-      // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
 
-      // exist.
-      Timber.e("ok" + "ok3");
+    if (viewIndex < 8) {
+      if (type == GRID) {
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+        organizeGrid(viewIndex, liveRowView);
+      } else {
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+        organizeLinear(viewIndex, liveRowView);
+      }
     }
-    //super.addView(liveRowView, params);
-    Timber.e("ok" + "ok");
   }
 
   private void initSubscriptions() {
@@ -104,30 +103,18 @@ public class LiveRoomView extends FrameLayout {
         .build()
         .inject(this);
   }
- /*
-  public void addView(View liveRowView, ViewGroup.LayoutParams params) {
-    super.addView(liveRowView, params);
-    test.setText("SOEF");
-  if (flexboxLayout == null) {
-      return;
-    }
-    int viewIndex = flexboxLayout.getChildCount();
-    if (viewIndex < 8) {
-      organiseGrid(viewIndex);
-      // index starts from 0. New View's index is N if N views ([0, 1, 2, ... N-1])
-
-      // exist.
-      Timber.e("ok" + "ok3");
-    }
-    //super.addView(liveRowView, params);
-    Timber.e("ok" + "ok");
-  }*/
 
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
 
     this.type = type;
-
+    if (type == GRID) {
+      flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+      Timber.e("GRID");
+    } else {
+      flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+      Timber.e("LINEAR");
+    }
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
 
@@ -136,35 +123,41 @@ public class LiveRoomView extends FrameLayout {
         liveRowView.setRoomType(type);
       }
     }
-
-    //requestLayout();
   }
 
   public @TribeRoomViewType int getType() {
     return type;
   }
 
-/*  @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    if (getChildCount() > 0) {
-      if (type == GRID) {
-        //layoutChildrenGrid();
-      } else {
-        //layoutChildrenLinear();
-      }
-    }
-  }*/
+  private void organizeLinear(int viewIndex, LiveRowView liveRowView) {
+    FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
+    lp.flexGrow = 1;
 
-  private LiveRoomView createBaseFlexItemTextView(int index) {
-    LiveRoomView textView = new LiveRoomView(getContext());
-    //textView.setBackgroundResource(R.drawable.flex_item_background);
-    //textView.setText(String.valueOf(index + 1));
-    // textView.setGravity(Gravity.CENTER);
-    return textView;
+    switch (viewIndex) {
+      case 0:
+      case 1:
+        LiveLocalView viewLocalLive = (LiveLocalView) flexboxLayout.getChildAt(0);
+        if (viewLocalLive.getParent() != null) {
+          ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive); // <- fix
+        }
+
+        viewLocalLive.setVisibility(VISIBLE);
+        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(1, 1);
+        lp1.flexGrow = 1;
+        viewLocalLive.setLayoutParams(lp1);
+        flexboxLayout.addView(viewLocalLive);
+
+        liveRowView.setLayoutParams(lp);
+        flexboxLayout.addView(liveRowView);
+        Log.e("0", "0");
+        break;
+      default:
+        liveRowView.setLayoutParams(lp);
+        flexboxLayout.addView(liveRowView);
+    }
   }
 
-  private void organiseGrid(int viewIndex, LiveRowView textView) {
-    //LiveRoomView textView = createBaseFlexItemTextView(viewIndex, liveRowView);
-    //textView.setGravity(Gravity.CENTER);
+  private void organizeGrid(int viewIndex, LiveRowView liveRowView) {
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
 
     switch (viewIndex) {
@@ -185,12 +178,12 @@ public class LiveRoomView extends FrameLayout {
 
         Log.e("1", "1");
         lp.flexGrow = 1;
-        textView.setLayoutParams(lp);
+        liveRowView.setLayoutParams(lp);
         flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
         //  textView.setText(viewIndex + "B : " + lp.order);
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        flexboxLayout.addView(textView);
+        flexboxLayout.addView(liveRowView);
         break;
       case 2:
         Log.e("2", "2");
@@ -203,12 +196,12 @@ public class LiveRoomView extends FrameLayout {
         changeWhidth(1, flexboxLayout.getWidth() / 2);
         lp.minWidth = flexboxLayout.getWidth() / 2; // C
 
-        textView.setLayoutParams(lp);
+        liveRowView.setLayoutParams(lp);
         flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
         //  textView.setText(viewIndex + "C: " + lp.order);
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-        flexboxLayout.addView(textView);
+        flexboxLayout.addView(liveRowView);
         break;
       case 3:
         Log.e("3", "3");
@@ -223,10 +216,10 @@ public class LiveRoomView extends FrameLayout {
 
         lp.minWidth = flexboxLayout.getWidth() / 2;
         flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
-        textView.setLayoutParams(lp);
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
+        liveRowView.setLayoutParams(lp);
         // textView.setText(viewIndex + "D: " + lp.order);
-        flexboxLayout.addView(textView);
+        flexboxLayout.addView(liveRowView);
         break;
       case 4:
         Log.e("4", "4");
@@ -238,13 +231,13 @@ public class LiveRoomView extends FrameLayout {
         lp.order = 5;
 
         lp.minWidth = flexboxLayout.getWidth();
-        textView.setLayoutParams(lp);
+        liveRowView.setLayoutParams(lp);
         lp.flexGrow = 1;
         flexboxLayout.setBackgroundColor(
             ContextCompat.getColor(getContext(), R.color.purple_group));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_group));
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_group));
         //textView.setText(viewIndex + "E: " + lp.order);
-        flexboxLayout.addView(textView);
+        flexboxLayout.addView(liveRowView);
         break;
       case 5:
         Log.e("5", "5");
@@ -259,11 +252,10 @@ public class LiveRoomView extends FrameLayout {
 
         //  lp.flexGrow = 1;
         lp.minWidth = flexboxLayout.getWidth() / 2;
-        textView.setLayoutParams(lp);
+        liveRowView.setLayoutParams(lp);
         flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-        // textView.setText(viewIndex + "F: " + lp.order);
-        flexboxLayout.addView(textView);
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
+        flexboxLayout.addView(liveRowView);
         break;
       case 6:
         Log.e("6", "6");
@@ -277,12 +269,12 @@ public class LiveRoomView extends FrameLayout {
         lp.order = 7;
 
         lp.minWidth = flexboxLayout.getWidth();
-        textView.setLayoutParams(lp);
+        liveRowView.setLayoutParams(lp);
         lp.flexGrow = 1;
         flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-        textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-        // textView.setText(viewIndex + "G: " + lp.order);
-        flexboxLayout.addView(textView);
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
+
+        flexboxLayout.addView(liveRowView);
         break;
       case 7:
         Log.e("7", "7");
@@ -301,11 +293,10 @@ public class LiveRoomView extends FrameLayout {
         lp.minWidth = flexboxLayout.getWidth() / 2;
         flexboxLayout.setBackgroundColor(
             ContextCompat.getColor(getContext(), R.color.grey_authentication));
-        textView.setBackgroundColor(
+        liveRowView.setBackgroundColor(
             ContextCompat.getColor(getContext(), R.color.grey_authentication));
-        textView.setLayoutParams(lp);
-        //textView.setText(viewIndex + "H: " + lp.order);
-        flexboxLayout.addView(textView);
+        liveRowView.setLayoutParams(lp);
+        flexboxLayout.addView(liveRowView);
         break;
       case 8:
         Log.e("8", "8");
