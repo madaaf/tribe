@@ -10,14 +10,12 @@
       android:animateLayoutChanges="true"
       >
 
-    <com.tribe.app.presentation.view.component.live.LiveLocalView
-        android:id="@+id/viewLocalLive"
+    <include
+        layout="@layout/view_flexbox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        >
+        />
 
-    </com.tribe.app.presentation.view.component.live.LiveLocalView>
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
