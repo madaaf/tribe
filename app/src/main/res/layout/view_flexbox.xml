@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-  <com.tribe.app.presentation.view.component.live.LiveLocalView
-      android:id="@+id/viewLocalLive"
+
+  <com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/view_flexbox"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:clickable="true"
+      android:animateLayoutChanges="true"
+      app:alignContent="stretch"
+      app:alignItems="stretch"
+      app:flexWrap="wrap"
       >
 
-  </com.tribe.app.presentation.view.component.live.LiveLocalView>
-</LinearLayout>
+    <com.tribe.app.presentation.view.component.live.LiveLocalView
+        android:id="@+id/viewLocalLive"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        >
+
+    </com.tribe.app.presentation.view.component.live.LiveLocalView>
+
+
+  </com.google.android.flexbox.FlexboxLayout>
+
+</merge>

@@ -10,11 +10,22 @@
       android:animateLayoutChanges="true"
       >
 
-    <include
-        layout="@layout/view_flexbox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    <!--
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+          <com.tribe.app.presentation.view.component.live.LiveLocalView
+              android:id="@+id/viewLocalLive"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:clickable="true"
+              >
+
+          </com.tribe.app.presentation.view.component.live.LiveLocalView>
+        </LinearLayout>
+    -->
 
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>

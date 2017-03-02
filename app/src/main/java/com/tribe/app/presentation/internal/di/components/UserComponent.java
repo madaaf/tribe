@@ -26,6 +26,7 @@ import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
+import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.component.live.ThreeDotsView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
@@ -106,6 +107,8 @@ import dagger.Component;
   void inject(SearchView searchView);
 
   void inject(LiveLocalView liveLocalView);
+
+  void inject(LiveRoomView liveRoomView);
 
   void inject(LiveAudioView liveAudioView);
 
