@@ -18,6 +18,7 @@
         >
 
     </com.tribe.app.presentation.view.component.live.LiveLocalView>
+
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
   <ImageView

@@ -238,6 +238,7 @@ dependencies {
   compile presentationDependencies.branchIo
   compile presentationDependencies.timber
   compile presentationDependencies.rxAppState
+  compile presentationDependencies.flexbox
 
   androidTestCompile presentationTestDependencies.mockito
   androidTestCompile presentationTestDependencies.dexmaker
