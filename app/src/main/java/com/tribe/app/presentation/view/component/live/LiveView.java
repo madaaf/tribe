@@ -527,8 +527,8 @@ public class LiveView extends FrameLayout {
       }));
 
       tempSubscriptions.add(latestView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
-        removeFromInvites(latestView.getGuest().getId());
-        room.sendToPeers(getRemovedPayload(latestView.getGuest()), true);
+        removeFromInvites(tribeGuest.getId());
+        room.sendToPeers(getRemovedPayload(tribeGuest), true);
       }).subscribe());
     }));
   }
