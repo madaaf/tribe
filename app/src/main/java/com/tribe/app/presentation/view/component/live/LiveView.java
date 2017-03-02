@@ -474,7 +474,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(event -> {
       stateContainer = event;
       viewRoom.setType(
-          event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
+          event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID); // SOEF
     }));
   }
 

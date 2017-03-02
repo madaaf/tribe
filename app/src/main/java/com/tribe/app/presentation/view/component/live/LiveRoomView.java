@@ -17,6 +17,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import javax.inject.Inject;
 
 import static com.google.android.flexbox.FlexboxLayout.ALIGN_CONTENT_STRETCH;
 
@@ -36,6 +38,8 @@ public class LiveRoomView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
+
+  @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -62,19 +66,6 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
   }
 
-  public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
-    int viewIndex = flexboxLayout.getChildCount();
-
-    if (viewIndex < 8) {
-      if (type == GRID) {
-        addViewInRow(viewIndex, liveRowView);
-        organizeGridParam();
-      } else {
-        addViewInRow(viewIndex, liveRowView);
-      }
-    }
-  }
-
   public void removeView(LiveRowView view) {
     flexboxLayout.removeView(view);
   }
@@ -95,12 +86,22 @@ public class LiveRoomView extends FrameLayout {
         .inject(this);
   }
 
-  public void setType(@TribeRoomViewType int type) {
-    if (this.type == type) return;
-
-    this.type = type;
+  public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
+    int viewIndex = flexboxLayout.getChildCount();
+    addViewInRow(viewIndex, liveRowView);
+    setRowsOrder();
     if (type == GRID) {
       organizeGridParam();
+    }
+  }
+
+  public void setType(@TribeRoomViewType int type) {
+    if (this.type == type) return;
+    this.type = type;
+
+    if (type == GRID) {
+      organizeGridParam();
+      setRowsGridWidth();
     } else {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
     }
@@ -145,8 +146,6 @@ public class LiveRoomView extends FrameLayout {
 
   private void organizeGridParam() {
     flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-    setRowsGridWidth();
-    setRowsGridOrder();
     switch (flexboxLayout.getChildCount()) {
       case 0:
       case 1:
@@ -154,23 +153,16 @@ public class LiveRoomView extends FrameLayout {
       case 2:
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
         break;
-      case 3:
-        setWidth(0, flexboxLayout.getWidth() / 2);
-        setWidth(1, flexboxLayout.getWidth() / 2);
-        setWidth(2, flexboxLayout.getWidth() / 2);
-        break;
     }
   }
 
-  private void setRowsGridOrder() {
+  private void setRowsOrder() {
     int peopleOnLine = flexboxLayout.getChildCount();
     for (int i = 0; i < peopleOnLine; i++) {
       if (i == 0) {
-        setOrder(i, 3);  //A
-      } else if (i < 3) {
-        setOrder(i, i);  // B,C
+        setOrder(i, peopleOnLine);  // local view
       } else {
-        setOrder(i, i + 1);  //D, E, F, G, H
+        setOrder(i, i);  // guest view
       }
     }
   }
@@ -184,17 +176,8 @@ public class LiveRoomView extends FrameLayout {
 
   private void setRowsGridWidth() {
     int peopleOnLine = flexboxLayout.getChildCount();
-    if (peopleOnLine % 2 == 0) {
-      for (int i = 0; i < peopleOnLine; i++) {
-        setWidth(i, flexboxLayout.getWidth() / 2);
-      }
-    } else {
-      for (int i = 0; i < peopleOnLine; i++) {
-        setWidth(i, flexboxLayout.getWidth() / 2);
-        if (i == (peopleOnLine - 1)) {
-          setWidth(i, flexboxLayout.getWidth());
-        }
-      }
+    for (int i = 0; i < peopleOnLine; i++) {
+      setWidth(i, (flexboxLayout.getWidth() / 2) - LiveInviteView.WIDTH);
     }
   }
 
@@ -206,7 +189,6 @@ public class LiveRoomView extends FrameLayout {
   }
 
 /*
-
         flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
         liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
 
