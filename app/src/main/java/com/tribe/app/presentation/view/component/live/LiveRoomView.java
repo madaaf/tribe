@@ -75,6 +75,10 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
+  public void removeView(LiveRowView view) {
+    flexboxLayout.removeView(view);
+  }
+
   protected ApplicationComponent getApplicationComponent() {
     return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
   }
