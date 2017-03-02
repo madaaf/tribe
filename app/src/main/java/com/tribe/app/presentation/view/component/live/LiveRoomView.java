@@ -137,9 +137,6 @@ public class LiveRoomView extends FrameLayout {
         viewLocalLive.setLayoutParams(lp1);
         flexboxLayout.addView(viewLocalLive);
 
-        liveRowView.setLayoutParams(lp);
-        flexboxLayout.addView(liveRowView);
-        break;
       default:
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
