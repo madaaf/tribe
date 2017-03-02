@@ -111,13 +111,13 @@ public class LiveRoomView extends FrameLayout {
     if (type == GRID) {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
       Timber.e("GRID");
+      organizeGridParam();
     } else {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
       Timber.e("LINEAR");
     }
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
-
       if (child instanceof LiveRowView) {
         LiveRowView liveRowView = (LiveRowView) child;
         liveRowView.setRoomType(type);
@@ -157,6 +157,72 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
+  private void organizeGridParam() {
+    FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
+    lp.flexGrow = 1;
+    switch (flexboxLayout.getChildCount()) {
+      case 0:
+      case 1:
+        break;
+      case 2:
+        setOrfer(1, 1);  //B
+        lp.order = 2;    //C
+        setOrfer(0, 3);  //A
+        break;
+      case 3:
+        Log.e("3", "3");
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
+
+        setOrfer(0, 3);  //A
+        setOrfer(1, 1);  //B
+        setOrfer(2, 2);  //C
+        lp.order = 4;
+        break;
+      case 4:
+        Log.e("4", "4");
+
+        setOrfer(0, 3);  //A
+        setOrfer(1, 1);  //B
+        setOrfer(2, 2);  //C
+        setOrfer(3, 4);  //D
+        lp.order = 5;
+        break;
+      case 5:
+        changeWhidth(4, flexboxLayout.getWidth() / 2);
+
+        setOrfer(0, 3);  //A
+        setOrfer(1, 1);  //B
+        setOrfer(2, 2);  //C
+        setOrfer(3, 4);  //D
+        setOrfer(4, 5);  //E
+        lp.order = 6;
+        break;
+      case 6:
+        setOrfer(0, 3);  //A
+        setOrfer(1, 1);  //B
+        setOrfer(2, 2);  //C
+        setOrfer(3, 4);  //D
+        setOrfer(4, 5);  //E
+        setOrfer(5, 6);  //F
+        lp.order = 7;
+        break;
+      case 7:
+        setOrfer(0, 3);  //A
+        setOrfer(1, 1);  //B
+        setOrfer(2, 2);  //C
+        setOrfer(3, 4);  //D
+        setOrfer(4, 5);  //E
+        setOrfer(5, 6);  //F
+        setOrfer(6, 7);  //G
+
+        changeWhidth(6, flexboxLayout.getWidth() / 2);
+        lp.order = 8; //H
+        break;
+    }
+  }
+
   private void organizeGrid(int viewIndex, LiveRowView liveRowView) {
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
 
@@ -179,8 +245,6 @@ public class LiveRoomView extends FrameLayout {
         Log.e("1", "1");
         lp.flexGrow = 1;
         liveRowView.setLayoutParams(lp);
-        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange_1));
         //  textView.setText(viewIndex + "B : " + lp.order);
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
         flexboxLayout.addView(liveRowView);
