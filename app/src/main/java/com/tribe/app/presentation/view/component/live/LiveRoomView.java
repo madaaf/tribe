@@ -3,9 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,17 +32,13 @@ public class LiveRoomView extends FrameLayout {
 
   public static final int GRID = 0;
   public static final int LINEAR = 1;
-
   private static final int DEFAULT_TYPE = GRID;
 
   // VARIABLES
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
-  private int width;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
-
-  // @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
   public LiveRoomView(Context context) {
     super(context);
@@ -67,7 +61,6 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.setAlignContent(ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
-    initSubscriptions();
   }
 
   public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
@@ -75,17 +68,12 @@ public class LiveRoomView extends FrameLayout {
 
     if (viewIndex < 8) {
       if (type == GRID) {
-        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-        organizeGrid(viewIndex, liveRowView);
+        addViewInRow(viewIndex, liveRowView);
+        organizeGridParam();
       } else {
-        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        organizeLinear(viewIndex, liveRowView);
+        addViewInRow(viewIndex, liveRowView);
       }
     }
-  }
-
-  private void initSubscriptions() {
-
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -109,13 +97,11 @@ public class LiveRoomView extends FrameLayout {
 
     this.type = type;
     if (type == GRID) {
-      flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-      Timber.e("GRID");
       organizeGridParam();
     } else {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-      Timber.e("LINEAR");
     }
+
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
       if (child instanceof LiveRowView) {
@@ -129,7 +115,8 @@ public class LiveRoomView extends FrameLayout {
     return type;
   }
 
-  private void organizeLinear(int viewIndex, LiveRowView liveRowView) {
+  private void addViewInRow(int viewIndex, LiveRowView liveRowView) {
+    flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
     lp.flexGrow = 1;
 
@@ -138,7 +125,7 @@ public class LiveRoomView extends FrameLayout {
       case 1:
         LiveLocalView viewLocalLive = (LiveLocalView) flexboxLayout.getChildAt(0);
         if (viewLocalLive.getParent() != null) {
-          ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive); // <- fix
+          ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive);
         }
 
         viewLocalLive.setVisibility(VISIBLE);
@@ -149,7 +136,6 @@ public class LiveRoomView extends FrameLayout {
 
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
-        Log.e("0", "0");
         break;
       default:
         liveRowView.setLayoutParams(lp);
@@ -158,217 +144,116 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void organizeGridParam() {
-    FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
-    lp.flexGrow = 1;
+    flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
     switch (flexboxLayout.getChildCount()) {
       case 0:
       case 1:
         break;
       case 2:
-        setOrfer(1, 1);  //B
-        lp.order = 2;    //C
-        setOrfer(0, 3);  //A
-        break;
-      case 3:
-        Log.e("3", "3");
-        changeWhidth(0, flexboxLayout.getWidth() / 2);
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        changeWhidth(2, flexboxLayout.getWidth() / 2);
-
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        lp.order = 4;
-        break;
-      case 4:
-        Log.e("4", "4");
-
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        lp.order = 5;
-        break;
-      case 5:
-        changeWhidth(4, flexboxLayout.getWidth() / 2);
-
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        setOrfer(4, 5);  //E
-        lp.order = 6;
-        break;
-      case 6:
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        setOrfer(4, 5);  //E
-        setOrfer(5, 6);  //F
-        lp.order = 7;
-        break;
-      case 7:
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        setOrfer(4, 5);  //E
-        setOrfer(5, 6);  //F
-        setOrfer(6, 7);  //G
-
-        changeWhidth(6, flexboxLayout.getWidth() / 2);
-        lp.order = 8; //H
-        break;
-    }
-  }
-
-  private void organizeGrid(int viewIndex, LiveRowView liveRowView) {
-    FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
-
-    switch (viewIndex) {
-      case 0:
-      case 1:
-        Log.e("0", "0");
-
-        LiveLocalView viewLocalLive = (LiveLocalView) flexboxLayout.getChildAt(0);
-        if (viewLocalLive.getParent() != null) {
-          ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive); // <- fix
-        }
-
-        viewLocalLive.setVisibility(VISIBLE);
-        FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(1, 1);
-        lp1.flexGrow = 1;
-        viewLocalLive.setLayoutParams(lp1);
-        flexboxLayout.addView(viewLocalLive);
-
-        Log.e("1", "1");
-        lp.flexGrow = 1;
-        liveRowView.setLayoutParams(lp);
-        //  textView.setText(viewIndex + "B : " + lp.order);
+        Timber.e("LayoutParams" + "2");
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        flexboxLayout.addView(liveRowView);
-        break;
-      case 2:
-        Log.e("2", "2");
-
-        setOrfer(1, 1);  //B
-        lp.order = 2;    //C
-        setOrfer(0, 3);  //A
-
         changeWhidth(0, flexboxLayout.getWidth());
-        changeWhidth(1, flexboxLayout.getWidth() / 2);
-        lp.minWidth = flexboxLayout.getWidth() / 2; // C
+        changeWhidth(1, flexboxLayout.getWidth());
+        setOrder(1, 1);  //B
+        setOrder(0, 2);  //A
 
-        liveRowView.setLayoutParams(lp);
-        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-        //  textView.setText(viewIndex + "C: " + lp.order);
-        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-        flexboxLayout.addView(liveRowView);
         break;
       case 3:
-        Log.e("3", "3");
+        Timber.e("LayoutParams" + "3");
         changeWhidth(0, flexboxLayout.getWidth() / 2);
         changeWhidth(1, flexboxLayout.getWidth() / 2);
         changeWhidth(2, flexboxLayout.getWidth() / 2);
 
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        lp.order = 4;
-
-        lp.minWidth = flexboxLayout.getWidth() / 2;
-        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green_group));
-        liveRowView.setLayoutParams(lp);
-        // textView.setText(viewIndex + "D: " + lp.order);
-        flexboxLayout.addView(liveRowView);
+        setOrder(0, 3);  //A
+        setOrder(1, 1);  //B
+        setOrder(2, 2);  //C
         break;
       case 4:
-        Log.e("4", "4");
+        Timber.e("LayoutParams" + "4");
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
+        changeWhidth(3, flexboxLayout.getWidth() / 2);
 
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        lp.order = 5;
-
-        lp.minWidth = flexboxLayout.getWidth();
-        liveRowView.setLayoutParams(lp);
-        lp.flexGrow = 1;
-        flexboxLayout.setBackgroundColor(
-            ContextCompat.getColor(getContext(), R.color.purple_group));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.purple_group));
-        //textView.setText(viewIndex + "E: " + lp.order);
-        flexboxLayout.addView(liveRowView);
+        setOrder(0, 3);  //A
+        setOrder(1, 1);  //B
+        setOrder(2, 2);  //C
+        setOrder(3, 4);  //D
         break;
+
       case 5:
-        Log.e("5", "5");
-        changeWhidth(4, flexboxLayout.getWidth() / 2);
+        Timber.e("LayoutParams" + "5");
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
+        changeWhidth(3, flexboxLayout.getWidth() / 2);
+        changeWhidth(4, flexboxLayout.getWidth());
 
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        setOrfer(4, 5);  //E
-        lp.order = 6;
+        setOrder(0, 3);  //A
+        setOrder(1, 1);  //B
+        setOrder(2, 2);  //C
+        setOrder(3, 4);  //D
+        setOrder(4, 5);  //E
 
-        //  lp.flexGrow = 1;
-        lp.minWidth = flexboxLayout.getWidth() / 2;
-        liveRowView.setLayoutParams(lp);
-        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-        flexboxLayout.addView(liveRowView);
         break;
       case 6:
-        Log.e("6", "6");
+        Timber.e("LayoutParams" + "6");
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
+        changeWhidth(3, flexboxLayout.getWidth() / 2);
+        changeWhidth(4, flexboxLayout.getWidth() / 2);
+        changeWhidth(5, flexboxLayout.getWidth() / 2);
 
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        setOrfer(4, 5);  //E
-        setOrfer(5, 6);  //F
-        lp.order = 7;
+        setOrder(0, 3);  //A
+        setOrder(1, 1);  //B
+        setOrder(2, 2);  //C
+        setOrder(3, 4);  //D
+        setOrder(4, 5);  //E
+        setOrder(5, 6);  //F
 
-        lp.minWidth = flexboxLayout.getWidth();
-        liveRowView.setLayoutParams(lp);
-        lp.flexGrow = 1;
-        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-
-        flexboxLayout.addView(liveRowView);
         break;
       case 7:
-        Log.e("7", "7");
+        Timber.e("LayoutParams" + "7");
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
+        changeWhidth(3, flexboxLayout.getWidth() / 2);
+        changeWhidth(4, flexboxLayout.getWidth() / 2);
+        changeWhidth(5, flexboxLayout.getWidth() / 2);
+        changeWhidth(6, flexboxLayout.getWidth());
 
-        setOrfer(0, 3);  //A
-        setOrfer(1, 1);  //B
-        setOrfer(2, 2);  //C
-        setOrfer(3, 4);  //D
-        setOrfer(4, 5);  //E
-        setOrfer(5, 6);  //F
-        setOrfer(6, 7);  //G
-
-        changeWhidth(6, flexboxLayout.getWidth() / 2);
-        lp.order = 8; //H
-
-        lp.minWidth = flexboxLayout.getWidth() / 2;
-        flexboxLayout.setBackgroundColor(
-            ContextCompat.getColor(getContext(), R.color.grey_authentication));
-        liveRowView.setBackgroundColor(
-            ContextCompat.getColor(getContext(), R.color.grey_authentication));
-        liveRowView.setLayoutParams(lp);
-        flexboxLayout.addView(liveRowView);
+        setOrder(0, 3);  //A
+        setOrder(1, 1);  //B
+        setOrder(2, 2);  //C
+        setOrder(3, 4);  //D
+        setOrder(4, 5);  //E
+        setOrder(5, 6);  //F
+        setOrder(6, 7);  //G
         break;
       case 8:
-        Log.e("8", "8");
-        break;
+        Timber.e("LayoutParams" + "69");
+        changeWhidth(0, flexboxLayout.getWidth() / 2);
+        changeWhidth(1, flexboxLayout.getWidth() / 2);
+        changeWhidth(2, flexboxLayout.getWidth() / 2);
+        changeWhidth(3, flexboxLayout.getWidth() / 2);
+        changeWhidth(4, flexboxLayout.getWidth() / 2);
+        changeWhidth(5, flexboxLayout.getWidth() / 2);
+        changeWhidth(6, flexboxLayout.getWidth() / 2);
+        changeWhidth(7, flexboxLayout.getWidth() / 2);
+
+        setOrder(0, 3);  //A
+        setOrder(1, 1);  //B
+        setOrder(2, 2);  //C
+        setOrder(3, 4);  //D
+        setOrder(4, 5);  //E
+        setOrder(5, 6);  //F
+        setOrder(6, 7);  //G
+        setOrder(7, 8);  //H
     }
   }
 
-  private void setOrfer(int index, int order) {
+  private void setOrder(int index, int order) {
     View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
     l.order = order;
@@ -382,7 +267,10 @@ public class LiveRoomView extends FrameLayout {
     view.setLayoutParams(l);
   }
 
-  //////////////////
-  //  OBSERVABLES //
-  //////////////////
+/*
+
+        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
+        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
+
+ */
 }

@@ -8,7 +8,6 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:animateLayoutChanges="true"
-      android:background="@color/blue.3"
       app:alignContent="stretch"
       app:alignItems="stretch"
       app:flexWrap="wrap"
@@ -18,7 +17,6 @@
         android:id="@+id/viewLocalLive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/red"
         android:clickable="true"
         android:visibility="invisible"
         >
