@@ -348,7 +348,7 @@ import timber.log.Timber;
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
       httpClientBuilder.addInterceptor(loggingInterceptor);
       httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
@@ -379,7 +379,7 @@ import timber.log.Timber;
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
       httpClientBuilder.addInterceptor(loggingInterceptor);
       httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }

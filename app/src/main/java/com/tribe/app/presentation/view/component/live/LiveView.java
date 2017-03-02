@@ -401,11 +401,11 @@ public class LiveView extends FrameLayout {
               + " & view : "
               + remotePeer.getPeerView());
           addView(remotePeer);
-          refactorNotifyButton();
           onNotificationRemoteWaiting.onNext(
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
 
           room.sendToPeer(remotePeer, getInvitedPayload(), true);
+          refactorNotifyButton();
 
           tempSubscriptions.add(remotePeer.getPeerView()
               .onNotificatinRemoteJoined()
@@ -511,11 +511,13 @@ public class LiveView extends FrameLayout {
 
   public void initDropSubscription(Observable<TileView> obs) {
     persistentSubscriptions.add(obs.subscribe(tileView -> {
+
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload(), true);
+      refactorNotifyButton();
 
       tempSubscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
         invitedCount++;
@@ -621,6 +623,8 @@ public class LiveView extends FrameLayout {
 
       addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
       liveInviteMap.put(trg.getId(), liveRowView);
+
+      refactorNotifyButton();
     }
   }
 
@@ -663,6 +667,13 @@ public class LiveView extends FrameLayout {
 
   private void refactorNotifyButton() {
     boolean enable = shouldEnableBuzz();
+
+    if (!enable) {
+      btnNotify.setVisibility(View.GONE);
+      return;
+    } else {
+      btnNotify.setVisibility(View.VISIBLE);
+    }
 
     if (enable != btnNotify.isEnabled()) {
       btnNotify.animate()
@@ -797,16 +808,17 @@ public class LiveView extends FrameLayout {
 
       if (liveRowView == null) {
         liveRowView = new LiveRowView(getContext());
-        liveRowView.setRoomType(viewRoom.getType());
-        liveRowView.setPeerView(remotePeer.getPeerView());
-        ViewGroup.LayoutParams params =
-            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
 
         if (guest != null) {
           liveRowView.setGuest(guest);
           liveRowView.showGuest(false);
         }
+
+        liveRowView.setRoomType(viewRoom.getType());
+        liveRowView.setPeerView(remotePeer.getPeerView());
+        ViewGroup.LayoutParams params =
+            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
 
         viewRoom.addView(liveRowView, params);
       }
@@ -828,6 +840,8 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = liveInviteMap.remove(id);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
+
+      refactorNotifyButton();
     }
   }
 
@@ -876,13 +890,13 @@ public class LiveView extends FrameLayout {
 
   private boolean shouldEnableBuzz() {
     boolean result = true;
-    int nbLiveInRoom = nbLiveInRoom();
+    int nbLiveInRoom = nbLiveInRoom() + 1;
 
     if (live == null) return false;
     if (nbLiveInRoom == LIVE_MAX) return false;
 
     if (live.isGroup()) {
-      if (live.getMembers() != null && live.getMembers().size() == nbLiveInRoom()) result = false;
+      if (live.getMembers() != null && live.getMembers().size() == nbLiveInRoom) result = false;
     } else if (!isTherePeopleWaiting()) {
       result = false;
     }

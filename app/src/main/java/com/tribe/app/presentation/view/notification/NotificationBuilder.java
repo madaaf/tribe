@@ -47,8 +47,6 @@ import javax.inject.Singleton;
         if (notification != null) {
           notificationManager.notify(getNotificationId(notificationPayload), notification);
         }
-        //Notification summary = buildSummary(message, GROUP_KEY);
-        //notificationManager.notify(SUMMARY_ID, summary);
       }
     }
   }

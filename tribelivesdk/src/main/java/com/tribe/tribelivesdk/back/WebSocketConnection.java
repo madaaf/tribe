@@ -204,7 +204,7 @@ import timber.log.Timber;
 
         @Override public void onError(WebSocket websocket, WebSocketException cause)
             throws Exception {
-          Timber.e("WebSocket onError : " + cause.getError().name());
+          Timber.d("WebSocket onError : " + cause.getError().name());
 
           state = STATE_ERROR;
           onError.onNext(cause.getMessage());
@@ -262,7 +262,7 @@ import timber.log.Timber;
 
     webSocketClient.connectAsynchronously();
     webSocketClient.setAutoFlush(true);
-    webSocketClient.setPingInterval(5 * 1000); // 60 SECONDS
+    webSocketClient.setPingInterval(5 * 1000); // 5 SECONDS
     webSocketClient.setPingPayloadGenerator(() -> "{}".getBytes());
   }
 
