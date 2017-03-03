@@ -92,16 +92,16 @@ public class LiveRoomView extends FrameLayout {
     setRowsOrder();
     if (type == GRID) {
       organizeGridParam();
+      setRowsGridWidth();
     }
   }
 
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
     this.type = type;
-
     if (type == GRID) {
-      organizeGridParam();
       setRowsGridWidth();
+      organizeGridParam();
     } else {
       flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
     }
@@ -147,9 +147,6 @@ public class LiveRoomView extends FrameLayout {
   private void organizeGridParam() {
     flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
     switch (flexboxLayout.getChildCount()) {
-      case 0:
-      case 1:
-        break;
       case 2:
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
         break;
@@ -176,15 +173,26 @@ public class LiveRoomView extends FrameLayout {
 
   private void setRowsGridWidth() {
     int peopleOnLine = flexboxLayout.getChildCount();
-    for (int i = 0; i < peopleOnLine; i++) {
-      setWidth(i, (flexboxLayout.getWidth() / 2) - LiveInviteView.WIDTH);
+    if (peopleOnLine % 2 == 0) {
+      for (int i = 0; i < peopleOnLine; i++) {
+        setWidth(i, (flexboxLayout.getWidth() / 2));
+      }
+    } else {
+      for (int i = 0; i < peopleOnLine; i++) {
+        if (i == 0) {
+          setWidth(i, (flexboxLayout.getWidth()));
+        } else {
+          setWidth(i, (flexboxLayout.getWidth() / 2));
+        }
+      }
     }
   }
 
   private void setWidth(int index, int width) {
     View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-    l.minWidth = width;
+    l.width = width - LiveInviteView.WIDTH;
+    l.flexGrow = 1;
     view.setLayoutParams(l);
   }
 
