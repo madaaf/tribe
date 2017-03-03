@@ -28,7 +28,6 @@ import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.LiveTestActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import java.io.File;
@@ -220,14 +219,6 @@ public class Navigator {
 
   public void navigateToIntent(Activity activity, Intent intent) {
     if (activity != null) {
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  public void navigateToLiveTest(Activity activity, Recipient recipient) {
-    if (activity != null) {
-      Intent intent = LiveTestActivity.getCallingIntent(activity, recipient);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }

@@ -16,7 +16,6 @@ import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.LiveTestActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -103,8 +102,6 @@ import dagger.Component;
   void inject(TileView tileView);
 
   void inject(LiveActivity liveActivity);
-
-  void inject(LiveTestActivity liveTestActivity);
 
   void inject(SearchView searchView);
 

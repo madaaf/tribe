@@ -4,7 +4,9 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -12,15 +14,26 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 /**
  * Created by tiago on 01/10/2016.
  */
-public class AddAnimationViewHolder extends RecyclerView.ViewHolder {
+public class BaseListViewHolder extends RecyclerView.ViewHolder {
 
-  public AddAnimationViewHolder(View itemView) {
+  public BaseListViewHolder(View itemView) {
     super(itemView);
+    ButterKnife.bind(this, itemView);
   }
 
-  @BindView(R.id.btnAdd) public View btnAdd;
+  @BindView(R.id.imgAvatar) public ImageView imgAvatar;
+
+  @BindView(R.id.txtName) public TextViewFont txtName;
+
+  @BindView(R.id.txtUsername) public TextViewFont txtUsername;
+
+  @BindView(R.id.txtFriend) public TextViewFont txtFriend;
+
+  @BindView(R.id.txtBubble) public TextViewFont txtBubble;
 
   @BindView(R.id.txtAction) public TextViewFont txtAction;
+
+  @BindView(R.id.btnAdd) public View btnAdd;
 
   @Nullable @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
 

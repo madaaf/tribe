@@ -84,6 +84,10 @@ public class Invite extends Recipient {
     return group != null;
   }
 
+  @Override public boolean isFriend() {
+    return false;
+  }
+
   private String getFriendshipsName() {
     String name = "";
 

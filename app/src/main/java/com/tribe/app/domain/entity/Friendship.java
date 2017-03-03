@@ -78,6 +78,10 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     return friend.getUsername();
   }
 
+  @Override public boolean isFriend() {
+    return friend != null;
+  }
+
   @Override public String getUsernameDisplay() {
     return friend.getUsernameDisplay();
   }

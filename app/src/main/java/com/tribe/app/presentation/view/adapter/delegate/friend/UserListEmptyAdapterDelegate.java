@@ -3,25 +3,30 @@ package com.tribe.app.presentation.view.adapter.delegate.friend;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.adapter.delegate.base.AddAnimationAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import java.util.List;
 
 /**
  * Created by tiago on 11/29/16.
  */
-public class UserListEmptyAdapterDelegate extends AddAnimationAdapterDelegate<List<Object>> {
+public class UserListEmptyAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
   // VARIABLES
+  private Context context;
+  protected LayoutInflater layoutInflater;
   private int avatarSize;
 
   public UserListEmptyAdapterDelegate(Context context) {
-    super(context);
+    this.context = context;
     this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+    this.layoutInflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
   }
 
   @Override public boolean isForViewType(@NonNull List<Object> items, int position) {

@@ -1,14 +1,17 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by tiago on 05/08/2016.
  */
-public abstract class Recipient implements Serializable {
+public abstract class Recipient implements Serializable, BaseListInterface {
 
   public static final String ID_EMPTY = "EMPTY";
   public static final String ID_HEADER = "HEADER";
@@ -24,6 +27,7 @@ public abstract class Recipient implements Serializable {
   protected Boolean mute;
   protected int position;
   protected boolean animateAdd = false;
+  protected AvatarModel avatarModel = null;
 
   public Date getCreatedAt() {
     return created_at;
@@ -102,12 +106,23 @@ public abstract class Recipient implements Serializable {
     this.mute = mute;
   }
 
-  public boolean isAnimateAdd() {
+  @Override public void setAnimateAdd(boolean animateAdd) {
+    this.animateAdd = animateAdd;
+  }
+
+  @Override public boolean isAnimateAdd() {
     return animateAdd;
   }
 
-  public void setAnimateAdd(boolean animateAdd) {
-    this.animateAdd = animateAdd;
+  @Override public AvatarModel getAvatar() {
+    if (avatarModel != null) return avatarModel;
+    avatarModel = new AvatarModel(getProfilePicture(), isLive() ? AvatarLiveView.LIVE
+        : (isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE));
+    return avatarModel;
+  }
+
+  @Override public boolean isReverse() {
+    return false;
   }
 
   @Override public int hashCode() {

@@ -1,5 +1,8 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +13,7 @@ import java.util.List;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class User implements Serializable {
+public class User implements Serializable, BaseListInterface {
 
   public static final String ID_EMPTY = "EMPTY";
 
@@ -38,6 +41,8 @@ public class User implements Serializable {
   private boolean isNewFriend = false;
   private boolean isFriend = false;
   private boolean animateAdd = false;
+
+  private AvatarModel avatarModel = null;
 
   public User(String id) {
     this.id = id;
@@ -215,19 +220,30 @@ public class User implements Serializable {
     this.last_seen_at = lastSeenAt;
   }
 
-  public boolean isFriend() {
+  @Override public boolean isFriend() {
     return isFriend;
+  }
+
+  @Override public AvatarModel getAvatar() {
+    if (avatarModel != null) return avatarModel;
+    avatarModel =
+        new AvatarModel(picture, isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE);
+    return avatarModel;
+  }
+
+  @Override public boolean isReverse() {
+    return false;
   }
 
   public void setFriend(boolean friend) {
     isFriend = friend;
   }
 
-  public boolean isAnimateAdd() {
+  @Override public boolean isAnimateAdd() {
     return animateAdd;
   }
 
-  public void setAnimateAdd(boolean animateAdd) {
+  @Override public void setAnimateAdd(boolean animateAdd) {
     this.animateAdd = animateAdd;
   }
 
@@ -303,7 +319,7 @@ public class User implements Serializable {
     List<GroupMember> userList = new ArrayList<>();
 
     if (friendships == null) return userList;
-    
+
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {

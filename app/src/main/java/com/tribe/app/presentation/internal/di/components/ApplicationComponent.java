@@ -44,6 +44,7 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
@@ -51,7 +52,6 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdap
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.live.LiveGridAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
@@ -76,9 +76,9 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LabelButton;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
@@ -160,8 +160,6 @@ public interface ApplicationComponent {
 
   void inject(UserListAdapterDelegate userListAdapterDelegate);
 
-  void inject(LiveGridAdapterDelegate liveGridAdapterDelegate);
-
   void inject(LiveView liveView);
 
   void inject(LiveContainer liveContainer);
@@ -179,6 +177,8 @@ public interface ApplicationComponent {
   void inject(FriendMemberAdapterDelegate friendMemberAdapterDelegate);
 
   void inject(LiveNotificationView liveNotificationView);
+
+  void inject(BaseListAdapterDelegate baseListAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

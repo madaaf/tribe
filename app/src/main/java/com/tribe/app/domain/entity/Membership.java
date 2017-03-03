@@ -27,6 +27,10 @@ public class Membership extends Recipient {
     return null;
   }
 
+  @Override public boolean isFriend() {
+    return false;
+  }
+
   @Override public String getUsernameDisplay() {
     return null;
   }

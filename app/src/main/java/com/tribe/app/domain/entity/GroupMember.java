@@ -1,11 +1,14 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.io.Serializable;
 
 /**
  * Created by tiago on 23/11/2016.
  */
-public class GroupMember implements Serializable {
+public class GroupMember implements Serializable, BaseListInterface {
 
   private boolean ogMember = false;
   private boolean member = false;
@@ -13,6 +16,7 @@ public class GroupMember implements Serializable {
   private boolean animateAdd = false;
   private User user;
   private Friendship friendship;
+  private AvatarModel avatarModel = null;
 
   public GroupMember(User user) {
     this.user = user;
@@ -68,12 +72,31 @@ public class GroupMember implements Serializable {
     return animateAdd;
   }
 
-  public void setAnimateAdd(boolean animateAdd) {
+  @Override public String getDisplayName() {
+    return user.getDisplayName();
+  }
+
+  @Override public String getUsername() {
+    return user.getUsername();
+  }
+
+  @Override public void setAnimateAdd(boolean animateAdd) {
     this.animateAdd = animateAdd;
   }
 
-  public boolean isFriend() {
+  @Override public boolean isFriend() {
     return friend;
+  }
+
+  @Override public AvatarModel getAvatar() {
+    if (avatarModel != null) return avatarModel;
+    avatarModel = new AvatarModel(user.getProfilePicture(),
+        user.isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE);
+    return avatarModel;
+  }
+
+  @Override public boolean isReverse() {
+    return isMember();
   }
 
   public void setFriend(boolean friend) {
