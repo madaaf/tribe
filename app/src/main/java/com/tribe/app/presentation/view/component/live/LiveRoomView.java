@@ -191,7 +191,7 @@ public class LiveRoomView extends FrameLayout {
   private void setWidth(int index, int width) {
     View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-    l.width = width - LiveInviteView.WIDTH;
+    l.width = width - (LiveInviteView.WIDTH / 2);
     l.flexGrow = 1;
     view.setLayoutParams(l);
   }
