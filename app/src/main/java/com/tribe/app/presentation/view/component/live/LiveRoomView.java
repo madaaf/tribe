@@ -17,8 +17,10 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 import static com.google.android.flexbox.FlexboxLayout.ALIGN_CONTENT_STRETCH;
 
@@ -34,6 +36,7 @@ public class LiveRoomView extends FrameLayout {
   public static final int GRID = 0;
   public static final int LINEAR = 1;
   private static final int DEFAULT_TYPE = GRID;
+  private static boolean onDropEnabled = true;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -84,6 +87,21 @@ public class LiveRoomView extends FrameLayout {
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  public void onDropEnabled(Boolean enabled) {
+    //Timber.e("set Value onDropEnabled " + enabled);
+    this.onDropEnabled = enabled;
+  }
+
+  public void onGuestDragged(TileView draggedTileView) {
+    LiveRowView lastViewAdded =
+        (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+    FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
+    l.maxHeight = flexboxLayout.getHeight() / 3;
+    l.flexGrow = 1;
+    lastViewAdded.setLayoutParams(l);
+    Timber.e("SOEF set HEIGHT MAX");
   }
 
   public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
@@ -138,7 +156,16 @@ public class LiveRoomView extends FrameLayout {
         viewLocalLive.setLayoutParams(lp1);
         flexboxLayout.addView(viewLocalLive);
 
+        liveRowView.setLayoutParams(lp);
+        flexboxLayout.addView(liveRowView);
+        break;
+      case 2:
       default:
+        Timber.e("SOEF  addViewInRow " + onDropEnabled);
+        if (onDropEnabled) {
+          lp.maxHeight = 100;
+          Timber.e("SOEF  set max height ");
+        }
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
     }

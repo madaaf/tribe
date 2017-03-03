@@ -470,6 +470,10 @@ public class LiveView extends FrameLayout {
     room.connect(options);
   }
 
+  public void onDroppedGuest(TileView draggedTileView) {
+    viewRoom.onGuestDragged(draggedTileView);
+  }
+
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     persistentSubscriptions.add(obs.subscribe(event -> {
       stateContainer = event;
@@ -484,6 +488,7 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
           false, null);
+      Timber.e("add onDropEnabled initOnStartDragSubscription ");
       addView(latestView, guest, tileView.getBackgroundColor());
     }));
   }
@@ -506,6 +511,9 @@ public class LiveView extends FrameLayout {
   public void initDropEnabledSubscription(Observable<Boolean> obs) {
     persistentSubscriptions.add(obs.subscribe(enabled -> {
       // TODO DO SOMETHING WITH THIS ?
+      //
+      Timber.e("add onDropEnabled on LIVE VIEW " + enabled);
+      viewRoom.onDropEnabled(enabled);
     }));
   }
 

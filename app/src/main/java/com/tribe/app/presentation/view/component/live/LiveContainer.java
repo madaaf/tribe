@@ -195,6 +195,8 @@ public class LiveContainer extends FrameLayout {
       }
     }));
 
+
+    viewLive.initDropEnabledSubscription(onDropEnabled());
     viewLive.initInviteOpenSubscription(onEvent());
     viewLive.initOnStartDragSubscription(onStartDrag());
     viewLive.initOnEndDragSubscription(onEndDrag());
@@ -393,6 +395,7 @@ public class LiveContainer extends FrameLayout {
               DRAG_END_DELAY, new DecelerateInterpolator());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         } else {
+          viewLive.onDroppedGuest(draggedTileView); // SOEF
           onDropped.onNext(draggedTileView);
           viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
