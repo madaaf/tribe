@@ -41,11 +41,12 @@ import rx.schedulers.Schedulers;
  */
 public class AvatarView extends LinearLayout implements Avatar {
 
-  @IntDef({ LIVE, REGULAR }) public @interface AvatarType {
+  @IntDef({ LIVE, CONNECTED, REGULAR }) public @interface AvatarType {
   }
 
   public static final int LIVE = 0;
-  public static final int REGULAR = 1;
+  public static final int CONNECTED = 1;
+  public static final int REGULAR = 2;
 
   @Inject ScreenUtils screenUtils;
 
@@ -108,7 +109,7 @@ public class AvatarView extends LinearLayout implements Avatar {
   @Override protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
 
-    if (type == LIVE) {
+    if (type == LIVE || type == CONNECTED) {
       int radius = getRadius();
       canvas.drawCircle(getWidth() - radius, getHeight() - radius, radius, transparentPaint);
     }

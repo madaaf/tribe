@@ -55,17 +55,17 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_hang_live),
         ContextCompat.getColor(context, R.color.red), Color.WHITE);
   }
 
   private ButtonModel getUnblockButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_unblock),
         ContextCompat.getColor(context, R.color.grey_unblock), Color.WHITE);
   }
 
   private ButtonModel getUnhideButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_unhide),
         ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
   }
 
@@ -78,7 +78,7 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
     }
 
     if (isBlockedOrHidden) {
-      vh.btnAdd.setOnClickListener(v -> clickAdd.onNext(vh.itemView));
+      vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh.itemView));
     } else {
       vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
     }

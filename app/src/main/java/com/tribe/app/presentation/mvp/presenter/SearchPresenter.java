@@ -14,7 +14,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -136,7 +135,7 @@ public class SearchPresenter implements Presenter {
     searchLocally.execute(contactListSubscriber);
   }
 
-  private final class ContactListSubscriber extends DefaultSubscriber<List<Contact>> {
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Object>> {
 
     @Override public void onCompleted() {
     }
@@ -145,9 +144,9 @@ public class SearchPresenter implements Presenter {
 
     }
 
-    @Override public void onNext(List<Contact> contactList) {
+    @Override public void onNext(List<Object> contactList) {
       if (contactList != null && contactList.size() > 0) {
-        searchView.renderContactList(new ArrayList<>(contactList));
+        searchView.renderContactList(contactList);
       }
     }
   }

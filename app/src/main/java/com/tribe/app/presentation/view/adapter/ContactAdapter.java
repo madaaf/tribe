@@ -151,7 +151,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<View> onUnblock() {
-    return Observable.empty();
-    //return recipientListAdapterDelegate.onUnblock();
+    return recipientListAdapterDelegate.onUnblock();
   }
 }

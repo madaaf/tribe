@@ -33,15 +33,21 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
   @Override protected ButtonModel getButtonModelFrom(BaseListInterface baseListItem) {
     User user = (User) baseListItem;
 
-    if (!user.isFriend()) {
+    if (!user.isNewFriend() && !user.isFriend()) {
       return getAddFriendButton();
     } else {
-      return getHangLiveButton();
+      return getAddedButton();
     }
   }
 
   @Override protected ButtonModel getButtonModelTo(BaseListInterface baseListItem) {
-    return getHangLiveButton();
+    User user = (User) baseListItem;
+
+    if (!user.isNewFriend() && !user.isFriend()) {
+      return getAddedButton();
+    } else {
+      return getAddFriendButton();
+    }
   }
 
   private ButtonModel getAddFriendButton() {
@@ -49,9 +55,10 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
         ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
   }
 
-  private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
-        ContextCompat.getColor(context, R.color.red), Color.WHITE);
+  private ButtonModel getAddedButton() {
+    return new ButtonModel(context.getString(R.string.action_member_added),
+        ContextCompat.getColor(context, R.color.blue_new_opacity_10),
+        ContextCompat.getColor(context, R.color.blue_new));
   }
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {

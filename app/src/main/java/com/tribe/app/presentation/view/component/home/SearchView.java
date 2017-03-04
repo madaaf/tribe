@@ -497,7 +497,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   @Override public void renderSearchResult(SearchResult searchResult) {
     if (isSearchMode) {
-      searchResult.setShouldAnimateAdd(this.searchResult.isShouldAnimateAdd());
+      searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
       this.searchResult = searchResult;
       this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
           .equals(user.getUsername()));

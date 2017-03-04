@@ -1,11 +1,15 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.io.Serializable;
 
 /**
  * Created by tiago on 08/09/2016.
  */
-public class SearchResult implements Serializable {
+public class SearchResult implements Serializable, BaseListInterface {
 
   private String id;
   private String display_name;
@@ -14,7 +18,7 @@ public class SearchResult implements Serializable {
   private boolean invisible_mode = false;
   private Friendship friendship;
   private boolean searchDone = false;
-  private boolean shouldAnimateAdd = false;
+  private boolean animateAdd = false;
   private boolean isMyself = false;
 
   public String getId() {
@@ -25,7 +29,23 @@ public class SearchResult implements Serializable {
     this.id = id;
   }
 
-  public String getDisplayName() {
+  @Override public void setAnimateAdd(boolean animateAdd) {
+    this.animateAdd = animateAdd;
+  }
+
+  @Override public boolean isAnimateAdd() {
+    return animateAdd;
+  }
+
+  @Override public boolean isActionAvailable(User currentUser) {
+    return !StringUtils.isEmpty(getDisplayName()) && !isMyself() && !invisible_mode;
+  }
+
+  @Override public boolean isInvisible() {
+    return invisible_mode;
+  }
+
+  @Override public String getDisplayName() {
     return display_name;
   }
 
@@ -33,8 +53,22 @@ public class SearchResult implements Serializable {
     this.display_name = displayName;
   }
 
-  public String getUsername() {
+  @Override public String getUsername() {
     return username;
+  }
+
+  @Override public boolean isFriend() {
+    return friendship != null;
+  }
+
+  @Override public AvatarModel getAvatar() {
+    return new AvatarModel(picture,
+        friendship != null && friendship.getFriend().isOnline() ? AvatarLiveView.CONNECTED
+            : AvatarLiveView.NONE);
+  }
+
+  @Override public boolean isReverse() {
+    return false;
   }
 
   public void setUsername(String username) {
@@ -65,20 +99,8 @@ public class SearchResult implements Serializable {
     this.searchDone = searchDone;
   }
 
-  public boolean isShouldAnimateAdd() {
-    return shouldAnimateAdd;
-  }
-
-  public void setShouldAnimateAdd(boolean shouldAnimateAdd) {
-    this.shouldAnimateAdd = shouldAnimateAdd;
-  }
-
   public void setInvisibleMode(boolean invisibleMode) {
     this.invisible_mode = invisibleMode;
-  }
-
-  public boolean isInvisibleMode() {
-    return invisible_mode;
   }
 
   public boolean isMyself() {

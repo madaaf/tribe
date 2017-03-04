@@ -1,6 +1,8 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +13,14 @@ public class Membership extends Recipient {
 
   public Membership(String id) {
     this.id = id;
+  }
+
+  @Override public boolean isActionAvailable(User currentUser) {
+    return true;
+  }
+
+  @Override public boolean isInvisible() {
+    return false;
   }
 
   @Override public String getDisplayName() {
@@ -29,6 +39,13 @@ public class Membership extends Recipient {
 
   @Override public boolean isFriend() {
     return false;
+  }
+
+  @Override public AvatarModel getAvatar() {
+    if (avatarModel != null) return avatarModel;
+    avatarModel = new AvatarModel(getProfilePicture(), isLive() ? AvatarLiveView.LIVE : AvatarLiveView.NONE);
+    avatarModel.setMemberPics(getMembersPic());
+    return avatarModel;
   }
 
   @Override public String getUsernameDisplay() {

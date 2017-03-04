@@ -106,11 +106,9 @@ import rx.Observable;
 
     return Observable.combineLatest(userDataStore.friendships(),
         userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), (friendships, onlineMap, liveMap) -> {
-
-          return userRealmDataMapper.getFriendshipRealmDataMapper()
-              .transform(updateOnlineLiveFriendship(friendships, onlineMap, liveMap));
-        });
+        userDataStore.liveMap().startWith(new HashMap<>()),
+        (friendships, onlineMap, liveMap) -> userRealmDataMapper.getFriendshipRealmDataMapper()
+            .transform(updateOnlineLiveFriendship(friendships, onlineMap, liveMap)));
   }
 
   private RealmList<FriendshipRealm> updateOnlineLiveFriendship(List<FriendshipRealm> friendships,
@@ -189,14 +187,16 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Object>> searchLocally(String s) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
     return Observable.combineLatest(userDataStore.userInfos(null)
             .map(userRealm -> userRealmDataMapper.transform(userRealm, true)),
         userDataStore.contactsOnApp()
             .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
         userDataStore.contactsToInvite()
             .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
-        (user, contactOnAppList, contactInviteList) -> {
+        userDataStore.liveMap(), userDataStore.onlineMap(),
+        (user, contactOnAppList, contactInviteList, liveMap, onlineMap) -> {
           List<Object> result = new ArrayList<>();
           Map<String, User> mapUsersAdded = new HashMap<>();
 
@@ -204,6 +204,11 @@ import rx.Observable;
             if (recipient instanceof Friendship) {
               Friendship fr = (Friendship) recipient;
               mapUsersAdded.put(fr.getSubId(), fr.getFriend());
+              fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
+              fr.setIsLive(liveMap.containsKey(fr.getId()));
+            } else if (recipient instanceof Membership) {
+              Membership me = (Membership) recipient;
+              me.getGroup().setIsLive(liveMap.containsKey(me.getSubId()));
             }
 
             result.add(recipient);
@@ -231,9 +236,20 @@ import rx.Observable;
   }
 
   @Override public Observable<SearchResult> findByUsername(String username) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.findByUsername(username)
-        .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.combineLatest(userDataStore.findByUsername(username)
+            .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm)),
+        userDataStore.liveMap(), userDataStore.onlineMap(), (searchResult, liveMap, onlineMap) -> {
+          if (searchResult != null && searchResult.getFriendship() != null) {
+            Friendship fr = searchResult.getFriendship();
+            fr.setIsLive(liveMap.containsKey(fr.getId()));
+            fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
+          }
+
+          return searchResult;
+        });
   }
 
   @Override public Observable<Boolean> lookupUsername(String username) {

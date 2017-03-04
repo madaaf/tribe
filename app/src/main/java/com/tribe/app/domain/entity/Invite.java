@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,14 @@ public class Invite extends Recipient {
 
   public void setRoomId(String roomId) {
     this.room_id = roomId;
+  }
+
+  @Override public boolean isActionAvailable(User currentUser) {
+    return false;
+  }
+
+  @Override public boolean isInvisible() {
+    return false;
   }
 
   @Override public String getDisplayName() {
@@ -86,6 +95,10 @@ public class Invite extends Recipient {
 
   @Override public boolean isFriend() {
     return false;
+  }
+
+  @Override public AvatarModel getAvatar() {
+    return null;
   }
 
   private String getFriendshipsName() {

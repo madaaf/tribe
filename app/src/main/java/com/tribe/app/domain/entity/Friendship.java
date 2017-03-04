@@ -1,6 +1,8 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.presentation.view.adapter.model.AvatarModel;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.text.Normalizer;
 import java.util.Date;
 
@@ -14,7 +16,6 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
   private String category;
   private User friend;
   private boolean isSelected;
-  private boolean shouldAnimateAdd;
   private String status;
   private boolean is_live;
 
@@ -58,6 +59,14 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     return id;
   }
 
+  @Override public boolean isActionAvailable(User currentUser) {
+    return friend == null || !currentUser.equals(friend);
+  }
+
+  @Override public boolean isInvisible() {
+    return friend != null && friend.isInvisibleMode();
+  }
+
   @Override public String getDisplayName() {
     if (friend != null) return friend.getDisplayName();
     return "";
@@ -82,6 +91,13 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
     return friend != null;
   }
 
+  @Override public AvatarModel getAvatar() {
+    if (avatarModel != null) return avatarModel;
+    avatarModel = new AvatarModel(getProfilePicture(), isLive() ? AvatarLiveView.LIVE
+        : (isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE));
+    return avatarModel;
+  }
+
   @Override public String getUsernameDisplay() {
     return friend.getUsernameDisplay();
   }
@@ -97,14 +113,6 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
 
   @Override public boolean isGroup() {
     return false;
-  }
-
-  public boolean isShouldAnimateAdd() {
-    return shouldAnimateAdd;
-  }
-
-  public void setShouldAnimateAdd(boolean shouldAnimateAdd) {
-    this.shouldAnimateAdd = shouldAnimateAdd;
   }
 
   public @FriendshipRealm.FriendshipStatus String getStatus() {

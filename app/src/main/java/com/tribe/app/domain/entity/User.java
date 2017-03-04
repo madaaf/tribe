@@ -243,6 +243,14 @@ public class User implements Serializable, BaseListInterface {
     return animateAdd;
   }
 
+  @Override public boolean isActionAvailable(User currentUser) {
+    return !currentUser.equals(this);
+  }
+
+  @Override public boolean isInvisible() {
+    return invisible_mode;
+  }
+
   @Override public void setAnimateAdd(boolean animateAdd) {
     this.animateAdd = animateAdd;
   }

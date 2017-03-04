@@ -18,9 +18,6 @@ import java.util.List;
  */
 public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
 
-  private ButtonModel buttonModelFirst = null;
-  private ButtonModel buttonModelSecond = null;
-
   public SearchResultGridAdapterDelegate(Context context) {
     super(context);
   }
@@ -31,38 +28,24 @@ public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
 
   @Override protected ButtonModel getButtonModelFrom(BaseListInterface baseListItem) {
     SearchResult searchResult = (SearchResult) baseListItem;
-    if (buttonModelFirst != null) return buttonModelFirst;
+    ButtonModel buttonModel = null;
 
     if (searchResult.getFriendship() == null) {
-      buttonModelFirst = getAddFriendButton();
+      buttonModel = getAddFriendButton();
     } else if (searchResult.getFriendship() != null && !searchResult.getFriendship()
         .isBlockedOrHidden()) {
-      buttonModelFirst = getHangLiveButton();
+      buttonModel = getHangLiveButton();
     } else if (searchResult.getFriendship().isBlocked()) {
-      buttonModelFirst = getUnblockButton();
+      buttonModel = getUnblockButton();
     } else if (searchResult.getFriendship().isHidden()) {
-      buttonModelFirst = getUnhideButton();
+      buttonModel = getUnhideButton();
     }
 
-    return buttonModelFirst;
+    return buttonModel;
   }
 
   @Override protected ButtonModel getButtonModelTo(BaseListInterface baseListItem) {
-    SearchResult searchResult = (SearchResult) baseListItem;
-    if (buttonModelSecond != null) return buttonModelSecond;
-
-    if (searchResult.getFriendship() == null) {
-      buttonModelSecond = getAddFriendButton();
-    } else if (searchResult.getFriendship() != null && !searchResult.getFriendship()
-        .isBlockedOrHidden()) {
-      buttonModelSecond = getHangLiveButton();
-    } else if (searchResult.getFriendship().isBlocked()) {
-      buttonModelSecond = getUnblockButton();
-    } else if (searchResult.getFriendship().isHidden()) {
-      buttonModelSecond = getUnhideButton();
-    }
-
-    return buttonModelSecond;
+    return getHangLiveButton();
   }
 
   private ButtonModel getAddFriendButton() {
@@ -71,26 +54,27 @@ public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_hang_live),
         ContextCompat.getColor(context, R.color.red), Color.WHITE);
   }
 
   private ButtonModel getUnblockButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_unblock),
         ContextCompat.getColor(context, R.color.grey_unblock), Color.WHITE);
   }
 
   private ButtonModel getUnhideButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_unhide),
         ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
   }
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     SearchResult searchResult = (SearchResult) baseListItem;
-    if (!searchResult.isInvisibleMode() && !searchResult.isMyself() && (searchResult.getFriendship()
+    if (!searchResult.isInvisible() && !searchResult.isMyself() && (searchResult.getFriendship()
         == null || searchResult.getFriendship().isBlockedOrHidden())) {
       vh.btnAdd.setOnClickListener(v -> {
-        searchResult.setShouldAnimateAdd(true);
+        animations.put(vh, animateProgressBar(vh));
+        searchResult.setAnimateAdd(true);
         clickAdd.onNext(vh.itemView);
       });
     } else {

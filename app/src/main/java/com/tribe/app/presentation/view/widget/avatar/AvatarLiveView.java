@@ -105,7 +105,7 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
       avatar.setType(AvatarView.LIVE);
     } else if (type == CONNECTED) {
       imgInd.setImageResource(R.drawable.picto_online);
-      avatar.setType(AvatarView.LIVE);
+      avatar.setType(AvatarView.CONNECTED);
     } else {
       imgInd.setImageBitmap(null);
       avatar.setType(AvatarView.REGULAR);

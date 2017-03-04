@@ -6,23 +6,16 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.ButtonModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
-import javax.inject.Inject;
 
 /**
  * Created by tiago on 11/29/16.
  */
 public class MemberListAdapterDelegate extends BaseListAdapterDelegate {
-
-  @Inject User user;
-
-  @Inject ScreenUtils screenUtils;
 
   public MemberListAdapterDelegate(Context context) {
     super(context);
@@ -52,6 +45,7 @@ public class MemberListAdapterDelegate extends BaseListAdapterDelegate {
     GroupMember groupMember = (GroupMember) baseListItem;
     if (!groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
+        animations.put(vh, animateProgressBar(vh));
         groupMember.setAnimateAdd(true);
         clickAdd.onNext(vh.itemView);
       });
@@ -65,7 +59,7 @@ public class MemberListAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
+    return new ButtonModel(context.getString(R.string.action_hang_live),
         ContextCompat.getColor(context, R.color.red), Color.WHITE);
   }
 

@@ -114,13 +114,6 @@ public abstract class Recipient implements Serializable, BaseListInterface {
     return animateAdd;
   }
 
-  @Override public AvatarModel getAvatar() {
-    if (avatarModel != null) return avatarModel;
-    avatarModel = new AvatarModel(getProfilePicture(), isLive() ? AvatarLiveView.LIVE
-        : (isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE));
-    return avatarModel;
-  }
-
   @Override public boolean isReverse() {
     return false;
   }

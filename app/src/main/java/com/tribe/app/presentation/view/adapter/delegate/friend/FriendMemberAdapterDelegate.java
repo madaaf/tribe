@@ -17,9 +17,6 @@ import java.util.List;
  */
 public class FriendMemberAdapterDelegate extends BaseListAdapterDelegate {
 
-  private ButtonModel buttonModelFirst = null;
-  private ButtonModel buttonModelSecond = null;
-
   public FriendMemberAdapterDelegate(Context context) {
     super(context);
   }

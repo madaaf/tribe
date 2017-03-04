@@ -68,8 +68,16 @@ public class GroupMember implements Serializable, BaseListInterface {
     this.member = member;
   }
 
-  public boolean isAnimateAdd() {
+  @Override public boolean isAnimateAdd() {
     return animateAdd;
+  }
+
+  @Override public boolean isActionAvailable(User currentUser) {
+    return !user.equals(currentUser);
+  }
+
+  @Override public boolean isInvisible() {
+    return user.isInvisible();
   }
 
   @Override public String getDisplayName() {
@@ -78,6 +86,10 @@ public class GroupMember implements Serializable, BaseListInterface {
 
   @Override public String getUsername() {
     return user.getUsername();
+  }
+
+  @Override public String getId() {
+    return user.getId();
   }
 
   @Override public void setAnimateAdd(boolean animateAdd) {
