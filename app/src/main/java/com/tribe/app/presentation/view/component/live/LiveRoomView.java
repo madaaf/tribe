@@ -70,9 +70,8 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void removeView(LiveRowView view) {
-    if (!onDropEnabled) {
-      flexboxLayout.removeView(view);
-    }
+    Timber.e("REMIVE VIEX " + onDropEnabled);
+    flexboxLayout.removeView(view);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -92,59 +91,21 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void onDropEnabled(Boolean enabled) {
-    //Timber.e("set Value onDropEnabled " + enabled);
-    this.onDropEnabled = enabled;
+    Timber.e("SOEF enabled " + enabled);
+    LiveRowView lastViewAdded =
+        (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+    FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
+    l.flexGrow = 1;
+
     if (enabled) {
-      LiveRowView lastViewAdded =
-          (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
-      FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
-      l.maxHeight = flexboxLayout.getHeight() / 3;
-      l.flexGrow = 1;
-
-    /*  LayoutTransition itemLayoutTransition = new LayoutTransition();
-      itemLayoutTransition.enableTransitionType(CHANGING);
-      itemLayoutTransition.disableTransitionType(DISAPPEARING);
-      itemLayoutTransition.setDuration(300);
-      lastViewAdded.setLayoutTransition(itemLayoutTransition);*/
-
-      ResizeAnimation resizeAnimation =
-          new ResizeAnimation(lastViewAdded, flexboxLayout.getHeight() / 3, 100);
-      resizeAnimation.setDuration(500);
+      ResizeAnimation resizeAnimation = new ResizeAnimation(l, lastViewAdded, 600, 100);
+      resizeAnimation.setDuration(3000);
       lastViewAdded.startAnimation(resizeAnimation);
-
-      lastViewAdded.setLayoutParams(l);
-      Timber.e("SOEF set HEIGHT MAX");
     } else {
-      LiveRowView lastViewAdded =
-          (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
-      FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
-      l.maxHeight = 100;
-      l.flexGrow = 1;
-
-      ResizeAnimation resizeAnimation =
-          new ResizeAnimation(lastViewAdded, 100, flexboxLayout.getHeight() / 3);
-      resizeAnimation.setDuration(500);
+      ResizeAnimation resizeAnimation = new ResizeAnimation(l, lastViewAdded, 100, 600);
+      resizeAnimation.setDuration(3000);
       lastViewAdded.startAnimation(resizeAnimation);
-
-  /*    lastViewAdded.animate()
-          .scaleY(100 / (flexboxLayout.getHeight() / 3))
-          .setDuration(3000)
-          .setListener(new Animator.AnimatorListener() {
-            @Override public void onAnimationStart(Animator animation) {
-            }
-
-            @Override public void onAnimationEnd(Animator animation) {
-              l.height = 100;
-              lastViewAdded.setLayoutParams(l);
-            }
-
-            @Override public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override public void onAnimationRepeat(Animator animation) {
-            }
-          })
-          .start();*/
+      //  l.maxHeight = 100;
     }
   }
 
@@ -205,10 +166,8 @@ public class LiveRoomView extends FrameLayout {
         break;
       case 2:
       default:
-        Timber.e("SOEF  addViewInRow ");
         if (true) {
           lp.maxHeight = 100;
-          Timber.e("SOEF  set max height ");
         }
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
@@ -277,19 +236,24 @@ public class LiveRoomView extends FrameLayout {
     final int targetHeight;
     View view;
     int startHeight;
+    FlexboxLayout.LayoutParams l;
 
-    public ResizeAnimation(View view, int targetHeight, int startHeight) {
+    public ResizeAnimation(FlexboxLayout.LayoutParams l, View view, int targetHeight,
+        int startHeight) {
       this.view = view;
       this.targetHeight = targetHeight;
       this.startHeight = startHeight;
+      this.l = l;
     }
 
     @Override protected void applyTransformation(float interpolatedTime, Transformation t) {
-      int newHeight = (int) (startHeight + targetHeight * interpolatedTime);
+      //int newHeight = (int) (startHeight + targetHeight * interpolatedTime);
       //to support decent animation, change new heigt as Nico S. recommended in comments
-      //int newHeight = (int) (startHeight+(targetHeight - startHeight) * interpolatedTime);
-      view.getLayoutParams().height = newHeight;
+      int newHeight = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
+      //int newHeight = (int) ((targetHeight - startHeight) * interpolatedTime);
+      l.maxHeight = newHeight;
       view.requestLayout();
+      view.setLayoutParams(l);
     }
 
     @Override public void initialize(int width, int height, int parentWidth, int parentHeight) {
