@@ -204,7 +204,7 @@ import timber.log.Timber;
 
         @Override public void onError(WebSocket websocket, WebSocketException cause)
             throws Exception {
-          Timber.e("WebSocket onError : " + cause.getError().name());
+          Timber.d("WebSocket onError : " + cause.getError().name());
 
           state = STATE_ERROR;
           onError.onNext(cause.getMessage());
@@ -306,7 +306,7 @@ import timber.log.Timber;
               closeLock.wait(CLOSE_TIMEOUT);
               break;
             } catch (InterruptedException e) {
-              Timber.e("Wait error: " + e.toString());
+              Timber.d("Wait error: " + e.toString());
             }
           }
         }

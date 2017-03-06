@@ -36,7 +36,7 @@ import javax.inject.Singleton;
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
-    if (notificationPayload != null) {
+    if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       if (application.getAppState() != null && application.getAppState()
           .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);

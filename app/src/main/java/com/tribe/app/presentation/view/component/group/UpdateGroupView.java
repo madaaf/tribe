@@ -18,6 +18,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -34,6 +35,8 @@ import rx.subscriptions.CompositeSubscription;
 public class UpdateGroupView extends LinearLayout {
 
   private int DURATION_FADE = 150;
+
+  @Inject ScreenUtils screenUtils;
 
   @Inject RxImagePicker rxImagePicker;
 
@@ -79,6 +82,7 @@ public class UpdateGroupView extends LinearLayout {
   }
 
   @Override protected void onDetachedFromWindow() {
+    if (editGroupName != null) screenUtils.hideKeyboard(editGroupName);
     super.onDetachedFromWindow();
   }
 

@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -108,21 +107,21 @@ public class LiveRowView extends FrameLayout {
 
   public void setPeerView(PeerView peerView) {
     remotePeerView = (RemotePeerView) peerView;
-    remotePeerView.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            layoutStream.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                viewWaiting.setVisibility(View.GONE);
-              }
 
-              @Override public void onAnimationStart(Animator animation) {
-                layoutStream.setVisibility(View.VISIBLE);
-              }
-            });
-          }
-        });
+    subscriptions.add(this.remotePeerView.onNotificatinRemoteJoined()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> {
+          UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+              viewWaiting.stopPulse();
+              viewWaiting.setVisibility(View.GONE);
+            }
+
+            @Override public void onAnimationStart(Animator animation) {
+              layoutStream.setVisibility(View.VISIBLE);
+            }
+          });
+        }));
 
     subscriptions.add(this.remotePeerView.onMediaConfiguration()
         .observeOn(AndroidSchedulers.mainThread())
