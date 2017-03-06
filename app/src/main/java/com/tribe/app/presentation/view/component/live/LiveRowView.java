@@ -94,6 +94,10 @@ public class LiveRowView extends FrameLayout {
     viewWaiting.setColor(color);
   }
 
+  public int getColor() {
+    return color;
+  }
+
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     viewWaiting.setGuest(guest);

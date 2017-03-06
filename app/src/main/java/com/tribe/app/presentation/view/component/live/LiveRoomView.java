@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -19,11 +20,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
-import javax.inject.Inject;
-import timber.log.Timber;
-
-import static com.google.android.flexbox.FlexboxLayout.ALIGN_CONTENT_STRETCH;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 
 /**
  * Created by tiago on 22/01/2017.
@@ -36,41 +33,41 @@ public class LiveRoomView extends FrameLayout {
 
   public static final int GRID = 0;
   public static final int LINEAR = 1;
+
+  private static int DURATION = 300;
+  private static int onDroppedBarHeight = 150;
   private static final int DEFAULT_TYPE = GRID;
-  private static boolean onDropEnabled = false;
+
   // VARIABLES
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
-
-  @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
   public LiveRoomView(Context context) {
     super(context);
-    type = DEFAULT_TYPE;
     init();
   }
 
   public LiveRoomView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    type = DEFAULT_TYPE;
     init();
   }
 
   private void init() {
+
+    type = DEFAULT_TYPE;
     initDependencyInjector();
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
 
-    flexboxLayout.setAlignContent(ALIGN_CONTENT_STRETCH);
+    flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
   }
 
   public void removeView(LiveRowView view) {
-    Timber.e("REMIVE VIEX " + onDropEnabled);
     flexboxLayout.removeView(view);
   }
 
@@ -91,25 +88,25 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void onDropEnabled(Boolean enabled) {
-    Timber.e("SOEF enabled " + enabled);
     LiveRowView lastViewAdded =
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
     l.flexGrow = 1;
+    ResizeAnimation resizeAnimation = null;
 
     if (enabled) {
-      ResizeAnimation resizeAnimation = new ResizeAnimation(l, lastViewAdded, 600, 100);
-      resizeAnimation.setDuration(3000);
-      lastViewAdded.startAnimation(resizeAnimation);
+      resizeAnimation =
+          new ResizeAnimation(l, lastViewAdded, flexboxLayout.getHeight(), onDroppedBarHeight);
     } else {
-      ResizeAnimation resizeAnimation = new ResizeAnimation(l, lastViewAdded, 100, 600);
-      resizeAnimation.setDuration(3000);
-      lastViewAdded.startAnimation(resizeAnimation);
-      //  l.maxHeight = 100;
+      resizeAnimation =
+          new ResizeAnimation(l, lastViewAdded, onDroppedBarHeight, flexboxLayout.getHeight());
     }
+
+    resizeAnimation.setDuration(DURATION);
+    lastViewAdded.startAnimation(resizeAnimation);
   }
 
-  public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
+  public void addView(LiveRowView liveRowView) {
     int viewIndex = flexboxLayout.getChildCount();
     addViewInRow(viewIndex, liveRowView);
     setRowsOrder();
@@ -142,9 +139,16 @@ public class LiveRoomView extends FrameLayout {
     return type;
   }
 
+  public int getColor(int color) {
+    if (color == Color.BLACK || color == 0) color = PaletteGrid.getRandomColorExcluding(color);
+    return color;
+  }
+
   private void addViewInRow(int viewIndex, LiveRowView liveRowView) {
     flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+    flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
+
     lp.flexGrow = 1;
 
     switch (viewIndex) {
@@ -164,11 +168,8 @@ public class LiveRoomView extends FrameLayout {
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
         break;
-      case 2:
       default:
-        if (true) {
-          lp.maxHeight = 100;
-        }
+        lp.maxHeight = onDroppedBarHeight;
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
     }
@@ -226,12 +227,6 @@ public class LiveRoomView extends FrameLayout {
     view.setLayoutParams(l);
   }
 
-/*
-        flexboxLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-        liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
-
- */
-
   public class ResizeAnimation extends Animation {
     final int targetHeight;
     View view;
@@ -247,17 +242,10 @@ public class LiveRoomView extends FrameLayout {
     }
 
     @Override protected void applyTransformation(float interpolatedTime, Transformation t) {
-      //int newHeight = (int) (startHeight + targetHeight * interpolatedTime);
-      //to support decent animation, change new heigt as Nico S. recommended in comments
       int newHeight = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
-      //int newHeight = (int) ((targetHeight - startHeight) * interpolatedTime);
       l.maxHeight = newHeight;
       view.requestLayout();
       view.setLayoutParams(l);
-    }
-
-    @Override public void initialize(int width, int height, int parentWidth, int parentHeight) {
-      super.initialize(width, height, parentWidth, parentHeight);
     }
 
     @Override public boolean willChangeBounds() {

@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -469,7 +468,7 @@ public class LiveView extends FrameLayout {
     Timber.d("Initiating Room");
     room.connect(options);
   }
-  
+
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     persistentSubscriptions.add(obs.subscribe(event -> {
       stateContainer = event;
@@ -506,9 +505,6 @@ public class LiveView extends FrameLayout {
 
   public void initDropEnabledSubscription(Observable<Boolean> obs) {
     persistentSubscriptions.add(obs.subscribe(enabled -> {
-      // TODO DO SOMETHING WITH THIS ?
-      //
-      Timber.e("add onDropEnabled on LIVE VIEW " + enabled);
       viewRoom.onDropEnabled(enabled);
     }));
   }
@@ -765,9 +761,7 @@ public class LiveView extends FrameLayout {
     liveRowView.setColor(color);
     liveRowView.setGuest(guest);
     liveRowView.setRoomType(viewRoom.getType());
-    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT);
-    viewRoom.addView(liveRowView, params);
+    viewRoom.addView(liveRowView);
   }
 
   private void addView(RemotePeer remotePeer) {
@@ -820,11 +814,8 @@ public class LiveView extends FrameLayout {
 
         liveRowView.setRoomType(viewRoom.getType());
         liveRowView.setPeerView(remotePeer.getPeerView());
-        ViewGroup.LayoutParams params =
-            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
 
-        viewRoom.addView(liveRowView, params);
+        viewRoom.addView(liveRowView);
       }
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
