@@ -143,10 +143,10 @@ android {
     }
 
     release {
-      debuggable true
-      minifyEnabled false
-      shrinkResources false
-      signingConfig signingConfigs.debug
+      debuggable false
+      minifyEnabled true
+      shrinkResources true
+      signingConfig signingConfigs.release
       resValue "string", "app_name", "Tribe"
       resValue "string", "branch_io", "\"${branch_io_prod}\""
 
@@ -255,8 +255,8 @@ dependencies {
   //compile developmentDependencies.takt
 
   compile project(':AdapterDelegates')
-  compile project(':ViewNavigator')
   compile project(':tribelivesdk')
+  compile project(':ViewNavigator')
   compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
     transitive = true;
   }
