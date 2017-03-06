@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,7 +19,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import timber.log.Timber;
@@ -36,8 +37,7 @@ public class LiveRoomView extends FrameLayout {
   public static final int GRID = 0;
   public static final int LINEAR = 1;
   private static final int DEFAULT_TYPE = GRID;
-  private static boolean onDropEnabled = true;
-
+  private static boolean onDropEnabled = false;
   // VARIABLES
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
@@ -70,7 +70,9 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void removeView(LiveRowView view) {
-    flexboxLayout.removeView(view);
+    if (!onDropEnabled) {
+      flexboxLayout.removeView(view);
+    }
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -92,16 +94,58 @@ public class LiveRoomView extends FrameLayout {
   public void onDropEnabled(Boolean enabled) {
     //Timber.e("set Value onDropEnabled " + enabled);
     this.onDropEnabled = enabled;
-  }
+    if (enabled) {
+      LiveRowView lastViewAdded =
+          (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+      FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
+      l.maxHeight = flexboxLayout.getHeight() / 3;
+      l.flexGrow = 1;
 
-  public void onGuestDragged(TileView draggedTileView) {
-    LiveRowView lastViewAdded =
-        (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
-    FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
-    l.maxHeight = flexboxLayout.getHeight() / 3;
-    l.flexGrow = 1;
-    lastViewAdded.setLayoutParams(l);
-    Timber.e("SOEF set HEIGHT MAX");
+    /*  LayoutTransition itemLayoutTransition = new LayoutTransition();
+      itemLayoutTransition.enableTransitionType(CHANGING);
+      itemLayoutTransition.disableTransitionType(DISAPPEARING);
+      itemLayoutTransition.setDuration(300);
+      lastViewAdded.setLayoutTransition(itemLayoutTransition);*/
+
+      ResizeAnimation resizeAnimation =
+          new ResizeAnimation(lastViewAdded, flexboxLayout.getHeight() / 3, 100);
+      resizeAnimation.setDuration(500);
+      lastViewAdded.startAnimation(resizeAnimation);
+
+      lastViewAdded.setLayoutParams(l);
+      Timber.e("SOEF set HEIGHT MAX");
+    } else {
+      LiveRowView lastViewAdded =
+          (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+      FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) lastViewAdded.getLayoutParams();
+      l.maxHeight = 100;
+      l.flexGrow = 1;
+
+      ResizeAnimation resizeAnimation =
+          new ResizeAnimation(lastViewAdded, 100, flexboxLayout.getHeight() / 3);
+      resizeAnimation.setDuration(500);
+      lastViewAdded.startAnimation(resizeAnimation);
+
+  /*    lastViewAdded.animate()
+          .scaleY(100 / (flexboxLayout.getHeight() / 3))
+          .setDuration(3000)
+          .setListener(new Animator.AnimatorListener() {
+            @Override public void onAnimationStart(Animator animation) {
+            }
+
+            @Override public void onAnimationEnd(Animator animation) {
+              l.height = 100;
+              lastViewAdded.setLayoutParams(l);
+            }
+
+            @Override public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override public void onAnimationRepeat(Animator animation) {
+            }
+          })
+          .start();*/
+    }
   }
 
   public void addView(LiveRowView liveRowView, ViewGroup.LayoutParams params) {
@@ -161,8 +205,8 @@ public class LiveRoomView extends FrameLayout {
         break;
       case 2:
       default:
-        Timber.e("SOEF  addViewInRow " + onDropEnabled);
-        if (onDropEnabled) {
+        Timber.e("SOEF  addViewInRow ");
+        if (true) {
           lp.maxHeight = 100;
           Timber.e("SOEF  set max height ");
         }
@@ -228,4 +272,32 @@ public class LiveRoomView extends FrameLayout {
         liveRowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.violet));
 
  */
+
+  public class ResizeAnimation extends Animation {
+    final int targetHeight;
+    View view;
+    int startHeight;
+
+    public ResizeAnimation(View view, int targetHeight, int startHeight) {
+      this.view = view;
+      this.targetHeight = targetHeight;
+      this.startHeight = startHeight;
+    }
+
+    @Override protected void applyTransformation(float interpolatedTime, Transformation t) {
+      int newHeight = (int) (startHeight + targetHeight * interpolatedTime);
+      //to support decent animation, change new heigt as Nico S. recommended in comments
+      //int newHeight = (int) (startHeight+(targetHeight - startHeight) * interpolatedTime);
+      view.getLayoutParams().height = newHeight;
+      view.requestLayout();
+    }
+
+    @Override public void initialize(int width, int height, int parentWidth, int parentHeight) {
+      super.initialize(width, height, parentWidth, parentHeight);
+    }
+
+    @Override public boolean willChangeBounds() {
+      return true;
+    }
+  }
 }

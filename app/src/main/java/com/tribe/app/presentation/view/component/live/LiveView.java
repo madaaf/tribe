@@ -469,16 +469,12 @@ public class LiveView extends FrameLayout {
     Timber.d("Initiating Room");
     room.connect(options);
   }
-
-  public void onDroppedGuest(TileView draggedTileView) {
-    viewRoom.onGuestDragged(draggedTileView);
-  }
-
+  
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     persistentSubscriptions.add(obs.subscribe(event -> {
       stateContainer = event;
       viewRoom.setType(
-          event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID); // SOEF
+          event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
     }));
   }
 
