@@ -484,7 +484,7 @@ public class LiveView extends FrameLayout {
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
           false, null);
       Timber.e("add onDropEnabled initOnStartDragSubscription ");
-      addView(latestView, guest, tileView.getBackgroundColor());
+      addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
 
@@ -561,7 +561,7 @@ public class LiveView extends FrameLayout {
 
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
-    addView(liveRowView, guest, live.getColor());
+    addView(liveRowView, guest, live.getColor(), false);
     liveRowView.showGuest(live.isCountdown());
 
     if (live.isCountdown()) {
@@ -621,7 +621,7 @@ public class LiveView extends FrameLayout {
             }
           });
 
-      addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK));
+      addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK), false);
       liveInviteMap.put(trg.getId(), liveRowView);
 
       refactorNotifyButton();
@@ -757,11 +757,12 @@ public class LiveView extends FrameLayout {
     scale(btnInviteLive, scale);
   }
 
-  private void addView(LiveRowView liveRowView, TribeGuest guest, int color) {
+  private void addView(LiveRowView liveRowView, TribeGuest guest, int color,
+      boolean guestDraggedByMe) {
     liveRowView.setColor(color);
     liveRowView.setGuest(guest);
     liveRowView.setRoomType(viewRoom.getType());
-    viewRoom.addView(liveRowView);
+    viewRoom.addView(liveRowView, guestDraggedByMe);
   }
 
   private void addView(RemotePeer remotePeer) {

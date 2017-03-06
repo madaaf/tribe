@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -20,11 +19,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
-
-/**
- * Created by tiago on 22/01/2017.
- */
 
 public class LiveRoomView extends FrameLayout {
 
@@ -34,7 +28,7 @@ public class LiveRoomView extends FrameLayout {
   public static final int GRID = 0;
   public static final int LINEAR = 1;
 
-  private static int DURATION = 300;
+  private static int DURATION = 400;
   private static int onDroppedBarHeight = 150;
   private static final int DEFAULT_TYPE = GRID;
 
@@ -69,6 +63,10 @@ public class LiveRoomView extends FrameLayout {
 
   public void removeView(LiveRowView view) {
     flexboxLayout.removeView(view);
+    if (type == GRID) {
+      organizeGridParam();
+      // setRowsGridWidth();
+    }
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -106,9 +104,9 @@ public class LiveRoomView extends FrameLayout {
     lastViewAdded.startAnimation(resizeAnimation);
   }
 
-  public void addView(LiveRowView liveRowView) {
+  public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    addViewInRow(viewIndex, liveRowView);
+    addViewInRow(viewIndex, liveRowView, guestDraguedByMy);
     setRowsOrder();
     if (type == GRID) {
       organizeGridParam();
@@ -139,12 +137,7 @@ public class LiveRoomView extends FrameLayout {
     return type;
   }
 
-  public int getColor(int color) {
-    if (color == Color.BLACK || color == 0) color = PaletteGrid.getRandomColorExcluding(color);
-    return color;
-  }
-
-  private void addViewInRow(int viewIndex, LiveRowView liveRowView) {
+  private void addViewInRow(int viewIndex, LiveRowView liveRowView, boolean guestDraguedByMe) {
     flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
     flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
@@ -169,7 +162,9 @@ public class LiveRoomView extends FrameLayout {
         flexboxLayout.addView(liveRowView);
         break;
       default:
-        lp.maxHeight = onDroppedBarHeight;
+        if (guestDraguedByMe) {
+          lp.maxHeight = onDroppedBarHeight;
+        }
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
     }
@@ -242,8 +237,7 @@ public class LiveRoomView extends FrameLayout {
     }
 
     @Override protected void applyTransformation(float interpolatedTime, Transformation t) {
-      int newHeight = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
-      l.maxHeight = newHeight;
+      l.maxHeight = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
       view.requestLayout();
       view.setLayoutParams(l);
     }
