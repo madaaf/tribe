@@ -816,7 +816,7 @@ public class LiveView extends FrameLayout {
         liveRowView.setRoomType(viewRoom.getType());
         liveRowView.setPeerView(remotePeer.getPeerView());
 
-        viewRoom.addView(liveRowView);
+        viewRoom.addView(liveRowView, false);
       }
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
