@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -29,7 +30,7 @@ public class LiveRoomView extends FrameLayout {
   public static final int GRID = 0;
   public static final int LINEAR = 1;
 
-  private static int DURATION = 400;
+  private static int DURATION = 600;
   private static int onDroppedBarHeight = 150;
   private static final int DEFAULT_TYPE = GRID;
 
@@ -106,6 +107,7 @@ public class LiveRoomView extends FrameLayout {
     }
 
     resizeAnimation.setDuration(DURATION);
+    resizeAnimation.setInterpolator(new DecelerateInterpolator());
     lastViewAdded.startAnimation(resizeAnimation);
   }
 
@@ -175,6 +177,7 @@ public class LiveRoomView extends FrameLayout {
               new ResizeAnimation(lp, liveRowView, onDroppedBarHeight, 0);
 
           resizeAnimation.setDuration(DURATION);
+          resizeAnimation.setInterpolator(new DecelerateInterpolator());
           liveRowView.startAnimation(resizeAnimation);
           liveRowView.setLayoutParams(lp);
         } else {
