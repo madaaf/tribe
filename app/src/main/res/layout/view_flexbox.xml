@@ -7,7 +7,7 @@
       android:id="@+id/flexbox_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:animateLayoutChanges="true"
+
       app:alignContent="stretch"
       app:alignItems="stretch"
       app:flexWrap="wrap"

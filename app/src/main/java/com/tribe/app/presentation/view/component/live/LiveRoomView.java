@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -7,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.FrameLayout;
@@ -56,6 +58,10 @@ public class LiveRoomView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
 
+    LayoutTransition transition = new LayoutTransition();
+    transition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+    flexboxLayout.setLayoutTransition(transition);
+
     flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
@@ -65,7 +71,7 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.removeView(view);
     if (type == GRID) {
       organizeGridParam();
-      // setRowsGridWidth();
+      setRowsGridWidth();
     }
   }
 
@@ -163,10 +169,28 @@ public class LiveRoomView extends FrameLayout {
         break;
       default:
         if (guestDraguedByMe) {
-          lp.maxHeight = onDroppedBarHeight;
+          FlexboxLayout.LayoutParams lpGuestDraguedByMe = new FlexboxLayout.LayoutParams(1, 1);
+          lpGuestDraguedByMe.flexGrow = 1;
+          lpGuestDraguedByMe.maxHeight = 0;
+          flexboxLayout.addView(liveRowView);
+
+          liveRowView.getViewTreeObserver()
+              .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override public void onGlobalLayout() {
+                  liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                  ResizeAnimation resizeAnimation =
+                      new ResizeAnimation(lpGuestDraguedByMe, liveRowView, onDroppedBarHeight, 0);
+
+                  resizeAnimation.setDuration(300);
+                  liveRowView.startAnimation(resizeAnimation);
+                }
+              });
+
+          liveRowView.setLayoutParams(lpGuestDraguedByMe);
+        } else {
+          liveRowView.setLayoutParams(lp);
+          flexboxLayout.addView(liveRowView);
         }
-        liveRowView.setLayoutParams(lp);
-        flexboxLayout.addView(liveRowView);
     }
   }
 
@@ -238,7 +262,7 @@ public class LiveRoomView extends FrameLayout {
 
     @Override protected void applyTransformation(float interpolatedTime, Transformation t) {
       l.maxHeight = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
-      view.requestLayout();
+      //view.requestLayout();
       view.setLayoutParams(l);
     }
 
