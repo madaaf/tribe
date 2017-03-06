@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.FrameLayout;
@@ -169,24 +168,15 @@ public class LiveRoomView extends FrameLayout {
         break;
       default:
         if (guestDraguedByMe) {
-          FlexboxLayout.LayoutParams lpGuestDraguedByMe = new FlexboxLayout.LayoutParams(1, 1);
-          lpGuestDraguedByMe.flexGrow = 1;
-          lpGuestDraguedByMe.maxHeight = 0;
+          lp.flexGrow = 1;
+          lp.maxHeight = 0;
           flexboxLayout.addView(liveRowView);
+          ResizeAnimation resizeAnimation =
+              new ResizeAnimation(lp, liveRowView, onDroppedBarHeight, 0);
 
-          liveRowView.getViewTreeObserver()
-              .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override public void onGlobalLayout() {
-                  liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                  ResizeAnimation resizeAnimation =
-                      new ResizeAnimation(lpGuestDraguedByMe, liveRowView, onDroppedBarHeight, 0);
-
-                  resizeAnimation.setDuration(300);
-                  liveRowView.startAnimation(resizeAnimation);
-                }
-              });
-
-          liveRowView.setLayoutParams(lpGuestDraguedByMe);
+          resizeAnimation.setDuration(DURATION);
+          liveRowView.startAnimation(resizeAnimation);
+          liveRowView.setLayoutParams(lp);
         } else {
           liveRowView.setLayoutParams(lp);
           flexboxLayout.addView(liveRowView);
