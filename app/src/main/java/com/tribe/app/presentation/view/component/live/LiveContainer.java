@@ -363,7 +363,6 @@ public class LiveContainer extends FrameLayout {
 
           if (offsetX <= 0) {
             springRight.setCurrentValue(currentOffsetRight).setAtRest();
-
             if (offsetX < -thresholdEnd && !isOpened) {
               openInviteView();
             } else {
@@ -530,7 +529,7 @@ public class LiveContainer extends FrameLayout {
     params.width = (int) (screenUtils.getWidthPx() + value);
     viewLive.setLayoutParams(params);
     viewLive.requestLayout();
-
+    viewInviteLive.setFadeInEffet(Math.abs(value / screenUtils.dpToPx(LiveInviteView.WIDTH)));
     viewShadowRight.setTranslationX(value);
   }
 
@@ -542,7 +541,6 @@ public class LiveContainer extends FrameLayout {
     if (currentDragPercent < 0) {
       return false;
     }
-
     currentOffsetRight = -computeOffsetWithTension(scrollRight, totalDragDistance);
     applyRight(currentOffsetRight);
 
@@ -565,7 +563,7 @@ public class LiveContainer extends FrameLayout {
   }
 
   private float getTotalDragDistance() {
-    return getHeight() / 4;
+    return getHeight() / 3;
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {

@@ -108,6 +108,10 @@ public class LiveInviteView extends FrameLayout {
 
   }
 
+  public void setFadeInEffet(float fadeInEffet) {
+    setAlpha(fadeInEffet);
+  }
+
   private void initRecyclerView() {
     layoutManager = new LiveInviteLayoutManager(getContext());
     recyclerViewFriends.setLayoutManager(layoutManager);
