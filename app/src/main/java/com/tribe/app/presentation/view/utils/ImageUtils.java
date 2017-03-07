@@ -120,9 +120,7 @@ import rx.schedulers.Schedulers;
       try {
         file = futureTarget.get();
       } catch (InterruptedException e) {
-        e.printStackTrace();
       } catch (ExecutionException e) {
-        e.printStackTrace();
       }
 
       Pair<Integer, File> pairFile = Pair.create(pair.first, file);

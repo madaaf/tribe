@@ -66,6 +66,7 @@ import timber.log.Timber;
   // VARIABLES
   private Map<String, String> headers;
   private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
+  private boolean hasSubscribed = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -122,6 +123,7 @@ import timber.log.Timber;
   }
 
   private void initWebSocket() {
+    hasSubscribed = false;
     webSocketConnection.setHeaders(headers);
     webSocketConnection.connect(BuildConfig.TRIBE_WSS);
 
@@ -129,7 +131,13 @@ import timber.log.Timber;
       webSocketState = newState;
 
       if (newState.equals(WebSocketConnection.STATE_CONNECTED)) {
-        initSubscriptions();
+        if (!hasSubscribed) {
+          hasSubscribed = true;
+          initSubscriptions();
+        }
+      } else if (newState.equals(WebSocketConnection.STATE_DISCONNECTED)) {
+        hasSubscribed = false;
+        if (subscriptions != null) subscriptions.clear();
       }
     }));
 
@@ -176,49 +184,50 @@ import timber.log.Timber;
         getApplicationContext().getString(R.string.subscription_inviteRemoved,
             hash + INVITE_REMOVED_SUFFIX));
 
-    Observable.zip(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
-      int count = 0;
+    subscriptions.add(
+        Observable.zip(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
+          int count = 0;
 
-      for (FriendshipRealm friendshipRealm : friendshipList) {
-        if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-          append(subscriptionsBuffer,
-              getApplicationContext().getString(R.string.subscription_userUpdated,
-                  hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
+          for (FriendshipRealm friendshipRealm : friendshipList) {
+            if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
+              append(subscriptionsBuffer,
+                  getApplicationContext().getString(R.string.subscription_userUpdated,
+                      hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
 
-          append(subscriptionsBuffer,
-              getApplicationContext().getString(R.string.subscription_friendshipUpdated,
-                  hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
+              append(subscriptionsBuffer,
+                  getApplicationContext().getString(R.string.subscription_friendshipUpdated,
+                      hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
 
-          count++;
-        }
-      }
-    }), Observable.just(userRealm.getMemberships()).doOnNext(membershipList -> {
-      int count = 0;
+              count++;
+            }
+          }
+        }), Observable.just(userRealm.getMemberships()).doOnNext(membershipList -> {
+          int count = 0;
 
-      for (MembershipRealm membershipRealm : membershipList) {
-        append(subscriptionsBuffer,
-            getApplicationContext().getString(R.string.subscription_groupUpdated,
-                hash + GROUP_SUFFIX + count, membershipRealm.getGroup().getId()));
+          for (MembershipRealm membershipRealm : membershipList) {
+            append(subscriptionsBuffer,
+                getApplicationContext().getString(R.string.subscription_groupUpdated,
+                    hash + GROUP_SUFFIX + count, membershipRealm.getGroup().getId()));
 
-        count++;
-      }
-    }), (friendshipRealmRealmList, membershipRealms) -> subscriptionsBuffer)
-        .subscribe(stringBuffer -> {
-          String body = subscriptionsBuffer.toString();
+            count++;
+          }
+        }), (friendshipRealmRealmList, membershipRealms) -> subscriptionsBuffer)
+            .subscribe(stringBuffer -> {
+              String body = subscriptionsBuffer.toString();
 
-          String userInfosFragment =
-              (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-                  R.string.userfragment_infos) : "");
+              String userInfosFragment =
+                  (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+                      R.string.userfragment_infos) : "");
 
-          String groupInfosFragment =
-              (body.contains("GroupInfos") ? "\n" + getApplicationContext().getString(
-                  R.string.groupfragment_info_members) : "");
+              String groupInfosFragment =
+                  (body.contains("GroupInfos") ? "\n" + getApplicationContext().getString(
+                      R.string.groupfragment_info_members) : "");
 
-          String req = getApplicationContext().getString(R.string.subscription,
-              subscriptionsBuffer.toString()) + userInfosFragment + groupInfosFragment;
+              String req = getApplicationContext().getString(R.string.subscription,
+                  subscriptionsBuffer.toString()) + userInfosFragment + groupInfosFragment;
 
-          webSocketConnection.send(req);
-        });
+              webSocketConnection.send(req);
+            }));
 
     subscriptions.add(jsonToModel.onInviteCreated()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
