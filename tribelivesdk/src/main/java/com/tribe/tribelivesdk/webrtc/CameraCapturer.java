@@ -54,6 +54,8 @@ import rx.subjects.PublishSubject;
           synchronized (stateLock) {
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
+                .doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getData(),
+                    frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp()))
                 //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
                 //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
                 //        frame.getHeight()), frame.getWidth(), frame.getHeight(),
