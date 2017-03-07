@@ -526,10 +526,7 @@ public class LiveView extends FrameLayout {
         latestView.startPulse();
       }));
 
-      tempSubscriptions.add(latestView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
-        removeFromInvites(tribeGuest.getId());
-        room.sendToPeers(getRemovedPayload(tribeGuest), true);
-      }).subscribe());
+      subscribeOnRemovingGuestFromLive(latestView);
     }));
   }
 
@@ -624,8 +621,16 @@ public class LiveView extends FrameLayout {
       addView(liveRowView, trg, PaletteGrid.getRandomColorExcluding(Color.BLACK), false);
       liveInviteMap.put(trg.getId(), liveRowView);
 
+      subscribeOnRemovingGuestFromLive(liveRowView);
       refactorNotifyButton();
     }
+  }
+
+  private void subscribeOnRemovingGuestFromLive(LiveRowView liveRowView) {
+    tempSubscriptions.add(liveRowView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
+      removeFromInvites(tribeGuest.getId());
+      room.sendToPeers(getRemovedPayload(tribeGuest), true);
+    }).subscribe());
   }
 
   public void setCameraEnabled(boolean enable) {
