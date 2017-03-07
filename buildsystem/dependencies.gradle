@@ -61,6 +61,8 @@ ext {
   blurKitVersion = '1.0.0'
   rxAppStateVersion = '2.0.0'
   webSocketVersion = '1.31'
+  easyRSVersion = '0.5.3'
+  guavaVersion = '19.0'
 
   //Testing
   robolectricVersion = '3.0'
@@ -127,7 +129,9 @@ ext {
                               timber                  : "com.jakewharton.timber:timber:${timberVersion}",
                               blurKit                 : "com.wonderkiln:blurkit:${blurKitVersion}",
                               rxAppState              : "com.jenzz:RxAppState:${rxAppStateVersion}",
-                              webSocket               : "com.neovisionaries:nv-websocket-client:${webSocketVersion}"]
+                              webSocket               : "com.neovisionaries:nv-websocket-client:${webSocketVersion}",
+                              easyRS                  : "io.github.silvaren:easyrs:${easyRSVersion}",
+                              guava                   : "com.google.guava:guava:${guavaVersion}"]
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",
                                   dexmaker          : "com.google.dexmaker:dexmaker:${dexmakerVersion}",

@@ -27,3 +27,10 @@
 -keep class **.R$* {
   <fields>;
 }
+
+-keep class android.support.v8.renderscript.** {
+    *;
+}
+-dontwarn android.support.v4.**
+-dontwarn android.support.v7.**
+-dontwarn android.support.v8.**

@@ -47,9 +47,9 @@ android {
   }
 
   defaultConfig {
-    renderscriptTargetApi globalConfiguration.getAt("androidTargetSdkVersion")
+    renderscriptTargetApi globalConfiguration.getAt("androidMinSdkVersion")
     renderscriptSupportModeEnabled true
-
+    
     minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
     targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
 

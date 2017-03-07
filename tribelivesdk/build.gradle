@@ -9,6 +9,9 @@ android {
   buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
 
   defaultConfig {
+    renderscriptTargetApi globalConfiguration.getAt("androidMinSdkVersion")
+    renderscriptSupportModeEnabled true
+
     minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
     targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
 
@@ -22,6 +25,7 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+  sourceSets { main { renderscript.srcDirs = ['src/main/rs/'] } }
 }
 
 dependencies {
@@ -37,6 +41,7 @@ dependencies {
   compile presentationDependencies.appCompat
   compile presentationDependencies.webSocket
   compile presentationDependencies.timber
+  compile presentationDependencies.guava
 
   apt presentationDependencies.daggerCompiler
   compile presentationDependencies.dagger

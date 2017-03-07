@@ -6,9 +6,7 @@ import com.tribe.tribelivesdk.view.PeerView;
 import java.util.List;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
-import org.webrtc.Camera1Enumerator;
 import org.webrtc.CameraEnumerationAndroid;
-import org.webrtc.CameraEnumerator;
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
@@ -78,7 +76,7 @@ public class TribeLiveLocalStream {
   }
 
   private void generateVideoCapturer() {
-    CameraEnumerator enumerator = new Camera1Enumerator(false);
+    com.tribe.tribelivesdk.webrtc.Camera1Enumerator enumerator = new com.tribe.tribelivesdk.webrtc.Camera1Enumerator(false);
 
     Timber.d("Creating capturer");
 
