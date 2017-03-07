@@ -603,7 +603,7 @@
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :ghost:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
-	<string name="profile_follow_us">Suivez-vous ! :metal:</string>
+	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>
 	
 	<!-- Carousel -->
