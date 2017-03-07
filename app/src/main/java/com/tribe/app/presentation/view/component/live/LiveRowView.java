@@ -39,6 +39,8 @@ public class LiveRowView extends FrameLayout {
 
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
+  @BindView(R.id.view_background) View backgroundView;
+
   // VARIABLES
   private Unbinder unbinder;
   private RemotePeerView remotePeerView;
@@ -174,6 +176,15 @@ public class LiveRowView extends FrameLayout {
 
   public void prepareForDrop() {
     viewWaiting.prepareForDrop();
+  }
+
+  public void setAlphaOnBackground(float alphaOnBackground) {
+    backgroundView.setAlpha(alphaOnBackground);
+    backgroundView.setVisibility(VISIBLE);
+
+    if (alphaOnBackground == 1) {
+      backgroundView.setVisibility(GONE);
+    }
   }
 
   public void showGuest(boolean hasCountDown) {

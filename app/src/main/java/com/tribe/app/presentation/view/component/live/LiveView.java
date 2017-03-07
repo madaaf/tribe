@@ -256,10 +256,25 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  private void setAlphaOnGuestWhenHideControls(boolean hiddenControls) {
+    if (hiddenControls) {
+      for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
+        if (!liveRowView.isWaiting()) {
+          liveRowView.setAlphaOnBackground(0.5f);
+        }
+      }
+    } else {
+      for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
+        liveRowView.setAlphaOnBackground(1f);
+      }
+    }
+  }
+
   private void initSubscriptions() {
     persistentSubscriptions.add(onHiddenControls().doOnNext(aBoolean -> {
       hiddenControls = aBoolean;
       viewLocalLive.hideControls(!hiddenControls);
+      setAlphaOnGuestWhenHideControls(hiddenControls);
     }).subscribe());
 
     persistentSubscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
