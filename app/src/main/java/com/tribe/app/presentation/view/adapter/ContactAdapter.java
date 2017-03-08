@@ -137,7 +137,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
   // OBSERVABLES
   public Observable<View> onClickAdd() {
-    return Observable.merge(searchResultGridAdapterDelegate.clickAdd(), // SOEF TODO ASK TIAGO
+    return Observable.merge(searchResultGridAdapterDelegate.clickAdd(),
         userListAdapterDelegate.clickAdd());
   }
 

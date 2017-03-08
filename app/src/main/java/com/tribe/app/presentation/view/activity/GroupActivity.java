@@ -374,7 +374,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     viewDetailsGroup =
         (GroupDetailsView) viewStack.pushWithParameter(R.layout.view_group_details, param);
 
-    subscriptions.add(viewDetailsGroup.onClickAddFriend().subscribe(user -> { // SOEF
+    subscriptions.add(viewDetailsGroup.onClickAddFriend().subscribe(user -> {
       if (user.isInvisible()) {
         DialogFactory.dialog(this, user.getDisplayName(),
             EmojiParser.demojizedText(getString(R.string.add_friend_error_invisible)),

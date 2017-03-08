@@ -56,7 +56,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class SearchView extends FrameLayout implements SearchMVPView {
 
@@ -180,7 +179,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
-          if (o instanceof SearchResult) { // SOEF
+          if (o instanceof SearchResult) {
             SearchResult searchResult = (SearchResult) o;
             if (searchResult.isInvisible()) {
               DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
@@ -191,7 +190,6 @@ public class SearchView extends FrameLayout implements SearchMVPView {
                   .filter(x -> x == true)
                   .subscribe(a -> {
                     onNavigateToSmsForInvites.onNext(null);
-                    Timber.e("SOEF " + "dok");
                   });
             } else if (searchResult.getFriendship() == null) {
               if (searchResult.getUsername() != null && !searchResult.getUsername()
