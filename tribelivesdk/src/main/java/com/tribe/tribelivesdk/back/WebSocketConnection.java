@@ -287,6 +287,10 @@ import timber.log.Timber;
     return (int) (Math.random() * (Math.min(30, (Math.pow(2, k) - 1)) * 1000));
   }
 
+  public void setShouldReconnect(boolean shouldReconnect) {
+    this.shouldReconnect = shouldReconnect;
+  }
+
   public void disconnect(boolean waitForComplete) {
     Timber.d("Disconnect");
 

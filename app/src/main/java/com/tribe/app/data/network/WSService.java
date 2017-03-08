@@ -19,6 +19,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,13 +118,18 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
-    headers.put(WebSocketConnection.USER_AGENT,
-        TribeApiUtils.getUserAgent(getApplicationContext()));
-    headers.put(WebSocketConnection.AUTHORIZATION,
-        accessToken.getTokenType() + " " + accessToken.getAccessToken());
-    headers.put(WebSocketConnection.VERSION, "13");
-    headers.put(WebSocketConnection.PROTOCOL, "graphql");
+    if (StringUtils.isEmpty(accessToken.getTokenType()) || StringUtils.isEmpty(
+        accessToken.getAccessToken())) {
+      webSocketConnection.setShouldReconnect(false);
+    } else {
+      headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
+      headers.put(WebSocketConnection.USER_AGENT,
+          TribeApiUtils.getUserAgent(getApplicationContext()));
+      headers.put(WebSocketConnection.AUTHORIZATION,
+          accessToken.getTokenType() + " " + accessToken.getAccessToken());
+      headers.put(WebSocketConnection.VERSION, "13");
+      headers.put(WebSocketConnection.PROTOCOL, "graphql");
+    }
   }
 
   private void initWebSocket() {

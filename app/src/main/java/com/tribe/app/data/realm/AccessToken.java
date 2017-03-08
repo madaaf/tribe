@@ -1,5 +1,6 @@
 package com.tribe.app.data.realm;
 
+import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.RealmObject;
 import javax.inject.Singleton;
 
@@ -19,7 +20,7 @@ import javax.inject.Singleton;
   }
 
   public String getTokenType() {
-    if (!Character.isUpperCase(token_type.charAt(0))) {
+    if (!StringUtils.isEmpty(token_type) && !Character.isUpperCase(token_type.charAt(0))) {
       token_type = Character.toString(token_type.charAt(0)).toUpperCase() + token_type.substring(1);
     }
 
