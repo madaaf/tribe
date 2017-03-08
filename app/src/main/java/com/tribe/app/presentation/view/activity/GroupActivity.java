@@ -41,6 +41,7 @@ import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
@@ -374,7 +375,18 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         (GroupDetailsView) viewStack.pushWithParameter(R.layout.view_group_details, param);
 
     subscriptions.add(viewDetailsGroup.onClickAddFriend().subscribe(user -> {
-      groupPresenter.createFriendship(user.getId());
+      if (user.isInvisible()) {
+        DialogFactory.dialog(this, user.getDisplayName(),
+            EmojiParser.demojizedText(getString(R.string.add_friend_error_invisible)),
+            getString(R.string.add_friend_error_invisible_invite_ios),
+            getString(R.string.add_friend_error_invisible_cancel))
+            .filter(x -> x == true)
+            .subscribe(a -> {
+              navigator.openSmsForInvite(this);
+            });
+      } else {
+        groupPresenter.createFriendship(user.getId());
+      }
     }));
 
     subscriptions.add(viewDetailsGroup.onHangLive().subscribe(friendship -> {

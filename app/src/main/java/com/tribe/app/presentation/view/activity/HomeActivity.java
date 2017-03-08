@@ -442,6 +442,10 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initSearch() {
+    subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
+      navigator.openSmsForInvite(this);
+    }));
+
     subscriptions.add(searchView.onShow().subscribe(aVoid -> {
       searchView.setVisibility(View.VISIBLE);
     }));
