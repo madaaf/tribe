@@ -36,8 +36,6 @@ public class BaseListViewHolder extends RecyclerView.ViewHolder {
 
   @BindView(R.id.btnAdd) public View btnAdd;
 
-  @BindView(R.id.imgGhost) public View imgGhost;
-
   @Nullable @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
 
   public GradientDrawable gradientDrawable;

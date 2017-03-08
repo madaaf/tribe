@@ -38,7 +38,7 @@ public class SearchResult implements Serializable, BaseListInterface {
   }
 
   @Override public boolean isActionAvailable(User currentUser) {
-    return !StringUtils.isEmpty(getDisplayName()) && !isMyself() && !invisible_mode;
+    return !StringUtils.isEmpty(getDisplayName()) && !isMyself();
   }
 
   @Override public boolean isInvisible() {

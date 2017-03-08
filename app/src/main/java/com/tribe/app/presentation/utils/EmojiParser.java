@@ -90,6 +90,7 @@ public class EmojiParser {
     IEmojiMap.put(":doughnut:", "\uD83C\uDF69");
     IEmojiMap.put(":cookie:", "\uD83C\uDF6A");
     IEmojiMap.put(":lollipop:", "\uD83C\uDF6D");
+    IEmojiMap.put(":see_no_evil:", "\uD83D\uDE48");
   }
 
   /**

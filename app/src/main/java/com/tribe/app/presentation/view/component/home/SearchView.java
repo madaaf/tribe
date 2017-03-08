@@ -56,6 +56,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class SearchView extends FrameLayout implements SearchMVPView {
 
@@ -107,6 +108,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onGone = PublishSubject.create();
   private PublishSubject<Void> onShow = PublishSubject.create();
+  private PublishSubject<Void> onNavigateToSmsForInvites = PublishSubject.create();
   private PublishSubject<Recipient> onHangLive = PublishSubject.create();
   private PublishSubject<ContactAB> onInvite = PublishSubject.create();
   private PublishSubject<Recipient> onUnblock = PublishSubject.create();
@@ -178,9 +180,21 @@ public class SearchView extends FrameLayout implements SearchMVPView {
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
-          if (o instanceof SearchResult) {
+          if (o instanceof SearchResult) { // SOEF
             SearchResult searchResult = (SearchResult) o;
-            if (searchResult.getFriendship() == null) {
+            if (searchResult.isInvisible()) {
+              DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
+                  EmojiParser.demojizedText(
+                      getContext().getString(R.string.add_friend_error_invisible)),
+                  context().getString(R.string.add_friend_error_invisible_invite_ios),
+                  context().getString(R.string.add_friend_error_invisible_cancel))
+                  .filter(x -> x == true)
+                  .subscribe(a -> {
+                    onNavigateToSmsForInvites.onNext(null);
+                    Timber.e("SOEF " + "dok");
+                  });
+              return;
+            } else if (searchResult.getFriendship() == null) {
               if (searchResult.getUsername() != null && !searchResult.getUsername()
                   .equals(user.getUsername())) {
                 searchPresenter.createFriendship(searchResult.getId());
@@ -452,6 +466,9 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   /////////////////////
   //   OBSERVABLES   //
   /////////////////////
+  public Observable<Void> onNavigateToSmsForInvites() {
+    return onNavigateToSmsForInvites;
+  }
 
   public Observable<Void> onShow() {
     return onShow;
