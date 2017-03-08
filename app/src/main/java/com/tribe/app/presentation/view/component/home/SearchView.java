@@ -193,7 +193,6 @@ public class SearchView extends FrameLayout implements SearchMVPView {
                     onNavigateToSmsForInvites.onNext(null);
                     Timber.e("SOEF " + "dok");
                   });
-              return;
             } else if (searchResult.getFriendship() == null) {
               if (searchResult.getUsername() != null && !searchResult.getUsername()
                   .equals(user.getUsername())) {

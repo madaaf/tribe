@@ -43,6 +43,11 @@ public class MemberListAdapterDelegate extends BaseListAdapterDelegate {
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     GroupMember groupMember = (GroupMember) baseListItem;
+    if (groupMember.getUser().isInvisibleMode()) {
+      vh.btnAdd.setOnClickListener(v -> {
+        clickAdd.onNext(vh.itemView);
+      });
+    }
     if (!groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
         animations.put(vh, animateProgressBar(vh));
@@ -50,7 +55,7 @@ public class MemberListAdapterDelegate extends BaseListAdapterDelegate {
         clickAdd.onNext(vh.itemView);
       });
     } else if (groupMember.isFriend()) {
-      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
+       vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
     }
   }
 

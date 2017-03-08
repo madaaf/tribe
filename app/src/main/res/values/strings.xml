@@ -450,7 +450,7 @@
 	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you\nwith friends. Check out our Terms &amp; Privacy for details.</string>
 	<string name="onboarding_queue_button_title">Search for my friends</string>
 	<string name="onboarding_queue_loading_title">Find your friends</string>
-	<string name="onboarding_queue_loading_description">Connecting with your friends...</string>
+	<string name="onboarding_queue_loading_description">Finding your friends...</string>
 	<string name="onboarding_queue_loading_friends">friends</string>
 	<string name="onboarding_queue_declined_title">You don\'t have access yet :pensive:</string>
 	<string name="onboarding_queue_declined_description">You need at least one friend\nto enter. Send invites! :dizzy:</string>
