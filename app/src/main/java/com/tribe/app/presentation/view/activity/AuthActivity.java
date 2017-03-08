@@ -557,6 +557,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   @Override public void goToConnected(User user) {
     this.user.copy(user);
 
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+
     viewCode.removeCountdown();
 
     subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
@@ -592,12 +594,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     Timber.d("Pin error");
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
   }
-
-  @Override public void pinSucceeded() {
-    Timber.d("Pin succeeded");
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
-  }
-
+  
   @Override public void showLoading() {
     if (pin == null) {
       viewPhoneNumber.showLoading();

@@ -143,9 +143,13 @@ public class LiveInviteView extends FrameLayout {
     int[] recyclerViewCoords = new int[2];
     recyclerViewFriends.getLocationOnScreen(recyclerViewCoords);
 
-    TileView view = (TileView) ViewUtils.findViewAt(recyclerViewFriends, TileView.class, (int) rawX,
-        (int) rawY);
-    return view;
+    View view = ViewUtils.findViewAt(recyclerViewFriends, TileView.class, (int) rawX, (int) rawY);
+
+    if (view instanceof TileView) {
+      return (TileView) view;
+    }
+
+    return null;
   }
 
   ////////////

@@ -66,8 +66,8 @@ import timber.log.Timber;
   }
 
   public void connect(final String url) {
-    if (state == STATE_CONNECTED || state == STATE_CONNECTING) {
-      Timber.e("WebSocket is already connected.");
+    if (state == STATE_CONNECTED) {
+      Timber.d("WebSocket is already connected.");
       return;
     }
 
@@ -262,7 +262,7 @@ import timber.log.Timber;
 
     webSocketClient.connectAsynchronously();
     webSocketClient.setAutoFlush(true);
-    webSocketClient.setPingInterval(5 * 1000); // 5 SECONDS
+    webSocketClient.setPingInterval(5 * 1000); // 60 SECONDS
     webSocketClient.setPingPayloadGenerator(() -> "{}".getBytes());
   }
 
@@ -287,6 +287,10 @@ import timber.log.Timber;
     return (int) (Math.random() * (Math.min(30, (Math.pow(2, k) - 1)) * 1000));
   }
 
+  public void setShouldReconnect(boolean shouldReconnect) {
+    this.shouldReconnect = shouldReconnect;
+  }
+
   public void disconnect(boolean waitForComplete) {
     Timber.d("Disconnect");
 
@@ -306,7 +310,7 @@ import timber.log.Timber;
               closeLock.wait(CLOSE_TIMEOUT);
               break;
             } catch (InterruptedException e) {
-              Timber.e("Wait error: " + e.toString());
+              Timber.d("Wait error: " + e.toString());
             }
           }
         }

@@ -161,7 +161,6 @@ public class AuthPresenter implements Presenter {
     }
 
     @Override public void onNext(AccessToken accessToken) {
-      if (accessToken != null) introView.pinSucceeded();
       getUserInfo();
     }
   }
