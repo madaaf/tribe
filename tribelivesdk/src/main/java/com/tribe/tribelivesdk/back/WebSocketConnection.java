@@ -67,7 +67,7 @@ import timber.log.Timber;
 
   public void connect(final String url) {
     if (state == STATE_CONNECTED) {
-      Timber.e("WebSocket is already connected.");
+      Timber.d("WebSocket is already connected.");
       return;
     }
 
