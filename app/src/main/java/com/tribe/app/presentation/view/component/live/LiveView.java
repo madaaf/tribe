@@ -33,6 +33,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -165,7 +166,8 @@ public class LiveView extends FrameLayout {
     if (timeStart > 0) {
       timeEnd = System.currentTimeMillis();
       long delta = timeEnd - timeStart;
-      duration = (double) delta / 1000.0;
+      duration = (double) delta / 60000.0;
+      duration = DoubleUtils.round(duration, 2);
     }
 
     tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
@@ -382,6 +384,7 @@ public class LiveView extends FrameLayout {
             .subscribe(intervalCount -> {
               totalSizeLive += nbLiveInRoom() + 1;
               averageCountLive = (double) totalSizeLive / (intervalCount + 1);
+              averageCountLive = DoubleUtils.round(averageCountLive, 2);
 
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
             }));
