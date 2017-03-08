@@ -63,10 +63,13 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     User user = (User) baseListItem;
-
     if (!user.isFriend() && !user.isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
         user.setAnimateAdd(true);
+        clickAdd.onNext(vh.itemView);
+      });
+    } else if (!user.isNewFriend() && !user.isFriend() && user.isInvisibleMode()) {
+      vh.btnAdd.setOnClickListener(v -> {
         clickAdd.onNext(vh.itemView);
       });
     } else if (user.isFriend()) {

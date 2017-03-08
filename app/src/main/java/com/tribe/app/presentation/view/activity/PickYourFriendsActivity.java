@@ -23,6 +23,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.FriendsPresenter;
 import com.tribe.app.presentation.mvp.view.FriendsMVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -176,8 +177,16 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
         .subscribe(o -> {
           if (o instanceof User) {
             User user = (User) o;
-
-            if (newFriends.contains(user)) {
+            if (user.isInvisible()) {
+              DialogFactory.dialog(this, user.getDisplayName(),
+                  EmojiParser.demojizedText(getString(R.string.add_friend_error_invisible)),
+                  getString(R.string.add_friend_error_invisible_invite_ios),
+                  getString(R.string.add_friend_error_invisible_cancel))
+                  .filter(x -> x == true)
+                  .subscribe(a -> {
+                    navigator.openSmsForInvite(this);
+                  });
+            } else if (newFriends.contains(user)) {
               user.setNewFriend(false);
               newFriends.remove(user);
             } else {

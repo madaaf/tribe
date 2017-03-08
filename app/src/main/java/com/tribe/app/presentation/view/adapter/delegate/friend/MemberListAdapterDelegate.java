@@ -47,15 +47,14 @@ public class MemberListAdapterDelegate extends BaseListAdapterDelegate {
       vh.btnAdd.setOnClickListener(v -> {
         clickAdd.onNext(vh.itemView);
       });
-    }
-    if (!groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) {
+    } else if (!groupMember.isFriend() && !groupMember.getUser().isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
         animations.put(vh, animateProgressBar(vh));
         groupMember.setAnimateAdd(true);
         clickAdd.onNext(vh.itemView);
       });
     } else if (groupMember.isFriend()) {
-       vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
+      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
     }
   }
 
