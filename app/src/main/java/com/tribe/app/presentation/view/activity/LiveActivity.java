@@ -78,10 +78,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
-      if (invite.getGroup() != null) {
-        builder.memberList(invite.getGroup().getMembers());
-      }
+      builder.memberList(invite.getMembers());
       builder.sessionId(invite.getRoomId());
+      builder.isInvite(true);
     } else if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
       builder.memberList(membership.getGroup().getMembers());
@@ -483,7 +482,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, null);
+                    false, false, null);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               }

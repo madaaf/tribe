@@ -88,8 +88,7 @@ public class Invite extends Recipient {
     return null;
   }
 
-  @Override
-  public boolean isGroup() {
+  @Override public boolean isGroup() {
     return group != null;
   }
 
@@ -127,5 +126,19 @@ public class Invite extends Recipient {
     }
 
     return pics;
+  }
+
+  public List<User> getMembers() {
+    List<User> userList = new ArrayList<>();
+
+    if (friendships != null) {
+      for (Friendship fr : friendships) {
+        userList.add(fr.getFriend());
+      }
+    } else if (group != null) {
+      userList.addAll(group.getMembers());
+    }
+
+    return userList;
   }
 }

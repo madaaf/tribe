@@ -162,13 +162,13 @@
     </string>
 
     <string name="lookup.phone" translatable="false">
-        lookupPhone%1$d : lookupByPhone (phones: [%2$s]) {
+        lookupPhone%1$s : lookupByPhone (phones: [%2$s]) {
             ...UserInfos
         }
     </string>
 
     <string name="lookup.facebook" translatable="false">
-        lookupFB%1$d : lookupByFbid (fbids: [%2$s]) {
+        lookupFB%1$s : lookupByFbid (fbids: [%2$s]) {
             ...UserInfos
         }
     </string>
@@ -192,7 +192,7 @@
     </string>
 
     <string name="createFriendship.input" translatable="false">
-        createFriendship%1$d : createFriendship(
+        createFriendship%1$s : createFriendship(
             friendship : {
                 category : \"main\",
                 status : DEFAULT,
@@ -205,11 +205,11 @@
     </string>
 
     <string name="removeFriendship.input" translatable="false">
-        removeFriendship%1$d : removeFriendship(friendshipId : \"%2$s\")
+        removeFriendship%1$s : removeFriendship(friendshipId : \"%2$s\")
     </string>
 
     <string name="howManyFriends.part" translatable="false">
-        howManyFriends%1$d : howManyFriends (phones: [%2$s])
+        howManyFriends%1$s : howManyFriends (phones: [%2$s])
     </string>
 
     <string name="groupfragment.info" translatable="false">

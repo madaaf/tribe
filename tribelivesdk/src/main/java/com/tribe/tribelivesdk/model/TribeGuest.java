@@ -16,6 +16,7 @@ public class TribeGuest {
   private String displayName;
   private String picture;
   private boolean isGroup;
+  private boolean isInvite;
   private List<String> memberPics;
 
   public TribeGuest(String id) {
@@ -23,11 +24,12 @@ public class TribeGuest {
   }
 
   public TribeGuest(String id, String displayName, String picture, boolean isGroup,
-      List<String> memberPics) {
+      boolean isInvite, List<String> memberPics) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
     this.isGroup = isGroup;
+    this.isInvite = isInvite;
     this.memberPics = memberPics;
   }
 
@@ -57,5 +59,13 @@ public class TribeGuest {
 
   public List<String> getMemberPics() {
     return memberPics;
+  }
+
+  public boolean isInvite() {
+    return isInvite;
+  }
+
+  public void setInvite(boolean invite) {
+    isInvite = invite;
   }
 }

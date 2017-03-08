@@ -110,7 +110,8 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
 
     viewAudio.setGuest(
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, null));
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+            null));
 
     txtLowConnectivity.setTranslationY(-translationY);
     txtLowConnectivity.setText(

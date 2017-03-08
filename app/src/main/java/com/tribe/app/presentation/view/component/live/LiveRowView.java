@@ -174,6 +174,10 @@ public class LiveRowView extends FrameLayout {
     return guest.isGroup();
   }
 
+  public boolean isInvite() {
+    return guest.isInvite();
+  }
+
   public void prepareForDrop() {
     viewWaiting.prepareForDrop();
   }
