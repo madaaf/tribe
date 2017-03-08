@@ -70,8 +70,14 @@ public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     SearchResult searchResult = (SearchResult) baseListItem;
-    if (!searchResult.isInvisible() && !searchResult.isMyself() && (searchResult.getFriendship()
-        == null || searchResult.getFriendship().isBlockedOrHidden())) {
+    boolean conditions = (!searchResult.isMyself() && (searchResult.getFriendship() == null
+        || searchResult.getFriendship().isBlockedOrHidden()));
+
+    if (searchResult.isInvisible()) {
+      vh.btnAdd.setOnClickListener(v -> {
+        clickAdd.onNext(vh.itemView);
+      });
+    } else if (!searchResult.isInvisible() && conditions) {
       vh.btnAdd.setOnClickListener(v -> {
         animations.put(vh, animateProgressBar(vh));
         searchResult.setAnimateAdd(true);
