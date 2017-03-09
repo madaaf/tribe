@@ -14,6 +14,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v8.renderscript.RenderScript;
+import com.tribe.tribelivesdk.rs.RSCompute;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import org.webrtc.CameraEnumerator;
@@ -54,8 +55,16 @@ import rx.subjects.PublishSubject;
           synchronized (stateLock) {
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
-                .doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getData(),
-                    frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp()))
+                .doOnNext(frame -> {
+                  //if (rsCompute != null) {
+                  //  capturerObserver.onByteBufferFrameCaptured(
+                  //      rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
+                  //      frame.getWidth(), frame.getHeight(), frame.getRotation(),
+                  //      frame.getTimestamp());
+                  //}
+                  capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
+                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+                })
                 //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
                 //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
                 //        frame.getHeight()), frame.getWidth(), frame.getHeight(),
@@ -181,6 +190,8 @@ import rx.subjects.PublishSubject;
         }
         cameraStatistics.addFrame();
 
+        if (rsCompute == null) rsCompute = new RSCompute(renderScript, width, height);
+
         if (!processing) onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
       }
     }
@@ -218,6 +229,7 @@ import rx.subjects.PublishSubject;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
   private RenderScript renderScript;
+  private RSCompute rsCompute;
 
   private final Object stateLock = new Object();
   private boolean sessionOpening; /* guarded by stateLock */
