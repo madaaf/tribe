@@ -58,6 +58,10 @@ import org.json.JSONObject;
 
   }
 
+  @Override public void increment(String properties, double value) {
+
+  }
+
   @Override public void clear() {
     branch.logout();
   }

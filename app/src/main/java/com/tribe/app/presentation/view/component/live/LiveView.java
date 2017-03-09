@@ -156,10 +156,6 @@ public class LiveView extends FrameLayout {
   public void onDestroy(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
-    if (hasJoined && averageCountLive > 1) {
-      state = TagManagerUtils.ENDED;
-    } else if (hasJoined && averageCountLive <= 1) state = TagManagerUtils.MISSED;
-
     double duration = 0.0D;
 
     if (timeStart > 0) {
@@ -167,6 +163,15 @@ public class LiveView extends FrameLayout {
       long delta = timeEnd - timeStart;
       duration = (double) delta / 60000.0;
       duration = DoubleUtils.round(duration, 2);
+    }
+
+    if (hasJoined && averageCountLive > 1) {
+      state = TagManagerUtils.ENDED;
+      tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
+      tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
+    } else if (hasJoined && averageCountLive <= 1) {
+      state = TagManagerUtils.MISSED;
+      tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
     }
 
     tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);

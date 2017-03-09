@@ -63,6 +63,10 @@ import org.json.JSONObject;
     mixpanelAPI.getPeople().increment(properties, 1);
   }
 
+  @Override public void increment(String properties, double value) {
+    mixpanelAPI.getPeople().increment(properties, value);
+  }
+
   @Override public void clear() {
     mixpanelAPI.reset();
   }

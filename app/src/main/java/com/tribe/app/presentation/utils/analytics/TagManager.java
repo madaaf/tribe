@@ -28,5 +28,7 @@ public interface TagManager {
 
   void increment(String properties);
 
+  void increment(String properties, double value);
+
   void clear();
 }
