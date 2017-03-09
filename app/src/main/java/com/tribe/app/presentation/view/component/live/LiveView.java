@@ -10,9 +10,10 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -32,6 +33,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
@@ -60,6 +62,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.R.dimen.nav_icon_size;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -105,6 +109,10 @@ public class LiveView extends FrameLayout {
   @BindView(R.id.btnCameraOff) View btnCameraOff;
 
   @BindView(R.id.btnFilter) View btnFilter;
+
+  @BindView(R.id.btnExpendLeft) View btnExpendLeft;
+
+  @BindView(R.id.layoutCameraControls) FrameLayout layoutCameraControl;
 
   @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
 
@@ -340,20 +348,19 @@ public class LiveView extends FrameLayout {
    */
 
   @OnClick(R.id.btnExpendRight) void onClickExpendRight() {
-    Timber.e("SOEF btnExpendRight");
     containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
     containerParamExtended.setVisibility(VISIBLE);
 
     containerParam.animate()
         .translationX((screenUtils.getWidthPx()))
-        .setInterpolator(new AccelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(1f))
         .alpha(0)
         .setDuration(DURATION)
         .start();
 
     containerParamExtended.animate()
         .setStartDelay(DURATION)
-        .setInterpolator(new DecelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(1f))
         .translationX(0)
         .alpha(1)
         .setDuration(DURATION)
@@ -361,10 +368,11 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnExpendLeft) void onClickExpendLeft() {
-    Timber.e("SOEF onClickExpendLefet");
+    containerParamExtended.setTranslationX(0);
+
     containerParamExtended.animate()
         .translationX(-screenUtils.getWidthPx())
-        .setInterpolator(new AccelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(1f))
         .alpha(0)
         .setDuration(DURATION)
         .start();
@@ -372,29 +380,77 @@ public class LiveView extends FrameLayout {
     containerParam.animate()
         .translationX(0)
         .setStartDelay(DURATION)
-        .setInterpolator(new DecelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(1f))
         .alpha(1)
         .setDuration(DURATION)
         .start();
   }
 
   @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
-    Timber.e("SOEF btnCameraEnable");
-    btnCameraOff.setVisibility(VISIBLE);
+    float xTranslation = getResources().getDimension(nav_icon_size);
 
+    btnCameraOff.setVisibility(VISIBLE);
     btnCameraOn.setVisibility(GONE);
-    btnFilter.setVisibility(GONE);
-    btnOrientationCamera.setVisibility(GONE);
+
+    Animation scaleAnimation =
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
+
+    btnFilter.setAnimation(scaleAnimation);
+    btnOrientationCamera.setAnimation(scaleAnimation);
+
+    TranslateAnimation xAnim = new TranslateAnimation(0, -xTranslation, 0, 0);
+    TranslateAnimation x2Anim = new TranslateAnimation(0, -xTranslation * 2, 0, 0);
+
+    xAnim.setDuration(DURATION);
+    x2Anim.setDuration(DURATION);
+
+    xAnim.setFillAfter(true);
+    x2Anim.setFillAfter(true);
+
+    scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
+
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        btnMicro.setAnimation(xAnim);
+        btnExpendLeft.setAnimation(x2Anim);
+      }
+    });
   }
 
   @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
-    Timber.e("SOEF onClickCameraDisable");
-
-    btnFilter.setVisibility(VISIBLE);
-    btnOrientationCamera.setVisibility(VISIBLE);
+    float xTranslation = getResources().getDimension(nav_icon_size);
 
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
+
+    Animation scaleAnimation =
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_appear);
+
+    TranslateAnimation xAnim = new TranslateAnimation(-xTranslation, 0, 0, 0);
+    TranslateAnimation x2Anim = new TranslateAnimation(-xTranslation * 2, 0, 0, 0);
+
+    xAnim.setDuration(DURATION);
+    x2Anim.setDuration(DURATION);
+
+    xAnim.setFillAfter(true);
+    x2Anim.setFillAfter(true);
+
+    btnMicro.setAnimation(xAnim);
+    btnExpendLeft.setAnimation(x2Anim);
+
+    xAnim.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        btnOrientationCamera.setAnimation(scaleAnimation);
+      }
+    });
+
+    x2Anim.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        btnFilter.setAnimation(scaleAnimation);
+      }
+    });
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
