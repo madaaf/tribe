@@ -110,6 +110,11 @@ import javax.inject.Singleton;
     branch.increment(properties);
   }
 
+  @Override public void increment(String properties, double value) {
+    mixpanel.increment(properties, value);
+    branch.increment(properties, value);
+  }
+
   @Override public void clear() {
     mixpanel.clear();
     branch.clear();

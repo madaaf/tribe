@@ -398,7 +398,7 @@ import timber.log.Timber;
       Context context) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS);
 
     httpClientBuilder.addInterceptor(chain -> {
       Request original = chain.request();
@@ -440,7 +440,7 @@ import timber.log.Timber;
 
     return new OkHttpClient.Builder().cache(cache)
         .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(20, TimeUnit.SECONDS);
+        .readTimeout(30, TimeUnit.SECONDS);
   }
 
   private void appendUserAgent(Context context, Request.Builder requestBuilder) {
