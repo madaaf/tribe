@@ -98,6 +98,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnNotify) View btnNotify;
 
+  @BindView(R.id.btnExpend) View btnExpend;
+
   @BindView(R.id.txtName) TextViewFont txtName;
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
