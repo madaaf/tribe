@@ -25,17 +25,19 @@
       />
 
   <FrameLayout
+      android:id="@+id/container_param_live"
       android:layout_width="match_parent"
       android:layout_height="@dimen/nav_icon_size"
       android:layout_gravity="bottom"
       android:visibility="visible"
       >
     <ImageView
-        android:id="@+id/btnExpend"
+        android:id="@+id/btnExpendRight"
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="start"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="10dp"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
         android:scaleType="centerInside"
@@ -70,27 +72,52 @@
 
 
   <LinearLayout
+      android:id="@+id/container_param_extended_live"
       android:layout_width="match_parent"
       android:layout_height="@dimen/nav_icon_size"
       android:layout_gravity="bottom"
       android:layout_marginBottom="5dp"
-      android:layout_marginLeft="10dp"
-      android:layout_marginRight="10dp"
+      android:layout_marginEnd="10dp"
+      android:layout_marginStart="10dp"
       android:orientation="horizontal"
-      android:visibility="gone"
+      android:visibility="invisible"
       >
 
-    <ImageView
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
+    <FrameLayout
+        android:id="@+id/layoutCameraControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_camera_on_live"
-        />
+        >
+
+      <ImageView
+          android:id="@+id/btnCameraOff"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:background="@drawable/selectable_button_oval_light"
+          android:clickable="true"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_camera_off_live"
+          android:visibility="invisible"
+          />
+
+      <ImageView
+          android:id="@+id/btnCameraOn"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:background="@drawable/selectable_button_oval_light"
+          android:clickable="true"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_camera_on_live"
+          android:visibility="visible"
+          />
+
+    </FrameLayout>
+
 
     <ImageView
+        android:id="@+id/btnOrientationCamera"
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_weight="1"
@@ -101,6 +128,7 @@
         />
 
     <ImageView
+        android:id="@+id/btnMicro"
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_weight="1"
@@ -111,6 +139,7 @@
         />
 
     <ImageView
+        android:id="@+id/btnFilter"
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_weight="1"
@@ -122,8 +151,10 @@
 
 
     <ImageView
+        android:id="@+id/btnExpendLeft"
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
+        android:layout_weight="1"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
         android:scaleType="centerInside"
