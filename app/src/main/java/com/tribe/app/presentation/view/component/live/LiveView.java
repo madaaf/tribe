@@ -10,9 +10,11 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -98,7 +100,19 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnNotify) View btnNotify;
 
-  @BindView(R.id.btnExpend) View btnExpend;
+  @BindView(R.id.btnCameraOn) View btnCameraOn;
+
+  @BindView(R.id.btnCameraOff) View btnCameraOff;
+
+  @BindView(R.id.btnFilter) View btnFilter;
+
+  @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
+
+  @BindView(R.id.btnMicro) View btnMicro;
+
+  @BindView(R.id.container_param_live) FrameLayout containerParam;
+
+  @BindView(R.id.container_param_extended_live) LinearLayout containerParamExtended;
 
   @BindView(R.id.txtName) TextViewFont txtName;
 
@@ -319,6 +333,68 @@ public class LiveView extends FrameLayout {
       }));
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
     }
+  }
+
+  /**
+   * SOEF
+   */
+
+  @OnClick(R.id.btnExpendRight) void onClickExpendRight() {
+    Timber.e("SOEF btnExpendRight");
+    containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
+    containerParamExtended.setVisibility(VISIBLE);
+
+    containerParam.animate()
+        .translationX((screenUtils.getWidthPx()))
+        .setInterpolator(new AccelerateInterpolator())
+        .alpha(0)
+        .setDuration(DURATION)
+        .start();
+
+    containerParamExtended.animate()
+        .setStartDelay(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .translationX(0)
+        .alpha(1)
+        .setDuration(DURATION)
+        .start();
+  }
+
+  @OnClick(R.id.btnExpendLeft) void onClickExpendLeft() {
+    Timber.e("SOEF onClickExpendLefet");
+    containerParamExtended.animate()
+        .translationX(-screenUtils.getWidthPx())
+        .setInterpolator(new AccelerateInterpolator())
+        .alpha(0)
+        .setDuration(DURATION)
+        .start();
+
+    containerParam.animate()
+        .translationX(0)
+        .setStartDelay(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .alpha(1)
+        .setDuration(DURATION)
+        .start();
+  }
+
+  @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
+    Timber.e("SOEF btnCameraEnable");
+    btnCameraOff.setVisibility(VISIBLE);
+
+    btnCameraOn.setVisibility(GONE);
+    btnFilter.setVisibility(GONE);
+    btnOrientationCamera.setVisibility(GONE);
+  }
+
+  @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
+    Timber.e("SOEF onClickCameraDisable");
+
+    btnFilter.setVisibility(VISIBLE);
+    btnOrientationCamera.setVisibility(VISIBLE);
+
+    btnCameraOff.setVisibility(GONE);
+    btnCameraOn.setVisibility(VISIBLE);
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
