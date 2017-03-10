@@ -14,10 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -50,13 +48,13 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
-  @BindView(R.id.btnCameraEnable) ImageView btnCameraEnable;
+/*  @BindView(R.id.btnCameraEnable) ImageView btnCameraEnable;
 
   @BindView(R.id.btnCameraDisable) ImageView btnCameraDisable;
 
   @BindView(R.id.btnCameraSwitch) ImageView btnCameraSwitch;
 
-  @BindView(R.id.layoutCameraControls) ViewGroup layoutCameraControls;
+  @BindView(R.id.layoutCameraControls) ViewGroup layoutCameraControls;*/
 
   @BindView(R.id.txtLowConnectivity) TextViewFont txtLowConnectivity;
 
@@ -170,9 +168,9 @@ public class LiveLocalView extends FrameLayout {
         .inject(this);
   }
 
-  private void switchCamera() {
+  public void switchCamera() {
     if (!hiddenControls) {
-      rotateSwitchCamera();
+      //rotateSwitchCamera();
       onSwitchCamera.onNext(null);
     }
   }
@@ -181,7 +179,7 @@ public class LiveLocalView extends FrameLayout {
   //   CLICKS    //
   /////////////////
 
-  @OnClick(R.id.btnCameraEnable) void clickEnableCamera() {
+/*  @OnClick(R.id.btnCameraEnable) void clickEnableCamera() {
     if (!hiddenControls) {
       enableCamera(true);
     }
@@ -200,7 +198,7 @@ public class LiveLocalView extends FrameLayout {
   @Override public boolean onTouchEvent(MotionEvent event) {
     gestureDetector.onTouchEvent(event);
     return super.onTouchEvent(event);
-  }
+  }*/
 
   ////////////////
   // ANIMATIONS //
@@ -209,8 +207,10 @@ public class LiveLocalView extends FrameLayout {
   public void enableCamera(boolean animate) {
     cameraEnabled = true;
     onEnableCamera.onNext(cameraEnabled);
+    /*
     alpha(btnCameraSwitch, 1);
     animateEnableCamera(cameraEnabled);
+    */
 
     UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
@@ -226,8 +226,8 @@ public class LiveLocalView extends FrameLayout {
   public void disableCamera(boolean animate) {
     cameraEnabled = false;
     onEnableCamera.onNext(cameraEnabled);
-    alpha(btnCameraSwitch, 0);
-    animateEnableCamera(cameraEnabled);
+/*    alpha(btnCameraSwitch, 0);
+    animateEnableCamera(cameraEnabled);*/
 
     UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
       @Override public void onAnimationStart(Animator animation) {
@@ -240,15 +240,15 @@ public class LiveLocalView extends FrameLayout {
     });
   }
 
-  private void animateEnableCamera(boolean enabled) {
-    if (enabled) {
-      alpha(btnCameraEnable, 0);
-      alpha(btnCameraDisable, 1);
-    } else {
-      alpha(btnCameraDisable, 0);
-      alpha(btnCameraEnable, 1);
-    }
-  }
+  //private void animateEnableCamera(boolean enabled) {
+  //  if (enabled) {
+  //    alpha(btnCameraEnable, 0);
+  //    alpha(btnCameraDisable, 1);
+  //  } else {
+  //    alpha(btnCameraDisable, 0);
+  //    alpha(btnCameraEnable, 1);
+  //  }
+  //}
 
   private void alpha(View v, int alpha) {
     v.animate().alpha(alpha).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
@@ -281,12 +281,12 @@ public class LiveLocalView extends FrameLayout {
         .start();
   }
 
-  private void rotateSwitchCamera() {
+/*  private void rotateSwitchCamera() {
     btnCameraSwitch.animate()
         .rotation(btnCameraSwitch.getRotation() == 0 ? 180 : 0)
         .setDuration(DURATION)
         .start();
-  }
+  }*/
 
   /////////////////
   //   PUBLIC    //
@@ -305,8 +305,8 @@ public class LiveLocalView extends FrameLayout {
     int scale = hiddenControls ? 0 : 1;
     this.hiddenControls = hiddenControls;
 
-    scale(layoutCameraControls, scale);
-    scale(btnCameraSwitch, scale);
+/*    scale(layoutCameraControls, scale);
+    scale(btnCameraSwitch, scale);*/
   }
 
   //////////////////
