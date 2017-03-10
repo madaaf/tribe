@@ -48,6 +48,8 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
+  @BindView(R.id.viewMicroDisabled) FrameLayout viewMicroDisabled;
+
 /*  @BindView(R.id.btnCameraEnable) ImageView btnCameraEnable;
 
   @BindView(R.id.btnCameraDisable) ImageView btnCameraDisable;
@@ -170,7 +172,6 @@ public class LiveLocalView extends FrameLayout {
 
   public void switchCamera() {
     if (!hiddenControls) {
-      //rotateSwitchCamera();
       onSwitchCamera.onNext(null);
     }
   }
@@ -203,6 +204,14 @@ public class LiveLocalView extends FrameLayout {
   ////////////////
   // ANIMATIONS //
   ////////////////
+
+  public void enableMicro(boolean isMicroActivated) {
+    if (!isMicroActivated) {
+      viewMicroDisabled.setVisibility(VISIBLE);
+    } else {
+      viewMicroDisabled.setVisibility(GONE);
+    }
+  }
 
   public void enableCamera(boolean animate) {
     cameraEnabled = true;
@@ -315,10 +324,6 @@ public class LiveLocalView extends FrameLayout {
 
   public Observable<Boolean> onEnableCamera() {
     return onEnableCamera;
-  }
-
-  public Observable<Void> onSwitchCamera() {
-    return onSwitchCamera;
   }
 
   public Observable<Void> onClick() {

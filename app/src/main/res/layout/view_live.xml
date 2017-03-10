@@ -136,7 +136,7 @@
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_micro_off_live"
+        android:src="@drawable/picto_micro_on_live"
         />
 
     <ImageView

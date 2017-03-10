@@ -78,7 +78,8 @@ public class LiveView extends FrameLayout {
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
-  private static boolean isExpended = false;
+  private static boolean isParamExpended = false;
+  private static boolean isMicroActivated = false;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -117,7 +118,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
 
-  @BindView(R.id.btnMicro) View btnMicro;
+  @BindView(R.id.btnMicro) ImageView btnMicro;
 
   @BindView(R.id.container_param_live) FrameLayout containerParam;
 
@@ -157,7 +158,6 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
-  private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -348,7 +348,8 @@ public class LiveView extends FrameLayout {
   /**
    * SOEF
    */
-  private void rotateSwitchCamera() {
+
+  @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera() {
     btnOrientationCamera.animate()
         .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
         .setDuration(DURATION)
@@ -356,8 +357,15 @@ public class LiveView extends FrameLayout {
     viewLocalLive.switchCamera();
   }
 
-  @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera() {
-    rotateSwitchCamera();
+  @OnClick(R.id.btnMicro) void onClickMicro() {
+    if (isMicroActivated) {
+      isMicroActivated = false;
+      btnMicro.setImageResource(R.drawable.picto_micro_off_live);
+    } else {
+      isMicroActivated = true;
+      btnMicro.setImageResource(R.drawable.picto_micro_on_live);
+    }
+    viewLocalLive.enableMicro(isMicroActivated);
   }
 
   private void setXTranslateAnimation(View view, float translation) {
@@ -370,8 +378,8 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnExpend) void onClickExpendRight() {
-    if (!isExpended) {
-      isExpended = true;
+    if (!isParamExpended) {
+      isParamExpended = true;
 
       int widthExtended = containerParamExtended.getWidth();
       containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
@@ -383,7 +391,7 @@ public class LiveView extends FrameLayout {
       setXTranslateAnimation(containerParam, widthExtended);
       setXTranslateAnimation(btnExpend, widthExtended);
     } else {
-      isExpended = false;
+      isParamExpended = false;
       containerParamExtended.setTranslationX(0);
       btnExpend.setImageResource(R.drawable.picto_extend_right_live);
 

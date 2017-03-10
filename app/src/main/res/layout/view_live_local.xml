@@ -58,6 +58,27 @@
       android:src="@drawable/picto_camera_switch"
       />
 -->
+
+  <FrameLayout
+      android:id="@+id/viewMicroDisabled"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/black.opacity.50"
+      android:visibility="gone"
+      >
+
+    <ImageView
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_gravity="center"
+        android:background="@drawable/selectable_button_oval_light"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_micro_off_shadow"
+        />
+
+  </FrameLayout>
+
+
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtLowConnectivity"
       android:layout_width="match_parent"
