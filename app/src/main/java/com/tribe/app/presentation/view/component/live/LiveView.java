@@ -157,6 +157,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
+  private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -347,6 +348,17 @@ public class LiveView extends FrameLayout {
   /**
    * SOEF
    */
+  private void rotateSwitchCamera() {
+    btnOrientationCamera.animate()
+        .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
+        .setDuration(DURATION)
+        .start();
+    viewLocalLive.switchCamera();
+  }
+
+  @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera() {
+    rotateSwitchCamera();
+  }
 
   private void setXTranslateAnimation(View view, float translation) {
     view.animate()
