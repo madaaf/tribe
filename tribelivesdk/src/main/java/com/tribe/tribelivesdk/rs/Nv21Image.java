@@ -11,6 +11,7 @@ import com.tribe.tribelivesdk.rs.base.RSToolboxContext;
 import com.tribe.tribelivesdk.rs.params.ColorMatrixParams;
 import com.tribe.tribelivesdk.scripts.ScriptC_channel;
 import com.tribe.tribelivesdk.scripts.ScriptC_uvencode;
+import timber.log.Timber;
 
 public class Nv21Image {
 
@@ -45,6 +46,9 @@ public class Nv21Image {
         ColorMatrix.applyMatrix(rs, croppedBitmap, ColorMatrixParams.rgbToNv21Matrix(),
             new Float4(0.0f, 0.5f, 0.5f, 0.0f));
 
+    long stepBitmap = System.nanoTime();
+    Timber.d("RS bitmap: " + (stepBitmap - startTime) / 1000000.0f + " ms");
+
     RSToolboxContext bitmapRSContext = RSToolboxContext.createFromBitmap(rs, yuvImage);
     ScriptC_channel channelScript = new ScriptC_channel(bitmapRSContext.rs);
     Type outType =
@@ -53,6 +57,9 @@ public class Nv21Image {
     Allocation aout = Allocation.createTyped(bitmapRSContext.rs, outType);
     channelScript.forEach_channelR(bitmapRSContext.ain, aout);
     int size = croppedBitmap.getWidth() * croppedBitmap.getHeight();
+
+    long stepChannel = System.nanoTime();
+    Timber.d("RS time channel: " + (stepChannel - stepBitmap) / 1000000.0f + " ms");
 
     byte[] yByteArray;
     if (dstArray == null) {
@@ -74,6 +81,9 @@ public class Nv21Image {
     resizeScript.forEach_bicubic(resizeaout);
     resizeaout.copyTo(resizedBmp);
 
+    long stepResizeOut = System.nanoTime();
+    Timber.d("RS resizeOut: " + (stepResizeOut - stepChannel) / 1000000.0f + " ms");
+
     Allocation resizedIn = Allocation.createFromBitmap(bitmapRSContext.rs, resizedBmp);
     ScriptC_uvencode encodeScript = new ScriptC_uvencode(bitmapRSContext.rs);
     Type uvtype = Type.createX(bitmapRSContext.rs, Element.U8(bitmapRSContext.rs), size / 2);
@@ -87,6 +97,9 @@ public class Nv21Image {
 
     uvAllocation.copyTo(uvByteArray);
     System.arraycopy(uvByteArray, 0, yByteArray, size, uvByteArray.length);
+
+    long stepResizeIn = System.nanoTime();
+    Timber.d("RS resizeIn: " + (stepResizeIn - stepResizeOut) / 1000000.0f + " ms");
 
     //Log.d("NV21", "Conversion to NV21: " + (System.currentTimeMillis() - startTime) + "ms");
     return new Nv21Image(yByteArray, yuvImage.getWidth(), yuvImage.getHeight());

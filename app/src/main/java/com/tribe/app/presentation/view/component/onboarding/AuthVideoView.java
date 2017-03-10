@@ -76,7 +76,7 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
     viewVideoScalable.setSurfaceTextureListener(this);
 
     mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(),
-        "asset:///video/onboarding_video.mp4").autoStart(true)
+        "asset:///video/onboarding_video.mp4").autoStart(false)
         .looping(true)
         .isLocal(true)
         .forceLegacy(true)

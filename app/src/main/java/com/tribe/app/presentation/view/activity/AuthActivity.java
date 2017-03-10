@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -131,6 +132,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
+
     if (savedInstanceState != null) {
       if (savedInstanceState.getParcelable(DEEP_LINK) != null) {
         deepLink = savedInstanceState.getParcelable(DEEP_LINK);
@@ -172,7 +174,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
     init();
     initSmsListener();
-    screenUtils.hideKeyboard(this);
     manageDeepLink(getIntent());
 
     if (lastVersion.get() != -1 && !lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
@@ -190,6 +191,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
   @Override protected void onResume() {
     super.onResume();
+    showPhoneInput(false);
   }
 
   @Override protected void onPause() {
@@ -255,6 +257,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
     layoutBottom.setTranslationY(screenUtils.getHeightPx());
     viewCode.setTranslationX(screenUtils.getWidthPx());
+
+    viewPhoneNumber.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            viewPhoneNumber.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            showPhoneInput(true);
+          }
+        });
 
     subscriptions.add(Observable.timer(BuildConfig.DEBUG ? 5000 : 5000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -366,7 +376,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     showPhoneInput(true);
   }
 
+  @OnClick(R.id.viewBackground) void clickBackground() {
+    viewPhoneNumber.hideKeyboard();
+  }
+
   @OnClick(R.id.viewVideoAuth) void endVideo() {
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_VideoSkipped);
     showPhoneInput(true);
   }
 
@@ -375,17 +390,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     AnimationUtils.fadeOut(btnSkip, animate ? DURATION : 0);
     viewBackground.setAlpha(0);
     viewBackground.setVisibility(View.VISIBLE);
+    showPlay();
     AnimationUtils.fadeIn(viewBackground, animate ? DURATION : 0);
     btnSkip.setEnabled(false);
     showLayoutBottom(animate);
   }
 
-  @OnClick(R.id.viewBackground) void showPlay() {
+  void showPlay() {
     if (pin == null) {
       btnPlay.postDelayed(() -> AnimationUtils.fadeIn(btnPlay, DURATION), DURATION_FAST);
-      viewBackground.setEnabled(false);
       btnPlay.setEnabled(true);
-      viewPhoneNumber.hideKeyboard();
     }
   }
 
@@ -432,6 +446,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   private void hideViewPhoneNumber(boolean animate) {
+    viewBackground.setEnabled(false);
+    btnPlay.setEnabled(false);
+    
     viewPhoneNumber.animate()
         .translationX(-screenUtils.getWidthPx())
         .setDuration(animate ? DURATION : 0)
@@ -443,10 +460,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     txtMessage.setText(R.string.onboarding_step_phone);
     viewPhoneNumber.hideLoading();
 
+    viewBackground.setEnabled(true);
+    btnPlay.setEnabled(true);
     viewPhoneNumber.animate().translationX(0).setDuration(DURATION).start();
   }
 
   private void hideViewCode() {
+    AnimationUtils.fadeIn(btnPlay, DURATION_FAST);
     cleanCountdown();
 
     viewCode.animate().translationX(screenUtils.getWidthPx()).setDuration(DURATION).start();
@@ -594,7 +614,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     Timber.d("Pin error");
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
   }
-  
+
   @Override public void showLoading() {
     if (pin == null) {
       viewPhoneNumber.showLoading();

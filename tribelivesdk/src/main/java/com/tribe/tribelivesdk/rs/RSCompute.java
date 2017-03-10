@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
+import android.support.v8.renderscript.Matrix3f;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicColorMatrix;
 import android.support.v8.renderscript.ScriptIntrinsicYuvToRGB;
@@ -41,6 +42,15 @@ import timber.log.Timber;
 public class RSCompute {
 
   RenderScript renderScript;
+
+  //private static final Matrix4f TRANSFORMATION_MATRIX = new Matrix4f(new float[] {
+  //    -0.33f, -0.33f, -0.33f, 1.0f, -0.59f, -0.59f, -0.59f, 1.0f, -0.11f, -0.11f, -0.11f, 1.0f,
+  //    1.0f, 1.0f, 1.0f, 1.0f
+  //});
+
+  private static final Matrix3f TRANSFORMATION_MATRIX = new Matrix3f(new float[] {
+      0.299f, 0.587f, 0.114f, -0.16874f, -0.33126f, 0.5f, 0.5f, -0.41869f, -0.08131f
+  });
 
   // Script vars
   ScriptIntrinsicYuvToRGB scriptIntrinsicYuvToRGB;
@@ -56,17 +66,17 @@ public class RSCompute {
   Allocation allocationYUV;
   Allocation rgbToYuvAllocation;
   Allocation allocationOut;
+  Allocation allocationOutYuv;
   Allocation allocationIn;
 
   ///////////////
   //create bitmap for output.
   Bitmap outputBitmap;
   ScriptIntrinsicColorMatrix greyScaleMatrix;
+  ScriptIntrinsicColorMatrix rgbToYuv;
 
   // Funcs
   public byte[] compute(byte[] dataIn, int width, int height) {
-    byte[] dataOut = new byte[dataIn.length];
-
     long stepStart = System.nanoTime();
 
     allocationYUV.copyFrom(dataIn);
@@ -86,11 +96,11 @@ public class RSCompute {
 
     allocationOut.copyTo(outputBitmap);
 
-    Nv21Image nv21Output = Nv21Image.bitmapToNV21(renderScript, outputBitmap);
-    System.arraycopy(nv21Output.nv21ByteArray, 0, dataOut, 0, nv21Output.nv21ByteArray.length);
+    byte[] dataOut = new byte[(int) (outputBitmap.getWidth() * outputBitmap.getHeight() * 1.5f)];
+    Nv21Image.bitmapToNV21(renderScript, outputBitmap, dataOut);
 
-    long stepBitmap = System.nanoTime();
-    Timber.d("RS time bitmap : " + (stepBitmap - stepGreyScale) / 1000000.0f + " ms");
+    long stepCopyToArray = System.nanoTime();
+    Timber.d("RS time copy : " + (stepCopyToArray - stepGreyScale) / 1000000.0f + " ms");
 
     renderScript.finish();
 
@@ -108,6 +118,7 @@ public class RSCompute {
     Type.Builder typeYUV = new Type.Builder(renderScript,
         Element.createPixel(renderScript, Element.DataType.UNSIGNED_8, Element.DataKind.PIXEL_YUV));
     typeYUV.setYuvFormat(ImageFormat.NV21);
+
     // allocation for the YUV input from the camera
     allocationYUV = Allocation.createTyped(renderScript, typeYUV.setX(width).setY(height).create(),
         android.renderscript.Allocation.USAGE_SCRIPT);
@@ -115,6 +126,7 @@ public class RSCompute {
     //create the instance of the YUV2RGB (built-in) RS intrinsic
     scriptIntrinsicYuvToRGB =
         ScriptIntrinsicYuvToRGB.create(renderScript, Element.U8_4(renderScript));
+
 
    /* scriptCMain.set_aIn(mainAllocation);
     scriptCMain.set_sizeIn(new Int2(width, height)); // Tells the script camera preview size
@@ -132,10 +144,19 @@ public class RSCompute {
 
     // Create an allocation (which is memory abstraction in the Renderscript) that corresponds to the outputBitmap
     allocationOut = Allocation.createFromBitmap(renderScript, outputBitmap);
+
+    allocationOutYuv =
+        Allocation.createSized(renderScript, Element.U8(renderScript), width * height);
+
     // allocationIn and allocationBlur matches the allocationOut
     allocationIn = Allocation.createTyped(renderScript, allocationOut.getType(),
         android.renderscript.Allocation.USAGE_SCRIPT);
+
     greyScaleMatrix = ScriptIntrinsicColorMatrix.create(renderScript, allocationOut.getElement());
     greyScaleMatrix.setGreyscale();
+
+    scriptColorMatrixRGBToYuv =
+        ScriptIntrinsicColorMatrix.create(renderScript, allocationOut.getElement());
+    scriptColorMatrixRGBToYuv.setColorMatrix(TRANSFORMATION_MATRIX);
   }
 }
