@@ -15,6 +15,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,7 +78,7 @@ public class LiveView extends FrameLayout {
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
-
+  private static boolean isExpended = false;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -110,7 +111,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnFilter) View btnFilter;
 
-  @BindView(R.id.btnExpendLeft) View btnExpendLeft;
+  @BindView(R.id.btnExpend) ImageView btnExpend;
 
   @BindView(R.id.layoutCameraControls) FrameLayout layoutCameraControl;
 
@@ -347,50 +348,43 @@ public class LiveView extends FrameLayout {
    * SOEF
    */
 
-  @OnClick(R.id.btnExpendRight) void onClickExpendRight() {
-    containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
-    containerParamExtended.setVisibility(VISIBLE);
-
-    containerParam.animate()
-        .translationX((screenUtils.getWidthPx()))
+  private void setXTranslateAnimation(View view, float translation) {
+    view.animate()
+        .translationX(translation)
         .setInterpolator(new OvershootInterpolator(1f))
-        .alpha(0)
-        .setDuration(DURATION)
-        .start();
-
-    containerParamExtended.animate()
-        .setStartDelay(DURATION)
-        .setInterpolator(new OvershootInterpolator(1f))
-        .translationX(0)
         .alpha(1)
         .setDuration(DURATION)
         .start();
   }
 
-  @OnClick(R.id.btnExpendLeft) void onClickExpendLeft() {
-    containerParamExtended.setTranslationX(0);
+  @OnClick(R.id.btnExpend) void onClickExpendRight() {
+    if (!isExpended) {
+      isExpended = true;
 
-    containerParamExtended.animate()
-        .translationX(-screenUtils.getWidthPx())
-        .setInterpolator(new OvershootInterpolator(1f))
-        .alpha(0)
-        .setDuration(DURATION)
-        .start();
+      int widthExtended = containerParamExtended.getWidth();
+      containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
+      containerParamExtended.setVisibility(VISIBLE);
 
-    containerParam.animate()
-        .translationX(0)
-        .setStartDelay(DURATION)
-        .setInterpolator(new OvershootInterpolator(1f))
-        .alpha(1)
-        .setDuration(DURATION)
-        .start();
+      btnExpend.setImageResource(R.drawable.picto_extend_left_live);
+
+      setXTranslateAnimation(containerParamExtended, 0);
+      setXTranslateAnimation(containerParam, widthExtended);
+      setXTranslateAnimation(btnExpend, widthExtended);
+    } else {
+      isExpended = false;
+      containerParamExtended.setTranslationX(0);
+      btnExpend.setImageResource(R.drawable.picto_extend_right_live);
+
+      setXTranslateAnimation(containerParamExtended, -screenUtils.getWidthPx());
+      setXTranslateAnimation(containerParam, 0);
+      setXTranslateAnimation(btnExpend, 0);
+    }
   }
 
   @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
     float xTranslation = getResources().getDimension(nav_icon_size);
-
-    btnCameraOff.setVisibility(VISIBLE);
     btnCameraOn.setVisibility(GONE);
+    btnCameraOff.setVisibility(VISIBLE);
 
     Animation scaleAnimation =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
@@ -411,8 +405,9 @@ public class LiveView extends FrameLayout {
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
+        containerParam.setVisibility(GONE);
+        btnExpend.setAnimation(x2Anim);
         btnMicro.setAnimation(xAnim);
-        btnExpendLeft.setAnimation(x2Anim);
       }
     });
   }
@@ -435,8 +430,9 @@ public class LiveView extends FrameLayout {
     xAnim.setFillAfter(true);
     x2Anim.setFillAfter(true);
 
+    containerParam.setVisibility(VISIBLE);
     btnMicro.setAnimation(xAnim);
-    btnExpendLeft.setAnimation(x2Anim);
+    btnExpend.setAnimation(x2Anim);
 
     xAnim.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationEnd(Animation animation) {

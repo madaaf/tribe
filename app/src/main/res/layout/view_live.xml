@@ -24,32 +24,34 @@
       android:src="@drawable/picto_leave_live"
       />
 
+
+  <ImageView
+      android:id="@+id/btnExpend"
+      android:layout_width="@dimen/nav_icon_size"
+      android:layout_height="@dimen/nav_icon_size"
+      android:layout_gravity="start|bottom"
+      android:layout_marginBottom="5dp"
+      android:layout_marginStart="10dp"
+      android:background="@drawable/selectable_button_oval_light"
+      android:clickable="true"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_extend_right_live"
+      />
+
   <FrameLayout
       android:id="@+id/container_param_live"
       android:layout_width="match_parent"
       android:layout_height="@dimen/nav_icon_size"
       android:layout_gravity="bottom"
+      android:layout_marginBottom="5dp"
       android:visibility="visible"
       >
-    <ImageView
-        android:id="@+id/btnExpendRight"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:layout_gravity="start"
-        android:layout_marginBottom="5dp"
-        android:layout_marginStart="10dp"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_extend_right_live"
-        />
 
     <ImageView
         android:id="@+id/btnNotify"
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
         android:scaleType="centerInside"
@@ -61,7 +63,6 @@
         android:layout_width="@dimen/nav_icon_size"
         android:layout_height="@dimen/nav_icon_size"
         android:layout_gravity="end"
-        android:layout_marginBottom="5dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
@@ -73,7 +74,7 @@
 
   <LinearLayout
       android:id="@+id/container_param_extended_live"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="@dimen/nav_icon_size"
       android:layout_gravity="bottom"
       android:layout_marginBottom="5dp"
@@ -88,6 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:clickable="true"
+        android:scaleType="centerInside"
         >
 
       <ImageView
@@ -146,18 +148,6 @@
         android:clickable="true"
         android:scaleType="centerInside"
         android:src="@drawable/picto_filter_live"
-        />
-
-
-    <ImageView
-        android:id="@+id/btnExpendLeft"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:layout_marginStart="10dp"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_extend_left_live"
         />
 
   </LinearLayout>
