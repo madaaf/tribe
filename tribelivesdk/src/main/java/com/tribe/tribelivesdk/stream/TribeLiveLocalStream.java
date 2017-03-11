@@ -76,7 +76,8 @@ public class TribeLiveLocalStream {
   }
 
   private void generateVideoCapturer() {
-    com.tribe.tribelivesdk.webrtc.Camera1Enumerator enumerator = new com.tribe.tribelivesdk.webrtc.Camera1Enumerator(false);
+    com.tribe.tribelivesdk.webrtc.Camera1Enumerator enumerator =
+        new com.tribe.tribelivesdk.webrtc.Camera1Enumerator(false);
 
     Timber.d("Creating capturer");
 

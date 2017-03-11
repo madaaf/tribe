@@ -448,7 +448,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   private void hideViewPhoneNumber(boolean animate) {
     viewBackground.setEnabled(false);
     btnPlay.setEnabled(false);
-    
+
     viewPhoneNumber.animate()
         .translationX(-screenUtils.getWidthPx())
         .setDuration(animate ? DURATION : 0)
@@ -601,7 +601,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
             navigator.navigateToAuthProfile(this, deepLink, loginEntity);
           } else {
             tagManager.setUserId(user.getId());
-            navigator.navigateToAuthAccess(this, deepLink);
+            navigator.navigateToHome(this, false, deepLink);
           }
         }));
   }
