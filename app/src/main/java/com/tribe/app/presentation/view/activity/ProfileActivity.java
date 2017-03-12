@@ -203,6 +203,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private void setupMainView() {
     viewProfile = (ProfileView) viewStack.push(R.layout.view_profile);
 
+    subscriptions.add(viewProfile.onShare().subscribe(aVoid -> {
+      navigator.openSmsForInvite(this);
+    }));
+
     subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> {
       setupProfileDetailView();
     }));

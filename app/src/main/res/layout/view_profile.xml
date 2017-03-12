@@ -15,6 +15,83 @@
       android:orientation="vertical"
       >
 
+    <FrameLayout
+        android:id="@+id/viewShareProfile"
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:background="@color/grey.background.profile_info"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button"
+        android:orientation="horizontal"
+        >
+
+      <FrameLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="left|center_vertical"
+          android:layout_margin="@dimen/horizontal_margin_small"
+          android:gravity="center"
+          >
+
+        <View
+            android:id="@+id/viewShadowAvatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_avatar_shadow"
+            />
+
+        <com.tribe.app.presentation.view.widget.avatar.AvatarView
+            android:id="@+id/avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@null"
+            />
+      </FrameLayout>
+
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginEnd="55dp"
+          android:layout_marginStart="80dp"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            style="@style/Body.Two.Black"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtName"
+            android:layout_marginTop="5dp"
+            android:singleLine="true"
+            style="@style/Body.One.Blue.New"
+            />
+      </RelativeLayout>
+
+      <ImageView
+          android:id="@+id/btnShare"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:layout_gravity="right|center_vertical"
+          android:background="@drawable/selectable_button_oval"
+          android:clickable="true"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_share_profile"
+          />
+    </FrameLayout>
+
+    <include layout="@layout/view_separator_simple"/>
+
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionProfile"
         android:layout_width="match_parent"

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -22,6 +23,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -34,6 +36,14 @@ public class ProfileView extends FrameLayout {
   @Inject TagManager tagManager;
 
   @Inject Navigator navigator;
+
+  @BindView(R.id.avatar) AvatarView viewAvatar;
+
+  @BindView(R.id.txtName) TextViewFont txtName;
+
+  @BindView(R.id.txtUsername) TextViewFont txtUsername;
+
+  @BindView(R.id.viewShareProfile) View viewShareProfile;
 
   @BindView(R.id.viewActionProfile) ActionView viewActionProfile;
 
@@ -53,6 +63,7 @@ public class ProfileView extends FrameLayout {
   private CompositeSubscription subscriptions;
   private PublishSubject<Boolean> onChangeVisible = PublishSubject.create();
   private PublishSubject<Void> onDebugMode = PublishSubject.create();
+  private PublishSubject<Void> onShare = PublishSubject.create();
 
   public ProfileView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -84,6 +95,10 @@ public class ProfileView extends FrameLayout {
   /////////////
 
   private void initUI() {
+    txtName.setText(user.getDisplayName());
+    txtUsername.setText("@" + user.getUsername());
+    viewAvatar.load(user.getProfilePicture());
+
     viewActionVisible.setValue(!user.isInvisibleMode());
 
     viewActionProfile.setTitle(
@@ -138,6 +153,10 @@ public class ProfileView extends FrameLayout {
     }
   }
 
+  @OnClick(R.id.viewShareProfile) void clickShareProfile() {
+    onShare.onNext(null);
+  }
+
   /**
    * OBSERVABLES
    */
@@ -164,5 +183,9 @@ public class ProfileView extends FrameLayout {
 
   public Observable<Void> onDebugMode() {
     return onDebugMode;
+  }
+
+  public Observable<Void> onShare() {
+    return onShare;
   }
 }
