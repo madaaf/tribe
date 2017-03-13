@@ -9,11 +9,11 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,8 +78,8 @@ public class LiveView extends FrameLayout {
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
-  private static boolean isParamExpended = false;
-  private static boolean isMicroActivated = false;
+  private boolean isParamExpended = false;
+  private boolean isMicroActivated = true;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -368,13 +368,16 @@ public class LiveView extends FrameLayout {
     viewLocalLive.enableMicro(isMicroActivated);
   }
 
-  private void setXTranslateAnimation(View view, float translation) {
-    view.animate()
-        .translationX(translation)
+  private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
+    ViewPropertyAnimator xAnim = view.animate();
+    xAnim.translationX(translation)
         .setInterpolator(new OvershootInterpolator(1f))
         .alpha(1)
-        .setDuration(DURATION)
+        .setDuration(500)
+        .setListener(null)
         .start();
+
+    return xAnim;
   }
 
   @OnClick(R.id.btnExpend) void onClickExpendRight() {
@@ -412,61 +415,30 @@ public class LiveView extends FrameLayout {
     btnFilter.setAnimation(scaleAnimation);
     btnOrientationCamera.setAnimation(scaleAnimation);
 
-    TranslateAnimation xAnim = new TranslateAnimation(0, -xTranslation, 0, 0);
-    TranslateAnimation x2Anim = new TranslateAnimation(0, -xTranslation * 2, 0, 0);
-
-    xAnim.setDuration(DURATION);
-    x2Anim.setDuration(DURATION);
-
-    xAnim.setFillAfter(true);
-    x2Anim.setFillAfter(true);
-
     scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        containerParam.setVisibility(GONE);
-        btnExpend.setAnimation(x2Anim);
-        btnMicro.setAnimation(xAnim);
+        setXTranslateAnimation(btnMicro, -xTranslation);
+        setXTranslateAnimation(btnExpend, 3 * xTranslation);
       }
     });
   }
 
   @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
-    float xTranslation = getResources().getDimension(nav_icon_size);
-
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
 
     Animation scaleAnimation =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_appear);
 
-    TranslateAnimation xAnim = new TranslateAnimation(-xTranslation, 0, 0, 0);
-    TranslateAnimation x2Anim = new TranslateAnimation(-xTranslation * 2, 0, 0, 0);
-
-    xAnim.setDuration(DURATION);
-    x2Anim.setDuration(DURATION);
-
-    xAnim.setFillAfter(true);
-    x2Anim.setFillAfter(true);
-
     containerParam.setVisibility(VISIBLE);
-    btnMicro.setAnimation(xAnim);
-    btnExpend.setAnimation(x2Anim);
 
-    xAnim.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        btnOrientationCamera.setAnimation(scaleAnimation);
-      }
-    });
+    setXTranslateAnimation(btnMicro, 0);
+    setXTranslateAnimation(btnExpend, containerParamExtended.getWidth());
 
-    x2Anim.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        btnFilter.setAnimation(scaleAnimation);
-      }
-    });
+    btnOrientationCamera.setAnimation(scaleAnimation);
+    btnFilter.setAnimation(scaleAnimation);
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
