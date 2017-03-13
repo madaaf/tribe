@@ -50,14 +50,6 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewMicroDisabled) FrameLayout viewMicroDisabled;
 
-/*  @BindView(R.id.btnCameraEnable) ImageView btnCameraEnable;
-
-  @BindView(R.id.btnCameraDisable) ImageView btnCameraDisable;
-
-  @BindView(R.id.btnCameraSwitch) ImageView btnCameraSwitch;
-
-  @BindView(R.id.layoutCameraControls) ViewGroup layoutCameraControls;*/
-
   @BindView(R.id.txtLowConnectivity) TextViewFont txtLowConnectivity;
 
   private LocalPeerView viewPeerLocal;
@@ -180,33 +172,15 @@ public class LiveLocalView extends FrameLayout {
   //   CLICKS    //
   /////////////////
 
-/*  @OnClick(R.id.btnCameraEnable) void clickEnableCamera() {
-    if (!hiddenControls) {
-      enableCamera(true);
-    }
-  }
-
-  @OnClick(R.id.btnCameraDisable) void clickDisableCamera() {
-    if (!hiddenControls) {
-      disableCamera(true);
-    }
-  }
-
-  @OnClick(R.id.btnCameraSwitch) void clickCameraSwitch() {
-    switchCamera();
-  }
-
-  @Override public boolean onTouchEvent(MotionEvent event) {
-    gestureDetector.onTouchEvent(event);
-    return super.onTouchEvent(event);
-  }*/
-
   ////////////////
   // ANIMATIONS //
   ////////////////
 
-  public void enableMicro(boolean isMicroActivated) {
+  public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
     if (!isMicroActivated) {
+      if (isCameraActivated) {
+
+      }
       viewMicroDisabled.setVisibility(VISIBLE);
     } else {
       viewMicroDisabled.setVisibility(GONE);
@@ -216,10 +190,6 @@ public class LiveLocalView extends FrameLayout {
   public void enableCamera(boolean animate) {
     cameraEnabled = true;
     onEnableCamera.onNext(cameraEnabled);
-    /*
-    alpha(btnCameraSwitch, 1);
-    animateEnableCamera(cameraEnabled);
-    */
 
     UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
@@ -235,8 +205,6 @@ public class LiveLocalView extends FrameLayout {
   public void disableCamera(boolean animate) {
     cameraEnabled = false;
     onEnableCamera.onNext(cameraEnabled);
-/*    alpha(btnCameraSwitch, 0);
-    animateEnableCamera(cameraEnabled);*/
 
     UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
       @Override public void onAnimationStart(Animator animation) {
@@ -248,54 +216,6 @@ public class LiveLocalView extends FrameLayout {
       }
     });
   }
-
-  //private void animateEnableCamera(boolean enabled) {
-  //  if (enabled) {
-  //    alpha(btnCameraEnable, 0);
-  //    alpha(btnCameraDisable, 1);
-  //  } else {
-  //    alpha(btnCameraDisable, 0);
-  //    alpha(btnCameraEnable, 1);
-  //  }
-  //}
-
-  private void alpha(View v, int alpha) {
-    v.animate().alpha(alpha).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        v.setVisibility(alpha == 1 ? View.VISIBLE : View.GONE);
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        v.setVisibility(alpha == 0 ? View.GONE : View.VISIBLE);
-        v.animate().setListener(null).start();
-      }
-    }).start();
-  }
-
-  private void scale(View v, int scale) {
-    v.animate()
-        .scaleX(scale)
-        .scaleY(scale)
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationStart(Animator animation) {
-            v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
-          }
-
-          @Override public void onAnimationEnd(Animator animation) {
-            v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
-            v.animate().setListener(null).start();
-          }
-        })
-        .start();
-  }
-
-/*  private void rotateSwitchCamera() {
-    btnCameraSwitch.animate()
-        .rotation(btnCameraSwitch.getRotation() == 0 ? 180 : 0)
-        .setDuration(DURATION)
-        .start();
-  }*/
 
   /////////////////
   //   PUBLIC    //
@@ -311,20 +231,12 @@ public class LiveLocalView extends FrameLayout {
   }
 
   public void hideControls(boolean hiddenControls) {
-    int scale = hiddenControls ? 0 : 1;
     this.hiddenControls = hiddenControls;
-
-/*    scale(layoutCameraControls, scale);
-    scale(btnCameraSwitch, scale);*/
   }
 
   //////////////////
   //  OBSERVABLES //
   //////////////////
-
-  public Observable<Boolean> onEnableCamera() {
-    return onEnableCamera;
-  }
 
   public Observable<Void> onClick() {
     return onClick;

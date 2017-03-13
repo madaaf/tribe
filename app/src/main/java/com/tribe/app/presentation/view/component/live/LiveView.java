@@ -80,6 +80,7 @@ public class LiveView extends FrameLayout {
   private static final float OVERSHOOT = 1.2f;
   private boolean isParamExpended = false;
   private boolean isMicroActivated = true;
+  private boolean isCameraActivated = true;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -365,7 +366,7 @@ public class LiveView extends FrameLayout {
       isMicroActivated = true;
       btnMicro.setImageResource(R.drawable.picto_micro_on_live);
     }
-    viewLocalLive.enableMicro(isMicroActivated);
+    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
   }
 
   private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
@@ -423,6 +424,8 @@ public class LiveView extends FrameLayout {
         setXTranslateAnimation(btnExpend, 3 * xTranslation);
       }
     });
+
+    viewLocalLive.disableCamera(true);
   }
 
   @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
@@ -439,6 +442,8 @@ public class LiveView extends FrameLayout {
 
     btnOrientationCamera.setAnimation(scaleAnimation);
     btnFilter.setAnimation(scaleAnimation);
+
+    viewLocalLive.enableCamera(true);
   }
 
   @OnClick(R.id.btnNotify) void onClickNotify() {
