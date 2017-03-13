@@ -78,6 +78,7 @@ public class LiveView extends FrameLayout {
 
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
+  private static float xTranslation;
   private static final float OVERSHOOT = 1.2f;
   private boolean isParamExpended = false;
   private boolean isMicroActivated = true;
@@ -266,6 +267,7 @@ public class LiveView extends FrameLayout {
   //////////////////////
 
   private void init(Context context, AttributeSet attrs) {
+    xTranslation = getResources().getDimension(nav_icon_size);
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
@@ -353,9 +355,8 @@ public class LiveView extends FrameLayout {
     expendParam();
   }
 
-  @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
+  @OnClick(R.id.btnCameraOn) void onClickCameraEnable() { // SOEF
     isCameraActivated = false;
-    float xTranslation = getResources().getDimension(nav_icon_size);
     btnCameraOn.setVisibility(GONE);
     btnCameraOff.setVisibility(VISIBLE);
 
@@ -378,7 +379,7 @@ public class LiveView extends FrameLayout {
     viewLocalLive.disableCamera(true);
   }
 
-  @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
+  @OnClick(R.id.btnCameraOff) void onClickCameraDisable() { // SOEF
     isCameraActivated = true;
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
@@ -1168,7 +1169,7 @@ public class LiveView extends FrameLayout {
     return xAnim;
   }
 
-  private void expendParam() {
+  private void expendParam() { // SOEF
     if (!isParamExpended) {
       isParamExpended = true;
 
@@ -1180,8 +1181,13 @@ public class LiveView extends FrameLayout {
 
       setXTranslateAnimation(containerParamExtended, 0);
       setXTranslateAnimation(containerParam, widthExtended);
-      setXTranslateAnimation(btnExpend, widthExtended);
+      if (isCameraActivated) {
+        setXTranslateAnimation(btnExpend, widthExtended);
+      } else {
+        setXTranslateAnimation(btnExpend, 3 * xTranslation);
+      }
     } else {
+
       isParamExpended = false;
       containerParamExtended.setTranslationX(0);
       btnExpend.setImageResource(R.drawable.picto_extend_right_live);
