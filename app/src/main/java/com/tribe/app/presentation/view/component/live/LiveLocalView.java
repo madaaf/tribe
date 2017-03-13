@@ -182,13 +182,14 @@ public class LiveLocalView extends FrameLayout {
   ////////////////
 
   public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
+    backMicroDisabled.setVisibility(GONE);
     if (!isMicroActivated) {
       backLiveLocalView.setVisibility(VISIBLE);
       imgMicroDisabled.setVisibility(VISIBLE);
 
       if (!isCameraActivated) {
-        backMicroDisabled.setVisibility(VISIBLE);
         backLiveLocalView.setVisibility(GONE);
+        backMicroDisabled.setVisibility(VISIBLE);
       }
     } else {
       backLiveLocalView.setVisibility(GONE);

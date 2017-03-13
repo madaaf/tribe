@@ -426,6 +426,7 @@ public class LiveView extends FrameLayout {
       }
     });
 
+    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
     viewLocalLive.disableCamera(true);
   }
 
@@ -445,6 +446,7 @@ public class LiveView extends FrameLayout {
     btnOrientationCamera.setAnimation(scaleAnimation);
     btnFilter.setAnimation(scaleAnimation);
 
+    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
     viewLocalLive.enableCamera(true);
   }
 
