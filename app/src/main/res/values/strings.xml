@@ -871,4 +871,9 @@
 	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Later</string>
+	
+	<!-- Live Rating -->
+	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>
+	<string name="live_rating_dismiss">Dismiss</string>
+	<string name="live_rating_send">Send rating</string>
 </resources>

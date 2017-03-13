@@ -871,4 +871,9 @@
 	<string name="tips_waiting60sec_message">Vous pouvez être en live avec plus de 8 personnes simultanément.</string>
 	<string name="tips_waiting60sec_action1">Invitez des amis !</string>
 	<string name="tips_waiting60sec_action2">Plus tard</string>
+	
+	<!-- Live Rating -->
+	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
+	<string name="live_rating_dismiss">Fermer</string>
+	<string name="live_rating_send">Envoyer la note</string>
 </resources>
