@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -48,7 +49,11 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
-  @BindView(R.id.viewMicroDisabled) FrameLayout viewMicroDisabled;
+  @BindView(R.id.backLiveLocalView) FrameLayout backLiveLocalView;
+
+  @BindView(R.id.backMicroDisabled) View backMicroDisabled;
+
+  @BindView(R.id.imgMicroDisabled) ImageView imgMicroDisabled;
 
   @BindView(R.id.txtLowConnectivity) TextViewFont txtLowConnectivity;
 
@@ -178,12 +183,16 @@ public class LiveLocalView extends FrameLayout {
 
   public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
     if (!isMicroActivated) {
-      if (isCameraActivated) {
+      backLiveLocalView.setVisibility(VISIBLE);
+      imgMicroDisabled.setVisibility(VISIBLE);
 
+      if (!isCameraActivated) {
+        backMicroDisabled.setVisibility(VISIBLE);
+        backLiveLocalView.setVisibility(GONE);
       }
-      viewMicroDisabled.setVisibility(VISIBLE);
     } else {
-      viewMicroDisabled.setVisibility(GONE);
+      backLiveLocalView.setVisibility(GONE);
+      imgMicroDisabled.setVisibility(GONE);
     }
   }
 

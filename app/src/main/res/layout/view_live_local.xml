@@ -9,23 +9,32 @@
 
 
   <FrameLayout
-      android:id="@+id/viewMicroDisabled"
+      android:id="@+id/backLiveLocalView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@color/black.opacity.50"
       android:visibility="gone"
-      >
+      />
 
-    <ImageView
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:layout_gravity="center"
-        android:background="@drawable/selectable_button_oval_light"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_micro_off_shadow"
-        />
+  <View
+      android:id="@+id/backMicroDisabled"
+      android:layout_width="@dimen/avatar_size_big"
+      android:layout_height="@dimen/avatar_size_big"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_oval_black60"
+      android:visibility="gone"
+      />
 
-  </FrameLayout>
+  <ImageView
+      android:id="@+id/imgMicroDisabled"
+      android:layout_width="@dimen/nav_icon_size"
+      android:layout_height="@dimen/nav_icon_size"
+      android:layout_gravity="center"
+      android:background="@drawable/selectable_button_oval_light"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_micro_off_shadow"
+      android:visibility="gone"
+      />
 
 
   <com.tribe.app.presentation.view.widget.TextViewFont
