@@ -177,6 +177,11 @@ public class LiveLocalView extends FrameLayout {
   //   CLICKS    //
   /////////////////
 
+  @Override public boolean onTouchEvent(MotionEvent event) {
+    gestureDetector.onTouchEvent(event);
+    return super.onTouchEvent(event);
+  }
+
   ////////////////
   // ANIMATIONS //
   ////////////////

@@ -74,6 +74,7 @@ public class LiveView extends FrameLayout {
   public static final int LIVE_MAX = 8;
 
   private static final int DURATION = 300;
+  private static final int DURATION_PARAM = 400;
 
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
@@ -316,13 +317,7 @@ public class LiveView extends FrameLayout {
         onShouldCloseInvites.onNext(null);
       }
     }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
-      if (hiddenControls) {
-        displayControls(1);
-        onHiddenControls.onNext(false);
-      } else {
-        displayControls(0);
-        onHiddenControls.onNext(true);
-      }
+      expendParam();
     }));
   }
 
@@ -334,21 +329,6 @@ public class LiveView extends FrameLayout {
     displayDragingGuestPopupTutorial();
     if (!hiddenControls) onOpenInvite.onNext(null);
   }
-
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      tempSubscriptions.add(DialogFactory.dialog(getContext(),
-          getContext().getString(R.string.tips_draggingguest_title),
-          getContext().getString(R.string.tips_draggingguest_message),
-          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
-  }
-
-  /**
-   * SOEF
-   */
 
   @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera() {
     btnOrientationCamera.animate()
@@ -369,41 +349,8 @@ public class LiveView extends FrameLayout {
     viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
   }
 
-  private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
-    ViewPropertyAnimator xAnim = view.animate();
-    xAnim.translationX(translation)
-        .setInterpolator(new OvershootInterpolator(1f))
-        .alpha(1)
-        .setDuration(500)
-        .setListener(null)
-        .start();
-
-    return xAnim;
-  }
-
   @OnClick(R.id.btnExpend) void onClickExpendParam() {
-    if (!isParamExpended) {
-      isParamExpended = true;
-
-      int widthExtended = containerParamExtended.getWidth();
-      containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
-      containerParamExtended.setVisibility(VISIBLE);
-
-      btnExpend.setImageResource(R.drawable.picto_extend_left_live);
-
-      setXTranslateAnimation(containerParamExtended, 0);
-      setXTranslateAnimation(containerParam, widthExtended);
-      setXTranslateAnimation(btnExpend, widthExtended);
-    } else {
-      isParamExpended = false;
-      containerParamExtended.setTranslationX(0);
-      btnExpend.setImageResource(R.drawable.picto_extend_right_live);
-
-      setXTranslateAnimation(containerParamExtended, -screenUtils.getWidthPx());
-      setXTranslateAnimation(containerParam, 0);
-      setXTranslateAnimation(btnExpend, 0);
-    }
-    onHiddenControls.onNext(isParamExpended);
+    expendParam();
   }
 
   @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
@@ -916,6 +863,7 @@ public class LiveView extends FrameLayout {
     scale(btnLeave, scale);
     scale(btnNotify, scale);
     scale(btnInviteLive, scale);
+    scale(btnExpend, scale);
   }
 
   private void addView(LiveRowView liveRowView, TribeGuest guest, int color,
@@ -1208,6 +1156,53 @@ public class LiveView extends FrameLayout {
     return tribeGuestName;
   }
 
+  private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
+    ViewPropertyAnimator xAnim = view.animate();
+    xAnim.translationX(translation)
+        .setInterpolator(new OvershootInterpolator(1f))
+        .alpha(1)
+        .setDuration(DURATION_PARAM)
+        .setListener(null)
+        .start();
+
+    return xAnim;
+  }
+
+  private void expendParam() {
+    if (!isParamExpended) {
+      isParamExpended = true;
+
+      int widthExtended = containerParamExtended.getWidth();
+      containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
+      containerParamExtended.setVisibility(VISIBLE);
+
+      btnExpend.setImageResource(R.drawable.picto_extend_left_live);
+
+      setXTranslateAnimation(containerParamExtended, 0);
+      setXTranslateAnimation(containerParam, widthExtended);
+      setXTranslateAnimation(btnExpend, widthExtended);
+    } else {
+      isParamExpended = false;
+      containerParamExtended.setTranslationX(0);
+      btnExpend.setImageResource(R.drawable.picto_extend_right_live);
+
+      setXTranslateAnimation(containerParamExtended, -screenUtils.getWidthPx());
+      setXTranslateAnimation(containerParam, 0);
+      setXTranslateAnimation(btnExpend, 0);
+    }
+    onHiddenControls.onNext(isParamExpended);
+  }
+
+  private void displayDragingGuestPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+      tempSubscriptions.add(DialogFactory.dialog(getContext(),
+          getContext().getString(R.string.tips_draggingguest_title),
+          getContext().getString(R.string.tips_draggingguest_message),
+          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
+      }));
+      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    }
+  }
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
