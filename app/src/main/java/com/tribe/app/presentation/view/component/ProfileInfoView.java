@@ -57,6 +57,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by horatiothomas on 9/6/16.
@@ -319,32 +320,27 @@ public class ProfileInfoView extends LinearLayout {
   }
 
   public void showUsernameInd() {
-    if (imgUsernameInd.getScaleX() == 0) {
-      AnimationUtils.scaleUp(imgUsernameInd, DURATION, new DecelerateInterpolator());
-    }
+    imgUsernameInd.clearAnimation();
+    AnimationUtils.scaleUp(imgUsernameInd, DURATION, new DecelerateInterpolator());
   }
 
   public void hideUsernameInd() {
-    if (imgUsernameInd.getScaleX() == 1) {
-      AnimationUtils.scaleDown(imgUsernameInd, DURATION, new DecelerateInterpolator());
-    }
+    imgUsernameInd.clearAnimation();
+    AnimationUtils.scaleDown(imgUsernameInd, DURATION, new DecelerateInterpolator());
   }
 
   public void showUsernameProgress() {
     usernameSelected = false;
     refactorInfosValid();
+    circularProgressUsername.clearAnimation();
 
-    if (circularProgressUsername.getScaleX() == 0) {
-      hideUsernameInd();
-      AnimationUtils.scaleUp(circularProgressUsername, DURATION, new DecelerateInterpolator());
-    }
+    hideUsernameInd();
+    AnimationUtils.scaleUp(circularProgressUsername, DURATION, new DecelerateInterpolator());
   }
 
   public void hideUsernameProgress() {
-    if (circularProgressUsername.getScaleX() == 1) {
-      showUsernameInd();
-      AnimationUtils.scaleDown(circularProgressUsername, DURATION, new DecelerateInterpolator());
-    }
+    circularProgressUsername.clearAnimation();
+    AnimationUtils.scaleDown(circularProgressUsername, DURATION, new DecelerateInterpolator());
   }
 
   public void setDisplayNameValid(boolean valid) {
@@ -367,12 +363,14 @@ public class ProfileInfoView extends LinearLayout {
 
   public void showDisplayNameInd() {
     if (imgDisplayNameInd.getScaleX() == 0) {
+      imgDisplayNameInd.clearAnimation();
       AnimationUtils.scaleUp(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
     }
   }
 
   public void hideDisplayNameInd() {
     if (imgDisplayNameInd.getScaleX() == 1) {
+      imgDisplayNameInd.clearAnimation();
       AnimationUtils.scaleDown(imgDisplayNameInd, DURATION, new DecelerateInterpolator());
     }
   }

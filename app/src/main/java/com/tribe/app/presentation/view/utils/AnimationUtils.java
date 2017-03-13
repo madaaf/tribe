@@ -53,12 +53,30 @@ public class AnimationUtils {
       Interpolator interpolator) {
     view.setScaleX(0);
     view.setScaleY(0);
+    view.setVisibility(View.INVISIBLE);
     view.animate()
         .scaleX(1)
         .scaleY(1)
         .setInterpolator(interpolator)
         .setDuration(duration)
         .setStartDelay(delay)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationStart(Animator animation) {
+            view.setVisibility(View.VISIBLE);
+          }
+
+          @Override public void onAnimationCancel(Animator animation) {
+            view.animate().setListener(null).start();
+            view.setScaleX(1);
+            view.setScaleY(1);
+          }
+
+          @Override public void onAnimationEnd(Animator animation) {
+            view.animate().setListener(null).start();
+            view.setScaleX(1);
+            view.setScaleY(1);
+          }
+        })
         .start();
   }
 
@@ -74,12 +92,28 @@ public class AnimationUtils {
       Interpolator interpolator) {
     view.setScaleX(1);
     view.setScaleY(1);
+    view.setVisibility(View.VISIBLE);
     view.animate()
         .scaleX(0)
         .scaleY(0)
         .setInterpolator(interpolator)
         .setDuration(duration)
         .setStartDelay(delay)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationCancel(Animator animation) {
+            view.animate().setListener(null).start();
+            view.setScaleX(0);
+            view.setScaleY(0);
+            view.setVisibility(View.INVISIBLE);
+          }
+
+          @Override public void onAnimationEnd(Animator animation) {
+            view.animate().setListener(null).start();
+            view.setScaleX(0);
+            view.setScaleY(0);
+            view.setVisibility(View.INVISIBLE);
+          }
+        })
         .start();
   }
 

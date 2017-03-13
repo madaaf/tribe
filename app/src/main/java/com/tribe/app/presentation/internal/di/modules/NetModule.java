@@ -251,6 +251,8 @@ import timber.log.Timber;
     });
 
     httpClientBuilder.authenticator((route, response) -> {
+      if (accessToken == null || accessToken.getRefreshToken() == null) return null;
+
       if (isRefreshing.compareAndSet(false, true)) {
         LOCK.close();
 
@@ -262,15 +264,12 @@ import timber.log.Timber;
           responseRefresh = newAccessTokenReq.execute();
         } catch (SocketTimeoutException ex) {
           Timber.d("SocketTimeOutException on refresh token");
-          Timber.e(ex);
           clearLock();
         } catch (IOException ex) {
           Timber.d("IOException on refresh token");
-          Timber.e(ex);
           clearLock();
         } catch (Exception ex) {
           Timber.d("Exception on refresh token");
-          Timber.e(ex);
           clearLock();
         }
 
@@ -378,12 +377,12 @@ import timber.log.Timber;
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS);
 
-    //if (BuildConfig.DEBUG) {
-    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-    //  httpClientBuilder.addInterceptor(loggingInterceptor);
-    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    //}
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
         .callFactory(httpClientBuilder.build())
@@ -418,12 +417,12 @@ import timber.log.Timber;
       return chain.proceed(request);
     });
 
-    //if (BuildConfig.DEBUG) {
-    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-    //  httpClientBuilder.addInterceptor(loggingInterceptor);
-    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    //}
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_AUTH)
         .addConverterFactory(GsonConverterFactory.create(gson))
