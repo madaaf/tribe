@@ -117,8 +117,6 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnExpend) ImageView btnExpend;
 
-  @BindView(R.id.layoutCameraControls) FrameLayout layoutCameraControl;
-
   @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
 
   @BindView(R.id.btnMicro) ImageView btnMicro;
@@ -355,7 +353,7 @@ public class LiveView extends FrameLayout {
     expendParam();
   }
 
-  @OnClick(R.id.btnCameraOn) void onClickCameraEnable() { // SOEF
+  @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
     isCameraActivated = false;
     btnCameraOn.setVisibility(GONE);
     btnCameraOff.setVisibility(VISIBLE);
@@ -379,7 +377,7 @@ public class LiveView extends FrameLayout {
     viewLocalLive.disableCamera(true);
   }
 
-  @OnClick(R.id.btnCameraOff) void onClickCameraDisable() { // SOEF
+  @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
     isCameraActivated = true;
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
@@ -450,7 +448,7 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnLeave) void onClickLeave() {
-    if (!hiddenControls) onLeave.onNext(null);
+    onLeave.onNext(null);
   }
 
   @OnClick(R.id.viewRoom) void onClickRoom() {
@@ -861,7 +859,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void displayControls(int scale) {
-    scale(btnLeave, scale);
     scale(btnNotify, scale);
     scale(btnInviteLive, scale);
     scale(btnExpend, scale);
@@ -1169,7 +1166,7 @@ public class LiveView extends FrameLayout {
     return xAnim;
   }
 
-  private void expendParam() { // SOEF
+  private void expendParam() {
     if (!isParamExpended) {
       isParamExpended = true;
 
