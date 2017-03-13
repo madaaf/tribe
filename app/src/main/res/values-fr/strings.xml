@@ -881,8 +881,7 @@
 	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
 	<string name="live_rating_dismiss">Fermer</string>
 	<string name="live_rating_send">Envoyer la note</string>
-
-	<!-- Invite Popup -->
+<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
 	<string name="invite_popup_message">Cet utilisateur n\'est pas encore inscrit sur Tribe.</string>
 	<string name="invite_popup_action">Inviter sur Tribe</string>
