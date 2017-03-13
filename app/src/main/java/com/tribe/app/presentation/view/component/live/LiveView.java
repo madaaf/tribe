@@ -381,7 +381,7 @@ public class LiveView extends FrameLayout {
     return xAnim;
   }
 
-  @OnClick(R.id.btnExpend) void onClickExpendRight() {
+  @OnClick(R.id.btnExpend) void onClickExpendParam() {
     if (!isParamExpended) {
       isParamExpended = true;
 
@@ -403,6 +403,7 @@ public class LiveView extends FrameLayout {
       setXTranslateAnimation(containerParam, 0);
       setXTranslateAnimation(btnExpend, 0);
     }
+    onHiddenControls.onNext(isParamExpended);
   }
 
   @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
@@ -653,6 +654,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       btnNotify.setAlpha(alpha);
       btnInviteLive.setAlpha(alpha);
+      btnExpend.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
     }));
   }
