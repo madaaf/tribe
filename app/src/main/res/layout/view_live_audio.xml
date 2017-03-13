@@ -17,12 +17,14 @@
       android:background="@null"
       />
 
-  <View
-      android:layout_width="@dimen/avatar_size_big"
-      android:layout_height="@dimen/avatar_size_big"
-      android:layout_gravity="center"
-      android:background="@drawable/shape_oval_black40"
-      />
-  
+  <!--
+    <View
+        android:layout_width="@dimen/avatar_size_big"
+        android:layout_height="@dimen/avatar_size_big"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_oval_black40"
+        />
+  -->
+
 
 </merge>

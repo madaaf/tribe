@@ -406,6 +406,7 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
+    isCameraActivated = false;
     float xTranslation = getResources().getDimension(nav_icon_size);
     btnCameraOn.setVisibility(GONE);
     btnCameraOff.setVisibility(VISIBLE);
@@ -429,6 +430,7 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
+    isCameraActivated = true;
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
 
