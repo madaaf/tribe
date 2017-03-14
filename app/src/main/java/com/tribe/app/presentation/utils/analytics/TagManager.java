@@ -2,6 +2,7 @@ package com.tribe.app.presentation.utils.analytics;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.tribe.app.domain.entity.User;
 
 /**
  * Created by tiago on 22/09/2016.
@@ -9,6 +10,8 @@ import android.os.Bundle;
 public interface TagManager {
 
   void alias(String userId);
+
+  void updateUser(User user);
 
   void setUserId(String userId);
 

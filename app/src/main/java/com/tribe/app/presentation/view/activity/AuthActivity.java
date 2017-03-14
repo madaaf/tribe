@@ -600,6 +600,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
               user.getUsername())) {
             navigator.navigateToAuthProfile(this, deepLink, loginEntity);
           } else {
+            tagManager.updateUser(user);
             tagManager.setUserId(user.getId());
             navigator.navigateToHome(this, false, deepLink);
           }

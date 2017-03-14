@@ -373,16 +373,16 @@ import timber.log.Timber;
       @Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(1, TimeUnit.MILLISECONDS)
-        .readTimeout(1, TimeUnit.MILLISECONDS)
-        .writeTimeout(1, TimeUnit.MILLISECONDS);
+    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS);
 
-    if (BuildConfig.DEBUG) {
-      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-      httpClientBuilder.addInterceptor(loggingInterceptor);
-      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    }
+    //if (BuildConfig.DEBUG) {
+    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    //  httpClientBuilder.addInterceptor(loggingInterceptor);
+    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    //}
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
         .callFactory(httpClientBuilder.build())
@@ -417,12 +417,12 @@ import timber.log.Timber;
       return chain.proceed(request);
     });
 
-    if (BuildConfig.DEBUG) {
-      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-      httpClientBuilder.addInterceptor(loggingInterceptor);
-      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    }
+    //if (BuildConfig.DEBUG) {
+    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    //  httpClientBuilder.addInterceptor(loggingInterceptor);
+    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    //}
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_AUTH)
         .addConverterFactory(GsonConverterFactory.create(gson))
@@ -438,9 +438,9 @@ import timber.log.Timber;
     Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
 
     return new OkHttpClient.Builder().cache(cache)
-        .connectTimeout(100, TimeUnit.MILLISECONDS)
-        .writeTimeout(1, TimeUnit.MILLISECONDS)
-        .readTimeout(1, TimeUnit.MILLISECONDS);
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS);
   }
 
   private void appendUserAgent(Context context, Request.Builder requestBuilder) {

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.utils.analytics;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import com.tribe.app.domain.entity.User;
 import io.branch.referral.Branch;
 import javax.inject.Singleton;
 import org.json.JSONException;
@@ -20,6 +21,10 @@ import org.json.JSONObject;
   }
 
   @Override public void alias(String userId) {
+
+  }
+
+  @Override public void updateUser(User user) {
 
   }
 
