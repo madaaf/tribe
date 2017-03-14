@@ -38,6 +38,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -61,6 +62,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.RatingNotificationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -112,6 +114,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.topBarContainer) TopBarContainer topBarContainer;
 
   @BindView(R.id.searchView) SearchView searchView;
+
+  @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -606,6 +610,14 @@ public class HomeActivity extends BaseActivity
   @Override public void onAppDidEnterBackground() {
     Timber.d("App in background stopping the service");
     stopService();
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == Navigator.LEAVE_LIVE) { // SOEF
+      ratingNotificationView.displayView();
+    }
   }
 
   /////////////////

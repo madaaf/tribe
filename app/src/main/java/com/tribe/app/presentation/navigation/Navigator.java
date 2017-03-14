@@ -45,6 +45,7 @@ public class Navigator {
   @Inject User user;
 
   public static int REQUEST_COUNTRY = 1000;
+  public static int LEAVE_LIVE = 1001;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -211,7 +212,7 @@ public class Navigator {
   public void navigateToLive(Activity activity, Recipient recipient, int color) {
     if (activity != null) {
       Intent intent = LiveActivity.getCallingIntent(activity, recipient, color);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, LEAVE_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }

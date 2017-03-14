@@ -27,6 +27,9 @@ import javax.inject.Inject;
 
 public class RatingNotificationView extends FrameLayout implements View.OnClickListener {
 
+  private static int DURATION = 300;
+  private static int ratingScore;
+
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.btnStar1) ImageView btnStart1;
@@ -38,7 +41,6 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   @BindView(R.id.txtAction) TextViewFont txtAction;
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
-  // OBSERVABLES
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
@@ -63,7 +65,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
     txtTitle.setText(EmojiParser.demojizedText(getContext().getString(R.string.live_rating_title)));
 
-    setBackground(null);
+    fillStartsColors(0);
     setOnClickListener(this);
   }
 
@@ -82,6 +84,10 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         .build()
         .inject(this);
   }
+
+  ///////////////////
+  //    CLICKS     //
+  ///////////////////
 
   @OnClick(R.id.btnStar1) void onClickStar1() {
     fillStartsColors(1);
@@ -104,16 +110,36 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   @OnClick(R.id.txtAction) void onClickTextAction() {
-
+    // TODO set ratingScore
+    hideView();
   }
 
-  public void ok(View view) {
-    Animation scaleAnimation =
-        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_stars);
-    view.startAnimation(scaleAnimation);
+  @Override public void onClick(View v) {
+    fillStartsColors(0);
+  }
+
+  private void hideView() {
+    animate().setDuration(DURATION).alpha(0f).withEndAction(new Runnable() {
+      @Override public void run() {
+        setVisibility(GONE);
+        setAlpha(0f);
+      }
+    });
+  }
+
+  public void displayView() {
+    fillStartsColors(0);
+    animate().setStartDelay(DURATION).setDuration(DURATION).alpha(1f).withEndAction(new Runnable() {
+      @Override public void run() {
+        setVisibility(VISIBLE);
+        setAlpha(1f);
+      }
+    });
   }
 
   private void fillStartsColors(int index) {
+    ratingScore = index;
+
     if (index == 0) {
       txtAction.setText(getResources().getString(R.string.live_rating_dismiss));
     } else {
@@ -135,7 +161,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         btnStart4.setImageResource(R.drawable.picto_rating_star);
         btnStart5.setImageResource(R.drawable.picto_rating_star);
 
-        ok(btnStart1);
+        scaleAnim(btnStart1);
 
         break;
       case 2:
@@ -146,7 +172,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         btnStart4.setImageResource(R.drawable.picto_rating_star);
         btnStart5.setImageResource(R.drawable.picto_rating_star);
 
-        ok(btnStart2);
+        scaleAnim(btnStart2);
         break;
       case 3:
         btnStart1.setImageResource(R.drawable.picto_rating_star_yellow);
@@ -156,7 +182,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         btnStart4.setImageResource(R.drawable.picto_rating_star);
         btnStart5.setImageResource(R.drawable.picto_rating_star);
 
-        ok(btnStart3);
+        scaleAnim(btnStart3);
         break;
       case 4:
         btnStart1.setImageResource(R.drawable.picto_rating_star_yellow_light);
@@ -166,7 +192,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
         btnStart5.setImageResource(R.drawable.picto_rating_star);
 
-        ok(btnStart4);
+        scaleAnim(btnStart4);
         break;
       case 5:
         btnStart1.setImageResource(R.drawable.picto_rating_star_green);
@@ -175,12 +201,14 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         btnStart4.setImageResource(R.drawable.picto_rating_star_green);
         btnStart5.setImageResource(R.drawable.picto_rating_star_green);
 
-        ok(btnStart5);
+        scaleAnim(btnStart5);
         break;
     }
   }
 
-  @Override public void onClick(View v) {
-    fillStartsColors(0);
+  private void scaleAnim(View view) {
+    Animation scaleAnimation =
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_stars);
+    view.startAnimation(scaleAnimation);
   }
 }

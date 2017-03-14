@@ -189,9 +189,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     super.onPause();
   }
 
-  @Override protected void onDestroy() {
+  @Override protected void onDestroy() { // SOEF
     viewLive.onDestroy(false);
-
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
