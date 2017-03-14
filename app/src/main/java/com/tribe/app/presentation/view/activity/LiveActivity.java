@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -57,6 +58,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -66,7 +68,10 @@ import static android.view.View.VISIBLE;
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
+  public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
+  private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
+  private static boolean liveDurationIsMoreThan30sec = false;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -135,6 +140,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
+  private Subscription timerSubscription;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -189,7 +195,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     super.onPause();
   }
 
-  @Override protected void onDestroy() { // SOEF
+  @Override protected void onDestroy() {
     viewLive.onDestroy(false);
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
@@ -203,6 +209,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (timerSubscription != null) timerSubscription.unsubscribe();
     super.onDestroy();
   }
 
@@ -274,6 +281,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     appStateMonitor = RxAppStateMonitor.create(getApplication());
     appStateMonitor.addListener(this);
     appStateMonitor.start();
+  }
+
+  private void ratingNotificationSubscribe() {
+    liveDurationIsMoreThan30sec = false;
+    timerSubscription =
+        Observable.timer(MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aVoid -> {
+              liveDurationIsMoreThan30sec = true;
+            });
   }
 
   private void displayStartFirstPopupTutorial() {
@@ -352,6 +369,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
         stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
       } else {
+        Intent returnIntent = new Intent();
+        if (liveDurationIsMoreThan30sec) {
+          returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
+          setResult(Activity.RESULT_OK, returnIntent);
+        }
         finish();
       }
     }));
@@ -382,6 +404,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onNotificationRemoteJoined().subscribe(userName -> {
+      ratingNotificationSubscribe();
       displayNotification(getString(R.string.live_notification_peer_joined, userName));
     }));
 

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -615,8 +616,11 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == Navigator.LEAVE_LIVE) { // SOEF
-      ratingNotificationView.displayView();
+    if (requestCode == Navigator.LEAVE_LIVE && resultCode == Activity.RESULT_OK && data != null) {
+      boolean result = data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
+      if (result) {
+        ratingNotificationView.displayView();
+      }
     }
   }
 
