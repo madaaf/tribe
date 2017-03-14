@@ -103,6 +103,11 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
   }
 
   @Override public void prepare() {
+    if (isPrepared) {
+      if (mediaPlayer != null) mediaPlayer.seekTo(0);
+      return;
+    }
+
     try {
       if (!isLocal) {
         RandomAccessFile raf = new RandomAccessFile(media, "r");

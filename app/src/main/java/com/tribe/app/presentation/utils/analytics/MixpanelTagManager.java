@@ -21,6 +21,10 @@ import org.json.JSONObject;
     mixpanelAPI = MixpanelAPI.getInstance(context, BuildConfig.MIXPANEL_TOKEN);
   }
 
+  @Override public void updateUser(User user) {
+
+  }
+
   @Override public void alias(String userId) {
     mixpanelAPI.alias(userId, mixpanelAPI.getDistinctId());
   }

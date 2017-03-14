@@ -17,6 +17,7 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import javax.inject.Inject;
 import javax.inject.Named;
+import timber.log.Timber;
 
 public class ProfileInfoPresenter extends UpdateUserPresenter {
 
@@ -113,11 +114,12 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onError(Throwable e) {
-      e.printStackTrace();
+      Timber.e(e, "Error in Register");
       profileInfoView.hideLoading();
     }
 
     @Override public void onNext(AccessToken accessToken) {
+      profileInfoView.onRegisterSuccess(accessToken);
       if (accessToken != null) getUserInfo();
     }
   }
@@ -128,12 +130,12 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onError(Throwable e) {
-      e.printStackTrace();
+      Timber.e(e, "UserInfos error");
       profileInfoView.hideLoading();
     }
 
     @Override public void onNext(User user) {
-      if (user != null) profileInfoView.userRegistered(user);
+      if (user != null) profileInfoView.userInfos(user);
     }
   }
 }

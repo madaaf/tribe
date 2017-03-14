@@ -440,8 +440,8 @@
 	<string name="onboarding_user_avatar_library">Ouvrir ma bibliothèque</string>
 	<string name="onboarding_user_avatar_selfie">Utiliser l\'appareil photo</string>
 	<string name="onboarding_user_mandatory_avatar">Avatar obligatoire</string>
-	<string name="onboarding_user_displayname_placeholder">Nom d\'affichage</string>
-	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur</string>
+	<string name="onboarding_user_displayname_placeholder">Nom d\'affichage*</string>
+	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur*</string>
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Aller plus vite avec facebook !</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
@@ -871,4 +871,9 @@
 	<string name="tips_waiting60sec_message">Vous pouvez être en live avec plus de 8 personnes simultanément.</string>
 	<string name="tips_waiting60sec_action1">Invitez des amis !</string>
 	<string name="tips_waiting60sec_action2">Plus tard</string>
+	
+	<!-- Live Rating -->
+	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
+	<string name="live_rating_dismiss">Fermer</string>
+	<string name="live_rating_send">Envoyer la note</string>
 </resources>

@@ -545,6 +545,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
               user.getUsername())) {
             navigator.navigateToAuthProfile(this, deepLink, loginEntity);
           } else {
+            tagManager.updateUser(user);
             tagManager.setUserId(user.getId());
             navigator.navigateToAuthAccess(this, deepLink);
           }
@@ -559,7 +560,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     Timber.d("Pin error");
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
   }
-  
+
   @Override public void showLoading() {
     if (pin == null) {
       viewPhoneNumber.showLoading();

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -87,7 +86,6 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -347,12 +345,12 @@ import timber.log.Timber;
       }
     });
 
-    if (BuildConfig.DEBUG) {
-      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-      httpClientBuilder.addInterceptor(loggingInterceptor);
-      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    }
+    //if (BuildConfig.DEBUG) {
+    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    //  httpClientBuilder.addInterceptor(loggingInterceptor);
+    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    //}
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
         .addConverterFactory(GsonConverterFactory.create(gson))
@@ -440,7 +438,8 @@ import timber.log.Timber;
 
     return new OkHttpClient.Builder().cache(cache)
         .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS);
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
   }
 
   private void appendUserAgent(Context context, Request.Builder requestBuilder) {

@@ -2,11 +2,14 @@ package com.tribe.app.presentation.utils.analytics;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.tribe.app.domain.entity.User;
 
 /**
  * Created by tiago on 22/09/2016.
  */
 public interface TagManager {
+
+  void updateUser(User user);
 
   void alias(String userId);
 

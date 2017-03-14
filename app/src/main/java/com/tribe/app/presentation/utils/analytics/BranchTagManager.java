@@ -3,6 +3,7 @@ package com.tribe.app.presentation.utils.analytics;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import com.tribe.app.domain.entity.User;
 import io.branch.referral.Branch;
 import javax.inject.Singleton;
 import org.json.JSONException;
@@ -17,6 +18,10 @@ import org.json.JSONObject;
 
   public BranchTagManager(Context context) {
     branch = branch.getInstance(context);
+  }
+
+  @Override public void updateUser(User user) {
+
   }
 
   @Override public void alias(String userId) {

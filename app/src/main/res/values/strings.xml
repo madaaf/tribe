@@ -440,8 +440,8 @@
 	<string name="onboarding_user_avatar_library">Camera roll</string>
 	<string name="onboarding_user_avatar_selfie">Selfie camera</string>
 	<string name="onboarding_user_mandatory_avatar">Profile picture required</string>
-	<string name="onboarding_user_displayname_placeholder">Display name</string>
-	<string name="onboarding_user_username_placeholder">username</string>
+	<string name="onboarding_user_displayname_placeholder">Display name*</string>
+	<string name="onboarding_user_username_placeholder">username*</string>
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
@@ -871,4 +871,9 @@
 	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Later</string>
+	
+	<!-- Live Rating -->
+	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>
+	<string name="live_rating_dismiss">Dismiss</string>
+	<string name="live_rating_send">Send rating</string>
 </resources>
