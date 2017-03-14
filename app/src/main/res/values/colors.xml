@@ -47,6 +47,7 @@
   <color name="grey.authentication">#393939</color>
   <color name="grey.blue">#DBE0E9</color>
   <color name="grey.unblock">#787878</color>
+  <color name="grey.rating">#F1F3F5</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
