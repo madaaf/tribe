@@ -159,6 +159,7 @@ public class Navigator {
       Intent i = new Intent(activity, AuthActivity.class);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       activity.startActivity(i);
+      activity.finish();
     }
   }
 

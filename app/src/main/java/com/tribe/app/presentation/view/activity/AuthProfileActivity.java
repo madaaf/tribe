@@ -16,6 +16,7 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -76,6 +77,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private LoginEntity loginEntity;
   private FacebookEntity facebookEntity;
   private Uri uriPicture;
+  private AccessToken accessToken;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -238,10 +240,13 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private void nextStep() {
     screenUtils.hideKeyboard(this);
 
-    if (StringUtils.isEmpty(user.getId())) {
+    if (StringUtils.isEmpty(user.getId()) && accessToken == null) {
       profileInfoPresenter.register(profileInfoView.getDisplayName(), profileInfoView.getUsername(),
           loginEntity);
-    } else {
+    } else if (accessToken != null && StringUtils.isEmpty(user.getId())) {
+      showLoading();
+      profileInfoPresenter.getUserInfo();
+    } else if (accessToken != null && !StringUtils.isEmpty(user.getId())) {
       showLoading();
       profileInfoPresenter.updateUser(profileInfoView.getUsername(),
           profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
@@ -250,14 +255,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     }
   }
 
-  @Override public void userRegistered(User user) {
+  @Override public void userInfos(User user) {
     this.user.copy(user);
 
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SUCCESS, true);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileConfigured, bundle);
 
-    tagManager.alias(user.getId());
+    Bundle bundleUser = new Bundle();
+    bundleUser.putString(TagManagerUtils.USER_USERNAME, this.user.getUsername());
+    tagManager.setProperty(bundleUser);
+    tagManager.setUserId(this.user.getId());
+    tagManager.updateUser(this.user);
 
     profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(),
         profileInfoView.getImgUri(),
@@ -267,14 +276,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
-
-    if (this.user != null) {
-      Bundle bundleUser = new Bundle();
-      bundleUser.putString(TagManagerUtils.USER_USERNAME, this.user.getUsername());
-      tagManager.setProperty(bundleUser);
-      tagManager.setUserId(user.getId());
-    }
-
     navigator.navigateToAuthAccess(this, deepLink);
   }
 
@@ -289,6 +290,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
     this.facebookEntity = facebookEntity;
     profileInfoView.setInfoFromFacebook(facebookEntity);
+  }
+
+  @Override public void onRegisterSuccess(AccessToken accessToken) {
+    this.accessToken = accessToken;
+    if (accessToken != null) {
+      tagManager.alias(accessToken.getUserId());
+      tagManager.setUserId(accessToken.getUserId());
+    }
+  }
+
+  @Override public void onRegisterFail() {
+    this.accessToken = null;
   }
 
   @Override public void usernameResult(Boolean available) {

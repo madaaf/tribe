@@ -21,15 +21,21 @@ import javax.inject.Singleton;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
+  private Context context;
   private MixpanelTagManager mixpanel;
   private BranchTagManager branch;
 
   @Inject public AnalyticsManager(Context context, @Named("userThreadSafe") User user) {
+    this.context = context;
     this.mixpanel = new MixpanelTagManager(context, user);
     this.branch = new BranchTagManager(context);
 
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
+    updateUser(user);
+  }
+
+  @Override public void updateUser(User user) {
     Bundle bundle = new Bundle();
 
     if (user != null) {
