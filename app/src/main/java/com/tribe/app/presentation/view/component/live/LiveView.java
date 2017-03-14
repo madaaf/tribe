@@ -74,7 +74,7 @@ public class LiveView extends FrameLayout {
   public static final int LIVE_MAX = 8;
 
   private static final int DURATION = 300;
-  private static final int DURATION_PARAM = 400;
+  private static final int DURATION_PARAM = 600;
 
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
