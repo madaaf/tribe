@@ -53,7 +53,7 @@ public abstract class UpdateUserPresenter implements Presenter {
 
     updateUserSubscriber = new UpdateUserSubscriber();
     updateUser.prepare(values);
-    updateUser.execute(new UpdateUserSubscriber());
+    updateUser.execute(updateUserSubscriber);
   }
 
   public void updateUserTribeSave(boolean tribeSave) {

@@ -103,7 +103,10 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
   }
 
   @Override public void prepare() {
-    if (isPrepared) return;
+    if (isPrepared) {
+      if (mediaPlayer != null) mediaPlayer.seekTo(0);
+      return;
+    }
 
     try {
       if (!isLocal) {

@@ -373,9 +373,9 @@ import timber.log.Timber;
       @Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(1, TimeUnit.MILLISECONDS)
+        .readTimeout(1, TimeUnit.MILLISECONDS)
+        .writeTimeout(1, TimeUnit.MILLISECONDS);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -438,8 +438,9 @@ import timber.log.Timber;
     Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
 
     return new OkHttpClient.Builder().cache(cache)
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS);
+        .connectTimeout(100, TimeUnit.MILLISECONDS)
+        .writeTimeout(1, TimeUnit.MILLISECONDS)
+        .readTimeout(1, TimeUnit.MILLISECONDS);
   }
 
   private void appendUserAgent(Context context, Request.Builder requestBuilder) {
