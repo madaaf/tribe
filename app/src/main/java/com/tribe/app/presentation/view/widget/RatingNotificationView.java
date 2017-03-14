@@ -20,7 +20,6 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 14/03/2017.
@@ -63,6 +62,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     unbinder = ButterKnife.bind(this);
 
     txtTitle.setText(EmojiParser.demojizedText(getContext().getString(R.string.live_rating_title)));
+
+    setBackground(null);
     setOnClickListener(this);
   }
 
@@ -126,7 +127,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         btnStart3.setImageResource(R.drawable.picto_rating_star);
         btnStart4.setImageResource(R.drawable.picto_rating_star);
         btnStart5.setImageResource(R.drawable.picto_rating_star);
-
+        break;
       case 1:
         btnStart1.setImageResource(R.drawable.picto_rating_star_red);
         btnStart2.setImageResource(R.drawable.picto_rating_star);
@@ -180,6 +181,6 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   @Override public void onClick(View v) {
-    Timber.e("SOEF");
+    fillStartsColors(0);
   }
 }
