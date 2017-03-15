@@ -15,8 +15,6 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -103,27 +101,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
-  @BindView(R.id.btnInviteLive) View btnInviteLive;
-
-  @BindView(R.id.btnLeave) View btnLeave;
-
-  @BindView(R.id.btnNotify) View btnNotify;
-
-  @BindView(R.id.btnCameraOn) View btnCameraOn;
-
-  @BindView(R.id.btnCameraOff) View btnCameraOff;
-
-  @BindView(R.id.btnFilter) View btnFilter;
-
-  @BindView(R.id.btnExpend) ImageView btnExpend;
-
-  @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
-
-  @BindView(R.id.btnMicro) ImageView btnMicro;
-
-  @BindView(R.id.container_param_live) FrameLayout containerParam;
-
-  @BindView(R.id.container_param_extended_live) LinearLayout containerParamExtended;
+  @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
   @BindView(R.id.txtName) TextViewFont txtName;
 
@@ -138,7 +116,6 @@ public class LiveView extends FrameLayout {
   private boolean hiddenControls = false;
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private AvatarView avatarView;
-  private ObjectAnimator animatorRotation;
   private ObjectAnimator animatorBuzzAvatar;
   private Map<String, Object> tagMap;
   private int wizzCount = 0, invitedCount = 0, totalSizeLive = 0;
@@ -228,11 +205,6 @@ public class LiveView extends FrameLayout {
       animatorBuzzAvatar.cancel();
     }
 
-    btnNotify.clearAnimation();
-    btnNotify.animate().setListener(null);
-
-    if (animatorRotation != null) animatorRotation.cancel();
-
     if (!isJump) {
       persistentSubscriptions.clear();
       tempSubscriptions.clear();
@@ -272,8 +244,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void initUI() {
-    btnNotify.setEnabled(false);
-
     setBackgroundColor(Color.BLACK);
 
     room = tribeLiveSDK.newRoom();
@@ -319,133 +289,150 @@ public class LiveView extends FrameLayout {
     }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
       expendParam();
     }));
+
+    @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera () {
+      btnOrientationCamera.animate()
+          .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
+          .setDuration(DURATION)
+          .start();
+      viewLocalLive.switchCamera();
+    }
+
+    @OnClick(R.id.btnMicro) void clickMicro () {
+      if (isMicroActivated) {
+        isMicroActivated = false;
+        btnMicro.setImageResource(R.drawable.picto_micro_off_live);
+      } else {
+        isMicroActivated = true;
+        btnMicro.setImageResource(R.drawable.picto_micro_on_live);
+      }
+
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+    }
+
+    @OnClick(R.id.btnExpend) void clickExpandParam () {
+      expendParam();
+    }
+
+    @OnClick(R.id.btnCameraOn) void clickCameraEnable () {
+      isCameraActivated = false;
+      btnCameraOn.setVisibility(GONE);
+      btnCameraOff.setVisibility(VISIBLE);
+
+      Animation scaleAnimation =
+          android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
+
+      btnFilter.setAnimation(scaleAnimation);
+      btnOrientationCamera.setAnimation(scaleAnimation);
+
+      scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
+
+        @Override public void onAnimationEnd(Animation animation) {
+          super.onAnimationEnd(animation);
+          setXTranslateAnimation(btnMicro, -xTranslation);
+          setXTranslateAnimation(btnExpend, 3 * xTranslation);
+        }
+      });
+
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.disableCamera(true);
+    }
+
+    @OnClick(R.id.btnCameraOff) void clickCameraDisable () {
+      isCameraActivated = true;
+      btnCameraOff.setVisibility(GONE);
+      btnCameraOn.setVisibility(VISIBLE);
+
+      Animation scaleAnimation =
+          android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_appear);
+
+      layoutContainerParamLive.setVisibility(VISIBLE);
+
+      setXTranslateAnimation(btnMicro, 0);
+      setXTranslateAnimation(btnExpend, layoutContainerParamExtendedLive.getWidth());
+
+      btnOrientationCamera.setAnimation(scaleAnimation);
+      btnFilter.setAnimation(scaleAnimation);
+
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableCamera(true);
+    }
+
+    @OnClick(R.id.btnNotify) void clickNotify () {
+
+    }
+
+    persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
+      displayDragingGuestPopupTutorial();
+      if (!hiddenControls) onOpenInvite.onNext(null);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
+
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aVoid -> {
+
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
+
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
+
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraEnable().subscribe(aVoid -> {
+
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraDisable().subscribe(aVoid -> {
+
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickNotify().doOnNext(aVoid -> {
+      if (!hiddenControls) {
+        wizzCount++;
+        onNotificationRemotePeerBuzzed.onNext(null);
+        viewBuzz.buzz();
+
+        if (avatarView != null) {
+          animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
+          animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
+          animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
+          animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
+          animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationCancel(Animator animation) {
+              animatorBuzzAvatar.removeAllListeners();
+              avatarView.setTranslationX(0);
+            }
+          });
+          animatorBuzzAvatar.start();
+        }
+
+        for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
+          liveRowView.buzz();
+        }
+
+        for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
+          if (liveRowView.isWaiting()) liveRowView.buzz();
+        }
+      }
+    }).subscribe(onNotify));
+
+    persistentSubscriptions.add(viewControlsLive.onNotifyAnimationDone().subscribe(aVoid -> {
+      if (animatorBuzzAvatar != null) animatorBuzzAvatar.cancel();
+
+      tempSubscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> refactorNotifyButton()));
+    }));
   }
 
   ///////////////////
   //    CLICKS     //
   ///////////////////
-
-  @OnClick(R.id.btnInviteLive) void openInvite() {
-    displayDragingGuestPopupTutorial();
-    if (!hiddenControls) onOpenInvite.onNext(null);
-  }
-
-  @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera() {
-    btnOrientationCamera.animate()
-        .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
-        .setDuration(DURATION)
-        .start();
-    viewLocalLive.switchCamera();
-  }
-
-  @OnClick(R.id.btnMicro) void onClickMicro() {
-    if (isMicroActivated) {
-      isMicroActivated = false;
-      btnMicro.setImageResource(R.drawable.picto_micro_off_live);
-    } else {
-      isMicroActivated = true;
-      btnMicro.setImageResource(R.drawable.picto_micro_on_live);
-    }
-    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-  }
-
-  @OnClick(R.id.btnExpend) void onClickExpendParam() {
-    expendParam();
-  }
-
-  @OnClick(R.id.btnCameraOn) void onClickCameraEnable() {
-    isCameraActivated = false;
-    btnCameraOn.setVisibility(GONE);
-    btnCameraOff.setVisibility(VISIBLE);
-
-    Animation scaleAnimation =
-        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
-
-    btnFilter.setAnimation(scaleAnimation);
-    btnOrientationCamera.setAnimation(scaleAnimation);
-
-    scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
-
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        setXTranslateAnimation(btnMicro, -xTranslation);
-        setXTranslateAnimation(btnExpend, 3 * xTranslation);
-      }
-    });
-
-    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-    viewLocalLive.disableCamera(true);
-  }
-
-  @OnClick(R.id.btnCameraOff) void onClickCameraDisable() {
-    isCameraActivated = true;
-    btnCameraOff.setVisibility(GONE);
-    btnCameraOn.setVisibility(VISIBLE);
-
-    Animation scaleAnimation =
-        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_appear);
-
-    containerParam.setVisibility(VISIBLE);
-
-    setXTranslateAnimation(btnMicro, 0);
-    setXTranslateAnimation(btnExpend, containerParamExtended.getWidth());
-
-    btnOrientationCamera.setAnimation(scaleAnimation);
-    btnFilter.setAnimation(scaleAnimation);
-
-    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-    viewLocalLive.enableCamera(true);
-  }
-
-  @OnClick(R.id.btnNotify) void onClickNotify() {
-    if (!hiddenControls) {
-      wizzCount++;
-      onNotificationRemotePeerBuzzed.onNext(null);
-      viewBuzz.buzz();
-
-      if (avatarView != null) {
-        animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
-        animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
-        animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
-        animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
-        animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationCancel(Animator animation) {
-            animatorBuzzAvatar.removeAllListeners();
-            avatarView.setTranslationX(0);
-          }
-        });
-        animatorBuzzAvatar.start();
-      }
-
-      for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
-        liveRowView.buzz();
-      }
-
-      for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
-        if (liveRowView.isWaiting()) liveRowView.buzz();
-      }
-
-      btnNotify.setEnabled(false);
-      btnNotify.animate()
-          .alpha(0.2f)
-          .setDuration(DURATION)
-          .setInterpolator(new DecelerateInterpolator())
-          .setListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              if (animatorBuzzAvatar != null) animatorBuzzAvatar.cancel();
-
-              tempSubscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> refactorNotifyButton()));
-
-              btnNotify.animate().setListener(null);
-            }
-          })
-          .start();
-
-      onNotify.onNext(null);
-    }
-  }
 
   @OnClick(R.id.btnLeave) void onClickLeave() {
     onLeave.onNext(null);
@@ -774,70 +761,7 @@ public class LiveView extends FrameLayout {
 
   private void refactorNotifyButton() {
     boolean enable = shouldEnableBuzz();
-
-    if (!enable) {
-      btnNotify.setVisibility(View.GONE);
-      return;
-    } else {
-      btnNotify.setVisibility(View.VISIBLE);
-    }
-
-    if (enable != btnNotify.isEnabled()) {
-      btnNotify.animate()
-          .alpha(1f)
-          .scaleX(1.25f)
-          .scaleY(1.25f)
-          .translationY(-screenUtils.dpToPx(10))
-          .rotation(10)
-          .setDuration(DURATION)
-          .setInterpolator(new DecelerateInterpolator())
-          .setListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              if (btnNotify == null) return;
-
-              btnNotify.animate().setListener(null);
-
-              animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
-              animatorRotation.setDuration(100);
-              animatorRotation.setRepeatCount(3);
-              animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
-              animatorRotation.addListener(new AnimatorListenerAdapter() {
-                @Override public void onAnimationEnd(Animator animation) {
-                  animatorRotation.removeAllListeners();
-
-                  if (btnNotify != null) {
-                    btnNotify.animate()
-                        .scaleX(1)
-                        .scaleY(1)
-                        .rotation(0)
-                        .translationY(0)
-                        .setDuration(DURATION)
-                        .setInterpolator(new DecelerateInterpolator())
-                        .setListener(new AnimatorListenerAdapter() {
-                          @Override public void onAnimationEnd(Animator animation) {
-                            if (btnNotify != null) {
-                              btnNotify.setEnabled(true);
-                              btnNotify.animate().setListener(null);
-                            }
-                          }
-
-                          @Override public void onAnimationCancel(Animator animation) {
-                            if (btnNotify != null) btnNotify.animate().setListener(null);
-                          }
-                        });
-                  }
-                }
-
-                @Override public void onAnimationCancel(Animator animation) {
-                  animatorRotation.removeAllListeners();
-                }
-              });
-
-              animatorRotation.start();
-            }
-          })
-          .start();
-    }
+    viewControlsLive.refactorNotifyButton(enable);
   }
 
   private void scale(View v, int scale) {
@@ -1170,14 +1094,14 @@ public class LiveView extends FrameLayout {
     if (!isParamExpended) {
       isParamExpended = true;
 
-      int widthExtended = containerParamExtended.getWidth();
-      containerParamExtended.setTranslationX(-(screenUtils.getWidthPx()));
-      containerParamExtended.setVisibility(VISIBLE);
+      int widthExtended = layoutContainerParamExtendedLive.getWidth();
+      layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
+      layoutContainerParamExtendedLive.setVisibility(VISIBLE);
 
       btnExpend.setImageResource(R.drawable.picto_extend_left_live);
 
-      setXTranslateAnimation(containerParamExtended, 0);
-      setXTranslateAnimation(containerParam, widthExtended);
+      setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
+      setXTranslateAnimation(layoutContainerParamLive, widthExtended);
       if (isCameraActivated) {
         setXTranslateAnimation(btnExpend, widthExtended);
       } else {
@@ -1186,11 +1110,11 @@ public class LiveView extends FrameLayout {
     } else {
 
       isParamExpended = false;
-      containerParamExtended.setTranslationX(0);
+      layoutContainerParamExtendedLive.setTranslationX(0);
       btnExpend.setImageResource(R.drawable.picto_extend_right_live);
 
-      setXTranslateAnimation(containerParamExtended, -screenUtils.getWidthPx());
-      setXTranslateAnimation(containerParam, 0);
+      setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
+      setXTranslateAnimation(layoutContainerParamLive, 0);
       setXTranslateAnimation(btnExpend, 0);
     }
     onHiddenControls.onNext(isParamExpended);
