@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -49,6 +50,8 @@ import dagger.Component;
 }) public interface UserComponent extends ActivityComponent {
 
   void inject(DebugActivity debugActivity);
+
+  void inject(LiveImmersiveNotificationActivity liveImmersiveNotificationActivity);
 
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 

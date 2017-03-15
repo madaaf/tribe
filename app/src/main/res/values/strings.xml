@@ -876,10 +876,13 @@
 	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>
 	<string name="live_rating_dismiss">Dismiss</string>
 	<string name="live_rating_send">Send rating</string>
+<<<<<<< d143f13e44b7ea43618ec706d34354df40b17524
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oops</string>
 	<string name="invite_popup_message">This user is not on Tribe yet.</string>
 	<string name="invite_popup_action">Invite on Tribe</string>
 	<string name="invite_popup_dismiss">Later</string>
+=======
+>>>>>>> display full screen notification
 </resources>
