@@ -14,7 +14,10 @@ import android.view.animation.AnimationUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -42,6 +45,7 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -55,10 +59,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -69,9 +73,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
+  public static final String ROOM_ID = "ROOM_ID";
+  public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
   private static boolean liveDurationIsMoreThan30sec = false;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -140,7 +147,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
-  private Subscription timerSubscription;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -154,6 +160,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initResources();
     initPermissions();
     initAppState();
+    initRemoteConfig();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -206,10 +213,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       audioManager.stop();
       audioManager = null;
     }
-
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    if (timerSubscription != null) timerSubscription.unsubscribe();
     super.onDestroy();
   }
 
@@ -260,6 +265,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initResources() {
     int result = 0;
+    liveDurationIsMoreThan30sec = false;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
 
     if (resourceId > 0) {
@@ -284,13 +290,34 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void ratingNotificationSubscribe() {
-    liveDurationIsMoreThan30sec = false;
-    timerSubscription =
-        Observable.timer(MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aVoid -> {
-              liveDurationIsMoreThan30sec = true;
-            });
+    subscriptions.add(Observable.timer(MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          liveDurationIsMoreThan30sec = true;
+        }));
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+      }
+    });
+  }
+
+  private Boolean displayRatingNotifDependingFirebaseTrigger() {
+    Random rn = new Random();
+    int randomNumber = rn.nextInt(101);
+    return randomNumber > firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TRIGGER);
+  }
+
+  private Long getfirebaseTimeoutConfig() {
+    return firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
   }
 
   private void displayStartFirstPopupTutorial() {
@@ -369,11 +396,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
         stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
       } else {
-        Intent returnIntent = new Intent();
-        if (liveDurationIsMoreThan30sec) {
-          returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
-          setResult(Activity.RESULT_OK, returnIntent);
-        }
         finish();
       }
     }));
@@ -413,6 +435,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
   }
 
+  private void putExtraHomeIntent() {
+    Intent returnIntent = new Intent();
+    if (liveDurationIsMoreThan30sec && displayRatingNotifDependingFirebaseTrigger()) {
+      if (viewLive != null
+          && viewLive.getRoom() != null
+          && viewLive.getRoom().getOptions() != null) {
+        returnIntent.putExtra(ROOM_ID, viewLive.getRoom().getOptions().getRoomId());
+      }
+      returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
+      returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getfirebaseTimeoutConfig());
+      setResult(Activity.RESULT_OK, returnIntent);
+    }
+  }
+
   private void displayNotification(String txt) {
     txtRemotePeerAdded.setText(txt);
     txtRemotePeerAdded.setVisibility(VISIBLE);
@@ -438,6 +474,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
   }

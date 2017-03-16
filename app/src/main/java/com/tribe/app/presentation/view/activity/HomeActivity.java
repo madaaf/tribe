@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +38,6 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -615,11 +613,13 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-
-    if (requestCode == Navigator.LEAVE_LIVE && resultCode == Activity.RESULT_OK && data != null) {
-      boolean result = data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
-      if (result) {
-        ratingNotificationView.displayView();
+    if (data != null) {
+      boolean displayRatingNotifView =
+          data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
+      long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
+      String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
+      if (displayRatingNotifView) {
+        ratingNotificationView.displayView(timeout, roomId);
       }
     }
   }
@@ -643,8 +643,9 @@ public class HomeActivity extends BaseActivity
             .filter(action -> action.getIntent() != null)
             .delay(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
+            .subscribe(action -> {
+              navigator.navigateToIntent(HomeActivity.this, action.getIntent());
+            }));
 
         Alerter.create(HomeActivity.this, liveNotificationView).show();
       }
