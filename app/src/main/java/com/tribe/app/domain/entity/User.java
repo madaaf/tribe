@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class User implements Serializable {
 
+  private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
   public static final String ID_EMPTY = "EMPTY";
 
   private String id;
@@ -200,7 +201,12 @@ public class User implements Serializable {
   }
 
   public boolean isOnline() {
-    return is_online;
+    if (is_online) return is_online;
+    if (last_seen_at == null) return false;
+
+    // We consider that somebody that was online less than fifteen minutes ago is still online
+    long fifteenMinutesAgo = System.currentTimeMillis() - FIFTEEN_MINUTES;
+    return last_seen_at.getTime() > fifteenMinutesAgo;
   }
 
   public void setIsOnline(boolean isOnline) {
@@ -303,7 +309,7 @@ public class User implements Serializable {
     List<GroupMember> userList = new ArrayList<>();
 
     if (friendships == null) return userList;
-    
+
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {

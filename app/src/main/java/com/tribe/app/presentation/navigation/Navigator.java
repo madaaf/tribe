@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +20,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
@@ -156,11 +159,7 @@ public class Navigator {
    * Logout -> new login
    */
   public void navigateToLogout(Activity activity) {
-    if (activity != null) {
-      Intent i = new Intent(activity, AuthActivity.class);
-      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      activity.startActivity(i);
-    }
+
   }
 
   /**

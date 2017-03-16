@@ -18,6 +18,7 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.ErrorLogin;
 import com.tribe.app.domain.entity.Pin;
@@ -176,6 +177,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
                 SurpriseDialogFragment.class.getName());
           }));
     }
+
+    stopService();
   }
 
   @Override protected void onResume() {
@@ -235,6 +238,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
       viewPhoneNumber.initWithCodeCountry(countryCode);
     }
+  }
+
+  private void stopService() {
+    Intent i = new Intent(this, WSService.class);
+    stopService(i);
   }
 
   private void init() {

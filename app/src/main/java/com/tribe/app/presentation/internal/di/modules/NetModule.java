@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.util.Base64;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -86,6 +87,7 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -233,6 +235,12 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(chain -> {
+      if (tribeAuthorizer == null
+          || tribeAuthorizer.getAccessToken() == null
+          || StringUtils.isEmpty(tribeAuthorizer.getAccessToken().getAccessToken())) {
+        return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
+      }
+
       Request original = chain.request();
 
       Request.Builder requestBuilder =
@@ -249,6 +257,8 @@ import timber.log.Timber;
     });
 
     httpClientBuilder.authenticator((route, response) -> {
+      if (accessToken == null || accessToken.getRefreshToken() == null) return null;
+
       if (isRefreshing.compareAndSet(false, true)) {
         LOCK.close();
 
@@ -260,15 +270,12 @@ import timber.log.Timber;
           responseRefresh = newAccessTokenReq.execute();
         } catch (SocketTimeoutException ex) {
           Timber.d("SocketTimeOutException on refresh token");
-          Timber.e(ex);
           clearLock();
         } catch (IOException ex) {
           Timber.d("IOException on refresh token");
-          Timber.e(ex);
           clearLock();
         } catch (Exception ex) {
           Timber.d("Exception on refresh token");
-          Timber.e(ex);
           clearLock();
         }
 
@@ -347,7 +354,7 @@ import timber.log.Timber;
 
     //if (BuildConfig.DEBUG) {
     //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     //  httpClientBuilder.addInterceptor(loggingInterceptor);
     //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     //}
@@ -372,9 +379,9 @@ import timber.log.Timber;
       @Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
 
     //if (BuildConfig.DEBUG) {
     //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -396,7 +403,9 @@ import timber.log.Timber;
       Context context) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
 
     httpClientBuilder.addInterceptor(chain -> {
       Request original = chain.request();
@@ -437,7 +446,7 @@ import timber.log.Timber;
     Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
 
     return new OkHttpClient.Builder().cache(cache)
-        .connectTimeout(10, TimeUnit.SECONDS)
+        .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS);
   }

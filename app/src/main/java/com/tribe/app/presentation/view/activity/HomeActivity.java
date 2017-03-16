@@ -39,6 +39,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -67,7 +68,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -79,7 +79,6 @@ public class HomeActivity extends BaseActivity
     GoogleApiClient.OnConnectionFailedListener, AppStateListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
-  private static final long TIMER_CANCEL_SERVICE = 20 * 60 * 1000;
   public static final int SETTINGS_RESULT = 101;
 
   public static Intent getCallingIntent(Context context) {
@@ -117,7 +116,6 @@ public class HomeActivity extends BaseActivity
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription timerStopServiceSubscription;
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
 
@@ -129,6 +127,7 @@ public class HomeActivity extends BaseActivity
   private boolean receiverRegistered = false;
   private boolean hasSynced = false;
   private boolean canEndRefresh = false;
+  private boolean finish = false;
   private AppStateMonitor appStateMonitor;
 
   // DIMEN
@@ -136,6 +135,12 @@ public class HomeActivity extends BaseActivity
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
+
+    finish = getIntent().getBooleanExtra(IntentUtils.FINISH, false);
+    if (finish) {
+      finish();
+      return;
+    }
 
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 
@@ -209,6 +214,8 @@ public class HomeActivity extends BaseActivity
   @Override protected void onResume() {
     super.onResume();
 
+    if (finish) return;
+
     startService(WSService.getCallingIntent(this));
 
     if (shouldOverridePendingTransactions) {
@@ -235,18 +242,16 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override protected void onDestroy() {
-    recyclerViewFriends.setAdapter(null);
+    if (recyclerViewFriends != null) recyclerViewFriends.setAdapter(null);
 
-    homeGridPresenter.onViewDetached();
+    if (homeGridPresenter != null) homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    if (timerStopServiceSubscription != null) {
-      Timber.d("App destroyed, we're cancelling the timer to stop the WS");
-      timerStopServiceSubscription.unsubscribe();
-    }
 
-    appStateMonitor.removeListener(this);
-    appStateMonitor.stop();
+    if (appStateMonitor != null) {
+      appStateMonitor.removeListener(this);
+      appStateMonitor.stop();
+    }
 
     stopService();
 
@@ -588,17 +593,11 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onAppDidEnterForeground() {
-    Timber.d("App in foreground stopping the timer");
-    if (timerStopServiceSubscription != null) timerStopServiceSubscription.unsubscribe();
   }
 
   @Override public void onAppDidEnterBackground() {
-    Timber.d("App in background starting the timer to stop the service");
-    timerStopServiceSubscription =
-        Observable.timer(TIMER_CANCEL_SERVICE, TimeUnit.MILLISECONDS).subscribe(aLong -> {
-          Timber.d("Stopping WS after timer");
-          stopService();
-        });
+    Timber.d("App in background stopping the service");
+    stopService();
   }
 
   /////////////////
