@@ -9,6 +9,8 @@ import com.tribe.app.domain.entity.User;
  */
 public interface TagManager {
 
+  void updateUser(User user);
+
   void alias(String userId);
 
   void updateUser(User user);

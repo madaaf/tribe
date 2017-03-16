@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class User implements Serializable, BaseListInterface {
 
+  private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
   public static final String ID_EMPTY = "EMPTY";
 
   private String id;
@@ -205,7 +206,12 @@ public class User implements Serializable, BaseListInterface {
   }
 
   public boolean isOnline() {
-    return is_online;
+    if (is_online) return is_online;
+    if (last_seen_at == null) return false;
+
+    // We consider that somebody that was online less than fifteen minutes ago is still online
+    long fifteenMinutesAgo = System.currentTimeMillis() - FIFTEEN_MINUTES;
+    return last_seen_at.getTime() > fifteenMinutesAgo;
   }
 
   public void setIsOnline(boolean isOnline) {

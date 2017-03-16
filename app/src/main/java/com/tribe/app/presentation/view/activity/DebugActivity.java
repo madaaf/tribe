@@ -89,6 +89,7 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
     subscriptions.add(viewActionFuckUpSomeTokens.onClick().subscribe(aVoid -> {
       accessToken.setAccessToken("thisisafaketokenfortestingpurposestiago");
+      accessToken.setRefreshToken("thisisafakerefreshtokenfortestingpurposestiago");
       userCache.put(accessToken);
     }));
   }

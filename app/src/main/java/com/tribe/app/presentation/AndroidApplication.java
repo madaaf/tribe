@@ -1,7 +1,10 @@
 package com.tribe.app.presentation;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 import com.facebook.FacebookSdk;
@@ -11,7 +14,6 @@ import com.jenzz.appstate.AppState;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
-import com.squareup.leakcanary.LeakCanary;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -30,7 +32,10 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.view.activity.HomeActivity;
+import com.tribe.app.presentation.view.activity.LauncherActivity;
 import io.branch.referral.Branch;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -77,15 +82,15 @@ public class AndroidApplication extends Application {
   }
 
   private void initLeakDetection() {
-    if (BuildConfig.DEBUG) {
-      if (LeakCanary.isInAnalyzerProcess(this)) {
-        // This process is dedicated to LeakCanary for heap analysis.
-        // You should not init your app in this process.
-        return;
-      }
-
-      LeakCanary.install(this);
-    }
+    //if (BuildConfig.DEBUG) {
+    //  if (LeakCanary.isInAnalyzerProcess(this)) {
+    //    // This process is dedicated to LeakCanary for heap analysis.
+    //    // You should not init your app in this process.
+    //    return;
+    //  }
+    //
+    //  LeakCanary.install(this);
+    //}
   }
 
   private void initStetho() {
@@ -186,5 +191,22 @@ public class AndroidApplication extends Application {
     applicationComponent.tagManager().clear();
 
     FileUtils.deleteDir(FileUtils.getCacheDir(getApplicationContext()));
+
+    Intent intent = new Intent(this, HomeActivity.class);
+    intent.putExtra(IntentUtils.FINISH, true);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(intent);
+
+    Intent intentLauncher = new Intent(this, LauncherActivity.class);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    int pendingIntentId = 123456; // FAKE ID
+    PendingIntent mPendingIntent = PendingIntent.getActivity(this, pendingIntentId, intentLauncher,
+        PendingIntent.FLAG_CANCEL_CURRENT);
+    AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+    System.exit(0);
   }
 }

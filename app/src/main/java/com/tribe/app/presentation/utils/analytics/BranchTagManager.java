@@ -20,6 +20,10 @@ import org.json.JSONObject;
     branch = branch.getInstance(context);
   }
 
+  @Override public void updateUser(User user) {
+
+  }
+
   @Override public void alias(String userId) {
 
   }

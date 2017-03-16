@@ -235,6 +235,12 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(chain -> {
+      if (tribeAuthorizer == null
+          || tribeAuthorizer.getAccessToken() == null
+          || StringUtils.isEmpty(tribeAuthorizer.getAccessToken().getAccessToken())) {
+        return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
+      }
+
       Request original = chain.request();
 
       Request.Builder requestBuilder =
@@ -346,12 +352,12 @@ import timber.log.Timber;
       }
     });
 
-    if (BuildConfig.DEBUG) {
-      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-      httpClientBuilder.addInterceptor(loggingInterceptor);
-      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    }
+    //if (BuildConfig.DEBUG) {
+    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    //  httpClientBuilder.addInterceptor(loggingInterceptor);
+    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    //}
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
         .addConverterFactory(GsonConverterFactory.create(gson))
@@ -373,9 +379,9 @@ import timber.log.Timber;
       @Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
 
     //if (BuildConfig.DEBUG) {
     //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -397,7 +403,9 @@ import timber.log.Timber;
       Context context) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.connectTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS);
+    httpClientBuilder.connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
 
     httpClientBuilder.addInterceptor(chain -> {
       Request original = chain.request();
@@ -438,9 +446,9 @@ import timber.log.Timber;
     Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
 
     return new OkHttpClient.Builder().cache(cache)
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS);
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
   }
 
   private void appendUserAgent(Context context, Request.Builder requestBuilder) {

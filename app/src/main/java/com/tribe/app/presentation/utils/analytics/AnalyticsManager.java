@@ -24,6 +24,7 @@ import javax.inject.Singleton;
   private Context context;
   private MixpanelTagManager mixpanel;
   private BranchTagManager branch;
+  private Context context;
 
   @Inject public AnalyticsManager(Context context, @Named("userThreadSafe") User user) {
     this.context = context;

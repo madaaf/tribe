@@ -34,7 +34,9 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import static android.view.View.GONE;
@@ -234,11 +236,20 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
             getString(R.string.settings_logout_confirm_message),
             getString(R.string.settings_logout_title), getString(R.string.action_cancel)))
         .filter(x -> x == true)
-        .subscribe(aVoid -> {
+        .doOnNext(aBoolean -> {
           tagManager.trackEvent(TagManagerUtils.Logout);
           progressDialog = DialogFactory.createProgressDialog(this, R.string.settings_logout_wait);
           progressDialog.show();
           profilePresenter.logout();
+        })
+        .delay(300, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnNext(aBoolean -> ((AndroidApplication) getApplication()).logoutUser())
+        .delay(2000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnNext(aBoolean -> finish())
+        .subscribe(aVoid -> {
+
         }));
 
     subscriptions.add(viewProfile.onChangeVisible()
@@ -309,9 +320,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void goToLauncher() {
-    ((AndroidApplication) getApplication()).logoutUser();
-    navigator.navigateToLogout(this);
-    finish();
   }
 
   @Override public void successUpdateUser(User user) {
