@@ -14,6 +14,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.Subscriber;
+import timber.log.Timber;
 
 @Singleton public class RxContacts {
 
@@ -49,7 +50,8 @@ import rx.Subscriber;
 
     if (contactsObservable == null) {
       contactsObservable = Observable.create((Subscriber<? super ContactABRealm> subscriber) -> {
-        emit(null, withPhones, sorter, filter, subscriber);
+        //emit(null, withPhones, sorter, filter, subscriber);
+        emitFast(subscriber);
       }).onBackpressureBuffer().serialize();
     }
 
@@ -63,7 +65,7 @@ import rx.Subscriber;
    */
   public Observable<Contact> getContactsFast() {
     return Observable.create((Subscriber<? super Contact> subscriber) -> {
-      emitFast(subscriber);
+      //emitFast(subscriber);
     }).onBackpressureBuffer().serialize();
   }
 
@@ -72,10 +74,14 @@ import rx.Subscriber;
   private void emit(String query, boolean withPhones, Sorter sorter, Filter[] filter,
       Subscriber<? super ContactABRealm> subscriber) {
     if (addressBook.get()) {
+      long timeStart = System.nanoTime();
+      int count = 0;
+
       Cursor c = helper.getContactsCursor(query, sorter, filter);
       while (c.moveToNext()) {
         ContactABRealm contact = helper.fetchContact(c, withPhones);
         if (contact != null) {
+          count++;
           if (!subscriber.isUnsubscribed()) {
             subscriber.onNext(contact);
           } else {
@@ -88,31 +94,53 @@ import rx.Subscriber;
         }
       }
       c.close();
+
+      long timeEnd = System.nanoTime();
+      Timber.d(
+          "Total parsing contact of " + count + " / " + (timeEnd - timeStart) / 1000000.0f + " ms");
     }
 
     subscriber.onCompleted();
   }
 
-  private void emitFast(Subscriber<? super Contact> subscriber) {
-    Cursor c = helper.getFastContactsCursor();
-    int count = c.getCount();
-    if (count != 0) {
-      c.moveToNext();
-      Contact contact;
-      while (c.getPosition() < count) {
-        contact = helper.fetchContactFast(c);
-        if (!subscriber.isUnsubscribed()) {
-          subscriber.onNext(contact);
-        } else {
-          break;
-        }
+  private void emitFast(Subscriber<? super ContactABRealm> subscriber) {
+    if (addressBook.get()) {
+      long timeStart = System.nanoTime();
+      Cursor c = helper.getFastContactsCursor();
+      int count = c.getCount();
+      int contactCount = 0;
 
-        if (ContactsHelper.DEBUG) {
-          Log.i("emit fast", contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());
+      if (count != 0) {
+        c.moveToNext();
+        ContactABRealm contact;
+        while (c.getPosition() < count) {
+          contact = helper.fetchContactFast(c);
+          if (contact != null) {
+            contactCount++;
+
+            if (!subscriber.isUnsubscribed()) {
+              subscriber.onNext(contact);
+            } else {
+              break;
+            }
+
+            if (ContactsHelper.DEBUG) {
+              Log.i("emit fast",
+                  contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());
+            }
+          }
         }
       }
+
+      c.close();
+
+      long timeEnd = System.nanoTime();
+      Timber.d("Total parsing contact of "
+          + contactCount
+          + " / "
+          + (timeEnd - timeStart) / 1000000.0f
+          + " ms");
     }
-    c.close();
 
     subscriber.onCompleted();
   }

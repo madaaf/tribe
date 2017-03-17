@@ -21,7 +21,6 @@ import javax.inject.Singleton;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
-  private Context context;
   private MixpanelTagManager mixpanel;
   private BranchTagManager branch;
   private Context context;

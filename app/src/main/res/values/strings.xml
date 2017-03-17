@@ -257,8 +257,8 @@
 	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
-	<string name="grid_menu_friendship_mute">De-activate notifications :no_bell:</string>
-	<string name="grid_menu_friendship_unmute">Activate notifications :bell:</string>
+	<string name="grid_menu_friendship_mute">Disable notifications :no_bell:</string>
+	<string name="grid_menu_friendship_unmute">Enable notifications :bell:</string>
 	<string name="grid_menu_friendship_report">Report %1$s</string>
 	<string name="grid_menu_friendship_report_success">Reported</string>
 	<string name="grid_menu_friendship_clear_tribes">Clear messages</string>
@@ -509,7 +509,7 @@
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Friend</string>
 	<string name="topbar_new_live">New group</string>
-	<string name="topbar_search">Search</string>
+	<string name="topbar_search">Friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Invite friends on iMessage</string>

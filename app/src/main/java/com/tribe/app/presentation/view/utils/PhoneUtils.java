@@ -75,6 +75,17 @@ import javax.inject.Singleton;
     return null;
   }
 
+  public String formatMobileNumberForAddressBook(String number, String countryCode) {
+    try {
+      Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(number, countryCode);
+      return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+    } catch (Exception e) {
+
+    }
+
+    return null;
+  }
+
   public String formatPhoneNumberForView(String number, String countryCode) {
     return PhoneNumberUtils.formatNumber(number, countryCode);
   }

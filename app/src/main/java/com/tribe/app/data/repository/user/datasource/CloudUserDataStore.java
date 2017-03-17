@@ -13,6 +13,7 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -57,7 +58,7 @@ import rx.functions.Action1;
  */
 public class CloudUserDataStore implements UserDataStore {
 
-  private static final int LOOKUP_LIMIT = 50;
+  private static final int LOOKUP_LIMIT = 200;
   private static final String SEARCH_KEY = "search";
 
   private final TribeApi tribeApi;
@@ -274,6 +275,7 @@ public class CloudUserDataStore implements UserDataStore {
 
           return contactList;
         }).flatMap(contactList -> {
+      List<String> requests = new ArrayList<>();
       Map<String, ContactInterface> phones = new HashMap<>();
       Map<String, ContactInterface> fbIds = new HashMap<>();
 
@@ -296,78 +298,82 @@ public class CloudUserDataStore implements UserDataStore {
       }
 
       if (phones.size() > 0 || fbIds.size() > 0) {
-        StringBuffer buffer = new StringBuffer();
-
         if (phones.size() > 0) {
           StringBuilder result = new StringBuilder();
 
           int count = 0;
-          int loopCount = 0;
           for (String phone : phones.keySet()) {
             result.append("\"" + phone + "\"");
             result.append(",");
             count++;
 
             if (count % LOOKUP_LIMIT == 0) {
-              buffer.append(context.getString(R.string.lookup_phone, loopCount,
-                  result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
-              loopCount++;
+              String req = context.getString(R.string.lookup_phone, 0,
+                  result.length() > 0 ? result.substring(0, result.length() - 1) : "");
+              requests.add(context.getString(R.string.lookup, req,
+                  context.getString(R.string.userfragment_infos)));
               result = new StringBuilder();
             }
           }
 
-          buffer.append(context.getString(R.string.lookup_phone, loopCount,
-              result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+          String req = context.getString(R.string.lookup_phone, 0,
+              result.length() > 0 ? result.substring(0, result.length() - 1) : "");
+          requests.add(context.getString(R.string.lookup, req,
+              context.getString(R.string.userfragment_infos)));
         }
 
         if (fbIds.size() > 0) {
           StringBuilder result = new StringBuilder();
 
           int count = 0;
-          int loopCount = 0;
           for (String fbid : fbIds.keySet()) {
             result.append("\"" + fbid + "\"");
             result.append(",");
             count++;
 
             if (count % LOOKUP_LIMIT == 0) {
-              buffer.append(context.getString(R.string.lookup_facebook, loopCount,
-                  result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
-              loopCount++;
+              String req = context.getString(R.string.lookup_facebook, 0,
+                  result.length() > 0 ? result.substring(0, result.length() - 1) : "");
+              requests.add(context.getString(R.string.lookup, req,
+                  context.getString(R.string.userfragment_infos)));
               result = new StringBuilder();
             }
           }
 
-          buffer.append(context.getString(R.string.lookup_facebook, loopCount,
-              result.length() > 0 ? result.substring(0, result.length() - 1) : ""));
+          String req = context.getString(R.string.lookup_facebook, 0,
+              result.length() > 0 ? result.substring(0, result.length() - 1) : "");
+          requests.add(context.getString(R.string.lookup, req,
+              context.getString(R.string.userfragment_infos)));
         }
 
-        String reqLookup = context.getString(R.string.lookup, buffer.toString(), "",
-            context.getString(R.string.userfragment_infos));
+        return Observable.just(requests)
+            .flatMap(strings -> Observable.from(strings))
+            .flatMap(s -> tribeApi.lookup(s))
+            .toList()
+            .map(lookupEntities -> {
+              for (LookupEntity lookupEntity : lookupEntities) {
+                for (UserRealm userRealm : lookupEntity.getLookup()) {
+                  for (String phone : phones.keySet()) {
+                    if (userRealm.getPhone().equals(phone)) {
+                      phones.get(phone).addUser(userRealm);
+                    }
+                  }
 
-        return tribeApi.lookup(reqLookup).map(lookupEntity -> {
-          for (UserRealm userRealm : lookupEntity.getLookup()) {
-            for (String phone : phones.keySet()) {
-              if (userRealm.getPhone().equals(phone)) {
-                phones.get(phone).addUser(userRealm);
+                  for (String fbId : fbIds.keySet()) {
+                    if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid()
+                        .equals(fbId)) {
+                      fbIds.get(fbId).addUser(userRealm);
+                    }
+                  }
+                }
               }
-            }
 
-            for (String fbId : fbIds.keySet()) {
-              if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid().equals(fbId)) {
-                fbIds.get(fbId).addUser(userRealm);
-              }
-            }
-          }
-
-          return Pair.create(phones, lookupEntity);
-        });
+              return Pair.create(phones, null);
+            });
       }
 
       return Observable.just(Pair.create(phones, null));
-    }, (contactList, entityPair) -> {
-      return contactList;
-    }).doOnNext(saveToCacheContacts);
+    }, (contactList, entityPair) -> contactList).doOnNext(saveToCacheContacts);
   }
 
   @Override public Observable<List<ContactInterface>> contactsFB() {
@@ -399,51 +405,59 @@ public class CloudUserDataStore implements UserDataStore {
 
       return phonesHowManyFriends;
     }).flatMap(phonesHowManyFriends -> {
-      String reqHowManyFriends = null;
+      List<String> requests = new ArrayList<>();
 
       if (phonesHowManyFriends.size() > 0) {
-        StringBuffer bufferHowManyFriends = new StringBuffer();
         StringBuilder resultHowManyFriends = new StringBuilder();
 
         int count = 0;
-        int loopCount = 0;
         for (String phone : phonesHowManyFriends.keySet()) {
           resultHowManyFriends.append("\"" + phone + "\"");
           resultHowManyFriends.append(",");
           count++;
 
           if (count % LOOKUP_LIMIT == 0) {
-            bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
+            String req = context.getString(R.string.howManyFriends_part, 0,
                 resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0,
-                    resultHowManyFriends.length() - 1) : ""));
-            loopCount++;
+                    resultHowManyFriends.length() - 1) : "");
+            requests.add(context.getString(R.string.mutation, req));
             resultHowManyFriends = new StringBuilder();
           }
         }
 
-        bufferHowManyFriends.append(context.getString(R.string.howManyFriends_part, loopCount,
+        String req = context.getString(R.string.howManyFriends_part, 0,
             resultHowManyFriends.length() > 0 ? resultHowManyFriends.substring(0,
-                resultHowManyFriends.length() - 1) : ""));
-
-        reqHowManyFriends = context.getString(R.string.mutation, bufferHowManyFriends.toString());
+                resultHowManyFriends.length() - 1) : "");
+        requests.add(context.getString(R.string.mutation, req));
       }
 
-      return StringUtils.isEmpty(reqHowManyFriends) ? Observable.just(new ArrayList<Integer>())
-          : tribeApi.howManyFriends(reqHowManyFriends);
-    }, (phonesHowManyFriends, howManyFriendsResult) -> {
-      int indexHowMany = 0;
+      if (requests.size() > 0) {
+        return Observable.just(requests)
+            .flatMap(strings -> Observable.from(strings))
+            .flatMap(s -> tribeApi.howManyFriends(s))
+            .toList()
+            .map(howManyFriendsResult -> {
+              for (List<Integer> howManyFriends : howManyFriendsResult) {
+                int indexHowMany = 0;
 
-      if (howManyFriendsResult != null && howManyFriendsResult.size() > 0) {
-        for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
-          contactInterface.setHowManyFriends(howManyFriendsResult.get(indexHowMany));
-          indexHowMany++;
-        }
+                if (howManyFriends != null && howManyFriends.size() > 0) {
+                  for (ContactInterface contactInterface : phonesHowManyFriends.values()) {
+                    if (howManyFriends.size() > indexHowMany) {
+                      contactInterface.setHowManyFriends(howManyFriends.get(indexHowMany));
+                      indexHowMany++;
+                    }
+                  }
+                }
+              }
 
-        contactCache.updateHowManyFriends(phonesHowManyFriends.values());
+              contactCache.updateHowManyFriends(phonesHowManyFriends.values());
+
+              return null;
+            });
       }
 
-      return null;
-    });
+      return Observable.just(new ArrayList<Integer>());
+    }, (phonesHowManyFriends, howManyFriendsResult) -> null);
   }
 
   @Override public Observable<SearchResultRealm> findByUsername(String username) {

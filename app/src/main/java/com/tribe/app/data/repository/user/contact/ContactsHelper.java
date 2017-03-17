@@ -11,8 +11,6 @@ import android.util.Log;
 import android.util.Pair;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.PhoneRealm;
-import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import io.realm.RealmList;
@@ -77,13 +75,11 @@ public class ContactsHelper {
   }
 
   @NonNull ContactABRealm fetchContact(Cursor c, boolean withPhones) {
+    long timeStart = System.nanoTime();
     String id = c.getString(c.getColumnIndex(Contacts._ID));
     ContactABRealm contact = new ContactABRealm();
     contact.setId(id);
     contact.setName(c.getString(c.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)));
-
-    long lastTimeContacted = c.getLong(c.getColumnIndex(Contacts.LAST_TIME_CONTACTED));
-    contact.setLastTimeContacted(lastTimeContacted);
 
     int countInternational = 0;
 
@@ -96,7 +92,7 @@ public class ContactsHelper {
         switch (data.getString(data.getColumnIndex(ContactsContract.Data.MIMETYPE))) {
           case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
             String phoneNumberFormatted =
-                phoneUtils.formatMobileNumber(value, String.valueOf(countryCode));
+                phoneUtils.formatMobileNumberForAddressBook(value, String.valueOf(countryCode));
             boolean isFormatted = !StringUtils.isEmpty(phoneNumberFormatted);
             phonesPair.put(isFormatted ? phoneNumberFormatted : value.trim(),
                 new Pair<>(isFormatted ? phoneNumberFormatted : value.trim(), isFormatted));
@@ -120,6 +116,9 @@ public class ContactsHelper {
       contact.setPhones(realmList);
       data.close();
     }
+
+    //long timeEnd = System.nanoTime();
+    //Timber.d("time for contact " + (timeEnd - timeStart) / 1000000.0f + " ms");
 
     if (countInternational > 0) return contact;
 
@@ -161,8 +160,7 @@ public class ContactsHelper {
     String where = ContactsContract.Data.MIMETYPE + "=?";
     String[] wheres = { where, where, where };
     String[] selectionArgs = {
-        CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, CommonDataKinds.Email.CONTENT_ITEM_TYPE,
-        CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+        CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
     };
     String selection = TextUtils.join(" OR ", wheres);
     Cursor data = resolver.query(ContactsContract.Data.CONTENT_URI, DATA_PROJECTION_FULL, selection,
@@ -171,15 +169,14 @@ public class ContactsHelper {
     return data;
   }
 
-  @NonNull Contact fetchContactFast(Cursor c) {
+  @NonNull ContactABRealm fetchContactFast(Cursor c) {
     String id = c.getString(c.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-    ContactAB contact = new ContactAB(id);
+    ContactABRealm contact = new ContactABRealm();
+    contact.setId(id);
 
-    long lastTimeContacted = c.getLong(c.getColumnIndex(ContactsContract.Data.LAST_TIME_CONTACTED));
-    contact.setLastTimeContacted(lastTimeContacted);
+    HashMap<String, Pair<String, Boolean>> phonesPair = new HashMap<>();
 
-    List<String> phones = new ArrayList<>();
-    List<String> emails = new ArrayList<>();
+    int countInternational = 0;
 
     String nextId = id;
     while (id.equals(nextId)) {
@@ -188,11 +185,12 @@ public class ContactsHelper {
         case CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
           contact.setName(value);
           break;
-        case CommonDataKinds.Email.CONTENT_ITEM_TYPE:
-          emails.add(value);
-          break;
         case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
-          phones.add(value);
+          String phoneNumberFormatted =
+              phoneUtils.formatMobileNumberForAddressBook(value, String.valueOf(countryCode));
+          boolean isFormatted = !StringUtils.isEmpty(phoneNumberFormatted);
+          phonesPair.put(isFormatted ? phoneNumberFormatted : value.trim(),
+              new Pair<>(isFormatted ? phoneNumberFormatted : value.trim(), isFormatted));
           break;
       }
 
@@ -203,9 +201,24 @@ public class ContactsHelper {
       }
     }
 
-    contact.setPhones(phones);
+    RealmList<PhoneRealm> realmList = new RealmList<>();
 
-    return contact;
+    if (phonesPair != null && phonesPair.size() > 0) {
+      for (Pair<String, Boolean> phonePair : phonesPair.values()) {
+        PhoneRealm phoneRealm = new PhoneRealm();
+        phoneRealm.setPhone(phonePair.first);
+        phoneRealm.setInternational(phonePair.second);
+        realmList.add(phoneRealm);
+
+        if (phonePair.second) countInternational++;
+      }
+    }
+
+    contact.setPhones(realmList);
+
+    if (countInternational > 0) return contact;
+
+    return null;
   }
 
   private static void log(List<ContactABRealm> contacts) {

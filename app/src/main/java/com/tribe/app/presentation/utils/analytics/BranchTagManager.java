@@ -28,10 +28,6 @@ import org.json.JSONObject;
 
   }
 
-  @Override public void updateUser(User user) {
-
-  }
-
   @Override public void setUserId(String userId) {
     branch.setIdentity(userId);
   }

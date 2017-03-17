@@ -38,6 +38,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
@@ -67,6 +68,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   private Unbinder unbinder;
   private int totalTimeSynchro;
   private int nbFriends = 0;
+  private long timeSyncStart = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -156,6 +158,9 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   @Override public void renderFriendList(List<User> userList) {
+    long timeSyncEnd = System.currentTimeMillis();
+    Timber.d("Total time sync cloud : " + (timeSyncEnd - timeSyncStart) + " in ms");
+
     Map<String, Object> relationsInApp = new HashMap<>();
 
     for (User user : userList) {
@@ -218,6 +223,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
           if (hasPermission) {
             addressBook.set(true);
+            timeSyncStart = System.currentTimeMillis();
             accessPresenter.lookupContacts();
           } else {
             renderFriendList(new ArrayList<>());

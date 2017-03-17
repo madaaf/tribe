@@ -13,8 +13,6 @@ public interface TagManager {
 
   void alias(String userId);
 
-  void updateUser(User user);
-
   void setUserId(String userId);
 
   void onStart(Activity activity);
