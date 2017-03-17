@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class AccessPresenter implements Presenter {
 
@@ -71,7 +72,8 @@ public class AccessPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      e.printStackTrace();
+      accessView.renderFriendList(new ArrayList<>());
+      Timber.e(e, "Lookup failed");
     }
 
     @Override public void onNext(List<Contact> contactList) {
