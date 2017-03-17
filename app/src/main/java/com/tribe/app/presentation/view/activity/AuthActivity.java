@@ -603,7 +603,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
           } else {
             tagManager.updateUser(user);
             tagManager.setUserId(user.getId());
-            navigator.navigateToHome(this, false, deepLink);
+            navigator.navigateToAuthAccess(this, deepLink);
           }
         }));
   }
