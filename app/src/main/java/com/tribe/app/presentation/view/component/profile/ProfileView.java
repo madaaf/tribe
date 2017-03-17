@@ -153,7 +153,7 @@ public class ProfileView extends FrameLayout {
     }
   }
 
-  @OnClick(R.id.viewShareProfile) void clickShareProfile() {
+  @OnClick({R.id.viewShareProfile, R.id.btnShare}) void clickShareProfile() {
     onShare.onNext(null);
   }
 

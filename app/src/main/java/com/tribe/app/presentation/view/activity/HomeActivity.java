@@ -295,6 +295,7 @@ public class HomeActivity extends BaseActivity
   private void initRecyclerView() {
     layoutManager = new HomeLayoutManager(context());
     layoutManager.setAutoMeasureEnabled(false);
+    recyclerViewFriends.setHasFixedSize(true);
     recyclerViewFriends.setLayoutManager(layoutManager);
     recyclerViewFriends.setItemAnimator(null);
     homeGridAdapter.setItems(new ArrayList<>());
@@ -305,6 +306,9 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
     recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
     recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+    recyclerViewFriends.setItemViewCacheSize(30);
+    recyclerViewFriends.setDrawingCacheEnabled(true);
+    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
     layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
       @Override public int getSpanSize(int position) {

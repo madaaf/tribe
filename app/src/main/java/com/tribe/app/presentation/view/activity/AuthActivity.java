@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -19,12 +18,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
@@ -89,7 +82,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
-  @Inject SmsListener smsListener;
+  //@Inject SmsListener smsListener;
 
   @BindView(R.id.viewVideoAuth) AuthVideoView authVideoView;
 
@@ -174,7 +167,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     initDependencyInjector();
 
     init();
-    initSmsListener();
+    //initSmsListener();
     manageDeepLink(getIntent());
 
     if (lastVersion.get() != -1 && !lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
@@ -219,7 +212,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (countdownSubscription != null) countdownSubscription.unsubscribe();
-    smsListener.unregister();
+    //smsListener.unregister();
     super.onDestroy();
   }
 
@@ -259,7 +252,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   private void init() {
-    smsListener.register();
+    //smsListener.register();
     viewBackground.setEnabled(false);
     btnPlay.setEnabled(false);
 
@@ -321,23 +314,23 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   private void initSmsListener() {
-    smsListener.setSmsCallback(AuthActivity.this);
-    Dexter.withActivity(this)
-        .withPermission(Manifest.permission.RECEIVE_SMS)
-        .withListener(new PermissionListener() {
-          @Override public void onPermissionGranted(PermissionGrantedResponse response) {
-            smsListener.setSmsCallback(AuthActivity.this);
-          }
-
-          @Override public void onPermissionDenied(PermissionDeniedResponse response) {
-          }
-
-          @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission,
-              PermissionToken token) {
-            token.continuePermissionRequest();
-          }
-        })
-        .check();
+    //smsListener.setSmsCallback(AuthActivity.this);
+    //Dexter.withActivity(this)
+    //    .withPermission(Manifest.permission.RECEIVE_SMS)
+    //    .withListener(new PermissionListener() {
+    //      @Override public void onPermissionGranted(PermissionGrantedResponse response) {
+    //        smsListener.setSmsCallback(AuthActivity.this);
+    //      }
+    //
+    //      @Override public void onPermissionDenied(PermissionDeniedResponse response) {
+    //      }
+    //
+    //      @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission,
+    //          PermissionToken token) {
+    //        token.continuePermissionRequest();
+    //      }
+    //    })
+    //    .check();
   }
 
   private void initViewCode() {
@@ -507,7 +500,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     viewStatus.showCodeSent(viewPhoneNumber.getPhoneNumberFormatted());
     showViewCode(animate);
     hideViewPhoneNumber(animate);
-    smsListener.setSmsCallback(AuthActivity.this);
+    //smsListener.setSmsCallback(AuthActivity.this);
   }
 
   private void confirmPhoneNumber() {

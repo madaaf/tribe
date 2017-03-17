@@ -16,6 +16,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 17/02/2016.
@@ -75,15 +76,6 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
     setWillNotDraw(false);
   }
 
-  @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-    if (getWidth() != 0 && getHeight() != 0) {
-      refactorSize();
-      invalidate();
-    }
-  }
-
   @Override public void load(Recipient recipient) {
     avatar.load(recipient);
   }
@@ -113,6 +105,7 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
   }
 
   private void refactorSize() {
+    Timber.d("Refactor size");
     MarginLayoutParams params = (MarginLayoutParams) avatar.getLayoutParams();
     params.width = getWidth();
     params.height = getHeight();

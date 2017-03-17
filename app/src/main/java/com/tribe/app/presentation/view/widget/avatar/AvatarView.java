@@ -108,11 +108,6 @@ public class AvatarView extends LinearLayout implements Avatar {
 
   @Override protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
-
-    if (type == LIVE || type == CONNECTED) {
-      int radius = getRadius();
-      canvas.drawCircle(getWidth() - radius, getHeight() - radius, radius, transparentPaint);
-    }
   }
 
   @Override public void load(Recipient recipient) {

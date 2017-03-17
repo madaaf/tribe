@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <include layout="@layout/view_tile_background" />
+  <include layout="@layout/view_tile_background"/>
 
   <View
       android:id="@+id/viewShadowAvatar"
@@ -19,6 +19,6 @@
       android:background="@null"
       />
 
-  <include layout="@layout/view_tile_grid_base_regular" />
+  <include layout="@layout/view_tile_grid_base_regular"/>
 
 </merge>
