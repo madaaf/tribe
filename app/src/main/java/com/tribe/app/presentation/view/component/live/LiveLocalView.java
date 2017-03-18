@@ -63,6 +63,7 @@ public class LiveLocalView extends FrameLayout {
   private Unbinder unbinder;
   private boolean hiddenControls = false;
   private boolean cameraEnabled = true;
+  private boolean microEnabled = true;
   private GestureDetectorCompat gestureDetector;
 
   // RESOURCES
@@ -72,6 +73,7 @@ public class LiveLocalView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onEnableCamera = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
+  private PublishSubject<Boolean> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {
@@ -105,6 +107,7 @@ public class LiveLocalView extends FrameLayout {
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
+    viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
 
     viewAudio.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
@@ -182,12 +185,43 @@ public class LiveLocalView extends FrameLayout {
     return super.onTouchEvent(event);
   }
 
+  class TapGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+    @Override public boolean onDoubleTap(MotionEvent e) {
+      switchCamera();
+      return true;
+    }
+
+    @Override public boolean onSingleTapConfirmed(MotionEvent e) {
+      onClick.onNext(null);
+      return true;
+    }
+  }
+
   ////////////////
   // ANIMATIONS //
   ////////////////
 
+  /////////////////
+  //   PUBLIC    //
+  /////////////////
+
+  public void dispose() {
+    if (subscriptions != null) subscriptions.unsubscribe();
+    viewPeerLocal.onDestroy();
+  }
+
+  public LocalPeerView getLocalPeerView() {
+    return viewPeerLocal;
+  }
+
+  public void hideControls(boolean hiddenControls) {
+    this.hiddenControls = hiddenControls;
+  }
+
   public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
     backMicroDisabled.setVisibility(GONE);
+
     if (!isMicroActivated) {
       backLiveLocalView.setVisibility(VISIBLE);
       imgMicroDisabled.setVisibility(VISIBLE);
@@ -232,41 +266,11 @@ public class LiveLocalView extends FrameLayout {
     });
   }
 
-  /////////////////
-  //   PUBLIC    //
-  /////////////////
-
-  public void dispose() {
-    if (subscriptions != null) subscriptions.unsubscribe();
-    viewPeerLocal.onDestroy();
-  }
-
-  public LocalPeerView getLocalPeerView() {
-    return viewPeerLocal;
-  }
-
-  public void hideControls(boolean hiddenControls) {
-    this.hiddenControls = hiddenControls;
-  }
-
   //////////////////
   //  OBSERVABLES //
   //////////////////
 
   public Observable<Void> onClick() {
     return onClick;
-  }
-
-  class TapGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-    @Override public boolean onDoubleTap(MotionEvent e) {
-      switchCamera();
-      return true;
-    }
-
-    @Override public boolean onSingleTapConfirmed(MotionEvent e) {
-      onClick.onNext(null);
-      return true;
-    }
   }
 }

@@ -9,8 +9,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,12 +38,11 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveControlsView extends FrameLayout {
 
   private static final int DURATION = 300;
+  private static final int DURATION_PARAM = 450;
 
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.btnInviteLive) View btnInviteLive;
-
-  @BindView(R.id.btnLeave) View btnLeave;
 
   @BindView(R.id.btnNotify) View btnNotify;
 
@@ -51,7 +52,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnFilter) View btnFilter;
 
-  @BindView(R.id.btnExpend) ImageView btnExpend;
+  @BindView(R.id.btnExpand) ImageView btnExpand;
 
   @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
 
@@ -64,12 +65,14 @@ public class LiveControlsView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private ObjectAnimator animatorRotation;
+  private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false;
+  private float xTranslation;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Void> onClickCameraOrientation = PublishSubject.create();
-  private PublishSubject<Void> onClickMicro = PublishSubject.create();
+  private PublishSubject<Boolean> onClickMicro = PublishSubject.create();
   private PublishSubject<Void> onClickParamExpand = PublishSubject.create();
   private PublishSubject<Void> onClickCameraEnable = PublishSubject.create();
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
@@ -113,6 +116,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void initUI() {
+    xTranslation = getResources().getDimension(R.dimen.nav_icon_size);
     btnNotify.setEnabled(false);
   }
 
@@ -132,6 +136,47 @@ public class LiveControlsView extends FrameLayout {
         .inject(this);
   }
 
+  private void expandParam() {
+    if (!isParamExpanded) {
+      isParamExpanded = true;
+
+      int widthExtended = layoutContainerParamExtendedLive.getWidth();
+      layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
+      layoutContainerParamExtendedLive.setVisibility(VISIBLE);
+
+      btnExpand.setImageResource(R.drawable.picto_extend_left_live);
+
+      setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
+      setXTranslateAnimation(layoutContainerParamLive, widthExtended);
+
+      if (cameraEnabled) {
+        setXTranslateAnimation(btnExpand, widthExtended);
+      } else {
+        setXTranslateAnimation(btnExpand, 3 * xTranslation);
+      }
+    } else {
+      isParamExpanded = false;
+      layoutContainerParamExtendedLive.setTranslationX(0);
+      btnExpand.setImageResource(R.drawable.picto_extend_right_live);
+
+      setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
+      setXTranslateAnimation(layoutContainerParamLive, 0);
+      setXTranslateAnimation(btnExpand, 0);
+    }
+  }
+
+  private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
+    ViewPropertyAnimator xAnim = view.animate();
+    xAnim.translationX(translation)
+        .setInterpolator(new OvershootInterpolator(0.45f))
+        .alpha(1)
+        .setDuration(DURATION_PARAM)
+        .setListener(null)
+        .start();
+
+    return xAnim;
+  }
+
   ///////////////
   //  ONCLICK  //
   ///////////////
@@ -145,27 +190,20 @@ public class LiveControlsView extends FrameLayout {
         .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
         .setDuration(DURATION)
         .start();
-    viewLocalLive.switchCamera();
+    onClickCameraOrientation.onNext(null);
   }
 
   @OnClick(R.id.btnMicro) void clickMicro() {
-    if (isMicroActivated) {
-      isMicroActivated = false;
-      btnMicro.setImageResource(R.drawable.picto_micro_off_live);
-    } else {
-      isMicroActivated = true;
-      btnMicro.setImageResource(R.drawable.picto_micro_on_live);
-    }
-
-    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+    microEnabled = !microEnabled;
+    onClickMicro.onNext(microEnabled);
   }
 
-  @OnClick(R.id.btnExpend) void clickExpandParam() {
-    expendParam();
+  @OnClick(R.id.btnExpand) void clickExpandParam() {
+    expandParam();
   }
 
   @OnClick(R.id.btnCameraOn) void clickCameraEnable() {
-    isCameraActivated = false;
+    cameraEnabled = false;
     btnCameraOn.setVisibility(GONE);
     btnCameraOff.setVisibility(VISIBLE);
 
@@ -180,16 +218,15 @@ public class LiveControlsView extends FrameLayout {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         setXTranslateAnimation(btnMicro, -xTranslation);
-        setXTranslateAnimation(btnExpend, 3 * xTranslation);
+        setXTranslateAnimation(btnExpand, 3 * xTranslation);
       }
     });
 
-    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-    viewLocalLive.disableCamera(true);
+    onClickCameraEnable.onNext(null);
   }
 
   @OnClick(R.id.btnCameraOff) void clickCameraDisable() {
-    isCameraActivated = true;
+    cameraEnabled = true;
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
 
@@ -199,13 +236,12 @@ public class LiveControlsView extends FrameLayout {
     layoutContainerParamLive.setVisibility(VISIBLE);
 
     setXTranslateAnimation(btnMicro, 0);
-    setXTranslateAnimation(btnExpend, layoutContainerParamExtendedLive.getWidth());
+    setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth());
 
     btnOrientationCamera.setAnimation(scaleAnimation);
     btnFilter.setAnimation(scaleAnimation);
 
-    viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-    viewLocalLive.enableCamera(true);
+    onClickCameraDisable.onNext(null);
   }
 
   @OnClick(R.id.btnNotify) void clickNotify() {
@@ -234,6 +270,15 @@ public class LiveControlsView extends FrameLayout {
     btnNotify.animate().setListener(null);
 
     if (animatorRotation != null) animatorRotation.cancel();
+  }
+
+  public void setNotifyEnabled(boolean enable) {
+    btnNotify.setEnabled(enable);
+  }
+
+  public void setMicroEnabled(boolean enabled) {
+    btnMicro.setImageResource(
+        enabled ? R.drawable.picto_micro_on_live : R.drawable.picto_micro_off_live);
   }
 
   public void refactorNotifyButton(boolean enable) {
@@ -314,7 +359,7 @@ public class LiveControlsView extends FrameLayout {
     return onClickCameraOrientation;
   }
 
-  public Observable<Void> onClickMicro() {
+  public Observable<Boolean> onClickMicro() {
     return onClickMicro;
   }
 

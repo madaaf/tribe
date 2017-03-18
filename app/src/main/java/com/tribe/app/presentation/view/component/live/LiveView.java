@@ -9,9 +9,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -32,7 +30,6 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.TileView;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
@@ -62,8 +59,6 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static com.tribe.app.R.dimen.nav_icon_size;
-
 /**
  * Created by tiago on 01/18/2017.
  */
@@ -72,15 +67,11 @@ public class LiveView extends FrameLayout {
   public static final int LIVE_MAX = 8;
 
   private static final int DURATION = 300;
-  private static final int DURATION_PARAM = 600;
 
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
-  private static float xTranslation;
   private static final float OVERSHOOT = 1.2f;
-  private boolean isParamExpended = false;
-  private boolean isMicroActivated = true;
-  private boolean isCameraActivated = true;
+
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -107,6 +98,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
+  @BindView(R.id.btnLeave) View btnLeave;
+
   // VARIABLES
   private Live live;
   private Room room;
@@ -122,6 +115,7 @@ public class LiveView extends FrameLayout {
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
+  private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -237,7 +231,6 @@ public class LiveView extends FrameLayout {
   //////////////////////
 
   private void init(Context context, AttributeSet attrs) {
-    xTranslation = getResources().getDimension(nav_icon_size);
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
@@ -287,80 +280,8 @@ public class LiveView extends FrameLayout {
         onShouldCloseInvites.onNext(null);
       }
     }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
-      expendParam();
+      onHiddenControls.onNext(isParamExpended);
     }));
-
-    @OnClick(R.id.btnOrientationCamera) void onClickOrientationCamera () {
-      btnOrientationCamera.animate()
-          .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
-          .setDuration(DURATION)
-          .start();
-      viewLocalLive.switchCamera();
-    }
-
-    @OnClick(R.id.btnMicro) void clickMicro () {
-      if (isMicroActivated) {
-        isMicroActivated = false;
-        btnMicro.setImageResource(R.drawable.picto_micro_off_live);
-      } else {
-        isMicroActivated = true;
-        btnMicro.setImageResource(R.drawable.picto_micro_on_live);
-      }
-
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-    }
-
-    @OnClick(R.id.btnExpend) void clickExpandParam () {
-      expendParam();
-    }
-
-    @OnClick(R.id.btnCameraOn) void clickCameraEnable () {
-      isCameraActivated = false;
-      btnCameraOn.setVisibility(GONE);
-      btnCameraOff.setVisibility(VISIBLE);
-
-      Animation scaleAnimation =
-          android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
-
-      btnFilter.setAnimation(scaleAnimation);
-      btnOrientationCamera.setAnimation(scaleAnimation);
-
-      scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
-
-        @Override public void onAnimationEnd(Animation animation) {
-          super.onAnimationEnd(animation);
-          setXTranslateAnimation(btnMicro, -xTranslation);
-          setXTranslateAnimation(btnExpend, 3 * xTranslation);
-        }
-      });
-
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-      viewLocalLive.disableCamera(true);
-    }
-
-    @OnClick(R.id.btnCameraOff) void clickCameraDisable () {
-      isCameraActivated = true;
-      btnCameraOff.setVisibility(GONE);
-      btnCameraOn.setVisibility(VISIBLE);
-
-      Animation scaleAnimation =
-          android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_appear);
-
-      layoutContainerParamLive.setVisibility(VISIBLE);
-
-      setXTranslateAnimation(btnMicro, 0);
-      setXTranslateAnimation(btnExpend, layoutContainerParamExtendedLive.getWidth());
-
-      btnOrientationCamera.setAnimation(scaleAnimation);
-      btnFilter.setAnimation(scaleAnimation);
-
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
-      viewLocalLive.enableCamera(true);
-    }
-
-    @OnClick(R.id.btnNotify) void clickNotify () {
-
-    }
 
     persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
       displayDragingGuestPopupTutorial();
@@ -368,27 +289,29 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
-
+      viewLocalLive.switchCamera();
     }));
 
-    persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aVoid -> {
-
-    }));
-
-    persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
-
+    persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aBoolean -> {
+      isMicroActivated = aBoolean;
+      viewControlsLive.setMicroEnabled(isMicroActivated);
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
-
+      onHiddenControls.onNext(isParamExpended);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraEnable().subscribe(aVoid -> {
-
+      isCameraActivated = false;
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.disableCamera(true);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraDisable().subscribe(aVoid -> {
-
+      isCameraActivated = true;
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableCamera(true);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickNotify().doOnNext(aVoid -> {
@@ -441,7 +364,6 @@ public class LiveView extends FrameLayout {
   @OnClick(R.id.viewRoom) void onClickRoom() {
     if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
     if (hiddenControls) {
-      displayControls(1);
       onHiddenControls.onNext(false);
     }
   }
@@ -585,9 +507,7 @@ public class LiveView extends FrameLayout {
 
   public void initOnAlphaSubscription(Observable<Float> obs) {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
-      btnNotify.setAlpha(alpha);
-      btnInviteLive.setAlpha(alpha);
-      btnExpend.setAlpha(alpha);
+      viewControlsLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
     }));
   }
@@ -662,7 +582,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void onJoining() {
-    btnNotify.setEnabled(live.isCountdown());
+    viewControlsLive.setNotifyEnabled(live.isCountdown());
     hasJoined = true;
   }
 
@@ -780,12 +700,6 @@ public class LiveView extends FrameLayout {
           }
         })
         .start();
-  }
-
-  private void displayControls(int scale) {
-    scale(btnNotify, scale);
-    scale(btnInviteLive, scale);
-    scale(btnExpend, scale);
   }
 
   private void addView(LiveRowView liveRowView, TribeGuest guest, int color,
@@ -1076,48 +990,6 @@ public class LiveView extends FrameLayout {
       }
     }
     return tribeGuestName;
-  }
-
-  private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
-    ViewPropertyAnimator xAnim = view.animate();
-    xAnim.translationX(translation)
-        .setInterpolator(new OvershootInterpolator(1f))
-        .alpha(1)
-        .setDuration(DURATION_PARAM)
-        .setListener(null)
-        .start();
-
-    return xAnim;
-  }
-
-  private void expendParam() {
-    if (!isParamExpended) {
-      isParamExpended = true;
-
-      int widthExtended = layoutContainerParamExtendedLive.getWidth();
-      layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
-      layoutContainerParamExtendedLive.setVisibility(VISIBLE);
-
-      btnExpend.setImageResource(R.drawable.picto_extend_left_live);
-
-      setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
-      setXTranslateAnimation(layoutContainerParamLive, widthExtended);
-      if (isCameraActivated) {
-        setXTranslateAnimation(btnExpend, widthExtended);
-      } else {
-        setXTranslateAnimation(btnExpend, 3 * xTranslation);
-      }
-    } else {
-
-      isParamExpended = false;
-      layoutContainerParamExtendedLive.setTranslationX(0);
-      btnExpend.setImageResource(R.drawable.picto_extend_right_live);
-
-      setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
-      setXTranslateAnimation(layoutContainerParamLive, 0);
-      setXTranslateAnimation(btnExpend, 0);
-    }
-    onHiddenControls.onNext(isParamExpended);
   }
 
   private void displayDragingGuestPopupTutorial() {
