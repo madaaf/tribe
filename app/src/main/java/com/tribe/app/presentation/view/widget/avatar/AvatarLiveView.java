@@ -105,7 +105,6 @@ public class AvatarLiveView extends RelativeLayout implements Avatar {
   }
 
   private void refactorSize() {
-    Timber.d("Refactor size");
     MarginLayoutParams params = (MarginLayoutParams) avatar.getLayoutParams();
     params.width = getWidth();
     params.height = getHeight();

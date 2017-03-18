@@ -254,8 +254,6 @@ dependencies {
   //compile developmentDependencies.androidDevMetrics
   compile developmentDependencies.takt
 
-  compile 'com.karumi:dexter:3.0.2'
-
   compile project(':AdapterDelegates')
   compile project(':tribelivesdk')
   compile project(':ViewNavigator')

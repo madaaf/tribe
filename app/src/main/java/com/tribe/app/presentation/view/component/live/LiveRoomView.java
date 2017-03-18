@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -21,6 +21,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import javax.inject.Inject;
 
 public class LiveRoomView extends FrameLayout {
 
@@ -30,13 +32,15 @@ public class LiveRoomView extends FrameLayout {
   public static final int GRID = 0;
   public static final int LINEAR = 1;
 
-  private static int DURATION = 600;
-  private static int onDroppedBarHeight = 150;
+  private static int DURATION = 300;
   private static final int DEFAULT_TYPE = GRID;
+
+  @Inject ScreenUtils screenUtils;
 
   // VARIABLES
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
+  private int onDroppedBarHeight = 0;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -51,9 +55,10 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void init() {
-
     type = DEFAULT_TYPE;
     initDependencyInjector();
+
+    onDroppedBarHeight = screenUtils.dpToPx(65);
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
@@ -106,8 +111,8 @@ public class LiveRoomView extends FrameLayout {
           new ResizeAnimation(l, lastViewAdded, onDroppedBarHeight, flexboxLayout.getHeight());
     }
 
-    resizeAnimation.setDuration(DURATION);
-    resizeAnimation.setInterpolator(new DecelerateInterpolator());
+    resizeAnimation.setDuration(DURATION * 2);
+    resizeAnimation.setInterpolator(new OvershootInterpolator(0.4f));
     lastViewAdded.startAnimation(resizeAnimation);
   }
 
@@ -175,9 +180,8 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
           ResizeAnimation resizeAnimation =
               new ResizeAnimation(lp, liveRowView, onDroppedBarHeight, 0);
-
           resizeAnimation.setDuration(DURATION);
-          resizeAnimation.setInterpolator(new DecelerateInterpolator());
+          resizeAnimation.setInterpolator(new OvershootInterpolator(0.4f));
           liveRowView.startAnimation(resizeAnimation);
           liveRowView.setLayoutParams(lp);
         } else {
