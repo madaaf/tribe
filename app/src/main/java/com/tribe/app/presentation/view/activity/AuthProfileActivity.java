@@ -246,7 +246,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     } else if (accessToken != null && StringUtils.isEmpty(user.getId())) {
       showLoading();
       profileInfoPresenter.getUserInfo();
-    } else if (accessToken != null && !StringUtils.isEmpty(user.getId())) {
+    } else if (!StringUtils.isEmpty(user.getId())) {
       showLoading();
       profileInfoPresenter.updateUser(profileInfoView.getUsername(),
           profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
