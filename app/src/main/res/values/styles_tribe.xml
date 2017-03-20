@@ -6,11 +6,11 @@
   </style>
 
   <style name="Body.One" parent="Body">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Body.Two" parent="Body">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Body.One.Black" parent="@style/Body.One">
@@ -82,11 +82,11 @@
   </style>
 
   <style name="Caption.One">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Caption.Two">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Caption.One.White40" parent="Caption.One">
@@ -119,11 +119,11 @@
   </style>
 
   <style name="Title.1" parent="@style/Title">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Title.2" parent="@style/Title">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Title.2.White" parent="@style/Title.2">
@@ -211,11 +211,11 @@
   </style>
 
   <style name="Headline.White.1" parent="@style/Headline.White">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Headline.White.2" parent="@style/Headline.White">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Headline.Black" parent="@style/Headline">
@@ -223,11 +223,11 @@
   </style>
 
   <style name="Headline.Black.1" parent="@style/Headline.Black">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Headline.Black.Regular" parent="Headline.Black">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Headline.Blue" parent="Headline">
@@ -239,7 +239,7 @@
   </style>
 
   <style name="Giant.1" parent="Giant">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Giant.1.Black" parent="Giant.1">
@@ -251,43 +251,11 @@
   </style>
 
   <style name="Medium.1" parent="Medium">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Medium.1.White" parent="Medium.1">
     <item name="android:textColor">@android:color/white</item>
-  </style>
-
-  <style name="Points">
-    <item name="customFont">SBNav.ttf</item>
-  </style>
-
-  <style name="Points.Reg" parent="@style/Points">
-    <item name="android:textSize">20sp</item>
-  </style>
-
-  <style name="Points.Reg.Black" parent="Points.Reg">
-    <item name="android:textColor">@android:color/black</item>
-  </style>
-
-  <style name="Points.Reg.Yellow" parent="Points.Reg">
-    <item name="android:textColor">@color/yellow</item>
-  </style>
-
-  <style name="Points.Reg.Black40" parent="Points.Reg">
-    <item name="android:textColor">@color/black.opacity.40</item>
-  </style>
-
-  <style name="Points.Small" parent="Points">
-    <item name="android:textSize">15sp</item>
-  </style>
-
-  <style name="Points.Small.White" parent="Points.Small">
-    <item name="android:textColor">@android:color/white</item>
-  </style>
-
-  <style name="Points.Large" parent="Points.Reg.Black">
-    <item name="android:textSize">35sp</item>
   </style>
 
   <style name="Small">
@@ -296,11 +264,11 @@
   </style>
 
   <style name="Small.1" parent="@style/Small">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Small.2" parent="@style/Small">
-    <item name="customFont">Roboto-Bold.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Small.2.Black" parent="@style/Small.2">
@@ -315,8 +283,10 @@
     <item name="android:textColor">@color/black.opacity.20</item>
   </style>
 
+  <style name="Text" />
+  
   <style name="Text.Input">
-    <item name="customFont">Roboto-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
     <item name="android:singleLine">true</item>
     <item name="android:textColor">@android:color/black</item>
     <item name="android:textColorHint">@color/black.opacity.40</item>

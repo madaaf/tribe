@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.TextView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.FontCache;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class TextViewFont extends TextView {
+public class TextViewFont extends android.support.v7.widget.AppCompatTextView {
 
   private String customFont;
 

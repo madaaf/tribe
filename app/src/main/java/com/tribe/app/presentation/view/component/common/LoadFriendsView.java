@@ -22,6 +22,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -146,7 +147,7 @@ public class LoadFriendsView extends LinearLayout {
     } else {
       TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_AddressBook);
     }
-    txtTitle.setCustomFont(getContext(), "Roboto-Bold.ttf");
+    txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
   }
 
   public void setBody(String str) {

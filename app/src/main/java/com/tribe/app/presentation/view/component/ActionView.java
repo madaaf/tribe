@@ -17,6 +17,7 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -172,7 +173,7 @@ public class ActionView extends FrameLayout {
 
       if (type == CRITICAL) {
         TextViewCompat.setTextAppearance(txtTitle, R.style.Title_1_Red);
-        txtTitle.setCustomFont(getContext(), "Roboto-Bold.ttf");
+        txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
       }
     }
   }

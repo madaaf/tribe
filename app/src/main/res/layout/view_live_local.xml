@@ -66,6 +66,6 @@
       android:background="@color/red"
       android:gravity="center"
       android:maxLines="1"
-      style="@style/Points.Small.White"
+      style="@style/Body.Two.White"
       />
 </merge>
