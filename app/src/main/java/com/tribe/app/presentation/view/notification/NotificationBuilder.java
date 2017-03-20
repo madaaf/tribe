@@ -47,7 +47,7 @@ import javax.inject.Singleton;
         Notification notification = buildNotification(notificationPayload, "Tribos");
         if (notification != null) {
           sendFullScreenNotification(remoteMessage);
-          //notificationManager.notify(getNotificationId(notificationPayload), notification);
+          notificationManager.notify(getNotificationId(notificationPayload), notification);
         }
       }
     }
@@ -154,6 +154,7 @@ import javax.inject.Singleton;
 
     incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
         notificationPayload);
+    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     application.startActivity(incomingCallIntent);
   }
 }

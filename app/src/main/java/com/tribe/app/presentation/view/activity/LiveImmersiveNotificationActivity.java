@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
@@ -44,7 +46,7 @@ import timber.log.Timber;
 
 public class LiveImmersiveNotificationActivity extends BaseActivity {
   public final static String PLAYLOAD_VALUE = "playload";
-  private final static int MAX_DURATION_NOTIFICATION = 30;
+  private final static int MAX_DURATION_NOTIFICATION = 5;
 
   private float y1, y2;
   static final int MIN_DISTANCE = 10;
@@ -91,9 +93,11 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_immerdive_call);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
     unbinder = ButterKnife.bind(this);
     initDependencyInjector();
-    setDownCounter();
+    // setDownCounter();
 
     circlePaint.setStrokeWidth(screenUtils.dpToPx(1f));
     circlePaint.setAntiAlias(true);
@@ -175,7 +179,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     viewCircle.setRect(rect);*/
 
     viewCircle.setPaint(circlePaint);
-    initAnimation();
+    // initAnimation();
     avatar.load(playload.getUserPicture());
   }
 
@@ -198,6 +202,17 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         .subscribe(aVoid -> {
           finish();
         });
+  }
+
+  @Override protected void onResume() {
+    // TODO Auto-generated method stub
+    super.onResume();
+    /******block is needed to raise the application if the lock is*********/
+    Window wind = this.getWindow();
+    wind.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+    wind.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+    wind.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    /* ^^^^^^^block is needed to raise the application if the lock is*/
   }
 
   @Override public void onBackPressed() {
