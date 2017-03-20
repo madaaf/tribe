@@ -237,8 +237,10 @@
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
-	<string name="grid_status_live">Hanging live!</string>
+	<string name="grid_name_with_guests">\nAnd guests</string>
+	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
+	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
 	<string name="grid_ghost">Has not joined yet</string>
@@ -876,13 +878,10 @@
 	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>
 	<string name="live_rating_dismiss">Dismiss</string>
 	<string name="live_rating_send">Send rating</string>
-<<<<<<< d143f13e44b7ea43618ec706d34354df40b17524
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oops</string>
 	<string name="invite_popup_message">This user is not on Tribe yet.</string>
 	<string name="invite_popup_action">Invite on Tribe</string>
 	<string name="invite_popup_dismiss">Later</string>
-=======
->>>>>>> display full screen notification
 </resources>

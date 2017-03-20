@@ -1,23 +1,98 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fillAfter="false"
-    android:repeatCount="infinite"
-    android:repeatMode="reverse">
-  <rotate
-      android:duration="70"
-      android:fromDegrees="-5"
-      android:interpolator="@android:anim/linear_interpolator"
-      android:pivotX="50%"
-      android:pivotY="50%"
-      android:repeatCount="5"
-      android:repeatMode="reverse"
-      android:toDegrees="5" />
+    android:interpolator="@android:anim/linear_interpolator">
   <translate
-      android:duration="70"
-      android:fromXDelta="-10"
-      android:interpolator="@android:anim/linear_interpolator"
-      android:repeatCount="5"
-      android:repeatMode="reverse"
-      android:toXDelta="10" />
+      android:duration="20"
+      android:fromXDelta="-1"
+      android:repeatCount="infinite"
+      android:repeatMode="restart"
+      android:toXDelta="1" />
+  <!--  <translate
+        android:duration="20"
+        android:fromXDelta="4"
+        android:repeatCount="infinite"
+        android:repeatMode="restart"
+        android:startOffset="20"
+        android:toXDelta="-3" />
+    <translate
+        android:duration="20"
+        android:fromXDelta="-3"
+        android:repeatCount="infinite"
+        android:repeatMode="restart"
+        android:startOffset="40"
+        android:toXDelta="2" />
+    <translate
+        android:duration="20"
+        android:fromXDelta="2"
+        android:repeatCount="infinite"
+        android:repeatMode="restart"
+        android:startOffset="60"
+        android:toXDelta="-1" />
+    <translate
+        android:duration="20"
+        android:fromXDelta="-1"
+        android:repeatCount="infinite"
+        android:repeatMode="restart"
+        android:startOffset="80"
+        android:toXDelta="0" />
+    <translate
+        android:duration="20"
+        android:fromXDelta="0"
+        android:repeatCount="infinite"
+        android:repeatMode="restart"
+        android:startOffset="100"
+        android:toXDelta="0" />
+
+    -->
+
+
+  <!-- <translate
+       android:duration="20"
+       android:fromXDelta="-12"
+       android:repeatCount="infinite"
+       android:repeatMode="restart"
+       android:startOffset="120"
+       android:toXDelta="10" />
+   <translate
+       android:duration="20"
+       android:fromXDelta="10"
+       android:repeatCount="infinite"
+       android:repeatMode="restart"
+       android:startOffset="140"
+       android:toXDelta="-7" />
+   <translate
+       android:duration="20"
+       android:fromXDelta="-7"
+       android:repeatCount="infinite"
+       android:repeatMode="restart"
+       android:startOffset="160"
+       android:toXDelta="4" />
+   <translate
+       android:duration="20"
+       android:fromXDelta="4"
+       android:repeatCount="infinite"
+       android:repeatMode="restart"
+       android:startOffset="200"
+       android:toXDelta="0" />
+   <translate
+       android:duration="20"
+       android:fromXDelta="0"
+       android:repeatCount="infinite"
+       android:repeatMode="restart"
+       android:startOffset="220"
+       android:toXDelta="0" />-->
 </set>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -237,8 +237,10 @@
 	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
-	<string name="grid_status_live">Live!</string>
+	<string name="grid_name_with_guests">\nEt invités</string>
+	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Live avec des invités!</string>
+	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
@@ -876,13 +878,10 @@
 	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
 	<string name="live_rating_dismiss">Fermer</string>
 	<string name="live_rating_send">Envoyer la note</string>
-<<<<<<< d143f13e44b7ea43618ec706d34354df40b17524
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
 	<string name="invite_popup_message">Cet utilisateur n\'est pas encore inscrit sur Tribe.</string>
 	<string name="invite_popup_action">Inviter sur Tribe</string>
 	<string name="invite_popup_dismiss">Plus tard</string>
-=======
->>>>>>> display full screen notification
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,78 +13,80 @@
       android:layout_gravity="center"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtDidplayName"
+  <!--  <include layout="@layout/view_tile_grid_live" />-->
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size_with_shadow"
+      android:layout_height="@dimen/avatar_size_with_shadow"
+      android:layout_above="@+id/txtContainer"
+      android:layout_centerHorizontal="true"
+      android:layout_marginBottom="50dp"
+      android:background="@null"
+      app:avatarLiveType="live"
+      />
+
+  <LinearLayout
+      android:id="@+id/txtContainer"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_centerInParent="true"
       android:layout_gravity="top|center_horizontal"
-      android:layout_marginTop="50dp"
-      android:text="Mada Jessie Bond"
-      style="@style/Title.2.Black"
-      />
+      android:gravity="center"
+      android:orientation="vertical"
+      >
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtDidplayNam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/vertical_margin_mid"
+        android:text="Live starts with"
+        style="@style/Title.2.Black"
+        />
 
-  <com.tribe.app.presentation.view.widget.avatar.AvatarView
-      android:id="@+id/avatar"
-      android:layout_width="200dp"
-      android:layout_height="200dp"
-      android:layout_gravity="center_horizontal"
-      android:layout_marginTop="100dp"
-      android:background="@null"
-      android:visibility="visible"
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtDidplayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mada Jessie Bond"
+        android:textSize="30sp"
+        style="@style/Title.2.Black"
+        />
 
-      />
+  </LinearLayout>
 
 
   <LinearLayout
-      android:layout_width="match_parent"
+      android:id="@+id/containerAction"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="bottom|center_horizontal"
-      android:layout_marginBottom="20dp"
-      android:orientation="horizontal"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true"
+      android:layout_marginBottom="30dp"
+      android:gravity="center"
+      android:clickable="true"
+      android:orientation="vertical"
       >
-    <FrameLayout
-        android:id="@+id/callActionClose"
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="50dp"
-        android:clickable="true"
-        >
-
-      <ImageView
-          android:layout_width="@dimen/avatar_size_medium"
-          android:layout_height="@dimen/avatar_size_medium"
-          android:layout_gravity="center"
-          android:background="@drawable/shape_oval_red"
-          android:clickable="false"
-          />
-
-      <ImageView
-          android:layout_width="@dimen/icons_start"
-          android:layout_height="@dimen/icons_start"
-          android:layout_gravity="center"
-          android:layout_margin="@dimen/vertical_margin"
-          android:background="@drawable/selectable_button_oval"
-          android:clickable="false"
-          android:padding="@dimen/icons_padding"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_camera_disabled"
-          />
-    </FrameLayout>
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="Swipe up to join"
+        />
     <FrameLayout
         android:id="@+id/callAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="50dp"
         android:clickable="true"
         >
 
       <ImageView
           android:id="@+id/viewCircle"
-          android:layout_width="@dimen/avatar_size_medium"
-          android:layout_height="@dimen/avatar_size_medium"
+          android:layout_width="@dimen/avatar_size_big"
+          android:layout_height="@dimen/avatar_size_big"
           android:layout_gravity="center"
           android:background="@drawable/shape_oval_green"
           android:clickable="false"
@@ -91,8 +94,8 @@
 
       <ImageView
           android:id="@+id/imgVideo"
-          android:layout_width="@dimen/icons_start"
-          android:layout_height="@dimen/icons_start"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
           android:layout_gravity="center"
           android:layout_margin="@dimen/vertical_margin"
           android:background="@drawable/selectable_button_oval"
@@ -102,7 +105,7 @@
           android:src="@drawable/picto_camera"
           />
     </FrameLayout>
-
-
   </LinearLayout>
-</FrameLayout>
+
+
+</RelativeLayout>

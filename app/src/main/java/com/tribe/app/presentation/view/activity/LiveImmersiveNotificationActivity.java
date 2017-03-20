@@ -6,12 +6,16 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -26,7 +30,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import javax.inject.Inject;
 import timber.log.Timber;
 
@@ -35,8 +39,8 @@ import timber.log.Timber;
  */
 
 public class LiveImmersiveNotificationActivity extends BaseActivity {
-  private float x1, x2;
-  static final int MIN_DISTANCE = 150;
+  private float y1, y2;
+  static final int MIN_DISTANCE = 10;
   private final static int TIMER_DISMISS_REMOVE = 5000;
 
   private final static int DURATION_FAST_FURIOUS = 60;
@@ -57,9 +61,10 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   @BindView(R.id.txtDidplayName) TextViewFont txtDidplayName;
   @BindView(R.id.callAction) FrameLayout callAction;
-  @BindView(R.id.callActionClose) FrameLayout callActionClose;
-  @BindView(R.id.avatar) AvatarView avatar;
+  @BindView(R.id.avatar) AvatarLiveView avatar;
   @BindView(R.id.backview) CircleView viewCircle;
+
+  @BindView(R.id.containerAction) LinearLayout containerAction;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -91,44 +96,75 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         playload = null;
       } else {
         playload = (NotificationPayload) extras.getSerializable("mada");
-        txtDidplayName.setText(EmojiParser.demojizedText(
-            getString(R.string.live_notification_hang_live, playload.getUserDisplayName())));
+        txtDidplayName.setText(EmojiParser.demojizedText(playload.getUserDisplayName()));
       }
     }
 
-    scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_stars);
+    scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_button_call);
     shake = AnimationUtils.loadAnimation(this, R.anim.vibrate);
-    shake2 = AnimationUtils.loadAnimation(this, R.anim.vibrate2);
 
-    NotificationUtils.getIntentForLive(this, playload);
+  /*  shake2 = AnimationUtils.loadAnimation(this, R.anim.vibrate2);*/
 
-    callAction.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        viewCircle.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.green_status));
+    Animation translation = new TranslateAnimation(0, 0, 0, -80);
+    translation.setDuration(3000);
+    translation.setRepeatCount(-1);
+    translation.setRepeatMode(Animation.REVERSE);
+    translation.setInterpolator(new LinearInterpolator());
 
-        callAction.animate().setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            super.onAnimationEnd(animation);
-            startActivity(NotificationUtils.getIntentForLive(v.getContext(), playload));
-          }
-        }).translationX(screenUtils.getWidthPx()).setDuration(1000).start();
-      }
-    });
+    AnimationSet setAnims = new AnimationSet(true);//false means don't share interpolators
+    setAnims.addAnimation(scaleAnimation);
+    setAnims.addAnimation(shake);
+    //setAnims.addAnimation(translation);
+    callAction.startAnimation(setAnims);
+    containerAction.startAnimation(translation);
 
-    callActionClose.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        finish();
+    callAction.setOnTouchListener(new View.OnTouchListener() {
+      @Override public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+          case MotionEvent.ACTION_DOWN:
+            y1 = event.getY();
+            break;
+          case MotionEvent.ACTION_UP:
+            y2 = event.getY();
+            float deltaY = y2 - y1;
+            if (deltaY < 0) {
+              Timber.e("SOEF SLIDE UP " + deltaY);
+              containerAction.animate()
+                  .translationY(-200)
+                  .alpha(0)
+                  .setDuration(500)
+                  .withEndAction(new Runnable() {
+                    @Override public void run() {
+                      startActivity(NotificationUtils.getIntentForLive(v.getContext(), playload));
+                    }
+                  })
+                  .start();
+            } else {
+              Timber.e("SOEF SLIDE DOWN " + deltaY);
+              containerAction.animate()
+                  .translationY(200)
+                  .alpha(0)
+                  .setDuration(500)
+                  .withEndAction(new Runnable() {
+                    @Override public void run() {
+                      finish();
+                    }
+                  })
+                  .start();
+            }
+            break;
+        }
+        return false;
       }
     });
 
     //callAction.startAnimation(scaleAnimation);
-    Timber.e("SOEF 3");
 /*    Rect rect = new Rect();
     rect.set(avatar.getTop() + (avatar.getWidth() / 2), avatar.getTop() + (avatar.getHeight() / 2),
         50, 50);
     viewCircle.setRect(rect);*/
-    viewCircle.setPaint(circlePaint);
 
+    viewCircle.setPaint(circlePaint);
     initAnimation();
     avatar.load(playload.getUserPicture());
   }
@@ -248,24 +284,4 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 /*    avatar.setScaleX(value);
     avatar.setScaleY(value);*/
   }
-
-/*  @Override public boolean onTouchEvent(MotionEvent event) {
-    switch (event.getAction()) {
-      case MotionEvent.ACTION_DOWN:
-        x1 = event.getX();
-        break;
-      case MotionEvent.ACTION_UP:
-        x2 = event.getX();
-        float deltaX = x2 - x1;
-        if (Math.abs(deltaX) > MIN_DISTANCE) {
-          //Toast.makeText(this, "left2right swipe", Toast.LENGTH_SHORT).show();
-          Timber.e("SOEF SXIPE RIGHT");
-        } else {
-          // consider as something else - a screen tap for example
-          Timber.e("SOEF SXIPE LEFT");
-        }
-        break;
-    }
-    return super.onTouchEvent(event);
-  }*/
 }
