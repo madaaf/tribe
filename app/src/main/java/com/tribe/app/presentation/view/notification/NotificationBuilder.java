@@ -154,7 +154,9 @@ import javax.inject.Singleton;
 
     incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
         notificationPayload);
-    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+/*    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
     application.startActivity(incomingCallIntent);
   }
 }

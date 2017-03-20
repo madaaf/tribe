@@ -4,11 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -97,7 +97,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     unbinder = ButterKnife.bind(this);
     initDependencyInjector();
-    // setDownCounter();
+    setDownCounter();
 
     circlePaint.setStrokeWidth(screenUtils.dpToPx(1f));
     circlePaint.setAntiAlias(true);
@@ -149,6 +149,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                   .setDuration(500)
                   .withEndAction(new Runnable() {
                     @Override public void run() {
+                      finish();
                       startActivity(NotificationUtils.getIntentForLive(v.getContext(), playload));
                     }
                   })
@@ -183,6 +184,12 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     avatar.load(playload.getUserPicture());
   }
 
+  @Override public void finish() {
+    Intent mIntent = new Intent(this, HomeActivity.class);
+    finishAffinity();
+    startActivity(mIntent);
+  }
+
   private void initDependencyInjector() {
     this.userComponent = DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
@@ -205,18 +212,14 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   }
 
   @Override protected void onResume() {
-    // TODO Auto-generated method stub
     super.onResume();
-    /******block is needed to raise the application if the lock is*********/
-    Window wind = this.getWindow();
-    wind.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-    wind.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-    wind.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-    /* ^^^^^^^block is needed to raise the application if the lock is*/
+    onResumeLockPhone();
   }
 
   @Override public void onBackPressed() {
     moveTaskToBack(true);
+    Timber.e("SOEG ");
+    super.onBackPressed();
   }
 
   private void initAnimation() {

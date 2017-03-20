@@ -170,7 +170,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onResume() {
     super.onResume();
-
+    onResumeLockPhone();
     if (!receiverRegistered) {
       if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
 
