@@ -21,7 +21,7 @@ public class TribeFirebaseMessagingService extends FirebaseMessagingService {
 
   @Override public void onMessageReceived(RemoteMessage remoteMessage) {
     Timber.d("Received : " + remoteMessage.getData());
-    notificationBuilder.sendFullScreenNotification(remoteMessage);
+    //notificationBuilder.sendFullScreenNotification(remoteMessage);
     notificationBuilder.sendBundledNotification(remoteMessage);
   }
 }

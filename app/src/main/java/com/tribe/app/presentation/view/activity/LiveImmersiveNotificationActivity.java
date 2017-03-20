@@ -39,10 +39,11 @@ import timber.log.Timber;
  */
 
 public class LiveImmersiveNotificationActivity extends BaseActivity {
+  public final static String PLAYLOAD_VALUE = "playload";
+
   private float y1, y2;
   static final int MIN_DISTANCE = 10;
   private final static int TIMER_DISMISS_REMOVE = 5000;
-
   private final static int DURATION_FAST_FURIOUS = 60;
   private final static int DURATION_FAST = 300;
   private final static int DELAY_COUNTDOWN = 500;
@@ -95,7 +96,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       if (extras == null) {
         playload = null;
       } else {
-        playload = (NotificationPayload) extras.getSerializable("mada");
+        playload = (NotificationPayload) extras.getSerializable(PLAYLOAD_VALUE);
         txtDidplayName.setText(EmojiParser.demojizedText(playload.getUserDisplayName()));
       }
     }

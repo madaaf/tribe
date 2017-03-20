@@ -46,7 +46,8 @@ import javax.inject.Singleton;
       } else {
         Notification notification = buildNotification(notificationPayload, "Tribos");
         if (notification != null) {
-          notificationManager.notify(getNotificationId(notificationPayload), notification);
+          sendFullScreenNotification(remoteMessage);
+          //notificationManager.notify(getNotificationId(notificationPayload), notification);
         }
       }
     }
@@ -146,12 +147,13 @@ import javax.inject.Singleton;
         : (int) System.currentTimeMillis();
   }
 
-  public void sendFullScreenNotification(RemoteMessage remoteMessage) {
+  private void sendFullScreenNotification(RemoteMessage remoteMessage) {
     Intent incomingCallIntent = new Intent(application, LiveImmersiveNotificationActivity.class);
     incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
-    incomingCallIntent.putExtra("mada", notificationPayload);
+    incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
+        notificationPayload);
     application.startActivity(incomingCallIntent);
   }
 }
