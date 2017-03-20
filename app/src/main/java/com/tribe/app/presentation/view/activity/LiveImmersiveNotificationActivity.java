@@ -31,7 +31,11 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 /**
@@ -40,6 +44,7 @@ import timber.log.Timber;
 
 public class LiveImmersiveNotificationActivity extends BaseActivity {
   public final static String PLAYLOAD_VALUE = "playload";
+  private final static int MAX_DURATION_NOTIFICATION = 30;
 
   private float y1, y2;
   static final int MIN_DISTANCE = 10;
@@ -80,11 +85,15 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   Animation shake;
   Animation shake2;
 
+  // OBSERVABLES
+  private Subscription startSubscription;
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_immerdive_call);
     unbinder = ButterKnife.bind(this);
     initDependencyInjector();
+    setDownCounter();
 
     circlePaint.setStrokeWidth(screenUtils.dpToPx(1f));
     circlePaint.setAntiAlias(true);
@@ -183,6 +192,14 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         .inject(this);
   }
 
+  private void setDownCounter() {
+    startSubscription = Observable.timer(MAX_DURATION_NOTIFICATION, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          finish();
+        });
+  }
+
   @Override public void onBackPressed() {
     moveTaskToBack(true);
   }
@@ -279,6 +296,12 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     animatorScaleAvatar.play(animatorScaleDown).before(animatorScaleUp);
     animatorScaleAvatar.start();
+  }
+
+  @Override protected void onDestroy() {
+    if (unbinder != null) unbinder.unbind();
+    if (startSubscription != null) startSubscription.unsubscribe();
+    super.onDestroy();
   }
 
   private void updateScaleWithValue(float value) {
