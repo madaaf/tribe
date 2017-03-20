@@ -44,11 +44,11 @@ public class StreamManager {
 
     localSubscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
       setLocalCameraEnabled(enabled);
-    }).map(aBoolean -> {
-      return null;
-    }).subscribe(o -> {
-      onMediaChanged.onNext(null);
-    }));
+    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
+
+    localSubscriptions.add(this.localPeerView.onEnableMicro().doOnNext(enabled -> {
+      setLocalAudioEnabled(enabled);
+    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
   }
 
   public MediaStream generateLocalStream(Context context,
@@ -150,6 +150,14 @@ public class StreamManager {
     }
 
     liveLocalStream.setCameraEnabled(enabled);
+  }
+
+  private void setLocalAudioEnabled(boolean enabled) {
+    if (liveLocalStream == null) {
+      return;
+    }
+
+    liveLocalStream.setAudioEnabled(enabled);
   }
 
   public boolean isLocalAudioEnabled() {

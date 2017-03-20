@@ -25,6 +25,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -220,19 +221,20 @@ public class LiveLocalView extends FrameLayout {
   }
 
   public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
-    backMicroDisabled.setVisibility(GONE);
+    microEnabled = isMicroActivated;
+    onEnableMicro.onNext(microEnabled);
 
     if (!isMicroActivated) {
-      backLiveLocalView.setVisibility(VISIBLE);
-      imgMicroDisabled.setVisibility(VISIBLE);
+      AnimationUtils.fadeIn(backLiveLocalView, DURATION);
+      AnimationUtils.fadeIn(imgMicroDisabled, DURATION);
 
       if (!isCameraActivated) {
-        backLiveLocalView.setVisibility(GONE);
-        backMicroDisabled.setVisibility(VISIBLE);
+        AnimationUtils.fadeOut(backLiveLocalView, DURATION);
+        AnimationUtils.fadeIn(backMicroDisabled, DURATION);
       }
     } else {
-      backLiveLocalView.setVisibility(GONE);
-      imgMicroDisabled.setVisibility(GONE);
+      AnimationUtils.fadeOut(backLiveLocalView, DURATION);
+      AnimationUtils.fadeOut(imgMicroDisabled, DURATION);
     }
   }
 
