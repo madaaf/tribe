@@ -27,6 +27,7 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -40,7 +41,6 @@ import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareCardView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.Avatar;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.util.Date;
 import javax.inject.Inject;
 import rx.Observable;
@@ -88,6 +88,10 @@ public class TileView extends SquareCardView {
   @Inject PaletteGrid paletteGrid;
 
   @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
+
+  @Nullable @BindView(R.id.txtWithGuests) TextViewFont txtWithGuests;
+
+  @Nullable @BindView(R.id.layoutName) public ViewGroup layoutName;
 
   @Nullable @BindView(R.id.viewShadowAvatar) public View viewShadowAvatar;
 
@@ -251,7 +255,12 @@ public class TileView extends SquareCardView {
         if (Math.abs(value - spring.getEndValue()) < 0.05) value = (float) spring.getEndValue();
 
         float alpha = 1 - value;
-        txtName.setAlpha(alpha);
+        if (layoutName != null) {
+          layoutName.setAlpha(alpha);
+        } else {
+          txtName.setAlpha(alpha);
+        }
+
         if (imgInd != null) {
           imgInd.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1,
               -10)); // Should disappear faster ^^
@@ -330,7 +339,7 @@ public class TileView extends SquareCardView {
   }
 
   private void prepareTouchesMore() {
-    txtName.setOnClickListener(v -> clickMoreView.onNext(this));
+    if (layoutName != null) layoutName.setOnClickListener(v -> clickMoreView.onNext(this));
   }
 
   private void prepareClickOnView() {
@@ -383,23 +392,18 @@ public class TileView extends SquareCardView {
       txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
     } else {
       txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      if (txtWithGuests != null) {
+        txtWithGuests.setVisibility(recipient instanceof Invite ? View.VISIBLE : View.GONE);
+      }
     }
 
     txtName.setText(recipient.getDisplayName());
   }
 
   public void setStatus() {
-    if (recipient.isLive()) {
-      ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
-      txtStatus.setText(R.string.grid_status_live);
-    } else if (recipient.isOnline()) {
-      ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
-      txtStatus.setText(R.string.grid_status_connected);
-    } else {
-      if (recipient.getLastSeenAt() != null) {
-        txtStatus.setText(DateUtils.getRelativeTimeSpanString(recipient.getLastSeenAt().getTime(),
-            new Date().getTime(), DateUtils.SECOND_IN_MILLIS).toString().toLowerCase());
-      }
+    if (!recipient.isLive() && !recipient.isOnline() && recipient.getLastSeenAt() != null) {
+      txtStatus.setText(DateUtils.getRelativeTimeSpanString(recipient.getLastSeenAt().getTime(),
+          new Date().getTime(), DateUtils.SECOND_IN_MILLIS).toString().toLowerCase());
     }
   }
 

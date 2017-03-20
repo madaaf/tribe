@@ -237,8 +237,9 @@
 	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
-	<string name="grid_status_live">Live!</string>
+	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Live avec des invités!</string>
+	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
 	<string name="grid_ghost">Pas encore inscrit</string>

@@ -65,6 +65,10 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
+  <style name="Body.Two.Black15" parent="@style/Body.Two">
+    <item name="android:textColor">@color/black.opacity.15</item>
+  </style>
+
   <style name="Body.Two.Purple" parent="@style/Body.Two">
     <item name="android:textColor">@color/purple.group</item>
   </style>
@@ -283,8 +287,8 @@
     <item name="android:textColor">@color/black.opacity.20</item>
   </style>
 
-  <style name="Text" />
-  
+  <style name="Text"/>
+
   <style name="Text.Input">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
     <item name="android:singleLine">true</item>
