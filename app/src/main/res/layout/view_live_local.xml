@@ -12,8 +12,9 @@
       android:id="@+id/backLiveLocalView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:alpha="0"
       android:background="@color/black.opacity.50"
-      android:visibility="gone"
+      android:visibility="visible"
       />
 
   <ImageView
@@ -21,10 +22,11 @@
       android:layout_width="@dimen/nav_icon_size"
       android:layout_height="@dimen/nav_icon_size"
       android:layout_gravity="center"
+      android:alpha="0"
       android:background="@drawable/selectable_button_oval_light"
       android:scaleType="centerInside"
       android:src="@drawable/picto_micro_off_shadow"
-      android:visibility="gone"
+      android:visibility="visible"
       />
 
 

@@ -74,6 +74,10 @@ public class LocalPeerView extends PeerView {
     return onEnableCamera;
   }
 
+  public Observable<Boolean> onEnableMicro() {
+    return onEnableMicro;
+  }
+
   public Observable<Void> onSwitchCamera() {
     return onSwitchCamera;
   }
