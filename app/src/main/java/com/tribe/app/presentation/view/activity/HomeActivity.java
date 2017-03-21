@@ -58,7 +58,6 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
@@ -102,8 +101,6 @@ public class HomeActivity extends BaseActivity
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
   @Inject @LastSync Preference<Long> lastSync;
-
-  @Inject SoundManager soundManager;
 
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
@@ -391,7 +388,7 @@ public class HomeActivity extends BaseActivity
 
           if (latestRecipientList.size() != 0) {
             diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-            homeGridAdapter.setItems(temp);
+            homeGridAdapter.setItems(temp); // SOEF
           }
 
           latestRecipientList.clear();

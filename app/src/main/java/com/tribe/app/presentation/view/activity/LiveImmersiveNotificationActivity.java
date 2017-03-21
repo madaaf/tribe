@@ -1,11 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,9 +9,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,9 +23,11 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.CircleView;
+import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.util.concurrent.TimeUnit;
@@ -38,54 +35,37 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 15/03/2017.
  */
 
 public class LiveImmersiveNotificationActivity extends BaseActivity {
-  public final static String PLAYLOAD_VALUE = "playload";
-  private final static int MAX_DURATION_NOTIFICATION = 5;
+  public final static String PLAYLOAD_VALUE = "PLAYLOAD_VALUE";
 
+  private final static int MAX_DURATION_NOTIFICATION = 3000;
+  private final static int SLOW_TRANSLATION_DURATION = 3000;
+  private final static int Y_TRANSLATION = -20;
+
+  private int yTranslation = 0;
   private float y1, y2;
-  static final int MIN_DISTANCE = 10;
-  private final static int TIMER_DISMISS_REMOVE = 5000;
-  private final static int DURATION_FAST_FURIOUS = 60;
-  private final static int DURATION_FAST = 300;
-  private final static int DELAY_COUNTDOWN = 500;
-  private final static int DURATION_PULSE_FAST = 150;
-  private final static int DURATION_PULSE = 300;
-  private final static int DURATION_SCALE = 1000;
-  private final static int SCALE_DELAY = 250;
-  private final static int DURATION_BUZZ = 300;
-  private final static float OVERSHOOT_SCALE = 1.25f;
-  private final static float SCALE_AVATAR = 1.15f;
-  private boolean hasPulsed = false;
 
   @Inject ScreenUtils screenUtils;
   @Inject PaletteGrid paletteGrid;
   @Inject Navigator navigator;
+  @Inject SoundManager soundManager;
 
   @BindView(R.id.txtDidplayName) TextViewFont txtDidplayName;
   @BindView(R.id.callAction) FrameLayout callAction;
   @BindView(R.id.avatar) AvatarLiveView avatar;
-  @BindView(R.id.backview) CircleView viewCircle;
-
+  @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
   @BindView(R.id.containerAction) LinearLayout containerAction;
+  @BindView(R.id.containerView) ImageView containerView;
 
   // VARIABLES
   private Unbinder unbinder;
   private UserComponent userComponent;
-  private ValueAnimator animatorPulse;
-  private ValueAnimator animatorScaleDown;
-  private ValueAnimator animatorScaleUp;
-  private AnimatorSet animatorScaleAvatar;
-  private Paint circlePaint = new Paint();
   NotificationPayload playload = null;
-  Animation scaleAnimation;
-  Animation shake;
-  Animation shake2;
 
   // OBSERVABLES
   private Subscription startSubscription;
@@ -97,12 +77,6 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     unbinder = ButterKnife.bind(this);
     initDependencyInjector();
-    setDownCounter();
-
-    circlePaint.setStrokeWidth(screenUtils.dpToPx(1f));
-    circlePaint.setAntiAlias(true);
-
-    viewCircle.setPaint(circlePaint);
 
     if (savedInstanceState == null) {
       Bundle extras = getIntent().getExtras();
@@ -114,80 +88,63 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       }
     }
 
-    scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_button_call);
-    shake = AnimationUtils.loadAnimation(this, R.anim.vibrate);
-
-  /*  shake2 = AnimationUtils.loadAnimation(this, R.anim.vibrate2);*/
-
-    Animation translation = new TranslateAnimation(0, 0, 0, -80);
-    translation.setDuration(3000);
-    translation.setRepeatCount(-1);
-    translation.setRepeatMode(Animation.REVERSE);
-    translation.setInterpolator(new LinearInterpolator());
-
-    AnimationSet setAnims = new AnimationSet(true);//false means don't share interpolators
-    setAnims.addAnimation(scaleAnimation);
-    setAnims.addAnimation(shake);
-    //setAnims.addAnimation(translation);
-    callAction.startAnimation(setAnims);
-    containerAction.startAnimation(translation);
-
-    callAction.setOnTouchListener(new View.OnTouchListener() {
-      @Override public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            y1 = event.getY();
-            break;
-          case MotionEvent.ACTION_UP:
-            y2 = event.getY();
-            float deltaY = y2 - y1;
-            if (deltaY < 0) {
-              Timber.e("SOEF SLIDE UP " + deltaY);
-              containerAction.animate()
-                  .translationY(-200)
-                  .alpha(0)
-                  .setDuration(500)
-                  .withEndAction(new Runnable() {
-                    @Override public void run() {
-                      finish();
-                      startActivity(NotificationUtils.getIntentForLive(v.getContext(), playload));
-                    }
-                  })
-                  .start();
-            } else {
-              Timber.e("SOEF SLIDE DOWN " + deltaY);
-              containerAction.animate()
-                  .translationY(200)
-                  .alpha(0)
-                  .setDuration(500)
-                  .withEndAction(new Runnable() {
-                    @Override public void run() {
-                      finish();
-                    }
-                  })
-                  .start();
-            }
-            break;
-        }
-        return false;
-      }
-    });
-
-    //callAction.startAnimation(scaleAnimation);
-/*    Rect rect = new Rect();
-    rect.set(avatar.getTop() + (avatar.getWidth() / 2), avatar.getTop() + (avatar.getHeight() / 2),
-        50, 50);
-    viewCircle.setRect(rect);*/
-
-    viewCircle.setPaint(circlePaint);
-    // initAnimation();
+    setAnimation();
+    setDownCounter();
+    soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
+    yTranslation = screenUtils.dpToPx(Y_TRANSLATION);
     avatar.load(playload.getUserPicture());
+    GlideUtils.load(this, playload.getUserPicture(), containerView);
+    callAction.setOnTouchListener(new onTouchJoinButton());
   }
+
+  ////////////////
+  // LIFE CYCLE //
+  ////////////////
 
   @Override public void finish() {
     Intent mIntent = new Intent(this, HomeActivity.class);
     finishAffinity();
     startActivity(mIntent);
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    onResumeLockPhone();
+  }
+
+  @Override public void onBackPressed() {
+    moveTaskToBack(true);
+    super.onBackPressed();
+  }
+
+  @Override protected void onDestroy() {
+    if (unbinder != null) unbinder.unbind();
+    if (startSubscription != null) startSubscription.unsubscribe();
+    super.onDestroy();
+  }
+
+  ////////////////
+  //   PRIVATE  //
+  ////////////////
+
+  private void setAnimation() {
+    pulseLayout.start();
+
+    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_button_call);
+    Animation shakeAnim = AnimationUtils.loadAnimation(this, R.anim.shake);
+    Animation xTranslationAnim = new TranslateAnimation(0, 0, 0, screenUtils.dpToPx(-40));
+
+    xTranslationAnim.setDuration(SLOW_TRANSLATION_DURATION);
+    xTranslationAnim.setRepeatCount(Animation.INFINITE);
+    xTranslationAnim.setRepeatMode(Animation.REVERSE);
+    xTranslationAnim.setInterpolator(new LinearInterpolator());
+
+    AnimationSet setAnims = new AnimationSet(true);
+    setAnims.addAnimation(scaleAnim);
+    setAnims.addAnimation(shakeAnim);
+
+    callAction.startAnimation(setAnims);
+    containerAction.startAnimation(xTranslationAnim);
   }
 
   private void initDependencyInjector() {
@@ -211,119 +168,42 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         });
   }
 
-  @Override protected void onResume() {
-    super.onResume();
-    onResumeLockPhone();
-  }
-
-  @Override public void onBackPressed() {
-    moveTaskToBack(true);
-    Timber.e("SOEG ");
-    super.onBackPressed();
-  }
-
-  private void initAnimation() {
-    startPulse();
-  }
-
-  private void clearAnimator(Animator animator) {
-    if (animator != null) {
-      animator.cancel();
-      animator.removeAllListeners();
+  private class onTouchJoinButton implements View.OnTouchListener {
+    @Override public boolean onTouch(View v, MotionEvent event) {
+      switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+          y1 = event.getY();
+          break;
+        case MotionEvent.ACTION_UP:
+          y2 = event.getY();
+          float deltaY = y2 - y1;
+          if (deltaY < 0) {
+            containerAction.animate()
+                .translationY(-200)
+                .alpha(0)
+                .setDuration(500)
+                .withEndAction(new Runnable() {
+                  @Override public void run() {
+                    finish();
+                    startActivity(NotificationUtils.getIntentForLive(v.getContext(), playload));
+                  }
+                })
+                .start();
+          } else {
+            containerAction.animate()
+                .translationY(200)
+                .alpha(0)
+                .setDuration(500)
+                .withEndAction(new Runnable() {
+                  @Override public void run() {
+                    finish();
+                  }
+                })
+                .start();
+          }
+          break;
+      }
+      return false;
     }
-  }
-
-  public void setColor(int color) {
-    viewCircle.setBackgroundColor(color);
-    viewCircle.setRadius(0);
-    circlePaint.setColor(paletteGrid.getRandomColorExcluding(color));
-  }
-
-  public void startPulse() {
-    animateScaleAvatar();
-  }
-
-  private void animatePulse(int duration) {
-    int finalHeight = screenUtils.getHeightPx() >> 1;
-
-    clearAnimator(animatorPulse);
-
-    animatorPulse = ValueAnimator.ofInt(avatar.getWidth() >> 1, finalHeight);
-    animatorPulse.setDuration(duration);
-    animatorPulse.addUpdateListener(animation -> {
-      Integer value = (Integer) animation.getAnimatedValue();
-      viewCircle.setRadius(value);
-    });
-
-    animatorPulse.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationCancel(Animator animation) {
-        animatorPulse.removeAllListeners();
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        setColor(circlePaint.getColor());
-      }
-    });
-
-    animatorPulse.start();
-  }
-
-  private void animateScaleAvatar() {
-    animatorScaleAvatar = new AnimatorSet();
-
-    animatorScaleUp = ValueAnimator.ofFloat(1f, SCALE_AVATAR);
-    animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-    animatorScaleUp.setDuration(DURATION_SCALE);
-    animatorScaleUp.setStartDelay(SCALE_DELAY);
-    animatorScaleUp.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      updateScaleWithValue(value);
-    });
-    animatorScaleUp.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationCancel(Animator animation) {
-        animatorScaleUp.removeAllListeners();
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        animatorScaleAvatar.start();
-      }
-    });
-
-    animatorScaleDown = ValueAnimator.ofFloat(SCALE_AVATAR, 1f);
-    animatorScaleDown.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      if (value < 1f && !hasPulsed) {
-        animatePulse(DURATION_PULSE);
-        hasPulsed = true;
-      }
-
-      updateScaleWithValue(value);
-    });
-    animatorScaleDown.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-    animatorScaleDown.setDuration(DURATION_SCALE >> 1);
-    animatorScaleDown.setStartDelay(SCALE_DELAY);
-    animatorScaleDown.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationCancel(Animator animation) {
-        animatorScaleDown.removeAllListeners();
-      }
-
-      @Override public void onAnimationStart(Animator animation) {
-        hasPulsed = false;
-      }
-    });
-
-    animatorScaleAvatar.play(animatorScaleDown).before(animatorScaleUp);
-    animatorScaleAvatar.start();
-  }
-
-  @Override protected void onDestroy() {
-    if (unbinder != null) unbinder.unbind();
-    if (startSubscription != null) startSubscription.unsubscribe();
-    super.onDestroy();
-  }
-
-  private void updateScaleWithValue(float value) {
-/*    avatar.setScaleX(value);
-    avatar.setScaleY(value);*/
   }
 }

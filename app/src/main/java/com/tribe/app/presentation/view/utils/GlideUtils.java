@@ -25,6 +25,16 @@ public class GlideUtils {
         .into(img);
   }
 
+  public static void load(Context context, String url, ImageView img) {
+    Glide.with(context)
+        .load(url)
+        .centerCrop()
+        .thumbnail(0.25f)
+        .error(R.drawable.picto_placeholder_avatar)
+        .placeholder(R.drawable.picto_placeholder_avatar)
+        .into(img);
+  }
+
   public static void load(Context context, int avatarSize, ImageView img) {
     Glide.with(context)
         .load(R.drawable.picto_placeholder_avatar)

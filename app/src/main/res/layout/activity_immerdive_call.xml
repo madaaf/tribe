@@ -4,27 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     >
 
-  <com.tribe.app.presentation.view.widget.CircleView
-      android:id="@+id/backview"
+  <ImageView
+      android:id="@+id/containerView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_gravity="center"
+      />
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/black.opacity.50"
       />
 
-  <!--  <include layout="@layout/view_tile_grid_live" />-->
-
-  <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
-      android:id="@+id/avatar"
-      android:layout_width="@dimen/avatar_size_with_shadow"
-      android:layout_height="@dimen/avatar_size_with_shadow"
+  <com.tribe.app.presentation.view.widget.PulseLayout
+      android:id="@+id/layoutPulse"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:layout_above="@+id/txtContainer"
-      android:layout_centerHorizontal="true"
-      android:layout_marginBottom="50dp"
-      android:background="@null"
-      app:avatarLiveType="live"
-      />
+      android:layout_gravity="center"
+      app:pulseColor="@android:color/white"
+      app:pulseCount="4"
+      app:pulseDuration="3000"
+      >
+    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_with_shadow"
+        android:layout_height="@dimen/avatar_size_with_shadow"
+        android:layout_above="@+id/txtContainer"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="50dp"
+        android:background="@null"
+        app:avatarLiveType="live"
+        />
+
+
+  </com.tribe.app.presentation.view.widget.PulseLayout>
 
   <LinearLayout
       android:id="@+id/txtContainer"
@@ -42,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/vertical_margin_mid"
         android:text="Live starts with"
-        style="@style/Title.2.Black"
+        style="@style/Title.2.White"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -51,11 +68,10 @@
         android:layout_height="wrap_content"
         android:text="Mada Jessie Bond"
         android:textSize="30sp"
-        style="@style/Title.2.Black"
+        style="@style/Title.2.White"
         />
 
   </LinearLayout>
-
 
   <LinearLayout
       android:id="@+id/containerAction"
@@ -64,8 +80,8 @@
       android:layout_alignParentBottom="true"
       android:layout_centerHorizontal="true"
       android:layout_marginBottom="30dp"
-      android:gravity="center"
       android:clickable="true"
+      android:gravity="center"
       android:orientation="vertical"
       >
 
@@ -75,6 +91,7 @@
         android:layout_marginBottom="20dp"
         android:gravity="center"
         android:text="Swipe up to join"
+        android:textColor="@android:color/white"
         />
     <FrameLayout
         android:id="@+id/callAction"
