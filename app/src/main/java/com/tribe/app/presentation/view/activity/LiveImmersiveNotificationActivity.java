@@ -43,6 +43,9 @@ import rx.android.schedulers.AndroidSchedulers;
 public class LiveImmersiveNotificationActivity extends BaseActivity {
   public final static String PLAYLOAD_VALUE = "PLAYLOAD_VALUE";
 
+  private final static int ACTION_BUTTON_DURATION_Y_TRANSLATION = 500;
+  private final static int ACTION_BUTTON_Y_TRANSLATION = 200;
+
   private final static int MAX_DURATION_NOTIFICATION = 30;
   private final static int SLOW_TRANSLATION_DURATION = 3000;
   private final static int Y_TRANSLATION = -20;
@@ -84,7 +87,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         playload = null;
       } else {
         playload = (NotificationPayload) extras.getSerializable(PLAYLOAD_VALUE);
-        txtDidplayName.setText(EmojiParser.demojizedText(playload.getUserDisplayName()));
+        if (playload != null) {  // TODO GROUP
+          txtDidplayName.setText(EmojiParser.demojizedText(playload.getUserDisplayName()));
+        }
       }
     }
 
@@ -181,9 +186,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
           float deltaY = y2 - y1;
           if (deltaY < 0) {
             containerAction.animate()
-                .translationY(-200)
+                .translationY(-ACTION_BUTTON_Y_TRANSLATION)
                 .alpha(0)
-                .setDuration(500)
+                .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
                 .withEndAction(new Runnable() {
                   @Override public void run() {
                     finish();
@@ -193,9 +198,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .start();
           } else {
             containerAction.animate()
-                .translationY(200)
+                .translationY(ACTION_BUTTON_Y_TRANSLATION)
                 .alpha(0)
-                .setDuration(500)
+                .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
                 .withEndAction(new Runnable() {
                   @Override public void run() {
                     finish();

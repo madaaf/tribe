@@ -243,6 +243,9 @@
 	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
+	<string name="grid_status_last_seen_minutes">Quelques minutes</string>
+	<string name="grid_status_last_seen_hours">Quelques heures</string>
+	<string name="grid_status_last_seen_days">Quelques jours</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>

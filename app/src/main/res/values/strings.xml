@@ -243,6 +243,9 @@
 	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
+	<string name="grid_status_last_seen_minutes">Few minutes ago</string>
+	<string name="grid_status_last_seen_hours">Few hours ago</string>
+	<string name="grid_status_last_seen_days">Few days ago</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>

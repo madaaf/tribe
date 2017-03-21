@@ -90,7 +90,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
   private void initView() {
     initResources();
-    
+
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_live_notification, this, true);
