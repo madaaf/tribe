@@ -121,6 +121,7 @@
         android:clickable="true"
         android:scaleType="centerInside"
         android:src="@drawable/picto_filter_live"
+        android:visibility="gone"
         />
 
   </LinearLayout>

@@ -50,7 +50,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnCameraOff) View btnCameraOff;
 
-  @BindView(R.id.btnFilter) View btnFilter;
+/*  @BindView(R.id.btnFilter) View btnFilter;*/
 
   @BindView(R.id.btnExpand) ImageView btnExpand;
 
@@ -147,7 +147,7 @@ public class LiveControlsView extends FrameLayout {
       btnExpand.setImageResource(R.drawable.picto_extend_left_live);
 
       setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
-      setXTranslateAnimation(layoutContainerParamLive, widthExtended);
+      setXTranslateAnimation(layoutContainerParamLive, getWidth());
 
       if (cameraEnabled) {
         setXTranslateAnimation(btnExpand, widthExtended);
@@ -210,7 +210,7 @@ public class LiveControlsView extends FrameLayout {
     Animation scaleAnimation =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
 
-    btnFilter.setAnimation(scaleAnimation);
+    //btnFilter.setAnimation(scaleAnimation);
     btnOrientationCamera.setAnimation(scaleAnimation);
 
     scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
@@ -239,7 +239,7 @@ public class LiveControlsView extends FrameLayout {
     setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth());
 
     btnOrientationCamera.setAnimation(scaleAnimation);
-    btnFilter.setAnimation(scaleAnimation);
+    // btnFilter.setAnimation(scaleAnimation);
 
     onClickCameraDisable.onNext(null);
   }
