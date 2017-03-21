@@ -26,6 +26,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int JOIN_CALL = 3;
   public static final int QUIT_CALL = 4;
   public static final int WIZZ = 5;
+  public static final int CALL_RING = 6;
 
   // VARIABLES
   private Context context;
@@ -63,6 +64,7 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(JOIN_CALL, R.raw.join_call);
     addSound(QUIT_CALL, R.raw.quit_call);
     addSound(WIZZ, R.raw.wizz);
+    addSound(CALL_RING, R.raw.call_ring);
   }
 
   public void addSound(int index, int soundID) {
@@ -102,6 +104,37 @@ import rx.android.schedulers.AndroidSchedulers;
               killSoundQueue.remove(killSound);
             }
           });
+    }
+  }
+
+  private boolean killSound = false;
+
+  public void playSoundEndlessly(int index, float volumeRate) {
+    if (availaibleSounds.contains(index) && uiSounds.get()) {
+      int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+      float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
+      int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
+
+      if (index != WAITING_FRIEND) killSoundQueue.add(soundId);
+      Observable.timer(6000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (!killSound) {
+              playSoundEndlessly(index, volumeRate);
+            }
+          });
+      killSound = false;
+    }
+  }
+
+  public void killAllSound() {
+    if (!killSoundQueue.isEmpty()) {
+      for (int i = 0; i < killSoundQueue.size(); i++) {
+        killSound = true;
+        Integer killSound = killSoundQueue.get(i);
+        soundPool.stop(killSound);
+        killSoundQueue.remove(killSound);
+      }
     }
   }
 }

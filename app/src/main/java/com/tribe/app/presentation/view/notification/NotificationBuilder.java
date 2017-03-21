@@ -46,8 +46,11 @@ import javax.inject.Singleton;
       } else {
         Notification notification = buildNotification(notificationPayload, "Tribos");
         if (notification != null) {
-          sendFullScreenNotification(remoteMessage);
-          notificationManager.notify(getNotificationId(notificationPayload), notification);
+          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+            sendFullScreenNotification(remoteMessage);
+          } else {
+            notificationManager.notify(getNotificationId(notificationPayload), notification);
+          }
         }
       }
     }
@@ -154,9 +157,6 @@ import javax.inject.Singleton;
 
     incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
         notificationPayload);
-/*    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);*/
     application.startActivity(incomingCallIntent);
   }
 }

@@ -388,7 +388,7 @@ public class HomeActivity extends BaseActivity
 
           if (latestRecipientList.size() != 0) {
             diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-            homeGridAdapter.setItems(temp); // SOEF
+            homeGridAdapter.setItems(temp);
           }
 
           latestRecipientList.clear();

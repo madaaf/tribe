@@ -43,7 +43,7 @@ import rx.android.schedulers.AndroidSchedulers;
 public class LiveImmersiveNotificationActivity extends BaseActivity {
   public final static String PLAYLOAD_VALUE = "PLAYLOAD_VALUE";
 
-  private final static int MAX_DURATION_NOTIFICATION = 3000;
+  private final static int MAX_DURATION_NOTIFICATION = 30;
   private final static int SLOW_TRANSLATION_DURATION = 3000;
   private final static int Y_TRANSLATION = -20;
 
@@ -72,7 +72,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_immerdive_call);
+    setContentView(R.layout.activity_immersive_call);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     unbinder = ButterKnife.bind(this);
@@ -88,9 +88,10 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       }
     }
 
+    soundManager.playSoundEndlessly(SoundManager.CALL_RING, SoundManager.SOUND_MID);
+
     setAnimation();
     setDownCounter();
-    soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
     yTranslation = screenUtils.dpToPx(Y_TRANSLATION);
     avatar.load(playload.getUserPicture());
     GlideUtils.load(this, playload.getUserPicture(), containerView);
@@ -102,6 +103,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   ////////////////
 
   @Override public void finish() {
+    soundManager.killAllSound();
     Intent mIntent = new Intent(this, HomeActivity.class);
     finishAffinity();
     startActivity(mIntent);
