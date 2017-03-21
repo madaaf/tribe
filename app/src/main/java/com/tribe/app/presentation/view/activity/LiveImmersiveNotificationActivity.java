@@ -21,6 +21,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
@@ -68,7 +69,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   // VARIABLES
   private Unbinder unbinder;
   private UserComponent userComponent;
-  NotificationPayload playload = null;
+  NotificationPayload payload = null;
 
   // OBSERVABLES
   private Subscription startSubscription;
@@ -84,11 +85,18 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     if (savedInstanceState == null) {
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
-        playload = null;
+        payload = null;
       } else {
-        playload = (NotificationPayload) extras.getSerializable(PLAYLOAD_VALUE);
-        if (playload != null) {  // TODO GROUP
-          txtDidplayName.setText(EmojiParser.demojizedText(playload.getUserDisplayName()));
+        payload = (NotificationPayload) extras.getSerializable(PLAYLOAD_VALUE);
+        if (payload != null) {
+          boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
+          String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
+          String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
+
+          txtDidplayName.setText(EmojiParser.demojizedText(name));
+          avatar.load(picture);
+          GlideUtils.load(this, picture, containerView);
+          avatar.load(picture);
         }
       }
     }
@@ -98,8 +106,6 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     setAnimation();
     setDownCounter();
     yTranslation = screenUtils.dpToPx(Y_TRANSLATION);
-    avatar.load(playload.getUserPicture());
-    GlideUtils.load(this, playload.getUserPicture(), containerView);
     callAction.setOnTouchListener(new onTouchJoinButton());
   }
 
@@ -192,7 +198,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .withEndAction(new Runnable() {
                   @Override public void run() {
                     finish();
-                    startActivity(NotificationUtils.getIntentForLive(v.getContext(), playload));
+                    startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload));
                   }
                 })
                 .start();
