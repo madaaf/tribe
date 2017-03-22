@@ -4,7 +4,6 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import java.io.Serializable;
 import java.util.Date;
 

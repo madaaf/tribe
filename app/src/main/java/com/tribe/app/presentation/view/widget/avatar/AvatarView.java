@@ -2,21 +2,16 @@ package com.tribe.app.presentation.view.widget.avatar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.support.annotation.IntDef;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.StringSignature;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
@@ -25,10 +20,11 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.transformer.HoleTransformation;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
@@ -39,29 +35,36 @@ import rx.schedulers.Schedulers;
 /**
  * Created by tiago on 17/02/2016.
  */
-public class AvatarView extends LinearLayout implements Avatar {
+public class AvatarView extends RelativeLayout implements Avatar {
 
-  @IntDef({ LIVE, CONNECTED, REGULAR }) public @interface AvatarType {
+  private static final float SHADOW_RATIO = 0.22f;
+
+  @IntDef({ LIVE, ONLINE, REGULAR }) public @interface AvatarType {
   }
 
   public static final int LIVE = 0;
-  public static final int CONNECTED = 1;
+  public static final int ONLINE = 1;
   public static final int REGULAR = 2;
 
   @Inject ScreenUtils screenUtils;
 
+  @BindView(R.id.imgShadow) ImageView imgShadow;
   @BindView(R.id.imgAvatar) ImageView imgAvatar;
+  @BindView(R.id.imgInd) ImageView imgInd;
 
   // VARIABLES
   private int type;
-  private Paint transparentPaint;
   private String url;
   private Recipient recipient;
   private List<String> membersPic;
   private String groupId;
+  private boolean hasShadow = false;
+  private boolean hasInd = true;
+  private boolean hasHole = true;
 
   // RESOURCES
   private int avatarSize;
+  private int paddingShadow;
 
   // SUBSCRIPTIONS
   private Subscription createImageSubscription;
@@ -86,28 +89,39 @@ public class AvatarView extends LinearLayout implements Avatar {
 
     TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
     type = a.getInt(R.styleable.AvatarView_avatarType, REGULAR);
+    hasShadow = a.getBoolean(R.styleable.AvatarView_hasShadow, false);
+    hasInd = a.getBoolean(R.styleable.AvatarView_hasInd, false);
+    hasHole = a.getBoolean(R.styleable.AvatarView_hasHole, true);
 
-    avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+    // DEFAULT SIZE
+    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size);
+
+    if (hasShadow) imgShadow.setVisibility(View.VISIBLE);
+    if (hasInd && isOnlineOrLive()) imgInd.setVisibility(View.VISIBLE);
 
     setWillNotDraw(false);
     a.recycle();
 
     setBackground(null);
-    setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-    transparentPaint = new Paint();
-    transparentPaint.setAntiAlias(true);
-    transparentPaint.setDither(false);
-    transparentPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-    transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        changeSize(getMeasuredWidth(), false);
+      }
+    });
   }
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
   }
 
-  @Override protected void dispatchDraw(Canvas canvas) {
-    super.dispatchDraw(canvas);
+  @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    if (getMeasuredWidth() != 0 && getMeasuredHeight() != 0) {
+      changeSize(getMeasuredWidth(), false);
+    }
   }
 
   @Override public void load(Recipient recipient) {
@@ -145,32 +159,25 @@ public class AvatarView extends LinearLayout implements Avatar {
       if ((StringUtils.isEmpty(previousUrl) || !previousUrl.equals(
           groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
         setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
-
-        Glide.with(getContext())
-            .load(groupAvatarFile)
-            .placeholder(R.drawable.picto_placeholder_avatar)
-            .bitmapTransform(new CropCircleTransformation(getContext()))
-            .signature(new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
-            .crossFade()
-            .into(imgAvatar);
+        new GlideUtils.Builder(getContext()).file(groupAvatarFile)
+            .target(imgAvatar)
+            .size(avatarSize)
+            .hasHole(hasHole && isOnlineOrLive())
+            .load();
       } else if (!groupAvatarFile.exists()) {
         if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
           createImageSubscription =
               ImageUtils.createGroupAvatar(getContext(), groupId, membersPic, avatarSize)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribeOn(Schedulers.io())
-                  .doOnError(throwable -> System.out.println("Error"))
-                  .subscribe(bitmap -> Glide.with(getContext())
-                      .load(groupAvatarFile)
-                      .placeholder(R.drawable.picto_placeholder_avatar)
-                      .bitmapTransform(new CropCircleTransformation(getContext()))
-                      .signature(
-                          new StringSignature(String.valueOf(groupAvatarFile.lastModified())))
-                      .crossFade()
-                      .into(imgAvatar));
+                  .subscribe(bitmap -> new GlideUtils.Builder(getContext()).file(groupAvatarFile)
+                      .size(avatarSize)
+                      .target(imgAvatar)
+                      .hasHole(hasHole && isOnlineOrLive())
+                      .load());
         }
 
-        loadPlaceholder();
+        loadPlaceholder(hasHole);
       }
     } else {
       load(url);
@@ -184,18 +191,42 @@ public class AvatarView extends LinearLayout implements Avatar {
         getContext().getString(R.string.no_profile_picture_url))) {
       setTag(R.id.profile_picture, url);
 
-      GlideUtils.load(getContext(), url, avatarSize, imgAvatar);
+      new GlideUtils.Builder(getContext()).url(url)
+          .size(avatarSize)
+          .target(imgAvatar)
+          .hasHole(hasHole && isOnlineOrLive())
+          .load();
     } else {
-      loadPlaceholder();
+      loadPlaceholder(hasHole);
     }
   }
 
-  private void loadPlaceholder() {
-    GlideUtils.load(getContext(), avatarSize, imgAvatar);
+  public void changeSize(int size, boolean shouldChangeLP) {
+    paddingShadow = hasShadow ? (int) (size * getShadowRatio()) : 0;
+    refactorSize(size);
+
+    if (shouldChangeLP) {
+      UIUtils.changeSizeOfView(this, size);
+    }
   }
 
-  public int getRadius() {
-    return (int) (getWidth() * 0.2f);
+  public void refactorSize(int size) {
+    avatarSize = size - paddingShadow;
+    ViewGroup.LayoutParams params = imgAvatar.getLayoutParams();
+    params.width = params.height = avatarSize;
+    imgAvatar.setLayoutParams(params);
+
+    int indSize = (int) (avatarSize * HoleTransformation.RATIO * 2);
+    UIUtils.changeSizeOfView(imgInd, indSize);
+  }
+
+  private void loadPlaceholder(boolean hasHole) {
+    if (avatarSize == 0) return;
+    new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).hasHole(hasHole).load();
+  }
+
+  public float getShadowRatio() {
+    return SHADOW_RATIO;
   }
 
   public String getUrl() {
@@ -214,7 +245,29 @@ public class AvatarView extends LinearLayout implements Avatar {
     return membersPic;
   }
 
+  private boolean isOnlineOrLive() {
+    return type == LIVE || type == ONLINE;
+  }
+
   public void setType(@AvatarType int type) {
     this.type = type;
+
+    if (type == LIVE && hasInd) {
+      imgInd.setVisibility(View.VISIBLE);
+      imgInd.setImageResource(R.drawable.picto_live);
+    } else if (type == ONLINE && hasInd) {
+      imgInd.setVisibility(View.VISIBLE);
+      imgInd.setImageResource(R.drawable.picto_online);
+    } else {
+      imgInd.setVisibility(View.GONE);
+    }
+
+    if (recipient != null) {
+      load(recipient);
+    } else if (!StringUtils.isEmpty(url)) {
+      load(url);
+    } else if (!StringUtils.isEmpty(groupId)) {
+      loadGroupAvatar(url, null, groupId, membersPic);
+    }
   }
 }

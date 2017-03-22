@@ -2,7 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 
 /**
@@ -103,7 +103,7 @@ public class GroupMember implements Serializable, BaseListInterface {
   @Override public AvatarModel getAvatar() {
     if (avatarModel != null) return avatarModel;
     avatarModel = new AvatarModel(user.getProfilePicture(),
-        user.isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE);
+        user.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR);
     return avatarModel;
   }
 

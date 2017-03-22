@@ -27,7 +27,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.SoundManager;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -64,7 +64,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @BindView(R.id.view_live_notification_action_container) LinearLayout actionContainer;
   @BindView(R.id.view_notification_container) LinearLayout screen;
   @BindView(R.id.tvTitle) TextViewFont txtTitle;
-  @BindView(R.id.avatar) AvatarLiveView avatarLiveView;
+  @BindView(R.id.avatar) AvatarView avatarView;
   @Nullable @BindView(R.id.imgIcon) ImageView imgIcon;
 
   @Inject SoundManager soundManager;
@@ -90,7 +90,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
   private void initView() {
     initResources();
-    
+
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_live_notification, this, true);
@@ -237,7 +237,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     if (type == ERROR) {
       imgIcon.setImageResource(R.drawable.picto_lock);
     } else {
-      avatarLiveView.load(url);
+      avatarView.load(url);
     }
   }
 

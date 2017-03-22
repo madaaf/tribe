@@ -40,7 +40,7 @@ import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareCardView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.Avatar;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.Date;
 import javax.inject.Inject;
 import rx.Observable;
@@ -93,9 +93,7 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.layoutName) public ViewGroup layoutName;
 
-  @Nullable @BindView(R.id.viewShadowAvatar) public View viewShadowAvatar;
-
-  @BindView(R.id.avatar) public View avatar;
+  @BindView(R.id.avatar) public AvatarView avatar;
 
   @Nullable @BindView(R.id.layoutPulse) public PulseLayout layoutPulse;
 
@@ -271,11 +269,6 @@ public class TileView extends SquareCardView {
         avatar.setScaleX(scale);
         avatar.setScaleY(scale);
 
-        if (viewShadowAvatar != null) {
-          viewShadowAvatar.setScaleX(scale);
-          viewShadowAvatar.setScaleY(scale);
-        }
-
         int cardRadius = Math.max((int) (cardRadiusMin + (diffCardRadius * value)), cardRadiusMin);
         setRadius(cardRadius);
 
@@ -296,25 +289,19 @@ public class TileView extends SquareCardView {
 
   public void initSize() {
     sizeAvatar =
-        isGrid() ? (int) ((screenUtils.getWidthPx() >> 1) * 0.4f) : screenUtils.getWidthPx() / 8;
+        isGrid() ? (int) ((screenUtils.getWidthPx() >> 1) * 0.5f) : screenUtils.getWidthPx() / 7;
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
-    ViewGroup.LayoutParams params = avatar.getLayoutParams();
-    params.width = sizeAvatar;
-    params.height = sizeAvatar;
-    avatar.setLayoutParams(params);
+    avatar.changeSize(sizeAvatar, true);
+
+    ViewGroup.LayoutParams params;
 
     if (type == TYPE_GRID_LIVE) {
       params = layoutPulse.getLayoutParams();
       params.width = sizeAvatar + screenUtils.dpToPx(90);
       params.height = sizeAvatar + screenUtils.dpToPx(90);
       layoutPulse.setLayoutParams(params);
-    } else if (viewShadowAvatar != null) {
-      params = viewShadowAvatar.getLayoutParams();
-      params.width = sizeAvatar + (isGrid() ? screenUtils.dpToPx(25) : screenUtils.dpToPx(15));
-      params.height = sizeAvatar + (isGrid() ? screenUtils.dpToPx(25) : screenUtils.dpToPx(15));
-      viewShadowAvatar.setLayoutParams(params);
     }
 
     if (type == TYPE_INVITE_LIVE_CO) {
@@ -328,9 +315,6 @@ public class TileView extends SquareCardView {
       imgInd.setLayoutParams(imgIndParams);
       imgInd.requestLayout();
     }
-
-    avatar.invalidate();
-    avatar.requestLayout();
   }
 
   public void initClicks() {
@@ -384,7 +368,9 @@ public class TileView extends SquareCardView {
   }
 
   public void setAvatar() {
-    ((Avatar) avatar).load(recipient);
+    avatar.setType(recipient.isLive() ? AvatarView.LIVE
+        : (recipient.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
+    avatar.load(recipient);
   }
 
   public void setName() {
@@ -501,10 +487,6 @@ public class TileView extends SquareCardView {
         AnimationUtils.getSizeAnimator(avatar, sizeAvatarBig),
         AnimationUtils.getScaleAnimator(avatar, 1), AnimationUtils.getElevationAnimator(this, 0),
         animatorBG);
-
-    if (viewShadowAvatar != null) {
-      animatorSecond.playTogether(AnimationUtils.getScaleAnimator(viewShadowAvatar, 1.2f));
-    }
 
     animatorFinal.playTogether(animatorFirst, animatorSecond);
     animatorFinal.addListener(new AnimatorListenerAdapter() {

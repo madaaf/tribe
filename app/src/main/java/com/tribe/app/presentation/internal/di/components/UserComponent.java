@@ -27,6 +27,7 @@ import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
+import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.component.live.ThreeDotsView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
@@ -36,7 +37,6 @@ import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
-import com.tribe.app.presentation.view.dialog_fragment.ShareDialogProfileFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import dagger.Component;
 
@@ -63,8 +63,6 @@ import dagger.Component;
   void inject(MediaHiddenActivity mediaHiddenActivity);
 
   void inject(AuthenticationDialogFragment authenticationDialogFragment);
-
-  void inject(ShareDialogProfileFragment shareDialogProfileFragment);
 
   void inject(SurpriseDialogFragment surpriseDialogFragment);
 
@@ -117,4 +115,6 @@ import dagger.Component;
   void inject(ThreeDotsView threeDotsView);
 
   void inject(BuzzView buzzView);
+
+  void inject(LiveWaitingAvatarView avatarView);
 }

@@ -2,7 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -232,8 +232,7 @@ public class User implements Serializable, BaseListInterface {
 
   @Override public AvatarModel getAvatar() {
     if (avatarModel != null) return avatarModel;
-    avatarModel =
-        new AvatarModel(picture, isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE);
+    avatarModel = new AvatarModel(picture, isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR);
     return avatarModel;
   }
 

@@ -278,7 +278,9 @@ public class SearchView extends FrameLayout implements SearchMVPView {
       boolean shouldAdd = false;
       if (obj instanceof Contact) {
         Contact contact = (Contact) obj;
-        if (contact.getName().toLowerCase().startsWith(search)) {
+        if (!StringUtils.isEmpty(contact.getName()) && contact.getName()
+            .toLowerCase()
+            .startsWith(search)) {
           shouldAdd = true;
         }
       } else if (obj instanceof Recipient) {

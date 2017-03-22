@@ -237,11 +237,15 @@
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
+	<string name="grid_name_with_guests">\nAnd guests</string>
 	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
 	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
+	<string name="grid_status_last_seen_minutes">Few minutes ago</string>
+	<string name="grid_status_last_seen_hours">Few hours ago</string>
+	<string name="grid_status_last_seen_days">Few days ago</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>

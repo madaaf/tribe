@@ -10,7 +10,7 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.model.ButtonModel;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 
 /**
  * Created by tiago on 01/10/2016.
@@ -22,7 +22,7 @@ public class BaseListViewHolder extends RecyclerView.ViewHolder {
     ButterKnife.bind(this, itemView);
   }
 
-  @BindView(R.id.viewAvatar) public AvatarLiveView viewAvatar;
+  @BindView(R.id.viewAvatar) public AvatarView viewAvatar;
 
   @BindView(R.id.txtName) public TextViewFont txtName;
 

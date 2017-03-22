@@ -28,7 +28,7 @@
         android:layout_marginTop="@dimen/horizontal_margin"
         >
 
-      <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
           android:id="@+id/avatar"
           android:layout_width="@dimen/avatar_size_small"
           android:layout_height="@dimen/avatar_size_small"

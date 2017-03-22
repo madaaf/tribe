@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/31/17.
@@ -128,7 +127,6 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     vh.buttonModelTo = getButtonModelTo(item);
 
     vh.btnAdd.setVisibility(isActionAvailable ? View.VISIBLE : View.GONE);
-
 
     vh.viewAvatar.setType(avatarModel.getType());
     if (avatarModel.getMemberPics() != null) {

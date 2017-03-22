@@ -28,7 +28,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,7 +49,7 @@ public class TopBarView extends FrameLayout {
 
   @Inject User user;
 
-  @BindView(R.id.viewAvatar) AvatarLiveView viewAvatar;
+  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.btnNew) View btnNew;
 
@@ -227,7 +227,6 @@ public class TopBarView extends FrameLayout {
     showView(imgClose, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         editTextSearch.setEnabled(true);
-        screenUtils.showKeyboard(editTextSearch, 0);
         imgClose.animate().setListener(null).start();
       }
     });
