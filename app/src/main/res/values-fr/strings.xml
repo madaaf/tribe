@@ -243,9 +243,11 @@
 	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
-	<string name="grid_status_last_seen_minutes">Quelques minutes</string>
-	<string name="grid_status_last_seen_hours">Quelques heures</string>
-	<string name="grid_status_last_seen_days">Quelques jours</string>
+	<string name="grid_status_last_seen_minutes">Il y a qqs minutes</string>
+	<string name="grid_status_last_seen_hours">Il y a qqs heures</string>
+	<string name="grid_status_last_seen_days">Il y a qqs jours</string>
+	<string name="grid_name_more_friends">Plus d\'amis</string>
+	<string name="grid_status_more_friends">Essayez!</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -881,11 +883,10 @@
 	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
 	<string name="live_rating_dismiss">Fermer</string>
 	<string name="live_rating_send">Envoyer la note</string>
-
-<!-- Invite Popup -->
+	
+	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
 	<string name="invite_popup_message">Cet utilisateur n\'est pas encore inscrit sur Tribe.</string>
 	<string name="invite_popup_action">Inviter sur Tribe</string>
 	<string name="invite_popup_dismiss">Plus tard</string>
-
 </resources>

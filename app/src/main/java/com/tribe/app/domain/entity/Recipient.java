@@ -14,6 +14,7 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public static final String ID_EMPTY = "EMPTY";
   public static final String ID_HEADER = "HEADER";
+  public static final String ID_MORE = "MORE";
 
   public static final String DISPLAY_NAME = "DISPLAY_NAME";
   public static final String PROFILE_PICTURE = "PROFILE_PICTURE";

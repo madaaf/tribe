@@ -55,6 +55,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   // VARIABLES
   private int type;
   private String url;
+  private int drawableId;
   private Recipient recipient;
   private List<String> membersPic;
   private String groupId;
@@ -201,6 +202,15 @@ public class AvatarView extends RelativeLayout implements Avatar {
     }
   }
 
+  @Override public void load(int drawableId) {
+    this.drawableId = drawableId;
+    new GlideUtils.Builder(getContext()).resourceId(drawableId)
+        .size(avatarSize)
+        .target(imgAvatar)
+        .hasHole(false)
+        .load();
+  }
+
   public void changeSize(int size, boolean shouldChangeLP) {
     paddingShadow = hasShadow ? (int) (size * getShadowRatio()) : 0;
     refactorSize(size);
@@ -268,6 +278,8 @@ public class AvatarView extends RelativeLayout implements Avatar {
       load(url);
     } else if (!StringUtils.isEmpty(groupId)) {
       loadGroupAvatar(url, null, groupId, membersPic);
+    } else if (drawableId != 0) {
+      load(drawableId);
     }
   }
 }

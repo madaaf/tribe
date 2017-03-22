@@ -22,10 +22,9 @@ public class UserConnectedGridAdapterDelegate extends RecipientGridAdapterDelega
     return (items.get(position) instanceof Friendship
         || items.get(position) instanceof Invite
         || items.get(position) instanceof Membership)
-        && !items.get(position)
-        .getSubId()
-        .equals(Recipient.ID_HEADER)
+        && !items.get(position).getSubId().equals(Recipient.ID_HEADER)
         && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
+        && !items.get(position).getSubId().equals(Recipient.ID_MORE)
         && items.get(position).isOnline()
         && !items.get(position).isLive();
   }

@@ -367,7 +367,9 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
-          if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
+          if (recipient.getId().equals(Recipient.ID_MORE)) {
+            navigator.openSmsForInvite(this);
+          } else if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
             subscriptions.add(
                 DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
                     getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName()),
@@ -390,6 +392,7 @@ public class HomeActivity extends BaseActivity
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
+          temp.add(new Friendship(Recipient.ID_MORE));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {

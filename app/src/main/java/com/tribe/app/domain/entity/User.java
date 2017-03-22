@@ -336,8 +336,10 @@ public class User implements Serializable, BaseListInterface {
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {
-      if (!friendship.getSubId().equals(Recipient.ID_EMPTY) && !friendship.getSubId()
-          .equals(this.id)) {
+      if (!friendship.getSubId().equals(Recipient.ID_EMPTY)
+          && !friendship.getSubId().equals(Recipient.ID_MORE)
+          && !friendship.getSubId().equals(Recipient.ID_HEADER)
+          && !friendship.getSubId().equals(this.id)) {
         GroupMember groupMember = new GroupMember(friendship.getFriend());
         groupMember.setFriend(true);
         userList.add(groupMember);

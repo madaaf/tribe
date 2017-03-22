@@ -24,6 +24,7 @@ public class UserInviteAdapterDelegate extends RecipientGridAdapterDelegate {
         .getSubId()
         .equals(Recipient.ID_HEADER)
         && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
+        && !items.get(position).getSubId().equals(Recipient.ID_MORE)
         && !items.get(position).isOnline()
         && !items.get(position).isLive();
   }

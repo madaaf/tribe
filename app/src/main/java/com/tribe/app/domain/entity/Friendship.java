@@ -78,7 +78,10 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
   }
 
   @Override public String getSubId() {
-    if (id.equals(Recipient.ID_EMPTY) || id.equals(Recipient.ID_HEADER)) return id;
+    if (id.equals(Recipient.ID_EMPTY) || id.equals(Recipient.ID_HEADER) || id.equals(
+        Recipient.ID_MORE)) {
+      return id;
+    }
 
     return friend.getId();
   }

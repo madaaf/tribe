@@ -246,6 +246,8 @@
 	<string name="grid_status_last_seen_minutes">Few minutes ago</string>
 	<string name="grid_status_last_seen_hours">Few hours ago</string>
 	<string name="grid_status_last_seen_days">Few days ago</string>
+	<string name="grid_name_more_friends">More friends</string>
+	<string name="grid_status_more_friends">Try it out!</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
