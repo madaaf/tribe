@@ -10,13 +10,11 @@ import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.ViewCompat;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
@@ -59,6 +57,8 @@ public class TileView extends SquareCardView {
   public final static int TYPE_NORMAL = 3;
   public final static int TYPE_INVITE = 4;
 
+  private final int MINUTES_LIMIT = 120 * 60 * 1000;
+  private final int HOURS_LIMIT = 48 * 24 * 60 * 1000;
   private final float SCALE_FACTOR = 1.75f;
   private final float SCALE_TILE_FACTOR = 1.05f;
   private final float SCALE_DOWN_MASTER_BG_FACTOR_LOW = 0.85f;
@@ -306,7 +306,8 @@ public class TileView extends SquareCardView {
     }
 
     if (type == TYPE_INVITE_LIVE_CO) {
-      RelativeLayout.LayoutParams imgIndParams = (RelativeLayout.LayoutParams) imgInd.getLayoutParams();
+      RelativeLayout.LayoutParams imgIndParams =
+          (RelativeLayout.LayoutParams) imgInd.getLayoutParams();
       imgIndParams.leftMargin = sizeAvatar / 3;
       imgIndParams.topMargin = imgIndParams.leftMargin;
       imgIndParams.height = sizeAvatar / 2;
@@ -389,8 +390,18 @@ public class TileView extends SquareCardView {
 
   public void setStatus() {
     if (!recipient.isLive() && !recipient.isOnline() && recipient.getLastSeenAt() != null) {
-      txtStatus.setText(DateUtils.getRelativeTimeSpanString(recipient.getLastSeenAt().getTime(),
-          new Date().getTime(), DateUtils.SECOND_IN_MILLIS).toString().toLowerCase());
+      long time = new Date().getTime() - recipient.getLastSeenAt().getTime();
+      String txt = "";
+      
+      if (time < MINUTES_LIMIT) {
+        txt = getContext().getResources().getString(R.string.grid_status_last_seen_minutes);
+      } else if (time < HOURS_LIMIT) {
+        txt = getContext().getResources().getString(R.string.grid_status_last_seen_hours);
+      } else {
+        txt = getContext().getResources().getString(R.string.grid_status_last_seen_days);
+      }
+
+      txtStatus.setText(txt);
     }
   }
 
