@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <LinearLayout
+      android:id="@+id/viewContainer"
+      android:layout_width="match_parent"
+      android:layout_height="180dp"
+      android:layout_margin="10dp"
+      android:background="@drawable/shape_rect_rounded_corner"
+      android:clickable="true"
+      android:orientation="vertical"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/live_rating_title"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
+
+    <LinearLayout
+        android:id="@+id/starsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:gravity="center"
+
+        >
+      <ImageView
+          android:id="@+id/btnStar1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/horizontal_margin_small"
+          android:src="@drawable/picto_rating_star"
+          />
+
+      <ImageView
+          android:id="@+id/btnStar2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/horizontal_margin_small"
+          android:src="@drawable/picto_rating_star"
+          />
+
+      <ImageView
+          android:id="@+id/btnStar3"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/horizontal_margin_small"
+          android:src="@drawable/picto_rating_star"
+          />
+
+      <ImageView
+          android:id="@+id/btnStar4"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/horizontal_margin_small"
+          android:src="@drawable/picto_rating_star"
+          />
+
+      <ImageView
+          android:id="@+id/btnStar5"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="@dimen/horizontal_margin_small"
+          android:layout_marginStart="@dimen/horizontal_margin_small"
+          android:src="@drawable/picto_rating_star"
+          />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/grey.light"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtAction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@drawable/shape_rect_grey_rounded_bottom_corner"
+        android:gravity="center"
+        android:text="@string/live_rating_send"
+        />
+
+  </LinearLayout>
+</merge>

@@ -61,6 +61,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.RatingNotificationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -112,6 +113,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.topBarContainer) TopBarContainer topBarContainer;
 
   @BindView(R.id.searchView) SearchView searchView;
+
+  @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -608,6 +611,19 @@ public class HomeActivity extends BaseActivity
     stopService();
   }
 
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (data != null) {
+      boolean displayRatingNotifView =
+          data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
+      long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
+      String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
+      if (displayRatingNotifView) {
+        ratingNotificationView.displayView(timeout, roomId);
+      }
+    }
+  }
+
   /////////////////
   //  BROADCAST  //
   /////////////////
@@ -627,8 +643,9 @@ public class HomeActivity extends BaseActivity
             .filter(action -> action.getIntent() != null)
             .delay(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                action -> navigator.navigateToIntent(HomeActivity.this, action.getIntent())));
+            .subscribe(action -> {
+              navigator.navigateToIntent(HomeActivity.this, action.getIntent());
+            }));
 
         Alerter.create(HomeActivity.this, liveNotificationView).show();
       }

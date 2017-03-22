@@ -106,6 +106,13 @@ public class TagManagerUtils {
   public static final String USER_HAS_PROFILE_PICTURE = "user_has_profile_picture";
   public static final String USER_ONBOARDING_COMPLETED = "user_onboarding_completed";
 
+  /**
+   * MIXPANEL PROPERTIES
+   */
+  public static final String CALLS_RATINGS = "Calls_Ratings";
+  public static final String RATING = "rating";
+  public static final String ROOM_ID = "room_id";
+
   public static void manageTags(TagManager tagManager, Map<String, Object> tagMap) {
     Bundle bundle = new Bundle();
 

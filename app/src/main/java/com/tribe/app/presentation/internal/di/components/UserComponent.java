@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
+import com.tribe.app.presentation.view.widget.RatingNotificationView;
 import dagger.Component;
 
 /**
@@ -103,6 +104,8 @@ import dagger.Component;
   void inject(LiveActivity liveActivity);
 
   void inject(SearchView searchView);
+
+  void inject(RatingNotificationView ratingNotificationView);
 
   void inject(LiveLocalView liveLocalView);
 
