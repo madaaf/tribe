@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -305,7 +306,7 @@ public class TileView extends SquareCardView {
     }
 
     if (type == TYPE_INVITE_LIVE_CO) {
-      FrameLayout.LayoutParams imgIndParams = (FrameLayout.LayoutParams) imgInd.getLayoutParams();
+      RelativeLayout.LayoutParams imgIndParams = (RelativeLayout.LayoutParams) imgInd.getLayoutParams();
       imgIndParams.leftMargin = sizeAvatar / 3;
       imgIndParams.topMargin = imgIndParams.leftMargin;
       imgIndParams.height = sizeAvatar / 2;
