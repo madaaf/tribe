@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -40,6 +41,8 @@ public class LiveRowView extends FrameLayout {
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
   @BindView(R.id.view_background) View backgroundView;
+
+  @BindView(R.id.test) TextView testtxt;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -104,6 +107,11 @@ public class LiveRowView extends FrameLayout {
     this.guest = guest;
     viewWaiting.setGuest(guest);
     viewAudio.setGuest(guest);
+  }
+
+
+  public void setTest(String test){
+    testtxt.setText(test);
   }
 
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {

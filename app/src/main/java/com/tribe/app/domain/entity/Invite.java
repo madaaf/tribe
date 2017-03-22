@@ -104,6 +104,9 @@ public class Invite extends Recipient {
     String name = "";
 
     int count = 0;
+    if (friendships == null) {
+      return null;
+    }
     for (Friendship friendship : friendships) {
       if (count > 0) name += ", ";
       name += friendship.getDisplayName();

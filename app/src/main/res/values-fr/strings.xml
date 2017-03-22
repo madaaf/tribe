@@ -87,7 +87,7 @@
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
 	<string name="permission_push_fake_alert_title">Ne loupez rien de vos amis !</string>
 	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis sont live ou connectés.</string>
-	<string name="permission_push_fake_alert_allow">Ok</string>
+	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">En savoir plus</string>
 	<string name="permission_push_disabled_alert_title">Push désactivés</string>
 	<string name="permission_push_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
@@ -237,15 +237,17 @@
 	<string name="grid_support_status_loading">Chargement</string>
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
-	<string name="grid_name_with_guests">\nEt invités</string>
+	<string name="grid_name_with_guests">\navec des invités</string>
 	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Live avec des invités!</string>
 	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
-	<string name="grid_status_last_seen_minutes">Quelques minutes</string>
-	<string name="grid_status_last_seen_hours">Quelques heures</string>
-	<string name="grid_status_last_seen_days">Quelques jours</string>
+	<string name="grid_status_last_seen_minutes">Il y a qqs mins</string>
+	<string name="grid_status_last_seen_hours">Il y a qqs heures</string>
+	<string name="grid_status_last_seen_days">Il y a qqs jours</string>
+	<string name="grid_name_more_friends">Plus d\'amis</string>
+	<string name="grid_status_more_friends">Essayez !</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -607,6 +609,7 @@
 	<string name="profile_title">Profil</string>
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :ghost:</string>
+	<string name="profile_fullscreen_notifications">Notifications plein-écran :telephone_receiver:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>
@@ -881,11 +884,10 @@
 	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
 	<string name="live_rating_dismiss">Fermer</string>
 	<string name="live_rating_send">Envoyer la note</string>
-
-<!-- Invite Popup -->
+	
+	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
 	<string name="invite_popup_message">Cet utilisateur n\'est pas encore inscrit sur Tribe.</string>
 	<string name="invite_popup_action">Inviter sur Tribe</string>
 	<string name="invite_popup_dismiss">Plus tard</string>
-
 </resources>

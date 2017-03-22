@@ -370,9 +370,7 @@ public class LiveContainer extends FrameLayout {
             }
           }
         }
-
         clearTouch();
-
         break;
       }
     }
