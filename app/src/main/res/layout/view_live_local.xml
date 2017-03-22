@@ -7,56 +7,28 @@
       android:layout_height="match_parent"
       />
 
+
   <FrameLayout
-      android:id="@+id/layoutCameraControls"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="bottom|left"
-      android:layout_margin="5dp"
-      android:scaleX="0"
-      android:scaleY="0"
-      >
-
-    <ImageView
-        android:id="@+id/btnCameraDisable"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:layout_gravity="center"
-        android:alpha="1"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_camera_disabled"
-        />
-
-    <ImageView
-        android:id="@+id/btnCameraEnable"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
-        android:layout_gravity="center"
-        android:alpha="0"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_camera_enabled"
-        android:visibility="gone"
-        />
-
-  </FrameLayout>
+      android:id="@+id/backLiveLocalView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@color/black.opacity.50"
+      android:visibility="visible"
+      />
 
   <ImageView
-      android:id="@+id/btnCameraSwitch"
+      android:id="@+id/imgMicroDisabled"
       android:layout_width="@dimen/nav_icon_size"
       android:layout_height="@dimen/nav_icon_size"
-      android:layout_gravity="bottom|right"
-      android:layout_margin="5dp"
+      android:layout_gravity="center"
+      android:alpha="0"
       android:background="@drawable/selectable_button_oval_light"
-      android:clickable="true"
       android:scaleType="centerInside"
-      android:scaleX="0"
-      android:scaleY="0"
-      android:src="@drawable/picto_camera_switch"
+      android:src="@drawable/picto_micro_off_shadow"
+      android:visibility="visible"
       />
+
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtLowConnectivity"

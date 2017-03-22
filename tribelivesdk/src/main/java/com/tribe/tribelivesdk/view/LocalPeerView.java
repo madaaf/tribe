@@ -14,6 +14,7 @@ public class LocalPeerView extends PeerView {
 
   private Observable<Void> onSwitchCamera;
   private Observable<Boolean> onEnableCamera;
+  private Observable<Boolean> onEnableMicro;
   private boolean frontFacing = true;
 
   // OBSERVABLES
@@ -49,6 +50,10 @@ public class LocalPeerView extends PeerView {
     onEnableCamera = obs;
   }
 
+  public void initEnableMicroSubscription(Observable<Boolean> obs) {
+    onEnableMicro = obs;
+  }
+
   public void initSwitchCameraSubscription(Observable<Void> obs) {
     onSwitchCamera = obs;
     subscriptions.add(onSwitchCamera.doOnNext(aVoid -> frontFacing = !frontFacing)
@@ -67,6 +72,10 @@ public class LocalPeerView extends PeerView {
 
   public Observable<Boolean> onEnableCamera() {
     return onEnableCamera;
+  }
+
+  public Observable<Boolean> onEnableMicro() {
+    return onEnableMicro;
   }
 
   public Observable<Void> onSwitchCamera() {
