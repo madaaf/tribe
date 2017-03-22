@@ -139,7 +139,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
-  private boolean liveDurationIsMoreThan30sec = true;
+  private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // RESOURCES

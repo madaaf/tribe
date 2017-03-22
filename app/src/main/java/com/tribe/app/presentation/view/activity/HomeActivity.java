@@ -159,8 +159,6 @@ public class HomeActivity extends BaseActivity
     manageDeepLink(getIntent());
     initPullToRefresh();
 
-    ratingNotificationView.displayView(10000000, "");
-
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
     if (!hasSynced) hasSynced = true;
