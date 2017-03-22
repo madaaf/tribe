@@ -219,6 +219,11 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
+    if (searchMode) {
+      screenUtils.showKeyboard(editTextSearch, 0);
+      return;
+    }
+
     onOpenCloseSearch.onNext(true);
 
     searchMode = true;
@@ -226,7 +231,6 @@ public class TopBarView extends FrameLayout {
 
     showView(imgClose, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
-        editTextSearch.setEnabled(true);
         imgClose.animate().setListener(null).start();
       }
     });

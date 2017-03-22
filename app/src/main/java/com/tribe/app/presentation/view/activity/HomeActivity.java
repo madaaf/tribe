@@ -159,6 +159,8 @@ public class HomeActivity extends BaseActivity
     manageDeepLink(getIntent());
     initPullToRefresh();
 
+    ratingNotificationView.displayView(10000000, "");
+
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
     if (!hasSynced) hasSynced = true;
@@ -616,6 +618,7 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
     if (data != null) {
       boolean displayRatingNotifView =
           data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);

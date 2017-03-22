@@ -237,13 +237,13 @@
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
-	<string name="grid_name_with_guests">\nAnd guests</string>
+	<string name="grid_name_with_guests">\nand guests</string>
 	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
 	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
-	<string name="grid_status_last_seen_minutes">Few minutes ago</string>
+	<string name="grid_status_last_seen_minutes">Few mins ago</string>
 	<string name="grid_status_last_seen_hours">Few hours ago</string>
 	<string name="grid_status_last_seen_days">Few days ago</string>
 	<string name="grid_name_more_friends">More friends</string>
@@ -609,6 +609,7 @@
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
+	<string name="profile_fullscreen_notifications">Fullscreen notifications :telephone_receiver:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_logout">Logout :skull:</string>

@@ -1,19 +1,26 @@
 package com.tribe.app.presentation.view.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
@@ -27,7 +34,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import java.util.Calendar;
+import java.util.List;
 import javax.inject.Inject;
 
 /**
@@ -36,19 +43,17 @@ import javax.inject.Inject;
 
 public class RatingNotificationView extends FrameLayout implements View.OnClickListener {
 
-  private static int DURATION = 300;
-  private static int indexStar;
-  private static String roomId;
-  private static long timeout;
+  private final static int DURATION = 300;
+  private final static int DURATION_COLOR = 1000;
+  private final static int DELAY = 0;
+  private final static float OVERSHOOT = 0.5f;
+  private final static float SCALE = 1.10f;
 
   @Inject ScreenUtils screenUtils;
   @Inject TagManager tagManager;
 
-  @BindView(R.id.btnStar1) ImageView btnStart1;
-  @BindView(R.id.btnStar2) ImageView btnStart2;
-  @BindView(R.id.btnStar3) ImageView btnStart3;
-  @BindView(R.id.btnStar4) ImageView btnStart4;
-  @BindView(R.id.btnStar5) ImageView btnStart5;
+  @BindViews({ R.id.btnStar1, R.id.btnStar2, R.id.btnStar3, R.id.btnStar4, R.id.btnStar5 })
+  List<ImageView> btnStars;
   @BindView(R.id.viewContainer) LinearLayout viewContainer;
   @BindView(R.id.txtAction) TextViewFont txtAction;
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
@@ -57,8 +62,11 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private CountDownTimer mCountDownTimer;
-  private Boolean[] statesStars;
+  private CountDownTimer countDownTimer;
+  private int[] colorFilters;
+  private int indexStar, lastIndexStar = 0, lastIndexStarUp = 0;
+  private String roomId;
+  private long timeout;
 
   public RatingNotificationView(Context context) {
     super(context);
@@ -79,12 +87,11 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     unbinder = ButterKnife.bind(this);
 
     txtTitle.setText(EmojiParser.demojizedText(getContext().getString(R.string.live_rating_title)));
-    statesStars = new Boolean[6];
-    viewContainer.setOnTouchListener(new OnTouchListener() {
-      @Override public boolean onTouch(View v, MotionEvent event) {
-        return true;
-      }
-    });
+
+    colorFilters = new int[btnStars.size()];
+    initColorStars();
+
+    viewContainer.setOnTouchListener((v, event) -> true);
 
     starsContainer.setOnTouchListener(new seekBarTouchListener());
   }
@@ -100,8 +107,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   public void displayView(long timeoutInSeconde, String roomid) {
     roomId = roomid;
     timeout = timeoutInSeconde;
-    fillStartState(0);
-    fillStartsColors(0);
+    fillStarsColors(0);
     setTimer();
     setVisibility(VISIBLE);
     setOnClickListener(this);
@@ -138,14 +144,14 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         super.onAnimationEnd(animation);
         clearAnimation();
         setVisibility(GONE);
-        mCountDownTimer.cancel();
+        countDownTimer.cancel();
       }
     });
     startAnimation(slideInAnimation);
   }
 
   private void setTimer() {
-    mCountDownTimer = new CountDownTimer(timeout * 1000, 1000) {
+    countDownTimer = new CountDownTimer(timeout * 1000, 1000) {
       @Override public void onTick(long millisUntilFinished) {
       }
 
@@ -156,92 +162,121 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   private void resetTimer() {
-    mCountDownTimer.cancel();
-    mCountDownTimer.start();
+    countDownTimer.cancel();
+    countDownTimer.start();
   }
 
-  private void fillStartsColors(int index) {
+  private void fillStarsColors(int index) {
+    if (lastIndexStar == index) return;
+
     if (index == 0) {
       txtAction.setText(getResources().getString(R.string.live_rating_dismiss));
     } else {
       txtAction.setText(getResources().getString(R.string.live_rating_send));
     }
+
+    int color;
+
     switch (index) {
       case 0:
-        btnStart1.setImageResource(R.drawable.picto_rating_star);
-        btnStart2.setImageResource(R.drawable.picto_rating_star);
-        btnStart3.setImageResource(R.drawable.picto_rating_star);
-        btnStart4.setImageResource(R.drawable.picto_rating_star);
-        btnStart5.setImageResource(R.drawable.picto_rating_star);
+        for (int i = 0; i < btnStars.size(); i++) {
+          color = Color.TRANSPARENT;
+          ImageView btnStar = btnStars.get(i);
+          btnStar.clearAnimation();
+          com.tribe.app.presentation.view.utils.AnimationUtils.animateColorFilter(btnStar,
+              colorFilters[i], color, DURATION_COLOR);
+          colorFilters[i] = color;
+        }
+
         break;
       case 1:
-        btnStart1.setImageResource(R.drawable.picto_rating_star_red);
-        btnStart2.setImageResource(R.drawable.picto_rating_star);
-        btnStart3.setImageResource(R.drawable.picto_rating_star);
-        btnStart4.setImageResource(R.drawable.picto_rating_star);
-        btnStart5.setImageResource(R.drawable.picto_rating_star);
-
-        scaleAnim(btnStart1);
+        color = ContextCompat.getColor(getContext(), R.color.star_red);
+        actionForIndexWithColor(index, color);
 
         break;
       case 2:
-        btnStart1.setImageResource(R.drawable.picto_rating_star_orange);
-        btnStart2.setImageResource(R.drawable.picto_rating_star_orange);
+        color = ContextCompat.getColor(getContext(), R.color.star_orange);
+        actionForIndexWithColor(index, color);
 
-        btnStart3.setImageResource(R.drawable.picto_rating_star);
-        btnStart4.setImageResource(R.drawable.picto_rating_star);
-        btnStart5.setImageResource(R.drawable.picto_rating_star);
-
-        scaleAnim(btnStart2);
         break;
       case 3:
-        btnStart1.setImageResource(R.drawable.picto_rating_star_yellow);
-        btnStart2.setImageResource(R.drawable.picto_rating_star_yellow);
-        btnStart3.setImageResource(R.drawable.picto_rating_star_yellow);
+        color = ContextCompat.getColor(getContext(), R.color.star_yellow);
+        actionForIndexWithColor(index, color);
 
-        btnStart4.setImageResource(R.drawable.picto_rating_star);
-        btnStart5.setImageResource(R.drawable.picto_rating_star);
-
-        scaleAnim(btnStart3);
         break;
       case 4:
-        btnStart1.setImageResource(R.drawable.picto_rating_star_yellow_light);
-        btnStart2.setImageResource(R.drawable.picto_rating_star_yellow_light);
-        btnStart3.setImageResource(R.drawable.picto_rating_star_yellow_light);
-        btnStart4.setImageResource(R.drawable.picto_rating_star_yellow_light);
+        color = ContextCompat.getColor(getContext(), R.color.star_yellow_strong);
+        actionForIndexWithColor(index, color);
 
-        btnStart5.setImageResource(R.drawable.picto_rating_star);
-
-        scaleAnim(btnStart4);
         break;
       case 5:
-        btnStart1.setImageResource(R.drawable.picto_rating_star_green);
-        btnStart2.setImageResource(R.drawable.picto_rating_star_green);
-        btnStart3.setImageResource(R.drawable.picto_rating_star_green);
-        btnStart4.setImageResource(R.drawable.picto_rating_star_green);
-        btnStart5.setImageResource(R.drawable.picto_rating_star_green);
+        color = ContextCompat.getColor(getContext(), R.color.star_green);
+        actionForIndexWithColor(index, color);
 
-        scaleAnim(btnStart5);
         break;
     }
+
+    lastIndexStar = index;
+  }
+
+  private void actionForIndexWithColor(int index, int color) {
+    for (int i = 0; i < index; i++) {
+      ImageView btnStar = btnStars.get(i);
+      com.tribe.app.presentation.view.utils.AnimationUtils.animateColorFilter(btnStar,
+              colorFilters[i], color, DURATION_COLOR);
+      colorFilters[i] = color;
+    }
+
+    for (int i = index; i < btnStars.size(); i++) {
+      ImageView btnStar = btnStars.get(i);
+      com.tribe.app.presentation.view.utils.AnimationUtils.animateColorFilter(btnStar,
+              colorFilters[i], Color.TRANSPARENT, DURATION_COLOR);
+      colorFilters[i] = Color.TRANSPARENT;
+    }
+
+    scaleAnim(btnStars.get(index - 1));
   }
 
   private void scaleAnim(View view) {
-    Animation scaleAnimation =
-        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_stars);
-    view.startAnimation(scaleAnimation);
+    view.clearAnimation();
+    view.animate()
+        .scaleX(SCALE)
+        .scaleY(SCALE)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationCancel(Animator animation) {
+            view.animate().setListener(null).start();
+          }
+
+          @Override public void onAnimationEnd(Animator animation) {
+            view.animate()
+                .scaleX(1)
+                .scaleY(1)
+                .setDuration(DURATION)
+                .setStartDelay(DELAY)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                  @Override public void onAnimationCancel(Animator animation) {
+                    view.animate().setListener(null).start();
+                  }
+
+                  @Override public void onAnimationEnd(Animator animation) {
+                    view.animate().setListener(null).start();
+                  }
+                })
+                .start();
+          }
+        })
+        .start();
   }
 
-  private void fillStartState(int index) {
-    indexStar = index;
-    for (int i = 0; i < statesStars.length; i++) {
-      if (i <= index) {
-        statesStars[i] = true;
-      } else {
-        statesStars[i] = false;
-      }
+  private void initColorStars() {
+    for (int i = 0; i < colorFilters.length; i++) {
+      colorFilters[i] = Color.TRANSPARENT;
     }
   }
+
   ///////////////////
   //    CLICKS     //
   ///////////////////
@@ -259,29 +294,26 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   private class seekBarTouchListener implements OnTouchListener {
-    private final int MAX_CLICK_DURATION = 400;
-    private final int MAX_CLICK_DISTANCE = 5;
-    private long startClickTime;
-    private float x1;
-    private float y1;
-    private float x2;
-    private float y2;
-    private float dx;
-    private float dy;
+
+    private final int MAX_CLICK_DURATION = 150;
+    private final int MAX_CLICK_DISTANCE = 15;
+    private long startClickTime, maxClickDistance;
+    private float x1, y1, x2, y2, dx, dy;
 
     @Override public boolean onTouch(View view, MotionEvent event) {
-      // TODO Auto-generated method stub
       resetTimer();
 
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN: {
-          startClickTime = Calendar.getInstance().getTimeInMillis();
+          maxClickDistance = screenUtils.dpToPx(MAX_CLICK_DISTANCE);
+          startClickTime = System.currentTimeMillis();
           x1 = event.getX();
           y1 = event.getY();
           break;
         }
+
         case MotionEvent.ACTION_UP: {
-          long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
+          long clickDuration = System.currentTimeMillis() - startClickTime;
           x2 = event.getX();
           y2 = event.getY();
           dx = x2 - x1;
@@ -290,20 +322,25 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
            *  ON CLICK TOUCH EVENT
            */
           if (clickDuration < MAX_CLICK_DURATION
-              && dx < MAX_CLICK_DISTANCE
-              && dy < MAX_CLICK_DISTANCE) {
+              && Math.abs(dx) < maxClickDistance
+              && Math.abs(dy) < maxClickDistance) {
 
-            if (statesStars[indexStar]) {
-              fillStartsColors(0);
-              fillStartState(0);
+            if (lastIndexStarUp == indexStar) {
+              fillStarsColors(0);
+              lastIndexStarUp = 0;
             } else {
-              fillStartsColors(indexStar);
-              fillStartState(indexStar);
+              fillStarsColors(indexStar);
+              lastIndexStarUp = indexStar;
             }
+
             break;
           }
-          fillStartState(indexStar);
+
+          lastIndexStarUp = indexStar;
+
+          break;
         }
+
         case MotionEvent.ACTION_MOVE: {
           int progress = Math.round(event.getX() / starsContainer.getWidth() * 100);
           int unity = 100 / 5;
@@ -318,7 +355,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
           } else {
             indexStar = 5;
           }
-          fillStartsColors(indexStar);
+
+          fillStarsColors(indexStar);
         }
       }
 
