@@ -601,6 +601,9 @@
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
 	<string name="live_title_with_guests">%1$s, and guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
+	<string name="live_waiting_state_initiating">Initiating live with $1%s...</string>
+	<string name="live_waiting_state_notifying">Notifying %1$s</string>
+	<string name="live_waiting_state_waiting">Waiting for %1$s to join</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>

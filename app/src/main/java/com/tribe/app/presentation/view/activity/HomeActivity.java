@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -621,6 +622,19 @@ public class HomeActivity extends BaseActivity
       if (displayRatingNotifView) {
         ratingNotificationView.displayView(timeout, roomId);
       }
+    }
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      Timber.e(
+          "SOEF  HOME LANDSCAPE " + this.getWindow().getAttributes().width + "/ " + this.getWindow()
+              .getAttributes().height);
+    } else {
+      Timber.e(
+          "SOEF HOME PORTRAIT " + this.getWindow().getAttributes().width + "/ " + this.getWindow()
+              .getAttributes().height);
     }
   }
 
