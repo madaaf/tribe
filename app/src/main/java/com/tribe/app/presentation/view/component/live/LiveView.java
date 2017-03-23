@@ -74,6 +74,7 @@ public class LiveView extends FrameLayout {
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
+  private static final float MARGIN_BOTTOM = 25;
 
   private static boolean joinLive = false;
 
@@ -119,6 +120,7 @@ public class LiveView extends FrameLayout {
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
+  private View view;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -212,8 +214,6 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  View view;
-
   @Override protected void onFinishInflate() {
     view = LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
     unbinder = ButterKnife.bind(this);
@@ -244,7 +244,7 @@ public class LiveView extends FrameLayout {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     params.gravity = Gravity.BOTTOM;
-    params.bottomMargin = screenUtils.dpToPx(30);
+    params.bottomMargin = screenUtils.dpToPx(MARGIN_BOTTOM);
     viewControlsLive.setLayoutParams(params);
   }
 

@@ -6,11 +6,9 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
@@ -106,12 +104,10 @@ public class LiveControlsView extends FrameLayout {
     super.onDetachedFromWindow();
   }
 
-  private View view;
-
   private void init() {
     initDependencyInjector();
 
-    view = LayoutInflater.from(getContext()).inflate(R.layout.view_live_controls, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_live_controls, this);
     unbinder = ButterKnife.bind(this);
 
     setBackground(null);

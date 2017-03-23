@@ -601,8 +601,8 @@
 	<string name="live_dismiss_invitation_validate">Supprimer %1$s</string>
 	<string name="live_title_with_guests">%1$s, et des invités</string>
 	<string name="live_low_connectivity">Réseau faible, audio mode activé :loud_sound:</string>
-	<string name="live_waiting_state_initiating">Initiating live with %1$s...</string>
-	<string name="live_waiting_state_notifying">Appel de %1$s en cours...</string>
+	<string name="live_waiting_state_initiating">Initiation du direct avec %1$s...</string>
+	<string name="live_waiting_state_notifying">Appel en cours de %1$s...</string>
 	<string name="live_waiting_state_waiting">En attente que %1$s vous rejoigne...</string>
 	
 	<!-- Blur Popup -->

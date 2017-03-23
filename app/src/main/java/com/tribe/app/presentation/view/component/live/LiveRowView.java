@@ -105,7 +105,7 @@ public class LiveRowView extends FrameLayout {
     viewWaiting.setGuest(guest);
     viewAudio.setGuest(guest);
   }
-  
+
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
     viewWaiting.setRoomType(type);
   }

@@ -32,7 +32,6 @@ public class LiveRoomView extends FrameLayout {
 
   public static final int GRID = 0;
   public static final int LINEAR = 1;
-
   private static final int DURATION = 300;
   private static final int DEFAULT_TYPE = GRID;
 
@@ -43,7 +42,6 @@ public class LiveRoomView extends FrameLayout {
   private @TribeRoomViewType int type;
   private int onDroppedBarHeight = 0;
   private boolean landscapeMode = false;
-
   private int witdhScreen;
   private int heightScreen;
 
@@ -59,17 +57,14 @@ public class LiveRoomView extends FrameLayout {
     init();
   }
 
-  private View view;
-
   private void init() {
     type = DEFAULT_TYPE;
     initDependencyInjector();
     onDroppedBarHeight = screenUtils.dpToPx(65);
 
-    view = LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
 
-    flexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
     LayoutTransition transition = new LayoutTransition();
     transition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
     flexboxLayout.setLayoutTransition(transition);
@@ -155,6 +150,10 @@ public class LiveRoomView extends FrameLayout {
     return type;
   }
 
+  /////////////////
+  //    INIT     //
+  /////////////////
+
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
     flexboxLayout.invalidate();
@@ -168,6 +167,22 @@ public class LiveRoomView extends FrameLayout {
     setScreenSize();
     setConfigurationScreen();
   }
+
+  @Override public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
+    setScreenSize();
+    setConfigurationScreen();
+  }
+
+  @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    super.onLayout(changed, l, t, r, b);
+    setScreenSize();
+    setConfigurationScreen();
+  }
+
+  /////////////////
+  //   PRIVATE   //
+  /////////////////
 
   private void setConfigurationScreen() {
     setViewsOrder();
@@ -194,9 +209,6 @@ public class LiveRoomView extends FrameLayout {
       }
     }
   }
-  /////////////////
-  //   PRIVATE    //
-  /////////////////
 
   private void addViewInContainer(int viewIndex, LiveRowView liveRowView,
       boolean guestDraguedByMe) {
@@ -237,18 +249,6 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
-  }
-
-  @Override public void onWindowFocusChanged(boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus);
-    setScreenSize();
-    setConfigurationScreen();
-  }
-
-  @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    super.onLayout(changed, l, t, r, b);
-    setScreenSize();
-    setConfigurationScreen();
   }
 
   private void setScreenSize() {

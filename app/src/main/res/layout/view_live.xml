@@ -8,8 +8,6 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:animateLayoutChanges="true"
-      android:background="@color/blue.2"
-      android:configChanges="orientation|screenSize"
       >
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
@@ -19,7 +17,6 @@
       android:layout_width="match_parent"
       android:layout_height="75dp"
       android:layout_gravity="bottom"
-      android:layout_marginBottom="2dp"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -55,5 +52,4 @@
       android:scaleType="centerInside"
       android:src="@drawable/picto_leave_live"
       />
-
 </merge>
