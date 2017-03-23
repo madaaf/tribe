@@ -80,10 +80,10 @@ public class LiveRoomView extends FrameLayout {
 
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;
-      setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
+      setScreenSize();
     } else {
       landscapeMode = false;
-      setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
+      setScreenSize();
     }
   }
 
@@ -141,7 +141,6 @@ public class LiveRoomView extends FrameLayout {
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
     this.type = type;
-    //setConfigurationScreen();
 
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
@@ -158,20 +157,15 @@ public class LiveRoomView extends FrameLayout {
 
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-/*    ViewGroup.LayoutParams lp = view.getLayoutParams();
-    lp.width = screenUtils.getWidthPx();
-    lp.height = screenUtils.getHeightPx();
-    view.setLayoutParams(lp);*/
     flexboxLayout.invalidate();
     flexboxLayout.requestLayout();
 
     if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;
-      setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
     } else {
-      setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
       landscapeMode = false;
     }
+    setScreenSize();
     setConfigurationScreen();
   }
 
@@ -247,17 +241,17 @@ public class LiveRoomView extends FrameLayout {
 
   @Override public void onWindowFocusChanged(boolean hasFocus) {
     super.onWindowFocusChanged(hasFocus);
-    setScreenSize(1, 1);
+    setScreenSize();
     setConfigurationScreen();
   }
 
   @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
     super.onLayout(changed, l, t, r, b);
-    setScreenSize(1, 1);
+    setScreenSize();
     setConfigurationScreen();
   }
 
-  private void setScreenSize(float width, float height) {
+  private void setScreenSize() {
     this.witdhScreen = flexboxLayout.getWidth();
     this.heightScreen = flexboxLayout.getHeight();
   }

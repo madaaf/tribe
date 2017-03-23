@@ -1062,8 +1062,18 @@ public class LiveView extends FrameLayout {
     return liveRowViewMap.getMapObservable();
   }
 
+  /*  @Override public void onConfigurationChanged(Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+      //onOpenInvite.onNext(null);
+
+      ViewGroup.LayoutParams lp = view.getLayoutParams();
+      lp.width = screenUtils.getWidthPx();
+      lp.height = screenUtils.getHeightPx();
+      view.setLayoutParams(lp);
+    }*/
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+    onShouldCloseInvites.onNext(null);
     ViewGroup.LayoutParams lp = view.getLayoutParams();
     lp.width = screenUtils.getWidthPx();
     lp.height = screenUtils.getHeightPx();

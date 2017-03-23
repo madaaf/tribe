@@ -555,7 +555,7 @@ public class LiveContainer extends FrameLayout {
     }
   }
 
-  private void closeInviteView() {
+  private void closeInviteView() { // SOEF
     isOpened = false;
     springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
   }
