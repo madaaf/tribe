@@ -13,7 +13,7 @@
       android:id="@+id/viewLiveContainer"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@null"
+      android:background="@color/purple.group"
       >
 
     <com.tribe.app.presentation.view.component.live.LiveInviteView
@@ -21,13 +21,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="right"
+        android:background="@color/yellow"
         />
 
     <com.tribe.app.presentation.view.component.live.LiveView
         android:id="@+id/viewLive"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null"
+        android:background="@color/white.opacity.70"
+        android:configChanges="orientation|screenSize"
         />
 
     <View

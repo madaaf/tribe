@@ -263,8 +263,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
-
-
   private void initResources() {
     int result = 0;
     liveDurationIsMoreThan30sec = false;

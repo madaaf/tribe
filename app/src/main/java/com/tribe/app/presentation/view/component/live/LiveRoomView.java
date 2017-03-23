@@ -24,7 +24,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 public class LiveRoomView extends FrameLayout {
 
@@ -60,14 +59,17 @@ public class LiveRoomView extends FrameLayout {
     init();
   }
 
+  private View view;
+
   private void init() {
     type = DEFAULT_TYPE;
     initDependencyInjector();
     onDroppedBarHeight = screenUtils.dpToPx(65);
 
-    LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
+    view = LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
 
+    flexboxLayout = (FlexboxLayout) findViewById(R.id.flexbox_layout);
     LayoutTransition transition = new LayoutTransition();
     transition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
     flexboxLayout.setLayoutTransition(transition);
@@ -79,35 +81,9 @@ public class LiveRoomView extends FrameLayout {
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;
       setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
-      //Timber.e("SOEF INIT LANDSCAPE");
-      Timber.e("SOEF screen utils  LANDSCAPE "
-          + screenUtils.getWidthPx()
-          + " "
-          + screenUtils.getHeightPx());
-      Timber.e("SOEF INT  LANDSCAPE "
-          + getWidth()
-          + "/ "
-          + flexboxLayout.getWidth()
-          + " height "
-          + getHeight()
-          + "/"
-          + flexboxLayout.getHeight());
     } else {
-      setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
-      //Timber.e("SOEF INIT PORTRAIT");
       landscapeMode = false;
-      Timber.e("SOEF screen utils  PORTRAIT "
-          + screenUtils.getWidthPx()
-          + " "
-          + screenUtils.getHeightPx());
-      Timber.e("SOEF INIT PORTRAIT "
-          + getWidth()
-          + "/ "
-          + flexboxLayout.getWidth()
-          + " height "
-          + getHeight()
-          + "/"
-          + flexboxLayout.getHeight());
+      setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
     }
   }
 
@@ -165,7 +141,7 @@ public class LiveRoomView extends FrameLayout {
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
     this.type = type;
-    setConfigurationScreen();
+    //setConfigurationScreen();
 
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
@@ -182,38 +158,26 @@ public class LiveRoomView extends FrameLayout {
 
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+/*    ViewGroup.LayoutParams lp = view.getLayoutParams();
+    lp.width = screenUtils.getWidthPx();
+    lp.height = screenUtils.getHeightPx();
+    view.setLayoutParams(lp);*/
+    flexboxLayout.invalidate();
+    flexboxLayout.requestLayout();
+
     if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;
       setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
-      Timber.e("SOEF LANDSCAPE "
-          + getWidth()
-          + "/ "
-          + flexboxLayout.getWidth()
-          + " "
-          + getHeight()
-          + "/"
-          + flexboxLayout.getHeight());
     } else {
       setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
       landscapeMode = false;
-      Timber.e("SOEF PORTRAIT "
-          + getWidth()
-          + "/ "
-          + flexboxLayout.getWidth()
-          + " "
-          + getHeight()
-          + "/"
-          + flexboxLayout.getHeight());
     }
     setConfigurationScreen();
   }
 
   private void setConfigurationScreen() {
-    requestLayout();
-    setScreenSize(screenUtils.getWidthDp(), screenUtils.getHeightDp());
     setViewsOrder();
     if (!landscapeMode) {
-      //Timber.e("SOEF PROTRAIT setConfigurationScreen");
       if (type == GRID) {
         setSizeGridViewsInPortaitMode();
 
@@ -227,7 +191,6 @@ public class LiveRoomView extends FrameLayout {
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
       }
     } else {
-      // Timber.e("SOEF LANDSCAPE setConfigurationScreen");
       setSizeGirdViewsInLandscapeMode();
 
       if (flexboxLayout.getChildCount() >= 5) {
@@ -284,7 +247,6 @@ public class LiveRoomView extends FrameLayout {
 
   @Override public void onWindowFocusChanged(boolean hasFocus) {
     super.onWindowFocusChanged(hasFocus);
-    //Here you can get the size!
     setScreenSize(1, 1);
     setConfigurationScreen();
   }
@@ -296,17 +258,12 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void setScreenSize(float width, float height) {
-    flexboxLayout.invalidate();
-    flexboxLayout.requestLayout();
     this.witdhScreen = flexboxLayout.getWidth();
     this.heightScreen = flexboxLayout.getHeight();
   }
 
   private void setSizeGirdViewsInLandscapeMode() {
     int peopleOnLine = flexboxLayout.getChildCount();
-    // TODO
-    // setScreenSize(flexboxLayout.getWidth(), flexboxLayout.getHeight());
-
     if (peopleOnLine < 5) {
       for (int i = 0; i < peopleOnLine; i++) {
         setWidth(i, witdhScreen / peopleOnLine);
@@ -331,9 +288,6 @@ public class LiveRoomView extends FrameLayout {
 
   private void setSizeGridViewsInPortaitMode() {
     int peopleOnLine = flexboxLayout.getChildCount();
-    // TODO
-    // setScreenSize(flexboxLayout.getWidth(), flexboxLayout.getHeight());
-
     if (peopleOnLine % 2 == 0) {
       for (int i = 0; i < peopleOnLine; i++) {
         if (peopleOnLine > 2) {
@@ -358,9 +312,6 @@ public class LiveRoomView extends FrameLayout {
 
   private void setSizeLinearViews() {
     int peopleOnLine = flexboxLayout.getChildCount();
-    // TODO
-    //setScreenSize(flexboxLayout.getWidth(), flexboxLayout.getHeight());
-
     for (int i = 0; i < peopleOnLine; i++) {
       setWidth(i, (witdhScreen));
       setHeight(i, (heightScreen / peopleOnLine));
@@ -390,7 +341,6 @@ public class LiveRoomView extends FrameLayout {
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
     l.height = height;
     l.flexGrow = 1;
-    // view.requestLayout();
     view.setLayoutParams(l);
   }
 
@@ -399,7 +349,6 @@ public class LiveRoomView extends FrameLayout {
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
     l.width = width - (LiveInviteView.WIDTH / 2);
     l.flexGrow = 1;
-    //view.requestLayout();
     view.setLayoutParams(l);
   }
 

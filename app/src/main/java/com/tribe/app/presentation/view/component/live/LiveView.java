@@ -5,10 +5,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -139,12 +141,12 @@ public class LiveView extends FrameLayout {
 
   public LiveView(Context context) {
     super(context);
-    init(context, null);
+    init();
   }
 
   public LiveView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init(context, attrs);
+    init();
   }
 
   public void jump() {
@@ -209,8 +211,10 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  View view;
+
   @Override protected void onFinishInflate() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
+    view = LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -230,7 +234,7 @@ public class LiveView extends FrameLayout {
   //      INIT        //
   //////////////////////
 
-  private void init(Context context, AttributeSet attrs) {
+  private void init() {
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
@@ -1056,6 +1060,25 @@ public class LiveView extends FrameLayout {
 
   public Observable<Map<String, LiveRowView>> onLiveChanged() {
     return liveRowViewMap.getMapObservable();
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ViewGroup.LayoutParams lp = view.getLayoutParams();
+    lp.width = screenUtils.getWidthPx();
+    lp.height = screenUtils.getHeightPx();
+    view.setLayoutParams(lp);
+
+  /*  if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      Timber.e("SOEF LIVEVIEW LANDSCAPE");
+    } else {
+      Timber.e("SOEF LIVEVIEW  PORTRAITR");
+    }
+    ViewGroup.LayoutParams lp = getChildAt(0).getLayoutParams();
+    view.setLayoutParams(lp);
+    //init();
+    invalidate();
+    requestLayout();*/
   }
 }
 
