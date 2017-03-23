@@ -557,7 +557,9 @@ public class LiveContainer extends FrameLayout {
 
   private void closeInviteView() { // SOEF
     isOpened = false;
-    springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    if (velocityTracker != null) {
+      springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    }
   }
 
   private float getTotalDragDistance() {

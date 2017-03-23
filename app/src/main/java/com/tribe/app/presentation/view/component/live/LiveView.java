@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -228,6 +229,23 @@ public class LiveView extends FrameLayout {
         .subscribe(aLong -> displayJoinLivePopupTutorial()));
 
     super.onFinishInflate();
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    onShouldCloseInvites.onNext(null);
+
+    ViewGroup.LayoutParams lp = view.getLayoutParams();
+    lp.width = screenUtils.getWidthPx();
+    lp.height = screenUtils.getHeightPx();
+    view.setLayoutParams(lp);
+
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    params.gravity = Gravity.BOTTOM;
+    params.bottomMargin = screenUtils.dpToPx(30);
+    viewControlsLive.setLayoutParams(params);
   }
 
   //////////////////////
@@ -1060,35 +1078,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<Map<String, LiveRowView>> onLiveChanged() {
     return liveRowViewMap.getMapObservable();
-  }
-
-  /*  @Override public void onConfigurationChanged(Configuration newConfig) {
-      super.onConfigurationChanged(newConfig);
-      //onOpenInvite.onNext(null);
-
-      ViewGroup.LayoutParams lp = view.getLayoutParams();
-      lp.width = screenUtils.getWidthPx();
-      lp.height = screenUtils.getHeightPx();
-      view.setLayoutParams(lp);
-    }*/
-  @Override public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    onShouldCloseInvites.onNext(null);
-    ViewGroup.LayoutParams lp = view.getLayoutParams();
-    lp.width = screenUtils.getWidthPx();
-    lp.height = screenUtils.getHeightPx();
-    view.setLayoutParams(lp);
-
-  /*  if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      Timber.e("SOEF LIVEVIEW LANDSCAPE");
-    } else {
-      Timber.e("SOEF LIVEVIEW  PORTRAITR");
-    }
-    ViewGroup.LayoutParams lp = getChildAt(0).getLayoutParams();
-    view.setLayoutParams(lp);
-    //init();
-    invalidate();
-    requestLayout();*/
   }
 }
 

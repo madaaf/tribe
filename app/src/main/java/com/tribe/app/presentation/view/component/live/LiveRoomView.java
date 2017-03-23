@@ -202,7 +202,7 @@ public class LiveRoomView extends FrameLayout {
       boolean guestDraguedByMe) {
     flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
-    liveRowView.setTest("" + viewIndex);
+
     lp.flexGrow = 1;
 
     switch (viewIndex) {

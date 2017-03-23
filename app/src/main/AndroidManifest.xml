@@ -105,9 +105,9 @@
 
     <activity
         android:name=".presentation.view.activity.HomeActivity"
-        android:configChanges="orientation|keyboardHidden|screenSize"
         android:label="@string/app_name"
         android:launchMode="singleTask"
+        android:screenOrientation="portrait"
 
         android:theme="@style/AppTheme.Black"
         android:windowSoftInputMode="stateHidden">
@@ -193,7 +193,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.White" />
 
-    <!--android:configChanges="orientation|screenSize"-->
     <activity
         android:name=".presentation.view.activity.LiveActivity"
         android:configChanges="orientation|screenSize"
