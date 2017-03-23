@@ -98,6 +98,8 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.layoutPulse) public PulseLayout layoutPulse;
 
+  @Nullable @BindView(R.id.layoutStatus) public ViewGroup layoutStatus;
+
   @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
 
   @BindView(R.id.viewBG) View viewBG;
@@ -296,6 +298,15 @@ public class TileView extends SquareCardView {
 
     avatar.changeSize(sizeAvatar, true);
 
+    if (isGrid()) {
+      int sizeTile = screenUtils.getWidthPx() >> 1;
+      int sizeLayoutName =
+          (sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio()))) >> 1;
+      int sizeStatus = sizeLayoutName;
+      UIUtils.changeHeightOfView(layoutName, sizeLayoutName);
+      UIUtils.changeHeightOfView(layoutStatus, sizeStatus);
+    }
+
     ViewGroup.LayoutParams params;
 
     if (type == TYPE_GRID_LIVE) {
@@ -392,7 +403,7 @@ public class TileView extends SquareCardView {
     if (!recipient.isLive() && !recipient.isOnline() && recipient.getLastSeenAt() != null) {
       long time = new Date().getTime() - recipient.getLastSeenAt().getTime();
       String txt = "";
-      
+
       if (time < MINUTES_LIMIT) {
         txt = getContext().getResources().getString(R.string.grid_status_last_seen_minutes);
       } else if (time < HOURS_LIMIT) {
