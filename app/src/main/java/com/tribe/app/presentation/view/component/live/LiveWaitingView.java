@@ -507,6 +507,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void dispose() {
     subscriptions.clear();
     stopPulse();
+    viewAvatar.dispose();
   }
 
   /////////////////

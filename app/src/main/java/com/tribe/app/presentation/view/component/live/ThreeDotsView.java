@@ -1,24 +1,26 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.LinearLayout;
-import butterknife.BindViews;
-import butterknife.ButterKnife;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -26,14 +28,21 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 01/22/17.
  */
-public class ThreeDotsView extends LinearLayout {
+public class ThreeDotsView extends FrameLayout {
 
-  private final static int DURATION = 1000;
+  private final static int DURATION = 1500;
+  private final static int NB_VIEWS = 8;
+  private final static int TRANSLATION_FROM_CENTER = 20;
 
-  @BindViews({ R.id.viewDot1, R.id.viewDot2, R.id.viewDot3 }) List<View> viewDots;
+  @Inject ScreenUtils screenUtils;
 
   // VARIABLES
   private Unbinder unbinder;
+  private List<View> viewDots;
+  private boolean stopped = false;
+
+  // RESOURCES
+  private int sizeDot;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -55,43 +64,88 @@ public class ThreeDotsView extends LinearLayout {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    animateSpin();
+  }
 
-    subscriptions.add(Observable.interval((DURATION >> 1) * viewDots.size(), TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          for (int i = 0; i < viewDots.size(); i++) {
-            View viewDot = viewDots.get(i);
-            ValueAnimator animator = ValueAnimator.ofFloat(1f, 1.5f, 1f);
+  @Override protected void onDetachedFromWindow() {
+    subscriptions.clear();
+    super.onDetachedFromWindow();
+  }
+
+  private void init() {
+    viewDots = new ArrayList<>();
+
+    initDependencyInjector();
+    initResources();
+
+    setBackground(null);
+    setClipToPadding(false);
+
+    initViews();
+  }
+
+  private void initResources() {
+    sizeDot = getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
+  }
+
+  private void initViews() {
+    int translationFromCenter = screenUtils.dpToPx(TRANSLATION_FROM_CENTER);
+
+    for (int i = 0; i < NB_VIEWS; i++) {
+      View v = new View(getContext());
+      v.setScaleX(0);
+      v.setScaleY(0);
+      v.setBackgroundResource(R.drawable.shape_oval_white);
+      FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
+      lp.gravity = Gravity.CENTER;
+      v.setLayoutParams(lp);
+
+      float angleDeg = (i * (360.0f / NB_VIEWS)) - 90.0f;
+      float angleRad = (float) (angleDeg * Math.PI / 180.0f);
+      v.setTranslationX(translationFromCenter * (float) Math.cos(angleRad));
+      v.setTranslationY(translationFromCenter * (float) Math.sin(angleRad));
+
+      viewDots.add(v);
+      addView(v);
+    }
+  }
+
+  private void animateSpin() {
+    for (int i = 0; i < viewDots.size(); i++) {
+      final View viewDot = viewDots.get(i);
+      final boolean last = (i == (viewDots.size() - 1));
+
+      subscriptions.add(Observable.timer(i * (DURATION / viewDots.size()), TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f, 0f);
             animator.setDuration(DURATION);
-            animator.setStartDelay(i * (DURATION >> 1));
-            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.setInterpolator(new DecelerateInterpolator());
             animator.addUpdateListener(animation -> {
               float value = (float) animation.getAnimatedValue();
               viewDot.setScaleX(value);
               viewDot.setScaleY(value);
             });
+
+            if (last) {
+              animator.addListener(new AnimatorListenerAdapter() {
+                @Override public void onAnimationStart(Animator animation) {
+                  if (!stopped) animateSpin();
+                }
+
+                @Override public void onAnimationEnd(Animator animation) {
+                  animator.removeAllListeners();
+                }
+
+                @Override public void onAnimationCancel(Animator animation) {
+                  animator.removeAllListeners();
+                }
+              });
+            }
+
             animator.start();
-          }
-        }));
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    subscriptions.clear();
-
-    super.onDetachedFromWindow();
-  }
-
-  private void init() {
-    initDependencyInjector();
-
-    LayoutInflater.from(getContext()).inflate(R.layout.view_three_dots, this);
-    unbinder = ButterKnife.bind(this);
-
-    setBackground(null);
-    setOrientation(HORIZONTAL);
-    setGravity(Gravity.CENTER);
-    setClipToPadding(false);
+          }));
+    }
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -113,4 +167,9 @@ public class ThreeDotsView extends LinearLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void dispose() {
+    stopped = true;
+    subscriptions.clear();
+  }
 }

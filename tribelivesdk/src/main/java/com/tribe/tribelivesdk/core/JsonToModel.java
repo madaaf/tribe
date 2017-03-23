@@ -251,13 +251,22 @@ public class JsonToModel {
 
   private void computeMediaConstraints(JSONObject jo, boolean shouldCreateOffer)
       throws JSONException {
+    Timber.d(jo.toString());
     TribeMediaConstraints tribeUserConfiguration = new TribeMediaConstraints();
     JSONObject video = jo.getJSONObject("video");
     JSONObject fps = video.getJSONObject("frameRate");
     int maxWidth = video.getJSONObject("width").getInt("max");
     int maxHeight = video.getJSONObject("height").getInt("max");
-    int minFps = fps.getInt("min");
-    int maxFps = fps.getInt("max");
+
+    int minFps = 0;
+    if (fps.has("min")) {
+      fps.getInt("min");
+    }
+
+    int maxFps = 30;
+    if (fps.has("max")) {
+      fps.getInt("max");
+    }
     tribeUserConfiguration.setMaxWidth(maxWidth);
     tribeUserConfiguration.setMaxHeight(maxHeight);
     tribeUserConfiguration.setMaxFps(maxFps);

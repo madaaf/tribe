@@ -210,4 +210,9 @@ public class LiveWaitingAvatarView extends FrameLayout {
   public AvatarView getAvatar() {
     return avatar;
   }
+
+  public void dispose() {
+    clearViewAnimations();
+    viewThreeDots.dispose();
+  }
 }
