@@ -88,7 +88,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       for (JsonElement obj : resultsMemberships) {
         if (!(obj instanceof JsonNull)) {
           MembershipRealm membershipRealm = gson.fromJson(obj, MembershipRealm.class);
-          realmListMemberships.add(membershipRealm);
+          if (membershipRealm != null) realmListMemberships.add(membershipRealm);
         }
       }
     }
@@ -101,7 +101,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         for (JsonElement obj : resultsGroups) {
           if (!(obj instanceof JsonNull)) {
             GroupRealm groupRealm = groupDeserializer.parseGroup(obj.getAsJsonObject());
-            realmListGroups.add(groupRealm);
+            if (groupRealm != null) realmListGroups.add(groupRealm);
           }
         }
       }

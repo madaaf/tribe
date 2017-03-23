@@ -218,6 +218,10 @@ public class LiveRowView extends FrameLayout {
     return viewWaiting.onShouldJoinRoom().distinct().doOnNext(aVoid -> viewWaiting.startPulse());
   }
 
+  public Observable<Void> onNotifyStepDone() {
+    return viewWaiting.onNotifyStepDone().distinct();
+  }
+
   public Observable<TribeGuest> onShouldRemoveGuest() {
     return viewWaiting.onShouldRemoveGuest();
   }

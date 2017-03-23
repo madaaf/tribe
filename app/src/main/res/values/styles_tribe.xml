@@ -300,8 +300,25 @@
     <item name="android:textSize">19sp</item>
   </style>
 
-  <style name="Text.Input.Search">
+  <style name="Text.Input.Search" parent="Text.Input">
     <item name="android:textSize">15sp</item>
+  </style>
+
+  <style name="TitleMedium">
+    <item name="android:textColor">@android:color/white</item>
+    <item name="android:textSize">19sp</item>
+  </style>
+
+  <style name="TitleMedium.1" parent="@style/TitleMedium">
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+  </style>
+
+  <style name="TitleMedium.2" parent="@style/TitleMedium">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="TitleMedium.2.White" parent="@style/TitleMedium.2">
+    <item name="android:textColor">@android:color/white</item>
   </style>
 
   <!--Alerter-->

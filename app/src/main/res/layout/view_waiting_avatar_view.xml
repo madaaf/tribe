@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
   <com.tribe.app.presentation.view.widget.avatar.AvatarView
       android:id="@+id/avatar"
@@ -22,8 +23,18 @@
       android:visibility="gone"
       />
 
-  <com.tribe.app.presentation.view.component.live.ThreeDotsView
-      android:id="@+id/viewThreeDots"
+  <ImageView
+      android:id="@+id/imgNotify"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:scaleX="0"
+      android:scaleY="0"
+      android:src="@drawable/picto_notify"
+      />
+
+  <com.tribe.app.presentation.view.component.live.ChasingDotsView
+      android:id="@+id/viewChasingDots"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_gravity="center"

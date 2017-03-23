@@ -28,11 +28,11 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 01/22/17.
  */
-public class ThreeDotsView extends FrameLayout {
+public class ChasingDotsView extends FrameLayout {
 
   private final static int DURATION = 1500;
   private final static int NB_VIEWS = 8;
-  private final static int TRANSLATION_FROM_CENTER = 20;
+  private final static int TRANSLATION_FROM_CENTER = 15;
 
   @Inject ScreenUtils screenUtils;
 
@@ -47,17 +47,17 @@ public class ThreeDotsView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
-  public ThreeDotsView(Context context) {
+  public ChasingDotsView(Context context) {
     super(context);
     init();
   }
 
-  public ThreeDotsView(Context context, AttributeSet attrs) {
+  public ChasingDotsView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init();
   }
 
-  public ThreeDotsView(Context context, AttributeSet attrs, int defStyleAttr) {
+  public ChasingDotsView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     init();
   }

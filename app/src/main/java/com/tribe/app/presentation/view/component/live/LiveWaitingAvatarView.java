@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -31,6 +32,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveWaitingAvatarView extends FrameLayout {
 
+  private final static int DURATION = 300;
   private final static float OVERSHOOT_SCALE = 1.25f;
 
   @BindView(R.id.avatar) AvatarView avatar;
@@ -41,7 +43,9 @@ public class LiveWaitingAvatarView extends FrameLayout {
 
   @BindView(R.id.viewRing) View viewRing;
 
-  @BindView(R.id.viewThreeDots) ThreeDotsView viewThreeDots;
+  @BindView(R.id.viewChasingDots) ChasingDotsView viewChasingDots;
+
+  @BindView(R.id.imgNotify) ImageView imgNotify;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -113,7 +117,7 @@ public class LiveWaitingAvatarView extends FrameLayout {
     int ponderedSize = (int) (size * (1 - avatar.getShadowRatio())) + 1;
     UIUtils.changeSizeOfView(viewForegroundAvatar, ponderedSize);
     UIUtils.changeSizeOfView(viewRing, ponderedSize);
-    UIUtils.changeSizeOfView(viewThreeDots, ponderedSize);
+    UIUtils.changeSizeOfView(viewChasingDots, ponderedSize);
   }
 
   public void showGuest() {
@@ -121,8 +125,32 @@ public class LiveWaitingAvatarView extends FrameLayout {
     viewForegroundAvatar.setVisibility(View.VISIBLE);
   }
 
+  public void showNotifyState() {
+    imgNotify.animate()
+        .scaleY(1)
+        .scaleX(1)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
+  public void hideNotifyState() {
+    imgNotify.animate()
+        .scaleY(0)
+        .scaleX(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            imgNotify.setVisibility(View.GONE);
+            imgNotify.animate().setListener(null).start();
+          }
+        })
+        .start();
+  }
+
   public void startPulse() {
-    viewThreeDots.setVisibility(View.VISIBLE);
+    viewChasingDots.setVisibility(View.VISIBLE);
     viewForegroundAvatar.setVisibility(View.VISIBLE);
   }
 
@@ -130,18 +158,19 @@ public class LiveWaitingAvatarView extends FrameLayout {
     avatar.clearAnimation();
     viewForegroundAvatar.clearAnimation();
     viewRing.clearAnimation();
-    viewThreeDots.clearAnimation();
+    viewChasingDots.clearAnimation();
+    viewChasingDots.dispose();
   }
 
   public void animateBuzzAlpha(float alpha) {
     viewForegroundAvatar.setAlpha(alpha);
-    viewThreeDots.setAlpha(alpha);
+    viewChasingDots.setAlpha(alpha);
   }
 
   public void animateRemovePeer(int duration, boolean reverse) {
     AnimatorSet animatorSet = new AnimatorSet();
 
-    viewThreeDots.animate()
+    viewChasingDots.animate()
         .alpha(reverse ? 1 : 0)
         .setDuration(duration)
         .setStartDelay(reverse ? duration * 2 : 0)
@@ -213,6 +242,6 @@ public class LiveWaitingAvatarView extends FrameLayout {
 
   public void dispose() {
     clearViewAnimations();
-    viewThreeDots.dispose();
+    viewChasingDots.dispose();
   }
 }

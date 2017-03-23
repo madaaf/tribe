@@ -37,7 +37,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -94,7 +93,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
-  @BindView(R.id.txtName) TextViewFont txtName;
+  @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
@@ -198,6 +197,8 @@ public class LiveView extends FrameLayout {
     if (animatorBuzzAvatar != null) {
       animatorBuzzAvatar.cancel();
     }
+
+    viewStatusName.dispose();
 
     if (!isJump) {
       persistentSubscriptions.clear();
@@ -553,13 +554,7 @@ public class LiveView extends FrameLayout {
   public void start(Live live) {
     this.live = live;
 
-    if (live.isGroup()) {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0, 0);
-    } else {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-    }
-
-    txtName.setText(live.getDisplayName());
+    viewStatusName.setLive(live);
 
     TribeGuest guest =
         new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
@@ -571,9 +566,13 @@ public class LiveView extends FrameLayout {
     liveRowView.showGuest(live.isCountdown());
 
     if (live.isCountdown()) {
-      tempSubscriptions.add(liveRowView.onShouldJoinRoom().distinct().doOnNext(aVoid -> {
-        onJoining();
-      }).subscribe(onShouldJoinRoom));
+      tempSubscriptions.add(liveRowView.onShouldJoinRoom()
+          .distinct()
+          .doOnNext(aVoid -> onJoining())
+          .subscribe(onShouldJoinRoom));
+
+      tempSubscriptions.add(liveRowView.onNotifyStepDone()
+          .subscribe(aVoid -> viewStatusName.setStatus(LiveStatusNameView.WAITING)));
     } else {
       liveRowView.startPulse();
       onJoining();
@@ -582,6 +581,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void onJoining() {
+    viewStatusName.setStatus(LiveStatusNameView.NOTIFYING);
     viewControlsLive.setNotifyEnabled(live.isCountdown());
     hasJoined = true;
   }
@@ -684,24 +684,6 @@ public class LiveView extends FrameLayout {
     viewControlsLive.refactorNotifyButton(enable);
   }
 
-  private void scale(View v, int scale) {
-    v.animate()
-        .scaleX(scale)
-        .scaleY(scale)
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationStart(Animator animation) {
-            v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
-          }
-
-          @Override public void onAnimationEnd(Animator animation) {
-            v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
-            v.animate().setListener(null).start();
-          }
-        })
-        .start();
-  }
-
   private void addView(LiveRowView liveRowView, TribeGuest guest, int color,
       boolean guestDraggedByMe) {
     liveRowView.setColor(color);
@@ -712,6 +694,10 @@ public class LiveView extends FrameLayout {
 
   private void addView(RemotePeer remotePeer) {
     LiveRowView liveRowView = null;
+
+    if (nbLiveInRoom() == 0) {
+      viewStatusName.setStatus(LiveStatusNameView.DONE);
+    }
 
     if (liveInviteMap.getMap()
         .containsKey(

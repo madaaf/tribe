@@ -32,11 +32,20 @@
       />
 
   <com.tribe.app.presentation.view.widget.CircularProgressBar
-      android:id="@+id/progressBar"
+      android:id="@+id/progressBarJoining"
       android:layout_width="95dp"
       android:layout_height="95dp"
       android:layout_gravity="center"
-      android:background="@drawable/shape_ring_white10"
+      android:background="@null"
+      android:visibility="gone"
+      />
+
+  <com.tribe.app.presentation.view.widget.CircularProgressBar
+      android:id="@+id/progressBarNotify"
+      android:layout_width="95dp"
+      android:layout_height="95dp"
+      android:layout_gravity="center"
+      android:background="@null"
       android:visibility="gone"
       />
 

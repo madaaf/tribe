@@ -19,18 +19,15 @@
       android:layout_gravity="bottom"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+  <com.tribe.app.presentation.view.component.live.LiveStatusNameView
+      android:id="@+id/viewStatusName"
+      android:layout_width="match_parent"
+      android:layout_height="100dp"
       android:layout_gravity="top|center_horizontal"
-      android:layout_margin="@dimen/horizontal_margin_small"
+      android:layout_marginLeft="50dp"
+      android:layout_marginRight="50dp"
+      android:layout_marginTop="19.5dp"
       android:background="@null"
-      android:drawablePadding="8.6dp"
-      android:shadowColor="@color/black.opacity.50"
-      android:shadowRadius="5"
-      android:singleLine="true"
-      style="@style/Body.Two.White"
       />
 
   <com.tribe.app.presentation.view.component.live.BuzzView
