@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -44,7 +43,7 @@ import javax.inject.Inject;
 public class RatingNotificationView extends FrameLayout implements View.OnClickListener {
 
   private final static int DURATION = 300;
-  private final static int DURATION_COLOR = 1000;
+  private final static int DURATION_COLOR = 300;
   private final static int DELAY = 0;
   private final static float OVERSHOOT = 0.5f;
   private final static float SCALE = 1.10f;
@@ -223,14 +222,14 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     for (int i = 0; i < index; i++) {
       ImageView btnStar = btnStars.get(i);
       com.tribe.app.presentation.view.utils.AnimationUtils.animateColorFilter(btnStar,
-              colorFilters[i], color, DURATION_COLOR);
+          colorFilters[i], color, DURATION_COLOR);
       colorFilters[i] = color;
     }
 
     for (int i = index; i < btnStars.size(); i++) {
       ImageView btnStar = btnStars.get(i);
       com.tribe.app.presentation.view.utils.AnimationUtils.animateColorFilter(btnStar,
-              colorFilters[i], Color.TRANSPARENT, DURATION_COLOR);
+          colorFilters[i], Color.TRANSPARENT, DURATION_COLOR);
       colorFilters[i] = Color.TRANSPARENT;
     }
 

@@ -87,7 +87,7 @@
 	<string name="permission_popup_push_home_yes">Notify me</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
 	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or live.</string>
-	<string name="permission_push_fake_alert_allow">Ok</string>
+	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">Read more</string>
 	<string name="permission_push_disabled_alert_title">Push permission denied</string>
 	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>

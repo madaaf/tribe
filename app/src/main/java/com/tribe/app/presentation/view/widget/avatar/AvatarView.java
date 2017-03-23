@@ -207,6 +207,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
     new GlideUtils.Builder(getContext()).resourceId(drawableId)
         .size(avatarSize)
         .target(imgAvatar)
+        .hasPlaceholder(false)
         .hasHole(false)
         .load();
   }

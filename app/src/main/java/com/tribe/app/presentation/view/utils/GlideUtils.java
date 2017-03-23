@@ -29,6 +29,7 @@ public class GlideUtils {
     private int size = 0;
     private ImageView target;
     private boolean hasHole = false;
+    private boolean hasPlaceholder = true;
 
     public Builder(Context context) {
       this.context = context;
@@ -69,6 +70,11 @@ public class GlideUtils {
       return this;
     }
 
+    public Builder hasPlaceholder(boolean hasPlaceholder) {
+      this.hasPlaceholder = hasPlaceholder;
+      return this;
+    }
+
     public void load() {
       DrawableRequestBuilder drawableRequestBuilder;
 
@@ -86,9 +92,11 @@ public class GlideUtils {
         drawableRequestBuilder = Glide.with(context).load(url);
       }
 
-      drawableRequestBuilder = drawableRequestBuilder.thumbnail(0.25f)
-          .error(R.drawable.picto_placeholder_avatar)
-          .placeholder(R.drawable.picto_placeholder_avatar);
+      if (hasPlaceholder) {
+        drawableRequestBuilder = drawableRequestBuilder.thumbnail(0.25f)
+            .error(R.drawable.picto_placeholder_avatar)
+            .placeholder(R.drawable.picto_placeholder_avatar);
+      }
 
       if (size != 0) {
         drawableRequestBuilder.override(size, size);

@@ -87,7 +87,7 @@
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
 	<string name="permission_push_fake_alert_title">Ne loupez rien de vos amis !</string>
 	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis sont live ou connectés.</string>
-	<string name="permission_push_fake_alert_allow">Ok</string>
+	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">En savoir plus</string>
 	<string name="permission_push_disabled_alert_title">Push désactivés</string>
 	<string name="permission_push_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
