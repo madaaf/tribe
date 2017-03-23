@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -31,8 +32,7 @@ public class LiveRoomView extends FrameLayout {
 
   public static final int GRID = 0;
   public static final int LINEAR = 1;
-
-  private static int DURATION = 300;
+  private static final int DURATION = 300;
   private static final int DEFAULT_TYPE = GRID;
 
   @Inject ScreenUtils screenUtils;
@@ -41,6 +41,9 @@ public class LiveRoomView extends FrameLayout {
   private Unbinder unbinder;
   private @TribeRoomViewType int type;
   private int onDroppedBarHeight = 0;
+  private boolean landscapeMode = false;
+  private int witdhScreen;
+  private int heightScreen;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -57,7 +60,6 @@ public class LiveRoomView extends FrameLayout {
   private void init() {
     type = DEFAULT_TYPE;
     initDependencyInjector();
-
     onDroppedBarHeight = screenUtils.dpToPx(65);
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
@@ -70,13 +72,13 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
-  }
 
-  public void removeView(LiveRowView view) {
-    flexboxLayout.removeView(view);
-    if (type == GRID) {
-      organizeGridParam();
-      setRowsGridWidth();
+    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      landscapeMode = true;
+      setScreenSize();
+    } else {
+      landscapeMode = false;
+      setScreenSize();
     }
   }
 
@@ -116,25 +118,24 @@ public class LiveRoomView extends FrameLayout {
     lastViewAdded.startAnimation(resizeAnimation);
   }
 
+  /////////////////
+  //   PUBLIC    //
+  /////////////////
+
+  public void removeView(LiveRowView view) {
+    flexboxLayout.removeView(view);
+    setConfigurationScreen();
+  }
+
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    addViewInRow(viewIndex, liveRowView, guestDraguedByMy);
-    setRowsOrder();
-    if (type == GRID) {
-      organizeGridParam();
-      setRowsGridWidth();
-    }
+    addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
+    setConfigurationScreen();
   }
 
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
     this.type = type;
-    if (type == GRID) {
-      setRowsGridWidth();
-      organizeGridParam();
-    } else {
-      flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-    }
 
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
@@ -149,8 +150,68 @@ public class LiveRoomView extends FrameLayout {
     return type;
   }
 
-  private void addViewInRow(int viewIndex, LiveRowView liveRowView, boolean guestDraguedByMe) {
-    flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+  /////////////////
+  //    INIT     //
+  /////////////////
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    flexboxLayout.invalidate();
+    flexboxLayout.requestLayout();
+
+    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      landscapeMode = true;
+    } else {
+      landscapeMode = false;
+    }
+    setScreenSize();
+    setConfigurationScreen();
+  }
+
+  @Override public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
+    setScreenSize();
+    setConfigurationScreen();
+  }
+
+  @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    super.onLayout(changed, l, t, r, b);
+    setScreenSize();
+    setConfigurationScreen();
+  }
+
+  /////////////////
+  //   PRIVATE   //
+  /////////////////
+
+  private void setConfigurationScreen() {
+    setViewsOrder();
+    if (!landscapeMode) {
+      if (type == GRID) {
+        setSizeGridViewsInPortaitMode();
+
+        if (flexboxLayout.getChildCount() < 3) {
+          flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+        } else {
+          flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+        }
+      } else {
+        setSizeLinearViews();
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+      }
+    } else {
+      setSizeGirdViewsInLandscapeMode();
+
+      if (flexboxLayout.getChildCount() >= 5) {
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+      } else {
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
+      }
+    }
+  }
+
+  private void addViewInContainer(int viewIndex, LiveRowView liveRowView,
+      boolean guestDraguedByMe) {
     flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
 
@@ -163,7 +224,6 @@ public class LiveRoomView extends FrameLayout {
         if (viewLocalLive.getParent() != null) {
           ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive);
         }
-
         viewLocalLive.setVisibility(VISIBLE);
         FlexboxLayout.LayoutParams lp1 = new FlexboxLayout.LayoutParams(1, 1);
         lp1.flexGrow = 1;
@@ -191,16 +251,68 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
-  private void organizeGridParam() {
-    flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-    switch (flexboxLayout.getChildCount()) {
-      case 2:
-        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        break;
+  private void setScreenSize() {
+    this.witdhScreen = flexboxLayout.getWidth();
+    this.heightScreen = flexboxLayout.getHeight();
+  }
+
+  private void setSizeGirdViewsInLandscapeMode() {
+    int peopleOnLine = flexboxLayout.getChildCount();
+    if (peopleOnLine < 5) {
+      for (int i = 0; i < peopleOnLine; i++) {
+        setWidth(i, witdhScreen / peopleOnLine);
+        setHeight(i, heightScreen);
+      }
+    } else {
+      for (int i = 0; i < peopleOnLine; i++) {
+        if (peopleOnLine % 2 == 0) { // LOCAL VIEW
+          setHeight(i, heightScreen / 2);
+          setWidth(i, witdhScreen / ((peopleOnLine / 2) + 1));
+        } else { // Impair
+          setWidth(i, witdhScreen / ((peopleOnLine / 2) + 1));
+          if (i == 0) {
+            setHeight(i, heightScreen);
+          } else {
+            setHeight(i, heightScreen / 2);
+          }
+        }
+      }
     }
   }
 
-  private void setRowsOrder() {
+  private void setSizeGridViewsInPortaitMode() {
+    int peopleOnLine = flexboxLayout.getChildCount();
+    if (peopleOnLine % 2 == 0) {
+      for (int i = 0; i < peopleOnLine; i++) {
+        if (peopleOnLine > 2) {
+          setWidth(i, (witdhScreen / 2));
+          setHeight(i, (heightScreen / (peopleOnLine / 2)));
+        } else {
+          setWidth(i, (witdhScreen));
+          setHeight(i, (heightScreen / peopleOnLine));
+        }
+      }
+    } else { // IMPAIR
+      for (int i = 0; i < peopleOnLine; i++) {
+        setHeight(i, heightScreen / (peopleOnLine + 1));
+        if (i == 0) {
+          setWidth(i, (witdhScreen));
+        } else {
+          setWidth(i, (witdhScreen / 2));
+        }
+      }
+    }
+  }
+
+  private void setSizeLinearViews() {
+    int peopleOnLine = flexboxLayout.getChildCount();
+    for (int i = 0; i < peopleOnLine; i++) {
+      setWidth(i, (witdhScreen));
+      setHeight(i, (heightScreen / peopleOnLine));
+    }
+  }
+
+  private void setViewsOrder() {
     int peopleOnLine = flexboxLayout.getChildCount();
     for (int i = 0; i < peopleOnLine; i++) {
       if (i == 0) {
@@ -218,21 +330,12 @@ public class LiveRoomView extends FrameLayout {
     view.setLayoutParams(l);
   }
 
-  private void setRowsGridWidth() {
-    int peopleOnLine = flexboxLayout.getChildCount();
-    if (peopleOnLine % 2 == 0) {
-      for (int i = 0; i < peopleOnLine; i++) {
-        setWidth(i, (flexboxLayout.getWidth() / 2));
-      }
-    } else {
-      for (int i = 0; i < peopleOnLine; i++) {
-        if (i == 0) {
-          setWidth(i, (flexboxLayout.getWidth()));
-        } else {
-          setWidth(i, (flexboxLayout.getWidth() / 2));
-        }
-      }
-    }
+  private void setHeight(int index, int height) {
+    View view = flexboxLayout.getChildAt(index);
+    FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
+    l.height = height;
+    l.flexGrow = 1;
+    view.setLayoutParams(l);
   }
 
   private void setWidth(int index, int width) {
@@ -243,7 +346,7 @@ public class LiveRoomView extends FrameLayout {
     view.setLayoutParams(l);
   }
 
-  public class ResizeAnimation extends Animation {
+  private class ResizeAnimation extends Animation {
     final int targetHeight;
     View view;
     int startHeight;
@@ -259,7 +362,7 @@ public class LiveRoomView extends FrameLayout {
 
     @Override protected void applyTransformation(float interpolatedTime, Transformation t) {
       l.maxHeight = (int) (startHeight + (targetHeight - startHeight) * interpolatedTime);
-      //view.requestLayout();
+      view.requestLayout();
       view.setLayoutParams(l);
     }
 
