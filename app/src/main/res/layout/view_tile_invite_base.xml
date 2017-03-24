@@ -5,12 +5,23 @@
       android:id="@+id/txtName"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      style="@style/Caption.Two.White"
       android:layout_gravity="top|center_horizontal"
-      android:layout_marginTop="10dp"
       android:layout_marginLeft="@dimen/horizontal_margin_small"
       android:layout_marginRight="@dimen/horizontal_margin_small"
+      android:layout_marginTop="10dp"
       android:singleLine="true"
+      style="@style/Caption.Two.White"
+      />
+
+  <ImageView
+      android:id="@+id/imgIndInvite"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignBottom="@id/avatarView"
+      android:layout_alignRight="@id/avatarView"
+      android:layout_gravity="center"
+      android:scaleType="fitXY"
+      android:src="@drawable/picto_live"
       />
 
 </merge>

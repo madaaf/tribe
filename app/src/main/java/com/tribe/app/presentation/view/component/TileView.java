@@ -15,8 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -104,7 +104,7 @@ public class TileView extends SquareCardView {
 
   @BindView(R.id.viewBG) View viewBG;
 
-  @Nullable @BindView(R.id.imgInd) ImageView imgInd;
+  @Nullable @BindView(R.id.imgIndInvite) ImageView imgIndInvite;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -262,8 +262,8 @@ public class TileView extends SquareCardView {
           txtName.setAlpha(alpha);
         }
 
-        if (imgInd != null) {
-          imgInd.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1,
+        if (imgIndInvite != null) {
+          imgIndInvite.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1,
               -10)); // Should disappear faster ^^
         }
 
@@ -317,16 +317,15 @@ public class TileView extends SquareCardView {
     }
 
     if (type == TYPE_INVITE_LIVE_CO) {
-      RelativeLayout.LayoutParams imgIndParams =
-          (RelativeLayout.LayoutParams) imgInd.getLayoutParams();
+      FrameLayout.LayoutParams imgIndParams =
+          (FrameLayout.LayoutParams) imgIndInvite.getLayoutParams();
       imgIndParams.leftMargin = sizeAvatar / 3;
       imgIndParams.topMargin = imgIndParams.leftMargin;
-      imgIndParams.height = sizeAvatar / 2;
+      imgIndParams.height = sizeAvatar / 3;
       imgIndParams.width = imgIndParams.height;
       int padding = screenUtils.dpToPx(1);
-      imgInd.setPadding(padding, padding, padding, padding);
-      imgInd.setLayoutParams(imgIndParams);
-      imgInd.requestLayout();
+      imgIndInvite.setPadding(padding, padding, padding, padding);
+      imgIndInvite.setLayoutParams(imgIndParams);
     }
   }
 
@@ -365,13 +364,13 @@ public class TileView extends SquareCardView {
       setStatus();
     } else {
       if (recipient.isLive()) {
-        imgInd.setVisibility(View.VISIBLE);
-        imgInd.setImageResource(R.drawable.picto_live);
+        imgIndInvite.setVisibility(View.VISIBLE);
+        imgIndInvite.setImageResource(R.drawable.picto_live);
       } else if (recipient.isOnline()) {
-        imgInd.setVisibility(View.VISIBLE);
-        imgInd.setImageResource(R.drawable.picto_online);
+        imgIndInvite.setVisibility(View.VISIBLE);
+        imgIndInvite.setImageResource(R.drawable.picto_online);
       } else {
-        imgInd.setVisibility(View.GONE);
+        imgIndInvite.setVisibility(View.GONE);
       }
     }
   }
@@ -432,7 +431,7 @@ public class TileView extends SquareCardView {
     this.position = position;
 
     if (!isGrid()) {
-      UIUtils.setBackgroundInd(imgInd, position);
+      UIUtils.setBackgroundInd(imgIndInvite, position);
       UIUtils.setBackgroundCard(this, position);
     } else {
       UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
