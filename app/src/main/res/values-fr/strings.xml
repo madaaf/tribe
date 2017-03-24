@@ -602,8 +602,8 @@
 	<string name="live_title_with_guests">%1$s, et des invités</string>
 	<string name="live_low_connectivity">Réseau faible, audio mode activé :loud_sound:</string>
 	<string name="live_waiting_state_initiating">Initiating live with %1$s...</string>
-	<string name="live_waiting_state_notifying">Notification de %1$s</string>
-	<string name="live_waiting_state_waiting">En attente de %1$s</string>
+	<string name="live_waiting_state_notifying">Appel de %1$s en cours...</string>
+	<string name="live_waiting_state_waiting">En attente que %1$s vous rejoigne...</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>
@@ -613,6 +613,8 @@
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :ghost:</string>
 	<string name="profile_fullscreen_notifications">Notifications plein-écran :telephone_receiver:</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title"></string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg"></string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>

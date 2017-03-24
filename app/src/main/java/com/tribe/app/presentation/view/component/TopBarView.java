@@ -39,6 +39,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 11/15/2016.
  */
 public class TopBarView extends FrameLayout {
+
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
   private static final int DURATION = 300;
@@ -231,6 +232,7 @@ public class TopBarView extends FrameLayout {
 
     showView(imgClose, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
+        editTextSearch.setEnabled(true);
         imgClose.animate().setListener(null).start();
       }
     });

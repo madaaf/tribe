@@ -20,8 +20,8 @@
 
   <ImageView
       android:id="@+id/imgInd"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
       android:layout_alignBottom="@id/imgAvatar"
       android:layout_alignRight="@id/imgAvatar"
       android:scaleType="fitXY"
