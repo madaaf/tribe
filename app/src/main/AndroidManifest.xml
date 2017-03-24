@@ -210,9 +210,9 @@
 
     <activity
         android:name=".presentation.view.activity.LiveActivity"
+        android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
-        android:screenOrientation="portrait"
         android:theme="@style/AppTheme.Black" />
 
     <service android:name=".data.network.WSService"></service>
