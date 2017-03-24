@@ -518,6 +518,7 @@
 	<string name="topbar_new_live">Nouveau groupe</string>
 	<string name="topbar_search">Amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
+	<string name="topbar_invite_video_action">:vhs: Regarder la vidéo démo</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Inviter des amis via iMessage</string>
 	<string name="topbar_invite_sms_action_android">:link: Inviter des amis via SMS</string>
@@ -601,9 +602,9 @@
 	<string name="live_dismiss_invitation_validate">Supprimer %1$s</string>
 	<string name="live_title_with_guests">%1$s, et des invités</string>
 	<string name="live_low_connectivity">Réseau faible, audio mode activé :loud_sound:</string>
-	<string name="live_waiting_state_initiating">Initiation du direct avec %1$s...</string>
-	<string name="live_waiting_state_notifying">Appel en cours de %1$s...</string>
-	<string name="live_waiting_state_waiting">En attente que %1$s vous rejoigne...</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiation du direct avec %1$s...</string>
+	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>
+	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>
@@ -611,9 +612,9 @@
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
-	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :ghost:</string>
+	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :mag:</string>
 	<string name="profile_fullscreen_notifications">Notifications plein-écran :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Ne râter plus les appels de vos amis!</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Ne ratez plus les appels de vos amis!</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Vous allez peut être manquer des appels de vos amis si vous désactivez les notifications plein-écran.</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>

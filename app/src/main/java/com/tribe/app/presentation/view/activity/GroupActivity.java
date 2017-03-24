@@ -182,7 +182,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
         groupEntity = new GroupEntity();
         groupEntity.setMembersId(membersId);
-        groupEntity.setName(getDefaultGroupName());
+        groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
 
         groupPresenter.createGroup(groupEntity);
       } else {

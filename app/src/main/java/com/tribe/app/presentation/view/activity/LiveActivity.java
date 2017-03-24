@@ -316,8 +316,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return randomNumber > firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TRIGGER);
   }
 
-  private Long getfirebaseTimeoutConfig() {
-    return firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
+  private Long getFirebaseTimeoutConfig() {
+    Long time = firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
+    return time == 0 ? 10 : time;
   }
 
   private void displayStartFirstPopupTutorial() {
@@ -444,7 +445,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         returnIntent.putExtra(ROOM_ID, viewLive.getRoom().getOptions().getRoomId());
       }
       returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
-      returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getfirebaseTimeoutConfig());
+      returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
       setResult(Activity.RESULT_OK, returnIntent);
     }
   }

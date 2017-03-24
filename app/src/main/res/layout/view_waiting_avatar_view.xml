@@ -11,6 +11,8 @@
       android:layout_margin="@dimen/horizontal_margin_small"
       android:background="@null"
       android:visibility="gone"
+      app:hasHole="false"
+      app:hasInd="false"
       app:hasShadow="true"
       />
 

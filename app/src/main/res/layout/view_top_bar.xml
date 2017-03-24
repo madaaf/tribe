@@ -95,7 +95,7 @@
           android:imeOptions="actionDone"
           android:inputType="text|textVisiblePassword"
           android:singleLine="true"
-          android:textColorHint="@android:color/white"
+          android:textColorHint="@color/white.opacity.40"
           style="@style/Body.Two.White"
           />
     </LinearLayout>

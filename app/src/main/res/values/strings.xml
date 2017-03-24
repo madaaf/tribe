@@ -518,6 +518,7 @@
 	<string name="topbar_new_live">New group</string>
 	<string name="topbar_search">Friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
+	<string name="topbar_invite_video_action">:vhs: Watch video demo</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Invite friends on iMessage</string>
 	<string name="topbar_invite_sms_action_android">:link: Invite friends by SMS</string>
@@ -601,9 +602,9 @@
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
 	<string name="live_title_with_guests">%1$s, and guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
-	<string name="live_waiting_state_initiating">Initiating live with %1$s...</string>
-	<string name="live_waiting_state_notifying">Ringing %1$s...</string>
-	<string name="live_waiting_state_waiting">Waiting for %1$s to join</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiating live with %1$s...</string>
+	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
+	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
@@ -611,7 +612,7 @@
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
-	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
+	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
 	<string name="profile_fullscreen_notifications">Fullscreen notifications :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Don\'t miss calls from friends!</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You will probably miss calls from friends if you downgrade fullscreen notifications to regular push notifications.</string>

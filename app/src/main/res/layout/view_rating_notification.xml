@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
   <LinearLayout
       android:id="@+id/viewContainer"
@@ -20,6 +21,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/live_rating_title"
+        style="@style/Body.Two.Black"
         />
 
     <View
@@ -95,6 +97,7 @@
         android:background="@drawable/shape_rect_grey_rounded_bottom_corner"
         android:gravity="center"
         android:text="@string/live_rating_send"
+        style="@style/Body.Two.Black"
         />
 
   </LinearLayout>

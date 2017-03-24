@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
@@ -33,8 +34,14 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -62,11 +69,13 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private CountDownTimer countDownTimer;
   private int[] colorFilters;
   private int indexStar, lastIndexStar = 0, lastIndexStarUp = 0;
   private String roomId;
   private long timeout;
+
+  // OBSERVABLES
+  Subscription timerSubscription;
 
   public RatingNotificationView(Context context) {
     super(context);
@@ -76,6 +85,14 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   public RatingNotificationView(Context context, AttributeSet attrs) {
     super(context, attrs);
     initView(context, attrs);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    if (timerSubscription != null) {
+      timerSubscription.unsubscribe();
+      timerSubscription = null;
+    }
+    super.onDetachedFromWindow();
   }
 
   private void initView(Context context, AttributeSet attrs) {
@@ -145,26 +162,21 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         super.onAnimationEnd(animation);
         clearAnimation();
         setVisibility(GONE);
-        countDownTimer.cancel();
+        if (timerSubscription != null) timerSubscription.unsubscribe();
       }
     });
     startAnimation(slideInAnimation);
   }
 
   private void setTimer() {
-    countDownTimer = new CountDownTimer(timeout * 1000, 1000) {
-      @Override public void onTick(long millisUntilFinished) {
-      }
-
-      @Override public void onFinish() {
-        hideView();
-      }
-    }.start();
+    timerSubscription = Observable.timer(timeout, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aLong -> {
+      hideView();
+    });
   }
 
   private void resetTimer() {
-    countDownTimer.cancel();
-    countDownTimer.start();
+    if (timerSubscription != null) timerSubscription.unsubscribe();
+    setTimer();
   }
 
   private void fillStarsColors(int index) {
@@ -318,6 +330,16 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
           startClickTime = System.currentTimeMillis();
           x1 = event.getX();
           y1 = event.getY();
+
+          indexStar = -1;
+
+          for (int i = 0; i < btnStars.size(); i++) {
+            if (ViewUtils.isIn(btnStars.get(i), (int) event.getRawX(), (int) event.getRawY())) {
+              indexStar = i + 1;
+              return true;
+            }
+          }
+
           break;
         }
 
@@ -332,7 +354,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
            */
           if (clickDuration < MAX_CLICK_DURATION
               && Math.abs(dx) < maxClickDistanceX
-              && Math.abs(dy) < maxClickDistanceY) {
+              && Math.abs(dy) < maxClickDistanceY && indexStar != -1) {
             Timber.d("clickDuration : " + clickDuration);
             Timber.d("Math.abs(dx) : " + Math.abs(dx));
             Timber.d("Math.abs(dy) : " + Math.abs(dy));
@@ -355,18 +377,10 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         }
 
         case MotionEvent.ACTION_MOVE: {
-          int progress = Math.round(event.getX() / starsContainer.getWidth() * lengthProgress);
-          int unity = lengthProgress / 5;
-          if (progress < unity) {
-            indexStar = 1;
-          } else if (progress >= unity && progress < 2 * unity) {
-            indexStar = 2;
-          } else if (progress >= 2 * unity && progress < 3 * unity) {
-            indexStar = 3;
-          } else if (progress >= 3 * unity && progress < 4 * unity) {
-            indexStar = 4;
-          } else {
-            indexStar = 5;
+          for (int i = 0; i < btnStars.size(); i++) {
+            if (isIn(btnStars.get(i), (int) event.getRawX(), (int) event.getRawY())) {
+              indexStar = i + 1;
+            }
           }
 
           fillStarsColors(indexStar);
@@ -375,5 +389,15 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
       return false;
     }
+  }
+
+  public boolean isIn(View child, int x, int y) {
+    int marginX = screenUtils.dpToPx(5);
+    int marginY = screenUtils.dpToPx(15);
+    int[] location = new int[2];
+    child.getLocationOnScreen(location);
+    Rect rect = new Rect(location[0] - marginX, location[1] - marginY, location[0] + child.getWidth() + marginX,
+        location[1] + child.getHeight() + marginY);
+    return rect.contains(x, y);
   }
 }

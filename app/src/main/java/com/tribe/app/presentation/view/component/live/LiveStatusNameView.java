@@ -19,6 +19,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
@@ -200,11 +201,13 @@ public class LiveStatusNameView extends FrameLayout {
     }
 
     if (txtStatusLast == null || txtStatusLast == txtStatus2) {
-      txtStatus1.setText(getContext().getString(status, live.getDisplayName()));
+      txtStatus1.setText(
+          EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
       hideView(txtStatus2);
       showView(txtStatus1);
     } else {
-      txtStatus2.setText(getContext().getString(status, live.getDisplayName()));
+      txtStatus2.setText(
+          EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
       hideView(txtStatus1);
       showView(txtStatus2);
     }
