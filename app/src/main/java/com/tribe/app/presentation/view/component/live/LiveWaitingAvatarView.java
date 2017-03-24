@@ -159,7 +159,6 @@ public class LiveWaitingAvatarView extends FrameLayout {
     viewForegroundAvatar.clearAnimation();
     viewRing.clearAnimation();
     viewChasingDots.clearAnimation();
-    viewChasingDots.dispose();
   }
 
   public void animateBuzzAlpha(float alpha) {

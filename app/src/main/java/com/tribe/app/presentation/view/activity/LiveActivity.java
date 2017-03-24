@@ -209,10 +209,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+    soundManager.cancelMediaPlayer();
+
     if (audioManager != null) {
       audioManager.stop();
       audioManager = null;
     }
+
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();

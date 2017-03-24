@@ -399,6 +399,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     clearAnimator(animatorBuzzAvatar);
     viewCircle.setRadius(0);
     clearViewAnimations();
+    viewAvatar.dispose();
   }
 
   private void clearViewAnimations() {

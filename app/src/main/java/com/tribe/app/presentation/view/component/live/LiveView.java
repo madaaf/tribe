@@ -696,6 +696,7 @@ public class LiveView extends FrameLayout {
     LiveRowView liveRowView = null;
 
     if (nbLiveInRoom() == 0) {
+      soundManager.cancelMediaPlayer();
       viewStatusName.setStatus(LiveStatusNameView.DONE);
     }
 
