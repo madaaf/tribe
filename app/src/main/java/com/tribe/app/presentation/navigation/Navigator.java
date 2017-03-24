@@ -1,8 +1,6 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +18,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
-import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
@@ -36,7 +33,6 @@ import com.tribe.app.presentation.view.activity.ProfileActivity;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Class used to navigate through the application.
@@ -60,6 +56,12 @@ public class Navigator {
       Intent intent = LauncherActivity.getCallingIntent(context);
       context.startActivity(intent);
     }
+  }
+
+  public void navigateToHomeAndFinishAffinity(Activity activity) {
+    Intent mIntent = new Intent(activity, HomeActivity.class);
+    activity.finishAffinity();
+    activity.startActivity(mIntent);
   }
 
   /**

@@ -47,9 +47,7 @@ public class LauncherActivity extends BaseActivity {
       navigator.navigateToLogin(this, deepLink);
     } else {
       //navigator.navigateToAuthAccess(this, deepLink);
-      //navigator.navigateToHome(this, true, deepLink); // SOEF
-      Intent i = new Intent(this, LiveImmersiveNotificationActivity.class);
-      startActivity(i);
+      navigator.navigateToHome(this, true, deepLink);
     }
 
     finish();

@@ -22,12 +22,12 @@ import timber.log.Timber;
   public static final float SOUND_MID = 0.5f;
   public static final float SOUND_LOW = 0.1f;
 
+  public static final int CALL_RING = 0;
   public static final int WAITING_FRIEND = 1;
   public static final int FRIEND_ONLINE = 2;
   public static final int JOIN_CALL = 3;
   public static final int QUIT_CALL = 4;
   public static final int WIZZ = 5;
-  public static final int CALL_RING = 6;
 
   // VARIABLES
   private Context context;
@@ -36,6 +36,7 @@ import timber.log.Timber;
   private HashMap<Integer, Integer> soundPoolMap;
   private AudioManager audioManager;
   private Vector<Integer> availaibleSounds = new Vector<>();
+  private Vector<Integer> soundsRawIds = new Vector<>();
   private Vector<Integer> killSoundQueue = new Vector<>();
   private MediaPlayer mediaPlayer;
 
@@ -60,25 +61,26 @@ import timber.log.Timber;
     soundPoolMap = new HashMap<>();
     audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
+    addSound(CALL_RING, R.raw.call_ring);
     addSound(WAITING_FRIEND, R.raw.waiting_friend);
     addSound(FRIEND_ONLINE, R.raw.friend_online);
     addSound(JOIN_CALL, R.raw.join_call);
     addSound(QUIT_CALL, R.raw.quit_call);
     addSound(WIZZ, R.raw.wizz);
-    addSound(CALL_RING, R.raw.call_ring);
   }
 
   public void addSound(int index, int soundID) {
     availaibleSounds.add(index);
+    soundsRawIds.add(index, soundID);
     soundPool.setOnLoadCompleteListener((soundPool1, sampleId, status) -> {
     });
     soundPoolMap.put(index, soundPool.load(context, soundID, 1));
   }
 
   public void playSound(int index, float volumeRate) {
-    if (index == WAITING_FRIEND) {
+    if (index == WAITING_FRIEND || index == CALL_RING) {
       Timber.d("Playing sound with MediaPlayer");
-      mediaPlayer = MediaPlayer.create(context, R.raw.waiting_friend);
+      mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));
       mediaPlayer.setVolume(volumeRate, volumeRate);
       mediaPlayer.setLooping(true);
       mediaPlayer.start();
@@ -88,7 +90,7 @@ import timber.log.Timber;
         float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
         int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
 
-        if (index != WAITING_FRIEND) killSoundQueue.add(soundId);
+        killSoundQueue.add(soundId);
 
         Observable.timer(5000, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -109,37 +111,6 @@ import timber.log.Timber;
       mediaPlayer.stop();
       mediaPlayer.release();
       mediaPlayer = null;
-    }
-  }
-
-  private boolean killSound = false;
-
-  public void playSoundEndlessly(int index, float volumeRate) {
-    if (availaibleSounds.contains(index) && uiSounds.get()) {
-      int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-      float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
-      int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
-
-      if (index != WAITING_FRIEND) killSoundQueue.add(soundId);
-      Observable.timer(6000, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            if (!killSound) {
-              playSoundEndlessly(index, volumeRate);
-            }
-          });
-      killSound = false;
-    }
-  }
-
-  public void killAllSound() {
-    if (!killSoundQueue.isEmpty()) {
-      for (int i = 0; i < killSoundQueue.size(); i++) {
-        killSound = true;
-        Integer killSound = killSoundQueue.get(i);
-        soundPool.stop(killSound);
-        killSoundQueue.remove(killSound);
-      }
     }
   }
 }

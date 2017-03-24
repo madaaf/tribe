@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -23,7 +24,6 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -43,15 +43,21 @@ import rx.android.schedulers.AndroidSchedulers;
 public class LiveImmersiveNotificationActivity extends BaseActivity {
   public final static String PLAYLOAD_VALUE = "PLAYLOAD_VALUE";
 
-  private final static int ACTION_BUTTON_DURATION_Y_TRANSLATION = 500;
   private final static int ACTION_BUTTON_Y_TRANSLATION = 200;
+  private final static int ACTION_BUTTON_DURATION_Y_TRANSLATION = 500;
 
   private final static int MAX_DURATION_NOTIFICATION = 30;
   private final static int SLOW_TRANSLATION_DURATION = 3000;
   private final static int Y_TRANSLATION = -100;
-  private final static int SHAKE_TRANSLATION = 5;
 
-  private float yTranslation = 0;
+  private final static int SHAKE_TRANSLATION = 5;
+  private final static int SHAKE_DURATION = 20;
+
+  private final static int SCALE_DURATION = 300;
+  private final static float SCALE_RATIO_MAX = 1.1f;
+  private final static float SCALE_RATIO_MIN = 1f;
+
+  private final Float[] ratioY = new Float[1];
   private float y1, y2;
 
   @Inject ScreenUtils screenUtils;
@@ -59,7 +65,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @Inject Navigator navigator;
   @Inject SoundManager soundManager;
 
-  @BindView(R.id.txtDidplayName) TextViewFont txtDidplayName;
+  @BindView(R.id.txtDisplayName) TextViewFont txtDidplayName;
   @BindView(R.id.callAction) FrameLayout callAction;
   @BindView(R.id.avatar) AvatarView avatar;
   @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
@@ -93,23 +99,18 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
           boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
           String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
           String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
-
+          Glide.with(this).load(picture).centerCrop().into(containerView);
           txtDidplayName.setText(EmojiParser.demojizedText(name));
-          avatar.load(picture);
-          new GlideUtils.Builder(this).hasPlaceholder(true)
-              .url(picture)
-              .target(containerView)
-              .load();
+          avatar.setType(AvatarView.LIVE);
           avatar.load(picture);
         }
       }
     }
 
-    soundManager.playSoundEndlessly(SoundManager.CALL_RING, SoundManager.SOUND_MID);
+    soundManager.playSound(SoundManager.CALL_RING, SoundManager.SOUND_MAX);
 
     setAnimation();
     setDownCounter();
-    yTranslation = screenUtils.pxToDp(Y_TRANSLATION);
     callAction.setOnTouchListener(new onTouchJoinButton());
   }
 
@@ -118,11 +119,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   ////////////////
 
   @Override public void finish() {
- /*   soundManager.killAllSound();
-    Intent mIntent = new Intent(this, HomeActivity.class);
-    finishAffinity();
-    startActivity(mIntent)*/
-    ;
+    soundManager.cancelMediaPlayer();
+    dispose();
+    navigator.navigateToHomeAndFinishAffinity(this);
   }
 
   @Override protected void onResume() {
@@ -145,11 +144,21 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   //   PRIVATE  //
   ////////////////
 
+  private void dispose() {
+    pulseLayout.clearAnimation();
+    callAction.clearAnimation();
+    containerAction.clearAnimation();
+    textSwipeDown.clearAnimation();
+  }
+
   private void setAnimation() {
     pulseLayout.start();
-    final Float[] ratioY = new Float[1];
+    setTranslationAnim();
+    setShakeAnimation();
+    setScaleAnimation();
+  }
 
-    /* Y ANIMATION **/
+  private void setTranslationAnim() {
     ObjectAnimator translateYAnimation =
         ObjectAnimator.ofFloat(containerAction, "translationY", 0f, Y_TRANSLATION);
     translateYAnimation.setDuration(SLOW_TRANSLATION_DURATION);
@@ -159,44 +168,53 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     translateYAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         ratioY[0] = (Float) animation.getAnimatedValue() / Y_TRANSLATION;
+        if (textSwipeDown == null) {
+          return;
+        }
         textSwipeDown.setAlpha(ratioY[0]);
       }
     });
     translateYAnimation.start();
+  }
 
-    /* SHAKE ANIMATION **/
-    ObjectAnimator shakeAnim = ObjectAnimator.ofFloat(callAction, "translationX", -5, 5);
-    shakeAnim.setDuration(20);
+  private void setShakeAnimation() {
+    ObjectAnimator shakeAnim =
+        ObjectAnimator.ofFloat(callAction, "translationX", -SHAKE_TRANSLATION, SHAKE_TRANSLATION);
+    shakeAnim.setDuration(SHAKE_DURATION);
     shakeAnim.setRepeatCount(ValueAnimator.INFINITE);
     shakeAnim.setRepeatMode(ValueAnimator.REVERSE);
     shakeAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        animation.setFloatValues(-5 * ratioY[0], 5 * ratioY[0]);
+        animation.setFloatValues(-SHAKE_TRANSLATION * ratioY[0], SHAKE_TRANSLATION * ratioY[0]);
       }
     });
     shakeAnim.start();
+  }
 
-    /* SCALE ANIMATION **/
+  private void setScaleAnimation() {
     AnimatorSet resizeAvenger = new AnimatorSet();
-    ObjectAnimator animResizeX = ObjectAnimator.ofFloat(callAction, "scaleX", 1f, 1.1f);
-    animResizeX.setDuration(300);
+    ObjectAnimator animResizeX =
+        ObjectAnimator.ofFloat(callAction, "scaleX", SCALE_RATIO_MIN, SCALE_RATIO_MAX);
+    animResizeX.setDuration(SCALE_DURATION);
     animResizeX.setRepeatMode(ValueAnimator.REVERSE);
     animResizeX.setRepeatCount(ValueAnimator.INFINITE);
     animResizeX.setInterpolator(new DecelerateInterpolator());
-    ObjectAnimator animResizeY = ObjectAnimator.ofFloat(callAction, "scaleY", 1f, 1.1f);
-    animResizeY.setDuration(300);
+
+    ObjectAnimator animResizeY =
+        ObjectAnimator.ofFloat(callAction, "scaleY", SCALE_RATIO_MIN, SCALE_RATIO_MAX);
+    animResizeY.setDuration(SCALE_DURATION);
     animResizeY.setRepeatMode(ValueAnimator.REVERSE);
     animResizeY.setRepeatCount(ValueAnimator.INFINITE);
     animResizeY.setInterpolator(new DecelerateInterpolator());
 
     animResizeY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        animation.setFloatValues(1f, 1 + (ratioY[0] / 10));
+        animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10));
       }
     });
     animResizeX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        animation.setFloatValues(1f, 1 + (ratioY[0] / 10));
+        animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10));
       }
     });
 
