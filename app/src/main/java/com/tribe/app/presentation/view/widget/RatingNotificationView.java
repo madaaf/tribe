@@ -35,6 +35,7 @@ import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 14/03/2017.
@@ -92,7 +93,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
     viewContainer.setOnTouchListener((v, event) -> true);
 
-    starsContainer.setOnTouchListener(new seekBarTouchListener());
+    starsContainer.setOnTouchListener(new SeekBarTouchListener());
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -112,7 +113,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     setOnClickListener(this);
     Animation slideInAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_from_top);
-    slideInAnimation.setStartTime(1000);
+    slideInAnimation.setStartOffset(1000);
+    slideInAnimation.setDuration(800);
     setAnimation(slideInAnimation);
     startAnimation(slideInAnimation);
   }
@@ -167,6 +169,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
   private void fillStarsColors(int index) {
     if (lastIndexStar == index) return;
+    Timber.d("Index : " + index);
 
     if (index == 0) {
       txtAction.setText(getResources().getString(R.string.live_rating_dismiss));
@@ -292,19 +295,26 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     hideView();
   }
 
-  private class seekBarTouchListener implements OnTouchListener {
+  private class SeekBarTouchListener implements OnTouchListener {
 
     private final int MAX_CLICK_DURATION = 150;
-    private final int MAX_CLICK_DISTANCE = 15;
-    private long startClickTime, maxClickDistance;
+    private final int MAX_CLICK_DISTANCE_X = 15;
+    private final int MAX_CLICK_DISTANCE_Y = 30;
+    private long startClickTime, maxClickDistanceX, maxClickDistanceY;
     private float x1, y1, x2, y2, dx, dy;
+    private int lengthProgress;
+
+    public SeekBarTouchListener() {
+      lengthProgress = screenUtils.dpToPx(100);
+    }
 
     @Override public boolean onTouch(View view, MotionEvent event) {
       resetTimer();
 
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN: {
-          maxClickDistance = screenUtils.dpToPx(MAX_CLICK_DISTANCE);
+          maxClickDistanceX = screenUtils.dpToPx(MAX_CLICK_DISTANCE_X);
+          maxClickDistanceY = screenUtils.dpToPx(MAX_CLICK_DISTANCE_Y);
           startClickTime = System.currentTimeMillis();
           x1 = event.getX();
           y1 = event.getY();
@@ -321,8 +331,12 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
            *  ON CLICK TOUCH EVENT
            */
           if (clickDuration < MAX_CLICK_DURATION
-              && Math.abs(dx) < maxClickDistance
-              && Math.abs(dy) < maxClickDistance) {
+              && Math.abs(dx) < maxClickDistanceX
+              && Math.abs(dy) < maxClickDistanceY) {
+            Timber.d("clickDuration : " + clickDuration);
+            Timber.d("Math.abs(dx) : " + Math.abs(dx));
+            Timber.d("Math.abs(dy) : " + Math.abs(dy));
+            Timber.d("lastIndexStarUp : " + lastIndexStarUp + " / indexStar : " + indexStar);
 
             if (lastIndexStarUp == indexStar) {
               fillStarsColors(0);
@@ -341,8 +355,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         }
 
         case MotionEvent.ACTION_MOVE: {
-          int progress = Math.round(event.getX() / starsContainer.getWidth() * 100);
-          int unity = 100 / 5;
+          int progress = Math.round(event.getX() / starsContainer.getWidth() * lengthProgress);
+          int unity = lengthProgress / 5;
           if (progress < unity) {
             indexStar = 1;
           } else if (progress >= unity && progress < 2 * unity) {

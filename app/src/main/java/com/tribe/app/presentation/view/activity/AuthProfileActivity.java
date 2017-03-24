@@ -70,7 +70,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @BindView(R.id.progressView) CircularProgressView progressView;
 
-  @BindView(R.id.facebookView) FacebookView facebookView;
+  //@BindView(R.id.facebookView) FacebookView facebookView;
 
   // VARIABLES
   private Uri deepLink;
@@ -184,18 +184,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       txtAction.setCustomFont(this, FontUtils.PROXIMA_BOLD);
     }));
 
-    subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
-      if (isReady()) {
-        nextStep();
-      } else {
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
-        if (FacebookUtils.isLoggedIn()) {
-          getInfoFromFacebook();
-        } else {
-          profileInfoPresenter.loginFacebook();
-        }
-      }
-    }));
+    //subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
+    //  if (isReady()) {
+    //    nextStep();
+    //  } else {
+    //    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
+    //    if (FacebookUtils.isLoggedIn()) {
+    //      getInfoFromFacebook();
+    //    } else {
+    //      profileInfoPresenter.loginFacebook();
+    //    }
+    //  }
+    //}));
 
     subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
       profileInfoPresenter.lookupUsername(s);

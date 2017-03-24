@@ -98,7 +98,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private ValueAnimator animatorAlphaTransition;
   private ObjectAnimator animatorBuzzAvatar;
   private boolean hasSentJoin = false, hasPulsed = false, removeMode = false,
-      shouldShowRemoveAgain = true;
+      shouldShowRemoveAgain = true, isCountDown = false;
 
   // RESOURCES
   private int timeJoinRoom, strokeWidth, avatarSize;
@@ -242,6 +242,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public void startCountdown() {
+    isCountDown = true;
     progressBarJoining.setVisibility(View.VISIBLE);
     progressBarJoining.setProgress(100, DELAY_COUNTDOWN, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
@@ -262,51 +263,61 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public void startPulse() {
-    progressBarNotify.setVisibility(View.VISIBLE);
-    progressBarNotify.setProgress(100, 0, new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(viewAvatar.getScaleX(), SCALE_AVATAR);
-        animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-        animatorScaleUp.setDuration(DURATION_FAST);
-        animatorScaleUp.addUpdateListener(animationScaleUp -> {
-          float value = (float) animationScaleUp.getAnimatedValue();
-          updateScaleWithValue(value);
-        });
-        animatorScaleUp.start();
+    if (isCountDown) {
+      isCountDown = false;
+      progressBarNotify.setVisibility(View.VISIBLE);
+      progressBarNotify.setProgress(100, 0, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          ValueAnimator animatorScaleUp =
+              ValueAnimator.ofFloat(viewAvatar.getScaleX(), SCALE_AVATAR);
+          animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+          animatorScaleUp.setDuration(DURATION_FAST);
+          animatorScaleUp.addUpdateListener(animationScaleUp -> {
+            float value = (float) animationScaleUp.getAnimatedValue();
+            updateScaleWithValue(value);
+          });
+          animatorScaleUp.start();
 
-        onNotifyStepDone.onNext(null);
+          onNotifyStepDone.onNext(null);
 
-        viewAvatar.hideNotifyState();
+          viewAvatar.hideNotifyState();
 
-        progressBarNotify.animate()
-            .scaleX(0)
-            .scaleY(0)
-            .setDuration(DURATION_FAST)
-            .setListener(new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                animatorScaleUp.cancel();
-                progressBarNotify.setVisibility(View.GONE);
-                progressBarNotify.animate().setListener(null).start();
-                clearAnimator(animatorAlpha);
-                clearViewAnimations();
-                viewAvatar.startPulse();
-                animateScaleAvatar();
-              }
-            })
-            .start();
+          progressBarNotify.animate()
+              .scaleX(0)
+              .scaleY(0)
+              .setDuration(DURATION_FAST)
+              .setListener(new AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(Animator animation) {
+                  animatorScaleUp.cancel();
+                  progressBarNotify.setVisibility(View.GONE);
+                  progressBarNotify.animate().setListener(null).start();
+                  startPulseImmediate();
+                }
+              })
+              .start();
 
-        progressBarJoining.animate()
-            .scaleX(0)
-            .scaleY(0)
-            .setDuration(DURATION_FAST)
-            .setListener(null)
-            .start();
-      }
+          progressBarJoining.animate()
+              .scaleX(0)
+              .scaleY(0)
+              .setDuration(DURATION_FAST)
+              .setListener(null)
+              .start();
+        }
 
-      @Override public void onAnimationCancel(Animator animation) {
-        animation.removeAllListeners();
-      }
-    }, null);
+        @Override public void onAnimationCancel(Animator animation) {
+          animation.removeAllListeners();
+        }
+      }, null);
+    } else {
+      startPulseImmediate();
+    }
+  }
+
+  private void startPulseImmediate() {
+    clearAnimator(animatorAlpha);
+    clearViewAnimations();
+    viewAvatar.startPulse();
+    animateScaleAvatar();
   }
 
   private void animateScaleAvatar() {

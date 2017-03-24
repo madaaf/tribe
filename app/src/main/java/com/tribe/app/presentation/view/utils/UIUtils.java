@@ -104,16 +104,18 @@ public class UIUtils {
     if (v.getVisibility() == View.VISIBLE) return;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
-      int initialRadius = 0;
-      Animator anim =
-          ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
-              (int) (v.getY() + v.getHeight() / 2), initialRadius,
-              Math.max(v.getWidth(), v.getHeight()));
-      anim.setInterpolator(new AccelerateDecelerateInterpolator());
-      anim.addListener(listenerAdapter);
-      anim.setDuration(DURATION_REVEAL);
-      anim.setStartDelay(500);
-      anim.start();
+      v.post(() -> {
+        int initialRadius = 0;
+        Animator anim =
+            ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
+                (int) (v.getY() + v.getHeight() / 2), initialRadius,
+                Math.max(v.getWidth(), v.getHeight()));
+        anim.setInterpolator(new AccelerateDecelerateInterpolator());
+        anim.addListener(listenerAdapter);
+        anim.setDuration(DURATION_REVEAL);
+        anim.setStartDelay(500);
+        anim.start();
+      });
     } else {
       v.setVisibility(View.VISIBLE);
     }
@@ -123,14 +125,16 @@ public class UIUtils {
     if (v.getVisibility() == View.GONE) return;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
-      int initialRadius = Math.max(v.getWidth(), v.getHeight());
-      Animator anim =
-          ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
-              (int) (v.getY() + v.getHeight() / 2), initialRadius, 0);
-      anim.setInterpolator(new AccelerateDecelerateInterpolator());
-      anim.setDuration(DURATION_REVEAL);
-      anim.addListener(listenerAdapter);
-      anim.start();
+      v.post(() -> {
+        int initialRadius = Math.max(v.getWidth(), v.getHeight());
+        Animator anim =
+            ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
+                (int) (v.getY() + v.getHeight() / 2), initialRadius, 0);
+        anim.setInterpolator(new AccelerateDecelerateInterpolator());
+        anim.setDuration(DURATION_REVEAL);
+        anim.addListener(listenerAdapter);
+        anim.start();
+      });
     } else {
       v.setVisibility(View.GONE);
     }

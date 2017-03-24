@@ -115,18 +115,16 @@ public class LiveRowView extends FrameLayout {
 
     subscriptions.add(this.remotePeerView.onNotificatinRemoteJoined()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(s -> {
-          UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              viewWaiting.stopPulse();
-              viewWaiting.setVisibility(View.GONE);
-            }
+        .subscribe(s -> UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            viewWaiting.stopPulse();
+            viewWaiting.setVisibility(View.GONE);
+          }
 
-            @Override public void onAnimationStart(Animator animation) {
-              layoutStream.setVisibility(View.VISIBLE);
-            }
-          });
-        }));
+          @Override public void onAnimationStart(Animator animation) {
+            layoutStream.setVisibility(View.VISIBLE);
+          }
+        })));
 
     subscriptions.add(this.remotePeerView.onMediaConfiguration()
         .observeOn(AndroidSchedulers.mainThread())
