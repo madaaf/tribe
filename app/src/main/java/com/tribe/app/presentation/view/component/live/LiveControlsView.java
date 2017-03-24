@@ -25,10 +25,11 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -116,7 +117,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void initUI() {
-    xTranslation = getResources().getDimension(R.dimen.nav_icon_size);
+    xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
     btnNotify.setEnabled(false);
   }
 
@@ -213,14 +214,13 @@ public class LiveControlsView extends FrameLayout {
     //btnFilter.setAnimation(scaleAnimation);
     btnOrientationCamera.setAnimation(scaleAnimation);
 
-    scaleAnimation.setAnimationListener(new AnimationListenerAdapter() {
-
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        setXTranslateAnimation(btnMicro, -xTranslation);
-        setXTranslateAnimation(btnExpand, 3 * xTranslation);
-      }
-    });
+    subscriptions.add(Observable.timer(scaleAnimation.getDuration() / 3, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          setXTranslateAnimation(btnMicro, -xTranslation);
+          setXTranslateAnimation(btnExpand,
+              layoutContainerParamExtendedLive.getWidth() - xTranslation);
+        }));
 
     onClickCameraEnable.onNext(null);
   }
