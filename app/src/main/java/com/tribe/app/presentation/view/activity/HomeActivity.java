@@ -624,7 +624,7 @@ public class HomeActivity extends BaseActivity
       }
     }
   }
-  
+
   /////////////////
   //  BROADCAST  //
   /////////////////

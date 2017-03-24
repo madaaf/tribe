@@ -2,10 +2,10 @@
     android:interpolator="@android:anim/linear_interpolator">
   <translate
       android:duration="20"
-      android:fromXDelta="-1"
+      android:fromXDelta="-3"
       android:repeatCount="infinite"
-      android:repeatMode="restart"
-      android:toXDelta="1" />
+      android:repeatMode="reverse"
+      android:toXDelta="3" />
 </set>
 
 

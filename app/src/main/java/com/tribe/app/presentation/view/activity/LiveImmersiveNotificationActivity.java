@@ -1,15 +1,14 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.content.Intent;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,9 +48,10 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   private final static int MAX_DURATION_NOTIFICATION = 30;
   private final static int SLOW_TRANSLATION_DURATION = 3000;
-  private final static int Y_TRANSLATION = -20;
+  private final static int Y_TRANSLATION = -100;
+  private final static int SHAKE_TRANSLATION = 5;
 
-  private int yTranslation = 0;
+  private float yTranslation = 0;
   private float y1, y2;
 
   @Inject ScreenUtils screenUtils;
@@ -65,6 +65,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
   @BindView(R.id.containerAction) LinearLayout containerAction;
   @BindView(R.id.containerView) ImageView containerView;
+  @BindView(R.id.txtSwipeDown) TextViewFont textSwipeDown;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -108,7 +109,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     setAnimation();
     setDownCounter();
-    yTranslation = screenUtils.dpToPx(Y_TRANSLATION);
+    yTranslation = screenUtils.pxToDp(Y_TRANSLATION);
     callAction.setOnTouchListener(new onTouchJoinButton());
   }
 
@@ -117,10 +118,11 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   ////////////////
 
   @Override public void finish() {
-    soundManager.killAllSound();
+ /*   soundManager.killAllSound();
     Intent mIntent = new Intent(this, HomeActivity.class);
     finishAffinity();
-    startActivity(mIntent);
+    startActivity(mIntent)*/
+    ;
   }
 
   @Override protected void onResume() {
@@ -145,22 +147,61 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   private void setAnimation() {
     pulseLayout.start();
+    final Float[] ratioY = new Float[1];
 
-    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.scale_button_call);
-    Animation shakeAnim = AnimationUtils.loadAnimation(this, R.anim.shake);
-    Animation xTranslationAnim = new TranslateAnimation(0, 0, 0, screenUtils.dpToPx(-40));
+    /* Y ANIMATION **/
+    ObjectAnimator translateYAnimation =
+        ObjectAnimator.ofFloat(containerAction, "translationY", 0f, Y_TRANSLATION);
+    translateYAnimation.setDuration(SLOW_TRANSLATION_DURATION);
+    translateYAnimation.setRepeatCount(ValueAnimator.INFINITE);
+    translateYAnimation.setRepeatMode(ValueAnimator.REVERSE);
+    translateYAnimation.setInterpolator(new LinearInterpolator());
+    translateYAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override public void onAnimationUpdate(ValueAnimator animation) {
+        ratioY[0] = (Float) animation.getAnimatedValue() / Y_TRANSLATION;
+        textSwipeDown.setAlpha(ratioY[0]);
+      }
+    });
+    translateYAnimation.start();
 
-    xTranslationAnim.setDuration(SLOW_TRANSLATION_DURATION);
-    xTranslationAnim.setRepeatCount(Animation.INFINITE);
-    xTranslationAnim.setRepeatMode(Animation.REVERSE);
-    xTranslationAnim.setInterpolator(new LinearInterpolator());
+    /* SHAKE ANIMATION **/
+    ObjectAnimator shakeAnim = ObjectAnimator.ofFloat(callAction, "translationX", -5, 5);
+    shakeAnim.setDuration(20);
+    shakeAnim.setRepeatCount(ValueAnimator.INFINITE);
+    shakeAnim.setRepeatMode(ValueAnimator.REVERSE);
+    shakeAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override public void onAnimationUpdate(ValueAnimator animation) {
+        animation.setFloatValues(-5 * ratioY[0], 5 * ratioY[0]);
+      }
+    });
+    shakeAnim.start();
 
-    AnimationSet setAnims = new AnimationSet(true);
-    setAnims.addAnimation(scaleAnim);
-    setAnims.addAnimation(shakeAnim);
+    /* SCALE ANIMATION **/
+    AnimatorSet resizeAvenger = new AnimatorSet();
+    ObjectAnimator animResizeX = ObjectAnimator.ofFloat(callAction, "scaleX", 1f, 1.1f);
+    animResizeX.setDuration(300);
+    animResizeX.setRepeatMode(ValueAnimator.REVERSE);
+    animResizeX.setRepeatCount(ValueAnimator.INFINITE);
+    animResizeX.setInterpolator(new DecelerateInterpolator());
+    ObjectAnimator animResizeY = ObjectAnimator.ofFloat(callAction, "scaleY", 1f, 1.1f);
+    animResizeY.setDuration(300);
+    animResizeY.setRepeatMode(ValueAnimator.REVERSE);
+    animResizeY.setRepeatCount(ValueAnimator.INFINITE);
+    animResizeY.setInterpolator(new DecelerateInterpolator());
 
-    callAction.startAnimation(setAnims);
-    containerAction.startAnimation(xTranslationAnim);
+    animResizeY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override public void onAnimationUpdate(ValueAnimator animation) {
+        animation.setFloatValues(1f, 1 + (ratioY[0] / 10));
+      }
+    });
+    animResizeX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override public void onAnimationUpdate(ValueAnimator animation) {
+        animation.setFloatValues(1f, 1 + (ratioY[0] / 10));
+      }
+    });
+
+    resizeAvenger.playTogether(animResizeX, animResizeY);
+    resizeAvenger.start();
   }
 
   private void initDependencyInjector() {
