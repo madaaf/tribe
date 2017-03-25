@@ -91,7 +91,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     BaseListViewHolder vh = (BaseListViewHolder) holder;
     BaseListInterface item = (BaseListInterface) items.get(position);
 
-    String username = "@" + item.getUsername();
+    String username = StringUtils.isEmpty(item.getUsername()) ? "" : "@" + item.getUsername();
     String displayName = item.getDisplayName();
     boolean isFriend = item.isFriend();
     AvatarModel avatarModel = item.getAvatar();
