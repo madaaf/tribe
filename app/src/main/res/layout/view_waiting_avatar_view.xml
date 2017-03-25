@@ -25,6 +25,16 @@
       android:visibility="gone"
       />
 
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtCountdown"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:scaleX="0"
+      android:scaleY="0"
+      style="@style/Medium.2.White"
+      />
+
   <ImageView
       android:id="@+id/imgNotify"
       android:layout_width="wrap_content"

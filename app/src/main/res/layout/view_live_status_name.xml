@@ -28,7 +28,7 @@
       android:shadowDy="3"
       android:shadowRadius="10"
       android:singleLine="true"
-      android:visibility="gone"
+      android:visibility="visible"
       style="@style/Body.Two.White"
       />
 

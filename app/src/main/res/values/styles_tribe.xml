@@ -250,6 +250,18 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="Medium">
+    <item name="android:textSize">30sp</item>
+  </style>
+
+  <style name="Medium.2" parent="Medium">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="Medium.2.White" parent="Medium.2">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
   <style name="Small">
     <item name="android:textColor">@android:color/white</item>
     <item name="android:textSize">9sp</item>

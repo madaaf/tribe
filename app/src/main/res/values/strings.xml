@@ -897,4 +897,9 @@
 	<string name="invite_popup_message">This user is not on Tribe yet.</string>
 	<string name="invite_popup_action">Invite on Tribe</string>
 	<string name="invite_popup_dismiss">Later</string>
+	
+	<!-- Call Kit -->
+	<string name="call_kit_swipe_down">Swipe down to answer</string>
+	<string name="call_kit_swipe_up">Swipe up to decline</string>
+	<string name="call_kit_title">Live starts with</string>
 </resources>

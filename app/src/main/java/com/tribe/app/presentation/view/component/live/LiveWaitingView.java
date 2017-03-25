@@ -101,11 +101,11 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       shouldShowRemoveAgain = true, isCountDown = false;
 
   // RESOURCES
-  private int timeJoinRoom, strokeWidth, avatarSize;
+  private int timeJoinRoom, timeNotify, strokeWidth, avatarSize;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription subscriptionDismissRemove;
+  private Subscription subscriptionCountdown, subscriptionDismissRemove;
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotifyStepDone = PublishSubject.create();
   private PublishSubject<TribeGuest> onShouldRemoveGuest = PublishSubject.create();
@@ -147,7 +147,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
         ContextCompat.getColor(getContext(), R.color.white_opacity_40));
     progressBarJoining.setProgressWidth(strokeWidth);
 
-    progressBarNotify.setAnimationDuration(timeJoinRoom);
+    progressBarNotify.setAnimationDuration(timeNotify);
     progressBarNotify.setProgressColor(Color.WHITE);
     progressBarNotify.setProgressWidth(strokeWidth);
 
@@ -166,6 +166,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   private void initResources() {
     timeJoinRoom = getContext().getResources().getInteger(R.integer.time_join_room);
+    timeNotify = getContext().getResources().getInteger(R.integer.time_notify);
     strokeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.stroke_width_ring);
     avatarSize =
         getContext().getResources().getDimensionPixelSize(R.dimen.waiting_view_avatar_size);
@@ -243,10 +244,23 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   public void startCountdown() {
     isCountDown = true;
+
+    int startCountdown = (timeJoinRoom - 1000) / 1000;
+
+    viewAvatar.showCountdown(timeJoinRoom / 1000);
+
+    subscriptionCountdown = Observable.interval(1, TimeUnit.SECONDS)
+        .map(time -> startCountdown - time)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(time -> {
+          if (time > 0) viewAvatar.startCountdown(time.intValue());
+        });
+
     progressBarJoining.setVisibility(View.VISIBLE);
     progressBarJoining.setProgress(100, DELAY_COUNTDOWN, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         animation.removeAllListeners();
+        if (subscriptionCountdown != null) subscriptionCountdown.unsubscribe();
       }
 
       @Override public void onAnimationCancel(Animator animation) {
@@ -556,6 +570,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public void dispose() {
+    if (subscriptionCountdown != null) subscriptionCountdown.unsubscribe();
+    if (subscriptionDismissRemove != null) subscriptionDismissRemove.unsubscribe();
     subscriptions.clear();
     stopPulse();
     progressBarJoining.clearAnimation();

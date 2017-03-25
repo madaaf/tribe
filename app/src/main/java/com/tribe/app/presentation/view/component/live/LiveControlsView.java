@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -65,7 +64,6 @@ public class LiveControlsView extends FrameLayout {
 
   // VARIABLES
   private Unbinder unbinder;
-  private ObjectAnimator animatorRotation;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false;
   private float xTranslation;
 
@@ -268,8 +266,6 @@ public class LiveControlsView extends FrameLayout {
   public void dispose() {
     btnNotify.clearAnimation();
     btnNotify.animate().setListener(null);
-
-    if (animatorRotation != null) animatorRotation.cancel();
   }
 
   public void setNotifyEnabled(boolean enable) {
@@ -290,60 +286,8 @@ public class LiveControlsView extends FrameLayout {
     }
 
     if (enable != btnNotify.isEnabled()) {
-      btnNotify.animate()
-          .alpha(1f)
-          .scaleX(1.25f)
-          .scaleY(1.25f)
-          .translationY(-screenUtils.dpToPx(10))
-          .rotation(10)
-          .setDuration(DURATION)
-          .setInterpolator(new DecelerateInterpolator())
-          .setListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              if (btnNotify == null) return;
-
-              btnNotify.animate().setListener(null);
-
-              animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
-              animatorRotation.setDuration(100);
-              animatorRotation.setRepeatCount(3);
-              animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
-              animatorRotation.addListener(new AnimatorListenerAdapter() {
-                @Override public void onAnimationEnd(Animator animation) {
-                  animatorRotation.removeAllListeners();
-
-                  if (btnNotify != null) {
-                    btnNotify.animate()
-                        .scaleX(1)
-                        .scaleY(1)
-                        .rotation(0)
-                        .translationY(0)
-                        .setDuration(DURATION)
-                        .setInterpolator(new DecelerateInterpolator())
-                        .setListener(new AnimatorListenerAdapter() {
-                          @Override public void onAnimationEnd(Animator animation) {
-                            if (btnNotify != null) {
-                              btnNotify.setEnabled(true);
-                              btnNotify.animate().setListener(null);
-                            }
-                          }
-
-                          @Override public void onAnimationCancel(Animator animation) {
-                            if (btnNotify != null) btnNotify.animate().setListener(null);
-                          }
-                        });
-                  }
-                }
-
-                @Override public void onAnimationCancel(Animator animation) {
-                  animatorRotation.removeAllListeners();
-                }
-              });
-
-              animatorRotation.start();
-            }
-          })
-          .start();
+      btnNotify.animate().alpha(1).setDuration(DURATION);
+      btnNotify.setEnabled(true);
     }
   }
 

@@ -96,8 +96,6 @@ public class LiveStatusNameView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_status_name, this);
     unbinder = ButterKnife.bind(this);
 
-    txtStatus1.setAlpha(0);
-    txtStatus1.setTranslationY(translationY);
     txtStatus2.setAlpha(0);
     txtStatus2.setTranslationY(translationY);
 
@@ -200,17 +198,20 @@ public class LiveStatusNameView extends FrameLayout {
       return;
     }
 
-    if (txtStatusLast == null || txtStatusLast == txtStatus2) {
-      txtStatus1.setText(
-          EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
-      hideView(txtStatus2);
-      showView(txtStatus1);
-    } else {
-      txtStatus2.setText(
-          EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
-      hideView(txtStatus1);
-      showView(txtStatus2);
-    }
+    txtStatus1.setText(
+        EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
+
+    //if (txtStatusLast == null || txtStatusLast == txtStatus2) {
+    //  txtStatus1.setText(
+    //      EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
+    //  hideView(txtStatus2);
+    //  showView(txtStatus1);
+    //} else {
+    //  txtStatus2.setText(
+    //      EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
+    //  hideView(txtStatus1);
+    //  showView(txtStatus2);
+    //}
   }
 
   public @LiveStatusNameView.StatusType int getStatus() {

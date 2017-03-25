@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -22,9 +23,15 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -34,6 +41,8 @@ public class LiveWaitingAvatarView extends FrameLayout {
 
   private final static int DURATION = 300;
   private final static float OVERSHOOT_SCALE = 1.25f;
+
+  @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.avatar) AvatarView avatar;
 
@@ -47,8 +56,11 @@ public class LiveWaitingAvatarView extends FrameLayout {
 
   @BindView(R.id.imgNotify) ImageView imgNotify;
 
+  @BindView(R.id.txtCountdown) TextViewFont txtCountdown;
+
   // VARIABLES
   private Unbinder unbinder;
+  private ObjectAnimator animatorRotation;
 
   // RESOURCES
   private int strokeWidth;
@@ -125,12 +137,86 @@ public class LiveWaitingAvatarView extends FrameLayout {
     viewForegroundAvatar.setVisibility(View.VISIBLE);
   }
 
-  public void showNotifyState() {
-    imgNotify.animate()
-        .scaleY(1)
+  public void showCountdown(int initCountdown) {
+    txtCountdown.setText("" + initCountdown);
+    txtCountdown.animate()
         .scaleX(1)
+        .scaleY(1)
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
+  public void startCountdown(int countDown) {
+    txtCountdown.setText("" + countDown);
+  }
+
+  public void showNotifyState() {
+    txtCountdown.animate()
+        .alpha(0)
+        .scaleX(0)
+        .scaleY(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    imgNotify.animate()
+        .alpha(1f)
+        .scaleX(1.25f)
+        .scaleY(1.25f)
+        .translationY(-screenUtils.dpToPx(10))
+        .rotation(10)
+        .setDuration(DURATION * 2)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            if (imgNotify == null) return;
+
+            imgNotify.animate().setListener(null);
+
+            animatorRotation = ObjectAnimator.ofFloat(imgNotify, ROTATION, screenUtils.dpToPx(7),
+                screenUtils.dpToPx(-7));
+            animatorRotation.setDuration(100);
+            animatorRotation.setRepeatCount(3);
+            animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
+            animatorRotation.addListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                animatorRotation.removeAllListeners();
+
+                if (imgNotify != null) {
+                  imgNotify.animate()
+                      .scaleX(1)
+                      .scaleY(1)
+                      .rotation(0)
+                      .translationY(0)
+                      .setDuration(DURATION * 2)
+                      .setInterpolator(new DecelerateInterpolator())
+                      .setListener(new AnimatorListenerAdapter() {
+                        @Override public void onAnimationEnd(Animator animation) {
+                          if (imgNotify != null) {
+                            imgNotify.animate().setListener(null);
+                          }
+
+                          subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
+                              .observeOn(AndroidSchedulers.mainThread())
+                              .subscribe(aLong -> showNotifyState()));
+                        }
+
+                        @Override public void onAnimationCancel(Animator animation) {
+                          if (imgNotify != null) imgNotify.animate().setListener(null);
+                        }
+                      });
+                }
+              }
+
+              @Override public void onAnimationCancel(Animator animation) {
+                animatorRotation.removeAllListeners();
+              }
+            });
+
+            animatorRotation.start();
+          }
+        })
         .start();
   }
 
@@ -241,6 +327,7 @@ public class LiveWaitingAvatarView extends FrameLayout {
 
   public void dispose() {
     clearViewAnimations();
+    if (animatorRotation != null) animatorRotation.cancel();
     viewChasingDots.dispose();
   }
 }

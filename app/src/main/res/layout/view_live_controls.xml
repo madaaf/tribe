@@ -31,7 +31,7 @@
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_notify"
+        android:src="@drawable/picto_notify_buzz"
         />
 
     <ImageView

@@ -199,6 +199,7 @@ public class LiveView extends FrameLayout {
     }
 
     viewStatusName.dispose();
+    viewControlsLive.dispose();
 
     if (!isJump) {
       persistentSubscriptions.clear();
