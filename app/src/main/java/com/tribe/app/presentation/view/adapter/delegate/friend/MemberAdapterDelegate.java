@@ -59,7 +59,10 @@ public class MemberAdapterDelegate extends RxAdapterDelegate<List<GroupMember>> 
     if (!groupMember.isOgMember()) vh.viewRing.setVisibility(View.VISIBLE);
 
     if (!StringUtils.isEmpty(groupMember.getUser().getProfilePicture())) {
-      GlideUtils.load(context, groupMember.getUser().getProfilePicture(), avatarSize, vh.imgAvatar);
+      new GlideUtils.Builder(context).url(groupMember.getUser().getProfilePicture())
+          .size(avatarSize)
+          .target(vh.imgAvatar)
+          .load();
     }
   }
 

@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -26,6 +25,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -50,13 +50,11 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
-  @BindView(R.id.btnCameraEnable) ImageView btnCameraEnable;
+  @BindView(R.id.backLiveLocalView) FrameLayout backLiveLocalView;
 
-  @BindView(R.id.btnCameraDisable) ImageView btnCameraDisable;
+  @BindView(R.id.backMicroDisabled) View backMicroDisabled;
 
-  @BindView(R.id.btnCameraSwitch) ImageView btnCameraSwitch;
-
-  @BindView(R.id.layoutCameraControls) ViewGroup layoutCameraControls;
+  @BindView(R.id.imgMicroDisabled) ImageView imgMicroDisabled;
 
   @BindView(R.id.txtLowConnectivity) TextViewFont txtLowConnectivity;
 
@@ -66,6 +64,7 @@ public class LiveLocalView extends FrameLayout {
   private Unbinder unbinder;
   private boolean hiddenControls = false;
   private boolean cameraEnabled = true;
+  private boolean microEnabled = true;
   private GestureDetectorCompat gestureDetector;
 
   // RESOURCES
@@ -75,6 +74,7 @@ public class LiveLocalView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onEnableCamera = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
+  private PublishSubject<Boolean> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {
@@ -108,6 +108,7 @@ public class LiveLocalView extends FrameLayout {
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
+    viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
 
     viewAudio.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
@@ -170,9 +171,8 @@ public class LiveLocalView extends FrameLayout {
         .inject(this);
   }
 
-  private void switchCamera() {
+  public void switchCamera() {
     if (!hiddenControls) {
-      rotateSwitchCamera();
       onSwitchCamera.onNext(null);
     }
   }
@@ -181,112 +181,27 @@ public class LiveLocalView extends FrameLayout {
   //   CLICKS    //
   /////////////////
 
-  @OnClick(R.id.btnCameraEnable) void clickEnableCamera() {
-    if (!hiddenControls) {
-      enableCamera(true);
-    }
-  }
-
-  @OnClick(R.id.btnCameraDisable) void clickDisableCamera() {
-    if (!hiddenControls) {
-      disableCamera(true);
-    }
-  }
-
-  @OnClick(R.id.btnCameraSwitch) void clickCameraSwitch() {
-    switchCamera();
-  }
-
   @Override public boolean onTouchEvent(MotionEvent event) {
     gestureDetector.onTouchEvent(event);
     return super.onTouchEvent(event);
   }
 
-  ////////////////
-  // ANIMATIONS //
-  ////////////////
+  class TapGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-  public void enableCamera(boolean animate) {
-    cameraEnabled = true;
-    onEnableCamera.onNext(cameraEnabled);
-    alpha(btnCameraSwitch, 1);
-    animateEnableCamera(cameraEnabled);
+    @Override public boolean onDoubleTap(MotionEvent e) {
+      switchCamera();
+      return true;
+    }
 
-    UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        viewAudio.setVisibility(View.GONE);
-      }
-
-      @Override public void onAnimationStart(Animator animation) {
-        viewPeerLocal.setVisibility(View.VISIBLE);
-      }
-    });
-  }
-
-  public void disableCamera(boolean animate) {
-    cameraEnabled = false;
-    onEnableCamera.onNext(cameraEnabled);
-    alpha(btnCameraSwitch, 0);
-    animateEnableCamera(cameraEnabled);
-
-    UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        viewAudio.setVisibility(View.VISIBLE);
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        viewPeerLocal.setVisibility(View.GONE);
-      }
-    });
-  }
-
-  private void animateEnableCamera(boolean enabled) {
-    if (enabled) {
-      alpha(btnCameraEnable, 0);
-      alpha(btnCameraDisable, 1);
-    } else {
-      alpha(btnCameraDisable, 0);
-      alpha(btnCameraEnable, 1);
+    @Override public boolean onSingleTapConfirmed(MotionEvent e) {
+      onClick.onNext(null);
+      return true;
     }
   }
 
-  private void alpha(View v, int alpha) {
-    v.animate().alpha(alpha).setDuration(DURATION).setListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        v.setVisibility(alpha == 1 ? View.VISIBLE : View.GONE);
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        v.setVisibility(alpha == 0 ? View.GONE : View.VISIBLE);
-        v.animate().setListener(null).start();
-      }
-    }).start();
-  }
-
-  private void scale(View v, int scale) {
-    v.animate()
-        .scaleX(scale)
-        .scaleY(scale)
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationStart(Animator animation) {
-            v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
-          }
-
-          @Override public void onAnimationEnd(Animator animation) {
-            v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
-            v.animate().setListener(null).start();
-          }
-        })
-        .start();
-  }
-
-  private void rotateSwitchCamera() {
-    btnCameraSwitch.animate()
-        .rotation(btnCameraSwitch.getRotation() == 0 ? 180 : 0)
-        .setDuration(DURATION)
-        .start();
-  }
+  ////////////////
+  // ANIMATIONS //
+  ////////////////
 
   /////////////////
   //   PUBLIC    //
@@ -302,39 +217,62 @@ public class LiveLocalView extends FrameLayout {
   }
 
   public void hideControls(boolean hiddenControls) {
-    int scale = hiddenControls ? 0 : 1;
     this.hiddenControls = hiddenControls;
+  }
 
-    scale(layoutCameraControls, scale);
-    scale(btnCameraSwitch, scale);
+  public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
+    microEnabled = isMicroActivated;
+    onEnableMicro.onNext(microEnabled);
+
+    if (!isMicroActivated) {
+      AnimationUtils.fadeIn(backLiveLocalView, DURATION);
+      AnimationUtils.fadeIn(imgMicroDisabled, DURATION);
+
+      if (!isCameraActivated) {
+        AnimationUtils.fadeOut(backLiveLocalView, DURATION);
+        AnimationUtils.fadeIn(backMicroDisabled, DURATION);
+      }
+    } else {
+      AnimationUtils.fadeOut(backLiveLocalView, DURATION);
+      AnimationUtils.fadeOut(imgMicroDisabled, DURATION);
+    }
+  }
+
+  public void enableCamera(boolean animate) {
+    cameraEnabled = true;
+    onEnableCamera.onNext(cameraEnabled);
+
+    UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        viewAudio.setVisibility(View.GONE);
+      }
+
+      @Override public void onAnimationStart(Animator animation) {
+        viewPeerLocal.setVisibility(View.VISIBLE);
+      }
+    });
+  }
+
+  public void disableCamera(boolean animate) {
+    cameraEnabled = false;
+    onEnableCamera.onNext(cameraEnabled);
+
+    UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+        viewAudio.setVisibility(View.VISIBLE);
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
+        viewPeerLocal.setVisibility(View.GONE);
+      }
+    });
   }
 
   //////////////////
   //  OBSERVABLES //
   //////////////////
 
-  public Observable<Boolean> onEnableCamera() {
-    return onEnableCamera;
-  }
-
-  public Observable<Void> onSwitchCamera() {
-    return onSwitchCamera;
-  }
-
   public Observable<Void> onClick() {
     return onClick;
-  }
-
-  class TapGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-    @Override public boolean onDoubleTap(MotionEvent e) {
-      switchCamera();
-      return true;
-    }
-
-    @Override public boolean onSingleTapConfirmed(MotionEvent e) {
-      onClick.onNext(null);
-      return true;
-    }
   }
 }

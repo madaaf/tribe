@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.widget;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -52,15 +53,24 @@ public class CircularProgressBar extends View {
   }
 
   private void drawOutlineArc(Canvas canvas) {
-
     final int diameter = Math.min(viewWidth, viewHeight) - (strokeWidth >> 1);
 
     final RectF outerOval = new RectF(strokeWidth >> 1, strokeWidth >> 1, diameter, diameter);
 
+    Bitmap bitmap =
+        Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+    canvas.drawBitmap(bitmap, 0, 0, paint);
+
     paint.setColor(progressColor);
     paint.setStrokeWidth(strokeWidth);
     paint.setAntiAlias(true);
+    //if (sweepAngle < 357) {
     paint.setStrokeCap(roundedCorners ? Paint.Cap.ROUND : Paint.Cap.BUTT);
+    paint.setStrokeJoin(roundedCorners ? Paint.Join.ROUND : Paint.Join.MITER);
+    //} else {
+    //  paint.setStrokeCap(Paint.Cap.BUTT);
+    //  paint.setStrokeJoin(Paint.Join.MITER);
+    //}
     paint.setStyle(Paint.Style.STROKE);
     canvas.drawArc(outerOval, startAngle, sweepAngle, false, paint);
   }
@@ -74,13 +84,15 @@ public class CircularProgressBar extends View {
    *
    * @param progress progress between 0 and 100.
    */
-  public void setProgress(int progress, int delay, AnimatorListenerAdapter listenerAdapter) {
+  public void setProgress(int progress, int delay, AnimatorListenerAdapter listenerAdapter,
+      ValueAnimator.AnimatorUpdateListener animatorUpdateListener) {
     ValueAnimator animator =
         ValueAnimator.ofFloat(sweepAngle, calcSweepAngleFromProgress(progress));
     animator.setInterpolator(new DecelerateInterpolator());
     animator.setDuration(animationDuration);
     animator.setStartDelay(delay);
     animator.addUpdateListener(valueAnimator -> {
+      if (animatorUpdateListener != null) animatorUpdateListener.onAnimationUpdate(valueAnimator);
       sweepAngle = (float) valueAnimator.getAnimatedValue();
       invalidate();
     });

@@ -24,6 +24,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.FriendsPresenter;
 import com.tribe.app.presentation.mvp.view.FriendsMVPView;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -270,7 +271,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
     } else {
       TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_Grey);
     }
-    txtAction.setCustomFont(this, "Roboto-Bold.ttf");
+    txtAction.setCustomFont(this, FontUtils.PROXIMA_BOLD);
   }
 
   private void lookupContacts() {

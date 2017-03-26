@@ -37,7 +37,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -92,15 +91,13 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
-  @BindView(R.id.btnInviteLive) View btnInviteLive;
+  @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
-  @BindView(R.id.btnLeave) View btnLeave;
-
-  @BindView(R.id.btnNotify) View btnNotify;
-
-  @BindView(R.id.txtName) TextViewFont txtName;
+  @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
 
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
+
+  @BindView(R.id.btnLeave) View btnLeave;
 
   // VARIABLES
   private Live live;
@@ -111,13 +108,13 @@ public class LiveView extends FrameLayout {
   private boolean hiddenControls = false;
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private AvatarView avatarView;
-  private ObjectAnimator animatorRotation;
   private ObjectAnimator animatorBuzzAvatar;
   private Map<String, Object> tagMap;
   private int wizzCount = 0, invitedCount = 0, totalSizeLive = 0;
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
+  private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -201,10 +198,8 @@ public class LiveView extends FrameLayout {
       animatorBuzzAvatar.cancel();
     }
 
-    btnNotify.clearAnimation();
-    btnNotify.animate().setListener(null);
-
-    if (animatorRotation != null) animatorRotation.cancel();
+    viewStatusName.dispose();
+    viewControlsLive.dispose();
 
     if (!isJump) {
       persistentSubscriptions.clear();
@@ -244,8 +239,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void initUI() {
-    btnNotify.setEnabled(false);
-
     setBackgroundColor(Color.BLACK);
 
     room = tribeLiveSDK.newRoom();
@@ -289,13 +282,76 @@ public class LiveView extends FrameLayout {
         onShouldCloseInvites.onNext(null);
       }
     }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
-      if (hiddenControls) {
-        displayControls(1);
-        onHiddenControls.onNext(false);
-      } else {
-        displayControls(0);
-        onHiddenControls.onNext(true);
+      onHiddenControls.onNext(isParamExpended);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
+      displayDragingGuestPopupTutorial();
+      if (!hiddenControls) onOpenInvite.onNext(null);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
+      viewLocalLive.switchCamera();
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aBoolean -> {
+      isMicroActivated = aBoolean;
+      viewControlsLive.setMicroEnabled(isMicroActivated);
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
+      onHiddenControls.onNext(isParamExpended);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraEnable().subscribe(aVoid -> {
+      isCameraActivated = false;
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.disableCamera(true);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickCameraDisable().subscribe(aVoid -> {
+      isCameraActivated = true;
+      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableCamera(true);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickNotify().doOnNext(aVoid -> {
+      if (!hiddenControls) {
+        wizzCount++;
+        onNotificationRemotePeerBuzzed.onNext(null);
+        viewBuzz.buzz();
+
+        if (avatarView != null) {
+          animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
+          animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
+          animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
+          animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
+          animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationCancel(Animator animation) {
+              animatorBuzzAvatar.removeAllListeners();
+              avatarView.setTranslationX(0);
+            }
+          });
+          animatorBuzzAvatar.start();
+        }
+
+        for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
+          liveRowView.buzz();
+        }
+
+        for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
+          if (liveRowView.isWaiting()) liveRowView.buzz();
+        }
       }
+    }).subscribe(onNotify));
+
+    persistentSubscriptions.add(viewControlsLive.onNotifyAnimationDone().subscribe(aVoid -> {
+      if (animatorBuzzAvatar != null) animatorBuzzAvatar.cancel();
+
+      tempSubscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> refactorNotifyButton()));
     }));
   }
 
@@ -303,80 +359,13 @@ public class LiveView extends FrameLayout {
   //    CLICKS     //
   ///////////////////
 
-  @OnClick(R.id.btnInviteLive) void openInvite() {
-    displayDragingGuestPopupTutorial();
-    if (!hiddenControls) onOpenInvite.onNext(null);
-  }
-
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      tempSubscriptions.add(DialogFactory.dialog(getContext(),
-          getContext().getString(R.string.tips_draggingguest_title),
-          getContext().getString(R.string.tips_draggingguest_message),
-          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
-  }
-
-  @OnClick(R.id.btnNotify) void onClickNotify() {
-    if (!hiddenControls) {
-      wizzCount++;
-      onNotificationRemotePeerBuzzed.onNext(null);
-      viewBuzz.buzz();
-
-      if (avatarView != null) {
-        animatorBuzzAvatar = ObjectAnimator.ofFloat(avatarView, TRANSLATION_X, 3, -3);
-        animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
-        animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
-        animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
-        animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationCancel(Animator animation) {
-            animatorBuzzAvatar.removeAllListeners();
-            avatarView.setTranslationX(0);
-          }
-        });
-        animatorBuzzAvatar.start();
-      }
-
-      for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
-        liveRowView.buzz();
-      }
-
-      for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
-        if (liveRowView.isWaiting()) liveRowView.buzz();
-      }
-
-      btnNotify.setEnabled(false);
-      btnNotify.animate()
-          .alpha(0.2f)
-          .setDuration(DURATION)
-          .setInterpolator(new DecelerateInterpolator())
-          .setListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              if (animatorBuzzAvatar != null) animatorBuzzAvatar.cancel();
-
-              tempSubscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> refactorNotifyButton()));
-
-              btnNotify.animate().setListener(null);
-            }
-          })
-          .start();
-
-      onNotify.onNext(null);
-    }
-  }
-
   @OnClick(R.id.btnLeave) void onClickLeave() {
-    if (!hiddenControls) onLeave.onNext(null);
+    onLeave.onNext(null);
   }
 
   @OnClick(R.id.viewRoom) void onClickRoom() {
     if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
     if (hiddenControls) {
-      displayControls(1);
       onHiddenControls.onNext(false);
     }
   }
@@ -520,8 +509,7 @@ public class LiveView extends FrameLayout {
 
   public void initOnAlphaSubscription(Observable<Float> obs) {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
-      btnNotify.setAlpha(alpha);
-      btnInviteLive.setAlpha(alpha);
+      viewControlsLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
     }));
   }
@@ -567,13 +555,7 @@ public class LiveView extends FrameLayout {
   public void start(Live live) {
     this.live = live;
 
-    if (live.isGroup()) {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_live, 0, 0, 0);
-    } else {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-    }
-
-    txtName.setText(live.getDisplayName());
+    viewStatusName.setLive(live);
 
     TribeGuest guest =
         new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
@@ -585,9 +567,13 @@ public class LiveView extends FrameLayout {
     liveRowView.showGuest(live.isCountdown());
 
     if (live.isCountdown()) {
-      tempSubscriptions.add(liveRowView.onShouldJoinRoom().distinct().doOnNext(aVoid -> {
-        onJoining();
-      }).subscribe(onShouldJoinRoom));
+      tempSubscriptions.add(liveRowView.onShouldJoinRoom()
+          .distinct()
+          .doOnNext(aVoid -> onJoining())
+          .subscribe(onShouldJoinRoom));
+
+      tempSubscriptions.add(liveRowView.onNotifyStepDone()
+          .subscribe(aVoid -> viewStatusName.setStatus(LiveStatusNameView.WAITING)));
     } else {
       liveRowView.startPulse();
       onJoining();
@@ -596,7 +582,8 @@ public class LiveView extends FrameLayout {
   }
 
   private void onJoining() {
-    btnNotify.setEnabled(live.isCountdown());
+    viewStatusName.setStatus(LiveStatusNameView.NOTIFYING);
+    viewControlsLive.setNotifyEnabled(live.isCountdown());
     hasJoined = true;
   }
 
@@ -695,94 +682,7 @@ public class LiveView extends FrameLayout {
 
   private void refactorNotifyButton() {
     boolean enable = shouldEnableBuzz();
-
-    if (!enable) {
-      btnNotify.setVisibility(View.GONE);
-      return;
-    } else {
-      btnNotify.setVisibility(View.VISIBLE);
-    }
-
-    if (enable != btnNotify.isEnabled()) {
-      btnNotify.animate()
-          .alpha(1f)
-          .scaleX(1.25f)
-          .scaleY(1.25f)
-          .translationY(-screenUtils.dpToPx(10))
-          .rotation(10)
-          .setDuration(DURATION)
-          .setInterpolator(new DecelerateInterpolator())
-          .setListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              if (btnNotify == null) return;
-
-              btnNotify.animate().setListener(null);
-
-              animatorRotation = ObjectAnimator.ofFloat(btnNotify, ROTATION, 7, -7);
-              animatorRotation.setDuration(100);
-              animatorRotation.setRepeatCount(3);
-              animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
-              animatorRotation.addListener(new AnimatorListenerAdapter() {
-                @Override public void onAnimationEnd(Animator animation) {
-                  animatorRotation.removeAllListeners();
-
-                  if (btnNotify != null) {
-                    btnNotify.animate()
-                        .scaleX(1)
-                        .scaleY(1)
-                        .rotation(0)
-                        .translationY(0)
-                        .setDuration(DURATION)
-                        .setInterpolator(new DecelerateInterpolator())
-                        .setListener(new AnimatorListenerAdapter() {
-                          @Override public void onAnimationEnd(Animator animation) {
-                            if (btnNotify != null) {
-                              btnNotify.setEnabled(true);
-                              btnNotify.animate().setListener(null);
-                            }
-                          }
-
-                          @Override public void onAnimationCancel(Animator animation) {
-                            if (btnNotify != null) btnNotify.animate().setListener(null);
-                          }
-                        });
-                  }
-                }
-
-                @Override public void onAnimationCancel(Animator animation) {
-                  animatorRotation.removeAllListeners();
-                }
-              });
-
-              animatorRotation.start();
-            }
-          })
-          .start();
-    }
-  }
-
-  private void scale(View v, int scale) {
-    v.animate()
-        .scaleX(scale)
-        .scaleY(scale)
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationStart(Animator animation) {
-            v.setVisibility(scale == 1 ? View.VISIBLE : View.GONE);
-          }
-
-          @Override public void onAnimationEnd(Animator animation) {
-            v.setVisibility(scale == 0 ? View.GONE : View.VISIBLE);
-            v.animate().setListener(null).start();
-          }
-        })
-        .start();
-  }
-
-  private void displayControls(int scale) {
-    scale(btnLeave, scale);
-    scale(btnNotify, scale);
-    scale(btnInviteLive, scale);
+    viewControlsLive.refactorNotifyButton(enable);
   }
 
   private void addView(LiveRowView liveRowView, TribeGuest guest, int color,
@@ -795,6 +695,11 @@ public class LiveView extends FrameLayout {
 
   private void addView(RemotePeer remotePeer) {
     LiveRowView liveRowView = null;
+
+    if (nbLiveInRoom() == 0) {
+      soundManager.cancelMediaPlayer();
+      viewStatusName.setStatus(LiveStatusNameView.DONE);
+    }
 
     if (liveInviteMap.getMap()
         .containsKey(
@@ -1075,6 +980,16 @@ public class LiveView extends FrameLayout {
     return tribeGuestName;
   }
 
+  private void displayDragingGuestPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+      tempSubscriptions.add(DialogFactory.dialog(getContext(),
+          getContext().getString(R.string.tips_draggingguest_title),
+          getContext().getString(R.string.tips_draggingguest_message),
+          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
+      }));
+      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    }
+  }
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////

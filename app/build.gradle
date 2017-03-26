@@ -49,7 +49,7 @@ android {
   defaultConfig {
     renderscriptTargetApi globalConfiguration.getAt("androidMinSdkVersion")
     renderscriptSupportModeEnabled true
-    
+
     minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
     targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
 
@@ -252,7 +252,7 @@ dependencies {
   compile developmentDependencies.stetho
   compile developmentDependencies.stethoOkHttp
   //compile developmentDependencies.androidDevMetrics
-  compile developmentDependencies.takt
+  //compile developmentDependencies.takt
 
   compile project(':AdapterDelegates')
   compile project(':tribelivesdk')

@@ -1,179 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <declare-styleable name="TextViewFont">
-    <attr format="string" name="customFont" />
+    <attr format="string" name="customFont"/>
   </declare-styleable>
 
   <declare-styleable name="AvatarView">
     <attr format="enum" name="avatarType">
-      <enum name="live" value="0" />
-      <enum name="regular" value="1" />
+      <enum name="live" value="0"/>
+      <enum name="online" value="1"/>
+      <enum name="regular" value="2"/>
     </attr>
-  </declare-styleable>
-
-  <declare-styleable name="AvatarLiveView">
-    <attr format="enum" name="avatarLiveType">
-      <enum name="live" value="0" />
-      <enum name="connected" value="1" />
-    </attr>
+    <attr format="boolean" name="hasShadow"/>
+    <attr format="boolean" name="hasInd"/>
+    <attr format="boolean" name="hasHole"/>
   </declare-styleable>
 
   <declare-styleable name="RoundedCornerLayout">
-    <attr format="dimension" name="cornerRadius" />
+    <attr format="dimension" name="cornerRadius"/>
   </declare-styleable>
 
   <declare-styleable name="TileView">
     <attr format="enum" name="tileType">
-      <enum name="live_grid" value="0" />
-      <enum name="connected_grid" value="1" />
-      <enum name="live_co_invite" value="2" />
-      <enum name="normal" value="3" />
-      <enum name="invite" value="4" />
+      <enum name="live_grid" value="0"/>
+      <enum name="connected_grid" value="1"/>
+      <enum name="live_co_invite" value="2"/>
+      <enum name="normal" value="3"/>
+      <enum name="invite" value="4"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="PictoVisualizerView">
-    <attr format="integer" name="picto" />
+    <attr format="integer" name="picto"/>
   </declare-styleable>
 
   <declare-styleable name="LabelButton">
-    <attr format="integer" name="drawable" />
+    <attr format="integer" name="drawable"/>
     <attr format="enum" name="type">
-      <enum name="infos" value="0" />
-      <enum name="action" value="1" />
+      <enum name="infos" value="0"/>
+      <enum name="action" value="1"/>
     </attr>
-    <attr format="string" name="label" />
+    <attr format="string" name="label"/>
   </declare-styleable>
 
   <declare-styleable name="CameraWrapper">
-    <attr format="boolean" name="cameraGradient" />
+    <attr format="boolean" name="cameraGradient"/>
     <attr format="enum" name="cameraType">
-      <enum name="recording" value="0" />
-      <enum name="setting" value="1" />
+      <enum name="recording" value="0"/>
+      <enum name="setting" value="1"/>
     </attr>
-    <attr format="dimension" name="cameraHeight" />
-    <attr format="dimension" name="cameraWidth" />
+    <attr format="dimension" name="cameraHeight"/>
+    <attr format="dimension" name="cameraWidth"/>
   </declare-styleable>
 
   <declare-styleable name="TribeVideoView">
     <attr format="enum" name="scaleVideoType">
-      <enum name="top" value="0" />
-      <enum name="bottom" value="1" />
-      <enum name="fill" value="2" />
-      <enum name="center_crop" value="3" />
-      <enum name="center_crop_fill" value="4" />
+      <enum name="top" value="0"/>
+      <enum name="bottom" value="1"/>
+      <enum name="fill" value="2"/>
+      <enum name="center_crop" value="3"/>
+      <enum name="center_crop_fill" value="4"/>
     </attr>
-    <attr format="boolean" name="autoStart" />
-    <attr format="boolean" name="looping" />
-    <attr format="boolean" name="mute" />
-    <attr format="boolean" name="speedControl" />
+    <attr format="boolean" name="autoStart"/>
+    <attr format="boolean" name="looping"/>
+    <attr format="boolean" name="mute"/>
+    <attr format="boolean" name="speedControl"/>
   </declare-styleable>
 
   <declare-styleable name="ButtonPointsView">
-    <attr format="integer" name="buttonDrawable" />
+    <attr format="integer" name="buttonDrawable"/>
     <attr format="enum" name="buttonType">
-      <enum name="profile" value="0" />
-      <enum name="fb_active" value="1" />
-      <enum name="fb_progress" value="2" />
-      <enum name="fb_disabled" value="3" />
+      <enum name="profile" value="0"/>
+      <enum name="fb_active" value="1"/>
+      <enum name="fb_progress" value="2"/>
+      <enum name="fb_disabled" value="3"/>
     </attr>
-    <attr format="string" name="buttonLabel" />
-    <attr format="string" name="buttonSubLabel" />
-    <attr format="integer" name="buttonPoints" />
-    <attr format="integer" name="buttonBGColor" />
+    <attr format="string" name="buttonLabel"/>
+    <attr format="string" name="buttonSubLabel"/>
+    <attr format="integer" name="buttonPoints"/>
+    <attr format="integer" name="buttonBGColor"/>
   </declare-styleable>
 
   <declare-styleable name="ButtonCardView">
-    <attr format="integer" name="buttonCardDrawable" />
+    <attr format="integer" name="buttonCardDrawable"/>
     <attr format="enum" name="buttonCardType">
-      <enum name="points" value="0" />
-      <enum name="meteo" value="1" />
-      <enum name="location" value="2" />
-      <enum name="city" value="3" />
+      <enum name="points" value="0"/>
+      <enum name="meteo" value="1"/>
+      <enum name="location" value="2"/>
+      <enum name="city" value="3"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="TextViewAnimatedDots">
-    <attr format="integer" name="textStyle" />
+    <attr format="integer" name="textStyle"/>
   </declare-styleable>
 
   <declare-styleable name="GroupSuggestionView">
-    <attr format="integer" name="groupDrawable" />
+    <attr format="integer" name="groupDrawable"/>
     <attr format="enum" name="groupType">
-      <enum name="bestfriends" value="0" />
-      <enum name="teammates" value="1" />
-      <enum name="classmates" value="2" />
-      <enum name="roomies" value="3" />
-      <enum name="workteam" value="4" />
-      <enum name="family" value="5" />
+      <enum name="bestfriends" value="0"/>
+      <enum name="teammates" value="1"/>
+      <enum name="classmates" value="2"/>
+      <enum name="roomies" value="3"/>
+      <enum name="workteam" value="4"/>
+      <enum name="family" value="5"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="ActionView">
-    <attr format="string" name="actionTitle" />
-    <attr format="string" name="actionBody" />
+    <attr format="string" name="actionTitle"/>
+    <attr format="string" name="actionBody"/>
     <attr format="enum" name="actionType">
-      <enum name="hierarchy" value="0" />
-      <enum name="hierarchy_with_image" value="1" />
-      <enum name="sharing" value="2" />
-      <enum name="toggle" value="3" />
-      <enum name="critical" value="4" />
-      <enum name="regular" value="5" />
+      <enum name="hierarchy" value="0"/>
+      <enum name="hierarchy_with_image" value="1"/>
+      <enum name="sharing" value="2"/>
+      <enum name="toggle" value="3"/>
+      <enum name="critical" value="4"/>
+      <enum name="regular" value="5"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="SyncView">
-    <attr format="integer" name="syncIcon" />
-    <attr format="integer" name="syncBackground" />
+    <attr format="integer" name="syncIcon"/>
+    <attr format="integer" name="syncBackground"/>
     <attr format="enum" name="syncType">‡
-      <enum name="fb" value="0" />
-      <enum name="addressbook" value="1" />
+      <enum name="fb" value="0"/>
+      <enum name="addressbook" value="1"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="LoadFriendsView">
-    <attr format="string" name="loadTitle" />
-    <attr format="string" name="loadBody" />
-    <attr format="integer" name="loadBG" />
-    <attr format="integer" name="loadIcon" />
+    <attr format="string" name="loadTitle"/>
+    <attr format="string" name="loadBody"/>
+    <attr format="integer" name="loadBG"/>
+    <attr format="integer" name="loadIcon"/>
     <attr format="enum" name="loadType">
-      <enum name="fb" value="0" />
-      <enum name="addressbook" value="1" />
+      <enum name="fb" value="0"/>
+      <enum name="addressbook" value="1"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="LiveIndView">
     <attr format="enum" name="liveType">
-      <enum name="live" value="0" />
-      <enum name="connected" value="1" />
+      <enum name="live" value="0"/>
+      <enum name="connected" value="1"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="PickAllView">
-    <attr format="string" name="pickAllTitle" />
-    <attr format="string" name="pickAllBody" />
-    <attr format="color" name="pickAllBGColor" />
+    <attr format="string" name="pickAllTitle"/>
+    <attr format="string" name="pickAllBody"/>
+    <attr format="color" name="pickAllBGColor"/>
   </declare-styleable>
 
   <declare-styleable name="PulseLayout">
-    <attr format="integer" name="pulseCount" />
-    <attr format="integer" name="pulseDuration" />
-    <attr format="color" name="pulseColor" />
+    <attr format="integer" name="pulseCount"/>
+    <attr format="integer" name="pulseDuration"/>
+    <attr format="color" name="pulseColor"/>
   </declare-styleable>
 
   <declare-styleable name="LiveNotificationView">
-    <attr format="string" name="notificationTitle" />
+    <attr format="string" name="notificationTitle"/>
   </declare-styleable>
 
   <declare-styleable name="BuzzView">
     <attr format="enum" name="buzzType">
-      <enum name="big" value="0" />
-      <enum name="small" value="1" />
+      <enum name="big" value="0"/>
+      <enum name="small" value="1"/>
     </attr>
   </declare-styleable>
 
   <declare-styleable name="Alerter">
-    <attr format="reference" name="alertStyle" />
+    <attr format="reference" name="alertStyle"/>
   </declare-styleable>
 
 </resources>

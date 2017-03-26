@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.activity.ProfileActivity;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 /**
  * Class used to navigate through the application.
@@ -45,6 +46,7 @@ public class Navigator {
   @Inject User user;
 
   public static int REQUEST_COUNTRY = 1000;
+  public static int FROM_LIVE = 1001;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -211,14 +213,14 @@ public class Navigator {
   public void navigateToLive(Activity activity, Recipient recipient, int color) {
     if (activity != null) {
       Intent intent = LiveActivity.getCallingIntent(activity, recipient, color);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 
   public void navigateToIntent(Activity activity, Intent intent) {
     if (activity != null) {
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }

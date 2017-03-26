@@ -3,6 +3,7 @@ package com.tribe.app.presentation.utils.mediapicker;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -121,8 +122,7 @@ public class MediaHiddenActivity extends BaseActivity {
           Bundle bundleBis = new Bundle();
           bundleBis.putBoolean(TagManagerUtils.ACCEPTED, granted);
           getTagManager().trackEvent(TagManagerUtils.KPI_Onboarding_SystemCamera, bundleBis);
-          getTagManager().trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone,
-              bundleBis);
+          getTagManager().trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone, bundleBis);
 
           if (granted) {
             Sources sourceType = Sources.values()[intent.getIntExtra(IMAGE_SOURCE, 0)];
@@ -171,6 +171,8 @@ public class MediaHiddenActivity extends BaseActivity {
     CropImage.activity(imageUri)
         .setGuidelines(CropImageView.Guidelines.ON)
         .setRequestedSize(500, 500)
+        .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+        .setOutputCompressQuality(70)
         .setAspectRatio(1, 1)
         .setMultiTouchEnabled(true)
         .setActivityMenuIconColor(Color.BLACK)

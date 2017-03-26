@@ -103,11 +103,8 @@ public class Invite extends Recipient {
   private String getFriendshipsName() {
     String name = "";
 
-    int count = 0;
-    for (Friendship friendship : friendships) {
-      if (count > 0) name += ", ";
-      name += friendship.getDisplayName();
-      count++;
+    if (friendships != null && friendships.size() > 0) {
+      name += friendships.get(0).getDisplayName();
     }
 
     return name;

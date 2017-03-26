@@ -1,35 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtStatus"
+  <LinearLayout
+      android:id="@+id/layoutStatus"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      style="@style/Body.Two.White"
+      android:layout_height="60dp"
       android:layout_gravity="bottom|center_horizontal"
-      android:layout_marginBottom="@dimen/horizontal_margin_small"
       android:layout_marginLeft="@dimen/horizontal_margin_small"
       android:layout_marginRight="@dimen/horizontal_margin_small"
-      android:singleLine="true"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      style="@style/Body.Two.White"
-      android:layout_gravity="top|center_horizontal"
-      android:layout_marginTop="10dp"
-      android:layout_marginLeft="@dimen/horizontal_margin_small"
-      android:layout_marginRight="@dimen/horizontal_margin_small"
-      android:background="@drawable/selectable_button_all_rounded_5_black_5"
       android:clickable="true"
-      android:singleLine="true"
-      android:paddingTop="7dp"
-      android:paddingBottom="8dp"
-      android:paddingLeft="10dp"
-      android:paddingRight="10dp"
-      android:drawablePadding="8.6dp"
-      />
+      android:gravity="center"
+      android:orientation="vertical"
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/shape_rect_rounded_white_10"
+        android:paddingBottom="5dp"
+        android:paddingLeft="7dp"
+        android:paddingRight="7dp"
+        android:paddingTop="6dp"
+        android:singleLine="true"
+        android:text="@string/grid_status_connected"
+        style="@style/Body.Two.White"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/layoutName"
+      android:layout_width="wrap_content"
+      android:layout_height="60dp"
+      android:layout_gravity="top|center_horizontal"
+      android:layout_marginLeft="@dimen/horizontal_margin_small"
+      android:layout_marginRight="@dimen/horizontal_margin_small"
+      android:clickable="true"
+      android:gravity="center"
+      android:orientation="vertical"
+      >
+
+    <include layout="@layout/view_tile_grid_base_name"/>
+  </LinearLayout>
 
 </merge>

@@ -3,7 +3,7 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 
 /**
@@ -63,8 +63,8 @@ public class SearchResult implements Serializable, BaseListInterface {
 
   @Override public AvatarModel getAvatar() {
     return new AvatarModel(picture,
-        friendship != null && friendship.getFriend().isOnline() ? AvatarLiveView.CONNECTED
-            : AvatarLiveView.NONE);
+        friendship != null && friendship.getFriend().isOnline() ? AvatarView.ONLINE
+            : AvatarView.REGULAR);
   }
 
   @Override public boolean isReverse() {

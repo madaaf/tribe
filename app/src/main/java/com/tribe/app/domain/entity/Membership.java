@@ -2,7 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +43,8 @@ public class Membership extends Recipient {
 
   @Override public AvatarModel getAvatar() {
     if (avatarModel != null) return avatarModel;
-    avatarModel = new AvatarModel(getProfilePicture(), isLive() ? AvatarLiveView.LIVE : AvatarLiveView.NONE);
+    avatarModel =
+        new AvatarModel(getProfilePicture(), isLive() ? AvatarView.LIVE : AvatarView.REGULAR);
     avatarModel.setMemberPics(getMembersPic());
     return avatarModel;
   }

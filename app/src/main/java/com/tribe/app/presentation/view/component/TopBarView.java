@@ -28,7 +28,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -39,6 +39,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 11/15/2016.
  */
 public class TopBarView extends FrameLayout {
+
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
   private static final int DURATION = 300;
@@ -49,7 +50,7 @@ public class TopBarView extends FrameLayout {
 
   @Inject User user;
 
-  @BindView(R.id.viewAvatar) AvatarLiveView viewAvatar;
+  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.btnNew) View btnNew;
 
@@ -219,6 +220,11 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
+    if (searchMode) {
+      screenUtils.showKeyboard(editTextSearch, 0);
+      return;
+    }
+
     onOpenCloseSearch.onNext(true);
 
     searchMode = true;
@@ -227,7 +233,6 @@ public class TopBarView extends FrameLayout {
     showView(imgClose, new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         editTextSearch.setEnabled(true);
-        screenUtils.showKeyboard(editTextSearch, 0);
         imgClose.animate().setListener(null).start();
       }
     });

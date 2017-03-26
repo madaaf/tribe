@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.ViewCompat;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +26,7 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -39,8 +39,7 @@ import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareCardView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.Avatar;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.Date;
 import javax.inject.Inject;
 import rx.Observable;
@@ -58,6 +57,8 @@ public class TileView extends SquareCardView {
   public final static int TYPE_NORMAL = 3;
   public final static int TYPE_INVITE = 4;
 
+  private final int MINUTES_LIMIT = 120 * 60 * 1000;
+  private final int HOURS_LIMIT = 48 * 24 * 60 * 1000;
   private final float SCALE_FACTOR = 1.75f;
   private final float SCALE_TILE_FACTOR = 1.05f;
   private final float SCALE_DOWN_MASTER_BG_FACTOR_LOW = 0.85f;
@@ -89,17 +90,21 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
 
-  @Nullable @BindView(R.id.viewShadowAvatar) public View viewShadowAvatar;
+  @Nullable @BindView(R.id.txtWithGuests) TextViewFont txtWithGuests;
 
-  @BindView(R.id.avatar) public View avatar;
+  @Nullable @BindView(R.id.layoutName) public ViewGroup layoutName;
+
+  @BindView(R.id.avatar) public AvatarView avatar;
 
   @Nullable @BindView(R.id.layoutPulse) public PulseLayout layoutPulse;
+
+  @Nullable @BindView(R.id.layoutStatus) public ViewGroup layoutStatus;
 
   @Nullable @BindView(R.id.txtStatus) public TextViewFont txtStatus;
 
   @BindView(R.id.viewBG) View viewBG;
 
-  @Nullable @BindView(R.id.imgInd) ImageView imgInd;
+  @Nullable @BindView(R.id.imgIndInvite) ImageView imgIndInvite;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -251,9 +256,14 @@ public class TileView extends SquareCardView {
         if (Math.abs(value - spring.getEndValue()) < 0.05) value = (float) spring.getEndValue();
 
         float alpha = 1 - value;
-        txtName.setAlpha(alpha);
-        if (imgInd != null) {
-          imgInd.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1,
+        if (layoutName != null) {
+          layoutName.setAlpha(alpha);
+        } else {
+          txtName.setAlpha(alpha);
+        }
+
+        if (imgIndInvite != null) {
+          imgIndInvite.setAlpha((float) SpringUtil.mapValueFromRangeToRange(alpha, 1, 0, 1,
               -10)); // Should disappear faster ^^
         }
 
@@ -261,11 +271,6 @@ public class TileView extends SquareCardView {
 
         avatar.setScaleX(scale);
         avatar.setScaleY(scale);
-
-        if (viewShadowAvatar != null) {
-          viewShadowAvatar.setScaleX(scale);
-          viewShadowAvatar.setScaleY(scale);
-        }
 
         int cardRadius = Math.max((int) (cardRadiusMin + (diffCardRadius * value)), cardRadiusMin);
         setRadius(cardRadius);
@@ -287,41 +292,41 @@ public class TileView extends SquareCardView {
 
   public void initSize() {
     sizeAvatar =
-        isGrid() ? (int) ((screenUtils.getWidthPx() >> 1) * 0.4f) : screenUtils.getWidthPx() / 8;
+        isGrid() ? (int) ((screenUtils.getWidthPx() >> 1) * 0.5f) : screenUtils.getWidthPx() / 7;
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
-    ViewGroup.LayoutParams params = avatar.getLayoutParams();
-    params.width = sizeAvatar;
-    params.height = sizeAvatar;
-    avatar.setLayoutParams(params);
+    avatar.changeSize(sizeAvatar, true);
+
+    if (isGrid()) {
+      int sizeTile = screenUtils.getWidthPx() >> 1;
+      int sizeLayoutName =
+          (sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio()))) >> 1;
+      int sizeStatus = sizeLayoutName;
+      UIUtils.changeHeightOfView(layoutName, sizeLayoutName);
+      UIUtils.changeHeightOfView(layoutStatus, sizeStatus);
+    }
+
+    ViewGroup.LayoutParams params;
 
     if (type == TYPE_GRID_LIVE) {
       params = layoutPulse.getLayoutParams();
       params.width = sizeAvatar + screenUtils.dpToPx(90);
       params.height = sizeAvatar + screenUtils.dpToPx(90);
       layoutPulse.setLayoutParams(params);
-    } else if (viewShadowAvatar != null) {
-      params = viewShadowAvatar.getLayoutParams();
-      params.width = sizeAvatar + (isGrid() ? screenUtils.dpToPx(25) : screenUtils.dpToPx(15));
-      params.height = sizeAvatar + (isGrid() ? screenUtils.dpToPx(25) : screenUtils.dpToPx(15));
-      viewShadowAvatar.setLayoutParams(params);
     }
 
     if (type == TYPE_INVITE_LIVE_CO) {
-      FrameLayout.LayoutParams imgIndParams = (FrameLayout.LayoutParams) imgInd.getLayoutParams();
+      FrameLayout.LayoutParams imgIndParams =
+          (FrameLayout.LayoutParams) imgIndInvite.getLayoutParams();
       imgIndParams.leftMargin = sizeAvatar / 3;
       imgIndParams.topMargin = imgIndParams.leftMargin;
-      imgIndParams.height = sizeAvatar / 2;
+      imgIndParams.height = sizeAvatar / 3;
       imgIndParams.width = imgIndParams.height;
       int padding = screenUtils.dpToPx(1);
-      imgInd.setPadding(padding, padding, padding, padding);
-      imgInd.setLayoutParams(imgIndParams);
-      imgInd.requestLayout();
+      imgIndInvite.setPadding(padding, padding, padding, padding);
+      imgIndInvite.setLayoutParams(imgIndParams);
     }
-
-    avatar.invalidate();
-    avatar.requestLayout();
   }
 
   public void initClicks() {
@@ -330,7 +335,7 @@ public class TileView extends SquareCardView {
   }
 
   private void prepareTouchesMore() {
-    txtName.setOnClickListener(v -> clickMoreView.onNext(this));
+    if (layoutName != null) layoutName.setOnClickListener(v -> clickMoreView.onNext(this));
   }
 
   private void prepareClickOnView() {
@@ -359,13 +364,13 @@ public class TileView extends SquareCardView {
       setStatus();
     } else {
       if (recipient.isLive()) {
-        imgInd.setVisibility(View.VISIBLE);
-        imgInd.setImageResource(R.drawable.picto_live);
+        imgIndInvite.setVisibility(View.VISIBLE);
+        imgIndInvite.setImageResource(R.drawable.picto_live);
       } else if (recipient.isOnline()) {
-        imgInd.setVisibility(View.VISIBLE);
-        imgInd.setImageResource(R.drawable.picto_online);
+        imgIndInvite.setVisibility(View.VISIBLE);
+        imgIndInvite.setImageResource(R.drawable.picto_online);
       } else {
-        imgInd.setVisibility(View.GONE);
+        imgIndInvite.setVisibility(View.GONE);
       }
     }
   }
@@ -375,7 +380,9 @@ public class TileView extends SquareCardView {
   }
 
   public void setAvatar() {
-    ((Avatar) avatar).load(recipient);
+    avatar.setType(recipient.isLive() ? AvatarView.LIVE
+        : (recipient.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
+    avatar.load(recipient);
   }
 
   public void setName() {
@@ -383,23 +390,28 @@ public class TileView extends SquareCardView {
       txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
     } else {
       txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      if (txtWithGuests != null) {
+        txtWithGuests.setVisibility(recipient instanceof Invite ? View.VISIBLE : View.GONE);
+      }
     }
 
     txtName.setText(recipient.getDisplayName());
   }
 
   public void setStatus() {
-    if (recipient.isLive()) {
-      ((AvatarLiveView) avatar).setType(AvatarLiveView.LIVE);
-      txtStatus.setText(R.string.grid_status_live);
-    } else if (recipient.isOnline()) {
-      ((AvatarLiveView) avatar).setType(AvatarLiveView.CONNECTED);
-      txtStatus.setText(R.string.grid_status_connected);
-    } else {
-      if (recipient.getLastSeenAt() != null) {
-        txtStatus.setText(DateUtils.getRelativeTimeSpanString(recipient.getLastSeenAt().getTime(),
-            new Date().getTime(), DateUtils.SECOND_IN_MILLIS).toString().toLowerCase());
+    if (!recipient.isLive() && !recipient.isOnline() && recipient.getLastSeenAt() != null) {
+      long time = new Date().getTime() - recipient.getLastSeenAt().getTime();
+      String txt = "";
+
+      if (time < MINUTES_LIMIT) {
+        txt = getContext().getResources().getString(R.string.grid_status_last_seen_minutes);
+      } else if (time < HOURS_LIMIT) {
+        txt = getContext().getResources().getString(R.string.grid_status_last_seen_hours);
+      } else {
+        txt = getContext().getResources().getString(R.string.grid_status_last_seen_days);
       }
+
+      txtStatus.setText(txt);
     }
   }
 
@@ -419,7 +431,7 @@ public class TileView extends SquareCardView {
     this.position = position;
 
     if (!isGrid()) {
-      UIUtils.setBackgroundInd(imgInd, position);
+      UIUtils.setBackgroundInd(imgIndInvite, position);
       UIUtils.setBackgroundCard(this, position);
     } else {
       UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());
@@ -497,10 +509,6 @@ public class TileView extends SquareCardView {
         AnimationUtils.getSizeAnimator(avatar, sizeAvatarBig),
         AnimationUtils.getScaleAnimator(avatar, 1), AnimationUtils.getElevationAnimator(this, 0),
         animatorBG);
-
-    if (viewShadowAvatar != null) {
-      animatorSecond.playTogether(AnimationUtils.getScaleAnimator(viewShadowAvatar, 1.2f));
-    }
 
     animatorFinal.playTogether(animatorFirst, animatorSecond);
     animatorFinal.addListener(new AnimatorListenerAdapter() {

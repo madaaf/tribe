@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:drawablePadding="5.25dp"
+      android:singleLine="true"
+      style="@style/Title.2.White"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtWithGuests"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="2dp"
+      android:singleLine="true"
+      android:text="@string/grid_status_with_guests"
+      android:visibility="gone"
+      style="@style/Body.Two.White"
+      />
+</merge>

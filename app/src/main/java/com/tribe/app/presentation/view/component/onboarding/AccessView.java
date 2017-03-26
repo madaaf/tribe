@@ -210,7 +210,7 @@ public class AccessView extends LinearLayout {
   }
 
   public void animateProgress() {
-    progressBar.setProgress(100, 0, null);
+    progressBar.setProgress(100, 0, null, null);
   }
 
   public @StatusType int getStatus() {
@@ -225,7 +225,7 @@ public class AccessView extends LinearLayout {
       status = LOADING;
 
       progressBar.clearAnimation();
-      progressBar.setProgress(0, 0, null);
+      progressBar.setProgress(0, 0, null, null);
 
       txtStatus.setText(R.string.onboarding_queue_loading_description);
 

@@ -15,6 +15,9 @@
         android:layout_height="30dp"
         android:layout_margin="@dimen/horizontal_margin_small"
         android:background="@drawable/shape_oval_black40"
+        app:hasHole="false"
+        app:hasInd="false"
+        app:hasShadow="false"
         />
 
     <LinearLayout
@@ -22,8 +25,8 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_gravity="right|bottom"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
         android:layout_marginBottom="@dimen/horizontal_margin_smaller"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
         android:gravity="center"
         >
 
@@ -40,10 +43,10 @@
           android:layout_height="12.5dp"
           android:layout_gravity="center"
           android:visibility="gone"
-          app:cpv_thickness="@dimen/progress_bar_thickness_small"
-          app:cpv_indeterminate="true"
-          app:cpv_color="@android:color/white"
           app:cpv_animAutostart="true"
+          app:cpv_color="@android:color/white"
+          app:cpv_indeterminate="true"
+          app:cpv_thickness="@dimen/progress_bar_thickness_small"
           />
 
     </LinearLayout>
@@ -52,24 +55,24 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="vertical"
       android:gravity="center_vertical"
+      android:orientation="vertical"
       android:paddingRight="@dimen/horizontal_margin_small"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtTitle"
-        style="@style/Title.2.AddressBook"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        style="@style/Title.2.AddressBook"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtBody"
-        style="@style/Body.One.Black40"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        style="@style/Body.One.Black40"
         />
   </LinearLayout>
 </merge>

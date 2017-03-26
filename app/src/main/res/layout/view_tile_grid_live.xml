@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <include layout="@layout/view_tile_background" />
+  <include layout="@layout/view_tile_background"/>
 
   <com.tribe.app.presentation.view.widget.PulseLayout
       android:id="@+id/layoutPulse"
@@ -16,17 +16,20 @@
       app:pulseDuration="3000"
       >
 
-    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
         android:layout_centerInParent="true"
         android:background="@null"
-        app:avatarLiveType="live"
+        app:avatarType="live"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="true"
         />
 
   </com.tribe.app.presentation.view.widget.PulseLayout>
 
-  <include layout="@layout/view_tile_grid_base_online" />
+  <include layout="@layout/view_tile_grid_base_live"/>
 
 </merge>

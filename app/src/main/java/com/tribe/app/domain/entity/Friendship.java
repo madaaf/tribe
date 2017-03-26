@@ -2,7 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.text.Normalizer;
 import java.util.Date;
 
@@ -78,7 +78,10 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
   }
 
   @Override public String getSubId() {
-    if (id.equals(Recipient.ID_EMPTY) || id.equals(Recipient.ID_HEADER)) return id;
+    if (id.equals(Recipient.ID_EMPTY) || id.equals(Recipient.ID_HEADER) || id.equals(
+        Recipient.ID_MORE)) {
+      return id;
+    }
 
     return friend.getId();
   }
@@ -93,8 +96,8 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
 
   @Override public AvatarModel getAvatar() {
     if (avatarModel != null) return avatarModel;
-    avatarModel = new AvatarModel(getProfilePicture(), isLive() ? AvatarLiveView.LIVE
-        : (isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE));
+    avatarModel = new AvatarModel(getProfilePicture(),
+        isLive() ? AvatarView.LIVE : (isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
     return avatarModel;
   }
 

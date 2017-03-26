@@ -34,6 +34,9 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:background="@null"
+        app:hasHole="false"
+        app:hasInd="false"
+        app:hasShadow="false"
         />
 
     <ImageView

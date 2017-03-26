@@ -409,7 +409,7 @@ public class AnimationUtils {
     return animator;
   }
 
-  public static Animator getColorAnimator(View v, int colorFrom, int colorTo) {
+  public static ValueAnimator getColorAnimator(View v, int colorFrom, int colorTo) {
     ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
     colorAnimation.addUpdateListener(
         animator -> setColorToBG(v, (Integer) animator.getAnimatedValue()));
@@ -444,6 +444,15 @@ public class AnimationUtils {
     ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
     colorAnimation.addUpdateListener(
         animator -> setColorToBG(v, (Integer) animator.getAnimatedValue()));
+    colorAnimation.setDuration(duration);
+    colorAnimation.setInterpolator(new DecelerateInterpolator());
+    colorAnimation.start();
+  }
+
+  public static void animateColorFilter(ImageView v, int colorFrom, int colorTo, int duration) {
+    ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+    colorAnimation.addUpdateListener(
+        animator -> v.setColorFilter((Integer) animator.getAnimatedValue()));
     colorAnimation.setDuration(duration);
     colorAnimation.setInterpolator(new DecelerateInterpolator());
     colorAnimation.start();

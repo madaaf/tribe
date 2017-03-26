@@ -47,6 +47,9 @@
             android:layout_height="50dp"
             android:layout_gravity="center"
             android:background="@null"
+            app:hasHole="false"
+            app:hasInd="false"
+            app:hasShadow="false"
             />
       </FrameLayout>
 

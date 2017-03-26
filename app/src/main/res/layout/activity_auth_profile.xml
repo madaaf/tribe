@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.activity.AuthProfileActivity"
     android:background="@null"
+    tools:context=".presentation.view.activity.AuthProfileActivity"
     >
 
   <LinearLayout
       android:layout_width="0dp"
       android:layout_height="0dp"
-      android:focusableInTouchMode="true"
-      android:focusable="true"
       android:clickable="true"
+      android:focusable="true"
+      android:focusableInTouchMode="true"
       >
 
-    <requestFocus />
+    <requestFocus/>
   </LinearLayout>
 
   <FrameLayout
@@ -27,23 +27,23 @@
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtTitle"
-        style="@style/Title.2.Black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/onboarding_user_title"
         android:gravity="center"
+        android:text="@string/onboarding_user_title"
+        style="@style/Title.2.Black"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAction"
-        style="@style/Title.2.Grey"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right|center_vertical"
         android:layout_marginRight="@dimen/horizontal_margin"
         android:gravity="right|center_vertical"
         android:text="@string/action_next"
+        style="@style/Title.2.Grey"
         />
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
@@ -54,8 +54,8 @@
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:visibility="gone"
         app:cpv_animAutostart="true"
-        app:cpv_indeterminate="true"
         app:cpv_color="@color/blue.new"
+        app:cpv_indeterminate="true"
         app:cpv_thickness="2dp"
         />
 
@@ -65,15 +65,15 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_marginTop="@dimen/top_bar_height_small"
-      android:fillViewport="true"
       android:background="@color/grey.background.profile_info"
+      android:fillViewport="true"
       >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:background="@null"
+        android:orientation="vertical"
         >
 
       <com.tribe.app.presentation.view.component.ProfileInfoView
@@ -97,21 +97,21 @@
       android:background="@color/grey.light"
       />
 
-  <com.tribe.app.presentation.view.widget.FacebookView
+  <!--<com.tribe.app.presentation.view.widget.FacebookView
       android:id="@+id/facebookView"
       android:layout_width="match_parent"
       android:layout_height="80dp"
       android:layout_gravity="bottom"
       android:clickable="true"
       android:foreground="@drawable/selectable_button_light"
-      />
+      />-->
 
-  <View
+  <!--<View
       android:layout_width="match_parent"
       android:layout_height="10dp"
-      android:background="@drawable/shadow_top"
       android:layout_gravity="bottom"
       android:layout_marginBottom="80dp"
-      />
+      android:background="@drawable/shadow_top"
+      />-->
 
 </FrameLayout>

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,10 @@ import android.view.animation.AnimationUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -41,6 +45,7 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -54,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -66,7 +72,11 @@ import static android.view.View.VISIBLE;
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
+  public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
+  public static final String ROOM_ID = "ROOM_ID";
+  public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
+  private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -129,6 +139,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
+  private boolean liveDurationIsMoreThan30sec = false;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // RESOURCES
 
@@ -148,6 +160,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initResources();
     initPermissions();
     initAppState();
+    initRemoteConfig();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -191,11 +204,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onDestroy() {
     viewLive.onDestroy(false);
-
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+    soundManager.cancelMediaPlayer();
 
     if (audioManager != null) {
       audioManager.stop();
@@ -275,6 +289,36 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     appStateMonitor = RxAppStateMonitor.create(getApplication());
     appStateMonitor.addListener(this);
     appStateMonitor.start();
+  }
+
+  private void ratingNotificationSubscribe() {
+    subscriptions.add(Observable.timer(MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> liveDurationIsMoreThan30sec = true));
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+      }
+    });
+  }
+
+  private Boolean displayRatingNotifDependingFirebaseTrigger() {
+    Random rn = new Random();
+    int randomNumber = rn.nextInt(101);
+    return randomNumber > firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TRIGGER);
+  }
+
+  private Long getFirebaseTimeoutConfig() {
+    Long time = firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
+    return time == 0 ? 10 : time;
   }
 
   private void displayStartFirstPopupTutorial() {
@@ -383,12 +427,27 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onNotificationRemoteJoined().subscribe(userName -> {
+      ratingNotificationSubscribe();
       displayNotification(getString(R.string.live_notification_peer_joined, userName));
     }));
 
     subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
       displayNotification(getString(R.string.live_notification_buzzed));
     }));
+  }
+
+  private void putExtraHomeIntent() {
+    Intent returnIntent = new Intent();
+    if (liveDurationIsMoreThan30sec && displayRatingNotifDependingFirebaseTrigger()) {
+      if (viewLive != null
+          && viewLive.getRoom() != null
+          && viewLive.getRoom().getOptions() != null) {
+        returnIntent.putExtra(ROOM_ID, viewLive.getRoom().getOptions().getRoomId());
+      }
+      returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
+      returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
+      setResult(Activity.RESULT_OK, returnIntent);
+    }
   }
 
   private void displayNotification(String txt) {
@@ -416,6 +475,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
   }

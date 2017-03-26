@@ -352,12 +352,12 @@ import timber.log.Timber;
       }
     });
 
-    //if (BuildConfig.DEBUG) {
-    //  HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    //  loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-    //  httpClientBuilder.addInterceptor(loggingInterceptor);
-    //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    //}
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
         .addConverterFactory(GsonConverterFactory.create(gson))

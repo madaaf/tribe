@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/31/17.
@@ -92,7 +91,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     BaseListViewHolder vh = (BaseListViewHolder) holder;
     BaseListInterface item = (BaseListInterface) items.get(position);
 
-    String username = "@" + item.getUsername();
+    String username = StringUtils.isEmpty(item.getUsername()) ? "" : "@" + item.getUsername();
     String displayName = item.getDisplayName();
     boolean isFriend = item.isFriend();
     AvatarModel avatarModel = item.getAvatar();
@@ -128,7 +127,6 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     vh.buttonModelTo = getButtonModelTo(item);
 
     vh.btnAdd.setVisibility(isActionAvailable ? View.VISIBLE : View.GONE);
-
 
     vh.viewAvatar.setType(avatarModel.getType());
     if (avatarModel.getMemberPics() != null) {

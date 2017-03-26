@@ -8,6 +8,7 @@
   <color name="black.opacity.30">#4D000000</color>
   <color name="black.opacity.40">#66000000</color>
   <color name="black.opacity.50">#80000000</color>
+  <color name="black.opacity.60">#96000000</color>
   <color name="black.opacity.70">#B3000000</color>
   <color name="black.opacity.80">#CC000000</color>
   <color name="black.infos">#1A14181A</color>
@@ -47,6 +48,7 @@
   <color name="grey.authentication">#393939</color>
   <color name="grey.blue">#DBE0E9</color>
   <color name="grey.unblock">#787878</color>
+  <color name="grey.rating">#F1F3F5</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
@@ -112,7 +114,7 @@
   <color name="classic.3">#FAB4FB</color>
   <color name="classic.4">#02ADF2</color>
   <color name="classic.5">#3DE9DA</color>
-  <color name="classic.6">#F7E467</color>
+  <color name="classic.6">#B513FE</color>
   <color name="classic.7">#F86197</color>
   <color name="classic.8">#007FFF</color>
 
@@ -188,4 +190,11 @@
 
   <!-- Pulses -->
   <color name="live">#BE38B0</color>
+
+  <!-- Stars -->
+  <color name="star_red">#F65352</color>
+  <color name="star_orange">#FF6F00</color>
+  <color name="star_yellow">#FFBA00</color>
+  <color name="star_yellow_strong">#FED800</color>
+  <color name="star_green">#2ECC4C</color>
 </resources>

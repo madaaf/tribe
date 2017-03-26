@@ -11,7 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.ShapeDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +32,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.CircleView;
 import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -55,7 +56,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private final static int DURATION_FAST_FURIOUS = 60;
   private final static int DURATION_FAST = 300;
   private final static int DELAY_COUNTDOWN = 500;
-  private final static int DURATION_PULSE_FAST = 150;
+  private final static int DURATION_PULSE_FAST = 100;
   private final static int DURATION_PULSE = 300;
   private final static int DURATION_SCALE = 1000;
   private final static int SCALE_DELAY = 250;
@@ -69,25 +70,17 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   @Inject PaletteGrid paletteGrid;
 
-  @BindView(R.id.avatar) AvatarView avatar;
-
-  @BindView(R.id.viewShadowAvatar) View viewShadow;
-
   @BindView(R.id.viewCircle) CircleView viewCircle;
-
-  @BindView(R.id.viewForegroundAvatar) View viewForegroundAvatar;
 
   @BindView(R.id.txtDropInTheLive) TextViewFont txtDropInTheLive;
 
-  @BindView(R.id.viewThreeDots) ThreeDotsView viewThreeDots;
-
   @BindView(R.id.viewBuzz) BuzzView viewBuzz;
 
-  @BindView(R.id.progressBar) CircularProgressBar progressBar;
+  @BindView(R.id.viewAvatar) LiveWaitingAvatarView viewAvatar;
 
-  @BindView(R.id.btnRemove) View btnRemove;
+  @BindView(R.id.progressBarJoining) CircularProgressBar progressBarJoining;
 
-  @BindView(R.id.viewRing) View viewRing;
+  @BindView(R.id.progressBarNotify) CircularProgressBar progressBarNotify;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -104,15 +97,17 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private ValueAnimator animatorScaleUpTransition;
   private ValueAnimator animatorAlphaTransition;
   private ObjectAnimator animatorBuzzAvatar;
-  private boolean hasPulsed = false, removeMode = false, shouldShowRemoveAgain = true;
+  private boolean hasSentJoin = false, hasPulsed = false, removeMode = false,
+      shouldShowRemoveAgain = true, isCountDown = false;
 
   // RESOURCES
-  private int timeJoinRoom, strokeWidth;
+  private int timeJoinRoom, timeNotify, strokeWidth, avatarSize;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription subscriptionDismissRemove;
+  private Subscription subscriptionCountdown, subscriptionDismissRemove;
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
+  private PublishSubject<Void> onNotifyStepDone = PublishSubject.create();
   private PublishSubject<TribeGuest> onShouldRemoveGuest = PublishSubject.create();
 
   public LiveWaitingView(Context context) {
@@ -147,22 +142,34 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     setBackground(null);
     setOnClickListener(this);
 
-    progressBar.setAnimationDuration(timeJoinRoom);
-    progressBar.setProgressColor(Color.WHITE);
-    progressBar.setProgressWidth(screenUtils.dpToPx(7.5f));
+    progressBarJoining.setAnimationDuration(timeJoinRoom);
+    progressBarJoining.setProgressColor(
+        ContextCompat.getColor(getContext(), R.color.white_opacity_40));
+    progressBarJoining.setProgressWidth(strokeWidth);
+
+    progressBarNotify.setAnimationDuration(timeNotify);
+    progressBarNotify.setProgressColor(Color.WHITE);
+    progressBarNotify.setProgressWidth(strokeWidth);
+
+    viewAvatar.changeSize(avatarSize);
+    UIUtils.changeSizeOfView(progressBarJoining,
+        avatarSize - (int) (avatarSize * avatar().getShadowRatio()) + strokeWidth * 2);
+    UIUtils.changeSizeOfView(progressBarNotify,
+        avatarSize - (int) (avatarSize * avatar().getShadowRatio()) + strokeWidth * 2);
 
     subscriptions.add(viewBuzz.onBuzzCompleted()
         .doOnNext(aVoid -> endBuzz())
         .delay(DURATION_BUZZ, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {
-          startPulse();
-        }));
+        .subscribe(aVoid -> startPulse()));
   }
 
   private void initResources() {
     timeJoinRoom = getContext().getResources().getInteger(R.integer.time_join_room);
+    timeNotify = getContext().getResources().getInteger(R.integer.time_notify);
     strokeWidth = getContext().getResources().getDimensionPixelSize(R.dimen.stroke_width_ring);
+    avatarSize =
+        getContext().getResources().getDimensionPixelSize(R.dimen.waiting_view_avatar_size);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -230,54 +237,100 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   public void showGuest() {
     txtDropInTheLive.setVisibility(View.GONE);
-    avatar.setVisibility(View.VISIBLE);
-    viewShadow.setVisibility(View.VISIBLE);
-    viewForegroundAvatar.setVisibility(View.VISIBLE);
+    viewAvatar.showGuest();
     viewBuzz.setVisibility(View.VISIBLE);
-    progressBar.setVisibility(View.GONE);
+    progressBarJoining.setVisibility(View.GONE);
   }
 
   public void startCountdown() {
-    progressBar.setVisibility(View.VISIBLE);
-    progressBar.setProgress(100, DELAY_COUNTDOWN, new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
-        animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-        animatorScaleUp.setDuration(DURATION_FAST);
-        animatorScaleUp.addUpdateListener(animationScaleUp -> {
-          float value = (float) animationScaleUp.getAnimatedValue();
-          updateScaleWithValue(value);
-        });
-        animatorScaleUp.start();
+    isCountDown = true;
 
-        progressBar.animate()
-            .scaleX(0)
-            .scaleY(0)
-            .setDuration(DURATION_FAST)
-            .setListener(new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                onShouldJoinRoom.onNext(null);
-                animatorScaleUp.cancel();
-                progressBar.setVisibility(View.GONE);
-                progressBar.animate().setListener(null).start();
-              }
-            })
-            .start();
+    int startCountdown = (timeJoinRoom - 1000) / 1000;
+
+    viewAvatar.showCountdown(timeJoinRoom / 1000);
+
+    subscriptionCountdown = Observable.interval(1, TimeUnit.SECONDS)
+        .map(time -> startCountdown - time)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(time -> {
+          if (time > 0) viewAvatar.startCountdown(time.intValue());
+        });
+
+    progressBarJoining.setVisibility(View.VISIBLE);
+    progressBarJoining.setProgress(100, DELAY_COUNTDOWN, new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        animation.removeAllListeners();
+        if (subscriptionCountdown != null) subscriptionCountdown.unsubscribe();
       }
 
       @Override public void onAnimationCancel(Animator animation) {
         animation.removeAllListeners();
       }
+    }, animation -> {
+      float sweepAngle = (float) animation.getAnimatedValue();
+      if (sweepAngle > 350 && !hasSentJoin) {
+        hasSentJoin = true;
+        viewAvatar.showNotifyState();
+        onShouldJoinRoom.onNext(null);
+      }
     });
   }
 
   public void startPulse() {
+    if (isCountDown) {
+      isCountDown = false;
+      progressBarNotify.setVisibility(View.VISIBLE);
+      progressBarNotify.setProgress(100, 0, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          ValueAnimator animatorScaleUp =
+              ValueAnimator.ofFloat(viewAvatar.getScaleX(), SCALE_AVATAR);
+          animatorScaleUp.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
+          animatorScaleUp.setDuration(DURATION_FAST);
+          animatorScaleUp.addUpdateListener(animationScaleUp -> {
+            float value = (float) animationScaleUp.getAnimatedValue();
+            updateScaleWithValue(value);
+          });
+          animatorScaleUp.start();
+
+          onNotifyStepDone.onNext(null);
+
+          viewAvatar.hideNotifyState();
+
+          progressBarNotify.animate()
+              .scaleX(0)
+              .scaleY(0)
+              .setDuration(DURATION_FAST)
+              .setListener(new AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(Animator animation) {
+                  animatorScaleUp.cancel();
+                  progressBarNotify.setVisibility(View.GONE);
+                  progressBarNotify.animate().setListener(null).start();
+                  startPulseImmediate();
+                }
+              })
+              .start();
+
+          progressBarJoining.animate()
+              .scaleX(0)
+              .scaleY(0)
+              .setDuration(DURATION_FAST)
+              .setListener(null)
+              .start();
+        }
+
+        @Override public void onAnimationCancel(Animator animation) {
+          animation.removeAllListeners();
+        }
+      }, null);
+    } else {
+      startPulseImmediate();
+    }
+  }
+
+  private void startPulseImmediate() {
     clearAnimator(animatorAlpha);
     clearViewAnimations();
-
-    viewThreeDots.setVisibility(View.VISIBLE);
-    viewForegroundAvatar.setVisibility(View.VISIBLE);
-
+    viewAvatar.startPulse();
     animateScaleAvatar();
   }
 
@@ -330,14 +383,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   private void updateScaleWithValue(float value) {
-    avatar.setScaleX(value);
-    avatar.setScaleY(value);
-    viewShadow.setScaleX(value);
-    viewShadow.setScaleY(value);
-    viewForegroundAvatar.setScaleX(value);
-    viewForegroundAvatar.setScaleY(value);
-    viewRing.setScaleX(value);
-    viewRing.setScaleY(value);
+    viewAvatar.setScaleX(value);
+    viewAvatar.setScaleY(value);
   }
 
   private void animatePulse(int duration) {
@@ -345,7 +392,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
     clearAnimator(animatorPulse);
 
-    animatorPulse = ValueAnimator.ofInt(avatar.getWidth() >> 1, finalHeight);
+    animatorPulse = ValueAnimator.ofInt(viewAvatar.getWidth() >> 1, finalHeight);
     animatorPulse.setDuration(duration);
     animatorPulse.addUpdateListener(animation -> {
       Integer value = (Integer) animation.getAnimatedValue();
@@ -377,15 +424,12 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     clearAnimator(animatorBuzzAvatar);
     viewCircle.setRadius(0);
     clearViewAnimations();
+    viewAvatar.dispose();
   }
 
   private void clearViewAnimations() {
-    avatar.clearAnimation();
-    viewShadow.clearAnimation();
-    viewForegroundAvatar.clearAnimation();
     viewCircle.clearAnimation();
-    viewRing.clearAnimation();
-    viewThreeDots.clearAnimation();
+    viewAvatar.clearViewAnimations();
   }
 
   private void clearAnimator(Animator animator) {
@@ -404,7 +448,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void readyForBuzz() {
     animatorTransition = new AnimatorSet();
 
-    animatorScaleUpTransition = ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
+    animatorScaleUpTransition = ValueAnimator.ofFloat(viewAvatar.getScaleX(), SCALE_AVATAR);
     animatorScaleUpTransition.setInterpolator(new DecelerateInterpolator());
     animatorScaleUpTransition.setDuration(DURATION_FAST);
     animatorScaleUpTransition.addUpdateListener(animation -> {
@@ -412,25 +456,22 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       updateScaleWithValue(value);
     });
 
-    animatorBuzzAvatar = ObjectAnimator.ofFloat(avatar, TRANSLATION_X, 3, -3);
+    animatorBuzzAvatar = ObjectAnimator.ofFloat(viewAvatar, TRANSLATION_X, 3, -3);
     animatorBuzzAvatar.setDuration(DURATION_FAST_FURIOUS);
     animatorBuzzAvatar.setRepeatCount(ValueAnimator.INFINITE);
     animatorBuzzAvatar.setRepeatMode(ValueAnimator.REVERSE);
     animatorBuzzAvatar.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationCancel(Animator animation) {
         animatorBuzzAvatar.removeAllListeners();
-        avatar.setTranslationX(0);
+        viewAvatar.setTranslationX(0);
       }
     });
     animatorBuzzAvatar.start();
 
     animatorAlphaTransition = ValueAnimator.ofFloat(1f, 0);
     animatorAlphaTransition.setDuration(DURATION_FAST);
-    animatorAlphaTransition.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      viewForegroundAvatar.setAlpha(value);
-      viewThreeDots.setAlpha(value);
-    });
+    animatorAlphaTransition.addUpdateListener(
+        animation -> viewAvatar.animateBuzzAlpha((float) animation.getAnimatedValue()));
 
     animatorTransition.playTogether(animatorScaleUpTransition, animatorAlphaTransition);
     animatorTransition.start();
@@ -445,11 +486,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
     animatorAlpha = ValueAnimator.ofFloat(0f, 1f);
     animatorAlpha.setDuration(DURATION_BUZZ);
-    animatorAlpha.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      viewForegroundAvatar.setAlpha(value);
-      viewThreeDots.setAlpha(value);
-    });
+    animatorAlpha.addUpdateListener(
+        animation -> viewAvatar.animateBuzzAlpha((float) animation.getAnimatedValue()));
     animatorAlpha.start();
   }
 
@@ -474,9 +512,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
     subscriptionDismissRemove = Observable.timer(TIMER_DISMISS_REMOVE, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          hideRemovePeer();
-        });
+        .subscribe(aLong -> hideRemovePeer());
   }
 
   private void hideRemovePeer() {
@@ -489,10 +525,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   private void animateRemovePeer(boolean reverse) {
-    AnimatorSet animatorSet = new AnimatorSet();
-
     ValueAnimator animatorScaleDownTransition =
-        ValueAnimator.ofFloat(avatar.getScaleX(), SCALE_AVATAR);
+        ValueAnimator.ofFloat(viewAvatar.getScaleX(), SCALE_AVATAR);
     animatorScaleDownTransition.setInterpolator(new DecelerateInterpolator());
     animatorScaleDownTransition.setDuration(DURATION_FAST);
     animatorScaleDownTransition.addUpdateListener(animation -> {
@@ -500,59 +534,9 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
       updateScaleWithValue(value);
     });
 
-    viewThreeDots.animate()
-        .alpha(reverse ? 1 : 0)
-        .setDuration(DURATION_FAST)
-        .setStartDelay(reverse ? DURATION_FAST * 2 : 0)
-        .start();
+    viewAvatar.animateRemovePeer(DURATION_FAST, reverse);
 
-    ValueAnimator animatorScaleUpRemove =
-        ValueAnimator.ofFloat(reverse ? 1f : 0f, reverse ? 0f : 1f);
-    animatorScaleUpRemove.setInterpolator(new OvershootInterpolator(OVERSHOOT_SCALE));
-    animatorScaleUpRemove.setStartDelay(DURATION_FAST);
-    animatorScaleUpRemove.setDuration(DURATION_FAST);
-    animatorScaleUpRemove.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-      btnRemove.setScaleX(value);
-      btnRemove.setScaleY(value);
-    });
-
-    ValueAnimator animatorRing =
-        ValueAnimator.ofFloat(reverse ? strokeWidth : 0f, reverse ? 0f : strokeWidth);
-    animatorRing.setInterpolator(new DecelerateInterpolator());
-    animatorRing.setStartDelay(DURATION_FAST);
-    animatorRing.setDuration(DURATION_FAST);
-    animatorRing.addUpdateListener(animation -> {
-      float value = (float) animation.getAnimatedValue();
-
-      if (viewRing.getBackground() instanceof ShapeDrawable) {
-        ShapeDrawable sd = (ShapeDrawable) viewRing.getBackground();
-        sd.getPaint().setStrokeWidth(value);
-      }
-    });
-
-    animatorSet.playTogether(animatorScaleDownTransition, animatorScaleUpRemove, animatorRing);
-    animatorSet.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        if (!reverse) {
-          viewRing.setVisibility(View.VISIBLE);
-          btnRemove.setVisibility(View.VISIBLE);
-        }
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        if (reverse) {
-          viewRing.setVisibility(View.GONE);
-          btnRemove.setVisibility(View.GONE);
-        }
-      }
-
-      @Override public void onAnimationCancel(Animator animation) {
-        animatorSet.removeAllListeners();
-      }
-    });
-
-    animatorSet.start();
+    animatorScaleDownTransition.start();
   }
 
   public void setColor(int color) {
@@ -568,10 +552,11 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     if (guest != null) {
-      if ((guest.isGroup() && StringUtils.isEmpty(guest.getPicture())) || guest.getMemberPics() != null) {
-        avatar.loadGroupAvatar(guest.getPicture(), null, guest.getId(), guest.getMemberPics());
+      if ((guest.isGroup() && StringUtils.isEmpty(guest.getPicture()))
+          || guest.getMemberPics() != null) {
+        viewAvatar.loadGroupAvatar(guest.getPicture(), null, guest.getId(), guest.getMemberPics());
       } else {
-        avatar.load(guest.getPicture());
+        viewAvatar.load(guest.getPicture());
       }
     }
   }
@@ -581,12 +566,17 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public AvatarView avatar() {
-    return avatar;
+    return viewAvatar.getAvatar();
   }
 
   public void dispose() {
+    if (subscriptionCountdown != null) subscriptionCountdown.unsubscribe();
+    if (subscriptionDismissRemove != null) subscriptionDismissRemove.unsubscribe();
     subscriptions.clear();
     stopPulse();
+    progressBarJoining.clearAnimation();
+    progressBarNotify.clearAnimation();
+    viewAvatar.dispose();
   }
 
   /////////////////
@@ -595,6 +585,10 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   public Observable<Void> onShouldJoinRoom() {
     return onShouldJoinRoom;
+  }
+
+  public Observable<Void> onNotifyStepDone() {
+    return onNotifyStepDone;
   }
 
   public Observable<TribeGuest> onShouldRemoveGuest() {

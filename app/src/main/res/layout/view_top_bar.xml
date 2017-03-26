@@ -7,17 +7,19 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       >
-    <com.tribe.app.presentation.view.widget.avatar.AvatarLiveView
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/viewAvatar"
         android:layout_width="@dimen/avatar_size_smaller"
         android:layout_height="@dimen/avatar_size_smaller"
         android:layout_gravity="center_vertical|left"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:background="@drawable/bg_top_bar_circle"
         android:clickable="true"
         android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
-        app:avatarLiveType="connected"
+        app:avatarType="online"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="false"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -94,7 +96,7 @@
           android:inputType="text|textVisiblePassword"
           android:singleLine="true"
           android:textColorHint="@color/white.opacity.40"
-          style="@style/Body.One.White"
+          style="@style/Body.Two.White"
           />
     </LinearLayout>
 

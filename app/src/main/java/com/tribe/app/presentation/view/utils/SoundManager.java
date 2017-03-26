@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 @Singleton public class SoundManager {
 
@@ -73,35 +74,39 @@ import rx.android.schedulers.AndroidSchedulers;
   }
 
   public void playSound(int index, float volumeRate) {
-    //if (index == WAITING_FRIEND) {
-    //  Timber.d("Playing sound with MediaPlayer");
-    //  MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.waiting_friend);
-    //  mediaPlayer.setOnCompletionListener(usedMediaPlayer -> {
-    //    Timber.d("Completed sound");
-    //    if (usedMediaPlayer != null) {
-    //      usedMediaPlayer.release();
-    //      usedMediaPlayer = null;
-    //    }
-    //  });
-    //  mediaPlayer.start();
-    //
-    //} else
-    if (availaibleSounds.contains(index) && uiSounds.get()) {
-      int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-      float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
-      int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
+    if (index == WAITING_FRIEND) {
+      Timber.d("Playing sound with MediaPlayer");
+      mediaPlayer = MediaPlayer.create(context, R.raw.waiting_friend);
+      mediaPlayer.setVolume(volumeRate, volumeRate);
+      mediaPlayer.setLooping(true);
+      mediaPlayer.start();
+    } else {
+      if (availaibleSounds.contains(index) && uiSounds.get()) {
+        int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
+        int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
 
-      if (index != WAITING_FRIEND) killSoundQueue.add(soundId);
+        if (index != WAITING_FRIEND) killSoundQueue.add(soundId);
 
-      Observable.timer(5000, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            if (!killSoundQueue.isEmpty()) {
-              Integer killSound = killSoundQueue.firstElement();
-              soundPool.stop(killSound);
-              killSoundQueue.remove(killSound);
-            }
-          });
+        Observable.timer(5000, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              if (!killSoundQueue.isEmpty()) {
+                Integer killSound = killSoundQueue.firstElement();
+                soundPool.stop(killSound);
+                killSoundQueue.remove(killSound);
+              }
+            });
+      }
+    }
+  }
+
+  public void cancelMediaPlayer() {
+    if (mediaPlayer != null) {
+      mediaPlayer.reset();
+      mediaPlayer.stop();
+      mediaPlayer.release();
+      mediaPlayer = null;
     }
   }
 }

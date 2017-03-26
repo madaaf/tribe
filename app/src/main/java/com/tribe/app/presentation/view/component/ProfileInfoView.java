@@ -42,9 +42,9 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -57,7 +57,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by horatiothomas on 9/6/16.
@@ -142,12 +141,8 @@ public class ProfileInfoView extends LinearLayout {
   public void loadAvatar(String url) {
     avatarSelected = true;
     refactorInfosValid();
-    Glide.with(getContext())
-        .load(url)
-        .override(avatarSize, avatarSize)
-        .bitmapTransform(new CropCircleTransformation(getContext()))
-        .crossFade()
-        .into(imgAvatar);
+
+    new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
   }
 
   public void setEditDisplayName(String displayName) {
@@ -274,13 +269,10 @@ public class ProfileInfoView extends LinearLayout {
   }
 
   public void setInfoFromFacebook(FacebookEntity facebookEntity) {
-    Glide.with(getContext())
-        .load(facebookEntity.getProfilePicture())
-        .override(avatarSize, avatarSize)
-        .centerCrop()
-        .bitmapTransform(new CropCircleTransformation(getContext()))
-        .crossFade()
-        .into(imgAvatar);
+    new GlideUtils.Builder(getContext()).url(facebookEntity.getProfilePicture())
+        .size(avatarSize)
+        .target(imgAvatar)
+        .load();
 
     Glide.with(getContext())
         .load(facebookEntity.getProfilePicture())

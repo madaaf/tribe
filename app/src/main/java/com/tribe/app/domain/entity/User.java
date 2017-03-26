@@ -2,7 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -232,8 +232,7 @@ public class User implements Serializable, BaseListInterface {
 
   @Override public AvatarModel getAvatar() {
     if (avatarModel != null) return avatarModel;
-    avatarModel =
-        new AvatarModel(picture, isOnline() ? AvatarLiveView.CONNECTED : AvatarLiveView.NONE);
+    avatarModel = new AvatarModel(picture, isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR);
     return avatarModel;
   }
 
@@ -337,8 +336,10 @@ public class User implements Serializable, BaseListInterface {
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {
-      if (!friendship.getSubId().equals(Recipient.ID_EMPTY) && !friendship.getSubId()
-          .equals(this.id)) {
+      if (!friendship.getSubId().equals(Recipient.ID_EMPTY)
+          && !friendship.getSubId().equals(Recipient.ID_MORE)
+          && !friendship.getSubId().equals(Recipient.ID_HEADER)
+          && !friendship.getSubId().equals(this.id)) {
         GroupMember groupMember = new GroupMember(friendship.getFriend());
         groupMember.setFriend(true);
         userList.add(groupMember);

@@ -170,16 +170,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     //initSmsListener();
     manageDeepLink(getIntent());
 
-    if (lastVersion.get() != -1 && !lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
+    if (!lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
       lastVersion.set(DeviceUtils.getVersionCode(this));
-
-      subscriptions.add(Observable.timer(TIMER_SURPRISE_DIALOG, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            surpriseDialogFragment = SurpriseDialogFragment.newInstance();
-            surpriseDialogFragment.show(getSupportFragmentManager(),
-                SurpriseDialogFragment.class.getName());
-          }));
     }
 
     stopService();

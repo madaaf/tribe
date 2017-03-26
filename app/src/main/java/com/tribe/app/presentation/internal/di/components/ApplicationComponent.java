@@ -45,8 +45,8 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.activity.SmsListener;
+import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
@@ -79,12 +79,10 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
-import com.tribe.app.presentation.view.widget.LabelButton;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
-import com.tribe.app.presentation.view.widget.avatar.AvatarLiveView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -120,13 +118,9 @@ public interface ApplicationComponent {
 
   void inject(AvatarView avatarView);
 
-  void inject(AvatarLiveView avatarLiveView);
-
   void inject(PlayerView playerView);
 
   void inject(TribeFirebaseInstanceIDService instanceIDService);
-
-  void inject(LabelButton labelButton);
 
   void inject(IntroVideoView introVideoView);
 

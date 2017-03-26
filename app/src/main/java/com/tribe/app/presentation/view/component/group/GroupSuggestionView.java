@@ -11,10 +11,9 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 /**
@@ -97,12 +96,10 @@ public class GroupSuggestionView extends FrameLayout {
   public void setDrawableResource(int res) {
     this.drawableId = res;
 
-    Glide.with(getContext())
-        .load(drawableId)
-        .override(imageView.getWidth(), imageView.getHeight())
-        .bitmapTransform(new CropCircleTransformation(getContext()))
-        .crossFade()
-        .into(imageView);
+    new GlideUtils.Builder(getContext()).resourceId(drawableId)
+        .size(imageView.getWidth())
+        .target(imageView)
+        .load();
   }
 
   public void setLabel(String str) {

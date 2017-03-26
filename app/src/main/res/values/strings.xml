@@ -87,7 +87,7 @@
 	<string name="permission_popup_push_home_yes">Notify me</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
 	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or live.</string>
-	<string name="permission_push_fake_alert_allow">Ok</string>
+	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">Read more</string>
 	<string name="permission_push_disabled_alert_title">Push permission denied</string>
 	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
@@ -237,10 +237,17 @@
 	<string name="grid_support_status_loading">Loading</string>
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
-	<string name="grid_status_live">Hanging live!</string>
+	<string name="grid_name_with_guests">\nand guests</string>
+	<string name="grid_status_live">LIVE</string>
 	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
+	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
+	<string name="grid_status_last_seen_minutes">Few mins ago</string>
+	<string name="grid_status_last_seen_hours">Few hours ago</string>
+	<string name="grid_status_last_seen_days">Few days ago</string>
+	<string name="grid_name_more_friends">More friends</string>
+	<string name="grid_status_more_friends">Try it out!</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -511,6 +518,7 @@
 	<string name="topbar_new_live">New group</string>
 	<string name="topbar_search">Friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
+	<string name="topbar_invite_video_action">:vhs: Watch video demo</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Invite friends on iMessage</string>
 	<string name="topbar_invite_sms_action_android">:link: Invite friends by SMS</string>
@@ -594,6 +602,9 @@
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
 	<string name="live_title_with_guests">%1$s, and guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiating live with %1$s...</string>
+	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
+	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
@@ -601,7 +612,11 @@
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
-	<string name="profile_invisible_mode">Allow people to add me :ghost:</string>
+	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
+	<string name="profile_fullscreen_notifications">Fullscreen notifications :telephone_receiver:</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Don\'t miss calls from friends!</string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg">You will probably miss calls from friends if you downgrade fullscreen notifications to regular push notifications.</string>
+	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_logout">Logout :skull:</string>
@@ -882,4 +897,9 @@
 	<string name="invite_popup_message">This user is not on Tribe yet.</string>
 	<string name="invite_popup_action">Invite on Tribe</string>
 	<string name="invite_popup_dismiss">Later</string>
+	
+	<!-- Call Kit -->
+	<string name="call_kit_swipe_down">Swipe down to answer</string>
+	<string name="call_kit_swipe_up">Swipe up to decline</string>
+	<string name="call_kit_title">Live starts with</string>
 </resources>
