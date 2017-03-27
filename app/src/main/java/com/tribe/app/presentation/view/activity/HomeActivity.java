@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -293,34 +294,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initRecyclerView() {
-    layoutManager = new HomeLayoutManager(context());
-    layoutManager.setAutoMeasureEnabled(false);
-    recyclerViewFriends.setHasFixedSize(true);
-    recyclerViewFriends.setLayoutManager(layoutManager);
-    recyclerViewFriends.setItemAnimator(null);
-    homeGridAdapter.setItems(new ArrayList<>());
-    recyclerViewFriends.setAdapter(homeGridAdapter);
-
-    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
-    recyclerViewFriends.setItemViewCacheSize(30);
-    recyclerViewFriends.setDrawingCacheEnabled(true);
-    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-        switch (homeGridAdapter.getItemViewType(position)) {
-          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-            return layoutManager.getSpanCount();
-          default:
-            return 1;
-        }
-      }
-    });
-
+    initUIRecyclerView();
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
@@ -628,6 +602,70 @@ public class HomeActivity extends BaseActivity
   /////////////////
   //  BROADCAST  //
   /////////////////
+  private void initUIRecyclerView() {
+    layoutManager =
+        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
+    layoutManager.setAutoMeasureEnabled(false);
+    recyclerViewFriends.setHasFixedSize(true);
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
+    homeGridAdapter.setItems(new ArrayList<>());
+    recyclerViewFriends.setAdapter(homeGridAdapter);
+
+    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+    recyclerViewFriends.setItemViewCacheSize(30);
+    recyclerViewFriends.setDrawingCacheEnabled(true);
+    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+      @Override public int getSpanSize(int position) {
+        switch (homeGridAdapter.getItemViewType(position)) {
+          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+            return layoutManager.getSpanCount();
+          default:
+            return 1;
+        }
+      }
+    });
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    layoutManager =
+        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
+    layoutManager.setAutoMeasureEnabled(true);
+    recyclerViewFriends.setHasFixedSize(false);
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
+    recyclerViewFriends.setAdapter(homeGridAdapter);
+
+    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+
+    recyclerViewFriends.setItemViewCacheSize(30);
+    recyclerViewFriends.setDrawingCacheEnabled(true);
+    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+      @Override public int getSpanSize(int position) {
+        switch (homeGridAdapter.getItemViewType(position)) {
+          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+            return layoutManager.getSpanCount();
+          default:
+            return 1;
+        }
+      }
+    });
+
+    homeGridAdapter.notifyDataSetChanged();
+  }
 
   class NotificationReceiver extends BroadcastReceiver {
 

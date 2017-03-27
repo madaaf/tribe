@@ -12,6 +12,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -49,7 +50,8 @@ public class MoreFriendsAdapterDelegate extends RxAdapterDelegate<List<Recipient
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     MoreFriendsViewHolder vh = new MoreFriendsViewHolder(
         layoutInflater.inflate(R.layout.item_add_friends_grid, parent, false));
-    int sizeAvatar = (int) ((screenUtils.getWidthPx() >> 1) * 0.5f);
+    int nbrColumn = context.getResources().getInteger(R.integer.columnNumber);
+    int sizeAvatar = (int) ((screenUtils.getWidthPx() / nbrColumn) * TileView.RATION_AVATAR_TILE);
     vh.viewAvatar.changeSize(sizeAvatar, true);
     return vh;
   }

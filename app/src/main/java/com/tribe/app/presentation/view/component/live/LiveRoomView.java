@@ -30,6 +30,7 @@ public class LiveRoomView extends FrameLayout {
   @IntDef({ GRID, LINEAR }) public @interface TribeRoomViewType {
   }
 
+  private static int heightOndropBar;
   public static final int GRID = 0;
   public static final int LINEAR = 1;
   private static final int DURATION = 300;
@@ -60,7 +61,8 @@ public class LiveRoomView extends FrameLayout {
   private void init() {
     type = DEFAULT_TYPE;
     initDependencyInjector();
-    onDroppedBarHeight = screenUtils.dpToPx(65);
+    heightOndropBar = (int) getResources().getDimension(R.dimen.live_room_view_dropped_bar_height);
+    onDroppedBarHeight = screenUtils.dpToPx(heightOndropBar);
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);

@@ -38,6 +38,6 @@
       android:orientation="vertical"
       >
 
-    <include layout="@layout/view_tile_grid_base_name"/>
+    <include layout="@layout/view_tile_grid_base_name" />
   </LinearLayout>
 </merge>
