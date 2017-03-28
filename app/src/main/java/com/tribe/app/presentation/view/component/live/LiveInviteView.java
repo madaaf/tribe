@@ -32,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveInviteView extends FrameLayout {
 
-  public static int WIDTH;
+  public final static int WIDTH = 106;
 
   @Inject Navigator navigator;
 
@@ -99,7 +99,6 @@ public class LiveInviteView extends FrameLayout {
 
   private void init(Context context, AttributeSet attrs) {
     friendshipList = new ArrayList<>();
-    WIDTH = (int) getResources().getDimension(R.dimen.live_invite_view_width);
   }
 
   private void initUI() {
