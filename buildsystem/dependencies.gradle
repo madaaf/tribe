@@ -24,7 +24,7 @@ ext {
   gsonVersion = '2.8.0'
   retrofitVersion = '2.1.0'
   androidAnnotationsVersion = '25.1.0'
-  okHttpVersion = '3.5.0'
+  okHttpVersion = '3.6.0'
   priorityJobQueueVersion = '2.0.1'
   pahoMQTT3Version = '1.0.2'
   stethoVersion = '1.4.1'

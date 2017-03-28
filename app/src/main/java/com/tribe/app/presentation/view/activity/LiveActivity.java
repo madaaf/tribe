@@ -284,6 +284,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         initSubscriptions();
 
+        livePresenter.loadFriendshipList();
+
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
@@ -499,7 +501,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void ready() {
     viewLive.update(live);
-    livePresenter.loadFriendshipList();
   }
 
   @Override public void finish() {

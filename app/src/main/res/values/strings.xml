@@ -517,7 +517,7 @@
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Friend</string>
 	<string name="topbar_new_live">New group</string>
-	<string name="topbar_search">Friends</string>
+	<string name="topbar_search">Search for friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_video_action">:vhs: Watch video demo</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>

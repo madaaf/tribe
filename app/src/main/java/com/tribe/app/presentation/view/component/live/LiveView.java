@@ -965,6 +965,7 @@ public class LiveView extends FrameLayout {
                   });
             }
           });
+          
           animatorLeftMargin.start();
         }));
   }
