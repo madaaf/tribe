@@ -44,6 +44,7 @@ public class LiveRoomView extends FrameLayout {
   private boolean landscapeMode = false;
   private int witdhScreen;
   private int heightScreen;
+  private boolean isConfigurationChanged = false;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -124,12 +125,14 @@ public class LiveRoomView extends FrameLayout {
 
   public void removeView(LiveRowView view) {
     flexboxLayout.removeView(view);
+    setViewsOrder();
     setConfigurationScreen();
   }
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
+    setViewsOrder();
     setConfigurationScreen();
   }
 
@@ -144,8 +147,10 @@ public class LiveRoomView extends FrameLayout {
         liveRowView.setRoomType(type);
       }
     }
+    setScreenSize();
+    setConfigurationScreen();
   }
-
+  
   public @TribeRoomViewType int getType() {
     return type;
   }
@@ -156,6 +161,7 @@ public class LiveRoomView extends FrameLayout {
 
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+    isConfigurationChanged = true;
     flexboxLayout.invalidate();
     flexboxLayout.requestLayout();
 
@@ -165,19 +171,17 @@ public class LiveRoomView extends FrameLayout {
       landscapeMode = false;
     }
     setScreenSize();
-    setConfigurationScreen();
-  }
-
-  @Override public void onWindowFocusChanged(boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus);
-    setScreenSize();
+    setViewsOrder();
     setConfigurationScreen();
   }
 
   @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
     super.onLayout(changed, l, t, r, b);
-    setScreenSize();
-    setConfigurationScreen();
+    if (isConfigurationChanged) {
+      setScreenSize();
+      setConfigurationScreen();
+      isConfigurationChanged = false;
+    }
   }
 
   /////////////////
@@ -185,7 +189,6 @@ public class LiveRoomView extends FrameLayout {
   /////////////////
 
   private void setConfigurationScreen() {
-    setViewsOrder();
     if (!landscapeMode) {
       if (type == GRID) {
         setSizeGridViewsInPortaitMode();
