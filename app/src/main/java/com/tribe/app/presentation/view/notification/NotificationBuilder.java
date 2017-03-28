@@ -18,6 +18,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,7 +53,11 @@ import javax.inject.Singleton;
       } else {
         Notification notification = buildNotification(notificationPayload);
         if (notification != null) {
-          notificationManager.notify(getNotificationId(notificationPayload), notification);
+          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+            sendFullScreenNotification(remoteMessage);
+          } else {
+            notificationManager.notify(getNotificationId(notificationPayload), notification);
+          }
         }
 
         if (notificationPayload.getClickAction()
@@ -162,5 +167,15 @@ import javax.inject.Singleton;
   private int getNotificationId(NotificationPayload payload) {
     return !StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
         : (int) System.currentTimeMillis();
+  }
+
+  private void sendFullScreenNotification(RemoteMessage remoteMessage) {
+    Intent incomingCallIntent = new Intent(application, LiveImmersiveNotificationActivity.class);
+    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    NotificationPayload notificationPayload = getPayload(remoteMessage);
+
+    incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
+        notificationPayload);
+    application.startActivity(incomingCallIntent);
   }
 }

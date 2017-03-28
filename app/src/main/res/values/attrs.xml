@@ -10,6 +10,7 @@
       <enum name="online" value="1"/>
       <enum name="regular" value="2"/>
     </attr>
+
     <attr format="boolean" name="hasShadow"/>
     <attr format="boolean" name="hasInd"/>
     <attr format="boolean" name="hasHole"/>

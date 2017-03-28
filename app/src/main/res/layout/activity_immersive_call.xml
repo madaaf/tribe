@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+  <ImageView
+      android:id="@+id/containerView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/black.opacity.50"
+      />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:weightSum="2"
+      >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:background="@color/yellow"
+        >
+
+      <com.tribe.app.presentation.view.widget.PulseLayout
+          android:id="@+id/layoutPulse"
+          android:layout_width="180dp"
+          android:layout_height="180dp"
+          android:layout_above="@+id/txtContainer"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+          app:pulseColor="@android:color/white"
+          app:pulseCount="4"
+          app:pulseDuration="3000"
+          >
+        <com.tribe.app.presentation.view.widget.avatar.AvatarView
+            android:id="@+id/avatar"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:background="@null"
+            app:avatarType="live"
+            app:hasHole="true"
+            app:hasInd="true"
+            app:hasShadow="false"
+            />
+
+      </com.tribe.app.presentation.view.widget.PulseLayout>
+
+
+      <LinearLayout
+          android:id="@+id/txtContainer"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/horizontal_margin_smaller"
+            android:text="@string/call_kit_title"
+            style="@style/Title.2.White"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtDisplayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            tools:text="Mada Jessie Bond"
+            style="@style/Title.2.White"
+            />
+
+      </LinearLayout>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:background="@color/red"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtSwipeDown"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_marginBottom="10dp"
+          android:alpha="1"
+          android:gravity="center"
+          android:text="@string/call_kit_swipe_down"
+          android:textColor="@android:color/white"
+          />
+
+      <LinearLayout
+          android:id="@+id/containerAction"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_above="@id/txtSwipeDown"
+          android:layout_centerHorizontal="true"
+          android:clickable="true"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:text="@string/call_kit_swipe_up"
+            android:textColor="@android:color/white"
+            />
+        <FrameLayout
+            android:id="@+id/callAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            >
+
+          <ImageView
+              android:id="@+id/viewCircle"
+              android:layout_width="@dimen/avatar_size_big"
+              android:layout_height="@dimen/avatar_size_big"
+              android:layout_gravity="center"
+              android:background="@drawable/shape_oval_white"
+              android:clickable="false"
+              />
+
+          <ImageView
+              android:id="@+id/imgVideo"
+              android:layout_width="@dimen/nav_icon_size"
+              android:layout_height="@dimen/nav_icon_size"
+              android:layout_gravity="center"
+              android:layout_margin="@dimen/vertical_margin"
+              android:background="@drawable/selectable_button_oval"
+              android:clickable="false"
+              android:padding="@dimen/icons_padding"
+              android:scaleType="centerInside"
+              android:src="@drawable/picto_camera_black"
+              />
+        </FrameLayout>
+      </LinearLayout>
+
+    </RelativeLayout>
+
+
+  </LinearLayout>
+</RelativeLayout>

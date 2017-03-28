@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -80,5 +82,12 @@ public abstract class BaseActivity extends AppCompatActivity {
    */
   protected void showToastMessage(String message) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  protected void onResumeLockPhone() {
+    Window wind = this.getWindow();
+    wind.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+    wind.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+    wind.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
   }
 }

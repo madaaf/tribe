@@ -370,9 +370,7 @@ public class LiveContainer extends FrameLayout {
             }
           }
         }
-
         clearTouch();
-
         break;
       }
     }
@@ -559,7 +557,9 @@ public class LiveContainer extends FrameLayout {
 
   private void closeInviteView() {
     isOpened = false;
-    springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    if (velocityTracker != null) {
+      springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    }
   }
 
   private float getTotalDragDistance() {

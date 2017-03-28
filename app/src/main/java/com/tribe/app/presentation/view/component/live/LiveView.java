@@ -5,10 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -70,6 +73,7 @@ public class LiveView extends FrameLayout {
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
+  private static final float MARGIN_BOTTOM = 25;
 
   private static boolean joinLive = false;
 
@@ -115,6 +119,7 @@ public class LiveView extends FrameLayout {
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
+  private View view;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -138,12 +143,12 @@ public class LiveView extends FrameLayout {
 
   public LiveView(Context context) {
     super(context);
-    init(context, null);
+    init();
   }
 
   public LiveView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init(context, attrs);
+    init();
   }
 
   public void jump() {
@@ -214,7 +219,7 @@ public class LiveView extends FrameLayout {
   }
 
   @Override protected void onFinishInflate() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
+    view = LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -230,11 +235,28 @@ public class LiveView extends FrameLayout {
     super.onFinishInflate();
   }
 
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    onShouldCloseInvites.onNext(null);
+
+    ViewGroup.LayoutParams lp = view.getLayoutParams();
+    lp.width = screenUtils.getWidthPx();
+    lp.height = screenUtils.getHeightPx();
+    view.setLayoutParams(lp);
+
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    params.gravity = Gravity.BOTTOM;
+    params.bottomMargin = screenUtils.dpToPx(MARGIN_BOTTOM);
+    viewControlsLive.setLayoutParams(params);
+  }
+
   //////////////////////
   //      INIT        //
   //////////////////////
 
-  private void init(Context context, AttributeSet attrs) {
+  private void init() {
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
