@@ -32,7 +32,7 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
     Timber.d("onAddStream");
 
     if (mediaStream.audioTracks.size() > 1 || mediaStream.videoTracks.size() > 1) {
-      Timber.e("Weird-looking stream: " + mediaStream);
+      Timber.d("Weird-looking stream: " + mediaStream);
       return;
     }
 

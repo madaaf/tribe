@@ -31,7 +31,7 @@ public class TribeSdpObserver implements SdpObserver {
 
   public void createOffer() {
     if (peerConnectionWeakReference == null || peerConnectionWeakReference.get() == null) {
-      Timber.e("Can't create offer, peer connection is null");
+      Timber.d("Can't create offer, peer connection is null");
       return;
     }
 
@@ -45,7 +45,7 @@ public class TribeSdpObserver implements SdpObserver {
   }
 
   @Override public void onCreateFailure(String msg) {
-    Timber.e("Failed to create : " + msg);
+    Timber.d("Failed to create : " + msg);
     creatingOffer = false;
   }
 
@@ -54,7 +54,7 @@ public class TribeSdpObserver implements SdpObserver {
 
     PeerConnection peerConnection;
     if (peerConnectionWeakReference == null || peerConnectionWeakReference.get() == null) {
-      Timber.e("Can't create offer, peer connection is null");
+      Timber.d("Can't create offer, peer connection is null");
       return;
     }
 
@@ -78,7 +78,7 @@ public class TribeSdpObserver implements SdpObserver {
 
   @Override public void onSetSuccess() {
     if (peerConnectionWeakReference == null || peerConnectionWeakReference.get() == null) {
-      Timber.e("onSetSuccess: but peer connection is null");
+      Timber.d("onSetSuccess: but peer connection is null");
       return;
     }
 

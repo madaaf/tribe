@@ -21,6 +21,7 @@ public class Live implements Serializable {
   private String sessionId;
   private int color = 0;
   private boolean countdown = true;
+  private boolean intent = false;
 
   private Live(Builder builder) {
     this.id = builder.id;
@@ -33,6 +34,7 @@ public class Live implements Serializable {
     this.color = builder.color;
     this.subId = builder.subId;
     this.countdown = builder.countdown;
+    this.intent = builder.intent;
   }
 
   public String getId() {
@@ -115,6 +117,10 @@ public class Live implements Serializable {
     this.countdown = countdown;
   }
 
+  public boolean isIntent() {
+    return intent;
+  }
+
   public boolean isGroupMember(String userId) {
     if (memberList != null) {
       for (User member : memberList) {
@@ -157,6 +163,7 @@ public class Live implements Serializable {
     private String sessionId;
     private int color;
     private boolean countdown = true;
+    private boolean intent = false;
 
     public Builder(String id, String subId) {
       this.id = id;
@@ -200,6 +207,11 @@ public class Live implements Serializable {
 
     public Builder countdown(boolean countdown) {
       this.countdown = countdown;
+      return this;
+    }
+
+    public Builder intent(boolean fromIntent) {
+      this.intent = fromIntent;
       return this;
     }
 

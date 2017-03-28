@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -84,6 +86,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
         .displayName(recipient.getDisplayName())
         .isGroup(recipient.isGroup())
+        .countdown(!recipient.isLive())
         .picture(recipient.getProfilePicture());
 
     if (recipient instanceof Invite) {
@@ -107,12 +110,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Live live = new Live.Builder(recipientId, recipientId).displayName(name)
         .isGroup(isGroup)
         .picture(picture)
+        .countdown(StringUtils.isEmpty(sessionId))
         .sessionId(sessionId)
+        .intent(true)
         .build();
+
     intent.putExtra(EXTRA_LIVE, live);
 
     return intent;
   }
+
+  @Inject NotificationManager notificationManager;
 
   @Inject SoundManager soundManager;
 
@@ -158,7 +166,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initParams(getIntent());
     init();
     initResources();
-    initPermissions();
     initAppState();
     initRemoteConfig();
   }
@@ -179,6 +186,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override protected void onStop() {
     livePresenter.onViewDetached();
     super.onStop();
+  }
+
+  @Override protected void onRestart() {
+    super.onRestart();
+    notificationManager.cancelAll();
   }
 
   @Override protected void onResume() {
@@ -251,19 +263,36 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initRoom() {
-    viewLiveContainer.setEnabled(false);
+    subscriptions.add(RxPermissions.getInstance(LiveActivity.this)
+        .request(PermissionUtils.PERMISSIONS_LIVE)
+        .subscribe(granted -> {
+          if (granted) {
+            viewLiveContainer.setEnabled(false);
 
-    ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
-    params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
-    viewInviteLive.setLayoutParams(params);
-    viewInviteLive.requestLayout();
-    viewLive.start(live);
+            ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
+            params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
+            viewInviteLive.setLayoutParams(params);
+            viewInviteLive.requestLayout();
 
-    if (live.isGroup()) {
-      livePresenter.loadRecipient(live);
-    } else {
-      ready();
-    }
+            initSubscriptions();
+
+            if (live.isGroup()) {
+              viewLive.start(live);
+              livePresenter.loadRecipient(live);
+            } else if (!StringUtils.isEmpty(live.getSessionId())) {
+              viewLive.start(live);
+              ready();
+            } else if (!live.isGroup()) {
+              if (live.isIntent()) {
+                livePresenter.loadRecipient(live);
+              } else {
+                viewLive.start(live);
+              }
+            }
+          } else {
+            finish();
+          }
+        }));
   }
 
   private void initResources() {
@@ -275,14 +304,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
 
     viewLiveContainer.setStatusBarHeight(result);
-  }
-
-  private void initPermissions() {
-    subscriptions.add(RxPermissions.getInstance(LiveActivity.this)
-        .request(PermissionUtils.PERMISSIONS_LIVE)
-        .subscribe(granted -> {
-
-        }));
   }
 
   private void initAppState() {
@@ -470,7 +491,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void ready() {
     viewLive.update(live);
-    initSubscriptions();
     livePresenter.loadFriendshipList();
   }
 
@@ -488,6 +508,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
       live.setMembers(membership.getGroup().getMembers());
+    } else if (recipient instanceof Friendship) {
+      live.setId(recipient.getId());
+      viewLive.start(live);
     }
 
     ready();
@@ -503,6 +526,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }
+  }
+
+  @Override public void onJoinRoomFailed(String message) {
+    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    finish();
+  }
+
+  @Override public Context context() {
+    return this;
   }
 
   @Override public void onAppDidEnterForeground() {

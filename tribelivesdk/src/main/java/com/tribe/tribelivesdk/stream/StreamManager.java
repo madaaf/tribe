@@ -93,18 +93,18 @@ public class StreamManager {
 
   public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
     if (TextUtils.isEmpty(peerId)) {
-      Timber.e("We found a null peerId it doesn't make sense!");
+      Timber.d("We found a null peerId it doesn't make sense!");
       return;
     }
 
     if (mediaStream == null) {
-      Timber.e("Cannot set a null mediaStream to peerId: " + mediaStream);
+      Timber.d("Cannot set a null mediaStream to peerId: " + mediaStream);
       return;
     }
 
     RemotePeer remotePeer = remotePeerMap.get(peerId);
     if (remotePeer == null) {
-      Timber.e("Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
+      Timber.d("Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
       return;
     }
 

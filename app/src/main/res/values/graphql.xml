@@ -33,7 +33,23 @@
         %4$s
     </string>
 
-    <string name="friendshipfragment.info" translatable="false">
+  <string name="user.infos.friendships" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                friendships {
+                    ...FriendshipInfos
+                }
+            }
+        }
+
+        %1$s
+        %2$s
+    </string>
+
+
+  <string name="friendshipfragment.info" translatable="false">
         fragment FriendshipInfos on Friendship {
             id
             status
@@ -46,7 +62,7 @@
         }
     </string>
 
-    <string name="user.infos.list" translatable="false">
+  <string name="user.infos.list" translatable="false">
         {
             users (ids: [%1$s]) {
                 ...UserInfos
@@ -56,7 +72,7 @@
         %2$s
     </string>
 
-    <string name="friendships.infos" translatable="false">
+  <string name="friendships.infos" translatable="false">
         id
         tag
         category
@@ -66,7 +82,7 @@
         }
     </string>
 
-    <string name="userfragment.infos" translatable="false">
+  <string name="userfragment.infos" translatable="false">
         fragment UserInfos on User {
             id
             phone
@@ -82,7 +98,7 @@
         }
     </string>
 
-    <string name="user.mutate" translatable="false">
+  <string name="user.mutate" translatable="false">
         mutation {
             updateUser(user: {
                 %1$s
@@ -94,15 +110,15 @@
         %2$s
     </string>
 
-    <string name="input.start" translatable="false">
+  <string name="input.start" translatable="false">
         (start : \"%1$s\")
     </string>
 
-    <string name="mutation" translatable="false">
+  <string name="mutation" translatable="false">
         mutation { %1$s }
     </string>
 
-    <string name="installs" translatable="false">
+  <string name="installs" translatable="false">
         {
             user {
                 installs {
@@ -113,7 +129,7 @@
         }
     </string>
 
-    <string name="install.create" translatable="false">
+  <string name="install.create" translatable="false">
         mutation {
             createInstall(install: %1$s) {
                 id
@@ -122,7 +138,7 @@
         }
     </string>
 
-    <string name="install.update" translatable="false">
+  <string name="install.update" translatable="false">
         mutation {
             updateI : updateInstall(id: \"%1$s\", install: %2$s) {
                 id
@@ -131,13 +147,13 @@
         }
     </string>
 
-    <string name="install.remove" translatable="false">
+  <string name="install.remove" translatable="false">
         mutation {
             removeInstall(id: \"%1$s\")
         }
     </string>
 
-    <string name="install.base" translatable="false">
+  <string name="install.base" translatable="false">
         {
             user_id : \"%1$s\",
             token : \"%2$s\",
@@ -152,7 +168,7 @@
         }
     </string>
 
-    <string name="lookup" translatable="false">
+  <string name="lookup" translatable="false">
         {
             %1$s
         }
@@ -160,19 +176,19 @@
         %2$s
     </string>
 
-    <string name="lookup.phone" translatable="false">
+  <string name="lookup.phone" translatable="false">
         lookupPhone%1$s : lookupByPhone (phones: [%2$s]) {
             ...UserInfos
         }
     </string>
 
-    <string name="lookup.facebook" translatable="false">
+  <string name="lookup.facebook" translatable="false">
         lookupFB%1$s : lookupByFbid (fbids: [%2$s]) {
             ...UserInfos
         }
     </string>
 
-    <string name="lookup.username" translatable="false">
+  <string name="lookup.username" translatable="false">
         {
             lookupByUsername (usernames: [\"%1$s\"]) {
                 ...UserInfos
@@ -182,7 +198,7 @@
         %2$s
     </string>
 
-    <string name="friendship.mutation" translatable="false">
+  <string name="friendship.mutation" translatable="false">
         mutation {
             %1$s
         }
@@ -190,7 +206,7 @@
         %2$s
     </string>
 
-    <string name="createFriendship.input" translatable="false">
+  <string name="createFriendship.input" translatable="false">
         createFriendship%1$s : createFriendship(
             friendship : {
                 category : \"main\",
@@ -203,15 +219,15 @@
         }
     </string>
 
-    <string name="removeFriendship.input" translatable="false">
+  <string name="removeFriendship.input" translatable="false">
         removeFriendship%1$s : removeFriendship(friendshipId : \"%2$s\")
     </string>
 
-    <string name="howManyFriends.part" translatable="false">
+  <string name="howManyFriends.part" translatable="false">
         howManyFriends%1$s : howManyFriends (phones: [%2$s])
     </string>
 
-    <string name="groupfragment.info" translatable="false">
+  <string name="groupfragment.info" translatable="false">
         fragment GroupInfos on Group {
             id
             name
@@ -222,7 +238,7 @@
         }
     </string>
 
-    <string name="groupfragment.info.members" translatable="false">
+  <string name="groupfragment.info.members" translatable="false">
         fragment GroupInfos on Group {
             id
             name
@@ -236,7 +252,7 @@
         }
     </string>
 
-    <string name="membershipfragment.info" translatable="false">
+  <string name="membershipfragment.info" translatable="false">
         fragment MembershipInfos on Membership {
             id
             group {
@@ -248,7 +264,7 @@
         }
     </string>
 
-    <string name="membershipfragment.info.light" translatable="false">
+  <string name="membershipfragment.info.light" translatable="false">
         fragment MembershipInfos on Membership {
             id
             mute
@@ -257,7 +273,7 @@
         }
     </string>
 
-    <string name="get.group.infos" translatable="false">
+  <string name="get.group.infos" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
                 ...GroupInfos
@@ -268,7 +284,7 @@
         %3$s
     </string>
 
-    <string name="get.group.members" translatable="false">
+  <string name="get.group.members" translatable="false">
         {
             groups (ids : [\"%1$s\"]) {
                 ...GroupInfos
@@ -283,7 +299,7 @@
         %3$s
     </string>
 
-    <string name="create.group" translatable="false">
+  <string name="create.group" translatable="false">
        mutation {
             createGroup(group: {
                 name : \"%1$s\"
@@ -295,11 +311,11 @@
         %3$s
     </string>
 
-    <string name="create.group.members" translatable="false">
+  <string name="create.group.members" translatable="false">
         , members: [%1$s]
     </string>
 
-    <string name="update.group" translatable="false">
+  <string name="update.group" translatable="false">
         mutation {
             updateGroup(id : \"%1$s\",
                 group : { %2$s }
@@ -311,7 +327,7 @@
         %3$s
     </string>
 
-    <string name="update.membership" translatable="false">
+  <string name="update.membership" translatable="false">
         mutation {
             updateMembership(membershipId : \"%1$s\",
                 membership : { %2$s }
@@ -323,7 +339,7 @@
         %3$s
     </string>
 
-    <string name="add.members.group" translatable="false">
+  <string name="add.members.group" translatable="false">
         mutation{
             addMembersToGroup(id : \"%1$s\", members: [%2$s]) {
                 id
@@ -331,7 +347,7 @@
         }
     </string>
 
-    <string name="remove.members.group" translatable="false">
+  <string name="remove.members.group" translatable="false">
         mutation {
             removeMembersFromGroup(id : \"%1$s\", members: [%2$s]) {
                 id
@@ -339,19 +355,19 @@
         }
     </string>
 
-    <string name="remove.group" translatable="false">
+  <string name="remove.group" translatable="false">
         mutation {
             removeGroup(id : \"%1$s\")
         }
     </string>
 
-    <string name="leave.group" translatable="false">
+  <string name="leave.group" translatable="false">
         mutation {
             removeMembership(membershipId: \"%1$s\")
         }
     </string>
 
-    <string name="create.membership" translatable="false">
+  <string name="create.membership" translatable="false">
         mutation {
             createMembership(groupId: \"%1$s\") {
                 ...MembershipInfos
@@ -363,7 +379,7 @@
         %4$s
     </string>
 
-    <string name="membership.infos" translatable="false">
+  <string name="membership.infos" translatable="false">
         {
             user {
                 ...UserInfos
@@ -379,7 +395,7 @@
         %4$s
     </string>
 
-    <string name="friendships.details" translatable="false">
+  <string name="friendships.details" translatable="false">
         {
             user {
                 ...UserInfos
@@ -394,13 +410,13 @@
         %3$s
     </string>
 
-    <string name="boostrap.support" translatable="false">
+  <string name="boostrap.support" translatable="false">
         mutation {
             bootstrapSupport
         }
     </string>
 
-    <string name="update.friendship" translatable="false">
+  <string name="update.friendship" translatable="false">
       mutation {
           updateFriendship(friendshipId : \"%1$s\",
               friendship : { %2$s }
@@ -414,23 +430,23 @@
     </string>
 
 
-    <string name="notify.facebook" translatable="false">
+  <string name="notify.facebook" translatable="false">
         mutation {
             runFacebookInvites(appId : \"%1$s\", accessToken : \"%2$s\")
         }
     </string>
 
-    <string name="subscription" translatable="false">
+  <string name="subscription" translatable="false">
         subscription { %1$s }
     </string>
 
-    <string name="subscription.userUpdated" translatable="false">
+  <string name="subscription.userUpdated" translatable="false">
         %1$s : userUpdated ( id : \"%2$s\" ) {
             ...UserInfos
         }
     </string>
 
-    <string name="subscription.groupUpdated" translatable="false">
+  <string name="subscription.groupUpdated" translatable="false">
         %1$s : groupUpdated ( id : \"%2$s\" ) {
             ...GroupInfos
         }
@@ -484,7 +500,7 @@
       ...RoomInfos
     }
   </string>
-  
+
   <string name="roomFragment_infos" translatable="false">
     fragment RoomInfos on RoomPeerCredentials {
       room_id
@@ -507,7 +523,7 @@
     buzzRoom(roomId : \"%1$s\")
   </string>
 
-    <string name="invites.infos" translatable="false">
+  <string name="invites.infos" translatable="false">
         {
             user {
                 invites {

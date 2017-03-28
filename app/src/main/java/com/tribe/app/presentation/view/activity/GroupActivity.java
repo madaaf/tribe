@@ -234,7 +234,6 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       if (task.isSuccessful()) {
         firebaseRemoteConfig.activateFetched();
       } else {
-        Timber.e("firebaseRemoteConfig failure");
         if (groupEntity != null) groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
       }
     });

@@ -153,32 +153,34 @@ public class LiveView extends FrameLayout {
   public void onDestroy(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
-    double duration = 0.0D;
+    if (live != null) {
+      double duration = 0.0D;
 
-    if (timeStart > 0) {
-      timeEnd = System.currentTimeMillis();
-      long delta = timeEnd - timeStart;
-      duration = (double) delta / 60000.0;
-      duration = DoubleUtils.round(duration, 2);
+      if (timeStart > 0) {
+        timeEnd = System.currentTimeMillis();
+        long delta = timeEnd - timeStart;
+        duration = (double) delta / 60000.0;
+        duration = DoubleUtils.round(duration, 2);
+      }
+
+      if (hasJoined && averageCountLive > 1) {
+        state = TagManagerUtils.ENDED;
+        tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
+        tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
+      } else if (hasJoined && averageCountLive <= 1) {
+        state = TagManagerUtils.MISSED;
+        tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
+      }
+
+      tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
+      tagMap.put(TagManagerUtils.DURATION, duration);
+      tagMap.put(TagManagerUtils.STATE, state);
+      tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
+      tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
+      tagMap.put(TagManagerUtils.TYPE,
+          live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
+      TagManagerUtils.manageTags(tagManager, tagMap);
     }
-
-    if (hasJoined && averageCountLive > 1) {
-      state = TagManagerUtils.ENDED;
-      tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
-      tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
-    } else if (hasJoined && averageCountLive <= 1) {
-      state = TagManagerUtils.MISSED;
-      tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
-    }
-
-    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
-    tagMap.put(TagManagerUtils.DURATION, duration);
-    tagMap.put(TagManagerUtils.STATE, state);
-    tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
-    tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
-    tagMap.put(TagManagerUtils.TYPE,
-        live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
-    TagManagerUtils.manageTags(tagManager, tagMap);
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       liveRowView.dispose();
@@ -240,9 +242,6 @@ public class LiveView extends FrameLayout {
 
   private void initUI() {
     setBackgroundColor(Color.BLACK);
-
-    room = tribeLiveSDK.newRoom();
-    room.initLocalStream(viewLocalLive.getLocalPeerView());
   }
 
   private void initResources() {
@@ -495,7 +494,6 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
           false, false, null);
-      Timber.e("add onDropEnabled initOnStartDragSubscription ");
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
@@ -555,6 +553,9 @@ public class LiveView extends FrameLayout {
   public void start(Live live) {
     this.live = live;
 
+    room = tribeLiveSDK.newRoom();
+    room.initLocalStream(viewLocalLive.getLocalPeerView());
+
     viewStatusName.setLive(live);
 
     TribeGuest guest =
@@ -575,6 +576,7 @@ public class LiveView extends FrameLayout {
       tempSubscriptions.add(liveRowView.onNotifyStepDone()
           .subscribe(aVoid -> viewStatusName.setStatus(LiveStatusNameView.WAITING)));
     } else {
+      viewStatusName.setStatus(LiveStatusNameView.WAITING);
       liveRowView.startPulse();
       onJoining();
       onShouldJoinRoom.onNext(null);
@@ -899,6 +901,10 @@ public class LiveView extends FrameLayout {
   private void animateGroupAvatar(LiveRowView liveRowView) {
     AvatarView fromAvatarView = liveRowView.avatar();
     avatarView = new AvatarView(getContext());
+    avatarView.setType(AvatarView.REGULAR);
+    avatarView.setHasHole(false);
+    avatarView.setHasInd(false);
+    avatarView.setHasShadow(true);
 
     if (fromAvatarView.getMembersPic() != null && fromAvatarView.getMembersPic().size() > 0) {
       avatarView.loadGroupAvatar(fromAvatarView.getUrl(), null, fromAvatarView.getGroupId(),

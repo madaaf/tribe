@@ -193,8 +193,9 @@ public class LiveStatusNameView extends FrameLayout {
     this.status = status;
 
     if (status == DONE) {
-      hideView(txtStatus1);
-      hideView(txtStatus2);
+      txtStatus1.setVisibility(View.GONE);
+      //hideView(txtStatus1);
+      //hideView(txtStatus2);
       return;
     }
 
