@@ -9,6 +9,7 @@ public class LoginEntity implements Serializable {
 
   private String to;
   private String username;
+  private String phoneNumber;
   private String password;
   private String pinId;
   private String countryCode;
@@ -20,6 +21,7 @@ public class LoginEntity implements Serializable {
 
   public LoginEntity(String phoneNumber, String code, String pinId) {
     this.username = phoneNumber;
+    this.phoneNumber = phoneNumber;
     this.password = code;
     this.pinId = pinId;
   }
@@ -62,5 +64,9 @@ public class LoginEntity implements Serializable {
 
   public void setNationalNumber(String nationalNumber) {
     this.nationalNumber = nationalNumber;
+  }
+
+  public String getPhoneNumber() {
+    return phoneNumber;
   }
 }

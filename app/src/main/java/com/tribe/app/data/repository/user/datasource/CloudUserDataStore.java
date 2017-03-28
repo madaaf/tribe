@@ -114,7 +114,8 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setUsername(username);
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
-    registerEntity.setPhoneNumber(loginEntity.getNationalNumber());
+    registerEntity.setPhoneNumber(
+        loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), ""));
     registerEntity.setPinId(loginEntity.getPinId());
 
     return this.loginApi.register(registerEntity).doOnNext(saveToCacheAccessToken);
