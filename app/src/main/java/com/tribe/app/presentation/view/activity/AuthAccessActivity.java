@@ -69,6 +69,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   private int totalTimeSynchro;
   private int nbFriends = 0;
   private long timeSyncStart = 0;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -108,6 +109,8 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
+
     startSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> start());
@@ -210,25 +213,23 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   private void lookupContacts() {
-    RxPermissions.getInstance(this)
-        .request(PermissionUtils.PERMISSIONS_CONTACTS)
-        .subscribe(hasPermission -> {
-          Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
-          tagManager.setProperty(bundle);
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
 
-          Bundle bundleBis = new Bundle();
-          bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
-          tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
 
-          if (hasPermission) {
-            addressBook.set(true);
-            timeSyncStart = System.currentTimeMillis();
-            accessPresenter.lookupContacts();
-          } else {
-            renderFriendList(new ArrayList<>());
-          }
-        });
+      if (hasPermission) {
+        addressBook.set(true);
+        timeSyncStart = System.currentTimeMillis();
+        accessPresenter.lookupContacts();
+      } else {
+        renderFriendList(new ArrayList<>());
+      }
+    });
   }
 
   private void showCongrats() {

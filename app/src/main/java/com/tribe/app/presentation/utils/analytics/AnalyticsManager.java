@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
@@ -54,12 +53,6 @@ import javax.inject.Singleton;
       mixpanel.setProperty(bundleMixpanel);
     }
 
-    bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED,
-        addressBook.get() && PermissionUtils.hasPermissionsContact(context));
-    bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED,
-        PermissionUtils.hasPermissionsCamera(context));
-    bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED,
-        PermissionUtils.hasPermissionsCamera(context));
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
         true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
 

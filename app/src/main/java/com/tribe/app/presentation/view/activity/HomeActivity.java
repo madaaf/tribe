@@ -132,6 +132,7 @@ public class HomeActivity extends BaseActivity
   private boolean canEndRefresh = false;
   private boolean finish = false;
   private AppStateMonitor appStateMonitor;
+  private RxPermissions rxPermissions;
 
   // DIMEN
 
@@ -165,7 +166,7 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(Observable.
         from(PermissionUtils.PERMISSIONS_CAMERA)
-        .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
+        .map(permission -> rxPermissions.isGranted(permission))
         .toList()
         .subscribe(grantedList -> {
           boolean areAllGranted = true;
@@ -267,6 +268,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     latestRecipientList = new ArrayList<>();
   }

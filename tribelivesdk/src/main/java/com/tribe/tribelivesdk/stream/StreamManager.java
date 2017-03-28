@@ -133,6 +133,10 @@ public class StreamManager {
   }
 
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
+    if (liveLocalStream == null) {
+      return;
+    }
+    
     liveLocalStream.updateMediaConstraints(tribeMediaConstraints);
   }
 
@@ -161,10 +165,18 @@ public class StreamManager {
   }
 
   public boolean isLocalAudioEnabled() {
+    if (liveLocalStream == null) {
+      return false;
+    }
+
     return liveLocalStream.isAudioEnabled();
   }
 
   public boolean isLocalCameraEnabled() {
+    if (liveLocalStream == null) {
+      return false;
+    }
+
     return liveLocalStream.isCameraEnabled();
   }
 

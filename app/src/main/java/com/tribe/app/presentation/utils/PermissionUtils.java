@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.utils;
 
 import android.Manifest;
-import android.content.Context;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 /**
@@ -28,20 +27,15 @@ public class PermissionUtils {
       Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
   };
 
-  public static boolean hasPermissionsLocation(Context context) {
-    return (RxPermissions.getInstance(context).isGranted(PermissionUtils.PERMISSION_COARSE)
-        && RxPermissions.getInstance(context).isGranted(PERMISSION_FINE));
+  public static boolean hasPermissionsContact(RxPermissions rxPermissions) {
+    return rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS);
   }
 
-  public static boolean hasPermissionsContact(Context context) {
-    return RxPermissions.getInstance(context).isGranted(PermissionUtils.PERMISSIONS_CONTACTS);
-  }
-
-  public static boolean hasPermissionsCamera(Context context) {
+  public static boolean hasPermissionsCamera(RxPermissions rxPermissions) {
     boolean hasAllPermissions = true;
 
     for (String permission : PERMISSIONS_CAMERA) {
-      if (!RxPermissions.getInstance(context).isGranted(permission)) hasAllPermissions = false;
+      if (!rxPermissions.isGranted(permission)) hasAllPermissions = false;
     }
 
     return hasAllPermissions;

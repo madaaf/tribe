@@ -102,6 +102,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private String username;
   private boolean isSearchMode = false;
   private String search;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -141,6 +142,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
     inflater.inflate(R.layout.view_search, this, true);
 
     unbinder = ButterKnife.bind(this);
+
+    rxPermissions = new RxPermissions((Activity) getContext());
 
     initUI();
     initRecyclerView();
@@ -323,7 +326,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
     boolean permissionsContact =
-        PermissionUtils.hasPermissionsContact(getContext()) && addressBook.get();
+        PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();
 
     layoutBottom.removeAllViews();
     layoutTop.removeAllViews();
@@ -382,20 +385,18 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   }
 
   private void lookupContacts() {
-    RxPermissions.getInstance(getContext())
-        .request(PermissionUtils.PERMISSIONS_CONTACTS)
-        .subscribe(hasPermission -> {
-          Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
-          tagManager.setProperty(bundle);
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
 
-          if (hasPermission) {
-            addressBook.set(true);
-            sync();
-          } else {
-            viewFriendsAddressBookLoad.hideLoading();
-          }
-        });
+      if (hasPermission) {
+        addressBook.set(true);
+        sync();
+      } else {
+        viewFriendsAddressBookLoad.hideLoading();
+      }
+    });
   }
 
   private void sync() {

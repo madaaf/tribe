@@ -36,6 +36,7 @@ public class MediaHiddenActivity extends BaseActivity {
 
   // VARIABLES
   private Uri cameraPictureUrl;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -100,6 +101,7 @@ public class MediaHiddenActivity extends BaseActivity {
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
   }
 
   private void initDependencyInjector() {
@@ -111,9 +113,8 @@ public class MediaHiddenActivity extends BaseActivity {
   }
 
   private void handleIntent(Intent intent) {
-    subscriptions.add(RxPermissions.getInstance(this)
-        .request(PermissionUtils.PERMISSIONS_CAMERA)
-        .subscribe(granted -> {
+    subscriptions.add(
+        rxPermissions.request(PermissionUtils.PERMISSIONS_CAMERA).subscribe(granted -> {
           Bundle bundle = new Bundle();
           bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED, granted);
           bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED, granted);

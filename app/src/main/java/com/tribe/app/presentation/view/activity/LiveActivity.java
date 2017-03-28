@@ -1,13 +1,13 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -120,7 +120,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  @Inject NotificationManager notificationManager;
+  @Inject NotificationManagerCompat notificationManager;
 
   @Inject SoundManager soundManager;
 
@@ -149,6 +149,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private AppStateMonitor appStateMonitor;
   private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RxPermissions rxPermissions;
 
   // RESOURCES
 
@@ -244,6 +245,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
+
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     initRoom();
@@ -263,36 +266,41 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initRoom() {
-    subscriptions.add(RxPermissions.getInstance(LiveActivity.this)
-        .request(PermissionUtils.PERMISSIONS_LIVE)
-        .subscribe(granted -> {
-          if (granted) {
-            viewLiveContainer.setEnabled(false);
+    subscriptions.add(rxPermissions.request(PermissionUtils.PERMISSIONS_LIVE).subscribe(granted -> {
+      if (granted) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED,
+            PermissionUtils.hasPermissionsCamera(rxPermissions));
+        bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED,
+            PermissionUtils.hasPermissionsCamera(rxPermissions));
+        tagManager.setProperty(bundle);
 
-            ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
-            params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
-            viewInviteLive.setLayoutParams(params);
-            viewInviteLive.requestLayout();
+        viewLiveContainer.setEnabled(false);
 
-            initSubscriptions();
+        ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
+        params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
+        viewInviteLive.setLayoutParams(params);
+        viewInviteLive.requestLayout();
 
-            if (live.isGroup()) {
-              viewLive.start(live);
-              livePresenter.loadRecipient(live);
-            } else if (!StringUtils.isEmpty(live.getSessionId())) {
-              viewLive.start(live);
-              ready();
-            } else if (!live.isGroup()) {
-              if (live.isIntent()) {
-                livePresenter.loadRecipient(live);
-              } else {
-                viewLive.start(live);
-              }
-            }
+        initSubscriptions();
+
+        if (live.isGroup()) {
+          viewLive.start(live);
+          livePresenter.loadRecipient(live);
+        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+          viewLive.start(live);
+          ready();
+        } else if (!live.isGroup()) {
+          if (live.isIntent()) {
+            livePresenter.loadRecipient(live);
           } else {
-            finish();
+            viewLive.start(live);
           }
-        }));
+        }
+      } else {
+        finish();
+      }
+    }));
   }
 
   private void initResources() {

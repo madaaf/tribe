@@ -947,6 +947,8 @@ public class LiveView extends FrameLayout {
             }
 
             @Override public void onAnimationEnd(Animator animation) {
+              if (viewBuzz == null) return;
+
               viewBuzz.setVisibility(View.VISIBLE);
               viewBuzz.getViewTreeObserver()
                   .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

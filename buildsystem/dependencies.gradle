@@ -45,7 +45,7 @@ ext {
   googlePlayLocationVersion = '9.4.0'
   googlePlayBaseVersion = '9.4.0'
   googlePlayGCMVersion = '9.4.0'
-  rxPermissionsVersion = '0.7.0@aar'
+  rxPermissionsVersion = '0.9.3@aar'
   facebookVersion = '4.19.0'
   multiDexVersion = '1.0.0'
   confettiVersion = '1.0.0'
