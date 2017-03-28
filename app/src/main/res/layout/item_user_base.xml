@@ -19,7 +19,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
-      android:layout_marginLeft="55dp"
+      android:layout_marginStart="@dimen/avatar_size_small_margin_start"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont

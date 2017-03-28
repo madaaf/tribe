@@ -8,7 +8,7 @@
 
   <FrameLayout
       android:layout_width="match_parent"
-      android:layout_height="180dp"
+      android:layout_height="@dimen/view_profile_info_height"
       android:background="@null"
       >
 
@@ -27,9 +27,9 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
         android:layout_margin="@dimen/horizontal_margin_small"
         android:background="@null"
-        android:layout_gravity="center_horizontal|bottom"
         android:text="@string/onboarding_user_mandatory_avatar"
         style="@style/Body.One.Black40"
         />

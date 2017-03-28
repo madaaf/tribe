@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <include layout="@layout/view_tile_background"/>
+  <include layout="@layout/view_tile_background" />
 
   <com.tribe.app.presentation.view.widget.avatar.AvatarView
       android:id="@+id/avatar"
@@ -11,11 +11,11 @@
       android:layout_height="@dimen/avatar_size"
       android:layout_gravity="center"
       android:background="@null"
-      app:hasShadow="true"
-      app:hasInd="false"
       app:hasHole="false"
+      app:hasInd="false"
+      app:hasShadow="true"
       />
 
-  <include layout="@layout/view_tile_grid_base_regular"/>
+  <include layout="@layout/view_tile_grid_base_regular" />
 
 </merge>

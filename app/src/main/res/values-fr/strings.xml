@@ -517,7 +517,7 @@
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Ami</string>
 	<string name="topbar_new_live">Nouveau groupe</string>
-	<string name="topbar_search">Amis</string>
+	<string name="topbar_search">Rechercher des amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_video_action">:vhs: Regarder la vidéo démo</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -558,7 +558,7 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
-	<string name="search_already_friends">Vous les connaissez :purple_heart:</string>
+	<string name="search_already_friends">Ils sont déjà sur Tribe :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
 	<string name="search_suggest_friends">Vous les connaissez peut-être :bee:</string>
