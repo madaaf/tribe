@@ -58,6 +58,12 @@ public class Navigator {
     }
   }
 
+  public void navigateToHomeAndFinishAffinity(Activity activity) {
+    Intent mIntent = new Intent(activity, HomeActivity.class);
+    activity.finishAffinity();
+    activity.startActivity(mIntent);
+  }
+
   /**
    * Goes to the login.
    *

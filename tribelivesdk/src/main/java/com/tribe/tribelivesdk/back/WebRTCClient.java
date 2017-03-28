@@ -99,8 +99,9 @@ import static android.R.attr.id;
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
 
-    if (options.getRoutingMode().equals(TribeLiveOptions.P2P) || session.getPeerId()
-        .equals(TribeSession.PUBLISHER_ID)) {
+    if ((options.getRoutingMode().equals(TribeLiveOptions.P2P)
+        || session.getPeerId().equals(TribeSession.PUBLISHER_ID)
+        && remotePeer.getPeerConnection() != null)) {
       remotePeer.getPeerConnection().addStream(localMediaStream);
     }
 
