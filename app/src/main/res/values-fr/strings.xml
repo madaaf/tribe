@@ -558,7 +558,7 @@
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
 	<string name="search_searching">Recherche en cours</string>
-	<string name="search_already_friends">Vous les connaissez :purple_heart:</string>
+	<string name="search_already_friends">Ils sont déjà sur Tribe :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
 	<string name="search_suggest_friends">Vous les connaissez peut-être :bee:</string>

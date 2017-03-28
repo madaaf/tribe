@@ -96,6 +96,7 @@
           android:inputType="text|textVisiblePassword"
           android:singleLine="true"
           android:textColorHint="@color/white.opacity.40"
+          android:textCursorDrawable="@drawable/cursor_white"
           style="@style/Body.Two.White"
           />
     </LinearLayout>
