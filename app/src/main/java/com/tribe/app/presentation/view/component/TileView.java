@@ -51,6 +51,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareCardView {
 
+  public final static float RATION_AVATAR_TILE = 0.5f;
   public final static int TYPE_GRID_LIVE = 0;
   public final static int TYPE_GRID_CONNECTED = 1;
   public final static int TYPE_INVITE_LIVE_CO = 2;
@@ -148,6 +149,8 @@ public class TileView extends SquareCardView {
     init(false);
   }
 
+  private View view;
+
   public void init(boolean isDragging) {
     subscriptions = new CompositeSubscription();
 
@@ -175,7 +178,7 @@ public class TileView extends SquareCardView {
         break;
     }
 
-    LayoutInflater.from(getContext()).inflate(resLayout, this);
+    view = LayoutInflater.from(getContext()).inflate(resLayout, this);
     unbinder = ButterKnife.bind(this);
 
     initDependencyInjector();
@@ -291,17 +294,18 @@ public class TileView extends SquareCardView {
   }
 
   public void initSize() {
-    sizeAvatar =
-        isGrid() ? (int) ((screenUtils.getWidthPx() >> 1) * 0.5f) : screenUtils.getWidthPx() / 7;
+    sizeAvatar = isGrid() ? (int) ((screenUtils.getWidthPx() / getResources().getInteger(
+        R.integer.columnNumber)) * RATION_AVATAR_TILE) : screenUtils.getWidthPx() / 7;
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
     avatar.changeSize(sizeAvatar, true);
 
     if (isGrid()) {
-      int sizeTile = screenUtils.getWidthPx() >> 1;
+      int sizeTile = screenUtils.getWidthPx() / getResources().getInteger(R.integer.columnNumber);
       int sizeLayoutName =
-          (sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio()))) >> 1;
+          (int) ((sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio())))
+              * RATION_AVATAR_TILE);
       int sizeStatus = sizeLayoutName;
       UIUtils.changeHeightOfView(layoutName, sizeLayoutName);
       UIUtils.changeHeightOfView(layoutStatus, sizeStatus);

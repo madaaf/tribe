@@ -18,7 +18,7 @@
     <FrameLayout
         android:id="@+id/viewShareProfile"
         android:layout_width="match_parent"
-        android:layout_height="82dp"
+        android:layout_height="@dimen/view_share_profile_height"
         android:background="@color/grey.background.profile_info"
         android:clickable="true"
         android:foreground="@drawable/selectable_button"
@@ -43,8 +43,8 @@
 
         <com.tribe.app.presentation.view.widget.avatar.AvatarView
             android:id="@+id/avatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/nav_icon_size"
+            android:layout_height="@dimen/nav_icon_size"
             android:layout_gravity="center"
             android:background="@null"
             app:hasHole="false"
@@ -57,8 +57,8 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="center_vertical"
-          android:layout_marginEnd="55dp"
-          android:layout_marginStart="80dp"
+          android:layout_marginEnd="@dimen/nav_icon_size_with_margin_end"
+          android:layout_marginStart="@dimen/nav_icon_size_with_margin_start"
           >
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -93,7 +93,7 @@
           />
     </FrameLayout>
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionProfile"
@@ -104,7 +104,7 @@
         app:actionType="hierarchy"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionVisible"
@@ -115,7 +115,7 @@
         app:actionType="toggle"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionRateUs"
@@ -126,7 +126,7 @@
         app:actionType="regular"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionFollow"
@@ -137,7 +137,7 @@
         app:actionType="regular"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionLogout"
@@ -148,7 +148,7 @@
         app:actionType="regular"
         />
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
   </LinearLayout>
 
   <ImageView
@@ -156,7 +156,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal|bottom"
-      android:layout_marginBottom="50dp"
+      android:layout_marginBottom="@dimen/top_bar_height_small"
       android:src="@drawable/picto_tribe_logo_black"
       />
 

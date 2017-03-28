@@ -19,6 +19,10 @@ import javax.inject.Singleton;
     this.context = context;
   }
 
+  public Context getContext() {
+    return context;
+  }
+
   public int dpToPx(int dp) {
     return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
         context.getResources().getDisplayMetrics());

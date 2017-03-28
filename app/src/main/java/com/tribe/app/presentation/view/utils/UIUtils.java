@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import com.tribe.app.R;
 
 /**
  * Created by tiago on 14/11/2016.
@@ -25,7 +26,9 @@ public class UIUtils {
     Drawable background = v.getBackground();
     int color = PaletteGrid.get(position - 1);
     int radiusTopLeft = position == 1 ? screenUtils.dpToPx(5) : 0;
-    int radiusTopRight = position == 2 ? screenUtils.dpToPx(5) : 0;
+    int radiusTopRight =
+        position == screenUtils.getContext().getResources().getInteger(R.integer.columnNumber)
+            ? screenUtils.dpToPx(5) : 0;
     float[] radiusMatrix =
         new float[] { radiusTopLeft, radiusTopLeft, radiusTopRight, radiusTopRight, 0, 0, 0, 0 };
 
