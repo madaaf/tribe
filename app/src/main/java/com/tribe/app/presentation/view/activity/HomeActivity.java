@@ -370,7 +370,7 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_MORE)) {
-            navigator.openSmsForInvite(this);
+            navigator.openSmsForInvite(this, null);
           } else if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
             subscriptions.add(
                 DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
@@ -442,7 +442,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, null);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch().subscribe(open -> {
@@ -460,7 +460,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, null);
     }));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> {
@@ -481,7 +481,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, contact.getPhone());
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {

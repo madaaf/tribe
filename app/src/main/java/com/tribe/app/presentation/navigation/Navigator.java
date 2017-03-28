@@ -1,8 +1,6 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +18,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
-import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
@@ -36,7 +33,6 @@ import com.tribe.app.presentation.view.activity.ProfileActivity;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Class used to navigate through the application.
@@ -322,9 +318,9 @@ public class Navigator {
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
-  public void openSmsForInvite(Activity activity) {
+  public void openSmsForInvite(Activity activity, String phoneNumber) {
     Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:"));
+    sendIntent.setData(Uri.parse("sms:" + (StringUtils.isEmpty(phoneNumber) ? "" : phoneNumber)));
     sendIntent.putExtra("sms_body", EmojiParser.demojizedText(
         activity.getString(R.string.share_invite, user.getUsername(),
             BuildConfig.TRIBE_URL + "/" + user.getUsername())));

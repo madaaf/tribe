@@ -191,9 +191,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
                   context().getString(R.string.add_friend_error_invisible_invite_ios),
                   context().getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
-                  .subscribe(a -> {
-                    onNavigateToSmsForInvites.onNext(null);
-                  });
+                  .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
             } else if (searchResult.getFriendship() == null) {
               if (searchResult.getUsername() != null && !searchResult.getUsername()
                   .equals(user.getUsername())) {

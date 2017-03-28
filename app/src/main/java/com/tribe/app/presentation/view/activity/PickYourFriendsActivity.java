@@ -186,9 +186,7 @@ public class PickYourFriendsActivity extends BaseActivity implements FriendsMVPV
                   getString(R.string.add_friend_error_invisible_invite_ios),
                   getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
-                  .subscribe(a -> {
-                    navigator.openSmsForInvite(this);
-                  });
+                  .subscribe(a -> navigator.openSmsForInvite(this, user.getPhone()));
             } else if (newFriends.contains(user)) {
               user.setNewFriend(false);
               newFriends.remove(user);
