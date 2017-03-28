@@ -28,7 +28,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class AuthenticationDialogFragment extends BaseDialogFragment {
 
-  private static final int WIDTH_MAX = 300;
+  private static int WIDTH_MAX;
 
   public static AuthenticationDialogFragment newInstance(String phoneNumber, boolean resend) {
     Bundle args = new Bundle();
@@ -108,6 +108,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
     Bundle args = getArguments();
     resend = args.getBoolean(RESEND);
     phoneNumber = args.getString(PHONE_NUMBER);
+    WIDTH_MAX = (int) getResources().getDimension(R.dimen.authentication_dialog_width);
 
     if (resend) {
       textTitle.setText(R.string.onboarding_popup_error_title);
