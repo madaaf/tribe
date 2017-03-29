@@ -62,7 +62,6 @@ import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
-import com.tribe.app.presentation.view.component.group.GroupSuggestionView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -139,8 +138,6 @@ public interface ApplicationComponent {
   void inject(TextViewAnimatedDots textViewAnimatedDots);
 
   void inject(TileView tileView);
-
-  void inject(GroupSuggestionView groupSuggestionView);
 
   void inject(AddMembersGroupView addMembersGroupView);
 

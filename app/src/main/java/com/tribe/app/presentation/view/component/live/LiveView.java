@@ -318,7 +318,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aBoolean -> {
       isMicroActivated = aBoolean;
       viewControlsLive.setMicroEnabled(isMicroActivated);
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableMicro(isMicroActivated);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
@@ -327,13 +327,13 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraEnable().subscribe(aVoid -> {
       isCameraActivated = false;
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableMicro(isMicroActivated);
       viewLocalLive.disableCamera(true);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraDisable().subscribe(aVoid -> {
       isCameraActivated = true;
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableMicro(isMicroActivated);
       viewLocalLive.enableCamera(true);
     }));
 
@@ -987,7 +987,7 @@ public class LiveView extends FrameLayout {
                   });
             }
           });
-          
+
           animatorLeftMargin.start();
         }));
   }

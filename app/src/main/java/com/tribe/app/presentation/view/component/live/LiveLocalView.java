@@ -50,9 +50,7 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
-  @BindView(R.id.backLiveLocalView) FrameLayout backLiveLocalView;
-
-  @BindView(R.id.backMicroDisabled) View backMicroDisabled;
+  @BindView(R.id.bgMicroDisabled) View bgMicroDisabled;
 
   @BindView(R.id.imgMicroDisabled) ImageView imgMicroDisabled;
 
@@ -220,20 +218,15 @@ public class LiveLocalView extends FrameLayout {
     this.hiddenControls = hiddenControls;
   }
 
-  public void enableMicro(boolean isMicroActivated, boolean isCameraActivated) {
+  public void enableMicro(boolean isMicroActivated) {
     microEnabled = isMicroActivated;
     onEnableMicro.onNext(microEnabled);
 
     if (!isMicroActivated) {
-      AnimationUtils.fadeIn(backLiveLocalView, DURATION);
+      AnimationUtils.fadeIn(bgMicroDisabled, DURATION);
       AnimationUtils.fadeIn(imgMicroDisabled, DURATION);
-
-      if (!isCameraActivated) {
-        AnimationUtils.fadeOut(backLiveLocalView, DURATION);
-        AnimationUtils.fadeIn(backMicroDisabled, DURATION);
-      }
     } else {
-      AnimationUtils.fadeOut(backLiveLocalView, DURATION);
+      AnimationUtils.fadeOut(bgMicroDisabled, DURATION);
       AnimationUtils.fadeOut(imgMicroDisabled, DURATION);
     }
   }

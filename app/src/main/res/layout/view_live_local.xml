@@ -7,9 +7,8 @@
       android:layout_height="match_parent"
       />
 
-
   <FrameLayout
-      android:id="@+id/backLiveLocalView"
+      android:id="@+id/bgMicroDisabled"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:alpha="0"
@@ -28,7 +27,6 @@
       android:src="@drawable/picto_micro_off_shadow"
       android:visibility="visible"
       />
-
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtLowConnectivity"

@@ -667,31 +667,6 @@
 	<string name="tribe_level_popup_catch_up">À rattraper !</string>
 	<string name="tribe_level_popup_advance">D\'avance</string>
 	
-	<!-- TribeEventPopup -->
-	<string name="tribe_event_popup_date">Date</string>
-	<string name="tribe_event_popup_start">De</string>
-	<string name="tribe_event_popup_end">À</string>
-	<string name="tribe_event_popup_more">Éditez et crééz un évènement</string>
-	<string name="tribe_event_popup_more_no_access">Vous devez donner les permissions pour l\'accès au calendrier</string>
-	<string name="tribe_event_today">Aujourd\'hui</string>
-	<string name="tribe_event_day_1_future">Demain</string>
-	<string name="tribe_event_day_1_past">Hier</string>
-	<string name="tribe_event_day_n_future">Dans %1$d jours</string>
-	<string name="tribe_event_day_n_past">Il y a %1$d jours</string>
-	<string name="tribe_event_week_1_future">Dans %1$d semaine</string>
-	<string name="tribe_event_week_1_past">Il y a %1$d semaine</string>
-	<string name="tribe_event_week_n_future">Dans %1$d semaines</string>
-	<string name="tribe_event_week_n_past">Il y a %1$d semaines</string>
-	<string name="tribe_event_month_1_future">Dans %1$d mois</string>
-	<string name="tribe_event_month_1_past">Il y a %1$d mois</string>
-	<string name="tribe_event_month_n_future">Dans %1$d mois</string>
-	<string name="tribe_event_month_n_past">Il y a %1$d mois</string>
-	<string name="tribe_event_year_1_future">Dans %1$d an</string>
-	<string name="tribe_event_year_1_past">Il y a %1$d an</string>
-	<string name="tribe_event_year_n_future">Dans %1$d ans</string>
-	<string name="tribe_event_year_n_past">Il y a %1$d ans</string>
-	<string name="tribe_event_title_suggestion">Dîner,Bière,Appel,Camping,Café,Concert,Date,Dentiste,Docteur,Verre,Facetime,Vol,Avion,Bateau,Bus,Réunion,Rendez-vous,Film,Cinéma,Bureau,Fête,Soirée,Réparer,Courir,Course,Shopping,Courses,Skype,Dormir,Train,Voyage,TV,Télé,Vacances,Exercice,Repos</string>
-	
 	<!-- Tutorial -->
 	<string name="tutorial_message_support">%1$d messages de l\'équipe</string>
 	<string name="tutorial_message_next_message">Message suivant</string>
@@ -732,20 +707,6 @@
 	<string name="language_supported_title">Langues supportées</string>
 	<string name="language_supported_values">af_ZA,id_ID,ms_MY,ca_ES,cs_CZ,da_DK,de_DE,en_AU,en_CA,en_GB,en_IN,en_IE,en_NZ,en_PH,en_ZA,en_US,es_AR,es_BO,es_CL,es_CO,es_CR,es_EC,es_SV,es_ES,es_US,es_GT,es_HN,es_MX,es_NI,es_PA,es_PY,es_PE,es_PR,es_DO,es_UY,es_VE,eu_ES,fil_PH,fr_FR,gl_ES,hr_HR,zu_ZA,is_IS,it_IT,lt_LT,hu_HU,nl_NL,nb_NO,pl_PL,pt_BR,pt_PT,ro_RO,sk_SK,sl_SI,fi_FI,sv_SE,vi_VN,tr_TR,el_GR,bg_BG,ru_RU,sr_RS,uk_UA,he_IL,ar_IL,ar_JO,ar_AE,ar_BH,ar_DZ,ar_SA,ar_IQ,ar_KW,ar_MA,ar_TN,ar_OM,ar_PS,ar_QA,ar_LB,ar_EG,fa_IR,hi_IN,th_TH,ko_KR,cmn_Hant_TW,yue_Hant_HK,ja_JP,cmn_Hans_HK,cmn_Hans_CN</string>
 	
-	<!-- Support -->
-	<string name="support_metadata">Support</string>
-	<string name="support_popup_displayname">Nom complet</string>
-	<string name="support_popup_username">Nom d\'utilisateur</string>
-	<string name="support_popup_score">Score</string>
-	<string name="support_popup_friends">Amis</string>
-	<string name="support_popup_groups">Groupes</string>
-	<string name="support_popup_device">Terminal</string>
-	<string name="support_popup_devices">Terminaux</string>
-	<string name="support_popup_model">Modèle</string>
-	<string name="support_popup_app">Version app</string>
-	<string name="support_popup_lang">Langue</string>
-	<string name="support_popup_created_at">Inscription</string>
-	
 	<!-- Camera -->
 	<string name="camera_permission">Activer\nla caméra</string>
 	<string name="camera_recording">REC</string>
@@ -760,89 +721,6 @@
 	<string name="score_next_level">Prochain niveau dans</string>
 	<string name="score_points_system_button">Régles du jeu</string>
 	<string name="score_share_level_button">Partager votre score</string>
-	
-	<!-- Points System -->
-	<string name="points_system_title">Régles du jeu</string>
-	<string name="points_Subtitles_title">Activer les sous-titres</string>
-	<string name="points_Subtitles_description">Pour chaque ami</string>
-	<string name="points_SendReceiveChat_title">Envoyer ou recevoir des messages</string>
-	<string name="points_SendReceiveChat_description">Message texte</string>
-	<string name="points_SendReceiveTribe_title">Envoyer ou recevoir des messages</string>
-	<string name="points_SendReceiveTribe_description">Message video ou audio</string>
-	<string name="points_NewFriendship_title">Nouvel(le) ami(e)</string>
-	<string name="points_NewFriendship_description">Rendez-vous à gauche de la grille</string>
-	<string name="points_InviteTribe_title">Inviter un ami</string>
-	<string name="points_InviteTribe_description">Rendez-vous à gauche de la grille</string>
-	<string name="points_CreateGroup_title">Créer un groupe</string>
-	<string name="points_CreateGroup_description">Rendez-vous à droite de la grille</string>
-	<string name="points_RateApp_title">Noter l\'app</string>
-	<string name="points_RateApp_description">Rendez-vous sur l\'App Store</string>
-	<string name="points_ShareProfile_title">Partager votre profil</string>
-	<string name="points_ShareProfile_description">Rendez-vous à gauche de la grille</string>
-	<string name="points_LocationPermission_title">Géolocalisation</string>
-	<string name="points_LocationPermission_description">Activez-la dans les réglages</string>
-	<string name="points_PushPermission_title">Notifications</string>
-	<string name="points_PushPermission_description">Activez-les dans les réglages</string>
-	<string name="points_ConnectFacebook_title">Connecter Facebook</string>
-	<string name="points_ConnectFacebook_description">Synchroniser vos amis</string>
-	<string name="points_InviteFacebookFriends_title">Notifier vos amis Facebook</string>
-	<string name="points_InviteFacebookFriends_description">Rendez-vous à gauche de la grille</string>
-	<string name="points_Camera_title">Appareil photo</string>
-	<string name="points_Camera_description">Activez-le dans les réglages</string>
-	
-	<!-- Level -->
-	<string name="level_rookie_title">Rookie</string>
-	<string name="level_heating_up_title">Heating up</string>
-	<string name="level_rising_star_title">Rising star</string>
-	<string name="level_on_fire_title">On fire</string>
-	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_champ_title">Champ</string>
-	<string name="level_icon_title">Icon</string>
-	<string name="level_greatness_title">Greatness</string>
-	<string name="level_royalty_title">Royalty</string>
-	<string name="level_unicorn_title">Unicorn</string>
-	
-	<!-- Chat -->
-	<string name="chat_tutorial_statuses_title">Statuts des messages</string>
-	<string name="chat_status_sending">Envoi en cours</string>
-	<string name="chat_status_sent">Envoyé</string>
-	<string name="chat_status_read_partly">Lu par une partie des destinataires</string>
-	<string name="chat_status_read">Lu par tous les destinataires</string>
-	<string name="chat_status_error">Pas de réseau</string>
-	<string name="chat_text_placeholder">Message...</string>
-	<string name="chat_date_today">Aujourd\'hui</string>
-	<string name="chat_author_you">Vous</string>
-	<string name="chat_erase_conversation_title">Supprimer tous les messages</string>
-	<string name="chat_erase_conversation_message">Êtes-vous sûr ?</string>
-	<string name="chat_is_typing">est en train d\'écrire</string>
-	<string name="chat_are_typing">sont en train d\'écrire</string>
-	<string name="chat_and">et</string>
-	<string name="chat_copied_to_clipboard">Copié dans le presse-papier</string>
-	<string name="chat_attachment_more_save">Sauvegarder dans votre bibliothèque</string>
-	<string name="chat_attachment_more_save_success">Sauvegardé !</string>
-	<string name="chat_more_erase_conversation">Supprimer tous les messages</string>
-	
-	<!-- Private Group -->
-	<string name="group_family_title">Famille</string>
-	<string name="group_roomies_title">Collocataires</string>
-	<string name="group_bffs_title">BFFs</string>
-	<string name="group_abroad_title">Étranger</string>
-	<string name="group_work_title">Travail</string>
-	<string name="group_classmates_title">Classe</string>
-	<string name="group_teammates_title">Équipe</string>
-	<string name="group_baddest_title">Les boys</string>
-	<string name="group_not_allowed_title">Les girls</string>
-	
-	<!-- Public Group -->
-	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
-	<string name="group_public_roomies_title">:kimono: Yoga lovers</string>
-	<string name="group_public_bffs_title">:baseball: Major League Baseball Playoffs</string>
-	<string name="group_public_abroad_title">:football: NFL Fantasy Football</string>
-	<string name="group_public_work_title">:jack_o_lantern: Halloween costumes</string>
-	<string name="group_public_classmates_title">:nail_care: Celeb Gossip</string>
-	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
-	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
-	<string name="group_public_not_allowed_title">:key: Life hacks</string>
 	
 	<!-- Group Infos -->
 	<string name="group_infos_error_edit_not_admin">:lock: Seuls les admins peuvent éditer un groupe</string>
@@ -905,4 +783,24 @@
 	<string name="call_kit_swipe_down">Glissez vers le bas pour décliner</string>
 	<string name="call_kit_swipe_up">Glissez vers le haut pour rejoindre</string>
 	<string name="call_kit_title">Live commence avec</string>
+	
+	<!-- Read More -->
+	<string name="readmore_contacts_title">Trouver vos\ncontacts sur tribe</string>
+	<string name="readmore_contacts_description">tribe ne fonctionne que si vous avez\ndes amis avec qui discuter.\nUploader vos contacts vous aide\nà vous connecter à vos amis. :blush:</string>
+	<string name="readmore_contacts_skip_description">Si vous passez cette étape, vous\nne trouverez jamais vos amis sur tribe.</string>
+	<string name="readmore_contacts_activate">Activer</string>
+	<string name="readmore_contacts_dismiss">Plus tard</string>
+	<string name="readmore_notifications_title">Ne ratez rien de\nvos amis sur tribe</string>
+	<string name="readmore_notifications_description">tribe vous permet de rejoindre les appels de groupe les plus funs avec vos amis. Les notifications vous avertiront quand un ami vous appelle, rejoint l\'app ou est en ligne.</string>
+	<string name="readmore_notifications_skip_description">Si vous passez cette étape, vous ne serez pas notifié si des amis vous appellent ou rejoignent l\'app.</string>
+	<string name="readmore_notifications_activate">Activer</string>
+	<string name="readmore_notifications_dismiss">Plus tard</string>
+	<string name="readmore_contacts_dismiss_popup_title">Continuer seul(e) ?</string>
+	<string name="readmore_contacts_dismiss_popup_description">Vous allez rater tous vos amis déjà inscrits et les prochains arrivants</string>
+	<string name="readmore_contacts_dismiss_popup_validate">Activer</string>
+	<string name="readmore_contacts_dismiss_popup_cancel">Continuer seul(e)</string>
+	<string name="readmore_notifications_dismiss_popup_title">Continuer sans les notifications ?</string>
+	<string name="readmore_notifications_dismiss_popup_description">Vous allez rater tous les appels de vos amis</string>
+	<string name="readmore_notifications_dismiss_popup_validate">Activer les notifications</string>
+	<string name="readmore_notifications_dismiss_popup_cancel">Continuer sans les notifications ?</string>
 </resources>
