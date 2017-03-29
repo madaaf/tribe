@@ -38,13 +38,12 @@ public class StreamManager {
     generateLocalStream(context, peerConnectionFactory);
     liveLocalStream.startVideoCapture();
 
-    localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> {
-      switchCamera();
-    }));
+    localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
 
-    localSubscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
-      setLocalCameraEnabled(enabled);
-    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
+    localSubscriptions.add(this.localPeerView.onEnableCamera()
+        .doOnNext(enabled -> setLocalCameraEnabled(enabled))
+        .map(aBoolean -> null)
+        .subscribe(o -> onMediaChanged.onNext(null)));
 
     localSubscriptions.add(this.localPeerView.onEnableMicro().doOnNext(enabled -> {
       setLocalAudioEnabled(enabled);
@@ -136,7 +135,7 @@ public class StreamManager {
     if (liveLocalStream == null) {
       return;
     }
-    
+
     liveLocalStream.updateMediaConstraints(tribeMediaConstraints);
   }
 

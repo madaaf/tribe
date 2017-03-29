@@ -249,6 +249,8 @@
 	<string name="grid_status_last_seen_days">Il y a qqs jours</string>
 	<string name="grid_name_more_friends">Plus d\'amis</string>
 	<string name="grid_status_more_friends">Essayez !</string>
+	<string name="grid_name_video_demo">Vidéo démo</string>
+	<string name="grid_status_video_demo">Apprenez en 30 sec</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>

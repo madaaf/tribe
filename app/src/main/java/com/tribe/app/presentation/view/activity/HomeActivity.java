@@ -59,6 +59,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.RatingNotificationView;
@@ -97,6 +98,8 @@ public class HomeActivity extends BaseActivity
   @Inject PaletteGrid paletteGrid;
 
   @Inject StateManager stateManager;
+
+  @Inject SoundManager soundManager;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
@@ -254,6 +257,8 @@ public class HomeActivity extends BaseActivity
       appStateMonitor.removeListener(this);
       appStateMonitor.stop();
     }
+
+    soundManager.cancelMediaPlayer();
 
     stopService();
 
