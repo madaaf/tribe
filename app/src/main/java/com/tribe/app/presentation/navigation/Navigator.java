@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
+import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
@@ -153,6 +154,14 @@ public class Navigator {
   public void navigateToProfile(Activity activity) {
     if (activity != null) {
       Intent intent = ProfileActivity.getCallingIntent(activity);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToVideo(Activity activity) {
+    if (activity != null) {
+      Intent intent = VideoActivity.getCallingIntent(activity);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }

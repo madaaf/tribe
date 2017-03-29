@@ -347,6 +347,8 @@ public class HomeActivity extends BaseActivity
         .subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_MORE)) {
             navigator.openSmsForInvite(this, null);
+          } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
+            navigator.navigateToVideo(this);
           } else if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
             subscriptions.add(
                 DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),

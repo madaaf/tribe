@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
+import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
@@ -61,6 +62,8 @@ import dagger.Component;
   void inject(CountryActivity countryActivity);
 
   void inject(HomeActivity homeActivity);
+
+  void inject(VideoActivity videoActivity);
 
   void inject(ProfileInfoView profileInfoView);
 

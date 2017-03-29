@@ -815,11 +815,11 @@
 	<string name="camera_microphone_popup_camera_enabled">Caméra activée</string>
 	<string name="camera_microphone_popup_enable_microphone">Activer le micro</string>
 	<string name="camera_microphone_popup_microphone_enabled">Micro activé</string>
-	<string name="camera_microphone_popup_swipe_to_dismiss">Glissez pour fermer</string>
+	<string name="camera_microphone_popup_swipe_to_dismiss">Glissez vers le haut pour fermer</string>
 	
 	<!-- Create Group Popup -->
 	<string name="create_group_popup_title">C\'était fun, hein ? Créez\nungroupe avec eux !</string>
 	<string name="create_group_popup_adjust_members">Ajuster les membres</string>
 	<string name="create_group_popup_create">Créer le groupe</string>
-	<string name="create_group_popup_swipe_to_dismiss">Glissez pour fermer</string>
+	<string name="create_group_popup_swipe_to_dismiss">Glissez vers le haut pour fermer</string>
 </resources>
