@@ -302,11 +302,12 @@ public class Navigator {
     }
   }
 
-  public void shareGenericText(String body, Context context) {
+  public void shareGenericText(String body, Activity activity) {
     Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
     sharingIntent.setType("text/plain");
     sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-    context.startActivity(sharingIntent);
+    activity.startActivity(sharingIntent);
+    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
   public void sendText(String body, Context context) {
@@ -325,13 +326,19 @@ public class Navigator {
   }
 
   public void openSmsForInvite(Activity activity, String phoneNumber) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:" + (StringUtils.isEmpty(phoneNumber) ? "" : phoneNumber)));
-    sendIntent.putExtra("sms_body", EmojiParser.demojizedText(
+    String text = EmojiParser.demojizedText(
         activity.getString(R.string.share_invite, user.getUsername(),
-            BuildConfig.TRIBE_URL + "/" + user.getUsername())));
-    activity.startActivity(sendIntent);
-    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            BuildConfig.TRIBE_URL + "/" + user.getUsername()));
+
+    if (StringUtils.isEmpty(phoneNumber)) {
+      shareGenericText(text, activity);
+    } else {
+      Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+      sendIntent.setData(Uri.parse("sms:" + phoneNumber));
+      sendIntent.putExtra("sms_body", text);
+      activity.startActivity(sendIntent);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
   }
 
   public void invite(String phone, int nbFriends, Activity activity) {

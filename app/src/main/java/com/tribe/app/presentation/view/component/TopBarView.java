@@ -14,7 +14,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,8 +52,6 @@ public class TopBarView extends FrameLayout {
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.btnNew) View btnNew;
-
-  @BindView(R.id.btnInvite) ImageView btnInvite;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
@@ -168,9 +165,6 @@ public class TopBarView extends FrameLayout {
           } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
-          } else if (isAClickInView(btnInvite, (int) startX, (int) startY)) {
-            btnInvite.onTouchEvent(event);
-            btnInvite.performClick();
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
             btnSearch.performClick();
@@ -193,8 +187,6 @@ public class TopBarView extends FrameLayout {
           viewAvatar.onTouchEvent(event);
         } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
           btnNew.onTouchEvent(event);
-        } else if (isAClickInView(btnInvite, (int) event.getRawX(), (int) event.getRawY())) {
-          btnInvite.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
           btnSearch.onTouchEvent(event);
         } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
@@ -215,10 +207,6 @@ public class TopBarView extends FrameLayout {
     clickNew.onNext(null);
   }
 
-  @OnClick(R.id.btnInvite) void launchInvite() {
-    clickInvite.onNext(null);
-  }
-
   @OnClick(R.id.btnSearch) void animateSearch() {
     if (searchMode) {
       screenUtils.showKeyboard(editTextSearch, 0);
@@ -237,7 +225,6 @@ public class TopBarView extends FrameLayout {
       }
     });
     hideView(btnNew, false);
-    hideView(btnInvite, false);
     hideView(viewAvatar, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
@@ -255,7 +242,6 @@ public class TopBarView extends FrameLayout {
     btnSearch.setClickable(true);
 
     showView(btnNew, null);
-    showView(btnInvite, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
 
@@ -264,7 +250,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private int getMarginRightSearch() {
-    return btnNew.getWidth() + btnInvite.getWidth() + ((int) 3f * marginSmall);
+    return btnNew.getWidth() + ((int) 2f * marginSmall);
   }
 
   private int getMarginLeftSearch() {
@@ -272,7 +258,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private int getMarginRightBtnNew() {
-    return btnInvite.getWidth() + 2 * marginSmall;
+    return marginSmall;
   }
 
   private void hideView(View view, boolean left) {

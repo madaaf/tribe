@@ -98,8 +98,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-@Module(
-    includes = DataModule.class) public class NetModule {
+@Module(includes = DataModule.class) public class NetModule {
 
   static final int DISK_CACHE_SIZE = (int) DecimalByteUnit.MEGABYTES.toBytes(50);
   static final ConditionVariable LOCK = new ConditionVariable(true);
@@ -354,7 +353,7 @@ import timber.log.Timber;
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
       httpClientBuilder.addInterceptor(loggingInterceptor);
       httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }

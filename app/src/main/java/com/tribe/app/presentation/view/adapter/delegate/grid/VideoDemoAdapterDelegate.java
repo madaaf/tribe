@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * Created by tiago on 03/21/2017
  */
-public class MoreFriendsAdapterDelegate extends CTAAdapterDelegate {
+public class VideoDemoAdapterDelegate extends CTAAdapterDelegate {
 
-  public MoreFriendsAdapterDelegate(Context context, boolean shouldRoundCorners) {
+  public VideoDemoAdapterDelegate(Context context, boolean shouldRoundCorners) {
     super(context, shouldRoundCorners);
   }
 
@@ -20,18 +20,18 @@ public class MoreFriendsAdapterDelegate extends CTAAdapterDelegate {
   }
 
   @Override protected int getAvatarResource() {
-    return R.drawable.picto_more_friends;
+    return R.drawable.picto_play_video;
   }
 
   @Override protected String getTitle() {
-    return context.getString(R.string.grid_name_more_friends);
+    return context.getString(R.string.grid_name_video_demo);
   }
 
   @Override protected String getSubtitle() {
-    return context.getString(R.string.grid_status_more_friends);
+    return context.getString(R.string.grid_status_video_demo);
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    return items.get(position).getSubId().equals(Recipient.ID_MORE);
+    return items.get(position).getSubId().equals(Recipient.ID_VIDEO);
   }
 }

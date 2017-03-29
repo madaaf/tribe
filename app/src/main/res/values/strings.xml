@@ -17,7 +17,7 @@
 	<string name="action_adding_friend">Loading...</string>
 	<string name="action_friend">Added</string>
 	<string name="action_unblock">Unblock</string>
-	<string name="action_hang_live">Hang live</string>
+	<string name="action_hang_live">Video call</string>
 	<string name="action_add_member">Add in group</string>
 	<string name="action_member_added">Added</string>
 	<string name="action_group_member">Member</string>
@@ -140,7 +140,7 @@
 	<string name="permission_global_mic_description">Make sure friends can hear you\non your messages</string>
 	<string name="permission_global_popup_title">Make sure everything works perfectly!</string>
 	<string name="permission_global_popup_message">Let’s take care of permissions so you don’t miss anything from the most incredible video messenger.</string>
-	<string name="permission_global_popup_cancel">Stay incomplete</string>
+	<string name="permission_global_popup_cancel">Do it later</string>
 	<string name="permission_global_popup_confirm">LET\'S GO!</string>
 	<string name="permission_facebook_popup_title">Find friends from Facebook</string>
 	<string name="permission_facebook_popup_message">Your Facebook friends will be countinuously synced so you can see who you already know on Tribe.</string>
@@ -572,7 +572,7 @@
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>
 	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
-	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to hang live again!</string>
+	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to video call with him!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
 	
@@ -616,10 +616,14 @@
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
-	<string name="profile_fullscreen_notifications">Fullscreen notifications :telephone_receiver:</string>
+	<string name="profile_video_demo_title">Video demo :vhs:</string>
+	<string name="profile_video_demo_subtitle">Learn in 30\'\'</string>
+	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Don\'t miss calls from friends!</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You will probably miss calls from friends if you downgrade fullscreen notifications to regular push notifications.</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
+	<string name="profile_shortcuts_phone_log">Shortcuts in Phone logs :clock3:</string>
+	<string name="profile_blocked_friends">Blocked friends</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_logout">Logout :skull:</string>
@@ -754,17 +758,17 @@
 	<string name="tips_droppingguest_message">Congrats! Add him to the group from your grid if you want him to be a permanent member of this group who\'ll be notified for every live.</string>
 	<string name="tips_droppingguest_action1">OK, great!</string>
 	<string name="tips_enterfirstlive_title">Start a live experience!</string>
-	<string name="tips_enterfirstlive_message">You\'re about to call %1$s!</string>
+	<string name="tips_enterfirstlive_message">You\'re about to video call %1$s!</string>
 	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
-	<string name="tips_enterfirstlive_action2">Call someone else</string>
+	<string name="tips_enterfirstlive_action2">Video call someone else</string>
 	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
-	<string name="tips_startfirstlive_message">Your friends included in this live that you\'re available to hang live with them!</string>
+	<string name="tips_startfirstlive_message">Your friends have been notified that you are video calling them.</string>
 	<string name="tips_startfirstlive_action1">OK, great!</string>
 	<string name="tips_waiting5sec_title">Feeling impatient?</string>
 	<string name="tips_waiting5sec_message">Tap the :bell: button below to buzz your friends and make them join faster!</string>
 	<string name="tips_waiting5sec_action1">Perfect!</string>
 	<string name="tips_waiting60sec_title">Want more? :fire:</string>
-	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
+	<string name="tips_waiting60sec_message">You can video call with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Later</string>
 	
@@ -803,4 +807,19 @@
 	<string name="readmore_notifications_dismiss_popup_description">You\'ll miss all the calls from your friends</string>
 	<string name="readmore_notifications_dismiss_popup_validate">Turn On Notification</string>
 	<string name="readmore_notifications_dismiss_popup_cancel">Continue without notifications?</string>
+	
+	<!-- Camera Mic Popup -->
+	<string name="camera_microphone_popup_title">Enable camera and\nmicrophone to start!</string>
+	<string name="camera_microphone_popup_description">Make sure your friends\ncan see and hear you\nduring your video calls</string>
+	<string name="camera_microphone_popup_enable_camera">Enable camera</string>
+	<string name="camera_microphone_popup_camera_enabled">Camera enabled</string>
+	<string name="camera_microphone_popup_enable_microphone">Enable microphone</string>
+	<string name="camera_microphone_popup_microphone_enabled">Microphone enabled</string>
+	<string name="camera_microphone_popup_swipe_to_dismiss">Swipe to dismiss</string>
+	
+	<!-- Create Group Popup -->
+	<string name="create_group_popup_title">It was fun, right? Create\na group with them!</string>
+	<string name="create_group_popup_adjust_members">Adjust members</string>
+	<string name="create_group_popup_create">Create now</string>
+	<string name="create_group_popup_swipe_to_dismiss">Swipe to dismiss</string>
 </resources>

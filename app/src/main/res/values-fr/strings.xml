@@ -140,7 +140,7 @@
 	<string name="permission_global_mic_description">S\'assurer que vos amis peuvent vous\nentendre sur vos messages</string>
 	<string name="permission_global_popup_title">Assurez-vous que tout fonctionne parfaitement !</string>
 	<string name="permission_global_popup_message">Occupons-nous des permissions pour que vous ne manquiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
-	<string name="permission_global_popup_cancel">En savoir plus</string>
+	<string name="permission_global_popup_cancel">Plus tard</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
 	<string name="permission_facebook_popup_title">Retrouver facilement vos amis Facebook</string>
 	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
@@ -248,7 +248,7 @@
 	<string name="grid_status_last_seen_hours">Il y a qqs heures</string>
 	<string name="grid_status_last_seen_days">Il y a qqs jours</string>
 	<string name="grid_name_more_friends">Plus d\'amis</string>
-	<string name="grid_status_more_friends">Essayez !</string>
+	<string name="grid_status_more_friends">Partager votre nom d\'utilisateur !</string>
 	<string name="grid_name_video_demo">Vidéo démo</string>
 	<string name="grid_status_video_demo">Apprenez en 30 sec</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
@@ -572,7 +572,7 @@
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_add_addressbook_title">Connecter votre carnet d\'adresses</string>
 	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
-	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to hang live again!</string>
+	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to video call with him!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
 	
@@ -616,10 +616,14 @@
 	<string name="profile_title">Profil</string>
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :mag:</string>
-	<string name="profile_fullscreen_notifications">Notifications plein-écran :telephone_receiver:</string>
+	<string name="profile_video_demo_title">Démo vidéo :vhs:</string>
+	<string name="profile_video_demo_subtitle">Comprendre en 30 sec</string>
+	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Ne ratez plus les appels de vos amis!</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Vous allez peut être manquer des appels de vos amis si vous désactivez les notifications plein-écran.</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
+	<string name="profile_shortcuts_phone_log">Historique des appels :clock3:</string>
+	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>
@@ -803,4 +807,19 @@
 	<string name="readmore_notifications_dismiss_popup_description">Vous allez rater tous les appels de vos amis</string>
 	<string name="readmore_notifications_dismiss_popup_validate">Activer les notifications</string>
 	<string name="readmore_notifications_dismiss_popup_cancel">Continuer sans les notifications ?</string>
+	
+	<!-- Camera Mic Popup -->
+	<string name="camera_microphone_popup_title">Activez la caméra et\nle micro pour démarrer !</string>
+	<string name="camera_microphone_popup_description">Assurez vous que vos amis\npeuvent vous voir et vous entendre\npendant vos appels vidéo</string>
+	<string name="camera_microphone_popup_enable_camera">Activer la caméra</string>
+	<string name="camera_microphone_popup_camera_enabled">Caméra activée</string>
+	<string name="camera_microphone_popup_enable_microphone">Activer le micro</string>
+	<string name="camera_microphone_popup_microphone_enabled">Micro activé</string>
+	<string name="camera_microphone_popup_swipe_to_dismiss">Glissez pour fermer</string>
+	
+	<!-- Create Group Popup -->
+	<string name="create_group_popup_title">C\'était fun, hein ? Créez\nungroupe avec eux !</string>
+	<string name="create_group_popup_adjust_members">Ajuster les membres</string>
+	<string name="create_group_popup_create">Créer le groupe</string>
+	<string name="create_group_popup_swipe_to_dismiss">Glissez pour fermer</string>
 </resources>

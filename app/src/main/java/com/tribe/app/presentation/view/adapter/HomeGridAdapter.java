@@ -11,6 +11,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.MoreFriendsAdapterD
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserConnectedGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.VideoDemoAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
   private UserLiveGridAdapterDelegate userLiveGridAdapterDelegate;
   private UserConnectedGridAdapterDelegate userConnectedGridAdapterDelegate;
   private MoreFriendsAdapterDelegate moreFriendsAdapterDelegate;
+  private VideoDemoAdapterDelegate videoDemoAdapterDelegate;
 
   // VARIABLES
   private List<Recipient> items;
@@ -41,8 +43,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
   @Inject public HomeGridAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
     delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, true, false));
-    moreFriendsAdapterDelegate = new MoreFriendsAdapterDelegate(context, true);
-    delegatesManager.addDelegate(moreFriendsAdapterDelegate);
     delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
         new EmptyHeaderGridAdapterDelegate(context));
 
@@ -54,6 +54,12 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
 
     userConnectedGridAdapterDelegate = new UserConnectedGridAdapterDelegate(context);
     delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
+
+    moreFriendsAdapterDelegate = new MoreFriendsAdapterDelegate(context, true);
+    delegatesManager.addDelegate(moreFriendsAdapterDelegate);
+
+    videoDemoAdapterDelegate = new VideoDemoAdapterDelegate(context, true);
+    delegatesManager.addDelegate(videoDemoAdapterDelegate);
 
     items = new ArrayList<>();
 
@@ -101,7 +107,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
   public Observable<View> onClick() {
     return Observable.merge(userGridAdapterDelegate.onClick(),
         userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick(),
-        moreFriendsAdapterDelegate.onClick());
+        moreFriendsAdapterDelegate.onClick(), videoDemoAdapterDelegate.onClick());
   }
 
   public Observable<View> onLongClick() {

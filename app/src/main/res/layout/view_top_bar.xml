@@ -27,26 +27,13 @@
         android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:layout_gravity="right|center_vertical"
-        android:background="@drawable/selectable_button_all_rounded_white_10"
+        android:background="@drawable/selectable_button_all_rounded_5_violet"
         android:clickable="true"
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:singleLine="true"
         android:text="@string/topbar_new_live"
-        style="@style/Body.Two.White"
-        />
-
-    <ImageView
-        android:id="@+id/btnInvite"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:clickable="true"
-        android:foreground="@drawable/selectable_button_oval_light"
-        android:gravity="center_vertical"
-        android:src="@drawable/picto_invite"
         style="@style/Body.Two.White"
         />
 

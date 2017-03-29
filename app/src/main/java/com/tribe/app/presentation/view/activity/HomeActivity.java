@@ -371,6 +371,7 @@ public class HomeActivity extends BaseActivity
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
+          temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
@@ -439,17 +440,13 @@ public class HomeActivity extends BaseActivity
       navigator.openSmsForInvite(this, null);
     }));
 
-    subscriptions.add(searchView.onShow().subscribe(aVoid -> {
-      searchView.setVisibility(View.VISIBLE);
-    }));
+    subscriptions.add(
+        searchView.onShow().subscribe(aVoid -> searchView.setVisibility(View.VISIBLE)));
 
-    subscriptions.add(searchView.onGone().subscribe(aVoid -> {
-      searchView.setVisibility(View.GONE);
-    }));
+    subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
-    subscriptions.add(searchView.onHangLive().subscribe(recipient -> {
-      navigator.navigateToLive(this, recipient, PaletteGrid.get(0));
-    }));
+    subscriptions.add(searchView.onHangLive()
+        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0))));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
