@@ -24,6 +24,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 public class LiveRoomView extends FrameLayout {
 
@@ -78,11 +79,10 @@ public class LiveRoomView extends FrameLayout {
 
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;
-      setScreenSize();
     } else {
       landscapeMode = false;
-      setScreenSize();
     }
+    setScreenSize();
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -133,6 +133,8 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
+    Timber.e("SOEF ADD VIEW");
+    setScreenSize();
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
     setViewsOrder();
     setConfigurationScreen();
@@ -151,8 +153,9 @@ public class LiveRoomView extends FrameLayout {
     }
     setScreenSize();
     setConfigurationScreen();
+    Timber.e("SOEF TYPE " + flexboxLayout.getChildCount());
   }
-  
+
   public @TribeRoomViewType int getType() {
     return type;
   }
@@ -217,6 +220,7 @@ public class LiveRoomView extends FrameLayout {
 
   private void addViewInContainer(int viewIndex, LiveRowView liveRowView,
       boolean guestDraguedByMe) {
+
     flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
 
@@ -234,7 +238,6 @@ public class LiveRoomView extends FrameLayout {
         lp1.flexGrow = 1;
         viewLocalLive.setLayoutParams(lp1);
         flexboxLayout.addView(viewLocalLive);
-
         liveRowView.setLayoutParams(lp);
         flexboxLayout.addView(liveRowView);
         break;
@@ -254,6 +257,8 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
+
+    Timber.e("SOEF " + viewIndex + " size flex :" + flexboxLayout.getChildCount() + " ");
   }
 
   private void setScreenSize() {
