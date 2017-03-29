@@ -605,7 +605,7 @@
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
 	<string name="live_title_with_guests">%1$s, and guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
-	<string name="live_waiting_state_initiating">:electric_plug: Initiating live with %1$s...</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	
