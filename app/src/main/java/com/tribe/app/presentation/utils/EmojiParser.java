@@ -95,6 +95,7 @@ public class EmojiParser {
     IEmojiMap.put(":clock10:", "\uD83D\uDD59");
     IEmojiMap.put(":electric_plug:", "\uD83D\uDD0C");
     IEmojiMap.put(":loud_sound:", "\uD83D\uDD0A");
+    IEmojiMap.put(":vhs:", "\uD83D\uDCFC");
   }
 
   /**

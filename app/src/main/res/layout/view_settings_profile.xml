@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.activity.SettingsActivity"
     android:background="@color/grey.background.profile_info"
+    tools:context=".presentation.view.activity.ProfileActivity"
     >
 
   <com.tribe.app.presentation.view.component.ProfileInfoView

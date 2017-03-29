@@ -11,12 +11,14 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -31,13 +33,13 @@ import rx.subjects.PublishSubject;
  */
 public class ActionView extends FrameLayout {
 
-  @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, SHARING, TOGGLE, CRITICAL, REGULAR })
+  @IntDef({ HIERARCHY, HIERARCHY_WITH_IMAGE, IMAGE, TOGGLE, CRITICAL, REGULAR })
   public @interface ActionViewType {
   }
 
   public static final int HIERARCHY = 0;
   public static final int HIERARCHY_WITH_IMAGE = 1;
-  public static final int SHARING = 2;
+  public static final int IMAGE = 2;
   public static final int TOGGLE = 3;
   public static final int CRITICAL = 4;
   public static final int REGULAR = 5;
@@ -49,6 +51,8 @@ public class ActionView extends FrameLayout {
   @BindView(R.id.txtBody) TextViewFont txtBody;
 
   @Nullable @BindView(R.id.avatarView) AvatarView avatarView;
+
+  @Nullable @BindView(R.id.imgAction) ImageView imgAction;
 
   @Nullable @BindView(R.id.viewSwitch) SwitchCompat viewSwitch;
 
@@ -92,8 +96,8 @@ public class ActionView extends FrameLayout {
       layout = R.layout.view_action_hierarchy;
     } else if (type == HIERARCHY_WITH_IMAGE) {
       layout = R.layout.view_action_hierarchy_with_image;
-    } else if (type == SHARING) {
-      layout = R.layout.view_action_share;
+    } else if (type == IMAGE) {
+      layout = R.layout.view_action_image;
     } else if (type == TOGGLE) {
       layout = R.layout.view_action_toggle;
     } else if (type == CRITICAL) {
@@ -106,15 +110,21 @@ public class ActionView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
 
     if (a.hasValue(R.styleable.ActionView_actionTitle)) {
-      setTitle(getResources().getString(a.getResourceId(R.styleable.ActionView_actionTitle,
-          R.string.group_details_settings_title)));
+      setTitle(EmojiParser.demojizedText(getResources().getString(
+          a.getResourceId(R.styleable.ActionView_actionTitle,
+              R.string.group_details_settings_title))));
     }
 
     if (a.hasValue(R.styleable.ActionView_actionBody)) {
-      setBody(getResources().getString(a.getResourceId(R.styleable.ActionView_actionBody,
-          R.string.group_details_settings_subtitle)));
+      setBody(EmojiParser.demojizedText(getResources().getString(
+          a.getResourceId(R.styleable.ActionView_actionBody,
+              R.string.group_details_settings_subtitle))));
     } else {
       computeBody();
+    }
+
+    if (a.hasValue(R.styleable.ActionView_actionImage)) {
+      setImage(a.getResourceId(R.styleable.ActionView_actionImage, R.drawable.picto_play_video));
     }
 
     a.recycle();
@@ -122,7 +132,8 @@ public class ActionView extends FrameLayout {
     int paddingStart = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
     int paddingEnd =
         type == TOGGLE ? getResources().getDimensionPixelSize(R.dimen.horizontal_margin_smaller)
-            : getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
+            : type == IMAGE ? getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small)
+                : getResources().getDimensionPixelSize(R.dimen.horizontal_margin);
     setPadding(paddingStart, paddingStart, paddingEnd, paddingStart);
 
     setClickable(true);
@@ -155,6 +166,10 @@ public class ActionView extends FrameLayout {
   public void setImage(String url) {
     imageUrl = url;
     computeImageView();
+  }
+
+  public void setImage(int drawable) {
+    imgAction.setImageResource(drawable);
   }
 
   public void setRecipient(Recipient recipient) {

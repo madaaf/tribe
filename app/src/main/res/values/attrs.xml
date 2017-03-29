@@ -117,17 +117,18 @@
     <attr format="enum" name="actionType">
       <enum name="hierarchy" value="0"/>
       <enum name="hierarchy_with_image" value="1"/>
-      <enum name="sharing" value="2"/>
+      <enum name="image" value="2"/>
       <enum name="toggle" value="3"/>
       <enum name="critical" value="4"/>
       <enum name="regular" value="5"/>
     </attr>
+    <attr format="integer" name="actionImage"/>
   </declare-styleable>
 
   <declare-styleable name="SyncView">
     <attr format="integer" name="syncIcon"/>
     <attr format="integer" name="syncBackground"/>
-    <attr format="enum" name="syncType">‡
+    <attr format="enum" name="syncType">
       <enum name="fb" value="0"/>
       <enum name="addressbook" value="1"/>
     </attr>

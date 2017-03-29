@@ -5,8 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -18,7 +18,6 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -29,7 +28,7 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-public class ProfileView extends FrameLayout {
+public class ProfileView extends ScrollView {
 
   @Inject User user;
 
@@ -54,6 +53,10 @@ public class ProfileView extends FrameLayout {
   @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
   @BindView(R.id.viewActionVisible) ActionView viewActionVisible;
+
+  @BindView(R.id.viewActionVideo) ActionView viewActionVideo;
+
+  @BindView(R.id.viewActionBlocked) ActionView viewActionBlocked;
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
 
@@ -100,17 +103,6 @@ public class ProfileView extends FrameLayout {
     viewAvatar.load(user.getProfilePicture());
 
     viewActionVisible.setValue(!user.isInvisibleMode());
-
-    viewActionProfile.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_user_infos)));
-    viewActionFollow.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_follow_us)));
-    viewActionRateUs.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_rate_us)));
-    viewActionLogout.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_logout)));
-    viewActionVisible.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_invisible_mode)));
 
     txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME,
         String.valueOf(BuildConfig.VERSION_CODE)));
@@ -185,7 +177,15 @@ public class ProfileView extends FrameLayout {
     return onDebugMode;
   }
 
+  public Observable<Void> onVideo() {
+    return viewActionVideo.onClick();
+  }
+
   public Observable<Void> onShare() {
     return onShare;
+  }
+
+  public Observable<Void> onBlockedFriends() {
+    return viewActionBlocked.onClick();
   }
 }

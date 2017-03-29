@@ -39,6 +39,7 @@ import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
+import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
@@ -132,4 +133,6 @@ import dagger.Component;
   void inject(LiveControlsView liveControlsView);
 
   void inject(LiveStatusNameView liveStatusNameView);
+
+  void inject(SettingsBlockedFriendsView settingsBlockedFriendsView);
 }
