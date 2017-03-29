@@ -218,6 +218,10 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  public void setOpenInviteValue(float valueOpenInvite) {
+    viewRoom.setOpenInviteValue(valueOpenInvite);
+  }
+
   @Override protected void onFinishInflate() {
     view = LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
     unbinder = ButterKnife.bind(this);
@@ -1021,6 +1025,7 @@ public class LiveView extends FrameLayout {
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
     }
   }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////

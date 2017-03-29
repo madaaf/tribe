@@ -306,7 +306,7 @@ public class TileView extends SquareCardView {
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
-    avatar.changeSize(sizeAvatar, true);
+    avatar.changeSize(sizeAvatar, false);
 
     if (isGrid()) {
       int sizeTile = screenUtils.getWidthPx() / getResources().getInteger(R.integer.columnNumber);

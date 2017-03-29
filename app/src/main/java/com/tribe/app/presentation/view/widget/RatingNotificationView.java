@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -41,7 +40,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -169,9 +167,11 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   private void setTimer() {
-    timerSubscription = Observable.timer(timeout, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aLong -> {
-      hideView();
-    });
+    timerSubscription = Observable.timer(timeout, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          hideView();
+        });
   }
 
   private void resetTimer() {
@@ -354,7 +354,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
            */
           if (clickDuration < MAX_CLICK_DURATION
               && Math.abs(dx) < maxClickDistanceX
-              && Math.abs(dy) < maxClickDistanceY && indexStar != -1) {
+              && Math.abs(dy) < maxClickDistanceY
+              && indexStar != -1) {
             Timber.d("clickDuration : " + clickDuration);
             Timber.d("Math.abs(dx) : " + Math.abs(dx));
             Timber.d("Math.abs(dy) : " + Math.abs(dy));
@@ -396,8 +397,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     int marginY = screenUtils.dpToPx(15);
     int[] location = new int[2];
     child.getLocationOnScreen(location);
-    Rect rect = new Rect(location[0] - marginX, location[1] - marginY, location[0] + child.getWidth() + marginX,
-        location[1] + child.getHeight() + marginY);
+    Rect rect = new Rect(location[0] - marginX, location[1] - marginY,
+        location[0] + child.getWidth() + marginX, location[1] + child.getHeight() + marginY);
     return rect.contains(x, y);
   }
 }

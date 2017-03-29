@@ -528,6 +528,7 @@ public class LiveContainer extends FrameLayout {
     viewLive.setLayoutParams(params);
     viewLive.requestLayout();
     viewInviteLive.setFadeInEffet(Math.abs(value / screenUtils.dpToPx(LiveInviteView.WIDTH)));
+    viewLive.setOpenInviteValue(value);
     viewShadowRight.setTranslationX(value);
   }
 
