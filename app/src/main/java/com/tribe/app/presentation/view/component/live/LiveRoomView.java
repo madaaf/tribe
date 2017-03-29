@@ -24,14 +24,12 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 public class LiveRoomView extends FrameLayout {
 
   @IntDef({ GRID, LINEAR }) public @interface TribeRoomViewType {
   }
 
-  private static int heightOndropBar;
   public static final int GRID = 0;
   public static final int LINEAR = 1;
   private static final int DURATION = 300;
@@ -47,6 +45,7 @@ public class LiveRoomView extends FrameLayout {
   private int witdhScreen;
   private int heightScreen;
   private boolean isConfigurationChanged = false;
+  private int heightOndropBar;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -82,7 +81,7 @@ public class LiveRoomView extends FrameLayout {
     } else {
       landscapeMode = false;
     }
-    setScreenSize();
+    setScreenSize(0);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -133,8 +132,7 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    Timber.e("SOEF ADD VIEW");
-    setScreenSize();
+    setScreenSize(0);
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
     setViewsOrder();
     setConfigurationScreen();
@@ -151,13 +149,17 @@ public class LiveRoomView extends FrameLayout {
         liveRowView.setRoomType(type);
       }
     }
-    setScreenSize();
+    setScreenSize(0);
     setConfigurationScreen();
-    Timber.e("SOEF TYPE " + flexboxLayout.getChildCount());
   }
 
   public @TribeRoomViewType int getType() {
     return type;
+  }
+
+  public void setOpenInviteValue(float valueOpenInvite) {
+    setScreenSize((int) valueOpenInvite);
+    setConfigurationScreen();
   }
 
   /////////////////
@@ -175,7 +177,7 @@ public class LiveRoomView extends FrameLayout {
     } else {
       landscapeMode = false;
     }
-    setScreenSize();
+    setScreenSize(0);
     setViewsOrder();
     setConfigurationScreen();
   }
@@ -183,7 +185,7 @@ public class LiveRoomView extends FrameLayout {
   @Override protected void onLayout(boolean changed, int l, int t, int r, int b) {
     super.onLayout(changed, l, t, r, b);
     if (isConfigurationChanged) {
-      setScreenSize();
+      setScreenSize(0);
       setConfigurationScreen();
       isConfigurationChanged = false;
     }
@@ -257,12 +259,10 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
-
-    Timber.e("SOEF " + viewIndex + " size flex :" + flexboxLayout.getChildCount() + " ");
   }
 
-  private void setScreenSize() {
-    this.witdhScreen = flexboxLayout.getWidth();
+  private void setScreenSize(int openInviteWidth) {
+    this.witdhScreen = flexboxLayout.getWidth() + openInviteWidth;
     this.heightScreen = flexboxLayout.getHeight();
   }
 
@@ -351,7 +351,7 @@ public class LiveRoomView extends FrameLayout {
   private void setWidth(int index, int width) {
     View view = flexboxLayout.getChildAt(index);
     FlexboxLayout.LayoutParams l = (FlexboxLayout.LayoutParams) view.getLayoutParams();
-    l.width = width - (LiveInviteView.WIDTH / 2);
+    l.width = width;
     l.flexGrow = 1;
     view.setLayoutParams(l);
   }
