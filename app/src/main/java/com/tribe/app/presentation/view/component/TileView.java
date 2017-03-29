@@ -149,8 +149,6 @@ public class TileView extends SquareCardView {
     init(false);
   }
 
-  private View view;
-
   public void init(boolean isDragging) {
     subscriptions = new CompositeSubscription();
 
@@ -178,7 +176,7 @@ public class TileView extends SquareCardView {
         break;
     }
 
-    view = LayoutInflater.from(getContext()).inflate(resLayout, this);
+    LayoutInflater.from(getContext()).inflate(resLayout, this);
     unbinder = ButterKnife.bind(this);
 
     initDependencyInjector();
@@ -223,6 +221,15 @@ public class TileView extends SquareCardView {
 
   @Override protected void onFinishInflate() {
     super.onFinishInflate();
+  }
+
+  @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    if (isGrid() && (getHeight() != 0 && viewBG.getHeight() != getHeight()) || (getWidth() != 0
+        && viewBG.getWidth() != getWidth())) {
+      UIUtils.changeWidthHeightOfView(viewBG, getWidth(), getHeight());
+    }
   }
 
   private void initResources() {

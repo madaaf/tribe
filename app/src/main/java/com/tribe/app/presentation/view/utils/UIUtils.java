@@ -104,6 +104,13 @@ public class UIUtils {
     v.setLayoutParams(params);
   }
 
+  public static void changeWidthHeightOfView(View v, int width, int height) {
+    ViewGroup.LayoutParams params = v.getLayoutParams();
+    params.width = width;
+    params.height = height;
+    v.setLayoutParams(params);
+  }
+
   public static void showReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
     if (!ViewCompat.isAttachedToWindow(v) || v.getVisibility() == View.VISIBLE) return;
 
