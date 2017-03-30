@@ -1,8 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.DeleteContactsABJob;
-import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
@@ -85,14 +83,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
 
   public void loadContactsAddressBook() {
     getDiskFBContactList.execute(new ContactFBListSubscriber());
-  }
-
-  public void deleteABContacts() {
-    jobManager.addJobInBackground(new DeleteContactsABJob());
-  }
-
-  public void deleteFBContacts() {
-    jobManager.addJobInBackground(new DeleteContactsFBJob());
   }
 
   public void goToLauncher() {

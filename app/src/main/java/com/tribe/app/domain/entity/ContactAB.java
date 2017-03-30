@@ -24,7 +24,8 @@ public class ContactAB extends Contact {
   }
 
   @Override public String toString() {
-    return String.format("[%s] %s\tphones=%s", id, String.valueOf(name), String.valueOf(phones));
+    return String.format("[%s] %s\tphones=%s\tnbUsers=%d", id, String.valueOf(name),
+        String.valueOf(phones), userList != null ? userList.size() : 0);
   }
 
   public List<String> getPhones() {

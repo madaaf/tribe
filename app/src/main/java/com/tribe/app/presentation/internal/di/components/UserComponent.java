@@ -17,15 +17,14 @@ import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
-import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
-import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
+import com.tribe.app.presentation.view.component.live.ChasingDotsView;
 import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
@@ -33,7 +32,6 @@ import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
-import com.tribe.app.presentation.view.component.live.ChasingDotsView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -102,11 +100,7 @@ import dagger.Component;
 
   void inject(AccessView accessView);
 
-  void inject(PickYourFriendsActivity pickYourFriendsActivity);
-
   void inject(LoadFriendsView loadFriendsView);
-
-  void inject(PickAllView pickAllView);
 
   void inject(TileView tileView);
 

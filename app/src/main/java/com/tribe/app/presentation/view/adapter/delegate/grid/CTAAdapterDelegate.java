@@ -56,7 +56,7 @@ public abstract class CTAAdapterDelegate extends RxAdapterDelegate<List<Recipien
     int nbrColumn = context.getResources().getInteger(R.integer.columnNumber);
     int sizeTile =
         screenUtils.getWidthPx() / context.getResources().getInteger(R.integer.columnNumber);
-    int sizeAvatar = (int) ((screenUtils.getWidthPx() / nbrColumn) * TileView.RATION_AVATAR_TILE);
+    int sizeAvatar = (int) ((screenUtils.getWidthPx() / nbrColumn) * TileView.RATIO_AVATAR_TILE);
     vh.viewAvatar.changeSize(sizeAvatar, true);
     UIUtils.changeHeightOfView(vh.layoutSubtitle, sizeAvatar);
 

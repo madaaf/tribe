@@ -134,6 +134,7 @@ public class HomeActivity extends BaseActivity
   private boolean finish = false;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
+  private boolean searchViewDisplayed = false;
 
   // DIMEN
 
@@ -258,7 +259,7 @@ public class HomeActivity extends BaseActivity
       appStateMonitor.stop();
     }
 
-    soundManager.cancelMediaPlayer();
+    if (soundManager != null) soundManager.cancelMediaPlayer();
 
     stopService();
 
@@ -428,10 +429,12 @@ public class HomeActivity extends BaseActivity
       if (open) {
         recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
         layoutManager.setScrollEnabled(false);
+        searchViewDisplayed = true;
         searchView.show();
       } else {
         recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
         layoutManager.setScrollEnabled(true);
+        searchViewDisplayed = false;
         searchView.hide();
       }
     }));
@@ -534,9 +537,8 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onBackPressed() {
-    super.onBackPressed();
-
-    if (!topBarContainer.isSearchMode()) {
+    if (!topBarContainer.isSearchMode() && !searchViewDisplayed) {
+      super.onBackPressed();
       // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
       // and transparent floating activity and auto finishes)
       startActivity(new Intent(this, DummyActivity.class));
@@ -564,6 +566,10 @@ public class HomeActivity extends BaseActivity
     return this;
   }
 
+  @Override public void onSyncDone() {
+
+  }
+
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
     Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
@@ -580,7 +586,6 @@ public class HomeActivity extends BaseActivity
 
   private void syncContacts() {
     homeGridPresenter.lookupContacts();
-    lastSync.set(System.currentTimeMillis());
   }
 
   @Override public void onAppDidEnterForeground() {

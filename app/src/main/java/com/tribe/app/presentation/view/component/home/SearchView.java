@@ -201,9 +201,12 @@ public class SearchView extends FrameLayout implements SearchMVPView {
               searchResult.getFriendship().setStatus(FriendshipRealm.DEFAULT);
               onUnblock.onNext(searchResult.getFriendship());
             }
-          } else {
+          } else if (o instanceof Contact) {
             Contact contact = (Contact) o;
             searchPresenter.createFriendship(contact.getUserList().get(0).getId());
+          } else if (o instanceof User) {
+            User user = (User) o;
+            searchPresenter.createFriendship(user.getId());
           }
         }));
 
@@ -286,8 +289,11 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         }
       } else if (obj instanceof Recipient) {
         Recipient recipient = (Recipient) obj;
-        if (recipient.getDisplayName().toLowerCase().startsWith(search) || (recipient.getUsername()
-            != null && recipient.getUsername().toLowerCase().startsWith(search))) {
+        if (!StringUtils.isEmpty(search) && ((!StringUtils.isEmpty(recipient.getDisplayName())
+            && recipient.getDisplayName().toLowerCase().startsWith(search))
+            || (recipient.getUsername() != null && recipient.getUsername()
+            .toLowerCase()
+            .startsWith(search)))) {
           shouldAdd = true;
         }
       }
@@ -298,12 +304,25 @@ public class SearchView extends FrameLayout implements SearchMVPView {
           this.filteredContactList.add(
               EmojiParser.demojizedText(getContext().getString(R.string.search_already_friends)));
         } else if (!hasDoneContacts && obj instanceof Contact) {
-          this.filteredContactList.add(
-              EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
-          hasDoneContacts = true;
+          Contact contact = (Contact) obj;
+          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+            if (!hasDoneSuggested) {
+              hasDoneSuggested = true;
+              this.filteredContactList.add(EmojiParser.demojizedText(
+                  getContext().getString(R.string.search_already_friends)));
+            }
+
+            this.filteredContactList.add(contact.getUserList().get(0));
+
+            shouldAdd = false;
+          } else {
+            this.filteredContactList.add(
+                EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
+            hasDoneContacts = true;
+          }
         }
 
-        this.filteredContactList.add(obj);
+        if (shouldAdd) this.filteredContactList.add(obj);
       }
     }
   }

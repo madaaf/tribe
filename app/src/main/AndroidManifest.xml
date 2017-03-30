@@ -101,13 +101,6 @@
         android:theme="@style/AppTheme"/>
 
     <activity
-        android:name=".presentation.view.activity.PickYourFriendsActivity"
-        android:configChanges="orientation|screenSize"
-        android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustPan"/>
-
-    <activity
         android:name=".presentation.view.activity.HomeActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
         android:label="@string/app_name"

@@ -310,18 +310,6 @@ public class TopBarView extends FrameLayout {
     return searchMode;
   }
 
-  @Override public boolean dispatchKeyEventPreIme(KeyEvent event) {
-    InputMethodManager imm =
-        (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-    if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK && searchMode) {
-      closeSearch();
-      return true;
-    }
-
-    return super.dispatchKeyEventPreIme(event);
-  }
-
   public void showSpinner(float value, float totalDragDistance) {
     value = (value / totalDragDistance);
     progressRefresh.clearAnimation();

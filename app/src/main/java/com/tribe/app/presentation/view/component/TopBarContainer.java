@@ -45,10 +45,7 @@ public class TopBarContainer extends FrameLayout {
   private ScreenUtils screenUtils;
   private float currentDragPercent;
   private boolean beingDragged = false;
-  private float lastDownX;
-  private float lastDownXTr;
-  private float lastDownY;
-  private float lastDownYTr;
+  private float lastDownX, lastDownXTr, lastDownY, lastDownYTr;
   private int activePointerId;
   private VelocityTracker velocityTracker;
   private int touchSlop;

@@ -17,7 +17,7 @@
 	<string name="action_adding_friend">Ajout en cours...</string>
 	<string name="action_friend">Ajouté</string>
 	<string name="action_unblock">Débloquer</string>
-	<string name="action_hang_live">Demarrer un live</string>
+	<string name="action_hang_live">Appeler</string>
 	<string name="action_add_member">Ajouter au groupe</string>
 	<string name="action_member_added">Ajouté</string>
 	<string name="action_group_member">Membre</string>
@@ -47,6 +47,7 @@
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Rechercher un(e) ami(e)</string>
 	<string name="contacts_search_new">NEW</string>
+	<string name="contacts_search_new_tooltip">Trouvez tout le monde ici !</string>
 	<string name="contacts_share_profile_button">Partager votre profil</string>
 	<string name="contacts_share_profile_description">Passer le message</string>
 	<string name="contacts_section_facebook_sync_title">Synchroniser vos ami(e)s</string>
@@ -88,7 +89,7 @@
 	<string name="permission_popup_push_home_no">Rester seul</string>
 	<string name="permission_popup_push_home_yes">Notifiez moi !</string>
 	<string name="permission_push_fake_alert_title">Ne loupez rien de vos amis !</string>
-	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis sont live ou connectés.</string>
+	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis vous appelle ou sont connectés.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">En savoir plus</string>
 	<string name="permission_push_disabled_alert_title">Push désactivés</string>
@@ -240,8 +241,8 @@
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
 	<string name="grid_name_with_guests">\navec des invités</string>
-	<string name="grid_status_live">LIVE</string>
-	<string name="grid_status_live_with_guests">Live avec des invités!</string>
+	<string name="grid_status_live">APPEL</string>
+	<string name="grid_status_live_with_guests">En appel avec des invités!</string>
 	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
 	<string name="grid_status_last_seen">Il y a %1$s</string>
@@ -591,9 +592,9 @@
 	<!-- Live -->
 	<string name="live_drag_friends">Glissez des invités !</string>
 	<string name="live_invite_link">Lien pour\ninviter</string>
-	<string name="live_drop_friend">Relachez votre ami dans le live !</string>
-	<string name="live_drop_friend_impossible">Seulement %1$d amis en live en même temps !</string>
-	<string name="live_join_impossible">:lock: Seulement %1$d amis en live en même temps !</string>
+	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
+	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
+	<string name="live_join_impossible">:lock: Seulement %1$d amis en appel en même temps !</string>
 	<string name="live_event_added">%1$s ajouté !</string>
 	<string name="live_event_joined">%1$s est entré !</string>
 	<string name="live_event_left">%1$s est parti !</string>
@@ -609,6 +610,7 @@
 	<string name="live_waiting_state_initiating">:electric_plug: Initiation de l\'appel avec %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
+	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Faire glisser pour fermer</string>
@@ -685,7 +687,7 @@
 	<string name="tutorial_message_tap_to_cancel">Annuler l\'envoi si besoin</string>
 	<string name="tutorial_message_filter_grid">Filtrer vos amis</string>
 	<string name="tutorial_message_invite_friends">Donnez accès à vos 3 meilleurs amis</string>
-	<string name="tutorial_message_live_add_friends">Ajoutez des invités au live !</string>
+	<string name="tutorial_message_live_add_friends">Ajoutez des invités à l\'appel !</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
@@ -748,28 +750,28 @@
 	<string name="add_friend_error_invisible_invite_android">Demander par SMS</string>
 	
 	<!-- Tips -->
-	<string name="tips_leavingroom_title">Quitter ce live ? :skull:</string>
-	<string name="tips_leavingroom_message">En tapant le bouton :x:, vous allez quitter ce live pour revenir sur votre grille.</string>
+	<string name="tips_leavingroom_title">Quitter cet appel ? :skull:</string>
+	<string name="tips_leavingroom_message">En tapant le bouton :x:, vous allez quitter cet appel pour revenir sur votre grille.</string>
 	<string name="tips_leavingroom_action1">Quitter</string>
-	<string name="tips_leavingroom_action2">Rester live</string>
-	<string name="tips_draggingguest_title">Inviter des amis dans ce live !</string>
-	<string name="tips_draggingguest_message">Faites glisser vos amis pour les faire rejoindre ce live.</string>
+	<string name="tips_leavingroom_action2">Continuer l\'appel</string>
+	<string name="tips_draggingguest_title">Inviter des amis à cet appel !</string>
+	<string name="tips_draggingguest_message">Faites glisser vos amis pour les faire rejoindre cet appel.</string>
 	<string name="tips_draggingguest_action1">J\'ai compris</string>
 	<string name="tips_droppingguest_title">Premier ami invité ! :clap:</string>
-	<string name="tips_droppingguest_message">Félicitations ! Ajoutez-le au groupe depuis votre grid si vous souhaitez qu\'il devienne un membre permanent de ce groupe qui sera notifié pour chaque live.</string>
+	<string name="tips_droppingguest_message">Félicitations ! Ajoutez-le au groupe depuis votre grille si vous souhaitez qu\'il devienne un membre permanent de ce groupe qui sera notifié pour chaque live.</string>
 	<string name="tips_droppingguest_action1">Super !</string>
-	<string name="tips_enterfirstlive_title">Commencer l\'expérience !</string>
-	<string name="tips_enterfirstlive_message">Vous êtes sur le point de rejoindre %1$s en live.</string>
+	<string name="tips_enterfirstlive_title">Démarrer un appel !</string>
+	<string name="tips_enterfirstlive_message">Vous êtes sur le point d\'appeler %1$s.</string>
 	<string name="tips_enterfirstlive_action1">C\'est parti !</string>
-	<string name="tips_enterfirstlive_action2">Commencer avec un autre ami</string>
+	<string name="tips_enterfirstlive_action2">Démarrer avec un autre ami</string>
 	<string name="tips_startfirstlive_title">Notifications envoyées :bell:</string>
-	<string name="tips_startfirstlive_message">Les amis inclus dans ce live ont été notifié que vous étiez disponible.</string>
+	<string name="tips_startfirstlive_message">Les amis inclus dans cet appel ont été notifié que vous étiez disponible.</string>
 	<string name="tips_startfirstlive_action1">Parfait !</string>
 	<string name="tips_waiting5sec_title">Impatient ?</string>
 	<string name="tips_waiting5sec_message">Appuyez sur le bouton :bell: en bas de l\'écran pour buzzer vos amis et les faire venir plus rapidement.</string>
 	<string name="tips_waiting5sec_action1">Génial !</string>
 	<string name="tips_waiting60sec_title">Vous en voulez plus ? :fire:</string>
-	<string name="tips_waiting60sec_message">Vous pouvez être en live avec plus de 8 personnes simultanément.</string>
+	<string name="tips_waiting60sec_message">Vous pouvez être en appel avec plus de 8 personnes simultanément.</string>
 	<string name="tips_waiting60sec_action1">Invitez des amis !</string>
 	<string name="tips_waiting60sec_action2">Plus tard</string>
 	
@@ -787,7 +789,7 @@
 	<!-- Call Kit -->
 	<string name="call_kit_swipe_down">Glissez vers le bas pour décliner</string>
 	<string name="call_kit_swipe_up">Glissez vers le haut pour rejoindre</string>
-	<string name="call_kit_title">Live commence avec</string>
+	<string name="call_kit_title">Appel démarre avec</string>
 	
 	<!-- Read More -->
 	<string name="readmore_contacts_title">Trouver vos\ncontacts sur tribe</string>

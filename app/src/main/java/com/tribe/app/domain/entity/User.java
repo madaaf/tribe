@@ -35,7 +35,6 @@ public class User implements Serializable, BaseListInterface {
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
-
   private boolean is_online = false;
   private Date last_seen_at;
 

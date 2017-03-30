@@ -116,7 +116,8 @@ import rx.Observable;
     RealmList<FriendshipRealm> result = new RealmList<>();
 
     for (FriendshipRealm fr : friendships) {
-      if (!excludeBlocked || (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT))) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+          .equals(FriendshipRealm.DEFAULT))) {
         fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
         fr.setLive(liveMap.containsKey(fr.getId()));
 
@@ -214,21 +215,29 @@ import rx.Observable;
             result.add(recipient);
           }
 
-          for (Contact contact : contactInviteList) {
-            boolean shouldAdd = true;
-            if (contact.getUserList() != null) {
-              for (User userInList : contact.getUserList()) {
-                if (mapUsersAdded.containsKey(userInList)) {
-                  shouldAdd = false;
-                }
-              }
-            }
+          for (Contact contact : contactOnAppList) {
+            compute(mapUsersAdded, contact, result);
+          }
 
-            if (shouldAdd) result.add(contact);
+          for (Contact contact : contactInviteList) {
+            compute(mapUsersAdded, contact, result);
           }
 
           return result;
         });
+  }
+
+  private void compute(Map<String, User> mapUsersAdded, Contact contact, List<Object> result) {
+    boolean shouldAdd = true;
+    if (contact.getUserList() != null) {
+      for (User userInList : contact.getUserList()) {
+        if (mapUsersAdded.containsKey(userInList.getId())) {
+          shouldAdd = false;
+        }
+      }
+    }
+
+    if (shouldAdd) result.add(contact);
   }
 
   @Override public Observable<Void> howManyFriends() {

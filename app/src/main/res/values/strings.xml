@@ -47,6 +47,7 @@
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Search for a friend</string>
 	<string name="contacts_search_new">NEW</string>
+	<string name="contacts_search_new_tooltip">Find everyone you know here!</string>
 	<string name="contacts_share_profile_button">Share your handle</string>
 	<string name="contacts_share_profile_description">Spread the word</string>
 	<string name="contacts_section_facebook_sync_title">Synchronize friends</string>
@@ -88,7 +89,7 @@
 	<string name="permission_popup_push_home_no">Stay alone</string>
 	<string name="permission_popup_push_home_yes">Notify me</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
-	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or live.</string>
+	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or video calling you.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">Read more</string>
 	<string name="permission_push_disabled_alert_title">Push permission denied</string>
@@ -609,6 +610,7 @@
 	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
+	<string name="live_screenshot_saved_toast">Saved in camera roll! :camera:</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
@@ -685,7 +687,7 @@
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
 	<string name="tutorial_message_filter_grid">Filter your friends</string>
 	<string name="tutorial_message_invite_friends">Give access to your 3 best friends</string>
-	<string name="tutorial_message_live_add_friends">Add guests in the live!</string>
+	<string name="tutorial_message_live_add_friends">Add guests in the call!</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
@@ -749,16 +751,16 @@
 	
 	<!-- Tips -->
 	<string name="tips_leavingroom_title">Want to leave? :skull:</string>
-	<string name="tips_leavingroom_message">By tapping the :x: button, your live hangout will be finished.</string>
+	<string name="tips_leavingroom_message">By tapping the :x: button, your video call will be finished.</string>
 	<string name="tips_leavingroom_action1">Leave</string>
 	<string name="tips_leavingroom_action2">No, I\'ll stay</string>
-	<string name="tips_draggingguest_title">Add friends to the live!</string>
-	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the live hangout!</string>
+	<string name="tips_draggingguest_title">Add friends to the call!</string>
+	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the video call!</string>
 	<string name="tips_draggingguest_action1">Gotcha</string>
 	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
 	<string name="tips_droppingguest_message">Congrats! Add him to the group from your grid if you want him to be a permanent member of this group who\'ll be notified for every live.</string>
 	<string name="tips_droppingguest_action1">OK, great!</string>
-	<string name="tips_enterfirstlive_title">Start a live experience!</string>
+	<string name="tips_enterfirstlive_title">Start a video call!</string>
 	<string name="tips_enterfirstlive_message">You\'re about to video call %1$s!</string>
 	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
 	<string name="tips_enterfirstlive_action2">Video call someone else</string>
@@ -787,7 +789,7 @@
 	<!-- Call Kit -->
 	<string name="call_kit_swipe_down">Swipe down to answer</string>
 	<string name="call_kit_swipe_up">Swipe up to decline</string>
-	<string name="call_kit_title">Live starts with</string>
+	<string name="call_kit_title">Video call starts with</string>
 	
 	<!-- Read More -->
 	<string name="readmore_contacts_title">Finding your\ncontacts on tribe</string>

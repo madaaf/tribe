@@ -329,6 +329,7 @@ public class HomeGridPresenter implements Presenter {
 
     @Override public void onNext(List<Contact> contactList) {
       jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
+      if (homeGridView != null) homeGridView.onSyncDone();
     }
   }
 }

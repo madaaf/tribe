@@ -8,6 +8,8 @@ import java.util.List;
  */
 public interface ContactInterface {
 
+  String getId();
+
   void setHowManyFriends(int friends);
 
   int getHowManyFriends();
@@ -17,4 +19,8 @@ public interface ContactInterface {
   void setUserList(RealmList<UserRealm> userRealmList);
 
   List<UserRealm> getUsers();
+
+  void setNew(boolean isNew);
+
+  boolean isNew();
 }

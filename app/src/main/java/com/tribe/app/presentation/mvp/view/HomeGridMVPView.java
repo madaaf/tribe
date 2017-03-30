@@ -20,4 +20,6 @@ public interface HomeGridMVPView extends LoadDataMVPView {
   void successFacebookLogin();
 
   void errorFacebookLogin();
+
+  void onSyncDone();
 }

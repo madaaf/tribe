@@ -44,6 +44,7 @@ import javax.inject.Singleton;
       contact.setName(contactABRealm.getName());
       contact.setUserList(userRealmDataMapper.transform(contactABRealm.getUsers(), false));
       contact.setHowManyFriends(contactABRealm.getHowManyFriends());
+      contact.setNew(contactABRealm.isNew());
       return contact;
     } else {
       ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
@@ -51,6 +52,7 @@ import javax.inject.Singleton;
       contact.setName(contactFBRealm.getName());
       contact.setUserList(userRealmDataMapper.transform(contactFBRealm.getUserList(), false));
       contact.setHowManyFriends(contactFBRealm.getHowManyFriends());
+      contact.setNew(contactFBRealm.isNew());
       return contact;
     }
   }

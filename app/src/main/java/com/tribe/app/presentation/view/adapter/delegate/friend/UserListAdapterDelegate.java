@@ -36,18 +36,12 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
     if (!user.isNewFriend() && !user.isFriend()) {
       return getAddFriendButton();
     } else {
-      return getAddedButton();
+      return getHangLiveButton();
     }
   }
 
   @Override protected ButtonModel getButtonModelTo(BaseListInterface baseListItem) {
-    User user = (User) baseListItem;
-
-    if (!user.isNewFriend() && !user.isFriend()) {
-      return getAddedButton();
-    } else {
-      return getAddFriendButton();
-    }
+    return getHangLiveButton();
   }
 
   private ButtonModel getAddFriendButton() {
@@ -55,23 +49,21 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
         ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
   }
 
-  private ButtonModel getAddedButton() {
-    return new ButtonModel(context.getString(R.string.action_member_added),
-        ContextCompat.getColor(context, R.color.blue_new_opacity_10),
-        ContextCompat.getColor(context, R.color.blue_new));
+  private ButtonModel getHangLiveButton() {
+    return new ButtonModel(context.getString(R.string.action_hang_live),
+        ContextCompat.getColor(context, R.color.red), Color.WHITE);
   }
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     User user = (User) baseListItem;
     if (!user.isFriend() && !user.isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
+        animations.put(vh, animateProgressBar(vh));
         user.setAnimateAdd(true);
         clickAdd.onNext(vh.itemView);
       });
     } else if (!user.isNewFriend() && !user.isFriend() && user.isInvisibleMode()) {
-      vh.btnAdd.setOnClickListener(v -> {
-        clickAdd.onNext(vh.itemView);
-      });
+      vh.btnAdd.setOnClickListener(v -> clickAdd.onNext(vh.itemView));
     } else if (user.isFriend()) {
       vh.btnAdd.setOnClickListener(null);
     }
