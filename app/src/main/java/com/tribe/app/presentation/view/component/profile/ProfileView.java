@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -23,6 +24,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
@@ -125,8 +127,25 @@ public class ProfileView extends ScrollView {
       onChangeVisible.onNext(!isChecked);
     }));
 
-    subscriptions.add(viewActionPhoneIntegration.onChecked()
-        .subscribe(isChecked -> fullScreenNotifications.set(isChecked)));
+    subscriptions.add(viewActionPhoneIntegration.onChecked().flatMap(isChecked -> {
+      if (!isChecked) {
+        return DialogFactory.dialog(getContext(),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_title),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_msg),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_disable),
+            getContext().getString(R.string.action_cancel));
+      } else {
+        return Observable.just(true);
+      }
+    }, (isChecked, proceed) -> Pair.create(isChecked, proceed)).filter(pair -> {
+      if (!pair.second) {
+        pair = Pair.create(true, true);
+        viewActionPhoneIntegration.setValue(true);
+      }
+      return pair.second;
+    }).subscribe(pair -> {
+      fullScreenNotifications.set(pair.first);
+    }));
   }
 
   private void initDependencyInjector() {
