@@ -64,6 +64,7 @@ ext {
   easyRSVersion = '0.5.3'
   guavaVersion = '19.0'
   flexboxVersion = '0.2.5'
+  instacaptureVersion = '1.2.2'
 
   //Testing
   robolectricVersion = '3.0'
@@ -131,8 +132,9 @@ ext {
                               blurKit                 : "com.wonderkiln:blurkit:${blurKitVersion}",
                               rxAppState              : "com.jenzz:RxAppState:${rxAppStateVersion}",
                               webSocket               : "com.neovisionaries:nv-websocket-client:${webSocketVersion}",
-                              flexbox                 : "com.google.android:flexbox:${flexboxVersion}",
+                              flexbox: "com.google.android:flexbox:${flexboxVersion}",
                               easyRS                  : "io.github.silvaren:easyrs:${easyRSVersion}",
+                              instacapture            : "com.github.tarek360:instacapture:${instacaptureVersion}",
                               guava                   : "com.google.guava:guava:${guavaVersion}"]
 
 

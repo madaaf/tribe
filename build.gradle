@@ -28,6 +28,7 @@ allprojects {
 
   repositories {
     maven { url "http://appboy.github.io/appboy-android-sdk/sdk" }
+    maven { url "https://jitpack.io" }
   }
 }
 
