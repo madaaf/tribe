@@ -14,6 +14,7 @@ import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
+import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
@@ -39,6 +40,7 @@ import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
@@ -82,6 +84,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
+import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -173,6 +176,8 @@ public interface ApplicationComponent {
 
   void inject(BaseListAdapterDelegate baseListAdapterDelegate);
 
+  void inject(TooltipView tooltipView);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -185,6 +190,8 @@ public interface ApplicationComponent {
   void inject(DeleteContactsABJob deleteContactsABJob);
 
   void inject(DeleteContactsFBJob deleteContactsFBJob);
+
+  void inject(RemoveNewStatusContactJob removeNewStatusContactJob);
 
   // SERVICES
   void inject(WSService wsService);
@@ -257,6 +264,8 @@ public interface ApplicationComponent {
   NotificationManagerCompat notificationManagerCompat();
 
   @LastSync Preference<Long> lastSync();
+
+  @NewContactsTooltip Preference<Boolean> newContactsTooltip();
 
   @LastVersionCode Preference<Integer> lastVersionCode();
 

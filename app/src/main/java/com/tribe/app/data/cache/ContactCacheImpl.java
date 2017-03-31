@@ -243,6 +243,33 @@ public class ContactCacheImpl implements ContactCache {
     }
   }
 
+  @Override public void removeNewStatus() {
+    Realm obsRealm = Realm.getDefaultInstance();
+    try {
+      obsRealm.executeTransaction(realm1 -> {
+        RealmResults<ContactABRealm> contactABRealmResults =
+            realm1.where(ContactABRealm.class).findAll();
+
+        if (contactABRealmResults != null) {
+          for (ContactABRealm contactABRealm : contactABRealmResults) {
+            if (contactABRealm.isNew()) contactABRealm.setNew(false);
+          }
+        }
+
+        RealmResults<ContactFBRealm> contactFBRealmResults =
+            realm1.where(ContactFBRealm.class).findAll();
+
+        if (contactFBRealmResults != null) {
+          for (ContactFBRealm contactFBRealm : contactFBRealmResults) {
+            if (contactFBRealm.isNew()) contactFBRealm.setNew(false);
+          }
+        }
+      });
+    } finally {
+      obsRealm.close();
+    }
+  }
+
   @Override public void deleteContactsFB() {
     Realm obsRealm = Realm.getDefaultInstance();
 

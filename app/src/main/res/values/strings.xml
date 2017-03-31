@@ -47,7 +47,7 @@
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Search for a friend</string>
 	<string name="contacts_search_new">NEW</string>
-	<string name="contacts_search_new_tooltip">Find everyone you know here!</string>
+	<string name="contacts_search_new_tooltip">Find your friends already on Tribe!</string>
 	<string name="contacts_share_profile_button">Share your handle</string>
 	<string name="contacts_share_profile_description">Spread the word</string>
 	<string name="contacts_section_facebook_sync_title">Synchronize friends</string>
@@ -241,7 +241,7 @@
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
 	<string name="grid_name_with_guests">\nand guests</string>
-	<string name="grid_status_live">LIVE</string>
+	<string name="grid_status_live">Live Call</string>
 	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
 	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
@@ -249,10 +249,10 @@
 	<string name="grid_status_last_seen_minutes">Few mins ago</string>
 	<string name="grid_status_last_seen_hours">Few hours ago</string>
 	<string name="grid_status_last_seen_days">Few days ago</string>
-	<string name="grid_name_more_friends">More friends</string>
-	<string name="grid_status_more_friends">Send username</string>
-	<string name="grid_name_video_demo">Video demo</string>
-	<string name="grid_status_video_demo">Learn in 30\'\'</string>
+	<string name="grid_name_more_friends">More Friends</string>
+	<string name="grid_status_more_friends">Invite your friends!</string>
+	<string name="grid_name_video_demo">Video Demo</string>
+	<string name="grid_status_video_demo">Master it in 30sec!</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -521,7 +521,7 @@
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Friend</string>
 	<string name="topbar_new_live">New group</string>
-	<string name="topbar_search">Search for friends</string>
+	<string name="topbar_search">Friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_video_action">:vhs: Watch video demo</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
@@ -610,7 +610,7 @@
 	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
-	<string name="live_screenshot_saved_toast">Saved in camera roll! :camera:</string>
+	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
@@ -619,11 +619,11 @@
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
-	<string name="profile_video_demo_title">Video demo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Learn in 30\'\'</string>
+	<string name="profile_video_demo_title">Video Demo :vhs:</string>
+	<string name="profile_video_demo_subtitle">Master it in 30 sec!</string>
 	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Don\'t miss calls from friends!</string>
-	<string name="profile_fullscreen_notifications_disable_alert_msg">You will probably miss calls from friends if you downgrade fullscreen notifications to regular push notifications.</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
 	<string name="profile_shortcuts_phone_log">Shortcuts in Phone logs :clock3:</string>
 	<string name="profile_blocked_friends">Blocked friends</string>
@@ -793,20 +793,20 @@
 	
 	<!-- Read More -->
 	<string name="readmore_contacts_title">Finding your\ncontacts on tribe</string>
-	<string name="readmore_contacts_description">tribe only works when you have\npeople to talk to. Uploading your\ncontacts helps you connect with\nyour friends. :blush:</string>
-	<string name="readmore_contacts_skip_description">If you skip this step, you‘ll never\nfind your friends on tribe.</string>
+	<string name="readmore_contacts_description">What fun is Tribe with no friends?!\nUploading your contacts allows\nyou to find your friends right away!</string>
+	<string name="readmore_contacts_skip_description">Disabling this step makes it\nso you won\'t know which\nof your friends are on Tribe.</string>
 	<string name="readmore_contacts_activate">Turn on</string>
 	<string name="readmore_contacts_dismiss">Not now</string>
-	<string name="readmore_notifications_title">Never miss anything from\nyour friends on tribe</string>
-	<string name="readmore_notifications_description">tribe let you join the funniest group\ncalls with your friends. Notifications\nwill warn you when a friend is calling\nyou, joins the app and is online.</string>
-	<string name="readmore_notifications_skip_description">If you skip this step, you‘ll never be\nnotified when friends call you, joins\nthe app and is online on tribe.</string>
+	<string name="readmore_notifications_title">Never miss a thing from\nyour friends on tribe</string>
+	<string name="readmore_notifications_description">Don\'t be the friend who misses\nout on the fun. Notifications alert you\nwhenever a friend is calling you,\njoins the app, and is online.</string>
+	<string name="readmore_notifications_skip_description">By skipping this step, you\'ll never be notified\nwhen friends are calling you and will\nnever know when they\'re on the app.</string>
 	<string name="readmore_notifications_activate">Turn on</string>
 	<string name="readmore_notifications_dismiss">Not now</string>
 	<string name="readmore_contacts_dismiss_popup_title">Continue all alone?</string>
 	<string name="readmore_contacts_dismiss_popup_description">You\'ll miss all your friends that are already here and coming</string>
 	<string name="readmore_contacts_dismiss_popup_validate">Turn On</string>
 	<string name="readmore_contacts_dismiss_popup_cancel">Continue alone</string>
-	<string name="readmore_notifications_dismiss_popup_title">Continue without notifications?</string>
+	<string name="readmore_notifications_dismiss_popup_title">Continue without notifications</string>
 	<string name="readmore_notifications_dismiss_popup_description">You\'ll miss all the calls from your friends</string>
 	<string name="readmore_notifications_dismiss_popup_validate">Turn On Notification</string>
 	<string name="readmore_notifications_dismiss_popup_cancel">Continue without notifications?</string>

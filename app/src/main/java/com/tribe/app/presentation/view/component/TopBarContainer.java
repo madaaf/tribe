@@ -1,17 +1,22 @@
 package com.tribe.app.presentation.view.component;
 
 import android.content.Context;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
@@ -19,10 +24,14 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.TooltipView;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -37,9 +46,13 @@ public class TopBarContainer extends FrameLayout {
 
   @Inject SoundManager soundManager;
 
+  @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
+
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerView;
 
   @BindView(R.id.topBarView) TopBarView topBarView;
+
+  @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
   // VARIABLES
   private ScreenUtils screenUtils;
@@ -51,6 +64,7 @@ public class TopBarContainer extends FrameLayout {
   private int touchSlop;
   private int currentOffsetTop;
   private boolean dropPullToRefresh = false;
+  private TooltipView tooltipView;
 
   // SPRINGS
   private SpringSystem springSystem = null;
@@ -63,6 +77,7 @@ public class TopBarContainer extends FrameLayout {
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onRefresh = PublishSubject.create();
+  private PublishSubject<Pair<Integer, Boolean>> onNewContactsInfos = PublishSubject.create();
 
   public TopBarContainer(Context context) {
     super(context);
@@ -118,6 +133,23 @@ public class TopBarContainer extends FrameLayout {
 
       return super.onTouchEvent(event);
     });
+
+    recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+      private int overallYScroll = 0;
+
+      @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        super.onScrolled(recyclerView, dx, dy);
+        overallYScroll = overallYScroll + dy;
+
+        if (tooltipView != null && ViewCompat.isAttachedToWindow(tooltipView)) {
+          if (overallYScroll > 0) {
+            tooltipView.setVisibility(View.GONE);
+          } else if (overallYScroll == 0) {
+            tooltipView.setVisibility(View.VISIBLE);
+          }
+        }
+      }
+    });
   }
 
   private void initDimen() {
@@ -125,7 +157,40 @@ public class TopBarContainer extends FrameLayout {
   }
 
   private void initSubscriptions() {
+    topBarView.initNewContactsObs(onNewContactsInfos);
+  }
 
+  private void initTooltip() {
+    if (tooltipView == null && !newContactsTooltip.get()) {
+      newContactsTooltip.set(true);
+      txtNewContacts.getViewTreeObserver()
+          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+              txtNewContacts.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+              
+              tooltipView = new TooltipView(getContext());
+              FrameLayout.LayoutParams params =
+                  new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                      ViewGroup.LayoutParams.WRAP_CONTENT);
+              tooltipView.setText(R.string.contacts_search_new_tooltip);
+              tooltipView.setBackgroundResource(R.drawable.bg_tooltip_new_contacts);
+              tooltipView.setMaxLines(2);
+
+              int[] locationNewContacts = new int[2];
+              txtNewContacts.getLocationOnScreen(locationNewContacts);
+
+              tooltipView.setMaxWidth(screenUtils.getWidthPx() >> 1);
+              tooltipView.measure(0, 0);
+
+              tooltipView.setTranslationY(locationNewContacts[1] + screenUtils.dpToPx(10));
+              tooltipView.setTranslationX(
+                  locationNewContacts[0] + (txtNewContacts.getMeasuredWidth() >> 1)
+                      - (tooltipView.getMeasuredWidth() >> 1));
+
+              addView(tooltipView, params);
+            }
+          });
+    }
   }
 
   public boolean isSearchMode() {
@@ -134,6 +199,12 @@ public class TopBarContainer extends FrameLayout {
 
   public void closeSearch() {
     topBarView.closeSearch();
+  }
+
+  public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
+    obsContactList.observeOn(AndroidSchedulers.mainThread()).doOnNext(integerBooleanPair -> {
+      if (integerBooleanPair.second) initTooltip();
+    }).subscribe(onNewContactsInfos);
   }
 
   ///////////////////////
@@ -219,7 +290,11 @@ public class TopBarContainer extends FrameLayout {
 
   private void translateTop(float value) {
     recyclerView.setTranslationY(value);
-    topBarView.showSpinner(value, getTotalDragDistance());
+    float alphaValue = (value / getTotalDragDistance());
+    topBarView.showSpinner(alphaValue);
+    if (tooltipView != null && ViewCompat.isAttachedToWindow(tooltipView)) {
+      tooltipView.setAlpha(1 - alphaValue);
+    }
     if (value > getTotalDragDistance() / 2 && dropPullToRefresh) {
       onRefresh.onNext(true);
     }
@@ -303,7 +378,7 @@ public class TopBarContainer extends FrameLayout {
     return true;
   }
 
-  ////////refresh///////////////
+  ///////////////////////
   //    OBSERVABLES    //
   ///////////////////////
 
@@ -328,6 +403,11 @@ public class TopBarContainer extends FrameLayout {
   }
 
   public Observable<Boolean> onOpenCloseSearch() {
-    return topBarView.onOpenCloseSearch();
+    return topBarView.onOpenCloseSearch().doOnNext(aBoolean -> {
+      if (aBoolean && tooltipView != null) {
+        removeView(tooltipView);
+        tooltipView = null;
+      }
+    });
   }
 }

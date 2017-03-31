@@ -99,6 +99,14 @@
     <attr format="integer" name="textStyle"/>
   </declare-styleable>
 
+  <declare-styleable name="TooltipView">
+    <attr format="integer" name="tooltipBackground"/>
+    <attr format="color" name="tooltipTextColor"/>
+    <attr format="enum" name="tooltipType">
+      <enum name="bottom" value="0"/>
+    </attr>
+  </declare-styleable>
+
   <declare-styleable name="GroupSuggestionView">
     <attr format="integer" name="groupDrawable"/>
     <attr format="enum" name="groupType">

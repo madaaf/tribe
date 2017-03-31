@@ -4,6 +4,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
@@ -25,6 +26,10 @@ public class BaseListViewHolder extends RecyclerView.ViewHolder {
   @BindView(R.id.viewAvatar) public AvatarView viewAvatar;
 
   @BindView(R.id.txtName) public TextViewFont txtName;
+
+  @BindView(R.id.txtNew) public TextViewFont txtNew;
+
+  @BindView(R.id.layoutInfos) public ViewGroup layoutInfos;
 
   @BindView(R.id.txtUsername) public TextViewFont txtUsername;
 

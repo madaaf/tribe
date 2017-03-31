@@ -200,7 +200,7 @@
         android:keepScreenOn="true"
         android:noHistory="true"
         android:screenOrientation="portrait"
-        android:theme="@style/AppTheme.White"/>
+        android:theme="@style/AppTheme.FullScreen"/>
 
     <activity
         android:name=".presentation.view.activity.LiveActivity"

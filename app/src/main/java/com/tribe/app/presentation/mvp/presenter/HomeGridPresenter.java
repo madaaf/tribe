@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
+import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
@@ -16,6 +17,7 @@ import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.CreateMembership;
+import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
@@ -52,11 +54,13 @@ public class HomeGridPresenter implements Presenter {
   private UpdateUser updateUser;
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
+  private GetDiskContactOnAppList getDiskContactOnAppList;
 
   // SUBSCRIBERS
   private FriendListSubscriber diskFriendListSubscriber;
   private FriendListSubscriber cloudFriendListSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
+  private ContactsOnAppSubscriber contactsOnAppSubscriber;
 
   @Inject public HomeGridPresenter(JobManager jobManager,
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos, LeaveGroup leaveGroup,
@@ -64,7 +68,8 @@ public class HomeGridPresenter implements Presenter {
       @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
       CreateMembership createMembership, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUser updateUser, RxFacebook rxFacebook,
-      @Named("synchroContactList") UseCase synchroContactList) {
+      @Named("synchroContactList") UseCase synchroContactList,
+      GetDiskContactOnAppList getDiskContactOnAppList) {
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.leaveGroup = leaveGroup;
@@ -77,6 +82,7 @@ public class HomeGridPresenter implements Presenter {
     this.updateUser = updateUser;
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
+    this.getDiskContactOnAppList = getDiskContactOnAppList;
   }
 
   @Override public void onViewDetached() {
@@ -89,6 +95,8 @@ public class HomeGridPresenter implements Presenter {
     updateUser.unsubscribe();
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
+    getDiskContactOnAppList.unsubscribe();
+    updateFriendship.unsubscribe();
     homeGridView = null;
   }
 
@@ -99,6 +107,7 @@ public class HomeGridPresenter implements Presenter {
   public void reload(boolean sync) {
     showViewLoading();
     loadFriendList();
+    loadContactsOnApp();
     if (!sync) syncFriendList();
   }
 
@@ -330,6 +339,33 @@ public class HomeGridPresenter implements Presenter {
     @Override public void onNext(List<Contact> contactList) {
       jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
       if (homeGridView != null) homeGridView.onSyncDone();
+    }
+  }
+
+  public void removeNewStatusContact() {
+    jobManager.addJobInBackground(new RemoveNewStatusContactJob());
+  }
+
+  public void loadContactsOnApp() {
+    if (contactsOnAppSubscriber != null) {
+      contactsOnAppSubscriber.unsubscribe();
+    }
+
+    contactsOnAppSubscriber = new ContactsOnAppSubscriber();
+    getDiskContactOnAppList.execute(contactsOnAppSubscriber);
+  }
+
+  private final class ContactsOnAppSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      homeGridView.renderContactsOnApp(contactList);
     }
   }
 }

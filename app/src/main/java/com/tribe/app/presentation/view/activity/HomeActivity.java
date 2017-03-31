@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,10 +31,12 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -122,6 +125,8 @@ public class HomeActivity extends BaseActivity
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContacts = PublishSubject.create();
+  private PublishSubject<Pair<Integer, Boolean>> onNewContactsInfos = PublishSubject.create();
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
@@ -275,6 +280,37 @@ public class HomeActivity extends BaseActivity
     rxPermissions = new RxPermissions(this);
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     latestRecipientList = new ArrayList<>();
+
+    subscriptions.add(onNewContacts.observeOn(Schedulers.computation()).map(contactList -> {
+      List<Contact> result = new ArrayList<>();
+
+      if (getCurrentUser().getFriendships() == null) {
+        result.addAll(contactList);
+      } else {
+        for (Contact contact : contactList) {
+          boolean shouldAdd = true;
+
+          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+            User linkedUser = contact.getUserList().get(0);
+
+            for (Friendship friendship : getCurrentUser().getFriendships()) {
+              if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
+            }
+          }
+
+          if (shouldAdd) result.add(contact);
+        }
+      }
+
+      int nbContacts = result.size();
+      boolean hasNewContacts = false;
+
+      for (Contact contact : result) {
+        if (contact.isNew()) hasNewContacts = true;
+      }
+
+      return new Pair<>(nbContacts, hasNewContacts);
+    }).subscribe(onNewContactsInfos));
   }
 
   private void initUi() {
@@ -425,19 +461,27 @@ public class HomeActivity extends BaseActivity
       navigator.openSmsForInvite(this, null);
     }));
 
-    subscriptions.add(topBarContainer.onOpenCloseSearch().subscribe(open -> {
-      if (open) {
-        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
-        layoutManager.setScrollEnabled(false);
-        searchViewDisplayed = true;
-        searchView.show();
-      } else {
-        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
-        layoutManager.setScrollEnabled(true);
-        searchViewDisplayed = false;
-        searchView.hide();
-      }
-    }));
+    subscriptions.add(topBarContainer.onOpenCloseSearch()
+        .doOnNext(open -> {
+          if (open) {
+            recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+            layoutManager.setScrollEnabled(false);
+            searchViewDisplayed = true;
+            searchView.show();
+          } else {
+            recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+            layoutManager.setScrollEnabled(true);
+            searchViewDisplayed = false;
+            searchView.hide();
+          }
+        })
+        .delay(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(open -> {
+          if (!open) homeGridPresenter.removeNewStatusContact();
+        }));
+
+    topBarContainer.initNewContactsObs((Observable) onNewContactsInfos);
   }
 
   private void initSearch() {
@@ -567,7 +611,11 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onSyncDone() {
+    lastSync.set(System.currentTimeMillis());
+  }
 
+  @Override public void renderContactsOnApp(List<Contact> contactList) {
+    onNewContacts.onNext(contactList);
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

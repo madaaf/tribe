@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
+import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -36,9 +37,15 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
   @Inject @RoutingMode Preference<String> routingMode;
 
+  @Inject @NewContactsTooltip Preference<Boolean> tooltip;
+
   @BindView(R.id.viewActionRouted) ActionView viewActionRouted;
 
   @BindView(R.id.viewActionFuckUpSomeTokens) ActionView viewActionFuckUpSomeTokens;
+
+  @BindView(R.id.viewActionTooltip) ActionView viewActionTooltip;
+
+  @BindView(R.id.viewActionSync) ActionView viewActionSync;
 
   private Unbinder unbinder;
 
@@ -66,8 +73,9 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
     viewActionRouted.setTitle("Routed mode");
     viewActionRouted.setValue(routingMode.get().equals(TribeLiveOptions.ROUTED));
-
     viewActionFuckUpSomeTokens.setTitle("Fuck up some tokens");
+    viewActionTooltip.setTitle("Clear tooltip");
+    viewActionSync.setTitle("Sync");
   }
 
   private void initDependencyInjector() {
@@ -92,10 +100,21 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
       accessToken.setRefreshToken("thisisafakerefreshtokenfortestingpurposestiago");
       userCache.put(accessToken);
     }));
+
+    subscriptions.add(viewActionTooltip.onClick().subscribe(aVoid -> tooltip.set(false)));
+
+    subscriptions.add(viewActionSync.onClick().subscribe(aVoid -> {
+      viewActionSync.setBody("Syncing...");
+      debugPresenter.lookupContacts();
+    }));
   }
 
   @Override public void finish() {
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+  }
+
+  @Override public void onSyncDone() {
+    viewActionSync.setBody("Done!");
   }
 }

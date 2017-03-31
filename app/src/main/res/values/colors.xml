@@ -49,6 +49,7 @@
   <color name="grey.blue">#DBE0E9</color>
   <color name="grey.unblock">#787878</color>
   <color name="grey.rating">#F1F3F5</color>
+  <color name="grey.new.contacts">#757575</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
@@ -73,6 +74,7 @@
   <!-- REDS -->
   <color name="red">#F9474C</color>
   <color name="red.circle">#F22936</color>
+  <color name="red.new.contacts">#FD2448</color>
 
   <!-- ORANGES -->
 

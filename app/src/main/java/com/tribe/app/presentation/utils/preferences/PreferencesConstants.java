@@ -13,6 +13,7 @@ public class PreferencesConstants {
   public static String DEBUG_MODE = "DEBUG_MODE";
   public static String UI_SOUNDS = "UI_SOUNDS";
   public static String ROUTING_MODE = "ROUTED_MODE";
+  public static String NEW_CONTACT_TOOLTIP = "NEW_CONTACT_TOOLTIP";
 
   // LEAVE FEATURE
   public static String TRIBE_STATE = "TRIBE_STATE";

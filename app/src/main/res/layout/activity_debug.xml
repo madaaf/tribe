@@ -49,6 +49,36 @@
           android:layout_height="@dimen/divider_size"
           android:background="@color/grey.light"
           />
+
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionTooltip"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@null"
+          app:actionTitle="Clear tooltip"
+          app:actionType="regular"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
+
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionSync"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@null"
+          app:actionTitle="Sync"
+          app:actionType="regular"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
     </LinearLayout>
   </ScrollView>
 </FrameLayout>

@@ -44,6 +44,8 @@ public class User implements Serializable, BaseListInterface {
 
   private AvatarModel avatarModel = null;
 
+  private boolean isNew = false;
+
   public User(String id) {
     this.id = id;
     this.inviteList = new ArrayList<>();
@@ -274,6 +276,14 @@ public class User implements Serializable, BaseListInterface {
 
   public List<Invite> getInviteList() {
     return inviteList;
+  }
+
+  public void setNew(boolean aNew) {
+    isNew = aNew;
+  }
+
+  public boolean isNew() {
+    return isNew;
   }
 
   @Override public boolean equals(Object o) {

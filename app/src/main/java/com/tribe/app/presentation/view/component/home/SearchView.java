@@ -312,6 +312,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
                   getContext().getString(R.string.search_already_friends)));
             }
 
+            User user = contact.getUserList().get(0);
+            user.setNew(contact.isNew());
             this.filteredContactList.add(contact.getUserList().get(0));
 
             shouldAdd = false;
@@ -451,6 +453,9 @@ public class SearchView extends FrameLayout implements SearchMVPView {
     colorAnimation.setDuration(DURATION_FAST);
     colorAnimation.setInterpolator(new DecelerateInterpolator());
     colorAnimation.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+      }
+
       @Override public void onAnimationEnd(Animator animation) {
         recyclerViewContacts.setVisibility(View.VISIBLE);
       }
@@ -460,6 +465,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   public void hide() {
     search = "";
+
     recyclerViewContacts.setVisibility(View.GONE);
 
     ValueAnimator colorAnimation =

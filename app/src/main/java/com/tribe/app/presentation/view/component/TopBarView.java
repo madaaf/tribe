@@ -3,16 +3,19 @@ package com.tribe.app.presentation.view.component;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
@@ -27,6 +30,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
@@ -57,6 +61,8 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
 
+  @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
+
   @BindView(R.id.imgClose) View imgClose;
 
   @BindView(R.id.progressRefresh) CircularProgressView progressRefresh;
@@ -68,6 +74,10 @@ public class TopBarView extends FrameLayout {
   // VARIABLES
   private float startX, startY = 0;
   private boolean searchMode = false;
+  private GradientDrawable drawableBGNewContacts;
+  private int nbContacts = 0;
+  private boolean hasNewContacts = false;
+  private boolean open = false;
 
   // RESOURCES
   private int avatarSize;
@@ -116,9 +126,16 @@ public class TopBarView extends FrameLayout {
   }
 
   private void init(Context context, AttributeSet attrs) {
+
   }
 
   private void initUI() {
+    drawableBGNewContacts = new GradientDrawable();
+    drawableBGNewContacts.setShape(GradientDrawable.RECTANGLE);
+    drawableBGNewContacts.setCornerRadius(screenUtils.dpToPx(5));
+    drawableBGNewContacts.setColor(Color.RED);
+    txtNewContacts.setBackgroundDrawable(drawableBGNewContacts);
+
     imgClose.setTranslationX(screenUtils.getWidthPx() >> 1);
     imgClose.setAlpha(1);
 
@@ -215,6 +232,10 @@ public class TopBarView extends FrameLayout {
 
     onOpenCloseSearch.onNext(true);
 
+    if (nbContacts > 0) {
+      showNewContacts(false);
+    }
+
     searchMode = true;
     btnSearch.setClickable(false);
 
@@ -244,6 +265,10 @@ public class TopBarView extends FrameLayout {
     showView(btnNew, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
+
+    if (nbContacts > 0) {
+      showNewContacts(true);
+    }
 
     AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
@@ -306,12 +331,42 @@ public class TopBarView extends FrameLayout {
     return true;
   }
 
+  private void showNewContacts(boolean show) {
+    if (searchMode) return;
+
+    txtNewContacts.animate()
+        .alpha(show ? 1 : 0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
+  public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
+    obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
+      nbContacts = integerBooleanPair.first;
+      hasNewContacts = integerBooleanPair.second;
+
+      if (nbContacts > 0) {
+        showNewContacts(true);
+        txtNewContacts.setText("" + nbContacts);
+        if (hasNewContacts) {
+          drawableBGNewContacts.setColor(
+              ContextCompat.getColor(getContext(), R.color.red_new_contacts));
+        } else {
+          drawableBGNewContacts.setColor(
+              ContextCompat.getColor(getContext(), R.color.grey_new_contacts));
+        }
+      } else {
+        showNewContacts(false);
+      }
+    });
+  }
+
   public boolean isSearchMode() {
     return searchMode;
   }
 
-  public void showSpinner(float value, float totalDragDistance) {
-    value = (value / totalDragDistance);
+  public void showSpinner(float value) {
     progressRefresh.clearAnimation();
     progressRefresh.setVisibility(VISIBLE);
     progressRefreshBack.setVisibility(VISIBLE);

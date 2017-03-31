@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
@@ -22,4 +23,6 @@ public interface HomeGridMVPView extends LoadDataMVPView {
   void errorFacebookLogin();
 
   void onSyncDone();
+
+  void renderContactsOnApp(List<Contact> contactList);
 }
