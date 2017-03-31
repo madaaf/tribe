@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   @Override protected void onResume() {
     super.onResume();
-    if (getResources().getBoolean(R.bool.isTablette)) {
+    if (getResources().getBoolean(R.bool.isTablet)) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
   }

@@ -284,7 +284,7 @@ public class LiveView extends FrameLayout {
             margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
                 R.dimen.margin_horizontal) + 3;
           }
-        }); // SOEF
+        });
     statusBarHeight = 0;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {

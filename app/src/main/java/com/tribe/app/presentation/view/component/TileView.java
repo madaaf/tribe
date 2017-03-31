@@ -182,7 +182,7 @@ public class TileView extends SquareCardView {
     initDependencyInjector();
     initResources();
     initSprings();
-    initSize(isDragging);
+    initSize();
 
     setCardElevation(0);
     ViewCompat.setElevation(this, 0);
@@ -300,16 +300,22 @@ public class TileView extends SquareCardView {
     springInside.setEndValue(0f).setAtRest();
   }
 
-  public void initSize(boolean isDragging) {
-    sizeAvatar = isGrid() ? (int) ((screenUtils.getWidthPx() / getResources().getInteger(
-        R.integer.columnNumber)) * RATIO_AVATAR_TILE) : screenUtils.getWidthPx() / 7;
+  public void initSize() {
+    int screenSize =
+        (screenUtils.getWidthPx() < screenUtils.getHeightPx()) ? screenUtils.getWidthPx()
+            : screenUtils.getHeightPx();
+    if (getResources().getBoolean(R.bool.isTablet)) {
+      screenSize = screenUtils.getWidthPx();
+    }
+    sizeAvatar = isGrid() ? (int) ((screenSize / getResources().getInteger(R.integer.columnNumber))
+        * RATIO_AVATAR_TILE) : screenSize / 7;
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
-    avatar.changeSize(sizeAvatar, !isDragging);
+    avatar.changeSize(sizeAvatar, true);
 
     if (isGrid()) {
-      int sizeTile = screenUtils.getWidthPx() / getResources().getInteger(R.integer.columnNumber);
+      int sizeTile = screenSize / getResources().getInteger(R.integer.columnNumber);
       int sizeLayoutName =
           (int) ((sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio())))
               * RATIO_AVATAR_TILE);
