@@ -790,7 +790,7 @@
 	<!-- Call Kit -->
 	<string name="call_kit_swipe_down">Glissez vers le bas pour décliner</string>
 	<string name="call_kit_swipe_up">Glissez vers le haut pour rejoindre</string>
-	<string name="call_kit_title">Appel démarre avec</string>
+	<string name="call_kit_title">Appel vidéo de</string>
 	
 	<!-- Read More -->
 	<string name="readmore_contacts_title">Trouver vos\ncontacts sur tribe</string>

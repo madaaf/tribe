@@ -521,33 +521,32 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void takeScreenshot() {
     if (takeScreenshotEnable) {
       takeScreenshotEnable = false;
-      InstaCapture.getInstance(this).captureRx().subscribe(new Subscriber<Bitmap>() {
-        @Override public void onCompleted() {
-        }
-
-        @Override public void onError(Throwable e) {
-        }
-
-        @Override public void onNext(Bitmap bitmap) {
-          Bitmap roundedBitmap =
-              UIUtils.getRoundedCornerBitmap(bitmap, Color.WHITE, CORNER_SCREENSHOT,
-                  CORNER_SCREENSHOT, context());
-          BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmap);
-
-          viewScreenShot.setImageBitmap(roundedBitmap);
-          viewScreenShot.animate()
-              .alpha(1)
-              .setStartDelay(FLASH_DURATION)
-              .setDuration(SCREENSHOT_DURATION)
-              .start();
-          viewFlash.animate().setDuration(FLASH_DURATION).alpha(1f).withEndAction(new Runnable() {
-            @Override public void run() {
-              viewFlash.setAlpha(0);
-              setScreenShotAnimation();
+      subscriptions.add(
+          InstaCapture.getInstance(this).captureRx().subscribe(new Subscriber<Bitmap>() {
+            @Override public void onCompleted() {
             }
-          });
-        }
-      });
+
+            @Override public void onError(Throwable e) {
+            }
+
+            @Override public void onNext(Bitmap bitmap) {
+              Bitmap roundedBitmap =
+                  UIUtils.getRoundedCornerBitmap(bitmap, Color.WHITE, CORNER_SCREENSHOT,
+                      CORNER_SCREENSHOT, context());
+              BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmap);
+
+              viewScreenShot.setImageBitmap(roundedBitmap);
+              viewScreenShot.animate()
+                  .alpha(1)
+                  .setStartDelay(FLASH_DURATION)
+                  .setDuration(SCREENSHOT_DURATION)
+                  .start();
+              viewFlash.animate().setDuration(FLASH_DURATION).alpha(1f).withEndAction(() -> {
+                viewFlash.setAlpha(0);
+                setScreenShotAnimation();
+              });
+            }
+          }));
     }
   }
 

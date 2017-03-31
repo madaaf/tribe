@@ -305,8 +305,14 @@ public class TileView extends SquareCardView {
         (screenUtils.getWidthPx() < screenUtils.getHeightPx()) ? screenUtils.getWidthPx()
             : screenUtils.getHeightPx();
     if (getResources().getBoolean(R.bool.isTablet)) {
-      screenSize = screenUtils.getWidthPx();
+      if (isGrid()) {
+        screenSize = screenUtils.getWidthPx();
+      } else {
+        screenSize = ((screenUtils.getWidthPx() < screenUtils.getHeightPx()) ? screenUtils.getWidthPx()
+            : screenUtils.getHeightPx()) >> 1;
+      }
     }
+
     sizeAvatar = isGrid() ? (int) ((screenSize / getResources().getInteger(R.integer.columnNumber))
         * RATIO_AVATAR_TILE) : screenSize / 7;
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
