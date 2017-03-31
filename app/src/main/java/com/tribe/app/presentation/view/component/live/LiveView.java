@@ -520,7 +520,7 @@ public class LiveView extends FrameLayout {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
-          false, false, null);
+          false, false, null, true);
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
@@ -587,7 +587,7 @@ public class LiveView extends FrameLayout {
 
     TribeGuest guest =
         new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
-            live.isInvite(), live.getMembersPics());
+            live.isInvite(), live.getMembersPics(), false);
 
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
@@ -622,7 +622,7 @@ public class LiveView extends FrameLayout {
       if (liveRowView != null) {
         liveRowView.setGuest(
             new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(),
-                live.isGroup(), live.isInvite(), live.getMembersPics()));
+                live.isGroup(), live.isInvite(), live.getMembersPics(), false));
       }
     }
   }
@@ -828,7 +828,7 @@ public class LiveView extends FrameLayout {
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
         return new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-            friendship.getProfilePicture(), false, false, null);
+            friendship.getProfilePicture(), false, false, null, true);
       }
     }
 

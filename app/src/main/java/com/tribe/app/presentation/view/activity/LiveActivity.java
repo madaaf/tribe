@@ -583,7 +583,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, false, null);
+                    false, false, null, true);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               }

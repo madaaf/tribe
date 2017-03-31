@@ -110,7 +110,7 @@ public class LiveLocalView extends FrameLayout {
 
     viewAudio.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
-            null));
+            null, false));
 
     txtLowConnectivity.setTranslationY(-translationY);
     txtLowConnectivity.setText(
