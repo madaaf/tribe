@@ -307,6 +307,7 @@ public class LiveView extends FrameLayout {
         onShouldCloseInvites.onNext(null);
       }
     }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
+      viewControlsLive.clickExpandParam();
       onHiddenControls.onNext(isParamExpended);
     }));
 

@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 @Singleton public class SoundManager {
 
@@ -79,7 +78,8 @@ import timber.log.Timber;
 
   public void playSound(int index, float volumeRate) {
     if (index == WAITING_FRIEND || index == CALL_RING) {
-      Timber.d("Playing sound with MediaPlayer");
+      if (mediaPlayer != null) cancelMediaPlayer();
+
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));
       mediaPlayer.setVolume(volumeRate, volumeRate);
       mediaPlayer.setLooping(true);

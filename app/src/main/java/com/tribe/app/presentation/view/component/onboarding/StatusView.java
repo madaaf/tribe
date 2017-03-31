@@ -17,6 +17,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import rx.subscriptions.CompositeSubscription;
@@ -98,28 +99,32 @@ public class StatusView extends FrameLayout {
 
   public void showDisclaimer() {
     AnimationUtils.crossFadeDrawable(background, drawableFrom(), 2, DURATION);
-    TextViewCompat.setTextAppearance(txtStatus, R.style.Small_1_Black40);
+    TextViewCompat.setTextAppearance(txtStatus, R.style.Small_2_Black40);
+    txtStatus.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
     txtStatus.setText(R.string.onboarding_phone_disclaimer);
     status = DISCLAIMER;
   }
 
   public void showSendingCode() {
     AnimationUtils.crossFadeDrawable(background, drawableFrom(), 1, DURATION);
-    TextViewCompat.setTextAppearance(txtStatus, R.style.Title_1_White);
+    TextViewCompat.setTextAppearance(txtStatus, R.style.Title_2_White);
+    txtStatus.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
     txtStatus.setText(R.string.onboarding_code_sending_status);
     status = SENDING;
   }
 
   public void showCodeSent(String phoneNumber) {
     AnimationUtils.crossFadeDrawable(background, drawableFrom(), 1, 0);
-    TextViewCompat.setTextAppearance(txtStatus, R.style.Title_1_White);
+    TextViewCompat.setTextAppearance(txtStatus, R.style.Title_2_White);
+    txtStatus.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
     txtStatus.setText(getContext().getString(R.string.onboarding_code_sent_status, phoneNumber));
     status = SENT;
   }
 
   public void showResend() {
     AnimationUtils.crossFadeDrawable(background, drawableFrom(), 0, DURATION);
-    TextViewCompat.setTextAppearance(txtStatus, R.style.Title_1_White);
+    TextViewCompat.setTextAppearance(txtStatus, R.style.Title_2_White);
+    txtStatus.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
     txtStatus.setText(R.string.onboarding_code_resend_status);
     status = RESEND;
   }
