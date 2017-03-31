@@ -37,6 +37,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
@@ -276,6 +277,8 @@ public interface ApplicationComponent {
   @UISounds Preference<Boolean> uiSounds();
 
   @RoutingMode Preference<String> routingMode();
+
+  @FullscreenNotifications Preference<Boolean> fullscreenNotifications();
 
   SoundManager soundManager();
 

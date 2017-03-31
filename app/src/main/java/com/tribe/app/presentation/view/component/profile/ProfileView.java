@@ -10,6 +10,7 @@ import android.widget.ScrollView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -20,6 +21,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -35,6 +37,8 @@ public class ProfileView extends ScrollView {
   @Inject TagManager tagManager;
 
   @Inject Navigator navigator;
+
+  @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
 
   @BindView(R.id.avatar) AvatarView viewAvatar;
 
@@ -53,6 +57,8 @@ public class ProfileView extends ScrollView {
   @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
   @BindView(R.id.viewActionVisible) ActionView viewActionVisible;
+
+  @BindView(R.id.viewActionPhoneIntegration) ActionView viewActionPhoneIntegration;
 
   @BindView(R.id.viewActionVideo) ActionView viewActionVideo;
 
@@ -103,6 +109,7 @@ public class ProfileView extends ScrollView {
     viewAvatar.load(user.getProfilePicture());
 
     viewActionVisible.setValue(!user.isInvisibleMode());
+    viewActionPhoneIntegration.setValue(fullScreenNotifications.get());
 
     txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME,
         String.valueOf(BuildConfig.VERSION_CODE)));
@@ -117,6 +124,9 @@ public class ProfileView extends ScrollView {
       tagManager.setProperty(bundle);
       onChangeVisible.onNext(!isChecked);
     }));
+
+    subscriptions.add(viewActionPhoneIntegration.onChecked()
+        .subscribe(isChecked -> fullScreenNotifications.set(isChecked)));
   }
 
   private void initDependencyInjector() {

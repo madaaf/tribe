@@ -128,6 +128,17 @@
     <include layout="@layout/view_separator_simple"/>
 
     <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionPhoneIntegration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_fullscreen_notifications_android"
+        app:actionType="toggle"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionRateUs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -621,6 +621,7 @@
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :mag:</string>
 	<string name="profile_video_demo_title">Démo vidéo :vhs:</string>
 	<string name="profile_video_demo_subtitle">Apprenez tout en 30 sec !</string>
+	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>

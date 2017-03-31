@@ -6,6 +6,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
@@ -81,5 +82,10 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @RoutingMode Preference<String> provideRoutingMode(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesConstants.ROUTING_MODE, TribeLiveOptions.ROUTED);
+  }
+
+  @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
+      RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesConstants.FULLSCREEN_NOTIFICATIONS, true);
   }
 }

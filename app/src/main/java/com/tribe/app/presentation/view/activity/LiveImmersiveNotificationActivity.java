@@ -18,7 +18,6 @@ import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -75,7 +74,6 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   // VARIABLES
   private Unbinder unbinder;
-  private UserComponent userComponent;
   NotificationPayload payload = null;
 
   // OBSERVABLES
@@ -165,14 +163,12 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     translateYAnimation.setRepeatCount(ValueAnimator.INFINITE);
     translateYAnimation.setRepeatMode(ValueAnimator.REVERSE);
     translateYAnimation.setInterpolator(new LinearInterpolator());
-    translateYAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override public void onAnimationUpdate(ValueAnimator animation) {
-        ratioY[0] = (Float) animation.getAnimatedValue() / Y_TRANSLATION;
-        if (textSwipeDown == null) {
-          return;
-        }
-        textSwipeDown.setAlpha(ratioY[0]);
+    translateYAnimation.addUpdateListener(animation -> {
+      ratioY[0] = (Float) animation.getAnimatedValue() / Y_TRANSLATION;
+      if (textSwipeDown == null) {
+        return;
       }
+      textSwipeDown.setAlpha(ratioY[0]);
     });
     translateYAnimation.start();
   }
@@ -183,11 +179,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     shakeAnim.setDuration(SHAKE_DURATION);
     shakeAnim.setRepeatCount(ValueAnimator.INFINITE);
     shakeAnim.setRepeatMode(ValueAnimator.REVERSE);
-    shakeAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override public void onAnimationUpdate(ValueAnimator animation) {
-        animation.setFloatValues(-SHAKE_TRANSLATION * ratioY[0], SHAKE_TRANSLATION * ratioY[0]);
-      }
-    });
+    shakeAnim.addUpdateListener(
+        animation -> animation.setFloatValues(-SHAKE_TRANSLATION * ratioY[0],
+            SHAKE_TRANSLATION * ratioY[0]));
     shakeAnim.start();
   }
 
@@ -207,23 +201,17 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     animResizeY.setRepeatCount(ValueAnimator.INFINITE);
     animResizeY.setInterpolator(new DecelerateInterpolator());
 
-    animResizeY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override public void onAnimationUpdate(ValueAnimator animation) {
-        animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10));
-      }
-    });
-    animResizeX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override public void onAnimationUpdate(ValueAnimator animation) {
-        animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10));
-      }
-    });
+    animResizeY.addUpdateListener(
+        animation -> animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10)));
+    animResizeX.addUpdateListener(
+        animation -> animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10)));
 
     resizeAvenger.playTogether(animResizeX, animResizeY);
     resizeAvenger.start();
   }
 
   private void initDependencyInjector() {
-    this.userComponent = DaggerUserComponent.builder()
+    DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
         .activityModule(getActivityModule())
         .build();
@@ -238,9 +226,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   private void setDownCounter() {
     startSubscription = Observable.timer(MAX_DURATION_NOTIFICATION, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {
-          finish();
-        });
+        .subscribe(aVoid -> finish());
   }
 
   private class onTouchJoinButton implements View.OnTouchListener {
@@ -252,16 +238,15 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         case MotionEvent.ACTION_UP:
           y2 = event.getY();
           float deltaY = y2 - y1;
+
           if (deltaY < 0) {
             containerAction.animate()
                 .translationY(-ACTION_BUTTON_Y_TRANSLATION)
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
-                .withEndAction(new Runnable() {
-                  @Override public void run() {
-                    finish();
-                    startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload));
-                  }
+                .withEndAction(() -> {
+                  finish();
+                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload));
                 })
                 .start();
           } else {
@@ -269,15 +254,12 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .translationY(ACTION_BUTTON_Y_TRANSLATION)
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
-                .withEndAction(new Runnable() {
-                  @Override public void run() {
-                    finish();
-                  }
-                })
+                .withEndAction(() -> finish())
                 .start();
           }
           break;
       }
+
       return false;
     }
   }

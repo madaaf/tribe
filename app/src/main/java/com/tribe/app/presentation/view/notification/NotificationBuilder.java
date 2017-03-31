@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import com.f2prateek.rx.preferences.Preference;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -16,6 +17,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
@@ -30,15 +32,17 @@ import javax.inject.Singleton;
   private Gson gson;
   private TribeApi tribeApi;
   private UserCache userCache;
+  private @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
 
   @Inject public NotificationBuilder(AndroidApplication application,
       NotificationManagerCompat notificationManager, Gson gson, TribeApi tribeApi,
-      UserCache userCache) {
+      UserCache userCache, @FullscreenNotifications Preference<Boolean> fullScreenNotifications) {
     this.application = application;
     this.notificationManager = notificationManager;
     this.gson = gson;
     this.tribeApi = tribeApi;
     this.userCache = userCache;
+    this.fullScreenNotifications = fullScreenNotifications;
   }
 
   public void sendBundledNotification(RemoteMessage remoteMessage) {
@@ -53,7 +57,8 @@ import javax.inject.Singleton;
       } else {
         Notification notification = buildNotification(notificationPayload);
         if (notification != null) {
-          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+              && fullScreenNotifications.get()) {
             sendFullScreenNotification(remoteMessage);
           } else {
             notificationManager.notify(getNotificationId(notificationPayload), notification);
