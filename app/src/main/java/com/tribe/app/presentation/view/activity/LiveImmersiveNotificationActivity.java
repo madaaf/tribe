@@ -1,15 +1,12 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -47,7 +44,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   private final static int MAX_DURATION_NOTIFICATION = 30;
   private final static int SLOW_TRANSLATION_DURATION = 3000;
-  private final static int Y_TRANSLATION = -100;
+  private final static int Y_TRANSLATION = -40;
 
   private final static int SHAKE_TRANSLATION = 5;
   private final static int SHAKE_DURATION = 20;
@@ -64,8 +61,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @Inject Navigator navigator;
   @Inject SoundManager soundManager;
 
-  @BindView(R.id.txtDisplayName) TextViewFont txtDidplayName;
-  @BindView(R.id.callAction) FrameLayout callAction;
+  @BindView(R.id.txtDisplayName) TextViewFont txtDisplayName;
+  @BindView(R.id.txtCallerName) TextViewFont txtCallerName;
+  @BindView(R.id.callAction) View callAction;
   @BindView(R.id.avatar) AvatarView avatar;
   @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
   @BindView(R.id.containerAction) LinearLayout containerAction;
@@ -74,7 +72,11 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   // VARIABLES
   private Unbinder unbinder;
-  NotificationPayload payload = null;
+  private NotificationPayload payload = null;
+
+  // RESOURCES
+  private int translationYAnimation = 0;
+  private int translationYAction = 0;
 
   // OBSERVABLES
   private Subscription startSubscription;
@@ -86,6 +88,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     unbinder = ButterKnife.bind(this);
     initDependencyInjector();
+    initResources();
 
     if (savedInstanceState == null) {
       Bundle extras = getIntent().getExtras();
@@ -98,7 +101,14 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
           String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
           String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
           Glide.with(this).load(picture).centerCrop().into(containerView);
-          txtDidplayName.setText(EmojiParser.demojizedText(name));
+          txtDisplayName.setText(EmojiParser.demojizedText(name));
+
+          if (isGroup) {
+            txtCallerName.setText(payload.getUserDisplayName());
+          } else {
+            txtCallerName.setVisibility(View.GONE);
+          }
+
           avatar.setType(AvatarView.LIVE);
           avatar.load(picture);
         }
@@ -142,6 +152,11 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   //   PRIVATE  //
   ////////////////
 
+  private void initResources() {
+    translationYAnimation = screenUtils.dpToPx(Y_TRANSLATION);
+    translationYAction = screenUtils.dpToPx(ACTION_BUTTON_Y_TRANSLATION);
+  }
+
   private void dispose() {
     pulseLayout.clearAnimation();
     callAction.clearAnimation();
@@ -153,21 +168,24 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     pulseLayout.start();
     setTranslationAnim();
     setShakeAnimation();
-    setScaleAnimation();
   }
 
   private void setTranslationAnim() {
     ObjectAnimator translateYAnimation =
-        ObjectAnimator.ofFloat(containerAction, "translationY", 0f, Y_TRANSLATION);
+        ObjectAnimator.ofFloat(containerAction, "translationY", 0f, translationYAnimation);
     translateYAnimation.setDuration(SLOW_TRANSLATION_DURATION);
     translateYAnimation.setRepeatCount(ValueAnimator.INFINITE);
     translateYAnimation.setRepeatMode(ValueAnimator.REVERSE);
     translateYAnimation.setInterpolator(new LinearInterpolator());
     translateYAnimation.addUpdateListener(animation -> {
-      ratioY[0] = (Float) animation.getAnimatedValue() / Y_TRANSLATION;
+      ratioY[0] = (Float) animation.getAnimatedValue() / translationYAnimation;
       if (textSwipeDown == null) {
         return;
       }
+
+      float scaleProgress = 1 + (SCALE_RATIO_MAX - SCALE_RATIO_MIN) * ratioY[0];
+      callAction.setScaleX(scaleProgress);
+      callAction.setScaleY(scaleProgress);
       textSwipeDown.setAlpha(ratioY[0]);
     });
     translateYAnimation.start();
@@ -183,31 +201,6 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         animation -> animation.setFloatValues(-SHAKE_TRANSLATION * ratioY[0],
             SHAKE_TRANSLATION * ratioY[0]));
     shakeAnim.start();
-  }
-
-  private void setScaleAnimation() {
-    AnimatorSet resizeAvenger = new AnimatorSet();
-    ObjectAnimator animResizeX =
-        ObjectAnimator.ofFloat(callAction, "scaleX", SCALE_RATIO_MIN, SCALE_RATIO_MAX);
-    animResizeX.setDuration(SCALE_DURATION);
-    animResizeX.setRepeatMode(ValueAnimator.REVERSE);
-    animResizeX.setRepeatCount(ValueAnimator.INFINITE);
-    animResizeX.setInterpolator(new DecelerateInterpolator());
-
-    ObjectAnimator animResizeY =
-        ObjectAnimator.ofFloat(callAction, "scaleY", SCALE_RATIO_MIN, SCALE_RATIO_MAX);
-    animResizeY.setDuration(SCALE_DURATION);
-    animResizeY.setRepeatMode(ValueAnimator.REVERSE);
-    animResizeY.setRepeatCount(ValueAnimator.INFINITE);
-    animResizeY.setInterpolator(new DecelerateInterpolator());
-
-    animResizeY.addUpdateListener(
-        animation -> animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10)));
-    animResizeX.addUpdateListener(
-        animation -> animation.setFloatValues(SCALE_RATIO_MIN, SCALE_RATIO_MIN + (ratioY[0] / 10)));
-
-    resizeAvenger.playTogether(animResizeX, animResizeY);
-    resizeAvenger.start();
   }
 
   private void initDependencyInjector() {
@@ -241,7 +234,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
           if (deltaY < 0) {
             containerAction.animate()
-                .translationY(-ACTION_BUTTON_Y_TRANSLATION)
+                .translationY(-translationYAction)
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
                 .withEndAction(() -> {
@@ -251,7 +244,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .start();
           } else {
             containerAction.animate()
-                .translationY(ACTION_BUTTON_Y_TRANSLATION)
+                .translationY(translationYAction)
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
                 .withEndAction(() -> finish())

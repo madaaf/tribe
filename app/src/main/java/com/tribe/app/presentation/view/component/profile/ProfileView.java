@@ -143,9 +143,7 @@ public class ProfileView extends ScrollView {
         viewActionPhoneIntegration.setValue(true);
       }
       return pair.second;
-    }).subscribe(pair -> {
-      fullScreenNotifications.set(pair.first);
-    }));
+    }).subscribe(pair -> fullScreenNotifications.set(pair.first)));
   }
 
   private void initDependencyInjector() {
