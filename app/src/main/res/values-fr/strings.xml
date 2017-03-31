@@ -605,7 +605,7 @@
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
 	<string name="live_dismiss_invitation_validate">Supprimer %1$s</string>
-	<string name="live_title_with_guests">%1$s, et des invités</string>
+	<string name="live_title_with_guests">%1$s et des invités</string>
 	<string name="live_low_connectivity">Réseau faible, audio mode activé :loud_sound:</string>
 	<string name="live_waiting_state_initiating">:electric_plug: Initiation de l\'appel avec %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>

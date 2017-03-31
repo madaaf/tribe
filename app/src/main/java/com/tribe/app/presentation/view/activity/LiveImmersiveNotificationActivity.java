@@ -2,6 +2,10 @@ package com.tribe.app.presentation.view.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,13 +20,16 @@ import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -31,6 +38,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by madaaflak on 15/03/2017.
@@ -73,6 +81,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   // VARIABLES
   private Unbinder unbinder;
   private NotificationPayload payload = null;
+  private NotificationReceiver notificationReceiver;
+  private boolean receiverRegistered = false;
 
   // RESOURCES
   private int translationYAnimation = 0;
@@ -80,6 +90,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   // OBSERVABLES
   private Subscription startSubscription;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -135,6 +146,14 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @Override protected void onResume() {
     super.onResume();
     onResumeLockPhone();
+
+    if (!receiverRegistered) {
+      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+
+      registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+      receiverRegistered = true;
+    }
   }
 
   @Override public void onBackPressed() {
@@ -143,6 +162,11 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   }
 
   @Override protected void onDestroy() {
+    if (receiverRegistered) {
+      unregisterReceiver(notificationReceiver);
+      receiverRegistered = false;
+    }
+    subscriptions.unsubscribe();
     if (unbinder != null) unbinder.unbind();
     if (startSubscription != null) startSubscription.unsubscribe();
     super.onDestroy();
@@ -254,6 +278,40 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       }
 
       return false;
+    }
+  }
+
+  /////////////////
+  //  BROADCAST  //
+  /////////////////
+
+  class NotificationReceiver extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
+      if (payload.equals(notificationPayload) && !notificationPayload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
+        return;
+      }
+
+      LiveNotificationView liveNotificationView =
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
+
+      if (liveNotificationView != null) {
+        subscriptions.add(liveNotificationView.onClickAction()
+            .delay(500, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(action -> {
+              if (action.getIntent() != null) {
+                navigator.navigateToIntent(LiveImmersiveNotificationActivity.this,
+                    action.getIntent());
+              }
+            }));
+
+        Alerter.create(LiveImmersiveNotificationActivity.this, liveNotificationView).show();
+      }
     }
   }
 }

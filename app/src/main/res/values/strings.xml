@@ -605,7 +605,7 @@
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
-	<string name="live_title_with_guests">%1$s, and guests</string>
+	<string name="live_title_with_guests">%1$s and guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
 	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
@@ -788,8 +788,8 @@
 	<string name="invite_popup_dismiss">Later</string>
 	
 	<!-- Call Kit -->
-	<string name="call_kit_swipe_down">Swipe down to answer</string>
-	<string name="call_kit_swipe_up">Swipe up to decline</string>
+	<string name="call_kit_swipe_down">Swipe down to decline</string>
+	<string name="call_kit_swipe_up">Swipe up to join</string>
 	<string name="call_kit_title">Video call starts with</string>
 	
 	<!-- Read More -->
