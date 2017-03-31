@@ -236,14 +236,11 @@ import javax.inject.Singleton;
    * @return - uri
    */
   public static final Uri getUriToDrawable(@NonNull Context context, @AnyRes int drawableId) {
-    Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-        +
-        "://"
-        + context.getResources().getResourcePackageName(drawableId)
-        + '/'
-        + context.getResources().getResourceTypeName(drawableId)
-        + '/'
-        + context.getResources().getResourceEntryName(drawableId));
+    Uri imageUri = Uri.parse(
+        ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getResources()
+            .getResourcePackageName(drawableId) + '/' + context.getResources()
+            .getResourceTypeName(drawableId) + '/' + context.getResources()
+            .getResourceEntryName(drawableId));
     return imageUri;
   }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <bool name="isTablette">false</bool>
+  <bool name="isTablet">false</bool>
 
   <!-- TIMERS -->
   <integer name="time_tap_to_cancel">3000</integer>

@@ -92,7 +92,7 @@
           />
     </FrameLayout>
 
-    <include layout="@layout/view_separator_simple"/>
+    <include layout="@layout/view_separator_simple" />
 
     <com.tribe.app.presentation.view.component.onboarding.StatusView
         android:id="@+id/viewStatus"

@@ -2,7 +2,6 @@ buildscript {
   repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
   }
   dependencies {
     classpath 'me.tatarka:gradle-retrolambda:3.2.3'
@@ -15,7 +14,6 @@ apply plugin: 'io.fabric'
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
-  maven { url "https://jitpack.io" }
 }
 
 apply plugin: 'com.fernandocejas.frodo'
@@ -239,6 +237,7 @@ dependencies {
   compile presentationDependencies.timber
   compile presentationDependencies.rxAppState
   compile presentationDependencies.flexbox
+  compile presentationDependencies.instacapture
 
   androidTestCompile presentationTestDependencies.mockito
   androidTestCompile presentationTestDependencies.dexmaker
