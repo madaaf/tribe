@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -74,7 +75,7 @@ public class LiveView extends FrameLayout {
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
   private static final float MARGIN_BOTTOM = 25;
-
+  private static final float AVATAR_SCALING = 0.75f;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -103,6 +104,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnLeave) View btnLeave;
 
+  @BindView(R.id.btnScreenshot) View btnScreenshot;
+
   // VARIABLES
   private Live live;
   private Room room;
@@ -120,7 +123,7 @@ public class LiveView extends FrameLayout {
   private long timeStart = 0L, timeEnd = 0L;
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
   private View view;
-
+  private int sizeAnimAvatarMax;
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
 
@@ -132,6 +135,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
 
@@ -264,6 +268,7 @@ public class LiveView extends FrameLayout {
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
+    sizeAnimAvatarMax = getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
   }
 
   private void initUI() {
@@ -272,8 +277,14 @@ public class LiveView extends FrameLayout {
 
   private void initResources() {
     timeJoinRoom = getResources().getInteger(R.integer.time_join_room);
-    margin = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-
+    btnScreenshot.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            btnScreenshot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
+                R.dimen.margin_horizontal) + 3;
+          }
+        }); // SOEF
     statusBarHeight = 0;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
@@ -388,6 +399,10 @@ public class LiveView extends FrameLayout {
     onLeave.onNext(null);
   }
 
+  @OnClick(R.id.btnScreenshot) void onClickScreenshot() {
+    onScreenshot.onNext(null);
+  }
+
   @OnClick(R.id.viewRoom) void onClickRoom() {
     if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
     if (hiddenControls) {
@@ -437,6 +452,7 @@ public class LiveView extends FrameLayout {
               + " & view : "
               + remotePeer.getPeerView());
           addView(remotePeer);
+          AnimationUtils.fadeIn(btnScreenshot, 300);
           onNotificationRemoteWaiting.onNext(
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
 
@@ -535,6 +551,11 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
+      if (avatarView != null) {
+        float scaling = (1.0f - ((1.0f - AVATAR_SCALING) * alpha));
+        UIUtils.changeSizeOfView(avatarView, (int) (sizeAnimAvatarMax * scaling));
+      }
+      btnScreenshot.setAlpha(alpha);
     }));
   }
 
@@ -947,14 +968,13 @@ public class LiveView extends FrameLayout {
     params.leftMargin = location[0];
     params.topMargin = location[1] - statusBarHeight;
     avatarView.setLayoutParams(params);
-
     addView(avatarView);
 
     tempSubscriptions.add(Observable.timer(50, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           Animator animatorSize = AnimationUtils.getSizeAnimator(avatarView,
-              getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller));
+              (int) (sizeAnimAvatarMax * AVATAR_SCALING));
           animatorSize.setDuration(DURATION);
           animatorSize.setInterpolator(new DecelerateInterpolator());
           animatorSize.start();
@@ -963,7 +983,6 @@ public class LiveView extends FrameLayout {
           animatorTopMargin.setDuration(DURATION);
           animatorTopMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
           animatorTopMargin.start();
-
           Animator animatorLeftMargin = AnimationUtils.getLeftMarginAnimator(avatarView, margin);
           animatorLeftMargin.setDuration(DURATION);
           animatorLeftMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
@@ -1044,6 +1063,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onLeave() {
     return onLeave;
+  }
+
+  public Observable<Void> onScreenshot() {
+    return onScreenshot;
   }
 
   public Observable<Boolean> onHiddenControls() {

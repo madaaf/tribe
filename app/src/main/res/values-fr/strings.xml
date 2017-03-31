@@ -18,7 +18,7 @@
 	<string name="action_friend">Ajouté</string>
 	<string name="action_unblock">Débloquer</string>
 	<string name="action_hang_live">Appeler</string>
-	<string name="action_add_member">Ajouter au groupe</string>
+	<string name="action_add_member">Ajouter</string>
 	<string name="action_member_added">Ajouté</string>
 	<string name="action_group_member">Membre</string>
 	<string name="action_nevermind">Non</string>
@@ -47,7 +47,7 @@
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Rechercher un(e) ami(e)</string>
 	<string name="contacts_search_new">NEW</string>
-	<string name="contacts_search_new_tooltip">Trouvez tout le monde ici !</string>
+	<string name="contacts_search_new_tooltip">Retrouvez vos amis déjà sur Tribe !</string>
 	<string name="contacts_share_profile_button">Partager votre profil</string>
 	<string name="contacts_share_profile_description">Passer le message</string>
 	<string name="contacts_section_facebook_sync_title">Synchroniser vos ami(e)s</string>
@@ -241,7 +241,7 @@
 	<string name="grid_support_status_reply">Répondez à l’Équipe</string>
 	<string name="grid_support_status_error">Non envoyé</string>
 	<string name="grid_name_with_guests">\navec des invités</string>
-	<string name="grid_status_live">APPEL</string>
+	<string name="grid_status_live">Appel...</string>
 	<string name="grid_status_live_with_guests">En appel avec des invités!</string>
 	<string name="grid_status_with_guests">avec des invités</string>
 	<string name="grid_status_connected">En ligne</string>
@@ -251,8 +251,8 @@
 	<string name="grid_status_last_seen_days">Il y a qqs jours</string>
 	<string name="grid_name_more_friends">Plus d\'amis</string>
 	<string name="grid_status_more_friends">Partager votre nom d\'utilisateur !</string>
-	<string name="grid_name_video_demo">Vidéo démo</string>
-	<string name="grid_status_video_demo">Apprenez en 30 sec</string>
+	<string name="grid_name_video_demo">Démo vidéo</string>
+	<string name="grid_status_video_demo">Apprenez tout en 30 sec !</string>
 	<string name="grid_ghost">Pas encore inscrit</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -292,7 +292,7 @@
 	<string name="group_add_members_search_placeholder">Rechercher vos amis</string>
 	<string name="group_add_members_already_member">Membre</string>
 	<string name="group_add_members_already_friend">Ami</string>
-	<string name="group_add_members_in_group">Ajouter au groupe</string>
+	<string name="group_add_members_in_group">Ajouter</string>
 	<string name="group_add_members_added">Ajouté !</string>
 	
 	<!-- Group Details -->
@@ -520,8 +520,8 @@
 	<string name="topbar_create_group">Groupe</string>
 	<string name="topbar_invite_friend">Invites</string>
 	<string name="topbar_new_friend">Ami</string>
-	<string name="topbar_new_live">Nouveau groupe</string>
-	<string name="topbar_search">Rechercher des amis</string>
+	<string name="topbar_new_live">+ Groupe</string>
+	<string name="topbar_search">Amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_video_action">:vhs: Regarder la vidéo démo</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -620,10 +620,11 @@
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :mag:</string>
 	<string name="profile_video_demo_title">Démo vidéo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Comprendre en 30 sec</string>
+	<string name="profile_video_demo_subtitle">Apprenez tout en 30 sec !</string>
+	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Ne ratez plus les appels de vos amis!</string>
-	<string name="profile_fullscreen_notifications_disable_alert_msg">Vous allez peut être manquer des appels de vos amis si vous désactivez les notifications plein-écran.</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_shortcuts_phone_log">Historique des appels :clock3:</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
@@ -806,7 +807,7 @@
 	<string name="readmore_contacts_dismiss_popup_description">Vous allez rater tous vos amis déjà inscrits et les prochains arrivants</string>
 	<string name="readmore_contacts_dismiss_popup_validate">Activer</string>
 	<string name="readmore_contacts_dismiss_popup_cancel">Continuer seul(e)</string>
-	<string name="readmore_notifications_dismiss_popup_title">Continuer sans les notifications ?</string>
+	<string name="readmore_notifications_dismiss_popup_title">Continuer sans les notifications</string>
 	<string name="readmore_notifications_dismiss_popup_description">Vous allez rater tous les appels de vos amis</string>
 	<string name="readmore_notifications_dismiss_popup_validate">Activer les notifications</string>
 	<string name="readmore_notifications_dismiss_popup_cancel">Continuer sans les notifications ?</string>

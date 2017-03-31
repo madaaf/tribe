@@ -5,13 +5,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,6 +30,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
+import com.tarek360.instacapture.InstaCapture;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -44,15 +52,19 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -65,6 +77,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -76,9 +89,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
   public static final String ROOM_ID = "ROOM_ID";
+  public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
+  private final int CORNER_SCREENSHOT = 5;
+  private final int SCREENSHOT_DURATION = 300;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -140,6 +156,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
+  @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
+
+  @BindView(R.id.viewFlash) FrameLayout viewFlash;
+
   // VARIABLES
   private TribeAudioManager audioManager;
   private Unbinder unbinder;
@@ -150,6 +170,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
+  private boolean takeScreenshotEnable = true;
 
   // RESOURCES
 
@@ -465,6 +486,88 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
       displayNotification(getString(R.string.live_notification_buzzed));
     }));
+
+    subscriptions.add(viewLive.onScreenshot().subscribe(aVoid -> {
+      if (RuntimePermissionUtil.checkPermission(context(), this)) {
+        takeScreenshot();
+      }
+    }));
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions,
+      @NonNull final int[] grantResults) {
+    switch (requestCode) {
+      case 100: {
+
+        RuntimePermissionUtil.onRequestPermissionsResult(grantResults,
+            new RuntimePermissionUtil.RPResultListener() {
+              @Override public void onPermissionGranted() {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                  takeScreenshot();
+                }
+              }
+
+              @Override public void onPermissionDenied() {
+                Toast.makeText(LiveActivity.this, "Permission Denied! You cannot save image!",
+                    Toast.LENGTH_SHORT).show();
+              }
+            });
+        break;
+      }
+    }
+  }
+
+  private void takeScreenshot() {
+    if (takeScreenshotEnable) {
+      takeScreenshotEnable = false;
+      InstaCapture.getInstance(this).captureRx().subscribe(new Subscriber<Bitmap>() {
+        @Override public void onCompleted() {
+        }
+
+        @Override public void onError(Throwable e) {
+        }
+
+        @Override public void onNext(Bitmap bitmap) {
+          Bitmap roundedBitmap =
+              UIUtils.getRoundedCornerBitmap(bitmap, Color.WHITE, CORNER_SCREENSHOT,
+                  CORNER_SCREENSHOT, context());
+          BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmap);
+
+          viewScreenShot.setImageBitmap(roundedBitmap);
+          viewScreenShot.animate()
+              .alpha(1)
+              .setStartDelay(FLASH_DURATION)
+              .setDuration(SCREENSHOT_DURATION)
+              .start();
+          viewFlash.animate().setDuration(FLASH_DURATION).alpha(1f).withEndAction(new Runnable() {
+            @Override public void run() {
+              viewFlash.setAlpha(0);
+              setScreenShotAnimation();
+            }
+          });
+        }
+      });
+    }
+  }
+
+  private void setScreenShotAnimation() {
+    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
+    AnimationSet setAnims = new AnimationSet(true);
+    setAnims.addAnimation(scaleAnim);
+    setAnims.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationStart(Animation animation) {
+        super.onAnimationStart(animation);
+      }
+
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        viewScreenShot.setVisibility(View.INVISIBLE);
+        takeScreenshotEnable = true;
+      }
+    });
+
+    viewScreenShot.startAnimation(setAnims);
   }
 
   private void putExtraHomeIntent() {
