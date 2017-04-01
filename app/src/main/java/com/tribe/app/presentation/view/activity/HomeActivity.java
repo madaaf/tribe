@@ -205,9 +205,9 @@ public class HomeActivity extends BaseActivity
     super.onStart();
     tagManager.onStart(this);
 
-    //if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       syncContacts();
-    //}
+    }
   }
 
   @Override protected void onRestart() {
