@@ -163,11 +163,12 @@ public class TopBarContainer extends FrameLayout {
   private void initTooltip() {
     if (tooltipView == null && !newContactsTooltip.get()) {
       newContactsTooltip.set(true);
+
       txtNewContacts.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override public void onGlobalLayout() {
               txtNewContacts.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-              
+
               tooltipView = new TooltipView(getContext());
               FrameLayout.LayoutParams params =
                   new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -187,6 +188,8 @@ public class TopBarContainer extends FrameLayout {
                   locationNewContacts[0] + (txtNewContacts.getMeasuredWidth() >> 1)
                       - (tooltipView.getMeasuredWidth() >> 1));
 
+              tooltipView.setOnClickListener(v -> topBarView.animateSearch());
+
               addView(tooltipView, params);
             }
           });
@@ -202,9 +205,11 @@ public class TopBarContainer extends FrameLayout {
   }
 
   public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
-    obsContactList.observeOn(AndroidSchedulers.mainThread()).doOnNext(integerBooleanPair -> {
-      if (integerBooleanPair.second) initTooltip();
-    }).subscribe(onNewContactsInfos);
+    obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
+      onNewContactsInfos.onNext(integerBooleanPair);
+
+      if (integerBooleanPair.second || !newContactsTooltip.get()) initTooltip();
+    });
   }
 
   ///////////////////////

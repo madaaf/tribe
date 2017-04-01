@@ -361,7 +361,9 @@ public class CloudUserDataStore implements UserDataStore {
                     if (userRealm.getPhone().equals(phone)) {
                       ContactInterface contactInterface = phones.get(phone);
                       contactInterface.addUser(userRealm);
-                      if (!contactInterface.isNew()) {
+                      if (!contactInterface.isNew()
+                          && lastSync.get() != null
+                          && lastSync.get() > 0) {
                         contactInterface.setNew(
                             userRealm.getCreatedAt().getTime() > lastSync.get());
                       }
@@ -373,7 +375,9 @@ public class CloudUserDataStore implements UserDataStore {
                         .equals(fbId)) {
                       ContactInterface contactInterface = fbIds.get(fbId);
                       contactInterface.addUser(userRealm);
-                      if (!contactInterface.isNew()) {
+                      if (!contactInterface.isNew()
+                          && lastSync.get() != null
+                          && lastSync.get() > 0) {
                         contactInterface.setNew(
                             userRealm.getCreatedAt().getTime() > lastSync.get());
                       }

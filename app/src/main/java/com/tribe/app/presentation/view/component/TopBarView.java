@@ -22,11 +22,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -53,6 +55,8 @@ public class TopBarView extends FrameLayout {
 
   @Inject User user;
 
+  @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
+
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.btnNew) View btnNew;
@@ -78,6 +82,7 @@ public class TopBarView extends FrameLayout {
   private int nbContacts = 0;
   private boolean hasNewContacts = false;
   private boolean open = false;
+  private boolean shouldForceRed = false;
 
   // RESOURCES
   private int avatarSize;
@@ -118,6 +123,8 @@ public class TopBarView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    shouldForceRed = !newContactsTooltip.get();
 
     initResources();
     initUI();
@@ -349,7 +356,8 @@ public class TopBarView extends FrameLayout {
       if (nbContacts > 0) {
         showNewContacts(true);
         txtNewContacts.setText("" + nbContacts);
-        if (hasNewContacts) {
+        if (hasNewContacts || shouldForceRed) {
+          shouldForceRed = false;
           drawableBGNewContacts.setColor(
               ContextCompat.getColor(getContext(), R.color.red_new_contacts));
         } else {

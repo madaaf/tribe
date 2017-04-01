@@ -285,6 +285,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 })
                 .start();
           }
+
           break;
       }
 
