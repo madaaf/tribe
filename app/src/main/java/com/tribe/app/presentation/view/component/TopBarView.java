@@ -260,6 +260,8 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.imgClose) public void closeSearch() {
+    shouldForceRed = false;
+
     onOpenCloseSearch.onNext(false);
     onSearch.onNext("");
 
@@ -357,7 +359,6 @@ public class TopBarView extends FrameLayout {
         showNewContacts(true);
         txtNewContacts.setText("" + nbContacts);
         if (hasNewContacts || shouldForceRed) {
-          shouldForceRed = false;
           drawableBGNewContacts.setColor(
               ContextCompat.getColor(getContext(), R.color.red_new_contacts));
         } else {

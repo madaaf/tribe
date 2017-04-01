@@ -31,7 +31,7 @@
         android:orientation="horizontal"
         >
 
-      <LinearLayout
+      <RelativeLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:minHeight="25dp"
@@ -40,11 +40,11 @@
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/txtName"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:ellipsize="end"
             android:lines="1"
+            android:layout_centerVertical="true"
             android:singleLine="true"
             style="@style/Body.Two.Black"
             />
@@ -54,6 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/horizontal_margin_xsmall"
+            android:layout_toRightOf="@id/txtName"
+            android:layout_centerVertical="true"
             android:background="@drawable/shape_rect_rounded_5_red"
             android:ellipsize="none"
             android:lines="1"
@@ -66,14 +68,7 @@
             android:visibility="gone"
             style="@style/Body.Two.White"
             />
-      </LinearLayout>
-
-      <View
-          android:id="@+id/viewEmpty"
-          android:layout_width="0dp"
-          android:layout_height="0dp"
-          android:layout_weight="1"
-          />
+      </RelativeLayout>
     </LinearLayout>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -91,7 +86,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/layoutName"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="6.5dp"
         android:layout_toRightOf="@id/txtUsername"
         android:singleLine="true"
         android:text="\u2022"
@@ -105,7 +99,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/layoutName"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/txtBubble"
         android:maxLines="1"
         android:text="@string/group_add_members_already_friend"
