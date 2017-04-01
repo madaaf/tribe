@@ -83,6 +83,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   private NotificationPayload payload = null;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
+  private boolean shouldStartHome = false;
 
   // RESOURCES
   private int translationYAnimation = 0;
@@ -138,9 +139,12 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   ////////////////
 
   @Override public void finish() {
-    soundManager.cancelMediaPlayer();
-    dispose();
-    navigator.navigateToHomeAndFinishAffinity(this);
+    if (shouldStartHome) {
+      shouldStartHome = false;
+      navigator.navigateToHomeAndFinishAffinity(this);
+    }
+
+    super.finish();
   }
 
   @Override protected void onResume() {
@@ -166,6 +170,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       unregisterReceiver(notificationReceiver);
       receiverRegistered = false;
     }
+
+    soundManager.cancelMediaPlayer();
+    dispose();
     subscriptions.unsubscribe();
     if (unbinder != null) unbinder.unbind();
     if (startSubscription != null) startSubscription.unsubscribe();
@@ -262,6 +269,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
                 .withEndAction(() -> {
+                  shouldStartHome = true;
                   finish();
                   startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload));
                 })
@@ -271,7 +279,10 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .translationY(translationYAction)
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
-                .withEndAction(() -> finish())
+                .withEndAction(() -> {
+                  shouldStartHome = false;
+                  finish();
+                })
                 .start();
           }
           break;

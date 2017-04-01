@@ -124,7 +124,6 @@ public class StatusView extends FrameLayout {
   public void showResend() {
     AnimationUtils.crossFadeDrawable(background, drawableFrom(), 0, DURATION);
     TextViewCompat.setTextAppearance(txtStatus, R.style.Title_2_White);
-    txtStatus.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
     txtStatus.setText(R.string.onboarding_code_resend_status);
     status = RESEND;
   }

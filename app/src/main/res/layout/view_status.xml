@@ -15,6 +15,6 @@
       android:gravity="center"
       android:maxLines="1"
       android:text="@string/onboarding_phone_disclaimer"
-      style="@style/Title.2.White"
+      style="@style/Small.2.Black40"
       />
 </merge>
