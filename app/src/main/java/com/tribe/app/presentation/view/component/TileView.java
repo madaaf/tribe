@@ -32,6 +32,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
+import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -314,7 +315,7 @@ public class TileView extends SquareCardView {
     }
 
     sizeAvatar = isGrid() ? (int) ((screenSize / getResources().getInteger(R.integer.columnNumber))
-        * RATIO_AVATAR_TILE) : screenSize / 7;
+        * RATIO_AVATAR_TILE) : (int) (screenUtils.dpToPx(LiveInviteView.WIDTH) * RATIO_AVATAR_TILE);
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
