@@ -2,10 +2,15 @@ package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import com.tribe.app.R;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,13 +25,30 @@ import static android.content.ContentValues.TAG;
 
 public class BitmapUtils {
 
-  private final static String TRIBE_DIRTECTORY = "Tribe";
+  private final static String TRIBE_DIRECTORY = "Tribe";
   private final static String EXTERNAL_STORAGE_DEFAULT_DIRECTORY =
       Environment.getExternalStorageDirectory().toString();
   private final static String PATH_DEFAULT_DIRECTORY =
-      EXTERNAL_STORAGE_DEFAULT_DIRECTORY + File.separator + TRIBE_DIRTECTORY + File.separator;
+      EXTERNAL_STORAGE_DEFAULT_DIRECTORY + File.separator + TRIBE_DIRECTORY + File.separator;
 
-  public static void saveScreenshotToDefaultDirectory(Context context, Bitmap bitmap) {
+  public static Bitmap watermarkBitmap(ScreenUtils screenUtils, Resources res, Bitmap bitmap) {
+    Bitmap bmOverlay =
+        Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+    Bitmap watermark = BitmapFactory.decodeResource(res, R.drawable.picto_watermark);
+
+    Paint paint = new Paint();
+    paint.setDither(true);
+    paint.setAntiAlias(true);
+
+    float left = (bitmap.getWidth() - watermark.getWidth()) >> 1;
+    float top = (bitmap.getHeight() - watermark.getHeight() - screenUtils.dpToPx(55));
+    Canvas canvas = new Canvas(bmOverlay);
+    canvas.drawBitmap(bitmap, 0, 0, paint);
+    canvas.drawBitmap(watermark, left, top, paint);
+    return bmOverlay;
+  }
+
+  public static boolean saveScreenshotToDefaultDirectory(Context context, Bitmap bitmap) {
 
     try {
       File defaultStorageDirectory = createDirectory(PATH_DEFAULT_DIRECTORY);
@@ -36,7 +58,12 @@ public class BitmapUtils {
           Uri.parse("file://" + getTimeStampFileName(defaultStorageDirectory))));
     } catch (Throwable e) {
       e.printStackTrace();
+      return false;
     }
+
+    if (bitmap != null) bitmap.recycle();
+
+    return true;
   }
 
   ////////////////

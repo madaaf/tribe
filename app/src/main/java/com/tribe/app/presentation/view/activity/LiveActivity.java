@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -95,6 +96,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
   private final int CORNER_SCREENSHOT = 5;
   private final int SCREENSHOT_DURATION = 300;
+  private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -157,6 +159,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
   @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
+
+  @BindView(R.id.viewBGScreenshot) View viewBGScreenshot;
 
   @BindView(R.id.viewFlash) FrameLayout viewFlash;
 
@@ -530,43 +534,72 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             }
 
             @Override public void onNext(Bitmap bitmap) {
+              viewLive.screenshotDone();
+
+              Bitmap bitmapWatermarked =
+                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
+
               Bitmap roundedBitmap =
-                  UIUtils.getRoundedCornerBitmap(bitmap, Color.WHITE, CORNER_SCREENSHOT,
-                      CORNER_SCREENSHOT, context());
-              BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmap);
+                  UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
+                      CORNER_SCREENSHOT * 2, context());
+
+              boolean result = BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
+              if (result) {
+                Toast.makeText(LiveActivity.this, R.string.live_screenshot_saved_toast,
+                    Toast.LENGTH_SHORT).show();
+              }
 
               viewScreenShot.setImageBitmap(roundedBitmap);
+              viewScreenShot.setVisibility(View.VISIBLE);
               viewScreenShot.animate()
-                  .alpha(1)
-                  .setStartDelay(FLASH_DURATION)
+                  .alpha(1f)
                   .setDuration(SCREENSHOT_DURATION)
+                  .setStartDelay(FLASH_DURATION)
+                  .setListener(new AnimatorListenerAdapter() {
+                    @Override public void onAnimationEnd(Animator animation) {
+                      viewScreenShot.animate().setListener(null).start();
+                      setScreenShotAnimation();
+                    }
+                  })
                   .start();
-              viewFlash.animate().setDuration(FLASH_DURATION).alpha(1f).withEndAction(() -> {
-                viewFlash.setAlpha(0);
-                setScreenShotAnimation();
-              });
+
+              viewFlash.animate()
+                  .setDuration(FLASH_DURATION)
+                  .alpha(1f)
+                  .withEndAction(() -> viewFlash.animate()
+                      .setDuration(FLASH_DURATION)
+                      .alpha(0f)
+                      .withEndAction(() -> viewFlash.animate().setListener(null).start()));
             }
           }));
     }
   }
 
   private void setScreenShotAnimation() {
+    viewBGScreenshot.setVisibility(View.VISIBLE);
+    viewBGScreenshot.animate()
+        .alpha(1f)
+        .setDuration(SCREENSHOT_DURATION)
+        .withEndAction(() -> viewBGScreenshot.animate()
+            .alpha(0f)
+            .setDuration(SCREENSHOT_DURATION)
+            .setStartDelay(SCALE_DOWN_SCREENSHOT_DURATION)
+            .start())
+        .start();
+
     Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
-    AnimationSet setAnims = new AnimationSet(true);
-    setAnims.addAnimation(scaleAnim);
-    setAnims.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation);
-      }
+    scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        viewScreenShot.setVisibility(View.INVISIBLE);
+        viewScreenShot.setAlpha(0f);
+        viewScreenShot.setVisibility(View.GONE);
         takeScreenshotEnable = true;
+        animation.setAnimationListener(null);
       }
     });
 
-    viewScreenShot.startAnimation(setAnims);
+    viewScreenShot.startAnimation(scaleAnim);
   }
 
   private void putExtraHomeIntent() {

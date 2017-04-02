@@ -75,7 +75,7 @@ public class LiveView extends FrameLayout {
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
   private static final float MARGIN_BOTTOM = 25;
-  private static final float AVATAR_SCALING = 0.75f;
+  private static final float AVATAR_SCALING = 0.6f;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -282,7 +282,7 @@ public class LiveView extends FrameLayout {
           @Override public void onGlobalLayout() {
             btnScreenshot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
-                R.dimen.margin_horizontal) + 3;
+                R.dimen.margin_horizontal) + screenUtils.dpToPx(3.5f);
           }
         });
     statusBarHeight = 0;
@@ -401,6 +401,7 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnScreenshot) void onClickScreenshot() {
+    viewControlsLive.prepareForScreenshot();
     onScreenshot.onNext(null);
   }
 
@@ -691,6 +692,10 @@ public class LiveView extends FrameLayout {
       removeFromInvites(tribeGuest.getId());
       room.sendToPeers(getRemovedPayload(tribeGuest), true);
     }).subscribe());
+  }
+
+  public void screenshotDone() {
+    viewControlsLive.screenshotDone();
   }
 
   public void setCameraEnabled(boolean enable) {

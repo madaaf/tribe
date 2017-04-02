@@ -295,6 +295,14 @@ public class LiveControlsView extends FrameLayout {
     btnNotify.setEnabled(enable);
   }
 
+  public void prepareForScreenshot() {
+    btnNotify.setAlpha(0f);
+  }
+
+  public void screenshotDone() {
+    btnNotify.setAlpha(1f);
+  }
+
   public void setMicroEnabled(boolean enabled) {
     btnMicro.setImageResource(
         enabled ? R.drawable.picto_micro_on_live : R.drawable.picto_micro_off_live);
