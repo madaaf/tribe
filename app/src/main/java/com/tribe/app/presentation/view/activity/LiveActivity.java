@@ -543,11 +543,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                   UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
                       CORNER_SCREENSHOT * 2, context());
 
-              boolean result = BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
-              if (result) {
-                Toast.makeText(LiveActivity.this, R.string.live_screenshot_saved_toast,
-                    Toast.LENGTH_SHORT).show();
-              }
+              boolean result =
+                  BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
 
               viewScreenShot.setImageBitmap(roundedBitmap);
               viewScreenShot.setVisibility(View.VISIBLE);
@@ -570,23 +567,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                       .setDuration(FLASH_DURATION)
                       .alpha(0f)
                       .withEndAction(() -> viewFlash.animate().setListener(null).start()));
+
+              viewBGScreenshot.setVisibility(View.VISIBLE);
+              subscriptions.add(
+                  Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
             }
           }));
     }
   }
 
   private void setScreenShotAnimation() {
-    viewBGScreenshot.setVisibility(View.VISIBLE);
-    viewBGScreenshot.animate()
-        .alpha(1f)
-        .setDuration(SCREENSHOT_DURATION)
-        .withEndAction(() -> viewBGScreenshot.animate()
-            .alpha(0f)
-            .setDuration(SCREENSHOT_DURATION)
-            .setStartDelay(SCALE_DOWN_SCREENSHOT_DURATION)
-            .start())
-        .start();
-
     Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
     scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
 
@@ -595,6 +587,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewScreenShot.setAlpha(0f);
         viewScreenShot.setVisibility(View.GONE);
         takeScreenshotEnable = true;
+
+        Toast.makeText(LiveActivity.this,
+            EmojiParser.demojizedText(getString(R.string.live_screenshot_saved_toast)),
+            Toast.LENGTH_SHORT).show();
+
         animation.setAnimationListener(null);
       }
     });

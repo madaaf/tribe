@@ -97,6 +97,7 @@ public class EmojiParser {
     IEmojiMap.put(":loud_sound:", "\uD83D\uDD0A");
     IEmojiMap.put(":vhs:", "\uD83D\uDCFC");
     IEmojiMap.put(":telephone_receiver:", "\uD83D\uDCDE");
+    IEmojiMap.put(":camera:", "\uD83D\uDCF7");
   }
 
   /**

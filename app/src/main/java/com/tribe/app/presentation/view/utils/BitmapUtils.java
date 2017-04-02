@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import com.tribe.app.R;
 import java.io.File;
@@ -52,10 +53,19 @@ public class BitmapUtils {
 
     try {
       File defaultStorageDirectory = createDirectory(PATH_DEFAULT_DIRECTORY);
-      saveBitmap(bitmap, getTimeStampFileName(defaultStorageDirectory), context);
+      File file = getTimeStampFileName(defaultStorageDirectory);
+      saveBitmap(bitmap, file, context);
       Timber.d("take screen shot " + getTimeStampFileName(defaultStorageDirectory).toString());
-      context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
-          Uri.parse("file://" + getTimeStampFileName(defaultStorageDirectory))));
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        final Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        final Uri contentUri = Uri.fromFile(file);
+        scanIntent.setData(contentUri);
+        context.sendBroadcast(scanIntent);
+      } else {
+        final Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED,
+            Uri.parse("file://" + Environment.getExternalStorageDirectory()));
+        context.sendBroadcast(intent);
+      }
     } catch (Throwable e) {
       e.printStackTrace();
       return false;

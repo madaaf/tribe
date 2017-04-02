@@ -16,6 +16,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -75,7 +76,7 @@ public class LiveView extends FrameLayout {
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
   private static final float MARGIN_BOTTOM = 25;
-  private static final float AVATAR_SCALING = 0.6f;
+  private static final float AVATAR_SCALING = 0.5f;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -104,7 +105,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnLeave) View btnLeave;
 
-  @BindView(R.id.btnScreenshot) View btnScreenshot;
+  @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
   // VARIABLES
   private Live live;
@@ -282,7 +283,7 @@ public class LiveView extends FrameLayout {
           @Override public void onGlobalLayout() {
             btnScreenshot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
-                R.dimen.margin_horizontal) + screenUtils.dpToPx(3.5f);
+                R.dimen.margin_horizontal) + screenUtils.dpToPx(5.5f);
           }
         });
     statusBarHeight = 0;
@@ -952,6 +953,8 @@ public class LiveView extends FrameLayout {
   }
 
   private void animateGroupAvatar(LiveRowView liveRowView) {
+    btnScreenshot.setImageResource(R.drawable.picto_screenshot_without_center);
+
     AvatarView fromAvatarView = liveRowView.avatar();
     avatarView = new AvatarView(getContext());
     avatarView.setType(AvatarView.REGULAR);

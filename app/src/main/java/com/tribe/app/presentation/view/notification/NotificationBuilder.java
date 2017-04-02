@@ -176,7 +176,7 @@ import javax.inject.Singleton;
 
   private void sendFullScreenNotification(RemoteMessage remoteMessage) {
     Intent incomingCallIntent = new Intent(application, LiveImmersiveNotificationActivity.class);
-    incomingCallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    incomingCallIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
     incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
