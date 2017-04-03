@@ -103,7 +103,6 @@
       android:layout_marginTop="20dp"
       android:gravity="center"
       android:lines="2"
-      android:text="@string/search_add_addressbook_subtitle"
       style="@style/Headline.Black.Regular"
       />
 </merge>

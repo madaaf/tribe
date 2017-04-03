@@ -97,7 +97,7 @@ public class LoadFriendsView extends LinearLayout {
 
     if (a.hasValue(R.styleable.LoadFriendsView_loadBody)) {
       setBody(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadBody,
-          R.string.search_add_addressbook_subtitle)));
+          R.string.search_add_addressbook_title)));
     } else {
       computeBody();
     }

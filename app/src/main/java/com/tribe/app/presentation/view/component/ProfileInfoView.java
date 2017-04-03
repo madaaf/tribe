@@ -142,7 +142,11 @@ public class ProfileInfoView extends LinearLayout {
     avatarSelected = true;
     refactorInfosValid();
 
-    new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
+    new GlideUtils.Builder(getContext()).url(url)
+        .size(avatarSize)
+        .target(imgAvatar)
+        .hasPlaceholder(false)
+        .load();
   }
 
   public void setEditDisplayName(String displayName) {

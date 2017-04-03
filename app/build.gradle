@@ -115,7 +115,7 @@ android {
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
       buildConfigField "String", "TRIBE_API", "\"https://api.tribedev.pm\""
-      buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribedev.pm\""
+      buildConfigField "String", "TRIBE_AUTH", "\"https://79398cc9.ngrok.io\""
       buildConfigField "String", "TRIBE_WSS", "\"wss://api.tribedev.pm\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_debug}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
