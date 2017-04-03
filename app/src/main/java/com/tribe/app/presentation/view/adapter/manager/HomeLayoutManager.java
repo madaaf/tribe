@@ -10,10 +10,10 @@ public class HomeLayoutManager extends GridLayoutManager {
 
   private boolean isScrollEnabled = true;
 
-  public HomeLayoutManager(Context context) {
-    super(context, 2);
+  public HomeLayoutManager(Context context, int columnNumber) {
+    super(context, columnNumber);
     setItemPrefetchEnabled(true);
-    setInitialPrefetchItemCount(8);
+    setInitialPrefetchItemCount(columnNumber ^ 4);
   }
 
   public void setScrollEnabled(boolean enabled) {

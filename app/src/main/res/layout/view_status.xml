@@ -12,9 +12,9 @@
       android:id="@+id/txtStatus"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:gravity="center"
       android:maxLines="1"
       android:text="@string/onboarding_phone_disclaimer"
-      android:gravity="center"
-      style="@style/Small.1.Black40"
+      style="@style/Small.2.Black40"
       />
 </merge>

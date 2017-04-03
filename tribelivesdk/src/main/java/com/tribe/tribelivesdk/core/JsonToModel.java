@@ -55,7 +55,7 @@ public class JsonToModel {
     @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
 
     if (localWebSocketType == null) {
-      Timber.e("WebSocket message unhandled");
+      Timber.e("WebSocket message unhandled : " + json);
       return;
     }
 
@@ -186,7 +186,7 @@ public class JsonToModel {
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                  guest.getString("picture"), false, false, null));
+                  guest.getString("picture"), false, false, null, true));
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {

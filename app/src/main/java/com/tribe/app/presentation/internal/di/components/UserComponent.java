@@ -16,14 +16,15 @@ import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
+import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
+import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
-import com.tribe.app.presentation.view.component.common.PickAllView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
+import com.tribe.app.presentation.view.component.live.ChasingDotsView;
 import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
@@ -31,12 +32,12 @@ import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
-import com.tribe.app.presentation.view.component.live.ChasingDotsView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
+import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
@@ -53,11 +54,15 @@ import dagger.Component;
 
   void inject(DebugActivity debugActivity);
 
+  void inject(LiveImmersiveNotificationActivity liveImmersiveNotificationActivity);
+
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
   void inject(CountryActivity countryActivity);
 
   void inject(HomeActivity homeActivity);
+
+  void inject(VideoActivity videoActivity);
 
   void inject(ProfileInfoView profileInfoView);
 
@@ -95,11 +100,7 @@ import dagger.Component;
 
   void inject(AccessView accessView);
 
-  void inject(PickYourFriendsActivity pickYourFriendsActivity);
-
   void inject(LoadFriendsView loadFriendsView);
-
-  void inject(PickAllView pickAllView);
 
   void inject(TileView tileView);
 
@@ -126,4 +127,6 @@ import dagger.Component;
   void inject(LiveControlsView liveControlsView);
 
   void inject(LiveStatusNameView liveStatusNameView);
+
+  void inject(SettingsBlockedFriendsView settingsBlockedFriendsView);
 }

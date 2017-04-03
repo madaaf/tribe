@@ -1,16 +1,26 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationManagerCompat;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -21,6 +31,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
+import com.tarek360.instacapture.InstaCapture;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
@@ -42,15 +53,19 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -63,6 +78,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -74,9 +90,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
   public static final String ROOM_ID = "ROOM_ID";
+  public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
+  private final int CORNER_SCREENSHOT = 5;
+  private final int SCREENSHOT_DURATION = 300;
+  private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
     Intent intent = new Intent(context, LiveActivity.class);
@@ -84,6 +104,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
         .displayName(recipient.getDisplayName())
         .isGroup(recipient.isGroup())
+        .countdown(!recipient.isLive())
         .picture(recipient.getProfilePicture());
 
     if (recipient instanceof Invite) {
@@ -107,12 +128,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Live live = new Live.Builder(recipientId, recipientId).displayName(name)
         .isGroup(isGroup)
         .picture(picture)
+        .countdown(StringUtils.isEmpty(sessionId))
         .sessionId(sessionId)
+        .intent(true)
         .build();
+
     intent.putExtra(EXTRA_LIVE, live);
 
     return intent;
   }
+
+  @Inject NotificationManagerCompat notificationManager;
 
   @Inject SoundManager soundManager;
 
@@ -132,6 +158,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
+  @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
+
+  @BindView(R.id.viewBGScreenshot) View viewBGScreenshot;
+
+  @BindView(R.id.viewFlash) FrameLayout viewFlash;
+
   // VARIABLES
   private TribeAudioManager audioManager;
   private Unbinder unbinder;
@@ -141,6 +173,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private AppStateMonitor appStateMonitor;
   private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RxPermissions rxPermissions;
+  private boolean takeScreenshotEnable = true;
 
   // RESOURCES
 
@@ -158,7 +192,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initParams(getIntent());
     init();
     initResources();
-    initPermissions();
     initAppState();
     initRemoteConfig();
   }
@@ -181,9 +214,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     super.onStop();
   }
 
+  @Override protected void onRestart() {
+    super.onRestart();
+    notificationManager.cancelAll();
+  }
+
   @Override protected void onResume() {
     super.onResume();
-
+    onResumeLockPhone();
     if (!receiverRegistered) {
       if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
 
@@ -232,6 +270,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
+
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     initRoom();
@@ -251,19 +291,43 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initRoom() {
-    viewLiveContainer.setEnabled(false);
+    subscriptions.add(rxPermissions.request(PermissionUtils.PERMISSIONS_LIVE).subscribe(granted -> {
+      if (granted) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED,
+            PermissionUtils.hasPermissionsCamera(rxPermissions));
+        bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED,
+            PermissionUtils.hasPermissionsCamera(rxPermissions));
+        tagManager.setProperty(bundle);
 
-    ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
-    params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
-    viewInviteLive.setLayoutParams(params);
-    viewInviteLive.requestLayout();
-    viewLive.start(live);
+        viewLiveContainer.setEnabled(false);
 
-    if (live.isGroup()) {
-      livePresenter.loadRecipient(live);
-    } else {
-      ready();
-    }
+        ViewGroup.LayoutParams params = viewInviteLive.getLayoutParams();
+        params.width = screenUtils.dpToPx(LiveInviteView.WIDTH);
+        viewInviteLive.setLayoutParams(params);
+        viewInviteLive.requestLayout();
+
+        initSubscriptions();
+
+        livePresenter.loadFriendshipList();
+
+        if (live.isGroup()) {
+          viewLive.start(live);
+          livePresenter.loadRecipient(live);
+        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+          viewLive.start(live);
+          ready();
+        } else if (!live.isGroup()) {
+          if (live.isIntent()) {
+            livePresenter.loadRecipient(live);
+          } else {
+            viewLive.start(live);
+          }
+        }
+      } else {
+        finish();
+      }
+    }));
   }
 
   private void initResources() {
@@ -275,14 +339,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
 
     viewLiveContainer.setStatusBarHeight(result);
-  }
-
-  private void initPermissions() {
-    subscriptions.add(RxPermissions.getInstance(LiveActivity.this)
-        .request(PermissionUtils.PERMISSIONS_LIVE)
-        .subscribe(granted -> {
-
-        }));
   }
 
   private void initAppState() {
@@ -411,7 +467,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, null);
     }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
@@ -434,6 +490,113 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
       displayNotification(getString(R.string.live_notification_buzzed));
     }));
+
+    subscriptions.add(viewLive.onScreenshot().subscribe(aVoid -> {
+      if (RuntimePermissionUtil.checkPermission(context(), this)) {
+        takeScreenshot();
+      }
+    }));
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions,
+      @NonNull final int[] grantResults) {
+    switch (requestCode) {
+      case 100: {
+
+        RuntimePermissionUtil.onRequestPermissionsResult(grantResults,
+            new RuntimePermissionUtil.RPResultListener() {
+              @Override public void onPermissionGranted() {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                  takeScreenshot();
+                }
+              }
+
+              @Override public void onPermissionDenied() {
+                Toast.makeText(LiveActivity.this, "Permission Denied! You cannot save image!",
+                    Toast.LENGTH_SHORT).show();
+              }
+            });
+        break;
+      }
+    }
+  }
+
+  private void takeScreenshot() {
+    if (takeScreenshotEnable) {
+      takeScreenshotEnable = false;
+      subscriptions.add(
+          InstaCapture.getInstance(this).captureRx().subscribe(new Subscriber<Bitmap>() {
+            @Override public void onCompleted() {
+            }
+
+            @Override public void onError(Throwable e) {
+            }
+
+            @Override public void onNext(Bitmap bitmap) {
+              viewLive.screenshotDone();
+
+              Bitmap bitmapWatermarked =
+                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
+
+              Bitmap roundedBitmap =
+                  UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
+                      CORNER_SCREENSHOT * 2, context());
+
+              boolean result =
+                  BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
+
+              viewScreenShot.setImageBitmap(roundedBitmap);
+              viewScreenShot.setVisibility(View.VISIBLE);
+              viewScreenShot.animate()
+                  .alpha(1f)
+                  .setDuration(SCREENSHOT_DURATION)
+                  .setStartDelay(FLASH_DURATION)
+                  .setListener(new AnimatorListenerAdapter() {
+                    @Override public void onAnimationEnd(Animator animation) {
+                      viewScreenShot.animate().setListener(null).start();
+                      setScreenShotAnimation();
+                    }
+                  })
+                  .start();
+
+              viewFlash.animate()
+                  .setDuration(FLASH_DURATION)
+                  .alpha(1f)
+                  .withEndAction(() -> viewFlash.animate()
+                      .setDuration(FLASH_DURATION)
+                      .alpha(0f)
+                      .withEndAction(() -> viewFlash.animate().setListener(null).start()));
+
+              viewBGScreenshot.setVisibility(View.VISIBLE);
+              subscriptions.add(
+                  Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
+            }
+          }));
+    }
+  }
+
+  private void setScreenShotAnimation() {
+    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
+    scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
+
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        viewScreenShot.setAlpha(0f);
+        viewScreenShot.setVisibility(View.GONE);
+        takeScreenshotEnable = true;
+
+        Toast.makeText(LiveActivity.this,
+            EmojiParser.demojizedText(getString(R.string.live_screenshot_saved_toast)),
+            Toast.LENGTH_SHORT).show();
+
+        animation.setAnimationListener(null);
+      }
+    });
+
+    viewScreenShot.startAnimation(scaleAnim);
   }
 
   private void putExtraHomeIntent() {
@@ -470,8 +633,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void ready() {
     viewLive.update(live);
-    initSubscriptions();
-    livePresenter.loadFriendshipList();
   }
 
   @Override public void finish() {
@@ -488,6 +649,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (recipient instanceof Membership) {
       Membership membership = (Membership) recipient;
       live.setMembers(membership.getGroup().getMembers());
+    } else if (recipient instanceof Friendship) {
+      live.setId(recipient.getId());
+      viewLive.start(live);
     }
 
     ready();
@@ -503,6 +667,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }
+  }
+
+  @Override public void onJoinRoomFailed(String message) {
+    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    finish();
+  }
+
+  @Override public Context context() {
+    return this;
   }
 
   @Override public void onAppDidEnterForeground() {
@@ -542,7 +715,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, false, null);
+                    false, false, null, true);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               }

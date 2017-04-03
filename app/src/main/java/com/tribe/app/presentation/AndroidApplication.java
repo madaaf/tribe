@@ -39,6 +39,8 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import io.branch.referral.Branch;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmObjectSchema;
+import io.realm.RealmSchema;
 import timber.log.Timber;
 
 /**
@@ -105,8 +107,25 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration =
-        new RealmConfiguration.Builder().schemaVersion(6).deleteRealmIfMigrationNeeded().build();
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(7)
+        .migration((realm, oldVersion, newVersion) -> {
+          RealmSchema schema = realm.getSchema();
+
+          if (oldVersion == 6) {
+            RealmObjectSchema contactABSchema = schema.get("ContactABRealm");
+            if (!contactABSchema.hasField("isNew")) {
+              contactABSchema.addField("isNew", boolean.class);
+            }
+
+            RealmObjectSchema contactFBSchema = schema.get("ContactFBRealm");
+            if (!contactFBSchema.hasField("isNew")) {
+              contactFBSchema.addField("isNew", boolean.class);
+            }
+
+            oldVersion++;
+          }
+        })
+        .build();
     Realm.setDefaultConfiguration(realmConfiguration);
   }
 

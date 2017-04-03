@@ -65,6 +65,7 @@ public class CountryAdapterDelegate extends RxAdapterDelegate<List<Country>> {
         country.name + " (+" + phoneNumberUtil.getCountryCodeForRegion(country.code) + ")";
     vh.txtName.setText(countryName);
 
+
     try {
       vh.imageCountryFlag.setImageDrawable(context.getResources()
           .getDrawable(

@@ -9,11 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -31,15 +33,21 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveRowView extends FrameLayout {
 
+  private static final int DURATION = 300;
+
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.viewWaiting) LiveWaitingView viewWaiting;
 
   @BindView(R.id.viewAudio) LiveAudioView viewAudio;
 
+  @BindView(R.id.bgMicroDisabled) View bgMicroDisabled;
+
+  @BindView(R.id.imgMicroDisabled) ImageView imgMicroDisabled;
+
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
-  @BindView(R.id.view_background) View backgroundView;
+  @BindView(R.id.viewBackground) View backgroundView;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -149,6 +157,14 @@ public class LiveRowView extends FrameLayout {
                 remotePeerView.setVisibility(View.GONE);
               }
             });
+          }
+
+          if (tribePeerMediaConfiguration.isAudioEnabled()) {
+            AnimationUtils.fadeOut(bgMicroDisabled, DURATION);
+            AnimationUtils.fadeOut(imgMicroDisabled, DURATION);
+          } else {
+            AnimationUtils.fadeIn(bgMicroDisabled, DURATION);
+            AnimationUtils.fadeIn(imgMicroDisabled, DURATION);
           }
         }));
 

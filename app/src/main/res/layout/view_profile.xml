@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
+    android:fillViewport="true"
     tools:context=".presentation.view.activity.ProfileActivity"
     >
 
@@ -18,47 +19,32 @@
     <FrameLayout
         android:id="@+id/viewShareProfile"
         android:layout_width="match_parent"
-        android:layout_height="82dp"
-        android:background="@color/grey.background.profile_info"
+        android:layout_height="@dimen/view_share_profile_height"
+        android:background="@null"
         android:clickable="true"
         android:foreground="@drawable/selectable_button"
         android:orientation="horizontal"
         >
 
-      <FrameLayout
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+          android:id="@+id/avatar"
+          android:layout_width="@dimen/nav_icon_size_with_shadow"
+          android:layout_height="@dimen/nav_icon_size_with_shadow"
           android:layout_gravity="left|center_vertical"
-          android:layout_margin="@dimen/horizontal_margin_small"
-          android:gravity="center"
-          >
+          android:layout_margin="@dimen/horizontal_margin_smaller"
+          android:background="@null"
+          app:hasHole="false"
+          app:hasInd="false"
+          app:hasShadow="true"
+          />
 
-        <View
-            android:id="@+id/viewShadowAvatar"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:background="@drawable/bg_avatar_shadow"
-            />
-
-        <com.tribe.app.presentation.view.widget.avatar.AvatarView
-            android:id="@+id/avatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:background="@null"
-            app:hasHole="false"
-            app:hasInd="false"
-            app:hasShadow="false"
-            />
-      </FrameLayout>
-
-      <RelativeLayout
+      <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="center_vertical"
-          android:layout_marginEnd="55dp"
-          android:layout_marginStart="80dp"
+          android:layout_marginEnd="@dimen/nav_icon_size_with_margin_end"
+          android:layout_marginStart="@dimen/nav_icon_size_with_margin_start"
+          android:orientation="vertical"
           >
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -74,24 +60,37 @@
             android:id="@+id/txtUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtName"
             android:layout_marginTop="5dp"
             android:singleLine="true"
             style="@style/Body.One.Blue.New"
             />
-      </RelativeLayout>
+      </LinearLayout>
 
       <ImageView
           android:id="@+id/btnShare"
-          android:layout_width="@dimen/nav_icon_size"
-          android:layout_height="@dimen/nav_icon_size"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
           android:layout_gravity="right|center_vertical"
-          android:background="@drawable/selectable_button_oval"
+          android:layout_marginEnd="@dimen/horizontal_margin_small"
+          android:background="@drawable/selectable_button_oval_light"
           android:clickable="true"
           android:scaleType="centerInside"
-          android:src="@drawable/picto_share_profile"
+          android:src="@drawable/picto_more_friends"
           />
     </FrameLayout>
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionVideo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionBody="@string/profile_video_demo_subtitle"
+        app:actionImage="@drawable/picto_play_video"
+        app:actionTitle="@string/profile_video_demo_title"
+        app:actionType="image"
+        />
 
     <include layout="@layout/view_separator_simple"/>
 
@@ -107,11 +106,33 @@
     <include layout="@layout/view_separator_simple"/>
 
     <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionBlocked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_blocked_friends"
+        app:actionType="hierarchy"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionVisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
         app:actionTitle="@string/profile_invisible_mode"
+        app:actionType="toggle"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionPhoneIntegration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_fullscreen_notifications_android"
         app:actionType="toggle"
         />
 
@@ -149,25 +170,31 @@
         />
 
     <include layout="@layout/view_separator_simple"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="50dp"
+        >
+
+      <ImageView
+          android:id="@+id/imgLogo"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:src="@drawable/picto_tribe_logo_black"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtVersion"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/vertical_margin"
+          android:clickable="true"
+          android:gravity="center"
+          style="@style/Body.One.Black40"
+          />
+    </LinearLayout>
   </LinearLayout>
-
-  <ImageView
-      android:id="@+id/imgLogo"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal|bottom"
-      android:layout_marginBottom="50dp"
-      android:src="@drawable/picto_tribe_logo_black"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtVersion"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal|bottom"
-      android:layout_marginBottom="@dimen/vertical_margin"
-      android:clickable="true"
-      android:gravity="center"
-      style="@style/Body.One.Black40"
-      />
 </com.tribe.app.presentation.view.component.profile.ProfileView>

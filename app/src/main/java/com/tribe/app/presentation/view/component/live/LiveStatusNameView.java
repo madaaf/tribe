@@ -22,10 +22,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -95,9 +92,6 @@ public class LiveStatusNameView extends FrameLayout {
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_status_name, this);
     unbinder = ButterKnife.bind(this);
-
-    txtStatus2.setAlpha(0);
-    txtStatus2.setTranslationY(translationY);
 
     setBackground(null);
   }
@@ -182,9 +176,7 @@ public class LiveStatusNameView extends FrameLayout {
 
     txtName.setText(live.getDisplayName());
 
-    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> setStatus(INITIATING)));
+    setStatus(INITIATING);
   }
 
   public void setStatus(@StatusType int status) {
@@ -193,8 +185,9 @@ public class LiveStatusNameView extends FrameLayout {
     this.status = status;
 
     if (status == DONE) {
-      hideView(txtStatus1);
-      hideView(txtStatus2);
+      txtStatus1.setVisibility(View.GONE);
+      //hideView(txtStatus1);
+      //hideView(txtStatus2);
       return;
     }
 

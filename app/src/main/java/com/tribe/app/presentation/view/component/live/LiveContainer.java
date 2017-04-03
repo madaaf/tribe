@@ -370,9 +370,7 @@ public class LiveContainer extends FrameLayout {
             }
           }
         }
-
         clearTouch();
-
         break;
       }
     }
@@ -530,6 +528,7 @@ public class LiveContainer extends FrameLayout {
     viewLive.setLayoutParams(params);
     viewLive.requestLayout();
     viewInviteLive.setFadeInEffet(Math.abs(value / screenUtils.dpToPx(LiveInviteView.WIDTH)));
+    viewLive.setOpenInviteValue(value);
     viewShadowRight.setTranslationX(value);
   }
 
@@ -559,7 +558,9 @@ public class LiveContainer extends FrameLayout {
 
   private void closeInviteView() {
     isOpened = false;
-    springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    if (velocityTracker != null) {
+      springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    }
   }
 
   private float getTotalDragDistance() {

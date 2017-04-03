@@ -54,7 +54,6 @@ import java.util.Map;
 import java.util.Random;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class GroupActivity extends BaseActivity implements GroupMVPView {
 
@@ -204,7 +203,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.GROUP);
           bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
           tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-          navigator.openSmsForInvite(this);
+          navigator.openSmsForInvite(this, null);
         }
       }
     });
@@ -234,8 +233,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       if (task.isSuccessful()) {
         firebaseRemoteConfig.activateFetched();
       } else {
-        Timber.e("firebaseRemoteConfig failure");
-        if (groupEntity != null) groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+        if (groupEntity != null) {
+          groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+        }
       }
     });
   }
@@ -381,9 +381,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
             getString(R.string.add_friend_error_invisible_invite_ios),
             getString(R.string.add_friend_error_invisible_cancel))
             .filter(x -> x == true)
-            .subscribe(a -> {
-              navigator.openSmsForInvite(this);
-            });
+            .subscribe(a -> navigator.openSmsForInvite(this, user.getPhone()));
       } else {
         groupPresenter.createFriendship(user.getId());
       }

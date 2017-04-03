@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -18,10 +20,11 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
@@ -29,13 +32,15 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-public class ProfileView extends FrameLayout {
+public class ProfileView extends ScrollView {
 
   @Inject User user;
 
   @Inject TagManager tagManager;
 
   @Inject Navigator navigator;
+
+  @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
 
   @BindView(R.id.avatar) AvatarView viewAvatar;
 
@@ -54,6 +59,12 @@ public class ProfileView extends FrameLayout {
   @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
   @BindView(R.id.viewActionVisible) ActionView viewActionVisible;
+
+  @BindView(R.id.viewActionPhoneIntegration) ActionView viewActionPhoneIntegration;
+
+  @BindView(R.id.viewActionVideo) ActionView viewActionVideo;
+
+  @BindView(R.id.viewActionBlocked) ActionView viewActionBlocked;
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
 
@@ -100,17 +111,7 @@ public class ProfileView extends FrameLayout {
     viewAvatar.load(user.getProfilePicture());
 
     viewActionVisible.setValue(!user.isInvisibleMode());
-
-    viewActionProfile.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_user_infos)));
-    viewActionFollow.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_follow_us)));
-    viewActionRateUs.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_rate_us)));
-    viewActionLogout.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_logout)));
-    viewActionVisible.setTitle(
-        EmojiParser.demojizedText(getContext().getString(R.string.profile_invisible_mode)));
+    viewActionPhoneIntegration.setValue(fullScreenNotifications.get());
 
     txtVersion.setText(getContext().getString(R.string.settings_version, BuildConfig.VERSION_NAME,
         String.valueOf(BuildConfig.VERSION_CODE)));
@@ -125,6 +126,24 @@ public class ProfileView extends FrameLayout {
       tagManager.setProperty(bundle);
       onChangeVisible.onNext(!isChecked);
     }));
+
+    subscriptions.add(viewActionPhoneIntegration.onChecked().flatMap(isChecked -> {
+      if (!isChecked) {
+        return DialogFactory.dialog(getContext(),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_title),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_msg),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_disable),
+            getContext().getString(R.string.action_cancel));
+      } else {
+        return Observable.just(true);
+      }
+    }, (isChecked, proceed) -> Pair.create(isChecked, proceed)).filter(pair -> {
+      if (!pair.second) {
+        pair = Pair.create(true, true);
+        viewActionPhoneIntegration.setValue(true);
+      }
+      return pair.second;
+    }).subscribe(pair -> fullScreenNotifications.set(pair.first)));
   }
 
   private void initDependencyInjector() {
@@ -153,7 +172,7 @@ public class ProfileView extends FrameLayout {
     }
   }
 
-  @OnClick({R.id.viewShareProfile, R.id.btnShare}) void clickShareProfile() {
+  @OnClick({ R.id.viewShareProfile, R.id.btnShare }) void clickShareProfile() {
     onShare.onNext(null);
   }
 
@@ -185,7 +204,15 @@ public class ProfileView extends FrameLayout {
     return onDebugMode;
   }
 
+  public Observable<Void> onVideo() {
+    return viewActionVideo.onClick();
+  }
+
   public Observable<Void> onShare() {
     return onShare;
+  }
+
+  public Observable<Void> onBlockedFriends() {
+    return viewActionBlocked.onClick();
   }
 }

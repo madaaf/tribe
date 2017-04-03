@@ -36,6 +36,8 @@ public abstract class UpdateUserPresenter implements Presenter {
   @Override public void onViewDetached() {
     updateUser.unsubscribe();
     lookupUsername.unsubscribe();
+    if (lookupUsernameSubscriber != null) lookupUsernameSubscriber.unsubscribe();
+    if (updateUserSubscriber != null) updateUserSubscriber.unsubscribe();
   }
 
   public void updateUser(String username, String displayName, String pictureUri, String fbid) {
@@ -131,12 +133,12 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      getUpdateUserView().usernameResult(false);
+      if (getUpdateUserView() != null) getUpdateUserView().usernameResult(false);
       e.printStackTrace();
     }
 
     @Override public void onNext(Boolean available) {
-      getUpdateUserView().usernameResult(available);
+      if (getUpdateUserView() != null) getUpdateUserView().usernameResult(available);
     }
   }
 }

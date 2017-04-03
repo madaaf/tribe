@@ -11,6 +11,7 @@ public class Contact implements Comparable<Contact> {
   protected String name;
   protected List<User> userList;
   protected int howManyFriends;
+  protected boolean isNew;
 
   public Contact(String id) {
     this.id = id;
@@ -56,5 +57,13 @@ public class Contact implements Comparable<Contact> {
 
   public void setHowManyFriends(int howManyFriends) {
     this.howManyFriends = howManyFriends;
+  }
+
+  public boolean isNew() {
+    return isNew;
+  }
+
+  public void setNew(boolean aNew) {
+    isNew = aNew;
   }
 }

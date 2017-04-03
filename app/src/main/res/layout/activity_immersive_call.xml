@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <ImageView
+      android:id="@+id/containerView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/black.opacity.50"
+      />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:weightSum="2"
+      >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+      <com.tribe.app.presentation.view.widget.PulseLayout
+          android:id="@+id/layoutPulse"
+          android:layout_width="180dp"
+          android:layout_height="180dp"
+          android:layout_above="@+id/txtContainer"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+          app:pulseColor="@android:color/white"
+          app:pulseCount="4"
+          app:pulseDuration="3000"
+          >
+        
+        <com.tribe.app.presentation.view.widget.avatar.AvatarView
+            android:id="@+id/avatar"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_centerInParent="true"
+            android:background="@null"
+            app:avatarType="live"
+            app:hasHole="true"
+            app:hasInd="true"
+            app:hasShadow="false"
+            />
+
+      </com.tribe.app.presentation.view.widget.PulseLayout>
+
+
+      <LinearLayout
+          android:id="@+id/txtContainer"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="@color/black.opacity.50"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="10"
+            android:text="@string/call_kit_title"
+            style="@style/Title.1.White"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtDisplayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="@dimen/vertical_margin"
+            android:gravity="center"
+            android:shadowColor="@color/black.opacity.50"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="10"
+            style="@style/Medium.2.White"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtCallerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="@dimen/vertical_margin"
+            android:gravity="center"
+            android:shadowColor="@color/black.opacity.50"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="10"
+            style="@style/Title.2.White"
+            />
+
+      </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:background="@color/red"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtSwipeDown"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_marginBottom="10dp"
+          android:alpha="1"
+          android:gravity="center"
+          android:shadowColor="@color/black.opacity.50"
+          android:shadowDx="3"
+          android:shadowDy="3"
+          android:shadowRadius="10"
+          android:text="@string/call_kit_swipe_down"
+          style="@style/Title.1.White"
+          />
+
+      <LinearLayout
+          android:id="@+id/containerAction"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_above="@id/txtSwipeDown"
+          android:layout_centerHorizontal="true"
+          android:clickable="true"
+          android:gravity="center"
+          android:orientation="vertical"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:shadowColor="@color/black.opacity.50"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="10"
+            android:text="@string/call_kit_swipe_up"
+            style="@style/Title.1.White"
+            />
+
+        <ImageView
+            android:id="@+id/callAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:padding="@dimen/icons_padding"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_fullscreen_camera"
+            />
+      </LinearLayout>
+    </RelativeLayout>
+  </LinearLayout>
+</RelativeLayout>

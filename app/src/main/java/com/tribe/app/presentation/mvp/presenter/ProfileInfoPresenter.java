@@ -43,6 +43,7 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
   }
 
   @Override public void onViewDetached() {
+    super.onViewDetached();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     lookupUsername.unsubscribe();
     doRegister.unsubscribe();

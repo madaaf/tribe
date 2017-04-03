@@ -16,27 +16,66 @@
       />
 
   <RelativeLayout
+      android:id="@+id/layoutInfos"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
-      android:layout_marginLeft="55dp"
+      android:layout_marginStart="@dimen/avatar_size_small_margin_start"
+      android:gravity="center_vertical"
       >
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutName"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:singleLine="true"
-        style="@style/Body.Two.Black"
-        />
+        android:orientation="horizontal"
+        >
+
+      <RelativeLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minHeight="25dp"
+          android:orientation="horizontal"
+          >
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            style="@style/Body.Two.Black"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_xsmall"
+            android:layout_toRightOf="@id/txtName"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_rect_rounded_5_red"
+            android:ellipsize="none"
+            android:lines="1"
+            android:paddingBottom="5dp"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:paddingTop="6dp"
+            android:singleLine="true"
+            android:text="@string/contacts_search_new"
+            android:visibility="gone"
+            style="@style/Body.Two.White"
+            />
+      </RelativeLayout>
+    </LinearLayout>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtName"
-        android:layout_marginTop="5dp"
+        android:layout_below="@id/layoutName"
         android:singleLine="true"
         style="@style/Body.One.Blue.New"
         />
@@ -45,9 +84,8 @@
         android:id="@+id/txtBubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtName"
+        android:layout_below="@id/layoutName"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="6.5dp"
         android:layout_toRightOf="@id/txtUsername"
         android:singleLine="true"
         android:text="\u2022"
@@ -59,14 +97,14 @@
         android:id="@+id/txtFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtName"
+        android:layout_below="@id/layoutName"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/txtBubble"
         android:maxLines="1"
         android:text="@string/group_add_members_already_friend"
         android:visibility="gone"
         style="@style/Body.One.Black40"
         />
+
   </RelativeLayout>
 </merge>

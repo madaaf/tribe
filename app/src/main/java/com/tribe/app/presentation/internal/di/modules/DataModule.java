@@ -6,9 +6,11 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
@@ -54,6 +56,11 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getLong(PreferencesConstants.LAST_SYNC, 0L);
   }
 
+  @Provides @Singleton @NewContactsTooltip Preference<Boolean> provideNewContactsTooltip(
+      RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesConstants.NEW_CONTACT_TOOLTIP, false);
+  }
+
   @Provides @Singleton @LastVersionCode Preference<Integer> provideLastVersionCode(Context context,
       RxSharedPreferences prefs) {
     return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, -1);
@@ -75,5 +82,10 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @RoutingMode Preference<String> provideRoutingMode(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesConstants.ROUTING_MODE, TribeLiveOptions.ROUTED);
+  }
+
+  @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
+      RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesConstants.FULLSCREEN_NOTIFICATIONS, true);
   }
 }

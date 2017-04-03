@@ -21,7 +21,7 @@
       />
 
   <LinearLayout
-      android:id="@+id/layoutStatus"
+      android:id="@+id/layoutSubtitle"
       android:layout_width="wrap_content"
       android:layout_height="60dp"
       android:layout_gravity="bottom|center_horizontal"
@@ -32,7 +32,7 @@
       android:orientation="vertical"
       >
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatus"
+        android:id="@+id/txtSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
@@ -41,13 +41,12 @@
         android:paddingRight="7dp"
         android:paddingTop="6dp"
         android:singleLine="true"
-        android:text="@string/grid_status_more_friends"
         style="@style/Body.Two.Black40"
         />
   </LinearLayout>
 
   <LinearLayout
-      android:id="@+id/layoutName"
+      android:id="@+id/layoutTitle"
       android:layout_width="wrap_content"
       android:layout_height="60dp"
       android:layout_gravity="top|center_horizontal"
@@ -59,13 +58,12 @@
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtName"
+        android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:drawablePadding="5.25dp"
         android:singleLine="true"
-        android:text="@string/grid_name_more_friends"
         style="@style/Title.2.White"
         />
   </LinearLayout>

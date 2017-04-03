@@ -19,14 +19,11 @@ public class UserInviteAdapterDelegate extends RecipientGridAdapterDelegate {
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    return items.get(position) instanceof Friendship
-        && !items.get(position)
-        .getSubId()
-        .equals(Recipient.ID_HEADER)
-        && !items.get(position).getSubId().equals(Recipient.ID_EMPTY)
-        && !items.get(position).getSubId().equals(Recipient.ID_MORE)
-        && !items.get(position).isOnline()
-        && !items.get(position).isLive();
+    Recipient recipient = items.get(position);
+    return recipient instanceof Friendship
+        && !recipient.isFake()
+        && !recipient.isOnline()
+        && !recipient.isLive();
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {

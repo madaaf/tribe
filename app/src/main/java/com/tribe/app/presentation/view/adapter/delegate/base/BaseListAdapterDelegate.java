@@ -112,6 +112,9 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
           : membership.getGroup().getMembers().size();
       username = size + " " + (size > 1 ? context.getString(R.string.group_members)
           : context.getString(R.string.group_member));
+    } else if (item instanceof User) {
+      User user = (User) item;
+      vh.txtNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
     }
 
     if (animations.containsKey(holder)) {
@@ -229,10 +232,10 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     vh.txtAction.measure(0, 0);
     int width = vh.txtAction.getMeasuredWidth() + (2 * marginSmall);
     UIUtils.changeWidthOfView(vh.btnAdd, width);
-    ViewGroup.MarginLayoutParams txtNameMargin =
-        (ViewGroup.MarginLayoutParams) vh.txtName.getLayoutParams();
-    txtNameMargin.rightMargin = width + (2 * marginSmall);
-    vh.txtName.requestLayout();
+    ViewGroup.MarginLayoutParams layoutInfos =
+        (ViewGroup.MarginLayoutParams) vh.layoutInfos.getLayoutParams();
+    layoutInfos.rightMargin = width + marginSmall;
+    vh.layoutInfos.requestLayout();
     vh.txtAction.setTextColor(buttonModel.getTextColor());
     vh.gradientDrawable.setColor(buttonModel.getBackgroundColor());
   }

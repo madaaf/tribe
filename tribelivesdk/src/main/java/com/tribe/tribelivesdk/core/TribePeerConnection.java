@@ -72,7 +72,7 @@ public class TribePeerConnection {
 
   public void setRemoteDescription(SessionDescription sessionDescription) {
     if (sessionDescription == null) {
-      Timber.e("Attempting to setRemoteDescription to null");
+      Timber.d("Attempting to setRemoteDescription to null");
       return;
     }
 
@@ -82,12 +82,12 @@ public class TribePeerConnection {
 
   public void addIceCandidate(final IceCandidate iceCandidate) {
     if (iceCandidate == null) {
-      Timber.e("Attempting to add null ice candidate");
+      Timber.d("Attempting to add null ice candidate");
       return;
     }
 
     if (peerConnection == null) {
-      Timber.e("Peer connection is null can't add iceCandidate");
+      Timber.d("Peer connection is null can't add iceCandidate");
       return;
     }
 

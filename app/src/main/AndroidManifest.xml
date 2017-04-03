@@ -14,22 +14,19 @@
   <uses-permission android:name="android.permission.READ_CONTACTS"/>
   <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
   <!--<uses-permission android:name="android.permission.RECEIVE_SMS" />
   <uses-permission android:name="android.permission.READ_SMS" />-->
   <uses-feature android:name="android.hardware.camera"/>
   <uses-feature android:name="android.hardware.camera.autofocus"/>
   <uses-feature android:glEsVersion="0x00020000"/>
 
-
-  <uses-permission
-      android:name="${applicationId}.permission.C2D_MESSAGE"/>
-  <uses-permission
-      android:name="com.google.android.c2dm.permission.RECEIVE"/>
+  <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE"/>
+  <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
 
   <permission
       android:name="${applicationId}.permission.C2D_MESSAGE"
       android:protectionLevel="signature"/>
-
 
   <application
       android:name=".presentation.AndroidApplication"
@@ -97,13 +94,6 @@
         android:configChanges="orientation|screenSize"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"/>
-
-    <activity
-        android:name=".presentation.view.activity.PickYourFriendsActivity"
-        android:configChanges="orientation|screenSize"
-        android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustPan"/>
 
     <activity
         android:name=".presentation.view.activity.HomeActivity"
@@ -192,15 +182,36 @@
 
     <activity
         android:name=".presentation.view.activity.ProfileActivity"
+        android:configChanges="orientation|keyboardHidden|screenSize"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.White"/>
 
+    <!--
+         android:keepScreenOn="true"
+            android:launchMode="singleTop"
+    -->
+
+    <activity
+        android:name=".presentation.view.activity.LiveImmersiveNotificationActivity"
+        android:keepScreenOn="true"
+        android:launchMode="singleTop"
+        android:noHistory="true"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.FullScreen"/>
+
     <activity
         android:name=".presentation.view.activity.LiveActivity"
+        android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
-        android:screenOrientation="portrait"
         android:theme="@style/AppTheme.Black"/>
+
+    <activity
+        android:name=".presentation.view.activity.VideoActivity"
+        android:keepScreenOn="true"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.FullScreen.Black"
+        />
 
     <service android:name=".data.network.WSService"></service>
 
@@ -264,10 +275,8 @@
         android:name="com.mixpanel.android.mpmetrics.GCMReceiver"
         android:permission="com.google.android.c2dm.permission.SEND">
       <intent-filter>
-        <action
-            android:name="com.google.android.c2dm.intent.RECEIVE"/>
-        <action
-            android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
 
         <category android:name="${applicationId}"/>
       </intent-filter>

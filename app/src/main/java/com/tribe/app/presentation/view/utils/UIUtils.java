@@ -2,14 +2,25 @@ package com.tribe.app.presentation.view.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import com.tribe.app.R;
 
 /**
  * Created by tiago on 14/11/2016.
@@ -24,7 +35,9 @@ public class UIUtils {
     Drawable background = v.getBackground();
     int color = PaletteGrid.get(position - 1);
     int radiusTopLeft = position == 1 ? screenUtils.dpToPx(5) : 0;
-    int radiusTopRight = position == 2 ? screenUtils.dpToPx(5) : 0;
+    int radiusTopRight =
+        position == screenUtils.getContext().getResources().getInteger(R.integer.columnNumber)
+            ? screenUtils.dpToPx(5) : 0;
     float[] radiusMatrix =
         new float[] { radiusTopLeft, radiusTopLeft, radiusTopRight, radiusTopRight, 0, 0, 0, 0 };
 
@@ -100,8 +113,15 @@ public class UIUtils {
     v.setLayoutParams(params);
   }
 
+  public static void changeWidthHeightOfView(View v, int width, int height) {
+    ViewGroup.LayoutParams params = v.getLayoutParams();
+    params.width = width;
+    params.height = height;
+    v.setLayoutParams(params);
+  }
+
   public static void showReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
-    if (v.getVisibility() == View.VISIBLE) return;
+    if (!ViewCompat.isAttachedToWindow(v) || v.getVisibility() == View.VISIBLE) return;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
       v.post(() -> {
@@ -122,7 +142,7 @@ public class UIUtils {
   }
 
   public static void hideReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
-    if (v.getVisibility() == View.GONE) return;
+    if (!ViewCompat.isAttachedToWindow(v) || v.getVisibility() == View.GONE) return;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
       v.post(() -> {
@@ -138,5 +158,41 @@ public class UIUtils {
     } else {
       v.setVisibility(View.GONE);
     }
+  }
+
+  public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int color, int cornerDips,
+      int borderDips, Context context) {
+    Bitmap output =
+        Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(output);
+
+    final int borderSizePx =
+        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float) borderDips,
+            context.getResources().getDisplayMetrics());
+    final int cornerSizePx =
+        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float) cornerDips,
+            context.getResources().getDisplayMetrics());
+    final Paint paint = new Paint();
+    final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+    final RectF rectF = new RectF(rect);
+
+    // prepare canvas for transfer
+    paint.setAntiAlias(true);
+    paint.setColor(0xFFFFFFFF);
+    paint.setStyle(Paint.Style.FILL);
+    canvas.drawARGB(0, 0, 0, 0);
+    canvas.drawRoundRect(rectF, cornerSizePx, cornerSizePx, paint);
+
+    // draw bitmap
+    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+    canvas.drawBitmap(bitmap, rect, rect, paint);
+
+    // draw border
+    paint.setColor(color);
+    paint.setStyle(Paint.Style.STROKE);
+    paint.setStrokeWidth((float) borderSizePx);
+    canvas.drawRoundRect(rectF, cornerSizePx, cornerSizePx, paint);
+
+    return output;
   }
 }

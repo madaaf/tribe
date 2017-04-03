@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -28,6 +27,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -36,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 01/22/17.
  */
 public class LiveControlsView extends FrameLayout {
-
+  private final static int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION = 300;
   private static final int DURATION_PARAM = 450;
 
@@ -77,6 +77,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
   private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
+  private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
     super(context);
@@ -99,7 +100,10 @@ public class LiveControlsView extends FrameLayout {
 
   @Override protected void onDetachedFromWindow() {
     subscriptions.clear();
-
+    if (timerSubscription != null) {
+      timerSubscription.unsubscribe();
+      timerSubscription = null;
+    }
     super.onDetachedFromWindow();
   }
 
@@ -110,7 +114,6 @@ public class LiveControlsView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
 
     setBackground(null);
-
     initUI();
   }
 
@@ -135,8 +138,24 @@ public class LiveControlsView extends FrameLayout {
         .inject(this);
   }
 
+  private void setTimer() {
+    timerSubscription = Observable.timer(MAX_DURATION_LAYOUT_CONTROLS, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          if (isParamExpanded) {
+            expandParam();
+          }
+        });
+  }
+
+  private void resetTimer() {
+    if (timerSubscription != null) timerSubscription.unsubscribe();
+    setTimer();
+  }
+
   private void expandParam() {
     if (!isParamExpanded) {
+      setTimer();
       isParamExpanded = true;
 
       int widthExtended = layoutContainerParamExtendedLive.getWidth();
@@ -182,6 +201,7 @@ public class LiveControlsView extends FrameLayout {
 
   @OnClick(R.id.btnInviteLive) void openInvite() {
     onOpenInvite.onNext(null);
+    resetTimer();
   }
 
   @OnClick(R.id.btnOrientationCamera) void clickOrientationCamera() {
@@ -190,11 +210,13 @@ public class LiveControlsView extends FrameLayout {
         .setDuration(DURATION)
         .start();
     onClickCameraOrientation.onNext(null);
+    resetTimer();
   }
 
   @OnClick(R.id.btnMicro) void clickMicro() {
     microEnabled = !microEnabled;
     onClickMicro.onNext(microEnabled);
+    resetTimer();
   }
 
   @OnClick(R.id.btnExpand) void clickExpandParam() {
@@ -243,6 +265,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnNotify) void clickNotify() {
+    resetTimer();
     btnNotify.setEnabled(false);
     btnNotify.animate()
         .alpha(0.2f)
@@ -270,6 +293,14 @@ public class LiveControlsView extends FrameLayout {
 
   public void setNotifyEnabled(boolean enable) {
     btnNotify.setEnabled(enable);
+  }
+
+  public void prepareForScreenshot() {
+    btnNotify.setAlpha(0f);
+  }
+
+  public void screenshotDone() {
+    btnNotify.setAlpha(1f);
   }
 
   public void setMicroEnabled(boolean enabled) {

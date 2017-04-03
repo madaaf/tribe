@@ -218,7 +218,7 @@ public class MediaConstraints {
       lines[mLineIndex] = newMLine.toString();
       Timber.d("Change media description: " + lines[mLineIndex]);
     } else {
-      Timber.e("Wrong SDP media description format: " + lines[mLineIndex]);
+      Timber.d("Wrong SDP media description format: " + lines[mLineIndex]);
     }
 
     StringBuilder newSdpDescription = new StringBuilder();
@@ -284,7 +284,7 @@ public class MediaConstraints {
       lines[mLineIndex] = newMLine.toString();
       Timber.d("Change media description: " + lines[mLineIndex]);
     } else {
-      Timber.e("Wrong SDP media description format: " + lines[mLineIndex]);
+      Timber.d("Wrong SDP media description format: " + lines[mLineIndex]);
     }
 
     StringBuilder newSdpDescription = new StringBuilder();

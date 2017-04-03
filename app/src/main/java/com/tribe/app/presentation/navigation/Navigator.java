@@ -1,8 +1,6 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +18,6 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
-import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
@@ -31,12 +28,11 @@ import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.PickYourFriendsActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
+import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Class used to navigate through the application.
@@ -60,6 +56,12 @@ public class Navigator {
       Intent intent = LauncherActivity.getCallingIntent(context);
       context.startActivity(intent);
     }
+  }
+
+  public void navigateToHomeAndFinishAffinity(Activity activity) {
+    Intent mIntent = new Intent(activity, HomeActivity.class);
+    activity.finishAffinity();
+    activity.startActivity(mIntent);
   }
 
   /**
@@ -108,16 +110,6 @@ public class Navigator {
     }
   }
 
-  public void navigateToPickYourFriends(Activity activity, Uri deepLink) {
-    if (activity != null) {
-      Intent intent = PickYourFriendsActivity.getCallingIntent(activity);
-      intent.setData(deepLink);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-      activity.finish();
-    }
-  }
-
   /**
    * Goes to the main grid.
    *
@@ -151,6 +143,14 @@ public class Navigator {
   public void navigateToProfile(Activity activity) {
     if (activity != null) {
       Intent intent = ProfileActivity.getCallingIntent(activity);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToVideo(Activity activity) {
+    if (activity != null) {
+      Intent intent = VideoActivity.getCallingIntent(activity);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -300,11 +300,12 @@ public class Navigator {
     }
   }
 
-  public void shareGenericText(String body, Context context) {
+  public void shareGenericText(String body, Activity activity) {
     Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
     sharingIntent.setType("text/plain");
     sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-    context.startActivity(sharingIntent);
+    activity.startActivity(sharingIntent);
+    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
   public void sendText(String body, Context context) {
@@ -322,14 +323,20 @@ public class Navigator {
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
-  public void openSmsForInvite(Activity activity) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:"));
-    sendIntent.putExtra("sms_body", EmojiParser.demojizedText(
+  public void openSmsForInvite(Activity activity, String phoneNumber) {
+    String text = EmojiParser.demojizedText(
         activity.getString(R.string.share_invite, user.getUsername(),
-            BuildConfig.TRIBE_URL + "/" + user.getUsername())));
-    activity.startActivity(sendIntent);
-    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+            BuildConfig.TRIBE_URL + "/" + user.getUsername()));
+
+    if (StringUtils.isEmpty(phoneNumber)) {
+      shareGenericText(text, activity);
+    } else {
+      Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+      sendIntent.setData(Uri.parse("sms:" + phoneNumber));
+      sendIntent.putExtra("sms_body", text);
+      activity.startActivity(sendIntent);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
   }
 
   public void invite(String phone, int nbFriends, Activity activity) {

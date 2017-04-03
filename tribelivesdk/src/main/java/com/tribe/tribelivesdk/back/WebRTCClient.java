@@ -62,7 +62,7 @@ import static android.R.attr.id;
 
   private void initPeerConnectionFactory() {
     if (!PeerConnectionFactory.initializeAndroidGlobals(context, true, true, false)) {
-      Timber.e("Failed to initializeAndroidGlobals");
+      Timber.d("Failed to initializeAndroidGlobals");
     }
 
     PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
@@ -86,12 +86,12 @@ import static android.R.attr.id;
 
   public void addPeerConnection(TribeSession session, boolean isOffer) {
     if (session == null) {
-      Timber.e("Attempt to addPeerConnection with null peerId");
+      Timber.d("Attempt to addPeerConnection with null peerId");
       return;
     }
 
     if (peerConnections.get(session.getPeerId()) != null) {
-      Timber.i("Client already exists - not adding client again. " + id);
+      Timber.d("Client already exists - not adding client again. " + id);
       return;
     }
 
@@ -99,8 +99,9 @@ import static android.R.attr.id;
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
 
-    if (options.getRoutingMode().equals(TribeLiveOptions.P2P) || session.getPeerId()
-        .equals(TribeSession.PUBLISHER_ID)) {
+    if ((options.getRoutingMode().equals(TribeLiveOptions.P2P)
+        || session.getPeerId().equals(TribeSession.PUBLISHER_ID)
+        && remotePeer.getPeerConnection() != null)) {
       remotePeer.getPeerConnection().addStream(localMediaStream);
     }
 
@@ -125,7 +126,7 @@ import static android.R.attr.id;
     TribePeerConnection tribePeerConnection = peerConnections.get(tribeSession.getPeerId());
 
     if (tribePeerConnection == null) {
-      Timber.e("Attempt to removePeerConnection on invalid peerId");
+      Timber.d("Attempt to removePeerConnection on invalid peerId");
       return false;
     }
 
@@ -190,7 +191,7 @@ import static android.R.attr.id;
     TribePeerConnection tribePeerConnection = peerConnections.get(peerId);
 
     if (tribePeerConnection == null) {
-      Timber.e("Attempt to addIceCandidate on invalid clientId");
+      Timber.d("Attempt to addIceCandidate on invalid clientId");
       return;
     }
 

@@ -21,6 +21,8 @@ import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -29,11 +31,14 @@ import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
+import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
@@ -67,6 +72,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   // VIEWS
   private ProfileView viewProfile;
   private SettingsProfileView viewSettingsProfile;
+  private SettingsBlockedFriendsView viewSettingsBlockedFriends;
 
   // VARIABLES
   private boolean disableUI = false;
@@ -101,6 +107,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (viewSettingsProfile != null) viewSettingsProfile.onDestroy();
+    if (viewSettingsBlockedFriends != null) viewSettingsBlockedFriends.onDestroy();
     if (viewProfile != null) viewProfile.onDestroy();
     if (progressDialog != null) progressDialog.dismiss();
     super.onDestroy();
@@ -205,13 +212,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private void setupMainView() {
     viewProfile = (ProfileView) viewStack.push(R.layout.view_profile);
 
-    subscriptions.add(viewProfile.onShare().subscribe(aVoid -> {
-      navigator.openSmsForInvite(this);
-    }));
+    subscriptions.add(
+        viewProfile.onShare().subscribe(aVoid -> navigator.openSmsForInvite(this, null)));
 
-    subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> {
-      setupProfileDetailView();
-    }));
+    subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> setupProfileDetailView()));
 
     subscriptions.add(viewProfile.onFollowClick()
         .flatMap(aVoid -> DialogFactory.showBottomSheetForFollow(this), ((aVoid, labelType) -> {
@@ -227,9 +231,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         }))
         .subscribe());
 
-    subscriptions.add(viewProfile.onRateClick().subscribe(aVoid -> {
-      navigator.rateApp(this);
-    }));
+    subscriptions.add(viewProfile.onRateClick().subscribe(aVoid -> navigator.rateApp(this)));
 
     subscriptions.add(viewProfile.onLogoutClick()
         .flatMap(aVoid -> DialogFactory.dialog(this, getString(R.string.settings_logout_title),
@@ -255,21 +257,38 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     subscriptions.add(viewProfile.onChangeVisible()
         .subscribe(aBoolean -> profilePresenter.updateUserInvisibleMode(aBoolean)));
 
-    subscriptions.add(viewProfile.onDebugMode().subscribe(aVoid -> {
-      navigator.navigateToDebugMode(this);
-    }));
+    subscriptions.add(
+        viewProfile.onDebugMode().subscribe(aVoid -> navigator.navigateToDebugMode(this)));
+
+    subscriptions.add(viewProfile.onVideo().subscribe(aVoid -> navigator.navigateToVideo(this)));
+
+    subscriptions.add(viewProfile.onBlockedFriends().subscribe(aVoid -> setupBlockedFriendsView()));
   }
 
   private void setupProfileDetailView() {
     viewSettingsProfile = (SettingsProfileView) viewStack.push(R.layout.view_settings_profile);
 
-    subscriptions.add(viewSettingsProfile.onUsernameInput().subscribe(s -> {
-      profilePresenter.lookupUsername(s);
+    subscriptions.add(
+        viewSettingsProfile.onUsernameInput().subscribe(s -> profilePresenter.lookupUsername(s)));
+
+    subscriptions.add(viewSettingsProfile.onInfoValid().subscribe(b -> txtAction.setEnabled(b)));
+  }
+
+  private void setupBlockedFriendsView() {
+    viewSettingsBlockedFriends =
+        (SettingsBlockedFriendsView) viewStack.push(R.layout.view_settings_blocked_friends);
+
+    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
+      if (recipient instanceof Friendship) {
+        Friendship fr = (Friendship) recipient;
+        profilePresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
+      }
     }));
 
-    subscriptions.add(viewSettingsProfile.onInfoValid().subscribe(b -> {
-      txtAction.setEnabled(b);
-    }));
+    subscriptions.add(viewSettingsBlockedFriends.onHangLive()
+        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0))));
+
+    profilePresenter.loadBlockedFriendshipList();
   }
 
   private void computeTitle(boolean forward, View to) {
@@ -280,6 +299,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       setupTitle(getString(R.string.settings_title), forward);
       txtAction.setVisibility(View.VISIBLE);
       txtAction.setText(getString(R.string.action_save));
+    } else if (to instanceof SettingsBlockedFriendsView) {
+      setupTitle(getString(R.string.profile_blocked_friends), forward);
+      txtAction.setVisibility(GONE);
     }
   }
 
@@ -320,6 +342,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void goToLauncher() {
+  }
+
+  @Override public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
+    if (viewSettingsBlockedFriends != null) {
+      viewSettingsBlockedFriends.renderBlockedFriendshipList(friendshipList);
+    }
   }
 
   @Override public void successUpdateUser(User user) {

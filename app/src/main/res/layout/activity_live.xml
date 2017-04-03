@@ -51,4 +51,31 @@
       android:visibility="gone"
       />
 
+  <View
+      android:id="@+id/viewBGScreenshot"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/black.opacity.50"
+      android:visibility="gone"
+      />
+
+  <ImageView
+      android:id="@+id/viewScreenShot"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:alpha="0"
+      android:gravity="center"
+      />
+
+  <FrameLayout
+      android:id="@+id/viewFlash"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:alpha="0"
+      android:background="@android:color/white"
+      android:gravity="center"
+      />
+
 </FrameLayout>

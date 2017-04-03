@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -35,10 +34,7 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.beginTransaction();
-      obsRealm.delete(ContactABRealm.class);
-      obsRealm.copyToRealmOrUpdate(contactList);
-      obsRealm.commitTransaction();
+      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(contactList));
     } finally {
       obsRealm.close();
     }
@@ -48,13 +44,7 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.beginTransaction();
-      obsRealm.delete(ContactFBRealm.class);
-      obsRealm.copyToRealmOrUpdate(contactList);
-      obsRealm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
-      ex.printStackTrace();
+      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(contactList));
     } finally {
       obsRealm.close();
     }
@@ -155,16 +145,14 @@ public class ContactCacheImpl implements ContactCache {
   }
 
   @Override public Observable<List<ContactABRealm>> contactsThreadSafe() {
-    return Observable.create(new Observable.OnSubscribe<List<ContactABRealm>>() {
-      @Override public void call(final Subscriber<? super List<ContactABRealm>> subscriber) {
-        Realm realmObs = Realm.getDefaultInstance();
-        RealmResults<ContactABRealm> contactABRealmList = realmObs.where(ContactABRealm.class)
-            .findAllSorted(new String[] { "name" }, new Sort[] { Sort.ASCENDING });
-        if (contactABRealmList != null) {
-          subscriber.onNext(realmObs.copyFromRealm(contactABRealmList));
-        }
-        realmObs.close();
+    return Observable.create(subscriber -> {
+      Realm realmObs = Realm.getDefaultInstance();
+      RealmResults<ContactABRealm> contactABRealmList = realmObs.where(ContactABRealm.class)
+          .findAllSorted(new String[] { "name" }, new Sort[] { Sort.ASCENDING });
+      if (contactABRealmList != null) {
+        subscriber.onNext(realmObs.copyFromRealm(contactABRealmList));
       }
+      realmObs.close();
     });
   }
 
@@ -228,8 +216,54 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
+      obsRealm.executeTransaction(realm1 -> realm1.delete(ContactABRealm.class));
+    } finally {
+      obsRealm.close();
+    }
+  }
+
+  @Override public void updateFromDB(List<ContactInterface> contactList) {
+    Realm obsRealm = Realm.getDefaultInstance();
+    try {
       obsRealm.executeTransaction(realm1 -> {
-        realm1.delete(ContactABRealm.class);
+        for (ContactInterface contact : contactList) {
+          if (contact instanceof ContactABRealm) {
+            ContactABRealm contactABRealm =
+                realm1.where(ContactABRealm.class).equalTo("id", contact.getId()).findFirst();
+            if (contactABRealm != null) contact.setNew(contactABRealm.isNew());
+          } else if (contact instanceof ContactFBRealm) {
+            ContactFBRealm contactFBRealm =
+                realm1.where(ContactFBRealm.class).equalTo("id", contact.getId()).findFirst();
+            if (contactFBRealm != null) contact.setNew(contactFBRealm.isNew());
+          }
+        }
+      });
+    } finally {
+      obsRealm.close();
+    }
+  }
+
+  @Override public void removeNewStatus() {
+    Realm obsRealm = Realm.getDefaultInstance();
+    try {
+      obsRealm.executeTransaction(realm1 -> {
+        RealmResults<ContactABRealm> contactABRealmResults =
+            realm1.where(ContactABRealm.class).findAll();
+
+        if (contactABRealmResults != null) {
+          for (ContactABRealm contactABRealm : contactABRealmResults) {
+            if (contactABRealm.isNew()) contactABRealm.setNew(false);
+          }
+        }
+
+        RealmResults<ContactFBRealm> contactFBRealmResults =
+            realm1.where(ContactFBRealm.class).findAll();
+
+        if (contactFBRealmResults != null) {
+          for (ContactFBRealm contactFBRealm : contactFBRealmResults) {
+            if (contactFBRealm.isNew()) contactFBRealm.setNew(false);
+          }
+        }
       });
     } finally {
       obsRealm.close();
@@ -240,9 +274,7 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> {
-        realm1.delete(ContactFBRealm.class);
-      });
+      obsRealm.executeTransaction(realm1 -> realm1.delete(ContactFBRealm.class));
     } finally {
       obsRealm.close();
     }

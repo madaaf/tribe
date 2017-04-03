@@ -170,6 +170,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private void hide() {
     if (screen != null) screen.setEnabled(false);
 
+    soundManager.cancelMediaPlayer();
+
     try {
       slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
         @Override public void onAnimationStart(final Animation animation) {
@@ -191,16 +193,16 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     postDelayed(() -> {
       try {
         if (getParent() == null) {
-          Timber.e("getParent() returning Null");
+          Timber.d("getParent() returning Null");
         } else {
           try {
             ((ViewGroup) getParent()).removeView(LiveNotificationView.this);
           } catch (Exception ex) {
-            Timber.e("Cannot remove from parent layout");
+            Timber.d("Cannot remove from parent layout");
           }
         }
       } catch (Exception ex) {
-        Timber.e(Log.getStackTraceString(ex));
+        Timber.d(Log.getStackTraceString(ex));
       }
     }, CLEAN_UP_DELAY_MILLIS);
   }

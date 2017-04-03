@@ -17,7 +17,7 @@
 	<string name="action_adding_friend">Loading...</string>
 	<string name="action_friend">Added</string>
 	<string name="action_unblock">Unblock</string>
-	<string name="action_hang_live">Hang live</string>
+	<string name="action_hang_live">Video call</string>
 	<string name="action_add_member">Add in group</string>
 	<string name="action_member_added">Added</string>
 	<string name="action_group_member">Member</string>
@@ -37,6 +37,7 @@
 	<string name="error_unknown">:bird: Something went wrong. Try again in 30s.</string>
 	<string name="error_technical">:warning: Technical turbulence.</string>
 	<string name="error_no_network">:satellite: No Internet here.</string>
+	<string name="error_join_room">Can\'t enter the call, try again is 30s.</string>
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Add an avatar</string>
@@ -45,6 +46,8 @@
 	
 	<!-- Contacts -->
 	<string name="contacts_search_placeholder">Search for a friend</string>
+	<string name="contacts_search_new">NEW</string>
+	<string name="contacts_search_new_tooltip">Find your friends already on Tribe!</string>
 	<string name="contacts_share_profile_button">Share your handle</string>
 	<string name="contacts_share_profile_description">Spread the word</string>
 	<string name="contacts_section_facebook_sync_title">Synchronize friends</string>
@@ -86,7 +89,7 @@
 	<string name="permission_popup_push_home_no">Stay alone</string>
 	<string name="permission_popup_push_home_yes">Notify me</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
-	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or live.</string>
+	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or video calling you.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">Read more</string>
 	<string name="permission_push_disabled_alert_title">Push permission denied</string>
@@ -139,7 +142,7 @@
 	<string name="permission_global_mic_description">Make sure friends can hear you\non your messages</string>
 	<string name="permission_global_popup_title">Make sure everything works perfectly!</string>
 	<string name="permission_global_popup_message">Let’s take care of permissions so you don’t miss anything from the most incredible video messenger.</string>
-	<string name="permission_global_popup_cancel">Stay incomplete</string>
+	<string name="permission_global_popup_cancel">Do it later</string>
 	<string name="permission_global_popup_confirm">LET\'S GO!</string>
 	<string name="permission_facebook_popup_title">Find friends from Facebook</string>
 	<string name="permission_facebook_popup_message">Your Facebook friends will be countinuously synced so you can see who you already know on Tribe.</string>
@@ -238,7 +241,7 @@
 	<string name="grid_support_status_reply">Reply to the CEO</string>
 	<string name="grid_support_status_error">Not sent</string>
 	<string name="grid_name_with_guests">\nand guests</string>
-	<string name="grid_status_live">LIVE</string>
+	<string name="grid_status_live">Live Call</string>
 	<string name="grid_status_live_with_guests">Hanging live with guests!</string>
 	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
@@ -246,8 +249,10 @@
 	<string name="grid_status_last_seen_minutes">Few mins ago</string>
 	<string name="grid_status_last_seen_hours">Few hours ago</string>
 	<string name="grid_status_last_seen_days">Few days ago</string>
-	<string name="grid_name_more_friends">More friends</string>
-	<string name="grid_status_more_friends">Try it out!</string>
+	<string name="grid_name_more_friends">More Friends</string>
+	<string name="grid_status_more_friends">Invite your friends!</string>
+	<string name="grid_name_video_demo">Video Demo</string>
+	<string name="grid_status_video_demo">Master it in 30sec!</string>
 	<string name="grid_ghost">Has not joined yet</string>
 	<string name="grid_friendship_recording_message">%1$d message</string>
 	<string name="grid_friendship_recording_messages">%1$d messages</string>
@@ -557,7 +562,7 @@
 	<string name="search_user_placeholder">Enter a username</string>
 	<string name="search_usernames">Result</string>
 	<string name="search_searching">Searching</string>
-	<string name="search_already_friends">People you know :purple_heart:</string>
+	<string name="search_already_friends">People you know on Tribe :purple_heart:</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Your friends are missing out!</string>
 	<string name="search_suggest_friends">People you may know :bee:</string>
@@ -569,7 +574,7 @@
 	<string name="search_add_facebook_subtitle">Don’t miss people you talk to often.</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>
 	<string name="search_add_addressbook_subtitle">Don’t miss people you talk to often.</string>
-	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to hang live again!</string>
+	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to video call with him!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
 	
@@ -600,11 +605,12 @@
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
-	<string name="live_title_with_guests">%1$s, and guests</string>
+	<string name="live_title_with_guests">%1$s and guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
-	<string name="live_waiting_state_initiating">:electric_plug: Initiating live with %1$s...</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with %1$s...</string>
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
+	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	
 	<!-- Blur Popup -->
 	<string name="blur_popup_dismiss">Swipe to dismiss</string>
@@ -613,10 +619,15 @@
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
-	<string name="profile_fullscreen_notifications">Fullscreen notifications :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Don\'t miss calls from friends!</string>
-	<string name="profile_fullscreen_notifications_disable_alert_msg">You will probably miss calls from friends if you downgrade fullscreen notifications to regular push notifications.</string>
+	<string name="profile_video_demo_title">Video Demo :vhs:</string>
+	<string name="profile_video_demo_subtitle">Master it in 30 sec!</string>
+	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
+	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
+	<string name="profile_shortcuts_phone_log">Shortcuts in Phone logs :clock3:</string>
+	<string name="profile_blocked_friends">Blocked friends</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_logout">Logout :skull:</string>
@@ -664,31 +675,6 @@
 	<string name="tribe_level_popup_catch_up">To catch up!</string>
 	<string name="tribe_level_popup_advance">In advance</string>
 	
-	<!-- TribeEventPopup -->
-	<string name="tribe_event_popup_date">Date</string>
-	<string name="tribe_event_popup_start">From</string>
-	<string name="tribe_event_popup_end">To</string>
-	<string name="tribe_event_popup_more">Edit and create event</string>
-	<string name="tribe_event_popup_more_no_access">Permission is needed to access the calendar. Go to Settings > Privacy > Calendars to allow access for the Be Collective app.</string>
-	<string name="tribe_event_today">Today</string>
-	<string name="tribe_event_day_1_future">Tomorrow</string>
-	<string name="tribe_event_day_1_past">Yesterday</string>
-	<string name="tribe_event_day_n_future">In %1$d days</string>
-	<string name="tribe_event_day_n_past">%1$d days ago</string>
-	<string name="tribe_event_week_1_future">In %1$d week</string>
-	<string name="tribe_event_week_1_past">%1$d week ago</string>
-	<string name="tribe_event_week_n_future">In %1$d weeks</string>
-	<string name="tribe_event_week_n_past">%1$d weeks ago</string>
-	<string name="tribe_event_month_1_future">In %1$d month</string>
-	<string name="tribe_event_month_1_past">%1$d month ago</string>
-	<string name="tribe_event_month_n_future">In %1$d months</string>
-	<string name="tribe_event_month_n_past">%1$d months ago</string>
-	<string name="tribe_event_year_1_future">In %1$d year</string>
-	<string name="tribe_event_year_1_past">%1$d year ago</string>
-	<string name="tribe_event_year_n_future">In %1$d years</string>
-	<string name="tribe_event_year_n_past">%1$d years ago</string>
-	<string name="tribe_event_title_suggestion">Dinner,Beer,Call,Camping,Coffee,Concert,Date,Dentist,Doctor,Drink,Facetime,Flight,Boat,Bus,Meeting,Movie,Office,Party,Repair,Run,Shopping,Skype,Sleep,Train,Travel,TV,Vacation,Workout,Chill</string>
-	
 	<!-- Tutorial -->
 	<string name="tutorial_message_support">%1$d messages from the team</string>
 	<string name="tutorial_message_next_message">Next message</string>
@@ -702,7 +688,7 @@
 	<string name="tutorial_message_tap_to_cancel">Tap to cancel if needed</string>
 	<string name="tutorial_message_filter_grid">Filter your friends</string>
 	<string name="tutorial_message_invite_friends">Give access to your 3 best friends</string>
-	<string name="tutorial_message_live_add_friends">Add guests in the live!</string>
+	<string name="tutorial_message_live_add_friends">Add guests in the call!</string>
 	
 	<!-- NewLevelPopup -->
 	<string name="newlevel_title">%1$s pts!</string>
@@ -729,20 +715,6 @@
 	<string name="language_supported_title">Supported languages</string>
 	<string name="language_supported_values">af_ZA,id_ID,ms_MY,ca_ES,cs_CZ,da_DK,de_DE,en_AU,en_CA,en_GB,en_IN,en_IE,en_NZ,en_PH,en_ZA,en_US,es_AR,es_BO,es_CL,es_CO,es_CR,es_EC,es_SV,es_ES,es_US,es_GT,es_HN,es_MX,es_NI,es_PA,es_PY,es_PE,es_PR,es_DO,es_UY,es_VE,eu_ES,fil_PH,fr_FR,gl_ES,hr_HR,zu_ZA,is_IS,it_IT,lt_LT,hu_HU,nl_NL,nb_NO,pl_PL,pt_BR,pt_PT,ro_RO,sk_SK,sl_SI,fi_FI,sv_SE,vi_VN,tr_TR,el_GR,bg_BG,ru_RU,sr_RS,uk_UA,he_IL,ar_IL,ar_JO,ar_AE,ar_BH,ar_DZ,ar_SA,ar_IQ,ar_KW,ar_MA,ar_TN,ar_OM,ar_PS,ar_QA,ar_LB,ar_EG,fa_IR,hi_IN,th_TH,ko_KR,cmn_Hant_TW,yue_Hant_HK,ja_JP,cmn_Hans_HK,cmn_Hans_CN</string>
 	
-	<!-- Support -->
-	<string name="support_metadata">Support</string>
-	<string name="support_popup_displayname">Full name</string>
-	<string name="support_popup_username">\@Username</string>
-	<string name="support_popup_score">Score</string>
-	<string name="support_popup_friends">Friends</string>
-	<string name="support_popup_groups">Groups</string>
-	<string name="support_popup_device">Device</string>
-	<string name="support_popup_devices">Devices</string>
-	<string name="support_popup_model">Model</string>
-	<string name="support_popup_app">App version</string>
-	<string name="support_popup_lang">Lang</string>
-	<string name="support_popup_created_at">Member since</string>
-	
 	<!-- Camera -->
 	<string name="camera_permission">Enable\ncamera</string>
 	<string name="camera_recording">REC</string>
@@ -757,89 +729,6 @@
 	<string name="score_next_level">Next level in</string>
 	<string name="score_points_system_button">Rules</string>
 	<string name="score_share_level_button">Share your score</string>
-	
-	<!-- Points System -->
-	<string name="points_system_title">Rules</string>
-	<string name="points_Subtitles_title">Set subtitles</string>
-	<string name="points_Subtitles_description">For each friend</string>
-	<string name="points_SendReceiveChat_title">Send or receive</string>
-	<string name="points_SendReceiveChat_description">Text message</string>
-	<string name="points_SendReceiveTribe_title">Send or receive</string>
-	<string name="points_SendReceiveTribe_description">Video or voice message</string>
-	<string name="points_NewFriendship_title">New friendship</string>
-	<string name="points_NewFriendship_description">Swipe left on the grid</string>
-	<string name="points_InviteTribe_title">Invite a friend</string>
-	<string name="points_InviteTribe_description">Swipe left on the grid</string>
-	<string name="points_CreateGroup_title">Create a group</string>
-	<string name="points_CreateGroup_description">Swipe right on the grid</string>
-	<string name="points_RateApp_title">Rate the app</string>
-	<string name="points_RateApp_description">Go to the App Store</string>
-	<string name="points_ShareProfile_title">Share your profile</string>
-	<string name="points_ShareProfile_description">Swipe left on the grid</string>
-	<string name="points_LocationPermission_title">Location</string>
-	<string name="points_LocationPermission_description">Enable it in the settings</string>
-	<string name="points_PushPermission_title">Notifications</string>
-	<string name="points_PushPermission_description">Enable it in the settings</string>
-	<string name="points_ConnectFacebook_title">Connect with Facebook</string>
-	<string name="points_ConnectFacebook_description">Auto-sync your contacts</string>
-	<string name="points_InviteFacebookFriends_title">Invite Facebook friends</string>
-	<string name="points_InviteFacebookFriends_description">Swipe left on the grid</string>
-	<string name="points_Camera_title">Camera</string>
-	<string name="points_Camera_description">Enable it in the settings</string>
-	
-	<!-- Level -->
-	<string name="level_rookie_title">Rookie</string>
-	<string name="level_heating_up_title">Heating up</string>
-	<string name="level_rising_star_title">Rising star</string>
-	<string name="level_on_fire_title">On fire</string>
-	<string name="level_rockstar_title">Rockstar</string>
-	<string name="level_champ_title">Champ</string>
-	<string name="level_icon_title">Icon</string>
-	<string name="level_greatness_title">Greatness</string>
-	<string name="level_royalty_title">Royalty</string>
-	<string name="level_unicorn_title">Unicorn</string>
-	
-	<!-- Chat -->
-	<string name="chat_tutorial_statuses_title">Message statuses</string>
-	<string name="chat_status_sending">Sending</string>
-	<string name="chat_status_sent">Sent</string>
-	<string name="chat_status_read_partly">Read by part of the recipients</string>
-	<string name="chat_status_read">Read by everyone</string>
-	<string name="chat_status_error">No network</string>
-	<string name="chat_text_placeholder">Message...</string>
-	<string name="chat_date_today">Today</string>
-	<string name="chat_author_you">You</string>
-	<string name="chat_erase_conversation_title">Erase this conversation</string>
-	<string name="chat_erase_conversation_message">Are you sure ?</string>
-	<string name="chat_is_typing">is typing</string>
-	<string name="chat_are_typing">are typing</string>
-	<string name="chat_and">and</string>
-	<string name="chat_copied_to_clipboard">Copied to clipboard!</string>
-	<string name="chat_attachment_more_save">Save in camera roll</string>
-	<string name="chat_attachment_more_save_success">Saved!</string>
-	<string name="chat_more_erase_conversation">Erase this conversation</string>
-	
-	<!-- Private Group -->
-	<string name="group_family_title">Family</string>
-	<string name="group_roomies_title">Roomies</string>
-	<string name="group_bffs_title">Best friends</string>
-	<string name="group_abroad_title">Friends abroad</string>
-	<string name="group_work_title">Work team</string>
-	<string name="group_classmates_title">Classmates</string>
-	<string name="group_teammates_title">Teammates</string>
-	<string name="group_baddest_title">Squad goals</string>
-	<string name="group_not_allowed_title">The Girls</string>
-	
-	<!-- Public Group -->
-	<string name="group_public_family_title">:loudspeaker: Election 2016</string>
-	<string name="group_public_roomies_title">:kimono: Yoga lovers</string>
-	<string name="group_public_bffs_title">:baseball: Major League Baseball Playoffs</string>
-	<string name="group_public_abroad_title">:football: NFL Fantasy Football</string>
-	<string name="group_public_work_title">:jack_o_lantern: Halloween costumes</string>
-	<string name="group_public_classmates_title">:nail_care: Celeb Gossip</string>
-	<string name="group_public_teammates_title">:muscle: Dab All Day</string>
-	<string name="group_public_baddest_title">:skull: Skate Or Die</string>
-	<string name="group_public_not_allowed_title">:key: Life hacks</string>
 	
 	<!-- Group Infos -->
 	<string name="group_infos_error_edit_not_admin">:lock: Only admins can edit the group</string>
@@ -863,27 +752,27 @@
 	
 	<!-- Tips -->
 	<string name="tips_leavingroom_title">Want to leave? :skull:</string>
-	<string name="tips_leavingroom_message">By tapping the :x: button, your live hangout will be finished.</string>
+	<string name="tips_leavingroom_message">By tapping the :x: button, your video call will be finished.</string>
 	<string name="tips_leavingroom_action1">Leave</string>
 	<string name="tips_leavingroom_action2">No, I\'ll stay</string>
-	<string name="tips_draggingguest_title">Add friends to the live!</string>
-	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the live hangout!</string>
+	<string name="tips_draggingguest_title">Add friends to the call!</string>
+	<string name="tips_draggingguest_message">Drag &amp; drop friends so they can join you in the video call!</string>
 	<string name="tips_draggingguest_action1">Gotcha</string>
 	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
 	<string name="tips_droppingguest_message">Congrats! Add him to the group from your grid if you want him to be a permanent member of this group who\'ll be notified for every live.</string>
 	<string name="tips_droppingguest_action1">OK, great!</string>
-	<string name="tips_enterfirstlive_title">Start a live experience!</string>
-	<string name="tips_enterfirstlive_message">You\'re about to call %1$s!</string>
+	<string name="tips_enterfirstlive_title">Start a video call!</string>
+	<string name="tips_enterfirstlive_message">You\'re about to video call %1$s!</string>
 	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
-	<string name="tips_enterfirstlive_action2">Call someone else</string>
+	<string name="tips_enterfirstlive_action2">Video call someone else</string>
 	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
-	<string name="tips_startfirstlive_message">Your friends included in this live that you\'re available to hang live with them!</string>
+	<string name="tips_startfirstlive_message">Your friends have been notified that you are video calling them.</string>
 	<string name="tips_startfirstlive_action1">OK, great!</string>
 	<string name="tips_waiting5sec_title">Feeling impatient?</string>
 	<string name="tips_waiting5sec_message">Tap the :bell: button below to buzz your friends and make them join faster!</string>
 	<string name="tips_waiting5sec_action1">Perfect!</string>
 	<string name="tips_waiting60sec_title">Want more? :fire:</string>
-	<string name="tips_waiting60sec_message">You can hang live with up to 8 people in a room.</string>
+	<string name="tips_waiting60sec_message">You can video call with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Later</string>
 	
@@ -899,7 +788,42 @@
 	<string name="invite_popup_dismiss">Later</string>
 	
 	<!-- Call Kit -->
-	<string name="call_kit_swipe_down">Swipe down to answer</string>
-	<string name="call_kit_swipe_up">Swipe up to decline</string>
-	<string name="call_kit_title">Live starts with</string>
+	<string name="call_kit_swipe_down">Swipe down to decline</string>
+	<string name="call_kit_swipe_up">Swipe up to join</string>
+	<string name="call_kit_title">Video call from</string>
+	
+	<!-- Read More -->
+	<string name="readmore_contacts_title">Finding your\ncontacts on tribe</string>
+	<string name="readmore_contacts_description">What fun is Tribe with no friends?!\nUploading your contacts allows\nyou to find your friends right away!</string>
+	<string name="readmore_contacts_skip_description">Disabling this step makes it\nso you won\'t know which\nof your friends are on Tribe.</string>
+	<string name="readmore_contacts_activate">Turn on</string>
+	<string name="readmore_contacts_dismiss">Not now</string>
+	<string name="readmore_notifications_title">Never miss a thing from\nyour friends on tribe</string>
+	<string name="readmore_notifications_description">Don\'t be the friend who misses\nout on the fun. Notifications alert you\nwhenever a friend is calling you,\njoins the app, and is online.</string>
+	<string name="readmore_notifications_skip_description">By skipping this step, you\'ll never be notified\nwhen friends are calling you and will\nnever know when they\'re on the app.</string>
+	<string name="readmore_notifications_activate">Turn on</string>
+	<string name="readmore_notifications_dismiss">Not now</string>
+	<string name="readmore_contacts_dismiss_popup_title">Continue all alone?</string>
+	<string name="readmore_contacts_dismiss_popup_description">You\'ll miss all your friends that are already here and coming</string>
+	<string name="readmore_contacts_dismiss_popup_validate">Turn On</string>
+	<string name="readmore_contacts_dismiss_popup_cancel">Continue alone</string>
+	<string name="readmore_notifications_dismiss_popup_title">Continue without notifications</string>
+	<string name="readmore_notifications_dismiss_popup_description">You\'ll miss all the calls from your friends</string>
+	<string name="readmore_notifications_dismiss_popup_validate">Turn On Notification</string>
+	<string name="readmore_notifications_dismiss_popup_cancel">Continue without notifications?</string>
+	
+	<!-- Camera Mic Popup -->
+	<string name="camera_microphone_popup_title">Enable camera and\nmicrophone to start!</string>
+	<string name="camera_microphone_popup_description">Make sure your friends\ncan see and hear you\nduring your video calls</string>
+	<string name="camera_microphone_popup_enable_camera">Enable camera</string>
+	<string name="camera_microphone_popup_camera_enabled">Camera enabled</string>
+	<string name="camera_microphone_popup_enable_microphone">Enable microphone</string>
+	<string name="camera_microphone_popup_microphone_enabled">Microphone enabled</string>
+	<string name="camera_microphone_popup_swipe_to_dismiss">Swipe up to dismiss</string>
+	
+	<!-- Create Group Popup -->
+	<string name="create_group_popup_title">It was fun, right? Create\na group with them!</string>
+	<string name="create_group_popup_adjust_members">Adjust members</string>
+	<string name="create_group_popup_create">Create now</string>
+	<string name="create_group_popup_swipe_to_dismiss">Swipe up to dismiss</string>
 </resources>

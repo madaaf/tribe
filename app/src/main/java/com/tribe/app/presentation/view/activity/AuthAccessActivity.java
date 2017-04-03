@@ -25,6 +25,7 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
@@ -55,6 +55,8 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
+  @Inject @LastSync Preference<Long> lastSync;
+
   @BindView(R.id.viewAccess) AccessView viewAccess;
 
   @BindView(R.id.txtAction) TextViewFont txtAction;
@@ -69,6 +71,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   private int totalTimeSynchro;
   private int nbFriends = 0;
   private long timeSyncStart = 0;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -108,6 +111,8 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
+
     startSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> start());
@@ -147,7 +152,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
       showCongrats();
     } else if (viewAccess.getStatus() == AccessView.DONE) {
       endSubscription.unsubscribe();
-      navigator.navigateToPickYourFriends(this, deepLink);
+      navigator.navigateToHome(this, false, deepLink);
     }
   }
 
@@ -158,8 +163,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   @Override public void renderFriendList(List<User> userList) {
-    long timeSyncEnd = System.currentTimeMillis();
-    Timber.d("Total time sync cloud : " + (timeSyncEnd - timeSyncStart) + " in ms");
+    lastSync.set(System.currentTimeMillis());
 
     Map<String, Object> relationsInApp = new HashMap<>();
 
@@ -184,9 +188,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
                   .onBackpressureDrop()
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(time -> {
-                    showCongrats();
-                  }));
+                  .subscribe(time -> showCongrats()));
             }
           });
     } else {
@@ -210,34 +212,31 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   private void lookupContacts() {
-    RxPermissions.getInstance(this)
-        .request(PermissionUtils.PERMISSIONS_CONTACTS)
-        .subscribe(hasPermission -> {
-          Bundle bundle = new Bundle();
-          bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
-          tagManager.setProperty(bundle);
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
 
-          Bundle bundleBis = new Bundle();
-          bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
-          tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
 
-          if (hasPermission) {
-            addressBook.set(true);
-            timeSyncStart = System.currentTimeMillis();
-            accessPresenter.lookupContacts();
-          } else {
-            renderFriendList(new ArrayList<>());
-          }
-        });
+      if (hasPermission) {
+        addressBook.set(true);
+        timeSyncStart = System.currentTimeMillis();
+        accessPresenter.lookupContacts();
+      } else {
+        renderFriendList(new ArrayList<>());
+      }
+    });
   }
 
   private void showCongrats() {
     txtAction.setText(R.string.action_next);
     txtAction.setVisibility(View.VISIBLE);
 
-    endSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS).subscribe(aLong -> {
-      navigator.navigateToPickYourFriends(this, deepLink);
-    });
+    endSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
+        .subscribe(aLong -> navigator.navigateToHome(this, false, deepLink));
 
     CommonConfetti.rainingConfetti(layoutConfettis, new int[] {
         ContextCompat.getColor(this, R.color.confetti_1),

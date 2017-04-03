@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
@@ -10,6 +11,7 @@ import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
+import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
@@ -108,7 +110,9 @@ public class LivePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      e.printStackTrace();
+      JoinRoomException joinRoomException = new JoinRoomException(e);
+      String errorMessage = ErrorMessageFactory.create(liveMVPView.context(), joinRoomException);
+      liveMVPView.onJoinRoomFailed(errorMessage);
     }
 
     @Override public void onNext(RoomConfiguration roomConfiguration) {

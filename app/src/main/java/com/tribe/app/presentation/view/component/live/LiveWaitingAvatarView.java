@@ -8,6 +8,8 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -170,7 +172,7 @@ public class LiveWaitingAvatarView extends FrameLayout {
         .setInterpolator(new DecelerateInterpolator())
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
-            if (imgNotify == null) return;
+            if (imgNotify == null || !ViewCompat.isAttachedToWindow(imgNotify)) return;
 
             imgNotify.animate().setListener(null);
 
@@ -181,9 +183,9 @@ public class LiveWaitingAvatarView extends FrameLayout {
             animatorRotation.setRepeatMode(ValueAnimator.REVERSE);
             animatorRotation.addListener(new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
-                animatorRotation.removeAllListeners();
+                animation.removeAllListeners();
 
-                if (imgNotify != null) {
+                if (imgNotify != null && ViewCompat.isAttachedToWindow(imgNotify)) {
                   imgNotify.animate()
                       .scaleX(1)
                       .scaleY(1)
@@ -210,7 +212,7 @@ public class LiveWaitingAvatarView extends FrameLayout {
               }
 
               @Override public void onAnimationCancel(Animator animation) {
-                animatorRotation.removeAllListeners();
+                animation.removeAllListeners();
               }
             });
 
@@ -241,6 +243,7 @@ public class LiveWaitingAvatarView extends FrameLayout {
   }
 
   public void clearViewAnimations() {
+    imgNotify.clearAnimation();
     avatar.clearAnimation();
     viewForegroundAvatar.clearAnimation();
     viewRing.clearAnimation();

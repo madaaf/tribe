@@ -95,7 +95,6 @@ public class ChasingDotsView extends FrameLayout {
       View v = new View(getContext());
       v.setScaleX(0);
       v.setScaleY(0);
-      //v.setAlpha(0);
       v.setBackgroundResource(R.drawable.shape_oval_white);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
       lp.gravity = Gravity.CENTER;
@@ -126,7 +125,6 @@ public class ChasingDotsView extends FrameLayout {
               float value = (float) animation.getAnimatedValue();
               viewDot.setScaleX(value);
               viewDot.setScaleY(value);
-              //viewDot.setAlpha(value);
             });
 
             if (last) {

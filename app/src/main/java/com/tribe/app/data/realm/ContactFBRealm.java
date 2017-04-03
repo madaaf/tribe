@@ -16,8 +16,9 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
   private String profilePicture;
   private RealmList<UserRealm> userList;
   private int howManyFriends = 0;
+  private boolean isNew = false;
 
-  public String getId() {
+  @Override public String getId() {
     return id;
   }
 
@@ -43,6 +44,14 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
 
   public RealmList<UserRealm> getUserList() {
     return userList;
+  }
+
+  @Override public boolean isNew() {
+    return isNew;
+  }
+
+  @Override public void setNew(boolean aNew) {
+    isNew = aNew;
   }
 
   @Override public void setUserList(RealmList<UserRealm> userList) {

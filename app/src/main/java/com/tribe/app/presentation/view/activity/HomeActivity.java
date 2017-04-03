@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,10 +31,12 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -98,13 +102,13 @@ public class HomeActivity extends BaseActivity
 
   @Inject StateManager stateManager;
 
+  @Inject SoundManager soundManager;
+
   @Inject @AddressBook Preference<Boolean> addressBook;
 
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
   @Inject @LastSync Preference<Long> lastSync;
-
-  @Inject SoundManager soundManager;
 
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
@@ -121,6 +125,8 @@ public class HomeActivity extends BaseActivity
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContacts = PublishSubject.create();
+  private PublishSubject<Pair<Integer, Boolean>> onNewContactsInfos = PublishSubject.create();
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
@@ -132,6 +138,8 @@ public class HomeActivity extends BaseActivity
   private boolean canEndRefresh = false;
   private boolean finish = false;
   private AppStateMonitor appStateMonitor;
+  private RxPermissions rxPermissions;
+  private boolean searchViewDisplayed = false;
 
   // DIMEN
 
@@ -165,7 +173,7 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(Observable.
         from(PermissionUtils.PERMISSIONS_CAMERA)
-        .map(permission -> RxPermissions.getInstance(HomeActivity.this).isGranted(permission))
+        .map(permission -> rxPermissions.isGranted(permission))
         .toList()
         .subscribe(grantedList -> {
           boolean areAllGranted = true;
@@ -256,6 +264,8 @@ public class HomeActivity extends BaseActivity
       appStateMonitor.stop();
     }
 
+    if (soundManager != null) soundManager.cancelMediaPlayer();
+
     stopService();
 
     super.onDestroy();
@@ -267,8 +277,40 @@ public class HomeActivity extends BaseActivity
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     latestRecipientList = new ArrayList<>();
+
+    subscriptions.add(onNewContacts.observeOn(Schedulers.computation()).map(contactList -> {
+      List<Contact> result = new ArrayList<>();
+
+      if (getCurrentUser().getFriendships() == null) {
+        result.addAll(contactList);
+      } else {
+        for (Contact contact : contactList) {
+          boolean shouldAdd = true;
+
+          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+            User linkedUser = contact.getUserList().get(0);
+
+            for (Friendship friendship : getCurrentUser().getFriendships()) {
+              if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
+            }
+          }
+
+          if (shouldAdd) result.add(contact);
+        }
+      }
+
+      int nbContacts = result.size();
+      boolean hasNewContacts = false;
+
+      for (Contact contact : result) {
+        if (contact.isNew()) hasNewContacts = true;
+      }
+
+      return new Pair<>(nbContacts, hasNewContacts);
+    }).subscribe(onNewContactsInfos));
   }
 
   private void initUi() {
@@ -296,34 +338,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initRecyclerView() {
-    layoutManager = new HomeLayoutManager(context());
-    layoutManager.setAutoMeasureEnabled(false);
-    recyclerViewFriends.setHasFixedSize(true);
-    recyclerViewFriends.setLayoutManager(layoutManager);
-    recyclerViewFriends.setItemAnimator(null);
-    homeGridAdapter.setItems(new ArrayList<>());
-    recyclerViewFriends.setAdapter(homeGridAdapter);
-
-    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
-    recyclerViewFriends.setItemViewCacheSize(30);
-    recyclerViewFriends.setDrawingCacheEnabled(true);
-    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-        switch (homeGridAdapter.getItemViewType(position)) {
-          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-            return layoutManager.getSpanCount();
-          default:
-            return 1;
-        }
-      }
-    });
-
+    initUIRecyclerView();
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
@@ -368,7 +383,9 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_MORE)) {
-            navigator.openSmsForInvite(this);
+            navigator.openSmsForInvite(this, null);
+          } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
+            navigator.navigateToVideo(this);
           } else if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
             subscriptions.add(
                 DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
@@ -393,6 +410,7 @@ public class HomeActivity extends BaseActivity
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
+          temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
@@ -440,38 +458,44 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, null);
     }));
 
-    subscriptions.add(topBarContainer.onOpenCloseSearch().subscribe(open -> {
-      if (open) {
-        recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
-        layoutManager.setScrollEnabled(false);
-        searchView.show();
-      } else {
-        recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
-        layoutManager.setScrollEnabled(true);
-        searchView.hide();
-      }
-    }));
+    subscriptions.add(topBarContainer.onOpenCloseSearch()
+        .doOnNext(open -> {
+          if (open) {
+            recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
+            layoutManager.setScrollEnabled(false);
+            searchViewDisplayed = true;
+            searchView.show();
+          } else {
+            recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
+            layoutManager.setScrollEnabled(true);
+            searchViewDisplayed = false;
+            searchView.hide();
+          }
+        })
+        .delay(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(open -> {
+          if (!open) homeGridPresenter.removeNewStatusContact();
+        }));
+
+    topBarContainer.initNewContactsObs((Observable) onNewContactsInfos);
   }
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, null);
     }));
 
-    subscriptions.add(searchView.onShow().subscribe(aVoid -> {
-      searchView.setVisibility(View.VISIBLE);
-    }));
+    subscriptions.add(
+        searchView.onShow().subscribe(aVoid -> searchView.setVisibility(View.VISIBLE)));
 
-    subscriptions.add(searchView.onGone().subscribe(aVoid -> {
-      searchView.setVisibility(View.GONE);
-    }));
+    subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
-    subscriptions.add(searchView.onHangLive().subscribe(recipient -> {
-      navigator.navigateToLive(this, recipient, PaletteGrid.get(0));
-    }));
+    subscriptions.add(searchView.onHangLive()
+        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0))));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
@@ -479,7 +503,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openSmsForInvite(this);
+      navigator.openSmsForInvite(this, contact.getPhone());
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
@@ -557,9 +581,8 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onBackPressed() {
-    super.onBackPressed();
-
-    if (!topBarContainer.isSearchMode()) {
+    if (!topBarContainer.isSearchMode() && !searchViewDisplayed) {
+      super.onBackPressed();
       // This is important : Hack to open a dummy activity for 200-500ms (cannot be noticed by user as it is for 500ms
       // and transparent floating activity and auto finishes)
       startActivity(new Intent(this, DummyActivity.class));
@@ -587,6 +610,14 @@ public class HomeActivity extends BaseActivity
     return this;
   }
 
+  @Override public void onSyncDone() {
+    lastSync.set(System.currentTimeMillis());
+  }
+
+  @Override public void renderContactsOnApp(List<Contact> contactList) {
+    onNewContacts.onNext(contactList);
+  }
+
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     Log.w("TRIBE", "onConnectionFailed:" + connectionResult);
     Toast.makeText(this, "Google Play Services Error: " + connectionResult.getErrorCode(),
@@ -603,7 +634,6 @@ public class HomeActivity extends BaseActivity
 
   private void syncContacts() {
     homeGridPresenter.lookupContacts();
-    lastSync.set(System.currentTimeMillis());
   }
 
   @Override public void onAppDidEnterForeground() {
@@ -631,6 +661,70 @@ public class HomeActivity extends BaseActivity
   /////////////////
   //  BROADCAST  //
   /////////////////
+  private void initUIRecyclerView() {
+    layoutManager =
+        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
+    layoutManager.setAutoMeasureEnabled(false);
+    recyclerViewFriends.setHasFixedSize(true);
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
+    homeGridAdapter.setItems(new ArrayList<>());
+    recyclerViewFriends.setAdapter(homeGridAdapter);
+
+    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+    recyclerViewFriends.setItemViewCacheSize(30);
+    recyclerViewFriends.setDrawingCacheEnabled(true);
+    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+      @Override public int getSpanSize(int position) {
+        switch (homeGridAdapter.getItemViewType(position)) {
+          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+            return layoutManager.getSpanCount();
+          default:
+            return 1;
+        }
+      }
+    });
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    layoutManager =
+        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
+    layoutManager.setAutoMeasureEnabled(true);
+    recyclerViewFriends.setHasFixedSize(false);
+    recyclerViewFriends.setLayoutManager(layoutManager);
+    recyclerViewFriends.setItemAnimator(null);
+    recyclerViewFriends.setAdapter(homeGridAdapter);
+
+    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
+    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+
+    recyclerViewFriends.setItemViewCacheSize(30);
+    recyclerViewFriends.setDrawingCacheEnabled(true);
+    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+      @Override public int getSpanSize(int position) {
+        switch (homeGridAdapter.getItemViewType(position)) {
+          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
+            return layoutManager.getSpanCount();
+          default:
+            return 1;
+        }
+      }
+    });
+
+    homeGridAdapter.notifyDataSetChanged();
+  }
 
   class NotificationReceiver extends BroadcastReceiver {
 

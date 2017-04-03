@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 @Singleton public class SoundManager {
 
@@ -22,6 +21,7 @@ import timber.log.Timber;
   public static final float SOUND_MID = 0.5f;
   public static final float SOUND_LOW = 0.1f;
 
+  public static final int CALL_RING = 0;
   public static final int WAITING_FRIEND = 1;
   public static final int FRIEND_ONLINE = 2;
   public static final int JOIN_CALL = 3;
@@ -35,6 +35,7 @@ import timber.log.Timber;
   private HashMap<Integer, Integer> soundPoolMap;
   private AudioManager audioManager;
   private Vector<Integer> availaibleSounds = new Vector<>();
+  private Vector<Integer> soundsRawIds = new Vector<>();
   private Vector<Integer> killSoundQueue = new Vector<>();
   private MediaPlayer mediaPlayer;
 
@@ -59,6 +60,7 @@ import timber.log.Timber;
     soundPoolMap = new HashMap<>();
     audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
+    addSound(CALL_RING, R.raw.call_ring);
     addSound(WAITING_FRIEND, R.raw.waiting_friend);
     addSound(FRIEND_ONLINE, R.raw.friend_online);
     addSound(JOIN_CALL, R.raw.join_call);
@@ -68,15 +70,17 @@ import timber.log.Timber;
 
   public void addSound(int index, int soundID) {
     availaibleSounds.add(index);
+    soundsRawIds.add(index, soundID);
     soundPool.setOnLoadCompleteListener((soundPool1, sampleId, status) -> {
     });
     soundPoolMap.put(index, soundPool.load(context, soundID, 1));
   }
 
   public void playSound(int index, float volumeRate) {
-    if (index == WAITING_FRIEND) {
-      Timber.d("Playing sound with MediaPlayer");
-      mediaPlayer = MediaPlayer.create(context, R.raw.waiting_friend);
+    if (index == WAITING_FRIEND || index == CALL_RING) {
+      if (mediaPlayer != null) cancelMediaPlayer();
+
+      mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));
       mediaPlayer.setVolume(volumeRate, volumeRate);
       mediaPlayer.setLooping(true);
       mediaPlayer.start();
@@ -86,7 +90,7 @@ import timber.log.Timber;
         float finalVol = volumeRate < streamVolume ? volumeRate : streamVolume;
         int soundId = soundPool.play(soundPoolMap.get(index), finalVol, finalVol, 1, 0, 1f);
 
-        if (index != WAITING_FRIEND) killSoundQueue.add(soundId);
+        killSoundQueue.add(soundId);
 
         Observable.timer(5000, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())

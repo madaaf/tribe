@@ -87,7 +87,7 @@ import rx.Observable;
         (userRealm, onlineMap, liveMap, inviteMap) -> {
           if (userRealm != null && userRealm.getFriendships() != null) {
             userRealm.setFriendships(
-                updateOnlineLiveFriendship(userRealm.getFriendships(), onlineMap, liveMap));
+                updateOnlineLiveFriendship(userRealm.getFriendships(), onlineMap, liveMap, true));
             for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
               membershipRealm.getGroup().setIsLive(liveMap.containsKey(membershipRealm.getSubId()));
             }
@@ -108,15 +108,16 @@ import rx.Observable;
         userDataStore.onlineMap().startWith(new HashMap<>()),
         userDataStore.liveMap().startWith(new HashMap<>()),
         (friendships, onlineMap, liveMap) -> userRealmDataMapper.getFriendshipRealmDataMapper()
-            .transform(updateOnlineLiveFriendship(friendships, onlineMap, liveMap)));
+            .transform(updateOnlineLiveFriendship(friendships, onlineMap, liveMap, true)));
   }
 
   private RealmList<FriendshipRealm> updateOnlineLiveFriendship(List<FriendshipRealm> friendships,
-      Map<String, Boolean> onlineMap, Map<String, Boolean> liveMap) {
+      Map<String, Boolean> onlineMap, Map<String, Boolean> liveMap, boolean excludeBlocked) {
     RealmList<FriendshipRealm> result = new RealmList<>();
 
     for (FriendshipRealm fr : friendships) {
-      if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+          .equals(FriendshipRealm.DEFAULT))) {
         fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
         fr.setLive(liveMap.containsKey(fr.getId()));
 
@@ -214,21 +215,29 @@ import rx.Observable;
             result.add(recipient);
           }
 
-          for (Contact contact : contactInviteList) {
-            boolean shouldAdd = true;
-            if (contact.getUserList() != null) {
-              for (User userInList : contact.getUserList()) {
-                if (mapUsersAdded.containsKey(userInList)) {
-                  shouldAdd = false;
-                }
-              }
-            }
+          for (Contact contact : contactOnAppList) {
+            compute(mapUsersAdded, contact, result);
+          }
 
-            if (shouldAdd) result.add(contact);
+          for (Contact contact : contactInviteList) {
+            compute(mapUsersAdded, contact, result);
           }
 
           return result;
         });
+  }
+
+  private void compute(Map<String, User> mapUsersAdded, Contact contact, List<Object> result) {
+    boolean shouldAdd = true;
+    if (contact.getUserList() != null) {
+      for (User userInList : contact.getUserList()) {
+        if (mapUsersAdded.containsKey(userInList.getId())) {
+          shouldAdd = false;
+        }
+      }
+    }
+
+    if (shouldAdd) result.add(contact);
   }
 
   @Override public Observable<Void> howManyFriends() {
@@ -330,23 +339,26 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Friendship>> getBlockedFriendshipList() {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return userDataStore.userInfos(null).map(userRealm -> {
-      if (userRealm != null && userRealm.getFriendships() != null) {
-        RealmList<FriendshipRealm> result = new RealmList<>();
-        for (FriendshipRealm fr : userRealm.getFriendships()) {
-          if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus()
-              .equals(FriendshipRealm.DEFAULT)) {
-            result.add(fr);
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
+        (userRealm, onlineMap, liveMap, inviteMap) -> {
+          RealmList<FriendshipRealm> result = new RealmList<>();
+
+          for (FriendshipRealm fr : userRealm.getFriendships()) {
+            if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus()
+                .equals(FriendshipRealm.DEFAULT)) {
+              result.add(fr);
+            }
           }
-        }
 
-        userRealm.setFriendships(result);
-      }
+          userRealm.setFriendships(updateOnlineLiveFriendship(result, onlineMap, liveMap, false));
 
-      return userRealmDataMapper.transform(userRealm, true).getFriendships();
-    });
+          return userRealmDataMapper.transform(userRealm, true).getFriendships();
+        });
   }
 
   @Override public Observable<String> getHeadDeepLink(String url) {

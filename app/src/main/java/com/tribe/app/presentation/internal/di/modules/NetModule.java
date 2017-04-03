@@ -98,8 +98,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-@Module(
-    includes = DataModule.class) public class NetModule {
+@Module(includes = DataModule.class) public class NetModule {
 
   static final int DISK_CACHE_SIZE = (int) DecimalByteUnit.MEGABYTES.toBytes(50);
   static final ConditionVariable LOCK = new ConditionVariable(true);

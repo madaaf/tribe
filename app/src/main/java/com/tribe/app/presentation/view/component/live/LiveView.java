@@ -5,14 +5,18 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -37,6 +41,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -70,7 +75,8 @@ public class LiveView extends FrameLayout {
   private static final int MAX_DURATION_JOIN_LIVE = 60;
   private static final int DURATION_FAST_FURIOUS = 60;
   private static final float OVERSHOOT = 1.2f;
-
+  private static final float MARGIN_BOTTOM = 25;
+  private static final float AVATAR_SCALING = 0.5f;
   private static boolean joinLive = false;
 
   @Inject SoundManager soundManager;
@@ -99,6 +105,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnLeave) View btnLeave;
 
+  @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
+
   // VARIABLES
   private Live live;
   private Room room;
@@ -115,7 +123,8 @@ public class LiveView extends FrameLayout {
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
-
+  private View view;
+  private int sizeAnimAvatarMax;
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
 
@@ -127,6 +136,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
 
@@ -138,12 +148,12 @@ public class LiveView extends FrameLayout {
 
   public LiveView(Context context) {
     super(context);
-    init(context, null);
+    init();
   }
 
   public LiveView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init(context, attrs);
+    init();
   }
 
   public void jump() {
@@ -153,32 +163,34 @@ public class LiveView extends FrameLayout {
   public void onDestroy(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
-    double duration = 0.0D;
+    if (live != null) {
+      double duration = 0.0D;
 
-    if (timeStart > 0) {
-      timeEnd = System.currentTimeMillis();
-      long delta = timeEnd - timeStart;
-      duration = (double) delta / 60000.0;
-      duration = DoubleUtils.round(duration, 2);
+      if (timeStart > 0) {
+        timeEnd = System.currentTimeMillis();
+        long delta = timeEnd - timeStart;
+        duration = (double) delta / 60000.0;
+        duration = DoubleUtils.round(duration, 2);
+      }
+
+      if (hasJoined && averageCountLive > 1) {
+        state = TagManagerUtils.ENDED;
+        tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
+        tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
+      } else if (hasJoined && averageCountLive <= 1) {
+        state = TagManagerUtils.MISSED;
+        tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
+      }
+
+      tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
+      tagMap.put(TagManagerUtils.DURATION, duration);
+      tagMap.put(TagManagerUtils.STATE, state);
+      tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
+      tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
+      tagMap.put(TagManagerUtils.TYPE,
+          live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
+      TagManagerUtils.manageTags(tagManager, tagMap);
     }
-
-    if (hasJoined && averageCountLive > 1) {
-      state = TagManagerUtils.ENDED;
-      tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
-      tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
-    } else if (hasJoined && averageCountLive <= 1) {
-      state = TagManagerUtils.MISSED;
-      tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
-    }
-
-    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
-    tagMap.put(TagManagerUtils.DURATION, duration);
-    tagMap.put(TagManagerUtils.STATE, state);
-    tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
-    tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
-    tagMap.put(TagManagerUtils.TYPE,
-        live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
-    TagManagerUtils.manageTags(tagManager, tagMap);
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       liveRowView.dispose();
@@ -211,8 +223,12 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  public void setOpenInviteValue(float valueOpenInvite) {
+    viewRoom.setOpenInviteValue(valueOpenInvite);
+  }
+
   @Override protected void onFinishInflate() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
+    view = LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -228,27 +244,48 @@ public class LiveView extends FrameLayout {
     super.onFinishInflate();
   }
 
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    onShouldCloseInvites.onNext(null);
+
+    ViewGroup.LayoutParams lp = view.getLayoutParams();
+    lp.width = screenUtils.getWidthPx();
+    lp.height = screenUtils.getHeightPx();
+    view.setLayoutParams(lp);
+
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    params.gravity = Gravity.BOTTOM;
+    params.bottomMargin = screenUtils.dpToPx(MARGIN_BOTTOM);
+    viewControlsLive.setLayoutParams(params);
+  }
+
   //////////////////////
   //      INIT        //
   //////////////////////
 
-  private void init(Context context, AttributeSet attrs) {
+  private void init() {
     liveRowViewMap = new ObservableRxHashMap<>();
     liveInviteMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
+    sizeAnimAvatarMax = getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
   }
 
   private void initUI() {
     setBackgroundColor(Color.BLACK);
-
-    room = tribeLiveSDK.newRoom();
-    room.initLocalStream(viewLocalLive.getLocalPeerView());
   }
 
   private void initResources() {
     timeJoinRoom = getResources().getInteger(R.integer.time_join_room);
-    margin = getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-
+    btnScreenshot.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            btnScreenshot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
+                R.dimen.margin_horizontal) + screenUtils.dpToPx(5.5f);
+          }
+        });
     statusBarHeight = 0;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
@@ -282,6 +319,7 @@ public class LiveView extends FrameLayout {
         onShouldCloseInvites.onNext(null);
       }
     }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
+      viewControlsLive.clickExpandParam();
       onHiddenControls.onNext(isParamExpended);
     }));
 
@@ -297,7 +335,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aBoolean -> {
       isMicroActivated = aBoolean;
       viewControlsLive.setMicroEnabled(isMicroActivated);
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableMicro(isMicroActivated);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
@@ -306,13 +344,13 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraEnable().subscribe(aVoid -> {
       isCameraActivated = false;
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableMicro(isMicroActivated);
       viewLocalLive.disableCamera(true);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraDisable().subscribe(aVoid -> {
       isCameraActivated = true;
-      viewLocalLive.enableMicro(isMicroActivated, isCameraActivated);
+      viewLocalLive.enableMicro(isMicroActivated);
       viewLocalLive.enableCamera(true);
     }));
 
@@ -361,6 +399,11 @@ public class LiveView extends FrameLayout {
 
   @OnClick(R.id.btnLeave) void onClickLeave() {
     onLeave.onNext(null);
+  }
+
+  @OnClick(R.id.btnScreenshot) void onClickScreenshot() {
+    viewControlsLive.prepareForScreenshot();
+    onScreenshot.onNext(null);
   }
 
   @OnClick(R.id.viewRoom) void onClickRoom() {
@@ -412,6 +455,7 @@ public class LiveView extends FrameLayout {
               + " & view : "
               + remotePeer.getPeerView());
           addView(remotePeer);
+          AnimationUtils.fadeIn(btnScreenshot, 300);
           onNotificationRemoteWaiting.onNext(
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
 
@@ -494,8 +538,7 @@ public class LiveView extends FrameLayout {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
-          false, false, null);
-      Timber.e("add onDropEnabled initOnStartDragSubscription ");
+          false, false, null, true);
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
@@ -511,6 +554,11 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
+      if (avatarView != null) {
+        float scaling = (1.0f - ((1.0f - AVATAR_SCALING) * alpha));
+        UIUtils.changeSizeOfView(avatarView, (int) (sizeAnimAvatarMax * scaling));
+      }
+      btnScreenshot.setAlpha(alpha);
     }));
   }
 
@@ -555,11 +603,14 @@ public class LiveView extends FrameLayout {
   public void start(Live live) {
     this.live = live;
 
+    room = tribeLiveSDK.newRoom();
+    room.initLocalStream(viewLocalLive.getLocalPeerView());
+
     viewStatusName.setLive(live);
 
     TribeGuest guest =
         new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
-            live.isInvite(), live.getMembersPics());
+            live.isInvite(), live.getMembersPics(), false);
 
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
@@ -575,6 +626,7 @@ public class LiveView extends FrameLayout {
       tempSubscriptions.add(liveRowView.onNotifyStepDone()
           .subscribe(aVoid -> viewStatusName.setStatus(LiveStatusNameView.WAITING)));
     } else {
+      viewStatusName.setStatus(LiveStatusNameView.WAITING);
       liveRowView.startPulse();
       onJoining();
       onShouldJoinRoom.onNext(null);
@@ -593,7 +645,7 @@ public class LiveView extends FrameLayout {
       if (liveRowView != null) {
         liveRowView.setGuest(
             new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(),
-                live.isGroup(), live.isInvite(), live.getMembersPics()));
+                live.isGroup(), live.isInvite(), live.getMembersPics(), false));
       }
     }
   }
@@ -641,6 +693,10 @@ public class LiveView extends FrameLayout {
       removeFromInvites(tribeGuest.getId());
       room.sendToPeers(getRemovedPayload(tribeGuest), true);
     }).subscribe());
+  }
+
+  public void screenshotDone() {
+    viewControlsLive.screenshotDone();
   }
 
   public void setCameraEnabled(boolean enable) {
@@ -799,7 +855,7 @@ public class LiveView extends FrameLayout {
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
         return new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-            friendship.getProfilePicture(), false, false, null);
+            friendship.getProfilePicture(), false, false, null, true);
       }
     }
 
@@ -897,8 +953,14 @@ public class LiveView extends FrameLayout {
   }
 
   private void animateGroupAvatar(LiveRowView liveRowView) {
+    btnScreenshot.setImageResource(R.drawable.picto_screenshot_without_center);
+
     AvatarView fromAvatarView = liveRowView.avatar();
     avatarView = new AvatarView(getContext());
+    avatarView.setType(AvatarView.REGULAR);
+    avatarView.setHasHole(false);
+    avatarView.setHasInd(false);
+    avatarView.setHasShadow(true);
 
     if (fromAvatarView.getMembersPic() != null && fromAvatarView.getMembersPic().size() > 0) {
       avatarView.loadGroupAvatar(fromAvatarView.getUrl(), null, fromAvatarView.getGroupId(),
@@ -915,14 +977,13 @@ public class LiveView extends FrameLayout {
     params.leftMargin = location[0];
     params.topMargin = location[1] - statusBarHeight;
     avatarView.setLayoutParams(params);
-
     addView(avatarView);
 
     tempSubscriptions.add(Observable.timer(50, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           Animator animatorSize = AnimationUtils.getSizeAnimator(avatarView,
-              getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller));
+              (int) (sizeAnimAvatarMax * AVATAR_SCALING));
           animatorSize.setDuration(DURATION);
           animatorSize.setInterpolator(new DecelerateInterpolator());
           animatorSize.start();
@@ -931,7 +992,6 @@ public class LiveView extends FrameLayout {
           animatorTopMargin.setDuration(DURATION);
           animatorTopMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
           animatorTopMargin.start();
-
           Animator animatorLeftMargin = AnimationUtils.getLeftMarginAnimator(avatarView, margin);
           animatorLeftMargin.setDuration(DURATION);
           animatorLeftMargin.setInterpolator(new OvershootInterpolator(OVERSHOOT));
@@ -941,6 +1001,8 @@ public class LiveView extends FrameLayout {
             }
 
             @Override public void onAnimationEnd(Animator animation) {
+              if (viewBuzz == null) return;
+
               viewBuzz.setVisibility(View.VISIBLE);
               viewBuzz.getViewTreeObserver()
                   .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -957,6 +1019,7 @@ public class LiveView extends FrameLayout {
                   });
             }
           });
+
           animatorLeftMargin.start();
         }));
   }
@@ -990,6 +1053,7 @@ public class LiveView extends FrameLayout {
       stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
     }
   }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -1008,6 +1072,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onLeave() {
     return onLeave;
+  }
+
+  public Observable<Void> onScreenshot() {
+    return onScreenshot;
   }
 
   public Observable<Boolean> onHiddenControls() {

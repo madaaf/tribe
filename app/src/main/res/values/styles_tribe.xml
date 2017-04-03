@@ -234,7 +234,7 @@
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
-  <style name="Headline.Blue" parent="Headline">
+  <style name="Headline.Blue" parent="Headline.White.2">
     <item name="android:textColor">@color/blue.new</item>
   </style>
 
@@ -285,6 +285,14 @@
 
   <style name="Small.1.Black20" parent="@style/Small.1">
     <item name="android:textColor">@color/black.opacity.20</item>
+  </style>
+
+  <style name="Small.2.White" parent="@style/Small.2">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="Small.2.Black40" parent="@style/Small.2">
+    <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
   <style name="Text"/>

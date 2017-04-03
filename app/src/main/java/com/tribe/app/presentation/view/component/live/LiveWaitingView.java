@@ -208,6 +208,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   ///////////////
 
   @Override public void onClick(View v) {
+    if (guest == null || !guest.canRemove()) return;
+
     if (!removeMode) {
       showRemovePeer();
     } else {

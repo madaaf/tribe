@@ -32,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveInviteView extends FrameLayout {
 
-  public static final int WIDTH = 106;
+  public final static int WIDTH = 106;
 
   @Inject Navigator navigator;
 

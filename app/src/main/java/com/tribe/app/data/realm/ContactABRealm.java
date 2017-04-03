@@ -18,12 +18,13 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private int version;
   private RealmList<UserRealm> userList;
   private int howManyFriends;
+  private boolean isNew = false;
 
   public ContactABRealm() {
 
   }
 
-  public String getId() {
+  @Override public String getId() {
     return id;
   }
 
@@ -61,6 +62,14 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
 
   public void setVersion(int version) {
     this.version = version;
+  }
+
+  @Override public boolean isNew() {
+    return isNew;
+  }
+
+  @Override public void setNew(boolean aNew) {
+    isNew = aNew;
   }
 
   @Override public void setHowManyFriends(int howManyFriends) {

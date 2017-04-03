@@ -24,7 +24,7 @@ ext {
   gsonVersion = '2.8.0'
   retrofitVersion = '2.1.0'
   androidAnnotationsVersion = '25.1.0'
-  okHttpVersion = '3.5.0'
+  okHttpVersion = '3.6.0'
   priorityJobQueueVersion = '2.0.1'
   pahoMQTT3Version = '1.0.2'
   stethoVersion = '1.4.1'
@@ -45,7 +45,7 @@ ext {
   googlePlayLocationVersion = '9.4.0'
   googlePlayBaseVersion = '9.4.0'
   googlePlayGCMVersion = '9.4.0'
-  rxPermissionsVersion = '0.7.0@aar'
+  rxPermissionsVersion = '0.9.3@aar'
   facebookVersion = '4.19.0'
   multiDexVersion = '1.0.0'
   confettiVersion = '1.0.0'
@@ -64,6 +64,7 @@ ext {
   easyRSVersion = '0.5.3'
   guavaVersion = '19.0'
   flexboxVersion = '0.2.5'
+  instacaptureVersion = '1.2.2'
 
   //Testing
   robolectricVersion = '3.0'
@@ -131,8 +132,9 @@ ext {
                               blurKit                 : "com.wonderkiln:blurkit:${blurKitVersion}",
                               rxAppState              : "com.jenzz:RxAppState:${rxAppStateVersion}",
                               webSocket               : "com.neovisionaries:nv-websocket-client:${webSocketVersion}",
-                              flexbox                 : "com.google.android:flexbox:${flexboxVersion}",
+                              flexbox: "com.google.android:flexbox:${flexboxVersion}",
                               easyRS                  : "io.github.silvaren:easyrs:${easyRSVersion}",
+                              instacapture            : "com.github.tarek360:instacapture:${instacaptureVersion}",
                               guava                   : "com.google.guava:guava:${guavaVersion}"]
 
 

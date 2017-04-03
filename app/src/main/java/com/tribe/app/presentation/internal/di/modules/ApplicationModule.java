@@ -15,6 +15,7 @@ import com.tribe.app.data.cache.LiveCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
+import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
@@ -41,6 +42,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -126,6 +128,7 @@ import timber.log.Timber;
     final AccessToken accessToken = new AccessToken();
 
     accessTokenResults = realm.where(AccessToken.class).findAll();
+
     accessTokenResults.addChangeListener(element -> {
       AccessToken accessTokenRes = realm.where(AccessToken.class).findFirst();
 
@@ -315,8 +318,9 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton public NotificationBuilder provideNotificationBuilder(
-      NotificationManagerCompat notificationManager, Gson gson) {
-    return new NotificationBuilder(application, notificationManager, gson);
+      NotificationManagerCompat notificationManager, Gson gson, TribeApi tribeApi,
+      UserCache userCache, @FullscreenNotifications Preference<Boolean> fullScreenNotifications) {
+    return new NotificationBuilder(application, notificationManager, gson, tribeApi, userCache, fullScreenNotifications);
   }
 
   // DATES

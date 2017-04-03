@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
@@ -37,12 +38,12 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,7 @@ public class CloudUserDataStore implements UserDataStore {
   private final Context context;
   private AccessToken accessToken = null;
   private Installation installation = null;
-  private SimpleDateFormat utcSimpleDate = null;
+  private @LastSync Preference<Long> lastSync;
 
   /**
    * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -85,7 +86,7 @@ public class CloudUserDataStore implements UserDataStore {
   public CloudUserDataStore(UserCache userCache, ContactCache contactCache, LiveCache liveCache,
       RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi,
       AccessToken accessToken, Installation installation, Context context,
-      SimpleDateFormat utcSimpleDate) {
+      @LastSync Preference<Long> lastSync) {
     this.userCache = userCache;
     this.contactCache = contactCache;
     this.rxContacts = rxContacts;
@@ -95,8 +96,8 @@ public class CloudUserDataStore implements UserDataStore {
     this.context = context;
     this.accessToken = accessToken;
     this.installation = installation;
-    this.utcSimpleDate = utcSimpleDate;
     this.liveCache = liveCache;
+    this.lastSync = lastSync;
   }
 
   @Override public Observable<PinRealm> requestCode(String phoneNumber) {
@@ -114,7 +115,8 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setUsername(username);
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
-    registerEntity.setPhoneNumber(loginEntity.getNationalNumber());
+    registerEntity.setPhoneNumber(
+        loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), ""));
     registerEntity.setPinId(loginEntity.getPinId());
 
     return this.loginApi.register(registerEntity).doOnNext(saveToCacheAccessToken);
@@ -273,6 +275,8 @@ public class CloudUserDataStore implements UserDataStore {
             contactList.add(contactFBRealm);
           }
 
+          contactCache.updateFromDB(contactList);
+
           return contactList;
         }).flatMap(contactList -> {
       List<String> requests = new ArrayList<>();
@@ -355,14 +359,28 @@ public class CloudUserDataStore implements UserDataStore {
                 for (UserRealm userRealm : lookupEntity.getLookup()) {
                   for (String phone : phones.keySet()) {
                     if (userRealm.getPhone().equals(phone)) {
-                      phones.get(phone).addUser(userRealm);
+                      ContactInterface contactInterface = phones.get(phone);
+                      contactInterface.addUser(userRealm);
+                      if (!contactInterface.isNew()
+                          && lastSync.get() != null
+                          && lastSync.get() > 0) {
+                        contactInterface.setNew(
+                            userRealm.getCreatedAt().getTime() > lastSync.get());
+                      }
                     }
                   }
 
                   for (String fbId : fbIds.keySet()) {
                     if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid()
                         .equals(fbId)) {
-                      fbIds.get(fbId).addUser(userRealm);
+                      ContactInterface contactInterface = fbIds.get(fbId);
+                      contactInterface.addUser(userRealm);
+                      if (!contactInterface.isNew()
+                          && lastSync.get() != null
+                          && lastSync.get() > 0) {
+                        contactInterface.setNew(
+                            userRealm.getCreatedAt().getTime() > lastSync.get());
+                      }
                     }
                   }
                 }

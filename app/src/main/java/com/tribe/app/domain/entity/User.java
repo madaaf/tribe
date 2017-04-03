@@ -35,7 +35,6 @@ public class User implements Serializable, BaseListInterface {
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
-
   private boolean is_online = false;
   private Date last_seen_at;
 
@@ -44,6 +43,8 @@ public class User implements Serializable, BaseListInterface {
   private boolean animateAdd = false;
 
   private AvatarModel avatarModel = null;
+
+  private boolean isNew = false;
 
   public User(String id) {
     this.id = id;
@@ -277,6 +278,14 @@ public class User implements Serializable, BaseListInterface {
     return inviteList;
   }
 
+  public void setNew(boolean aNew) {
+    isNew = aNew;
+  }
+
+  public boolean isNew() {
+    return isNew;
+  }
+
   @Override public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || !(o instanceof User)) return false;
@@ -336,10 +345,7 @@ public class User implements Serializable, BaseListInterface {
     Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
     for (Friendship friendship : friendships) {
-      if (!friendship.getSubId().equals(Recipient.ID_EMPTY)
-          && !friendship.getSubId().equals(Recipient.ID_MORE)
-          && !friendship.getSubId().equals(Recipient.ID_HEADER)
-          && !friendship.getSubId().equals(this.id)) {
+      if (!friendship.isFake() && !friendship.getSubId().equals(this.id)) {
         GroupMember groupMember = new GroupMember(friendship.getFriend());
         groupMember.setFriend(true);
         userList.add(groupMember);

@@ -129,4 +129,15 @@ public class NotificationPayload implements Serializable {
   public boolean isLive() {
     return click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(CLICK_ACTION_LIVE);
   }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || !(o instanceof NotificationPayload)) return false;
+
+    NotificationPayload that = (NotificationPayload) o;
+
+    return group_id != null ? group_id.equals(that.group_id)
+        : (that.user_id != null ? user_id.equals(that.user_id)
+            : (session_id != null ? session_id.equals(that.session_id) : session_id == null));
+  }
 }

@@ -32,6 +32,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
+import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -51,6 +52,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareCardView {
 
+  public final static float RATIO_AVATAR_TILE = 0.5f;
   public final static int TYPE_GRID_LIVE = 0;
   public final static int TYPE_GRID_CONNECTED = 1;
   public final static int TYPE_INVITE_LIVE_CO = 2;
@@ -222,6 +224,15 @@ public class TileView extends SquareCardView {
     super.onFinishInflate();
   }
 
+  @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    if (isGrid() && (getHeight() != 0 && viewBG.getHeight() != getHeight()) || (getWidth() != 0
+        && viewBG.getWidth() != getWidth())) {
+      UIUtils.changeWidthHeightOfView(viewBG, getWidth(), getHeight());
+    }
+  }
+
   private void initResources() {
     cardRadiusMax = screenUtils.dpToPx(RADIUS_MAX);
     cardRadiusMin = screenUtils.dpToPx(RADIUS_MIN);
@@ -291,17 +302,25 @@ public class TileView extends SquareCardView {
   }
 
   public void initSize() {
-    sizeAvatar =
-        isGrid() ? (int) ((screenUtils.getWidthPx() >> 1) * 0.5f) : screenUtils.getWidthPx() / 7;
+    int screenSize =
+        (screenUtils.getWidthPx() < screenUtils.getHeightPx()) ? screenUtils.getWidthPx()
+            : screenUtils.getHeightPx();
+    if (getResources().getBoolean(R.bool.isTablet)) {
+      screenSize = screenUtils.getWidthPx();
+    }
+
+    sizeAvatar = isGrid() ? (int) ((screenSize / getResources().getInteger(R.integer.columnNumber))
+        * RATIO_AVATAR_TILE) : (int) (screenUtils.dpToPx(LiveInviteView.WIDTH) * RATIO_AVATAR_TILE);
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
     avatar.changeSize(sizeAvatar, true);
 
     if (isGrid()) {
-      int sizeTile = screenUtils.getWidthPx() >> 1;
+      int sizeTile = screenSize / getResources().getInteger(R.integer.columnNumber);
       int sizeLayoutName =
-          (sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio()))) >> 1;
+          (int) ((sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio())))
+              * RATIO_AVATAR_TILE);
       int sizeStatus = sizeLayoutName;
       UIUtils.changeHeightOfView(layoutName, sizeLayoutName);
       UIUtils.changeHeightOfView(layoutStatus, sizeStatus);

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.onboarding;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
   @BindView(R.id.viewVideoScalable) ScalableVideoView viewVideoScalable;
 
   // VARIABLES
+  private boolean autoStart = false;
   private TribeMediaPlayer mediaPlayer;
   private SurfaceTexture surfaceTexture;
   private boolean isPaused, shouldResume = false;
@@ -52,6 +54,10 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_auth_video, this, true);
     unbinder = ButterKnife.bind(this);
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AuthVideoView);
+    autoStart = a.getBoolean(R.styleable.AuthVideoView_onboardingAutoStart, false);
+    a.recycle();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -76,7 +82,7 @@ public class AuthVideoView extends FrameLayout implements TextureView.SurfaceTex
     viewVideoScalable.setSurfaceTextureListener(this);
 
     mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(),
-        "asset:///video/onboarding_video.mp4").autoStart(false)
+        "asset:///video/onboarding_video.mp4").autoStart(autoStart)
         .looping(true)
         .isLocal(true)
         .forceLegacy(true)

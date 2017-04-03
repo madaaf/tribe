@@ -3,31 +3,36 @@ package com.tribe.app.presentation.view.component;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
@@ -50,15 +55,17 @@ public class TopBarView extends FrameLayout {
 
   @Inject User user;
 
+  @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
+
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.btnNew) View btnNew;
 
-  @BindView(R.id.btnInvite) ImageView btnInvite;
-
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
+
+  @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
   @BindView(R.id.imgClose) View imgClose;
 
@@ -71,6 +78,11 @@ public class TopBarView extends FrameLayout {
   // VARIABLES
   private float startX, startY = 0;
   private boolean searchMode = false;
+  private GradientDrawable drawableBGNewContacts;
+  private int nbContacts = 0;
+  private boolean hasNewContacts = false;
+  private boolean open = false;
+  private boolean shouldForceRed = false;
 
   // RESOURCES
   private int avatarSize;
@@ -112,6 +124,8 @@ public class TopBarView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
+    shouldForceRed = !newContactsTooltip.get();
+
     initResources();
     initUI();
 
@@ -119,9 +133,16 @@ public class TopBarView extends FrameLayout {
   }
 
   private void init(Context context, AttributeSet attrs) {
+
   }
 
   private void initUI() {
+    drawableBGNewContacts = new GradientDrawable();
+    drawableBGNewContacts.setShape(GradientDrawable.RECTANGLE);
+    drawableBGNewContacts.setCornerRadius(screenUtils.dpToPx(5));
+    drawableBGNewContacts.setColor(Color.RED);
+    txtNewContacts.setBackgroundDrawable(drawableBGNewContacts);
+
     imgClose.setTranslationX(screenUtils.getWidthPx() >> 1);
     imgClose.setAlpha(1);
 
@@ -168,9 +189,6 @@ public class TopBarView extends FrameLayout {
           } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
-          } else if (isAClickInView(btnInvite, (int) startX, (int) startY)) {
-            btnInvite.onTouchEvent(event);
-            btnInvite.performClick();
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
             btnSearch.performClick();
@@ -193,8 +211,6 @@ public class TopBarView extends FrameLayout {
           viewAvatar.onTouchEvent(event);
         } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
           btnNew.onTouchEvent(event);
-        } else if (isAClickInView(btnInvite, (int) event.getRawX(), (int) event.getRawY())) {
-          btnInvite.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
           btnSearch.onTouchEvent(event);
         } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
@@ -215,10 +231,6 @@ public class TopBarView extends FrameLayout {
     clickNew.onNext(null);
   }
 
-  @OnClick(R.id.btnInvite) void launchInvite() {
-    clickInvite.onNext(null);
-  }
-
   @OnClick(R.id.btnSearch) void animateSearch() {
     if (searchMode) {
       screenUtils.showKeyboard(editTextSearch, 0);
@@ -226,6 +238,10 @@ public class TopBarView extends FrameLayout {
     }
 
     onOpenCloseSearch.onNext(true);
+
+    if (nbContacts > 0) {
+      showNewContacts(false);
+    }
 
     searchMode = true;
     btnSearch.setClickable(false);
@@ -237,7 +253,6 @@ public class TopBarView extends FrameLayout {
       }
     });
     hideView(btnNew, false);
-    hideView(btnInvite, false);
     hideView(viewAvatar, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
@@ -245,6 +260,8 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.imgClose) public void closeSearch() {
+    shouldForceRed = false;
+
     onOpenCloseSearch.onNext(false);
     onSearch.onNext("");
 
@@ -255,16 +272,19 @@ public class TopBarView extends FrameLayout {
     btnSearch.setClickable(true);
 
     showView(btnNew, null);
-    showView(btnInvite, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
+
+    if (nbContacts > 0) {
+      showNewContacts(true);
+    }
 
     AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
   }
 
   private int getMarginRightSearch() {
-    return btnNew.getWidth() + btnInvite.getWidth() + ((int) 3f * marginSmall);
+    return btnNew.getWidth() + ((int) 2f * marginSmall);
   }
 
   private int getMarginLeftSearch() {
@@ -272,7 +292,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private int getMarginRightBtnNew() {
-    return btnInvite.getWidth() + 2 * marginSmall;
+    return marginSmall;
   }
 
   private void hideView(View view, boolean left) {
@@ -320,24 +340,42 @@ public class TopBarView extends FrameLayout {
     return true;
   }
 
+  private void showNewContacts(boolean show) {
+    if (searchMode) return;
+
+    txtNewContacts.animate()
+        .alpha(show ? 1 : 0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
+  public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
+    obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
+      nbContacts = integerBooleanPair.first;
+      hasNewContacts = integerBooleanPair.second;
+
+      if (nbContacts > 0) {
+        showNewContacts(true);
+        txtNewContacts.setText("" + nbContacts);
+        if (hasNewContacts || shouldForceRed) {
+          drawableBGNewContacts.setColor(
+              ContextCompat.getColor(getContext(), R.color.red_new_contacts));
+        } else {
+          drawableBGNewContacts.setColor(
+              ContextCompat.getColor(getContext(), R.color.grey_new_contacts));
+        }
+      } else {
+        showNewContacts(false);
+      }
+    });
+  }
+
   public boolean isSearchMode() {
     return searchMode;
   }
 
-  @Override public boolean dispatchKeyEventPreIme(KeyEvent event) {
-    InputMethodManager imm =
-        (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-    if (imm.isActive() && event.getKeyCode() == KeyEvent.KEYCODE_BACK && searchMode) {
-      closeSearch();
-      return true;
-    }
-
-    return super.dispatchKeyEventPreIme(event);
-  }
-
-  public void showSpinner(float value, float totalDragDistance) {
-    value = (value / totalDragDistance);
+  public void showSpinner(float value) {
     progressRefresh.clearAnimation();
     progressRefresh.setVisibility(VISIBLE);
     progressRefreshBack.setVisibility(VISIBLE);

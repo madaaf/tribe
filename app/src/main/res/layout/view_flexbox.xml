@@ -7,7 +7,6 @@
       android:id="@+id/flexbox_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-
       app:alignContent="stretch"
       app:alignItems="stretch"
       app:flexWrap="wrap"
@@ -18,12 +17,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:visibility="invisible"
         >
 
     </com.tribe.app.presentation.view.component.live.LiveLocalView>
-
-
   </com.google.android.flexbox.FlexboxLayout>
-
 </merge>

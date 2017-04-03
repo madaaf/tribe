@@ -66,4 +66,8 @@ import rx.Observable;
   void deleteContactsFB();
 
   void deleteContactsAB();
+
+  void updateFromDB(List<ContactInterface> contactList);
+
+  void removeNewStatus();
 }

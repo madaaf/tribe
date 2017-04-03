@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
@@ -10,6 +11,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.preferences.LastSync;
 import java.text.SimpleDateFormat;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,12 +35,13 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   private final Installation installation;
   private final ReactiveLocationProvider reactiveLocationProvider;
   private final SimpleDateFormat utcSimpleDate;
+  private final @LastSync Preference<Long> lastSync;
 
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
       LoginApi loginApi, AccessToken accessToken, Installation installation,
       ReactiveLocationProvider reactiveLocationProvider,
-      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
+      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @LastSync Preference<Long> lastSync) {
 
     if (context == null || userCache == null) {
       throw new IllegalArgumentException("Constructor parameters cannot be null!");
@@ -56,6 +59,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     this.installation = installation;
     this.reactiveLocationProvider = reactiveLocationProvider;
     this.utcSimpleDate = utcSimpleDate;
+    this.lastSync = lastSync;
   }
 
   /**
@@ -71,6 +75,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   public UserDataStore createCloudDataStore() {
     return new CloudUserDataStore(this.userCache, this.contactCache, this.liveCache,
         this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi, this.accessToken,
-        this.installation, this.context, this.utcSimpleDate);
+        this.installation, this.context, this.lastSync);
   }
 }

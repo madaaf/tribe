@@ -66,6 +66,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   // RESOURCES
   private int avatarSize;
   private int paddingShadow;
+  private String noUrl;
 
   // SUBSCRIPTIONS
   private Subscription createImageSubscription;
@@ -96,6 +97,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
     // DEFAULT SIZE
     avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size);
+    noUrl = getContext().getString(R.string.no_profile_picture_url);
 
     if (hasShadow) imgShadow.setVisibility(View.VISIBLE);
     if (hasInd && isOnlineOrLive()) imgInd.setVisibility(View.VISIBLE);
@@ -154,7 +156,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
     this.membersPic = membersPic;
     this.groupId = groupId;
 
-    if (StringUtils.isEmpty(url)) {
+    if (StringUtils.isEmpty(url) || url.equals(noUrl)) {
       File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), groupId, FileUtils.PHOTO);
 
       if ((StringUtils.isEmpty(previousUrl) || !previousUrl.equals(
@@ -188,8 +190,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   @Override public void load(String url) {
     this.url = url;
 
-    if (!StringUtils.isEmpty(url) && !url.equals(
-        getContext().getString(R.string.no_profile_picture_url))) {
+    if (!StringUtils.isEmpty(url) && !url.equals(noUrl)) {
       setTag(R.id.profile_picture, url);
 
       new GlideUtils.Builder(getContext()).url(url)
@@ -282,5 +283,17 @@ public class AvatarView extends RelativeLayout implements Avatar {
     } else if (drawableId != 0) {
       load(drawableId);
     }
+  }
+
+  public void setHasHole(boolean hasHole) {
+    this.hasHole = hasHole;
+  }
+
+  public void setHasInd(boolean hasInd) {
+    this.hasInd = hasInd;
+  }
+
+  public void setHasShadow(boolean hasShadow) {
+    this.hasShadow = hasShadow;
   }
 }

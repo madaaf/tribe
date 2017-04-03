@@ -9,14 +9,14 @@
       android:orientation="vertical"
       >
 
-    <include layout="@layout/view_action_base" />
+    <include layout="@layout/view_action_base"/>
   </LinearLayout>
 
   <ImageView
-      android:layout_width="45dp"
-      android:layout_height="45dp"
+      android:id="@+id/imgAction"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
       android:layout_gravity="center_vertical|right"
-      android:src="@drawable/picto_share_social_icons"
       android:scaleType="centerInside"
       />
 </merge>

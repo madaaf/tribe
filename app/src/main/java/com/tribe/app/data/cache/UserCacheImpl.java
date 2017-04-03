@@ -44,7 +44,11 @@ public class UserCacheImpl implements UserCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(userRealm));
+      obsRealm.executeTransaction(realm1 -> {
+        realm1.delete(FriendshipRealm.class);
+        realm1.delete(MembershipRealm.class);
+        realm1.insertOrUpdate(userRealm);
+      });
     } finally {
       obsRealm.close();
     }

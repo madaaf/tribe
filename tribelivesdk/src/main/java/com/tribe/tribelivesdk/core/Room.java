@@ -204,7 +204,7 @@ public class Room {
         .onErrorResumeNext(throwable -> Observable.just(""))
         .subscribe(message -> {
           if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
-            Timber.e("Got WebSocket message in non registered state.");
+            Timber.d("Got WebSocket message in non registered state.");
           }
 
           Timber.d("On webSocketConnection message : " + message);

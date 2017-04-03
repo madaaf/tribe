@@ -38,13 +38,12 @@ public class StreamManager {
     generateLocalStream(context, peerConnectionFactory);
     liveLocalStream.startVideoCapture();
 
-    localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> {
-      switchCamera();
-    }));
+    localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
 
-    localSubscriptions.add(this.localPeerView.onEnableCamera().doOnNext(enabled -> {
-      setLocalCameraEnabled(enabled);
-    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
+    localSubscriptions.add(this.localPeerView.onEnableCamera()
+        .doOnNext(enabled -> setLocalCameraEnabled(enabled))
+        .map(aBoolean -> null)
+        .subscribe(o -> onMediaChanged.onNext(null)));
 
     localSubscriptions.add(this.localPeerView.onEnableMicro().doOnNext(enabled -> {
       setLocalAudioEnabled(enabled);
@@ -93,18 +92,18 @@ public class StreamManager {
 
   public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
     if (TextUtils.isEmpty(peerId)) {
-      Timber.e("We found a null peerId it doesn't make sense!");
+      Timber.d("We found a null peerId it doesn't make sense!");
       return;
     }
 
     if (mediaStream == null) {
-      Timber.e("Cannot set a null mediaStream to peerId: " + mediaStream);
+      Timber.d("Cannot set a null mediaStream to peerId: " + mediaStream);
       return;
     }
 
     RemotePeer remotePeer = remotePeerMap.get(peerId);
     if (remotePeer == null) {
-      Timber.e("Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
+      Timber.d("Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
       return;
     }
 
@@ -133,6 +132,10 @@ public class StreamManager {
   }
 
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
+    if (liveLocalStream == null) {
+      return;
+    }
+
     liveLocalStream.updateMediaConstraints(tribeMediaConstraints);
   }
 
@@ -161,10 +164,18 @@ public class StreamManager {
   }
 
   public boolean isLocalAudioEnabled() {
+    if (liveLocalStream == null) {
+      return false;
+    }
+
     return liveLocalStream.isAudioEnabled();
   }
 
   public boolean isLocalCameraEnabled() {
+    if (liveLocalStream == null) {
+      return false;
+    }
+
     return liveLocalStream.isCameraEnabled();
   }
 

@@ -20,14 +20,15 @@ buildscript {
 allprojects {
   ext {
     androidApplicationId = 'com.tribe.app'
-    androidVersionCode = 75
-    androidVersionName = "3.0.3"
+    androidVersionCode = 77
+    androidVersionName = "3.0.4"
     testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     testApplicationId = 'com.tribe.app.test'
   }
 
   repositories {
     maven { url "http://appboy.github.io/appboy-android-sdk/sdk" }
+    maven { url "https://jitpack.io" }
   }
 }
 
