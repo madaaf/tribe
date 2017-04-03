@@ -46,8 +46,6 @@ public class LoadFriendsView extends LinearLayout {
 
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
-  @BindView(R.id.txtBody) TextViewFont txtBody;
-
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.imgIcon) ImageView imgIcon;
@@ -61,7 +59,6 @@ public class LoadFriendsView extends LinearLayout {
   private int type;
   private String imageUrl;
   private int iconId;
-  private String body;
   private String title;
 
   public LoadFriendsView(Context context) {
@@ -93,13 +90,6 @@ public class LoadFriendsView extends LinearLayout {
     if (a.hasValue(R.styleable.LoadFriendsView_loadTitle)) {
       setTitle(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadTitle,
           R.string.search_add_addressbook_title)));
-    }
-
-    if (a.hasValue(R.styleable.LoadFriendsView_loadBody)) {
-      setBody(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadBody,
-          R.string.search_add_addressbook_subtitle)));
-    } else {
-      computeBody();
     }
 
     if (a.hasValue(R.styleable.LoadFriendsView_loadIcon)) {
@@ -150,11 +140,6 @@ public class LoadFriendsView extends LinearLayout {
     txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
   }
 
-  public void setBody(String str) {
-    body = str;
-    computeBody();
-  }
-
   public void setImage(String url) {
     imageUrl = url;
     computeImageView();
@@ -182,15 +167,6 @@ public class LoadFriendsView extends LinearLayout {
   private void computeTitle() {
     if (txtTitle != null && !StringUtils.isEmpty(title)) {
       txtTitle.setText(title);
-    }
-  }
-
-  private void computeBody() {
-    if (txtBody != null && !StringUtils.isEmpty(body)) {
-      txtBody.setVisibility(View.VISIBLE);
-      txtBody.setText(body);
-    } else {
-      txtBody.setVisibility(View.GONE);
     }
   }
 
