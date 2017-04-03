@@ -6,7 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,6 +41,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 15/03/2017.
@@ -84,6 +87,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private boolean shouldStartHome = false;
+  private AudioManager audioManager;
 
   // RESOURCES
   private int translationYAnimation = 0;
@@ -127,7 +131,22 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       }
     }
 
-    soundManager.playSound(SoundManager.CALL_RING, SoundManager.SOUND_MAX);
+    audioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
+
+    if (audioManager != null) {
+      switch (audioManager.getRingerMode()) {
+        case AudioManager.RINGER_MODE_SILENT:
+          Timber.d("Silent mode");
+          break;
+        case AudioManager.RINGER_MODE_VIBRATE:
+          vibrate();
+          break;
+        case AudioManager.RINGER_MODE_NORMAL:
+          Timber.d("Normal mode");
+          soundManager.playSound(SoundManager.CALL_RING, SoundManager.SOUND_MAX);
+          break;
+      }
+    }
 
     setAnimation();
     setDownCounter();
@@ -171,6 +190,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       receiverRegistered = false;
     }
 
+    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    if (v.hasVibrator()) v.cancel();
+
     soundManager.cancelMediaPlayer();
     dispose();
     subscriptions.unsubscribe();
@@ -186,6 +208,17 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   private void initResources() {
     translationYAnimation = screenUtils.dpToPx(Y_TRANSLATION);
     translationYAction = screenUtils.dpToPx(ACTION_BUTTON_Y_TRANSLATION);
+  }
+
+  private void vibrate() {
+    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+    long[] pattern = { 0, 1000, 1000 };
+
+    // Output yes if can vibrate, no otherwise
+    if (v.hasVibrator()) {
+      v.vibrate(pattern, 0);
+    }
   }
 
   private void dispose() {
