@@ -180,6 +180,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   @Override protected void onResume() {
     super.onResume();
     showPhoneInput(false);
+
+    if (pin != null) viewCode.openKeyboard(0);
   }
 
   @Override protected void onPause() {
@@ -215,8 +217,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
     if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
     if (pin != null) outState.putSerializable(PIN, pin);
-    if (!StringUtils.isEmpty(viewPhoneNumber.getPhoneNumberInput())) {
-      outState.putString(PHONE_NUMBER, viewPhoneNumber.getPhoneNumberInput());
+
+    String phoneInput = viewPhoneNumber.getPhoneNumberInput();
+    if (!StringUtils.isEmpty(phoneInput)) {
+      outState.putString(PHONE_NUMBER, phoneInput.trim().replace(" ", ""));
     }
     if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
     if (countdownActive) outState.putInt(COUNTDOWN, viewCode.getCurrentCountdown());
@@ -427,7 +431,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             layoutBottom.animate().setListener(null).start();
-            viewPhoneNumber.openKeyboard(animate ? DURATION : 0);
+            if (pin == null) viewPhoneNumber.openKeyboard(animate ? DURATION : 0);
             viewBackground.setEnabled(true);
           }
         })
@@ -446,10 +450,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
         .translationX(-screenUtils.getWidthPx())
         .setDuration(animate ? DURATION : 0)
         .start();
+
+    viewPhoneNumber.clearFocus();
   }
 
   private void showViewPhoneNumber() {
     pin = null;
+
+    viewPhoneNumber.enableFocus();
+
     txtMessage.setText(R.string.onboarding_step_phone);
     viewPhoneNumber.hideLoading();
 
@@ -469,6 +478,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     AnimationUtils.fadeOut(btnPlay, animate ? DURATION_FAST : 0);
     txtMessage.setText(R.string.onboarding_step_code);
     initCountdown();
+
+    viewCode.requestCodeFocus();
 
     viewCode.animate()
         .translationX(0)

@@ -101,6 +101,7 @@
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
+	<string name="live_notification_decline">Pas disponible, je te rappelle très vite!</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -165,7 +166,7 @@
 	<string name="settings_follow_instagram">Instagram</string>
 	<string name="settings_follow_instagram_url">https://www.instagram.com/heytribe/</string>
 	<string name="settings_follow_snapchat">Snapchat</string>
-	<string name="settings_follow_snapchat_url">http://www.snapchat.com/add/heytribe</string>
+	<string name="settings_follow_snapchat_url">https://www.snapchat.com/add/heytribe</string>
 	<string name="settings_logout_title">Déconnexion</string>
 	<string name="settings_logout_confirm_message">Êtes-vous sûr de vouloir déconnecter ce compte de ce terminal ?</string>
 	<string name="settings_logout_wait">Déconnexion en cours...</string>
