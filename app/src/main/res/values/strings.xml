@@ -11,6 +11,8 @@
 	<string name="action_next">Next</string>
 	<string name="action_enter">Enter</string>
 	<string name="action_start">Start</string>
+	
+	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
 	<string name="action_adding_friend">Loading...</string>
 	<string name="action_friend">Added</string>
@@ -20,7 +22,6 @@
 	<string name="action_member_added">Added</string>
 	<string name="action_group_member">Member</string>
 	<string name="action_nevermind">Nevermind</string>
-	<string name="action_invite">Invite</string>
 	<string name="action_unhide">Add Friend</string>
 	
 	<!-- Group -->
@@ -41,13 +42,11 @@
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>
 	<string name="contacts_search_new_tooltip">Find your friends already on Tribe!</string>
-	<string name="contacts_share_profile_button">Share your handle</string>
 	<string name="contacts_section_facebook_no_os_facebook_title">Facebook friends</string>
 	<string name="contacts_section_facebook_no_os_facebook_description">Got to the Settings of your phone to connect your Facebook account!</string>
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Cancel</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">Got it!</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
-	<string name="contacts_section_search_searching">Searching</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Address book permission denied</string>
@@ -58,7 +57,6 @@
 	<string name="permission_location_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_location_disabled_alert_redirect">Go to Settings</string>
 	<string name="permission_location_disabled_alert_cancel">No, thanks</string>
-	<string name="permission_camera_enable_button_title">Enable\ncamera</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
 	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or video calling you.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
@@ -67,12 +65,10 @@
 	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_push_disabled_alert_redirect">Go to Settings</string>
 	<string name="permission_push_disabled_alert_cancel">Stay alone</string>
-	<string name="permission_screen_camera_mic_description">Make sure you’ll be\nable to send messages.</string>
 	<string name="permission_camera_disabled_alert_title">Camera or Microphone permission denied</string>
 	<string name="permission_camera_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_camera_disabled_alert_redirect">Go to Settings</string>
 	<string name="permission_camera_disabled_alert_cancel">Keep it blocked</string>
-	<string name="permission_screen_location_description">Get weather, Uber ETAs, and more\nlocation-based features in your messages</string>
 	<string name="permission_photos_disabled_alert_title">Photo Album permission denied</string>
 	<string name="permission_photos_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
 	<string name="permission_photos_disabled_alert_redirect">Go to Settings</string>
@@ -90,10 +86,8 @@
 	<string name="permission_addressbook_popup_ok">Perfect!</string>
 	<string name="permission_addressbook_popup_ko">Read more</string>
 	
-	<!-- Rating -->
-	<string name="rating_title">Rate us 5 starsif\nyou\'re loving Tribe!</string>
-	<string name="rating_reviews">Current Tribe reviews:</string>
-	<string name="rating_descriptions">“Facetime\non your time!”+“Emotions,\nin motion”+“Groups that feel like\nyou\'re in the same room.”+“More convenient\nthan live calls!”+“The quickest way\nto send messages!”</string>
+	<!-- Location -->
+	<string name="tribe_distance_nearby">Nearby</string>
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">The phone number of this contact doesn\'t look right</string>
@@ -101,18 +95,14 @@
 	<string name="invitation_sms_error_parse_number_action_edit">Fix the number</string>
 	<string name="invitation_sms_error_parse_number_action_use">Use it anyway</string>
 	
-	<!-- Tribe -->
-	<string name="tribe_distance_nearby">Nearby</string>
-	<string name="tribe_more_save">Save in camera roll</string>
-	<string name="tribe_more_save_success">Saved!</string>
-	<string name="live_notification_action_see_online">See who\'s online</string>
-	
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
 	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to join %1$s</string>
+	
+	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
 	<string name="live_notification_peer_joining">%1$s joining...</string>
 	<string name="live_notification_peer_joined">%1$s joined</string>
@@ -140,7 +130,6 @@
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
 	<string name="grid_menu_friendship_mute">Disable notifications :no_bell:</string>
 	<string name="grid_menu_friendship_unmute">Enable notifications :bell:</string>
-	<string name="group_identification_title">New group</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -150,18 +139,14 @@
 	<string name="group_add_members_title">Add members</string>
 	<string name="group_add_members_search_placeholder">Search friends</string>
 	<string name="group_add_members_already_friend">Friend</string>
-	<string name="group_add_members_in_group">Add in group</string>
-	<string name="group_add_members_added">Added!</string>
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Invite link</string>
 	<string name="group_details_notifications_title">Group notifications :bell:</string>
-	<string name="group_details_notifications_subtitle">Get notified for new\nmessages in this group</string>
 	<string name="group_details_leave_title">Leave group :skull:</string>
-	<string name="group_details_leave_subtitle">You’ll need to be invited again by group members to send and receive messages in this group.</string>
 	<string name="group_details_delete_title">Delete group</string>
 	<string name="group_details_settings_title">Group settings :pencil2:</string>
-	<string name="group_details_settings_subtitle">Identity, subtitles &amp; push notifications</string>
+	<string name="group_details_settings_subtitle"></string>
 	<string name="group_details_add_members_title">Add members :fire:</string>
 	
 	<!-- Group Settings -->
@@ -169,20 +154,14 @@
 	
 	<!-- Create group -->
 	<string name="group_create_title">Create group</string>
-	<string name="group_suggestions_title">Name suggestions</string>
 	<string name="group_search_friends_placeholder">Search friends</string>
-	<string name="group_members_action_remove_member">Remove from group</string>
 	
 	<!-- Group Members -->
 	<string name="group_members_remove_member_alert_message">Would you like to remove this friends from the members ?</string>
 	<string name="group_members_remove_member_alert_confirm">Remove %1$s</string>
-	<string name="settings_title">Settings</string>
 	
 	<!-- Settings -->
 	<string name="settings_profile_title">Profile</string>
-	<string name="settings_message_tribe">Send a Tribe to the Support</string>
-	<string name="settings_message_email">Email the team</string>
-	<string name="settings_message_twitter">Twitter</string>
 	<string name="settings_follow_twitter">Twitter</string>
 	<string name="settings_follow_twitter_url">https://twitter.com/heytribe</string>
 	<string name="settings_follow_instagram">Instagram</string>
@@ -199,7 +178,7 @@
 	<string name="onboarding_new_version_popup_message">This update brings you a whole new way to tribe. Connect, see who\'s online &amp; hang live with your best friends now!</string>
 	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
 	
-	<!-- Onboarding -->
+	<!-- Onboarding Phone -->
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
@@ -210,6 +189,8 @@
 	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
 	<string name="onboarding_connected">Connected</string>
+	
+	<!-- Onboarding User -->
 	<string name="onboarding_user_title">Set your profile</string>
 	<string name="onboarding_user_mandatory_avatar">Profile picture required</string>
 	<string name="onboarding_user_displayname_placeholder">Display name*</string>
@@ -217,6 +198,8 @@
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
+	
+	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Find your friends</string>
 	<string name="onboarding_queue_description">Discover which of your\nfriends are already here.</string>
 	<string name="onboarding_queue_disclaimer">We send your contacts to the server to connect you\nwith friends. Check out our Terms &amp; Privacy for details.</string>
@@ -227,15 +210,21 @@
 	<string name="onboarding_queue_valid_title">Find your friends</string>
 	<string name="onboarding_queue_valid_description">Congratulations,\nyou\'re ready to go!</string>
 	<string name="onboarding_queue_valid_button_title">Enter now</string>
+	
+	<!-- Onboarding Popup Confirm -->
 	<string name="onboarding_popup_confirm_description">We are about to send a code\nto verify this phone number.</string>
 	<string name="onboarding_popup_confirm_edit_button_title">Edit</string>
 	<string name="onboarding_popup_confirm_send_button_title">Let\'s go!</string>
+	
+	<!-- Onboarding Popup Error -->
 	<string name="onboarding_popup_error_title">We\'re here to help!</string>
 	<string name="onboarding_popup_error_description">Sounds like the code didn\'t\nget through to your phone.</string>
 	<string name="onboarding_popup_error_sent_to">Code sent to:</string>
 	<string name="onboarding_popup_error_edit_button_title">Close</string>
 	<string name="onboarding_popup_error_resend_button_title">Resend it</string>
 	<string name="onboarding_popup_error_team_notified">Our Support team has been notified and will help you shortly. Until then, feel free to try to resend your code.</string>
+	
+	<!-- Onboarding Friends To Add -->
 	<string name="onboarding_friends_to_add_title">Pick your friends</string>
 	<string name="onboarding_friends_to_add_shortcut_title">Connect with all your friends!</string>
 	<string name="onboarding_friends_to_add_shortcut_subtitle_one">%1$d friend connected</string>
@@ -249,12 +238,6 @@
 	<string name="legal_terms">Terms of Service</string>
 	<string name="legal_privacy">Privacy Policy</string>
 	
-	<!-- Pull to search -->
-	<string name="pull_to_search_title">Filter your grid by letter</string>
-	
-	<!-- Grid Filter -->
-	<string name="grid_manage_title">Manage friends</string>
-	
 	<!-- Top Bar -->
 	<string name="topbar_new_live">New group</string>
 	<string name="topbar_search">Friends</string>
@@ -264,8 +247,6 @@
 	<string name="topbar_invite_sms_action_android">:link: Invite friends by SMS</string>
 	<string name="topbar_invite_messenger_action">:link: Invite friends on Messenger</string>
 	<string name="topbar_invite_whatsapp_action">:link: Invite friends on WhatsApp</string>
-	<string name="share_add_friends_addressbook_suggestions">I was able to get access to Tribe. Just noticed that you already have %1$d friends on this app. I can get you in: %2$s #JoinTheTribe</string>
-	<string name="share_add_friends_handle">Get on this so we can chat http://get.tribe.pm/start1 :joy:</string>
 	
 	<!-- Share -->
 	<string name="share_messenger_url">http://get.tribe.pm/start1</string>
@@ -370,10 +351,6 @@
 	<string name="tips_droppingguest_title">First guest dropped! :clap:</string>
 	<string name="tips_droppingguest_message">Congrats! Add him to the group from your grid if you want him to be a permanent member of this group who\'ll be notified for every live.</string>
 	<string name="tips_droppingguest_action1">OK, great!</string>
-	<string name="tips_enterfirstlive_title">Start a video call!</string>
-	<string name="tips_enterfirstlive_message">You\'re about to video call %1$s!</string>
-	<string name="tips_enterfirstlive_action1">Let\'s go!</string>
-	<string name="tips_enterfirstlive_action2">Video call someone else</string>
 	<string name="tips_startfirstlive_title">Notification sent! :bell:</string>
 	<string name="tips_startfirstlive_message">Your friends have been notified that you are video calling them.</string>
 	<string name="tips_startfirstlive_action1">OK, great!</string>
@@ -401,21 +378,27 @@
 	<string name="call_kit_swipe_up">Swipe up to join</string>
 	<string name="call_kit_title">Video call from</string>
 	
-	<!-- Read More -->
+	<!-- Read More Contacts -->
 	<string name="readmore_contacts_title">Finding your\ncontacts on tribe</string>
 	<string name="readmore_contacts_description">What fun is Tribe with no friends?!\nUploading your contacts allows\nyou to find your friends right away!</string>
 	<string name="readmore_contacts_skip_description">Disabling this step makes it\nso you won\'t know which\nof your friends are on Tribe.</string>
 	<string name="readmore_contacts_activate">Turn on</string>
 	<string name="readmore_contacts_dismiss">Not now</string>
+	
+	<!-- Read More Notifications -->
 	<string name="readmore_notifications_title">Never miss a thing from\nyour friends on tribe</string>
 	<string name="readmore_notifications_description">Don\'t be the friend who misses\nout on the fun. Notifications alert you\nwhenever a friend is calling you,\njoins the app, and is online.</string>
 	<string name="readmore_notifications_skip_description">By skipping this step, you\'ll never be notified\nwhen friends are calling you and will\nnever know when they\'re on the app.</string>
 	<string name="readmore_notifications_activate">Turn on</string>
 	<string name="readmore_notifications_dismiss">Not now</string>
+	
+	<!-- Read More Contacts Popup -->
 	<string name="readmore_contacts_dismiss_popup_title">Continue all alone?</string>
 	<string name="readmore_contacts_dismiss_popup_description">You\'ll miss all your friends that are already here and coming</string>
 	<string name="readmore_contacts_dismiss_popup_validate">Turn On</string>
 	<string name="readmore_contacts_dismiss_popup_cancel">Continue alone</string>
+	
+	<!-- Read More Notifications Popup -->
 	<string name="readmore_notifications_dismiss_popup_title">Continue without notifications</string>
 	<string name="readmore_notifications_dismiss_popup_description">You\'ll miss all the calls from your friends</string>
 	<string name="readmore_notifications_dismiss_popup_validate">Turn On Notification</string>
