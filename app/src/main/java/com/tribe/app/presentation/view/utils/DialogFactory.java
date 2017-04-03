@@ -163,9 +163,6 @@ public final class DialogFactory {
       moreTypeList.add(new LabelType(
           context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
           LabelType.BLOCK_HIDE));
-    } else if (recipient instanceof Membership) {
-      moreTypeList.add(
-          new LabelType(context.getString(R.string.grid_menu_group_infos), LabelType.GROUP_INFO));
     }
 
     return moreTypeList;

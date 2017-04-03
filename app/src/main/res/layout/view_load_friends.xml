@@ -67,12 +67,5 @@
         style="@style/Title.2.AddressBook"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtBody"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        style="@style/Body.One.Black40"
-        />
   </LinearLayout>
 </merge>

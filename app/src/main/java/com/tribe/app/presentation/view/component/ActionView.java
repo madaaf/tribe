@@ -118,7 +118,7 @@ public class ActionView extends FrameLayout {
     if (a.hasValue(R.styleable.ActionView_actionBody)) {
       setBody(EmojiParser.demojizedText(getResources().getString(
           a.getResourceId(R.styleable.ActionView_actionBody,
-              R.string.group_details_settings_subtitle))));
+              R.string.profile_video_demo_subtitle))));
     } else {
       computeBody();
     }
