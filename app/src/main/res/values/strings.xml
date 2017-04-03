@@ -123,7 +123,6 @@
 	<string name="grid_status_more_friends">Invite your friends!</string>
 	<string name="grid_name_video_demo">Video Demo</string>
 	<string name="grid_status_video_demo">Master it in 30sec!</string>
-	<string name="grid_menu_group_infos">Settings &amp; members</string>
 	<string name="grid_menu_friendship_hide">Hide %1$s</string>
 	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
@@ -146,7 +145,6 @@
 	<string name="group_details_leave_title">Leave group :skull:</string>
 	<string name="group_details_delete_title">Delete group</string>
 	<string name="group_details_settings_title">Group settings :pencil2:</string>
-	<string name="group_details_settings_subtitle"></string>
 	<string name="group_details_add_members_title">Add members :fire:</string>
 	
 	<!-- Group Settings -->
@@ -270,7 +268,6 @@
 	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
 	<string name="search_add_facebook_title">Load friends from facebook</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>
-	<string name="search_add_addressbook_subtitle"></string>
 	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to video call with him!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
