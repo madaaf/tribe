@@ -58,7 +58,6 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
@@ -136,8 +135,6 @@ public interface ApplicationComponent {
   void inject(TopBarView topBarView);
 
   void inject(VisualizerView visualizerView);
-
-  void inject(RatingView ratingView);
 
   void inject(TextViewAnimatedDots textViewAnimatedDots);
 

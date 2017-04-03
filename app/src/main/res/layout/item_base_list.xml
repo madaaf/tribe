@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
-        android:text="@string/group_add_members_in_group"
+        android:text="@string/action_add_member"
         style="@style/Body.Two.White"
         />
 

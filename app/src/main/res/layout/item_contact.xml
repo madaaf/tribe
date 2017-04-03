@@ -54,7 +54,7 @@
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:maxLines="1"
-        android:text="@string/action_invite"
+        android:text="@string/action_add_friend"
         style="@style/Body.Two.White"
         />
   </FrameLayout>
