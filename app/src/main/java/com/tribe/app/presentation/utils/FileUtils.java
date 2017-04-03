@@ -164,30 +164,6 @@ import javax.inject.Singleton;
     return dir.delete();
   }
 
-  public static void saveToMediaStore(Context context, String path) {
-    String title = "tribe_" + System.currentTimeMillis() + ".mp4";
-    File saveDir = new File(Environment.getExternalStorageDirectory() + pathSave);
-    if (!saveDir.exists()) saveDir.mkdirs();
-
-    File file = new File(saveDir, title);
-    copyFile(path, file.getAbsolutePath());
-
-    ContentValues values = new ContentValues();
-    values.put(MediaStore.Video.Media.TITLE, title);
-    values.put(MediaStore.Video.Media.DESCRIPTION, "");
-    values.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
-    values.put(MediaStore.Video.VideoColumns.BUCKET_ID,
-        file.toString().toLowerCase(context.getResources().getConfiguration().locale).hashCode());
-    values.put(MediaStore.Video.VideoColumns.BUCKET_DISPLAY_NAME,
-        file.getName().toLowerCase(context.getResources().getConfiguration().locale));
-    values.put("_data", file.getAbsolutePath());
-
-    ContentResolver cr = context.getContentResolver();
-    cr.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-
-    Toast.makeText(context, R.string.tribe_more_save_success, Toast.LENGTH_SHORT).show();
-  }
-
   public static void copyFile(String inputPath, String outputPath) {
     InputStream in = null;
     OutputStream out = null;

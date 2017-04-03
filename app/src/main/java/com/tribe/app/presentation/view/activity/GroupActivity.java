@@ -163,7 +163,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Creation);
       setupAction(getString(R.string.action_create));
       txtAction.setVisibility(View.VISIBLE);
-      txtTitle.setText(R.string.group_identification_title);
+      txtTitle.setText(R.string.group_create_title);
     }
 
     txtAction.setOnClickListener(v -> {

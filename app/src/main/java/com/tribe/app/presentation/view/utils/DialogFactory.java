@@ -124,19 +124,6 @@ public final class DialogFactory {
     });
   }
 
-  public static Observable<LabelType> showBottomSheetForGroupMembers(Context context) {
-    return createBottomSheet(context, generateLabelsForGroupMember(context));
-  }
-
-  private static List<LabelType> generateLabelsForGroupMember(Context context) {
-    List<LabelType> labelTypeList = new ArrayList<>();
-
-    labelTypeList.add(new LabelType(context.getString(R.string.group_members_action_remove_member),
-        LabelType.REMOVE_FROM_GROUP));
-
-    return labelTypeList;
-  }
-
   public static Observable<LabelType> showBottomSheetForCamera(Context context) {
     return createBottomSheet(context, generateLabelsForCamera(context));
   }
@@ -198,22 +185,6 @@ public final class DialogFactory {
     followTypes.add(
         new LabelType(context.getString(R.string.settings_follow_snapchat), LabelType.SNAPCHAT));
     return followTypes;
-  }
-
-  public static Observable<LabelType> showBottomSheetForContact(Context context) {
-    return createBottomSheet(context, generateLabelsForContact(context));
-  }
-
-  private static List<LabelType> generateLabelsForContact(Context context) {
-    List<LabelType> messageTypes = new ArrayList<>();
-
-    messageTypes.add(
-        new LabelType(context.getString(R.string.settings_message_tribe), LabelType.TRIBE));
-    messageTypes.add(
-        new LabelType(context.getString(R.string.settings_message_email), LabelType.EMAIL));
-    messageTypes.add(
-        new LabelType(context.getString(R.string.settings_message_twitter), LabelType.TWITTER));
-    return messageTypes;
   }
 
   public static Observable<LabelType> showBottomSheetForInvites(Context context) {

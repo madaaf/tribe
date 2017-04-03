@@ -296,7 +296,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       setupTitle(getString(R.string.profile_title), forward);
       txtAction.setVisibility(GONE);
     } else if (to instanceof SettingsProfileView) {
-      setupTitle(getString(R.string.settings_title), forward);
+      setupTitle(getString(R.string.settings_profile_title), forward);
       txtAction.setVisibility(View.VISIBLE);
       txtAction.setText(getString(R.string.action_save));
     } else if (to instanceof SettingsBlockedFriendsView) {

@@ -91,19 +91,4 @@
         />
 
   </FrameLayout>
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtStatus"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal|bottom"
-      android:layout_marginBottom="@dimen/horizontal_margin_small"
-      android:layout_marginLeft="50dp"
-      android:layout_marginRight="50dp"
-      android:layout_marginTop="20dp"
-      android:gravity="center"
-      android:lines="2"
-      android:text="@string/search_add_addressbook_subtitle"
-      style="@style/Headline.Black.Regular"
-      />
 </merge>

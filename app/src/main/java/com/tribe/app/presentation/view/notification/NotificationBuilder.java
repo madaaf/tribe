@@ -139,10 +139,7 @@ import javax.inject.Singleton;
 
   private NotificationCompat.Builder addCommonActions(NotificationCompat.Builder builder,
       NotificationPayload payload) {
-    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_grid,
-        application.getString(R.string.live_notification_action_see_online),
-        getPendingIntentForHome(payload)).build())
-        .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
+    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
             application.getString(R.string.live_notification_action_hang_live),
             getPendingIntentForLive(payload)).build());
   }

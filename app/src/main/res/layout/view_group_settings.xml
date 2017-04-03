@@ -36,7 +36,6 @@
           android:layout_height="wrap_content"
           android:background="@android:color/white"
           app:actionTitle="@string/group_details_notifications_title"
-          app:actionBody="@string/group_details_notifications_subtitle"
           app:actionType="toggle"
           />
 
@@ -48,7 +47,6 @@
           android:layout_height="wrap_content"
           android:background="@android:color/white"
           app:actionTitle="@string/group_details_leave_title"
-          app:actionBody="@string/group_details_leave_subtitle"
           app:actionType="critical"
           />
 

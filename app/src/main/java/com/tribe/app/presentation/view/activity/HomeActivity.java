@@ -386,18 +386,6 @@ public class HomeActivity extends BaseActivity
             navigator.openSmsForInvite(this, null);
           } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
             navigator.navigateToVideo(this);
-          } else if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
-            subscriptions.add(
-                DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
-                    getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName()),
-                    getString(R.string.tips_enterfirstlive_action1),
-                    getString(R.string.tips_enterfirstlive_action2))
-                    .filter(x -> x == true)
-                    .subscribe(a -> {
-                      navigator.navigateToLive(this, recipient,
-                          PaletteGrid.get(recipient.getPosition()));
-                    }));
-            stateManager.addTutorialKey(StateManager.ENTER_FIRST_LIVE);
           } else {
             navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
           }
