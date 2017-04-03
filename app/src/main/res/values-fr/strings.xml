@@ -289,6 +289,7 @@
 	<string name="search_no_friends_to_suggest">Aucun ami actuellement connectés</string>
 	<string name="search_add_facebook_title">Connecter avec vos amis Facebook</string>
 	<string name="search_add_addressbook_title">Connecter votre carnet d\'adresses</string>
+	<string name="search_add_addressbook_subtitle"></string>
 	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to video call with him!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>

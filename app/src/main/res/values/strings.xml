@@ -289,6 +289,7 @@
 	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
 	<string name="search_add_facebook_title">Load friends from facebook</string>
 	<string name="search_add_addressbook_title">Load friends from address book</string>
+	<string name="search_add_addressbook_subtitle"></string>
 	<string name="search_unblock_alert_message">You blocked this friend.\nUnblock him to video call with him!</string>
 	<string name="search_unblock_alert_cancel">Keep blocked</string>
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
