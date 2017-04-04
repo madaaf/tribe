@@ -151,12 +151,13 @@ public class PhoneNumberView extends FrameLayout {
   }
 
   private void checkValidPhoneNumber() {
-    if (editable && !StringUtils.isEmpty(getPhoneNumberInput())) {
-      currentPhoneNumber =
-          phoneUtils.formatMobileNumber(PhoneNumberView.this.getPhoneNumberInput(), countryCode);
-      String viewPhoneNumber =
-          phoneUtils.formatPhoneNumberForView(PhoneNumberView.this.getPhoneNumberInput(),
-              countryCode);
+    String phoneInput = getPhoneNumberInput();
+
+    if (editable && !StringUtils.isEmpty(phoneInput)) {
+      phoneInput = phoneInput.trim().replace(" ", "");
+      currentPhoneNumber = phoneUtils.formatMobileNumber(phoneInput, countryCode);
+      String viewPhoneNumber = phoneUtils.formatPhoneNumberForView(phoneInput, countryCode);
+
       if (viewPhoneNumber != null) {
         editable = false;
         editTxtPhoneNumber.setText(viewPhoneNumber);
@@ -204,6 +205,16 @@ public class PhoneNumberView extends FrameLayout {
 
   public void hideKeyboard() {
     screenUtils.hideKeyboard(editTxtPhoneNumber);
+  }
+
+  public void clearPhoneFocus() {
+    editTxtPhoneNumber.clearFocus();
+    editTxtPhoneNumber.setEnabled(false);
+  }
+
+  public void enablePhoneFocus() {
+    editTxtPhoneNumber.setEnabled(true);
+    editTxtPhoneNumber.requestFocus();
   }
 
   protected ApplicationComponent getApplicationComponent() {

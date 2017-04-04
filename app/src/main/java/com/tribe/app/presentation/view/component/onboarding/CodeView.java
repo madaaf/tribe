@@ -252,6 +252,10 @@ public class CodeView extends FrameLayout {
     return currentCountdown;
   }
 
+  public void requestCodeFocus() {
+    editTxtCode.requestFocus();
+  }
+
   /**
    * Observable
    */
