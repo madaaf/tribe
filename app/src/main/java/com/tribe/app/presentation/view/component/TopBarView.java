@@ -341,7 +341,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private void showNewContacts(boolean show) {
-    if (searchMode) return;
+    if (searchMode || txtNewContacts == null) return;
 
     txtNewContacts.animate()
         .alpha(show ? 1 : 0)
