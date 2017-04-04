@@ -569,10 +569,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                       .withEndAction(() -> viewFlash.animate().setListener(null).start()));
 
               viewBGScreenshot.setVisibility(View.VISIBLE);
-              subscriptions.add(
-                  Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
+              subscriptions.add(Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
             }
           }));
     }
@@ -664,6 +663,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(roomConfiguration);
+    if (!live.isGroup()) {
+      viewLiveContainer.openInviteView();
+    }
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }

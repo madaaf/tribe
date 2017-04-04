@@ -546,7 +546,7 @@ public class LiveContainer extends FrameLayout {
     return true;
   }
 
-  private void openInviteView() {
+  public void openInviteView() {
     isOpened = true;
     if (velocityTracker != null) {
       springRight.setVelocity(velocityTracker.getXVelocity())

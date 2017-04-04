@@ -193,7 +193,7 @@
 	<string name="onboarding_user_title">Configurer votre profil</string>
 	<string name="onboarding_user_mandatory_avatar">Avatar obligatoire</string>
 	<string name="onboarding_user_displayname_placeholder">Nom d\'affichage*</string>
-	<string name="onboarding_user_username_placeholder">Nom d\'utilisateur*</string>
+	<string name="onboarding_user_username_placeholder">\@nom-d\'utilisateur*</string>
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Aller plus vite avec facebook !</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
