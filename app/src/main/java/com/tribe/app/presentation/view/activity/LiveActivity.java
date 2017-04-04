@@ -48,6 +48,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
@@ -149,6 +150,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Inject StateManager stateManager;
 
   @Inject @RoutingMode Preference<String> routingMode;
+
+  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -662,6 +665,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     roomConfiguration.setRoutingMode(routingMode.get());
+    if (numberOfCalls != null) {
+      numberOfCalls.set(numberOfCalls.get() + 1);
+    }
     viewLive.joinRoom(roomConfiguration);
     if (!live.isGroup()) {
       viewLiveContainer.openInviteView();

@@ -15,6 +15,8 @@ public class PreferencesConstants {
   public static String ROUTING_MODE = "ROUTED_MODE";
   public static String NEW_CONTACT_TOOLTIP = "NEW_CONTACT_TOOLTIP";
   public static String FULLSCREEN_NOTIFICATIONS = "FULLSCREEN_NOTIFICATIONS";
+  public static String NUMBER_OF_CALLS = "NUMBER_OF_CALLS";
+  public static String IS_GROUPE_CREATED = "IS_GROUPE_CREATED";
 
   // LEAVE FEATURE
   public static String TRIBE_STATE = "TRIBE_STATE";

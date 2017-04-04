@@ -8,9 +8,11 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
+import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
@@ -64,6 +66,16 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @LastVersionCode Preference<Integer> provideLastVersionCode(Context context,
       RxSharedPreferences prefs) {
     return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, -1);
+  }
+
+  @Provides @Singleton @NumberOfCalls Preference<Integer> provideNumberOfCalls(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesConstants.NUMBER_OF_CALLS, 0);
+  }
+
+  @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesConstants.IS_GROUPE_CREATED, false);
   }
 
   @Provides @Singleton @DebugMode Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
