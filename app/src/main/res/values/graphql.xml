@@ -155,16 +155,15 @@
 
   <string name="install.base" translatable="false">
         {
-            user_id : \"%1$s\",
-            token : \"%2$s\",
-            os_name : \"%3$s\",
-            os_version : \"%4$s\",
-            device_manufacturer : \"%5$s\",
-            device_model : \"%6$s\",
-            client_version : \"%7$s\",
-            client_id : \"%8$s\",
-            lang : \"%9$s\",
-            carrier : \"%10$s\"
+            token : \"%1$s\",
+            os_name : \"%2$s\",
+            os_version : \"%3$s\",
+            device_manufacturer : \"%4$s\",
+            device_model : \"%5$s\",
+            client_version : \"%6$s\",
+            client_id : \"%7$s\",
+            lang : \"%8$s\",
+            carrier : \"%9$s\"
         }
     </string>
 
@@ -208,11 +207,6 @@
 
   <string name="createFriendship.input" translatable="false">
         createFriendship%1$s : createFriendship(
-            friendship : {
-                category : \"main\",
-                status : DEFAULT,
-                tag : \"friend\"
-            },
             friendId : \"%2$s\"
         ) {
             %3$s

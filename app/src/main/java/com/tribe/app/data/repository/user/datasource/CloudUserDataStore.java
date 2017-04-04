@@ -168,11 +168,10 @@ public class CloudUserDataStore implements UserDataStore {
       operatorName = operatorName.replaceAll("[^a-zA-Z0-9]+", "");
     }
 
-    String base =
-        context.getString(R.string.install_base, accessToken.getUserId(), token, "android",
-            Build.VERSION.RELEASE, Build.MANUFACTURER, Build.MODEL,
-            DeviceUtils.getVersionName(context), context.getPackageName(),
-            context.getResources().getConfiguration().locale.toString(), operatorName);
+    String base = context.getString(R.string.install_base, token, "android", Build.VERSION.RELEASE,
+        Build.MANUFACTURER, Build.MODEL, DeviceUtils.getVersionName(context),
+        context.getPackageName(), context.getResources().getConfiguration().locale.toString(),
+        operatorName);
 
     String req =
         installation == null || StringUtils.isEmpty(installation.getToken()) ? context.getString(
