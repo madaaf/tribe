@@ -132,6 +132,7 @@ public class LiveView extends FrameLayout {
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
   private View view;
   private int sizeAnimAvatarMax;
+
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
 
@@ -466,6 +467,7 @@ public class LiveView extends FrameLayout {
               + " & view : "
               + remotePeer.getPeerView());
           addView(remotePeer);
+          btnScreenshot.setVisibility(VISIBLE);
           AnimationUtils.fadeIn(btnScreenshot, 300);
           onNotificationRemoteWaiting.onNext(
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
@@ -565,6 +567,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
+
       if (avatarView != null) {
         float scaling = (1.0f - ((1.0f - AVATAR_SCALING) * alpha));
         UIUtils.changeSizeOfView(avatarView, (int) (sizeAnimAvatarMax * scaling));
