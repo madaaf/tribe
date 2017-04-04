@@ -427,8 +427,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         })
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
+        .subscribe(filteredFriendships -> {
+          viewInviteLive.renderFriendshipList(filteredFriendships);
+          if (!live.isGroup()) {
+            viewLiveContainer.openInviteView();
+          }
+        }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
@@ -665,9 +669,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(roomConfiguration);
-    if (!live.isGroup()) {
-      viewLiveContainer.openInviteView();
-    }
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }

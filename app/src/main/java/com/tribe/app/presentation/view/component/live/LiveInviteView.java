@@ -107,7 +107,7 @@ public class LiveInviteView extends FrameLayout {
   private void initResources() {
 
   }
-
+  
   public void setFadeInEffet(float fadeInEffet) {
     setAlpha(fadeInEffet);
   }
