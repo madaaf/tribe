@@ -373,6 +373,12 @@
         %4$s
     </string>
 
+  <string name="create.membership.user" translatable="false">
+    createMembership%1$s : createMembership(groupId: \"%2$s\", userId: \"%3$s\") {
+      id
+    }
+    </string>
+
   <string name="membership.infos" translatable="false">
         {
             user {

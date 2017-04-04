@@ -830,12 +830,21 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    String memberIdsJson = listToArrayReq(memberIds);
-    String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
+    StringBuffer buffer = new StringBuffer();
+    String mutationCreateMembership = null;
 
-    return this.tribeApi.addMembersToGroup(request)
-        .doOnNext(aVoid -> userCache.addMembersToGroup(groupId, memberIds))
-        .doOnNext(aVoid -> clearGroupAvatar(groupId));
+    int count = 0;
+    for (String id : memberIds) {
+      buffer.append(context.getString(R.string.create_membership_user, count, groupId, id));
+      count++;
+    }
+
+    mutationCreateMembership = context.getString(R.string.mutation, buffer.toString());
+
+    return (StringUtils.isEmpty(mutationCreateMembership) ? Observable.empty()
+        : tribeApi.createMembershipsForUsers(mutationCreateMembership)
+            .doOnNext(aVoid -> userCache.addMembersToGroup(groupId, memberIds))
+            .doOnNext(aVoid -> clearGroupAvatar(groupId)));
   }
 
   @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {

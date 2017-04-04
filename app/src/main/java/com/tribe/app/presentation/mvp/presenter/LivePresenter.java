@@ -112,11 +112,11 @@ public class LivePresenter implements Presenter {
     @Override public void onError(Throwable e) {
       JoinRoomException joinRoomException = new JoinRoomException(e);
       String errorMessage = ErrorMessageFactory.create(liveMVPView.context(), joinRoomException);
-      liveMVPView.onJoinRoomFailed(errorMessage);
+      if (liveMVPView != null) liveMVPView.onJoinRoomFailed(errorMessage);
     }
 
     @Override public void onNext(RoomConfiguration roomConfiguration) {
-      liveMVPView.onJoinedRoom(roomConfiguration);
+      if (liveMVPView != null) liveMVPView.onJoinedRoom(roomConfiguration);
     }
   }
 
