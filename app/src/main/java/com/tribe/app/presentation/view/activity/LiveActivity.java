@@ -48,7 +48,6 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
@@ -90,6 +89,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
+  public static final String DISPLAY_ENJOYING_NOTIFICATON = "DISPLAY_ENJOYING_NOTIFICATON";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
@@ -150,8 +150,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Inject StateManager stateManager;
 
   @Inject @RoutingMode Preference<String> routingMode;
-
-  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -611,8 +609,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
       returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
-      setResult(Activity.RESULT_OK, returnIntent);
     }
+    returnIntent.putExtra(DISPLAY_ENJOYING_NOTIFICATON, true);
+    setResult(Activity.RESULT_OK, returnIntent);
   }
 
   private void displayNotification(String txt) {
@@ -665,9 +664,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     roomConfiguration.setRoutingMode(routingMode.get());
-    if (numberOfCalls != null) {
-      numberOfCalls.set(numberOfCalls.get() + 1);
-    }
     viewLive.joinRoom(roomConfiguration);
     if (!live.isGroup()) {
       viewLiveContainer.openInviteView();

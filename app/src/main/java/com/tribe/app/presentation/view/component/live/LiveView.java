@@ -21,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Friendship;
@@ -33,6 +34,8 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -92,6 +95,10 @@ public class LiveView extends FrameLayout {
   @Inject TagManager tagManager;
 
   @Inject StateManager stateManager;
+
+  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
+
+  @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
@@ -175,6 +182,10 @@ public class LiveView extends FrameLayout {
 
       if (hasJoined && averageCountLive > 1) {
         state = TagManagerUtils.ENDED;
+        numberOfCalls.set(numberOfCalls.get() + 1);
+        minutesOfCalls.set(minutesOfCalls.get());
+        Float totalDuration = minutesOfCalls.get() + (float) duration;
+        minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
       } else if (hasJoined && averageCountLive <= 1) {

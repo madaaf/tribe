@@ -98,6 +98,7 @@ public class EmojiParser {
     IEmojiMap.put(":vhs:", "\uD83D\uDCFC");
     IEmojiMap.put(":telephone_receiver:", "\uD83D\uDCDE");
     IEmojiMap.put(":camera:", "\uD83D\uDCF7");
+    IEmojiMap.put(":star:", "\u2B50");
   }
 
   /**

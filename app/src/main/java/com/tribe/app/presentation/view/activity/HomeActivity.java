@@ -64,6 +64,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.RatingNotificationView;
 import java.util.ArrayList;
@@ -119,6 +120,9 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.searchView) SearchView searchView;
 
   @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
+
+  @BindView(R.id.enjoyingTribeNotificationView) EnjoyingTribeNotificationView
+      enjoyingTribeNotificationView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -638,9 +642,15 @@ public class HomeActivity extends BaseActivity
     if (data != null) {
       boolean displayRatingNotifView =
           data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
-      long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
-      String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
+
+      boolean displayEnjoyingNotifView =
+          data.getBooleanExtra(LiveActivity.DISPLAY_ENJOYING_NOTIFICATON, false);
+      if (displayEnjoyingNotifView) {
+        enjoyingTribeNotificationView.displayView();
+      }
       if (displayRatingNotifView) {
+        long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
+        String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
         ratingNotificationView.displayView(timeout, roomId);
       }
     }

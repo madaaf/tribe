@@ -17,6 +17,7 @@ public class PreferencesConstants {
   public static String FULLSCREEN_NOTIFICATIONS = "FULLSCREEN_NOTIFICATIONS";
   public static String NUMBER_OF_CALLS = "NUMBER_OF_CALLS";
   public static String IS_GROUPE_CREATED = "IS_GROUPE_CREATED";
+  public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
 
   // LEAVE FEATURE
   public static String TRIBE_STATE = "TRIBE_STATE";

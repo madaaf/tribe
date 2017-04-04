@@ -42,6 +42,7 @@ import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -282,6 +283,8 @@ public interface ApplicationComponent {
   @IsGroupCreated Preference<Boolean> isGroupCreated();
 
   @NumberOfCalls Preference<Integer> numberOfCalls();
+
+  @MinutesOfCalls Preference<Float> minutesOfCalls();
 
   SoundManager soundManager();
 
