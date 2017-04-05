@@ -82,6 +82,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
@@ -95,6 +96,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
+  private final int MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST = 3;
   private final int CORNER_SCREENSHOT = 5;
   private final int SCREENSHOT_DURATION = 300;
   private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
@@ -431,6 +433,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           viewInviteLive.renderFriendshipList(filteredFriendships);
           if (!live.isGroup()) {
             viewLiveContainer.openInviteView();
+            if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+              subscriptions.add(Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST,
+                  TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
+                Timber.e(" SOEF DISPLAY POPUP");
+                displayDragingGuestPopupTutorial();
+              }));
+            }
           }
         }));
 
@@ -634,6 +643,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
+  }
+
+  private void displayDragingGuestPopupTutorial() { // SOEF
+    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+      subscriptions.add(DialogFactory.dialog(this, getString(R.string.tips_draggingguest_title),
+          getString(R.string.tips_draggingguest_message),
+          getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
+      }));
+      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    }
   }
 
   private void ready() {
