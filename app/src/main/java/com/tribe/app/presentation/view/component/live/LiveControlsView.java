@@ -36,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 01/22/17.
  */
 public class LiveControlsView extends FrameLayout {
-  private final static int MAX_DURATION_LAYOUT_CONTROLS = 30;
+  private final static int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION = 300;
   private static final int DURATION_PARAM = 450;
 

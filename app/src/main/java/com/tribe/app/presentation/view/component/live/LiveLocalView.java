@@ -109,7 +109,10 @@ public class LiveLocalView extends FrameLayout {
 
   private void initSubscriptions() {
     subscriptions.add(Observable.merge(onEnableCamera, onEnableMicro)
-        .subscribe(mediaConfiguration -> viewPeerState.setMediaConfiguration(mediaConfiguration)));
+        .filter(mediaConfiguration -> (!mediaConfiguration.isVideoEnabled() || !mediaConfiguration.isAudioEnabled()))
+        .subscribe(mediaConfiguration -> {
+          viewPeerState.setMediaConfiguration(mediaConfiguration);
+        }));
   }
 
   private void initResources() {
@@ -143,12 +146,14 @@ public class LiveLocalView extends FrameLayout {
     if (!localMediaConfiguration.isVideoEnabled() || !localMediaConfiguration.isAudioEnabled()) {
       UIUtils.showReveal(viewPeerState, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationStart(Animator animation) {
+          animation.removeAllListeners();
           viewPeerState.setVisibility(View.VISIBLE);
         }
       });
     } else {
       UIUtils.hideReveal(viewPeerState, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
+          animation.removeAllListeners();
           viewPeerState.setVisibility(View.GONE);
         }
       });
