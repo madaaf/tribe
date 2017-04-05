@@ -68,6 +68,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -446,6 +447,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       viewLiveContainer.setEnabled(true);
       joinRoom();
       displayStartFirstPopupTutorial();
+    }));
+
+    subscriptions.add(viewLive.onRoomStateChanged().subscribe(state -> {
+      if (state == Room.STATE_CONNECTED) {
+        if (!live.isGroup() && !live.isInvite() && viewLive.nbInRoom() < 3) {
+          viewLiveContainer.openInviteView();
+          if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+            subscriptions.add(
+                Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
+          }
+        }
+      }
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {

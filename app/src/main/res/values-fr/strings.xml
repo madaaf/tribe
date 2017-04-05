@@ -306,7 +306,7 @@
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :mag:</string>
 	<string name="profile_video_demo_title">Démo vidéo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Apprenez tout en 30 sec !</string>
+	<string name="profile_video_demo_subtitle">Apprenez Tribe en 30 secondes !</string>
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
@@ -444,4 +444,13 @@
 	<string name="live_placeholder_low_bandwidth">Mauvaise connexion</string>
 	<string name="live_placeholder_camera_paused">Caméra en pause</string>
 	<string name="live_placeholder_low_connection">Basse connexion</string>
+	
+	<!-- Popup Create Group -->
+	<string name="popup_create_grp_title"></string>
+	<string name="popup_create_grp_subtitle"></string>
+	<string name="popup_create_grp_action1"></string>
+	<string name="popup_create_grp_action2"></string>
+	
+	<!-- Popup Behavior -->
+	<string name="popup_behavior_swipe_dismiss"></string>
 </resources>

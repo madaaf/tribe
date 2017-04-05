@@ -306,7 +306,7 @@
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
 	<string name="profile_video_demo_title">Video Demo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Master it in 30 sec!</string>
+	<string name="profile_video_demo_subtitle">Master Tribe in 30 seconds!</string>
 	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
@@ -444,4 +444,13 @@
 	<string name="live_placeholder_low_bandwidth">Poor connection</string>
 	<string name="live_placeholder_camera_paused">Camera paused</string>
 	<string name="live_placeholder_low_connection">Low connection</string>
+	
+	<!-- Popup Create Group -->
+	<string name="popup_create_grp_title">It was fun, right? Create \n a group with them!</string>
+	<string name="popup_create_grp_subtitle">Katie Evans, Nora Dunn, Effie Color, Edward Lynch, Brent Andrews, Helena Morton</string>
+	<string name="popup_create_grp_action1">Adjust members</string>
+	<string name="popup_create_grp_action2">Create now</string>
+	
+	<!-- Popup Behavior -->
+	<string name="popup_behavior_swipe_dismiss">Swipe to dismiss</string>
 </resources>
