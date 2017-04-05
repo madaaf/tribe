@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.IntDef;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ import javax.inject.Inject;
 
 public class LiveRoomView extends FrameLayout {
 
+  public static final int CORNER_RADIUS = 5;
+
   @IntDef({ GRID, LINEAR }) public @interface TribeRoomViewType {
   }
 
@@ -48,6 +51,8 @@ public class LiveRoomView extends FrameLayout {
   private int heightOndropBar;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
+
+  @BindView(R.id.cardview) CardView cardView;
 
   public LiveRoomView(Context context) {
     super(context);
@@ -75,6 +80,11 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
+
+    // retro-compatibiliy with lollipop
+    cardView.setPreventCornerOverlap(false);
+    cardView.setMaxCardElevation(0);
+    cardView.setRadius(screenUtils.dpToPx(CORNER_RADIUS));
 
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;

@@ -337,7 +337,6 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
-      displayDragingGuestPopupTutorial();
       if (!hiddenControls) onOpenInvite.onNext(null);
     }));
 
@@ -1055,17 +1054,6 @@ public class LiveView extends FrameLayout {
       }
     }
     return tribeGuestName;
-  }
-
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      tempSubscriptions.add(DialogFactory.dialog(getContext(),
-          getContext().getString(R.string.tips_draggingguest_title),
-          getContext().getString(R.string.tips_draggingguest_message),
-          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
   }
 
   //////////////////////
