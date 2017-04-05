@@ -70,6 +70,7 @@ import javax.inject.Singleton;
               application.getString(R.string.userfragment_infos),
               application.getString(R.string.friendshipfragment_info)))
               .subscribe(userRealm -> userCache.put(userRealm));
+          notificationManager.notify(getNotificationId(notificationPayload), notification);
         }
       }
     }
