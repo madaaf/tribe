@@ -43,7 +43,9 @@ import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriends
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
+import com.tribe.app.presentation.view.widget.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.EnjoyingTribeNotificationView;
+import com.tribe.app.presentation.view.widget.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.RatingNotificationView;
 import dagger.Component;
 
@@ -58,6 +60,10 @@ import dagger.Component;
   void inject(DebugActivity debugActivity);
 
   void inject(LiveImmersiveNotificationActivity liveImmersiveNotificationActivity);
+
+  void inject(NotificationContainerView notificationContainerView);
+
+  void inject(CreateGroupNotificationView createGroupNotificationView);
 
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 

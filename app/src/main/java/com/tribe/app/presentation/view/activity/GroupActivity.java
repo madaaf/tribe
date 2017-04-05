@@ -47,6 +47,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
+import com.tribe.app.presentation.view.widget.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -71,6 +72,19 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       intent.putExtra(GROUP_PICTURE, membership.getProfilePicture());
     }
 
+    return intent;
+  }
+
+  public static Intent getCallingIntentWithMembers(Context context,
+      List<GroupMember> prefilledGrpMembers, boolean createGrpDirectly) {
+    Intent intent = new Intent(context, GroupActivity.class);
+    if (prefilledGrpMembers != null) {
+      Bundle extra = new Bundle();
+      extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
+          (Serializable) prefilledGrpMembers);
+      intent.putExtra(CreateGroupNotificationView.CREATE_GRP_DIRECTLY, createGrpDirectly);
+      intent.putExtras(extra);
+    }
     return intent;
   }
 
@@ -108,6 +122,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   private String groupName;
   private Membership membership;
   private List<GroupMember> newMembers;
+  private List<GroupMember> prefilledGrpMembers = new ArrayList<>();
   private TextViewFont currentTitle;
   private FirebaseRemoteConfig firebaseRemoteConfig;
 
@@ -127,8 +142,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     unbinder = ButterKnife.bind(this);
     initResources();
     initDependencyInjector();
-    init(savedInstanceState);
     initRemoteConfig();
+    init(savedInstanceState);
     initPresenter();
   }
 
@@ -153,6 +168,26 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     super.onDestroy();
   }
 
+  private void addList(List<GroupMember> origine, List<GroupMember> listToAdd) {
+    if (listToAdd.isEmpty()) {
+      return;
+    }
+    List<GroupMember> copie = new ArrayList<>();
+    List<String> listToAddIds = new ArrayList<>();
+    copie.addAll(origine);
+
+    for (GroupMember groupMember : listToAdd) {
+      listToAddIds.add(groupMember.getUser().getId());
+    }
+
+    for (GroupMember groupMember : copie) {
+      if (listToAddIds.contains(groupMember.getUser().getId())) {
+        origine.remove(groupMember);
+      }
+    }
+    origine.addAll(0, listToAdd);
+  }
+
   private void init(Bundle savedInstanceState) {
     newMembers = new ArrayList<>();
     tagMap = new HashMap<>();
@@ -164,8 +199,17 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       setupAction(getString(R.string.group_details_invite_link));
       txtAction.setVisibility(View.VISIBLE);
     } else {
+      if (getIntent().hasExtra(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS)) {
+        Bundle extra = getIntent().getExtras();
+        prefilledGrpMembers.addAll((ArrayList<GroupMember>) extra.getSerializable(
+            CreateGroupNotificationView.PREFILLED_GRP_MEMBERS));
+        if (extra.getBoolean(CreateGroupNotificationView.CREATE_GRP_DIRECTLY)) {
+          createGroup();
+          finish();
+        }
+      }
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Creation);
-      setupAction(getString(R.string.action_create));
+      setUpActionTitle(prefilledGrpMembers.size());
       txtAction.setVisibility(View.VISIBLE);
       txtTitle.setText(R.string.group_create_title);
     }
@@ -173,22 +217,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     txtAction.setOnClickListener(v -> {
       isGroupCreated.set(true);
       if (membershipId == null) {
-        List<String> membersId = new ArrayList<>();
-
-        for (GroupMember groupMember : newMembers) {
-          membersId.add(groupMember.getUser().getId());
-        }
-
-        tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CREATED);
-        tagMap.put(TagManagerUtils.MEMBERS_COUNT, membersId.size());
-        TagManagerUtils.manageTags(tagManager, tagMap);
-        tagManager.increment(TagManagerUtils.USER_GROUPS_COUNT);
-
-        groupEntity = new GroupEntity();
-        groupEntity.setMembersId(membersId);
-        groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
-
-        groupPresenter.createGroup(groupEntity);
+        createGroup();
       } else {
         if (viewStack.getTopView() instanceof UpdateGroupView) {
           tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.MODIFIED);
@@ -224,6 +253,27 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         setupAddMembersView(null);
       }
     }
+  }
+
+  private void createGroup() {
+    List<String> membersId = new ArrayList<>();
+    addList(newMembers, prefilledGrpMembers);
+    for (GroupMember groupMember : newMembers) {
+      if (!groupMember.getUser().getId().equals(user.getId())) {
+        membersId.add(groupMember.getUser().getId());
+      }
+    }
+
+    tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CREATED);
+    tagMap.put(TagManagerUtils.MEMBERS_COUNT, membersId.size());
+    TagManagerUtils.manageTags(tagManager, tagMap);
+    tagManager.increment(TagManagerUtils.USER_GROUPS_COUNT);
+
+    groupEntity = new GroupEntity();
+    groupEntity.setMembersId(membersId);
+    groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+
+    groupPresenter.createGroup(groupEntity);
   }
 
   private void initRemoteConfig() {
@@ -352,12 +402,13 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     if (membership != null) {
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Members);
     }
-
     viewAddMembersGroup =
         (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_group_add_members, param);
+    viewAddMembersGroup.addPrefildMumbers(prefilledGrpMembers);
     subscriptions.add(viewAddMembersGroup.onMembersChanged().subscribe(addedMembers -> {
       newMembers.clear();
       newMembers.addAll(addedMembers);
+      addList(newMembers, prefilledGrpMembers);
 
       if (membershipId != null) {
         if (newMembers.size() > 0) {
@@ -367,12 +418,16 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           txtAction.setVisibility(View.GONE);
         }
       } else {
-        setupAction(getString(R.string.action_create) + (newMembers.size() > 0 ? " ("
-            + newMembers.size()
-            + ")" : ""));
+        setUpActionTitle(newMembers.size() - 1);
         txtAction.setVisibility(View.VISIBLE);
       }
     }));
+  }
+
+  private void setUpActionTitle(int number) {
+    String numberOfMember = !(number == 0) ? " (" + number + ")" : "";
+    String title = getString(R.string.action_create) + numberOfMember;
+    setupAction(title);
   }
 
   private void setupGroupDetails(Serializable param) {
@@ -621,6 +676,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   @Override public void hideLoading() {
+    if (txtAction == null) {
+      return;
+    }
     txtAction.setVisibility(View.VISIBLE);
     progressView.setVisibility(View.GONE);
   }

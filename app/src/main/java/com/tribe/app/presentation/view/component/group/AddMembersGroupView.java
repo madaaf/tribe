@@ -78,6 +78,8 @@ public class AddMembersGroupView extends LinearLayout {
   private MembersAdapter membersAdapter;
   private List<GroupMember> newMembers;
   private String currentFilter = "";
+  private List<GroupMember> copieUserListTemp = new ArrayList<>();
+  private List<String> newMembersIds = new ArrayList<>();
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -141,8 +143,6 @@ public class AddMembersGroupView extends LinearLayout {
     setOrientation(VERTICAL);
 
     subscriptions = new CompositeSubscription();
-
-    newMembers = new ArrayList<>();
 
     layoutManager = new FriendMembersLayoutManager(getContext());
     recyclerView.setLayoutManager(layoutManager);
@@ -213,9 +213,21 @@ public class AddMembersGroupView extends LinearLayout {
   private void setupFriendList() {
     List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
     if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
+    copieUserListTemp.addAll(userListTemp);
+
+    for (GroupMember groupMember : newMembers) {
+      newMembersIds.add(groupMember.getUser().getId());
+    }
+
+    for (GroupMember groupMember : copieUserListTemp) {
+      if (newMembersIds.contains(groupMember.getUser().getId())) {
+        userListTemp.remove(groupMember);
+      }
+    }
+    userListTemp.addAll(0, newMembers);
     adapter.setItems(userListTemp);
   }
-
+  
   public void updateGroup(Group group, boolean full) {
     if (full) {
       membership.setGroup(group);
@@ -248,7 +260,9 @@ public class AddMembersGroupView extends LinearLayout {
       GroupMember groupMember = new GroupMember(user);
       groupMember.setOgMember(true);
       groupMember.setMember(true);
-      membersAdapter.add(groupMember);
+
+      newMembers.add(0, groupMember);
+      membersAdapter.setItems(newMembers, true);
     } else {
       membersAdapter.setItems(membership.getGroup().getGroupMembers(), true);
     }
@@ -283,9 +297,9 @@ public class AddMembersGroupView extends LinearLayout {
   }
 
   private void refactorMembers() {
-    txtMembers.setText(membersAdapter.getItemCount() + " " +
-        (membersAdapter.getItemCount() > 1 ? getResources().getString(R.string.group_members)
-            : getResources().getString(R.string.group_member)) + " " + "\uD83D\uDD25");
+    txtMembers.setText(membersAdapter.getItemCount() + " " + (membersAdapter.getItemCount() > 1
+        ? getResources().getString(R.string.group_members)
+        : getResources().getString(R.string.group_member)) + " " + "\uD83D\uDD25");
   }
 
   private void filter(String text) {
@@ -302,5 +316,10 @@ public class AddMembersGroupView extends LinearLayout {
   // OBSERVABLES
   public Observable<List<GroupMember>> onMembersChanged() {
     return membersChanged;
+  }
+
+  public void addPrefildMumbers(List<GroupMember> prefilledMembers) {
+    newMembers = new ArrayList<>();
+    newMembers.addAll(prefilledMembers);
   }
 }

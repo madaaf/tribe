@@ -51,20 +51,10 @@
       android:visibility="gone"
       />
 
-  <com.tribe.app.presentation.view.widget.RatingNotificationView
-      android:id="@+id/ratingNotificationView"
+  <com.tribe.app.presentation.view.widget.NotificationContainerView
+      android:id="@+id/notificationContainerView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:clickable="true"
-      android:visibility="gone"
-      />
-
-  <com.tribe.app.presentation.view.widget.EnjoyingTribeNotificationView
-      android:id="@+id/enjoyingTribeNotificationView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:clickable="true"
-      android:visibility="gone"
       />
 
 </FrameLayout>

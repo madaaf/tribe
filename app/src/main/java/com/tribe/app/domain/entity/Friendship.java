@@ -1,15 +1,18 @@
 package com.tribe.app.domain.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.Date;
 
 /**
  * Created by tiago on 05/08/2016.
  */
-public class Friendship extends Recipient implements Comparable<Friendship> {
+public class Friendship extends Recipient implements Comparable<Friendship>, Serializable {
 
   private String id;
   private String tag;
@@ -159,4 +162,6 @@ public class Friendship extends Recipient implements Comparable<Friendship> {
 
     return name1.compareTo(name2);
   }
+
+
 }

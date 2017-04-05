@@ -66,9 +66,8 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.app.presentation.view.widget.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.NotificationContainerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -123,10 +122,7 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.searchView) SearchView searchView;
 
-  @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
-
-  @BindView(R.id.enjoyingTribeNotificationView) EnjoyingTribeNotificationView
-      enjoyingTribeNotificationView;
+  @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -667,6 +663,7 @@ public class HomeActivity extends BaseActivity
         String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
         ratingNotificationView.displayView(timeout, roomId);
       }
+      notificationContainerView.displayNotification(data);
     }
   }
 

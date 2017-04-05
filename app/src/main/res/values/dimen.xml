@@ -33,6 +33,7 @@
   <dimen name="margin_end_action_view">70dp</dimen>
   <dimen name="margin_buzz">75dp</dimen>
   <dimen name="margin_horizontal">5dp</dimen>
+  <dimen name="margin_horizonta_avatrs">3dp</dimen>
 
   <!-- PADDING -->
   <dimen name="icons_padding">3.75dp</dimen>

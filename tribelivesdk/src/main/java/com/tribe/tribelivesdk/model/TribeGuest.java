@@ -1,12 +1,13 @@
 package com.tribe.tribelivesdk.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by tiago on 07/02/2017.
  */
 
-public class TribeGuest {
+public class TribeGuest extends GroupJoiner implements Serializable {
 
   public static final String ID = "id";
   public static final String DISPLAY_NAME = "display_name";
@@ -33,6 +34,10 @@ public class TribeGuest {
     this.isInvite = isInvite;
     this.memberPics = memberPics;
     this.canRemove = canRemove;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   public String getDisplayName() {

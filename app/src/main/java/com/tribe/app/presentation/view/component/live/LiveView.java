@@ -56,7 +56,9 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -814,12 +816,14 @@ public class LiveView extends FrameLayout {
     } else if (liveRowViewMap.getMap()
         .containsKey(remotePeer.getSession()
             .getUserId())) { // If the user was already live, usually the case on 1-1 calls
+
       liveRowView = liveRowViewMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
     } else {
       TribeGuest guest = guestFromRemotePeer(remotePeer);
 
       if (nbLiveInRoom() == 0) { // First user joining in a group call
+
         if (live.isGroup()) { // if it's a group
           String groupId = getGroupWaiting();
           if (!StringUtils.isEmpty(groupId)) {
@@ -944,6 +948,22 @@ public class LiveView extends FrameLayout {
     return count;
   }
 
+  public List<TribeGuest> getUsersInLiveRoom() {
+    ArrayList<TribeGuest> usersInLive = new ArrayList<>();
+    for (String liveRowViewId : liveRowViewMap.getMap().keySet()) {
+      LiveRowView liveRowView = liveRowViewMap.getMap().get(liveRowViewId);
+      if (!liveRowView.isWaiting()) {
+        TribeGuest guest = liveRowView.getGuest();
+          /* if (guest == null) { // TODO waiting for rules
+          guest = new TribeGuest(liveRowViewId);
+          guest.setDisplayName("anonymous");
+        }*/
+        if (guest != null) usersInLive.add(guest);
+      }
+    }
+    return usersInLive;
+  }
+
   private boolean isTherePeopleWaiting() {
     boolean waiting = false;
 
@@ -1065,6 +1085,10 @@ public class LiveView extends FrameLayout {
       }
     }
     return tribeGuestName;
+  }
+
+  public int getInviteMembersNbr() {
+    return liveInviteMap.size();
   }
 
   //////////////////////

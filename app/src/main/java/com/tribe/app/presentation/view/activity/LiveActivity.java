@@ -68,11 +68,14 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -91,8 +94,6 @@ import static android.view.View.VISIBLE;
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
-  public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
-  public static final String DISPLAY_ENJOYING_NOTIFICATON = "DISPLAY_ENJOYING_NOTIFICATON";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
@@ -176,6 +177,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private Unbinder unbinder;
   private Live live;
   private RoomConfiguration roomConfiguration;
+  private boolean liveIsInvite = false;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
@@ -183,7 +185,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
   private boolean takeScreenshotEnable = true;
-
+  private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
+  private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   // RESOURCES
 
   // OBSERVABLES
@@ -400,6 +403,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
+  private boolean isRoomHasGuest() {
+    if (live.isInvite()) return true;
+    if (live.isGroup()) {
+      //int nbrPersonneInGrp = live.isGroup();
+    }
+    return false;
+  }
+
   private void initSubscriptions() {
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
@@ -408,14 +419,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           List<String> idsToFilter = new ArrayList<>();
           idsToFilter.addAll(liveMap.keySet());
           idsToFilter.addAll(invitesMap.keySet());
-
+          usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
           Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
           List<Friendship> filteredFriendships = new ArrayList<>();
-
+          liveIsInvite = live.isInvite();
           if (live.getMembers() != null) {
             for (Friendship fr : friendshipList) {
               if (!live.isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
+                  .getId()
                   .equals(live.getSubId()) && !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
@@ -428,7 +440,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               }
             }
           }
-
           return filteredFriendships;
         })
         .delay(500, TimeUnit.MILLISECONDS)
@@ -626,7 +637,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (roomConfiguration != null && !StringUtils.isEmpty(roomConfiguration.getRoomId())) {
         returnIntent.putExtra(ROOM_ID, roomConfiguration.getRoomId());
       }
-      returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
+      returnIntent.putExtra(NotificationContainerView.DISPLAY_RATING_NOTIFICATON, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
       willDisplayPopup = true;
     }
@@ -637,6 +648,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
 
     returnIntent.putExtra(DISPLAY_ENJOYING_NOTIFICATON, true);
+
+    List<TribeGuest> peopleInLive = viewLive.getUsersInLiveRoom();
+    for (TribeGuest guest : peopleInLive) {
+      if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {
+        activeUersIdsInvitedInLiveRoom.add(guest.getId());
+      }
+    }
+
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty()) && peopleInLive.size() > 1) {
+      returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GROUPE_NOTIFICATION, true);
+      Bundle extra = new Bundle();
+      extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
+          (Serializable) peopleInLive);
+      returnIntent.putExtras(extra);
+      liveIsInvite = false;
+      usersIdsInvitedInLiveRoom.clear();
+      activeUersIdsInvitedInLiveRoom.clear();
+    }
+
     setResult(Activity.RESULT_OK, returnIntent);
   }
 

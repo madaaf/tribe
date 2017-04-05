@@ -420,8 +420,8 @@
 	<!-- Enjoying Tribe Popup -->
 	<string name="enjoying_tribe_popup_action1">Pas maintenant  :broken_heart:</string>
 	<string name="enjoying_tribe_popup_action2">J\'adore!  :heart:</string>
-	<string name="enjoying_tribe_popup_title">yo soefzer</string>
-	<string name="enjoying_tribe_popup_subtitle">yo soefzer</string>
+	<string name="enjoying_tribe_popup_title">Tu as aimé tribe?</string>
+	<string name="enjoying_tribe_popup_subtitle">Clique sur une des deux \n options pour nous tenir au courant!</string>
 	
 	<!-- Popup Feedback -->
 	<string name="popup_feedback_title">Compris !</string>
@@ -446,11 +446,14 @@
 	<string name="live_placeholder_low_connection">Basse connexion</string>
 	
 	<!-- Popup Create Group -->
-	<string name="popup_create_grp_title"></string>
-	<string name="popup_create_grp_subtitle"></string>
-	<string name="popup_create_grp_action1"></string>
-	<string name="popup_create_grp_action2"></string>
+	<string name="popup_create_grp_title">C\'était marrant, non? Creer un group avec eux!</string>
+	<string name="popup_create_grp_subtitle">Katie Evans, Nora Dunn, Effie Color, Edward Lynch, Brent Andrews, Helena Morton</string>
+	<string name="popup_create_grp_action1">Adjuster les membres</string>
+	<string name="popup_create_grp_action2">Créer maintenant</string>
 	
-	<!-- Popup Behavior -->
-	<string name="popup_behavior_swipe_dismiss"></string>
+	
+<!-- Popup Behavior -->
+	<string name="popup_behavior_swipe_dismiss">Glisser vers le bas pour fermer</string>
+
+	
 </resources>

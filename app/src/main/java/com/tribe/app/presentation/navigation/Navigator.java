@@ -1,17 +1,16 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
@@ -30,7 +29,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
-import java.io.File;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -184,6 +183,16 @@ public class Navigator {
   public void navigateToCreateGroup(Activity activity) {
     if (activity != null) {
       Intent intent = GroupActivity.getCallingIntent(activity, null);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToPrefilledCreationGroup(Activity activity,
+      List<GroupMember> prefilledGrpMembers, boolean createGrpDirectly) {
+    if (activity != null) {
+      Intent intent = GroupActivity.getCallingIntentWithMembers(activity, prefilledGrpMembers,
+          createGrpDirectly);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
