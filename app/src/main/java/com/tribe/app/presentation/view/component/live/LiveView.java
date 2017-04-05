@@ -139,6 +139,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
+  private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -324,7 +325,6 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
-      displayDragingGuestPopupTutorial();
       if (!hiddenControls) onOpenInvite.onNext(null);
     }));
 
@@ -440,6 +440,8 @@ public class LiveView extends FrameLayout {
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
             }));
       }
+
+      onRoomStateChanged.onNext(state);
     }));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
@@ -1043,17 +1045,6 @@ public class LiveView extends FrameLayout {
     return tribeGuestName;
   }
 
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      tempSubscriptions.add(DialogFactory.dialog(getContext(),
-          getContext().getString(R.string.tips_draggingguest_title),
-          getContext().getString(R.string.tips_draggingguest_message),
-          getContext().getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
-  }
-
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -1064,6 +1055,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShouldJoinRoom() {
     return onShouldJoinRoom;
+  }
+
+  public Observable<String> onRoomStateChanged() {
+    return onRoomStateChanged;
   }
 
   public Observable<Void> onNotify() {

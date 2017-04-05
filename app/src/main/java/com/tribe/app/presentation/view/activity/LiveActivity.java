@@ -68,6 +68,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
@@ -94,6 +95,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
+  private final int MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST = 3;
   private final int CORNER_SCREENSHOT = 5;
   private final int SCREENSHOT_DURATION = 300;
   private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
@@ -426,13 +428,28 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         })
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
+        .subscribe(filteredFriendships -> {
+          viewInviteLive.renderFriendshipList(filteredFriendships);
+        }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       joinRoom();
       displayStartFirstPopupTutorial();
+    }));
+
+    subscriptions.add(viewLive.onRoomStateChanged().subscribe(state -> {
+      if (state == Room.STATE_CONNECTED) {
+        if (!live.isGroup() && !live.isInvite() && viewLive.nbInRoom() < 3) {
+          viewLiveContainer.openInviteView();
+          if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+            subscriptions.add(
+                Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
+          }
+        }
+      }
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
@@ -569,10 +586,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                       .withEndAction(() -> viewFlash.animate().setListener(null).start()));
 
               viewBGScreenshot.setVisibility(View.VISIBLE);
-              subscriptions.add(
-                  Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
+              subscriptions.add(Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
             }
           }));
     }
@@ -629,6 +645,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
+  }
+
+  private void displayDragingGuestPopupTutorial() {
+    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+      subscriptions.add(DialogFactory.dialog(this, getString(R.string.tips_draggingguest_title),
+          getString(R.string.tips_draggingguest_message),
+          getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
+      }));
+      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+    }
   }
 
   private void ready() {

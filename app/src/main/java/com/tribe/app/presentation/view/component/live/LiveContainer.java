@@ -28,6 +28,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -47,6 +48,7 @@ public class LiveContainer extends FrameLayout {
   @IntDef({ EVENT_CLOSED, EVENT_OPENED }) public @interface Event {
   }
 
+  public static final int MAX_DURATION_INVITE_VIEW_OPEN = 5;
   public static final int EVENT_CLOSED = 0;
   public static final int EVENT_OPENED = 1;
 
@@ -64,6 +66,8 @@ public class LiveContainer extends FrameLayout {
   private static final int INVALID_POINTER = -1;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -98,6 +102,8 @@ public class LiveContainer extends FrameLayout {
   private int initialTileHeight = 0;
   private boolean hiddenControls = false;
 
+  boolean enabledTimer = false;
+
   // DIMENS
   private int thresholdEnd;
 
@@ -111,6 +117,7 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Float> onAlpha = PublishSubject.create();
   private PublishSubject<Boolean> onDropEnabled = PublishSubject.create();
   private PublishSubject<TileView> onDropped = PublishSubject.create();
+  private Subscription timerSubscription;
 
   public LiveContainer(Context context) {
     super(context);
@@ -134,6 +141,11 @@ public class LiveContainer extends FrameLayout {
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
       subscriptions.clear();
+    }
+
+    if (timerSubscription != null) {
+      timerSubscription.unsubscribe();
+      timerSubscription = null;
     }
 
     super.onDetachedFromWindow();
@@ -392,6 +404,9 @@ public class LiveContainer extends FrameLayout {
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         } else {
           onDropped.onNext(draggedTileView);
+          stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
+          enabledTimer = true;
+          resetTimer();
           viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         }
@@ -408,6 +423,20 @@ public class LiveContainer extends FrameLayout {
     if (timerLongPress != null) timerLongPress.unsubscribe();
 
     dropEnabled = false;
+  }
+
+  private void setTimer() {
+    timerSubscription = Observable.timer(MAX_DURATION_INVITE_VIEW_OPEN, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          closeInviteView();
+        });
+  }
+
+  private void resetTimer() {
+    if (!enabledTimer) return;
+    if (timerSubscription != null) timerSubscription.unsubscribe();
+    setTimer();
   }
 
   private void clearCurrentTile() {
@@ -437,6 +466,7 @@ public class LiveContainer extends FrameLayout {
   private void startTileDrag() {
     draggedTileView.startDrag();
     onStartDrag.onNext(draggedTileView);
+    resetTimer();
   }
 
   private void endTileDrag() {
@@ -546,7 +576,7 @@ public class LiveContainer extends FrameLayout {
     return true;
   }
 
-  private void openInviteView() {
+  public void openInviteView() {
     isOpened = true;
     if (velocityTracker != null) {
       springRight.setVelocity(velocityTracker.getXVelocity())
@@ -554,6 +584,7 @@ public class LiveContainer extends FrameLayout {
     } else {
       springRight.setEndValue(-viewInviteLive.getWidth());
     }
+    resetTimer();
   }
 
   private void closeInviteView() {
