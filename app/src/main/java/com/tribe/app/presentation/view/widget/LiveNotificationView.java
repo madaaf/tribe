@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;

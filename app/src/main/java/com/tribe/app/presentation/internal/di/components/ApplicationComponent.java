@@ -39,9 +39,12 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
+import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
@@ -276,6 +279,12 @@ public interface ApplicationComponent {
   @RoutingMode Preference<String> routingMode();
 
   @FullscreenNotifications Preference<Boolean> fullscreenNotifications();
+
+  @IsGroupCreated Preference<Boolean> isGroupCreated();
+
+  @NumberOfCalls Preference<Integer> numberOfCalls();
+
+  @MinutesOfCalls Preference<Float> minutesOfCalls();
 
   SoundManager soundManager();
 

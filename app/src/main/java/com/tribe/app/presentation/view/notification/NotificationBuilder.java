@@ -60,9 +60,8 @@ import javax.inject.Singleton;
           if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
               && fullScreenNotifications.get()) {
             sendFullScreenNotification(remoteMessage);
-          } else {
-            notificationManager.notify(getNotificationId(notificationPayload), notification);
-          }
+          }// TODO add "else" statement when the missed call notif are ready in backend
+          notificationManager.notify(getNotificationId(notificationPayload), notification);
         }
 
         if (notificationPayload.getClickAction()
@@ -71,6 +70,7 @@ import javax.inject.Singleton;
               application.getString(R.string.userfragment_infos),
               application.getString(R.string.friendshipfragment_info)))
               .subscribe(userRealm -> userCache.put(userRealm));
+          notificationManager.notify(getNotificationId(notificationPayload), notification);
         }
       }
     }
@@ -140,8 +140,8 @@ import javax.inject.Singleton;
   private NotificationCompat.Builder addCommonActions(NotificationCompat.Builder builder,
       NotificationPayload payload) {
     return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
-            application.getString(R.string.live_notification_action_hang_live),
-            getPendingIntentForLive(payload)).build());
+        application.getString(R.string.live_notification_action_hang_live),
+        getPendingIntentForLive(payload)).build());
   }
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {

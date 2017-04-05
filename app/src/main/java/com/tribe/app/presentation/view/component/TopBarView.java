@@ -28,7 +28,9 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -45,6 +47,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TopBarView extends FrameLayout {
 
+  private static final int MIN_NUMBER_CALL = 3;
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
   private static final int DURATION = 300;
@@ -56,6 +59,10 @@ public class TopBarView extends FrameLayout {
   @Inject User user;
 
   @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
+
+  @Inject @IsGroupCreated Preference<Boolean> isGroupCreated;
+
+  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -169,6 +176,10 @@ public class TopBarView extends FrameLayout {
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
+
+    if (numberOfCalls.get() < MIN_NUMBER_CALL && !isGroupCreated.get()) {
+      btnNew.setBackgroundResource(R.drawable.selectable_button_all_rounded_purple);
+    }
   }
 
   private void initResources() {

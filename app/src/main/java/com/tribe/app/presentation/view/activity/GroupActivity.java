@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -37,6 +38,7 @@ import com.tribe.app.presentation.mvp.view.GroupMVPView;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
@@ -79,6 +81,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   @Inject ScreenUtils screenUtils;
 
   @Inject GroupPresenter groupPresenter;
+
+  @Inject @IsGroupCreated Preference<Boolean> isGroupCreated;
 
   @BindView(R.id.viewNavigatorStack) ViewStack viewStack;
 
@@ -167,6 +171,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     }
 
     txtAction.setOnClickListener(v -> {
+      isGroupCreated.set(true);
       if (membershipId == null) {
         List<String> membersId = new ArrayList<>();
 

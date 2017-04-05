@@ -90,6 +90,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
+  public static final String DISPLAY_ENJOYING_NOTIFICATON = "DISPLAY_ENJOYING_NOTIFICATON";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
@@ -427,8 +428,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         })
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
+        .subscribe(filteredFriendships -> {
+          viewInviteLive.renderFriendshipList(filteredFriendships);
+          if (!live.isGroup()) {
+            viewLiveContainer.openInviteView();
+          }
+        }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
@@ -609,8 +614,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
       returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
-      setResult(Activity.RESULT_OK, returnIntent);
     }
+    returnIntent.putExtra(DISPLAY_ENJOYING_NOTIFICATON, true);
+    setResult(Activity.RESULT_OK, returnIntent);
   }
 
   private void displayNotification(String txt) {
@@ -664,9 +670,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(roomConfiguration);
-    if (!live.isGroup()) {
-      viewLiveContainer.openInviteView();
-    }
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
     }
@@ -703,8 +706,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
-          .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
+      if (live.getSubId().equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
         return;
       }

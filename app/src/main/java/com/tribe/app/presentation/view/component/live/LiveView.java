@@ -21,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Friendship;
@@ -33,6 +34,8 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -94,6 +97,10 @@ public class LiveView extends FrameLayout {
 
   @Inject StateManager stateManager;
 
+  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
+
+  @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
+
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
@@ -126,6 +133,7 @@ public class LiveView extends FrameLayout {
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
   private View view;
   private int sizeAnimAvatarMax;
+
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
 
@@ -176,6 +184,10 @@ public class LiveView extends FrameLayout {
 
       if (hasJoined && averageCountLive > 1) {
         state = TagManagerUtils.ENDED;
+        numberOfCalls.set(numberOfCalls.get() + 1);
+        minutesOfCalls.set(minutesOfCalls.get());
+        Float totalDuration = minutesOfCalls.get() + (float) duration;
+        minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
       } else if (hasJoined && averageCountLive <= 1) {
@@ -454,6 +466,7 @@ public class LiveView extends FrameLayout {
               + " & view : "
               + remotePeer.getPeerView());
           addView(remotePeer);
+          btnScreenshot.setVisibility(VISIBLE);
           AnimationUtils.fadeIn(btnScreenshot, 300);
           onNotificationRemoteWaiting.onNext(
               getDisplayNameNotification(remotePeer.getSession().getUserId()));
@@ -553,6 +566,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
       btnLeave.setAlpha(alpha);
+
       if (avatarView != null) {
         float scaling = (1.0f - ((1.0f - AVATAR_SCALING) * alpha));
         UIUtils.changeSizeOfView(avatarView, (int) (sizeAnimAvatarMax * scaling));
