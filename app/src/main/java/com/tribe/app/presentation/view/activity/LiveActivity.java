@@ -82,7 +82,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
@@ -431,12 +430,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(filteredFriendships -> {
           viewInviteLive.renderFriendshipList(filteredFriendships);
-          if (!live.isGroup()) {
+          if (!live.isGroup() && !live.isInvite() && viewLive.nbInRoom() < 3) {
             viewLiveContainer.openInviteView();
             if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
               subscriptions.add(Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST,
                   TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-                Timber.e(" SOEF DISPLAY POPUP");
                 displayDragingGuestPopupTutorial();
               }));
             }
@@ -645,7 +643,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 
-  private void displayDragingGuestPopupTutorial() { // SOEF
+  private void displayDragingGuestPopupTutorial() {
     if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
       subscriptions.add(DialogFactory.dialog(this, getString(R.string.tips_draggingguest_title),
           getString(R.string.tips_draggingguest_message),
