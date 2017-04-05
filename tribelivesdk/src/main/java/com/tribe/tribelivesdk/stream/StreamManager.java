@@ -10,14 +10,19 @@ import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import rx.Observable;
+import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class StreamManager {
+
+  private static final int DURATION = 5; // S
 
   private Context context;
   private TribeLiveLocalStream liveLocalStream;
@@ -26,6 +31,7 @@ public class StreamManager {
 
   // OBSERVABLES
   private CompositeSubscription localSubscriptions = new CompositeSubscription();
+  private Subscription subscriptionRenderingWell;
   private PublishSubject<TribePeerMediaConfiguration> onMediaChanged = PublishSubject.create();
 
   public StreamManager(Context context) {
@@ -47,6 +53,23 @@ public class StreamManager {
     localSubscriptions.add(this.localPeerView.onEnableMicro()
         .doOnNext(mediaConfiguration -> setLocalAudioEnabled(mediaConfiguration.isAudioEnabled()))
         .subscribe(mediaConfiguration -> onMediaChanged.onNext(mediaConfiguration)));
+
+    subscriptionRenderingWell =
+        Observable.interval(0, DURATION, TimeUnit.SECONDS).subscribe(aLong -> {
+          Collection<RemotePeer> remotePeerCollection = remotePeerMap.getMap().values();
+          for (RemotePeer remotePeer : remotePeerCollection) {
+            boolean isRenderingWell = remotePeer.isRenderingWell();
+            TribePeerMediaConfiguration mediaConfiguration = remotePeer.getMediaConfiguration();
+
+            if (!isRenderingWell) {
+              mediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.FPS_DROP);
+              remotePeer.setMediaConfiguration(mediaConfiguration);
+            } else if (mediaConfiguration.isLowConnection()) {
+              mediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.NONE);
+              remotePeer.setMediaConfiguration(mediaConfiguration);
+            }
+          }
+        });
   }
 
   public MediaStream generateLocalStream(Context context,
@@ -205,6 +228,8 @@ public class StreamManager {
         localPeerView.dispose();
         localPeerView = null;
       }
+
+      if (subscriptionRenderingWell != null) subscriptionRenderingWell.unsubscribe();
     }
 
     Timber.d("End disposing stream manager");

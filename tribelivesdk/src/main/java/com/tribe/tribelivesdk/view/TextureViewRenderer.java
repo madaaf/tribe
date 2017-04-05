@@ -22,6 +22,7 @@ import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
 import org.webrtc.ThreadUtils;
 import org.webrtc.VideoRenderer;
+import timber.log.Timber;
 
 /**
  * Implements org.webrtc.VideoRenderer.Callbacks by displaying the video stream on a SurfaceView.
@@ -51,6 +52,10 @@ public class TextureViewRenderer extends TextureView
   private boolean enableFixedSize;
   private int surfaceWidth;
   private int surfaceHeight;
+
+  // Detecting FPS DROP
+  private int framesRendered;
+  private long lastRenderingCheck = 0L;
 
   /**
    * Standard View constructor. In order to render something, you must first call init().
@@ -194,6 +199,8 @@ public class TextureViewRenderer extends TextureView
   @Override public void renderFrame(VideoRenderer.I420Frame frame) {
     updateFrameDimensionsAndReportEvents(frame);
     eglRenderer.renderFrame(frame);
+
+    framesRendered++;
   }
 
   // View layout interface.
@@ -329,5 +336,22 @@ public class TextureViewRenderer extends TextureView
   }
 
   @Override public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+  }
+
+  public boolean isRenderingWell() {
+    boolean isRenderingWell = true;
+
+    if (lastRenderingCheck != 0L) {
+      long timeIntervalSinceLastCheck = System.currentTimeMillis() - lastRenderingCheck;
+      int framesRenderedSinceLastCheck = framesRendered;
+      float fps = (framesRenderedSinceLastCheck / (timeIntervalSinceLastCheck / 1000));
+      Timber.d("Frames : " + framesRenderedSinceLastCheck + " / Fps : " + fps);
+      isRenderingWell = fps > 5;
+    }
+
+    framesRendered = 0;
+    lastRenderingCheck = System.currentTimeMillis();
+
+    return isRenderingWell;
   }
 }

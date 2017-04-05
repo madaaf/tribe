@@ -22,7 +22,7 @@ import timber.log.Timber;
 public abstract class PeerView extends ViewGroup {
 
   // OBSERVABLES
-  private PublishSubject<String> onNotificatinRemoteJoined = PublishSubject.create();
+  private PublishSubject<String> onNotificationRemoteJoined = PublishSubject.create();
 
   /**
    * The scaling type to be utilized by default.
@@ -116,7 +116,7 @@ public abstract class PeerView extends ViewGroup {
    */
   protected final RendererEvents rendererEvents = new RendererEvents() {
     @Override public void onFirstFrameRendered() {
-      onNotificatinRemoteJoined.onNext(null);
+      onNotificationRemoteJoined.onNext(null);
     }
 
     @Override public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
@@ -450,11 +450,17 @@ public abstract class PeerView extends ViewGroup {
     removeRendererFromVideoTrack();
   }
 
+  public boolean isRenderingWell() {
+    if (textureViewRenderer == null) return true;
+    
+    return textureViewRenderer.isRenderingWell();
+  }
+
   public VideoRenderer getVideoRenderer() {
     return videoRenderer;
   }
 
   public Observable<String> onNotificatinRemoteJoined() {
-    return onNotificatinRemoteJoined;
+    return onNotificationRemoteJoined;
   }
 }

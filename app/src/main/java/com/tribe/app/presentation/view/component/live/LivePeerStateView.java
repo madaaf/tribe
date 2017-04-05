@@ -34,6 +34,7 @@ import javax.inject.Inject;
 public class LivePeerStateView extends FrameLayout {
 
   private static final int DURATION = 300;
+  private static final int DURATION_LONG = 1000;
 
   @Inject ScreenUtils screenUtils;
 
@@ -54,6 +55,8 @@ public class LivePeerStateView extends FrameLayout {
   @BindView(R.id.layoutNoVideo) ViewGroup layoutNoVideo;
 
   @BindView(R.id.layoutVideo) ViewGroup layoutVideo;
+
+  @BindView(R.id.viewLowConnection) View viewLowConnection;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -173,7 +176,8 @@ public class LivePeerStateView extends FrameLayout {
   private int getStateResource() {
     if (mediaConfiguration == null
         || mediaConfiguration.getType() == null
-        || mediaConfiguration.getType().equals(TribePeerMediaConfiguration.NONE)) {
+        || mediaConfiguration.getType().equals(TribePeerMediaConfiguration.NONE)
+        || mediaConfiguration.getType().equals(TribePeerMediaConfiguration.FPS_DROP)) {
       return -1;
     }
 
@@ -211,6 +215,12 @@ public class LivePeerStateView extends FrameLayout {
     if (mediaConfiguration.isVideoEnabled()) {
       layoutVideo.setVisibility(View.VISIBLE);
       layoutNoVideo.setVisibility(View.GONE);
+
+      if (mediaConfiguration.isLowConnection()) {
+        AnimationUtils.fadeIn(viewLowConnection, DURATION_LONG);
+      } else {
+        AnimationUtils.fadeOut(viewLowConnection, DURATION_LONG);
+      }
     } else {
       layoutVideo.setVisibility(View.GONE);
       layoutNoVideo.setVisibility(View.VISIBLE);

@@ -412,10 +412,10 @@
 	<string name="camera_microphone_popup_swipe_to_dismiss">Glissez vers le haut pour fermer</string>
 	
 	<!-- Create Group Popup -->
-	<string name="create_group_popup_title">C\'était fun, hein ? Créez\nungroupe avec eux !</string>
-	<string name="create_group_popup_adjust_members">Ajuster les membres</string>
+	<string name="create_group_popup_title">C\'était fun ! Créer un groupe avec ces amis ?</string>
+	<string name="create_group_popup_adjust_members">Modifier les membres</string>
 	<string name="create_group_popup_create">Créer le groupe</string>
-	<string name="create_group_popup_swipe_to_dismiss">Glissez vers le haut pour fermer</string>
+	<string name="create_group_popup_swipe_to_dismiss">Glisser vers le haut pour fermer</string>
 	
 	<!-- Enjoying Tribe Popup -->
 	<string name="enjoying_tribe_popup_action1">Pas maintenant  :broken_heart:</string>
@@ -443,4 +443,14 @@
 	<string name="live_placeholder_fps_drops">Connexion de la vidéo...</string>
 	<string name="live_placeholder_low_bandwidth">Mauvaise connexion</string>
 	<string name="live_placeholder_camera_paused">Caméra en pause</string>
+	<string name="live_placeholder_low_connection">Basse connexion</string>
+	
+	<!-- Popup Create Group -->
+	<string name="popup_create_grp_title"></string>
+	<string name="popup_create_grp_subtitle"></string>
+	<string name="popup_create_grp_action1"></string>
+	<string name="popup_create_grp_action2"></string>
+	
+	<!-- Popup Behavior -->
+	<string name="popup_behavior_swipe_dismiss"></string>
 </resources>

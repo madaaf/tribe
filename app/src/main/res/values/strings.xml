@@ -412,9 +412,9 @@
 	<string name="camera_microphone_popup_swipe_to_dismiss">Swipe up to dismiss</string>
 	
 	<!-- Create Group Popup -->
-	<string name="create_group_popup_title">It was fun, right? Create\na group with them!</string>
-	<string name="create_group_popup_adjust_members">Adjust members</string>
-	<string name="create_group_popup_create">Create now</string>
+	<string name="create_group_popup_title">Enjoy that call? Create a group with those friends!</string>
+	<string name="create_group_popup_adjust_members">Adjust Members</string>
+	<string name="create_group_popup_create">Create Now</string>
 	<string name="create_group_popup_swipe_to_dismiss">Swipe up to dismiss</string>
 	
 	<!-- Enjoying Tribe Popup -->
@@ -443,4 +443,14 @@
 	<string name="live_placeholder_fps_drops">Connecting video...</string>
 	<string name="live_placeholder_low_bandwidth">Poor connection</string>
 	<string name="live_placeholder_camera_paused">Camera paused</string>
+	<string name="live_placeholder_low_connection">Low connection</string>
+	
+	<!-- Popup Create Group -->
+	<string name="popup_create_grp_title">It was fun, right? Create \n a group with them!</string>
+	<string name="popup_create_grp_subtitle">Katie Evans, Nora Dunn, Effie Color, Edward Lynch, Brent Andrews, Helena Morton</string>
+	<string name="popup_create_grp_action1">Adjust members</string>
+	<string name="popup_create_grp_action2">Create now</string>
+	
+	<!-- Popup Behavior -->
+	<string name="popup_behavior_swipe_dismiss">Swipe to dismiss</string>
 </resources>

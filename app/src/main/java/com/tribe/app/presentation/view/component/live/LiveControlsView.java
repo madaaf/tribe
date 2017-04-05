@@ -139,6 +139,8 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void setTimer() {
+    if (timerSubscription != null) timerSubscription.unsubscribe();
+
     timerSubscription = Observable.timer(MAX_DURATION_LAYOUT_CONTROLS, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aVoid -> {
@@ -155,7 +157,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void expandParam() {
     if (!isParamExpanded) {
-      setTimer();
+      resetTimer();
       isParamExpanded = true;
 
       int widthExtended = layoutContainerParamExtendedLive.getWidth();
@@ -170,7 +172,8 @@ public class LiveControlsView extends FrameLayout {
       if (cameraEnabled) {
         setXTranslateAnimation(btnExpand, widthExtended);
       } else {
-        setXTranslateAnimation(btnExpand, 3 * xTranslation);
+        setXTranslateAnimation(btnExpand,
+            layoutContainerParamExtendedLive.getWidth() - xTranslation);
       }
     } else {
       isParamExpanded = false;

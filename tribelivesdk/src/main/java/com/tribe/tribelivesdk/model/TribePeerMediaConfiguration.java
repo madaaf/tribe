@@ -1,6 +1,5 @@
 package com.tribe.tribelivesdk.model;
 
-import android.content.Context;
 import android.support.annotation.StringDef;
 
 /**
@@ -51,6 +50,10 @@ public class TribePeerMediaConfiguration {
 
   public boolean isVideoEnabled() {
     return videoEnabled;
+  }
+
+  public boolean isLowConnection() {
+    return mediaConfigurationType != null && mediaConfigurationType.equals(FPS_DROP);
   }
 
   public @MediaConfigurationType String getType() {

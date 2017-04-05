@@ -10,6 +10,13 @@
       android:visibility="gone"
       >
 
+    <com.tribe.app.presentation.view.component.live.LiveLowConnectionView
+        android:id="@+id/viewLowConnection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        />
+
     <View
         android:id="@+id/bgDisabledFull"
         android:layout_width="match_parent"

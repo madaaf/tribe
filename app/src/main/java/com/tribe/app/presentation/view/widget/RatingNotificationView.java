@@ -40,7 +40,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 14/03/2017.
@@ -181,7 +180,6 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
   private void fillStarsColors(int index) {
     if (lastIndexStar == index) return;
-    Timber.d("Index : " + index);
 
     if (index == 0) {
       txtAction.setText(getResources().getString(R.string.live_rating_dismiss));
@@ -356,11 +354,6 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
               && Math.abs(dx) < maxClickDistanceX
               && Math.abs(dy) < maxClickDistanceY
               && indexStar != -1) {
-            Timber.d("clickDuration : " + clickDuration);
-            Timber.d("Math.abs(dx) : " + Math.abs(dx));
-            Timber.d("Math.abs(dy) : " + Math.abs(dy));
-            Timber.d("lastIndexStarUp : " + lastIndexStarUp + " / indexStar : " + indexStar);
-
             if (lastIndexStarUp == indexStar) {
               fillStarsColors(0);
               lastIndexStarUp = 0;

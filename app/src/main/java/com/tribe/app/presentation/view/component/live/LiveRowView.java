@@ -132,7 +132,8 @@ public class LiveRowView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribePeerMediaConfiguration -> {
           if (!tribePeerMediaConfiguration.isVideoEnabled()
-              || !tribePeerMediaConfiguration.isAudioEnabled()) {
+              || !tribePeerMediaConfiguration.isAudioEnabled()
+              || tribePeerMediaConfiguration.isLowConnection()) {
             UIUtils.showReveal(viewPeerState, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationStart(Animator animation) {
                 viewPeerState.setVisibility(View.VISIBLE);

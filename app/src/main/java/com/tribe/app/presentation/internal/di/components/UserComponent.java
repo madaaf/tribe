@@ -25,6 +25,7 @@ import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
+import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerStateView;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
@@ -32,6 +33,7 @@ import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
+import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -132,4 +134,8 @@ import dagger.Component;
   void inject(LiveStatusNameView liveStatusNameView);
 
   void inject(SettingsBlockedFriendsView settingsBlockedFriendsView);
+
+  void inject(LiveLowConnectionView liveLowConnectionView);
+
+  void inject(LiveWaveView liveWaveView);
 }
