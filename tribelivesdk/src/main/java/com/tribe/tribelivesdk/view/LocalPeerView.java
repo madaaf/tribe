@@ -13,9 +13,10 @@ import rx.subscriptions.CompositeSubscription;
 public class LocalPeerView extends PeerView {
 
   private Observable<Void> onSwitchCamera;
-  private Observable<Boolean> onEnableCamera;
-  private Observable<Boolean> onEnableMicro;
+  private Observable<TribePeerMediaConfiguration> onEnableCamera;
+  private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private boolean frontFacing = true;
+  private TribePeerMediaConfiguration mediaConfiguration;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -23,6 +24,12 @@ public class LocalPeerView extends PeerView {
 
   public LocalPeerView(Context context) {
     super(context);
+    initVideoRenderer();
+  }
+
+  public LocalPeerView(Context context, TribePeerMediaConfiguration mediaConfiguration) {
+    super(context);
+    this.mediaConfiguration = mediaConfiguration;
     initVideoRenderer();
   }
 
@@ -46,11 +53,11 @@ public class LocalPeerView extends PeerView {
   //  PUBLIC  //
   //////////////
 
-  public void initEnableCameraSubscription(Observable<Boolean> obs) {
+  public void initEnableCameraSubscription(Observable<TribePeerMediaConfiguration> obs) {
     onEnableCamera = obs;
   }
 
-  public void initEnableMicroSubscription(Observable<Boolean> obs) {
+  public void initEnableMicroSubscription(Observable<TribePeerMediaConfiguration> obs) {
     onEnableMicro = obs;
   }
 
@@ -62,27 +69,23 @@ public class LocalPeerView extends PeerView {
         .subscribe(aVoid -> setMirror(frontFacing)));
   }
 
-  public void shouldSwitchMode(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
-    shouldSwitchMode.onNext(tribePeerMediaConfiguration);
+  public TribePeerMediaConfiguration getMediaConfiguration() {
+    return mediaConfiguration;
   }
 
   /////////////////
   // OBSERVABLES //
   /////////////////
 
-  public Observable<Boolean> onEnableCamera() {
+  public Observable<TribePeerMediaConfiguration> onEnableCamera() {
     return onEnableCamera;
   }
 
-  public Observable<Boolean> onEnableMicro() {
+  public Observable<TribePeerMediaConfiguration> onEnableMicro() {
     return onEnableMicro;
   }
 
   public Observable<Void> onSwitchCamera() {
     return onSwitchCamera;
-  }
-
-  public Observable<TribePeerMediaConfiguration> onShouldSwitchMode() {
-    return shouldSwitchMode;
   }
 }

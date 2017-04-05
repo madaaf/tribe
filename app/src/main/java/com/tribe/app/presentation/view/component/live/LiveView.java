@@ -48,6 +48,7 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -335,7 +336,7 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aBoolean -> {
       isMicroActivated = aBoolean;
       viewControlsLive.setMicroEnabled(isMicroActivated);
-      viewLocalLive.enableMicro(isMicroActivated);
+      viewLocalLive.enableMicro(isMicroActivated, TribePeerMediaConfiguration.USER_UPDATE);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
@@ -344,13 +345,11 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraEnable().subscribe(aVoid -> {
       isCameraActivated = false;
-      viewLocalLive.enableMicro(isMicroActivated);
-      viewLocalLive.disableCamera(true);
+      viewLocalLive.disableCamera(true, TribePeerMediaConfiguration.USER_UPDATE);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraDisable().subscribe(aVoid -> {
       isCameraActivated = true;
-      viewLocalLive.enableMicro(isMicroActivated);
       viewLocalLive.enableCamera(true);
     }));
 
@@ -699,11 +698,12 @@ public class LiveView extends FrameLayout {
     viewControlsLive.screenshotDone();
   }
 
-  public void setCameraEnabled(boolean enable) {
+  public void setCameraEnabled(boolean enable,
+      @TribePeerMediaConfiguration.MediaConfigurationType String type) {
     if (enable) {
       viewLocalLive.enableCamera(false);
     } else {
-      viewLocalLive.disableCamera(false);
+      viewLocalLive.disableCamera(false, type);
     }
   }
 

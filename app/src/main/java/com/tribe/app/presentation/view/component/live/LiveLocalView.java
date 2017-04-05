@@ -12,9 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -24,16 +22,14 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -48,31 +44,24 @@ public class LiveLocalView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.viewAudio) LiveAudioView viewAudio;
-
-  @BindView(R.id.bgMicroDisabled) View bgMicroDisabled;
-
-  @BindView(R.id.imgMicroDisabled) ImageView imgMicroDisabled;
-
-  @BindView(R.id.txtLowConnectivity) TextViewFont txtLowConnectivity;
+  @BindView(R.id.viewPeerState) LivePeerStateView viewPeerState;
 
   private LocalPeerView viewPeerLocal;
 
   // VARIABLES
   private Unbinder unbinder;
   private boolean hiddenControls = false;
-  private boolean cameraEnabled = true;
-  private boolean microEnabled = true;
   private GestureDetectorCompat gestureDetector;
+  private TribePeerMediaConfiguration localMediaConfiguration;
 
   // RESOURCES
   private int translationY;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Boolean> onEnableCamera = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onEnableCamera = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
-  private PublishSubject<Boolean> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {
@@ -99,53 +88,28 @@ public class LiveLocalView extends FrameLayout {
 
     gestureDetector = new GestureDetectorCompat(getContext(), new TapGestureListener());
 
-    viewPeerLocal = new LocalPeerView(getContext());
+    localMediaConfiguration = new TribePeerMediaConfiguration(
+        new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
+
+    viewPeerLocal = new LocalPeerView(getContext(), localMediaConfiguration);
     viewPeerLocal.setBackgroundColor(Color.BLACK);
-    addView(viewPeerLocal, 1, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+    addView(viewPeerLocal, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
-    viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
+    viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
 
-    viewAudio.setGuest(
+    viewPeerState.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
             null, false));
-
-    txtLowConnectivity.setTranslationY(-translationY);
-    txtLowConnectivity.setText(
-        EmojiParser.demojizedText(getContext().getString(R.string.live_low_connectivity)));
 
     initSubscriptions();
   }
 
   private void initSubscriptions() {
-    subscriptions.add(viewPeerLocal.onShouldSwitchMode()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(mediaConfiguration -> {
-          if (!cameraEnabled && mediaConfiguration.isVideoEnabled()) {
-            enableCamera(true);
-
-            if (mediaConfiguration.isLowConnectivityMode()
-                && txtLowConnectivity.getTranslationX() == 0) {
-              txtLowConnectivity.animate()
-                  .translationY(-translationY)
-                  .setDuration(DURATION)
-                  .setInterpolator(new OvershootInterpolator(1f))
-                  .start();
-            }
-          } else if (cameraEnabled && !mediaConfiguration.isVideoEnabled()) {
-            disableCamera(true);
-
-            if (mediaConfiguration.isLowConnectivityMode()) {
-              txtLowConnectivity.animate()
-                  .translationY(0)
-                  .setDuration(DURATION)
-                  .setInterpolator(new OvershootInterpolator(1f))
-                  .start();
-            }
-          }
-        }));
+    subscriptions.add(Observable.merge(onEnableCamera, onEnableMicro)
+        .subscribe(mediaConfiguration -> viewPeerState.setMediaConfiguration(mediaConfiguration)));
   }
 
   private void initResources() {
@@ -172,6 +136,22 @@ public class LiveLocalView extends FrameLayout {
   public void switchCamera() {
     if (!hiddenControls) {
       onSwitchCamera.onNext(null);
+    }
+  }
+
+  private void computeDisplay(boolean animate) {
+    if (!localMediaConfiguration.isVideoEnabled() || !localMediaConfiguration.isAudioEnabled()) {
+      UIUtils.showReveal(viewPeerState, animate, new AnimatorListenerAdapter() {
+        @Override public void onAnimationStart(Animator animation) {
+          viewPeerState.setVisibility(View.VISIBLE);
+        }
+      });
+    } else {
+      UIUtils.hideReveal(viewPeerState, animate, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          viewPeerState.setVisibility(View.GONE);
+        }
+      });
     }
   }
 
@@ -218,47 +198,26 @@ public class LiveLocalView extends FrameLayout {
     this.hiddenControls = hiddenControls;
   }
 
-  public void enableMicro(boolean isMicroActivated) {
-    microEnabled = isMicroActivated;
-    onEnableMicro.onNext(microEnabled);
-
-    if (!isMicroActivated) {
-      AnimationUtils.fadeIn(bgMicroDisabled, DURATION);
-      AnimationUtils.fadeIn(imgMicroDisabled, DURATION);
-    } else {
-      AnimationUtils.fadeOut(bgMicroDisabled, DURATION);
-      AnimationUtils.fadeOut(imgMicroDisabled, DURATION);
-    }
+  public void enableMicro(boolean isMicroActivated,
+      @TribePeerMediaConfiguration.MediaConfigurationType String type) {
+    localMediaConfiguration.setAudioEnabled(isMicroActivated);
+    localMediaConfiguration.setMediaConfigurationType(type);
+    onEnableMicro.onNext(localMediaConfiguration);
+    computeDisplay(false);
   }
 
   public void enableCamera(boolean animate) {
-    cameraEnabled = true;
-    onEnableCamera.onNext(cameraEnabled);
-
-    UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        viewAudio.setVisibility(View.GONE);
-      }
-
-      @Override public void onAnimationStart(Animator animation) {
-        viewPeerLocal.setVisibility(View.VISIBLE);
-      }
-    });
+    localMediaConfiguration.setVideoEnabled(true);
+    onEnableCamera.onNext(localMediaConfiguration);
+    computeDisplay(animate);
   }
 
-  public void disableCamera(boolean animate) {
-    cameraEnabled = false;
-    onEnableCamera.onNext(cameraEnabled);
-
-    UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-        viewAudio.setVisibility(View.VISIBLE);
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        viewPeerLocal.setVisibility(View.GONE);
-      }
-    });
+  public void disableCamera(boolean animate,
+      @TribePeerMediaConfiguration.MediaConfigurationType String type) {
+    localMediaConfiguration.setVideoEnabled(false);
+    localMediaConfiguration.setMediaConfigurationType(type);
+    onEnableCamera.onNext(localMediaConfiguration);
+    computeDisplay(animate);
   }
 
   //////////////////

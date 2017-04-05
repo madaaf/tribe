@@ -36,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 01/22/17.
  */
 public class LiveControlsView extends FrameLayout {
-  private final static int MAX_DURATION_LAYOUT_CONTROLS = 5;
+  private final static int MAX_DURATION_LAYOUT_CONTROLS = 30;
   private static final int DURATION = 300;
   private static final int DURATION_PARAM = 450;
 
@@ -224,6 +224,8 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnCameraOn) void clickCameraEnable() {
+    resetTimer();
+
     cameraEnabled = false;
     btnCameraOn.setVisibility(GONE);
     btnCameraOff.setVisibility(VISIBLE);
@@ -246,6 +248,8 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnCameraOff) void clickCameraDisable() {
+    resetTimer();
+
     cameraEnabled = true;
     btnCameraOff.setVisibility(GONE);
     btnCameraOn.setVisibility(VISIBLE);
@@ -266,6 +270,7 @@ public class LiveControlsView extends FrameLayout {
 
   @OnClick(R.id.btnNotify) void clickNotify() {
     resetTimer();
+
     btnNotify.setEnabled(false);
     btnNotify.animate()
         .alpha(0.2f)

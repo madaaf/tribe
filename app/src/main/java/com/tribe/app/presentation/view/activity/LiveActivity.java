@@ -69,6 +69,7 @@ import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -681,11 +682,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onAppDidEnterForeground() {
-    if (viewLive != null) viewLive.setCameraEnabled(true);
+    if (viewLive != null) {
+      viewLive.setCameraEnabled(true, TribePeerMediaConfiguration.APP_IN_BACKGROUND);
+    }
   }
 
   @Override public void onAppDidEnterBackground() {
-    if (viewLive != null) viewLive.setCameraEnabled(false);
+    if (viewLive != null) {
+      viewLive.setCameraEnabled(false, TribePeerMediaConfiguration.APP_IN_BACKGROUND);
+    }
   }
 
   /////////////////

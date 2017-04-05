@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <com.tribe.app.presentation.view.component.live.LiveAudioView
-      android:id="@+id/viewAudio"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:visibility="gone"
-      />
-
   <com.tribe.app.presentation.view.component.live.LiveWaitingView
       android:id="@+id/viewWaiting"
       android:layout_width="match_parent"
@@ -26,32 +18,19 @@
 
   </LinearLayout>
 
+  <com.tribe.app.presentation.view.component.live.LivePeerStateView
+      android:id="@+id/viewPeerState"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:visibility="gone"
+      />
+
   <View
       android:id="@+id/viewBackground"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@android:color/black"
       android:visibility="gone"
-      />
-
-  <FrameLayout
-      android:id="@+id/bgMicroDisabled"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:alpha="0"
-      android:background="@color/black.opacity.50"
-      android:visibility="visible"
-      />
-
-  <ImageView
-      android:id="@+id/imgMicroDisabled"
-      android:layout_width="@dimen/nav_icon_size"
-      android:layout_height="@dimen/nav_icon_size"
-      android:layout_gravity="center"
-      android:alpha="0"
-      android:background="@drawable/selectable_button_oval_light"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_micro_off_shadow"
-      android:visibility="visible"
       />
 </merge>

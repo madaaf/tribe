@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.view.PeerView;
 import java.util.List;
 import org.webrtc.AudioSource;

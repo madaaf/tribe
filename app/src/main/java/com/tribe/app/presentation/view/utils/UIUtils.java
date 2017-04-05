@@ -131,9 +131,8 @@ public class UIUtils {
                 (int) (v.getY() + v.getHeight() / 2), initialRadius,
                 Math.max(v.getWidth(), v.getHeight()));
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
-        anim.addListener(listenerAdapter);
+        if (listenerAdapter != null) anim.addListener(listenerAdapter);
         anim.setDuration(DURATION_REVEAL);
-        anim.setStartDelay(500);
         anim.start();
       });
     } else {
@@ -152,7 +151,7 @@ public class UIUtils {
                 (int) (v.getY() + v.getHeight() / 2), initialRadius, 0);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(DURATION_REVEAL);
-        anim.addListener(listenerAdapter);
+        if (listenerAdapter != null) anim.addListener(listenerAdapter);
         anim.start();
       });
     } else {

@@ -33,8 +33,8 @@
 
   <com.tribe.app.presentation.view.widget.CircularProgressBar
       android:id="@+id/progressBarJoining"
-      android:layout_width="95dp"
-      android:layout_height="95dp"
+      android:layout_width="@dimen/avatar_size_big_shadow"
+      android:layout_height="@dimen/avatar_size_big_shadow"
       android:layout_gravity="center"
       android:background="@null"
       android:visibility="gone"
@@ -42,8 +42,8 @@
 
   <com.tribe.app.presentation.view.widget.CircularProgressBar
       android:id="@+id/progressBarNotify"
-      android:layout_width="95dp"
-      android:layout_height="95dp"
+      android:layout_width="@dimen/avatar_size_big_shadow"
+      android:layout_height="@dimen/avatar_size_big_shadow"
       android:layout_gravity="center"
       android:background="@null"
       android:visibility="gone"
@@ -51,8 +51,8 @@
 
   <com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView
       android:id="@+id/viewAvatar"
-      android:layout_width="95dp"
-      android:layout_height="95dp"
+      android:layout_width="@dimen/avatar_size_big_shadow"
+      android:layout_height="@dimen/avatar_size_big_shadow"
       android:layout_gravity="center"
       />
 </merge>

@@ -9,13 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -39,11 +37,7 @@ public class LiveRowView extends FrameLayout {
 
   @BindView(R.id.viewWaiting) LiveWaitingView viewWaiting;
 
-  @BindView(R.id.viewAudio) LiveAudioView viewAudio;
-
-  @BindView(R.id.bgMicroDisabled) View bgMicroDisabled;
-
-  @BindView(R.id.imgMicroDisabled) ImageView imgMicroDisabled;
+  @BindView(R.id.viewPeerState) LivePeerStateView viewPeerState;
 
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
@@ -85,7 +79,7 @@ public class LiveRowView extends FrameLayout {
 
     if (guest != null) {
       viewWaiting.setGuest(guest);
-      viewAudio.setGuest(guest);
+      viewPeerState.setGuest(guest);
     }
 
     viewWaiting.setColor(color);
@@ -111,7 +105,7 @@ public class LiveRowView extends FrameLayout {
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     viewWaiting.setGuest(guest);
-    viewAudio.setGuest(guest);
+    viewPeerState.setGuest(guest);
   }
 
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
@@ -137,35 +131,22 @@ public class LiveRowView extends FrameLayout {
     subscriptions.add(this.remotePeerView.onMediaConfiguration()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribePeerMediaConfiguration -> {
-          if (tribePeerMediaConfiguration.isVideoEnabled()) {
-            UIUtils.showReveal(remotePeerView, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                viewAudio.setVisibility(View.GONE);
-              }
-
+          if (!tribePeerMediaConfiguration.isVideoEnabled()
+              || !tribePeerMediaConfiguration.isAudioEnabled()) {
+            UIUtils.showReveal(viewPeerState, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationStart(Animator animation) {
-                remotePeerView.setVisibility(View.VISIBLE);
+                viewPeerState.setVisibility(View.VISIBLE);
               }
             });
           } else {
-            UIUtils.hideReveal(remotePeerView, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationStart(Animator animation) {
-                viewAudio.setVisibility(View.VISIBLE);
-              }
-
+            UIUtils.hideReveal(viewPeerState, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
-                remotePeerView.setVisibility(View.GONE);
+                viewPeerState.setVisibility(View.GONE);
               }
             });
           }
 
-          if (tribePeerMediaConfiguration.isAudioEnabled()) {
-            AnimationUtils.fadeOut(bgMicroDisabled, DURATION);
-            AnimationUtils.fadeOut(imgMicroDisabled, DURATION);
-          } else {
-            AnimationUtils.fadeIn(bgMicroDisabled, DURATION);
-            AnimationUtils.fadeIn(imgMicroDisabled, DURATION);
-          }
+          viewPeerState.setMediaConfiguration(tribePeerMediaConfiguration);
         }));
 
     isWaiting = false;
