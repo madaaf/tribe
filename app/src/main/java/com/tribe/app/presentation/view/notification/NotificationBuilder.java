@@ -58,8 +58,7 @@ import javax.inject.Singleton;
         Notification notification = buildNotification(notificationPayload);
         if (notification != null) {
           if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-              && fullScreenNotifications.get()
-              && notificationPayload.getLiveUsersLength() == 1) {
+              && fullScreenNotifications.get()) {
             sendFullScreenNotification(remoteMessage);
           } else {
             notificationManager.notify(getNotificationId(notificationPayload), notification);
