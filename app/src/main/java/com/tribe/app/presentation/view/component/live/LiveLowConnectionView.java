@@ -3,10 +3,9 @@ package com.tribe.app.presentation.view.component.live;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -22,7 +21,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 01/22/17.
  */
-public class LiveLowConnectionView extends LinearLayout {
+public class LiveLowConnectionView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
@@ -69,8 +68,6 @@ public class LiveLowConnectionView extends LinearLayout {
     unbinder = ButterKnife.bind(this);
 
     setBackgroundResource(R.color.black_opacity_40);
-    setOrientation(VERTICAL);
-    setGravity(Gravity.CENTER);
   }
 
   private void initResources() {

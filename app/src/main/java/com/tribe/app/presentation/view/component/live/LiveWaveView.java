@@ -21,13 +21,12 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 04/05/17.
  */
 public class LiveWaveView extends FrameLayout {
-
-  private static final int DURATION_WAVE = 5000;
 
   @Inject ScreenUtils screenUtils;
 
@@ -36,7 +35,6 @@ public class LiveWaveView extends FrameLayout {
   // RESOURCES
 
   // VARIABLES
-  private int type;
   private Unbinder unbinder;
   private Animation animationWave;
 
@@ -73,7 +71,10 @@ public class LiveWaveView extends FrameLayout {
   @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-    if (getMeasuredWidth() != 0 && getMeasuredWidth() != getWidth()) initWave();
+    if (getMeasuredWidth() != 0 && animationWave == null) {
+      Timber.d("Measure");
+      initWave();
+    }
   }
 
   private void init(Context context, AttributeSet attrs) {
@@ -91,25 +92,21 @@ public class LiveWaveView extends FrameLayout {
   }
 
   private void initWave() {
+    if (animationWave != null) animationWave.cancel();
+
     final int waveImgWidth =
         ContextCompat.getDrawable(getContext(), R.drawable.picto_wave_low_connection)
             .getIntrinsicWidth();
 
-    int animatedViewWidth = 0;
     int measuredWidth = getMeasuredWidth();
-    while (animatedViewWidth < measuredWidth) {
-      animatedViewWidth += waveImgWidth;
-    }
-    animatedViewWidth += waveImgWidth;
-
     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) viewWave.getLayoutParams();
-    layoutParams.width = animatedViewWidth;
+    layoutParams.width = measuredWidth + waveImgWidth * 2;
     viewWave.setLayoutParams(layoutParams);
 
     animationWave = new TranslateAnimation(0, -waveImgWidth, 0, 0);
     animationWave.setInterpolator(new LinearInterpolator());
     animationWave.setRepeatCount(Animation.INFINITE);
-    animationWave.setDuration(measuredWidth * 10);
+    animationWave.setDuration(measuredWidth * 3);
 
     viewWave.startAnimation(animationWave);
   }

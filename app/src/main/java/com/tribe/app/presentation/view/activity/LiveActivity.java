@@ -432,15 +432,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(filteredFriendships -> {
           viewInviteLive.renderFriendshipList(filteredFriendships);
-          if (!live.isGroup() && !live.isInvite() && viewLive.nbInRoom() < 3) {
-            viewLiveContainer.openInviteView();
-            if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-              subscriptions.add(Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST,
-                  TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-                displayDragingGuestPopupTutorial();
-              }));
-            }
-          }
         }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
