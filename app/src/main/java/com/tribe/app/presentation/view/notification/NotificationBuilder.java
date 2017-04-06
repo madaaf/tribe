@@ -111,21 +111,22 @@ import javax.inject.Singleton;
   }
 
   private PendingIntent getIntentFromPayload(NotificationPayload payload) {
-    Intent notificationIntent = new Intent(application, getClassFromPayload(payload));
-    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    Class pendingClass = getClassFromPayload(payload);
+    if (pendingClass != null) {
+      if (pendingClass.equals(LiveActivity.class)) {
+        return getPendingIntentForLive(payload);
+      }
+    }
 
-    PendingIntent pendingIntent =
-        PendingIntent.getActivity(application, (int) System.currentTimeMillis(), notificationIntent,
-            PendingIntent.FLAG_ONE_SHOT);
-
-    return pendingIntent;
+    return getPendingIntentForHome(payload);
   }
 
   private Class getClassFromPayload(NotificationPayload payload) {
     if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       return HomeActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
       return LiveActivity.class;
     }
 
