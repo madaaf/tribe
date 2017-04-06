@@ -6,6 +6,7 @@ import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
@@ -70,10 +71,11 @@ public class Room {
   private boolean hasJoined = false;
 
   // OBSERVABLES
-  private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   // They stay when switching from Room to room
-  private CompositeSubscription tempSubscriptions = new CompositeSubscription();
+  private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   // They are removed when switching room
+  private CompositeSubscription tempSubscriptions = new CompositeSubscription();
+  private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
@@ -96,7 +98,8 @@ public class Room {
 
     persistentSubscriptions.add(jsonToModel.onJoinRoom()
         .doOnNext(joinedRoom -> {
-          Timber.d("onJoinRoom");
+          onJoined.onNext(joinedRoom);
+
           if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
             for (TribeSession session : joinedRoom.getSessionList()) {
               webRTCClient.addPeerConnection(session, true);
@@ -381,6 +384,10 @@ public class Room {
   /////////////////
   // OBSERVABLES //
   /////////////////
+
+  public Observable<TribeJoinRoom> onJoined() {
+    return onJoined;
+  }
 
   public Observable<String> onRoomStateChanged() {
     return onRoomStateChanged;

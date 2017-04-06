@@ -48,6 +48,7 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
-  private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
+  private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -440,9 +441,9 @@ public class LiveView extends FrameLayout {
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
             }));
       }
-
-      onRoomStateChanged.onNext(state);
     }));
+
+    tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
 
@@ -555,7 +556,6 @@ public class LiveView extends FrameLayout {
   public void initOnAlphaSubscription(Observable<Float> obs) {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
-      btnLeave.setAlpha(alpha);
       if (avatarView != null) {
         float scaling = (1.0f - ((1.0f - AVATAR_SCALING) * alpha));
         UIUtils.changeSizeOfView(avatarView, (int) (sizeAnimAvatarMax * scaling));
@@ -1057,8 +1057,8 @@ public class LiveView extends FrameLayout {
     return onShouldJoinRoom;
   }
 
-  public Observable<String> onRoomStateChanged() {
-    return onRoomStateChanged;
+  public Observable<TribeJoinRoom> onJoined() {
+    return onJoined;
   }
 
   public Observable<Void> onNotify() {

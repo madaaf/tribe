@@ -68,7 +68,6 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.util.ArrayList;
@@ -386,11 +385,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           getString(R.string.tips_startfirstlive_message),
           getString(R.string.tips_startfirstlive_action1), null)
           .filter(x -> x == true)
-          .subscribe(a -> {
-            subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()));
-          }));
+          .subscribe(a -> subscriptions.add(
+              Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()))));
       stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
     }
   }
@@ -438,16 +436,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       displayStartFirstPopupTutorial();
     }));
 
-    subscriptions.add(viewLive.onRoomStateChanged().subscribe(state -> {
-      if (state == Room.STATE_CONNECTED) {
-        if (!live.isGroup() && !live.isInvite() && viewLive.nbInRoom() < 3) {
-          viewLiveContainer.openInviteView();
-          if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-            subscriptions.add(
-                Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
-          }
+    // We put a delay to wait for the info of the peers in the room (invited peers are received
+    // only when the connection is established)
+    subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
+      if (!live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
+        viewLiveContainer.openInviteView();
+        if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
+          subscriptions.add(
+              Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
         }
       }
     }));
