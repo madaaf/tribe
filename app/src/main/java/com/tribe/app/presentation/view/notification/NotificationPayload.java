@@ -29,6 +29,7 @@ public class NotificationPayload implements Serializable {
   private String group_picture;
   private boolean shouldDisplayDrag = true;
   private String thread;
+  private int live_users_length;
 
   public void setUserId(String userId) {
     this.user_id = userId;
@@ -124,6 +125,14 @@ public class NotificationPayload implements Serializable {
 
   public String getThread() {
     return thread;
+  }
+
+  public int getLiveUsersLength() {
+    return live_users_length;
+  }
+
+  public void setLiveUsersLength(int live_users_length) {
+    this.live_users_length = live_users_length;
   }
 
   public boolean isLive() {

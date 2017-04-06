@@ -589,6 +589,8 @@ public class LiveContainer extends FrameLayout {
     isOpened = false;
     if (velocityTracker != null) {
       springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    } else {
+      springRight.setEndValue(0);
     }
   }
 

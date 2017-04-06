@@ -13,11 +13,16 @@ public class TribeJoinRoom {
 
   public TribeJoinRoom(List<TribeSession> sessionList, int roomSize) {
     this.sessionList = sessionList;
+    this.roomSize = roomSize;
   }
 
   public TribeJoinRoom() {}
 
   public List<TribeSession> getSessionList() {
     return sessionList;
+  }
+
+  public int getRoomSize() {
+    return roomSize;
   }
 }
