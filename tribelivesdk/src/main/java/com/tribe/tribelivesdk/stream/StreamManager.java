@@ -61,7 +61,9 @@ public class StreamManager {
             boolean isRenderingWell = remotePeer.isRenderingWell();
             TribePeerMediaConfiguration mediaConfiguration = remotePeer.getMediaConfiguration();
 
-            if (!isRenderingWell) {
+            if (!isRenderingWell
+                && mediaConfiguration.isAudioEnabled()
+                && mediaConfiguration.isVideoEnabled()) {
               mediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.FPS_DROP);
               remotePeer.setMediaConfiguration(mediaConfiguration);
             } else if (mediaConfiguration.isLowConnection()) {

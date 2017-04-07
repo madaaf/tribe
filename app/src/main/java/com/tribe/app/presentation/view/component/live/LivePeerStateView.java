@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -208,13 +210,18 @@ public class LivePeerStateView extends FrameLayout {
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
+    //if (mediaConfiguration.equals(this.mediaConfiguration)) return;
     this.mediaConfiguration = mediaConfiguration;
 
     int icon = getStateResource();
 
     if (mediaConfiguration.isVideoEnabled()) {
       layoutVideo.setVisibility(View.VISIBLE);
-      layoutNoVideo.setVisibility(View.GONE);
+      UIUtils.hideReveal(layoutNoVideo, true, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          layoutNoVideo.setVisibility(View.GONE);
+        }
+      });
 
       if (mediaConfiguration.isLowConnection()) {
         AnimationUtils.fadeIn(viewLowConnection, DURATION_LONG);
@@ -223,7 +230,12 @@ public class LivePeerStateView extends FrameLayout {
       }
     } else {
       layoutVideo.setVisibility(View.GONE);
-      layoutNoVideo.setVisibility(View.VISIBLE);
+      UIUtils.showReveal(layoutNoVideo, true, new AnimatorListenerAdapter() {
+        @Override public void onAnimationStart(Animator animation) {
+          layoutNoVideo.setVisibility(View.VISIBLE);
+        }
+      });
+
       txtState.setText(getStateLabel());
     }
 

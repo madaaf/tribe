@@ -134,17 +134,9 @@ public class LiveRowView extends FrameLayout {
           if (!tribePeerMediaConfiguration.isVideoEnabled()
               || !tribePeerMediaConfiguration.isAudioEnabled()
               || tribePeerMediaConfiguration.isLowConnection()) {
-            UIUtils.showReveal(viewPeerState, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationStart(Animator animation) {
-                viewPeerState.setVisibility(View.VISIBLE);
-              }
-            });
+            viewPeerState.setVisibility(View.VISIBLE);
           } else {
-            UIUtils.hideReveal(viewPeerState, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                viewPeerState.setVisibility(View.GONE);
-              }
-            });
+            viewPeerState.setVisibility(View.GONE);
           }
 
           viewPeerState.setMediaConfiguration(tribePeerMediaConfiguration);

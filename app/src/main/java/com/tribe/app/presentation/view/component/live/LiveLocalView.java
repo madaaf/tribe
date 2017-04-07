@@ -110,9 +110,7 @@ public class LiveLocalView extends FrameLayout {
   private void initSubscriptions() {
     subscriptions.add(Observable.merge(onEnableCamera, onEnableMicro)
         .filter(mediaConfiguration -> (!mediaConfiguration.isVideoEnabled() || !mediaConfiguration.isAudioEnabled()))
-        .subscribe(mediaConfiguration -> {
-          viewPeerState.setMediaConfiguration(mediaConfiguration);
-        }));
+        .subscribe(mediaConfiguration -> viewPeerState.setMediaConfiguration(mediaConfiguration)));
   }
 
   private void initResources() {

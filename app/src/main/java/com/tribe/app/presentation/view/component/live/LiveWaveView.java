@@ -21,7 +21,6 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 04/05/17.
@@ -70,11 +69,20 @@ public class LiveWaveView extends FrameLayout {
 
   @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight());
 
-    if (getMeasuredWidth() != 0 && animationWave == null) {
-      Timber.d("Measure");
-      initWave();
+    final int waveImgWidth =
+        ContextCompat.getDrawable(getContext(), R.drawable.picto_wave_low_connection)
+            .getIntrinsicWidth();
+
+    final int count = getChildCount();
+    for (int i = 0; i < count; i++) {
+      final View v = getChildAt(i);
+      v.measure(MeasureSpec.makeMeasureSpec(getMeasuredWidth() + waveImgWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY));
     }
+
+    initWave();
   }
 
   private void init(Context context, AttributeSet attrs) {
@@ -99,10 +107,6 @@ public class LiveWaveView extends FrameLayout {
             .getIntrinsicWidth();
 
     int measuredWidth = getMeasuredWidth();
-    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) viewWave.getLayoutParams();
-    layoutParams.width = measuredWidth + waveImgWidth * 2;
-    viewWave.setLayoutParams(layoutParams);
-
     animationWave = new TranslateAnimation(0, -waveImgWidth, 0, 0);
     animationWave.setInterpolator(new LinearInterpolator());
     animationWave.setRepeatCount(Animation.INFINITE);

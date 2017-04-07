@@ -79,4 +79,37 @@ public class TribePeerMediaConfiguration {
       return LOW_BANDWIDTH;
     }
   }
+
+  @Override public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (session.getUserId() != null ? session.hashCode() : 0);
+    return result;
+  }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || !(o instanceof TribePeerMediaConfiguration)) return false;
+
+    TribePeerMediaConfiguration that = (TribePeerMediaConfiguration) o;
+
+    if (session == null) {
+      if (that.session != null) return false;
+    } else if (!session.getUserId().equals(session.getUserId())) {
+      return false;
+    }
+
+    if (!mediaConfigurationType.equals(that.mediaConfigurationType)) {
+      return false;
+    }
+
+    if (audioEnabled != that.audioEnabled) {
+      return false;
+    }
+
+    if (videoEnabled != that.videoEnabled) {
+      return false;
+    }
+
+    return true;
+  }
 }
