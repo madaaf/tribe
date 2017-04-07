@@ -34,8 +34,10 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -101,6 +103,8 @@ public class LiveView extends FrameLayout {
   @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
 
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
+
+  @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
@@ -188,7 +192,6 @@ public class LiveView extends FrameLayout {
       if (hasJoined && averageCountLive > 1) {
         state = TagManagerUtils.ENDED;
         numberOfCalls.set(numberOfCalls.get() + 1);
-        minutesOfCalls.set(minutesOfCalls.get());
         Float totalDuration = minutesOfCalls.get() + (float) duration;
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
@@ -205,7 +208,13 @@ public class LiveView extends FrameLayout {
       tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
       tagMap.put(TagManagerUtils.TYPE,
           live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
-      TagManagerUtils.manageTags(tagManager, tagMap);
+      // We are entering another call, so we send the tags regarless
+      // else we are pushing the tags only after the call rating popup so we save them
+      if (isJump) {
+        TagManagerUtils.manageTags(tagManager, tagMap);
+      } else {
+        PreferencesUtils.saveMapAsJson(tagMap, callTagsMap);
+      }
     }
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {

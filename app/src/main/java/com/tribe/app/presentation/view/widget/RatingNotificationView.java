@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -23,6 +22,7 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -31,10 +31,13 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -55,6 +58,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
   @Inject ScreenUtils screenUtils;
   @Inject TagManager tagManager;
+  @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @BindViews({ R.id.btnStar1, R.id.btnStar2, R.id.btnStar3, R.id.btnStar4, R.id.btnStar5 })
   List<ImageView> btnStars;
@@ -134,8 +138,9 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   ///////////////////
-  //    PRIVATE     //
+  //    PRIVATE    //
   ///////////////////
+
   private void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
@@ -145,6 +150,8 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
   }
 
   private void hideView() {
+    if (timerSubscription != null) timerSubscription.unsubscribe();
+
     Animation slideInAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_out_to_top);
     setAnimation(slideInAnimation);
@@ -159,7 +166,6 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
         super.onAnimationEnd(animation);
         clearAnimation();
         setVisibility(GONE);
-        if (timerSubscription != null) timerSubscription.unsubscribe();
       }
     });
     startAnimation(slideInAnimation);
@@ -169,6 +175,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     timerSubscription = Observable.timer(timeout, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
+          manageTags(PreferencesUtils.getMapFromJson(callTagsMap));
           hideView();
         });
   }
@@ -289,19 +296,27 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
     }
   }
 
+  private void manageTags(Map<String, Object> map) {
+    if (map != null && map.size() > 0) {
+      TagManagerUtils.manageTags(tagManager, map);
+      callTagsMap.set("");
+    }
+  }
+
   ///////////////////
   //    CLICKS     //
   ///////////////////
 
   @OnClick(R.id.txtAction) void onClickTextAction() {
+    Map<String, Object> map = PreferencesUtils.getMapFromJson(callTagsMap);
+    map.put(TagManagerUtils.RATE, String.valueOf(indexStar));
+    map.put(TagManagerUtils.ROOM_ID, roomId);
+    manageTags(map);
     hideView();
-    Bundle properties = new Bundle();
-    properties.putString(TagManagerUtils.RATING, String.valueOf(indexStar));
-    properties.putString(TagManagerUtils.ROOM_ID, roomId);
-    tagManager.trackEvent(TagManagerUtils.CALLS_RATINGS, properties);
   }
 
   @Override public void onClick(View v) {
+    manageTags(PreferencesUtils.getMapFromJson(callTagsMap));
     hideView();
   }
 

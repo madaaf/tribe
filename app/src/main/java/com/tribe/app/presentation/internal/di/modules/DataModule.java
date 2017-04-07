@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -15,7 +16,7 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
-import com.tribe.app.presentation.utils.preferences.PreferencesConstants;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
@@ -43,73 +44,78 @@ import static android.content.Context.MODE_PRIVATE;
   }
 
   @Provides @Singleton @Theme Preference<Integer> provideTheme(RxSharedPreferences prefs) {
-    return prefs.getInteger(PreferencesConstants.THEME, 0);
+    return prefs.getInteger(PreferencesUtils.THEME, 0);
   }
 
   @Provides @Singleton @InvisibleMode Preference<Boolean> provideInvisibleMode(
       RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.INVISIBLE_MODE, false);
+    return prefs.getBoolean(PreferencesUtils.INVISIBLE_MODE, false);
   }
 
   @Provides @Singleton @AddressBook Preference<Boolean> provideAddressBook(
       RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.ADDRESS_BOOK, false);
+    return prefs.getBoolean(PreferencesUtils.ADDRESS_BOOK, false);
   }
 
   @Provides @Singleton @LastSync Preference<Long> provideLastSync(RxSharedPreferences prefs) {
-    return prefs.getLong(PreferencesConstants.LAST_SYNC, 0L);
+    return prefs.getLong(PreferencesUtils.LAST_SYNC, 0L);
   }
 
   @Provides @Singleton @NewContactsTooltip Preference<Boolean> provideNewContactsTooltip(
       RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.NEW_CONTACT_TOOLTIP, false);
+    return prefs.getBoolean(PreferencesUtils.NEW_CONTACT_TOOLTIP, false);
   }
 
   @Provides @Singleton @LastVersionCode Preference<Integer> provideLastVersionCode(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getInteger(PreferencesConstants.PREVIOUS_VERSION_CODE, -1);
+    return prefs.getInteger(PreferencesUtils.PREVIOUS_VERSION_CODE, -1);
   }
 
   @Provides @Singleton @NumberOfCalls Preference<Integer> provideNumberOfCalls(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getInteger(PreferencesConstants.NUMBER_OF_CALLS, 0);
+    return prefs.getInteger(PreferencesUtils.NUMBER_OF_CALLS, 0);
   }
 
   @Provides @Singleton @MinutesOfCalls Preference<Float> provideMinutesOfCalls(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getFloat(PreferencesConstants.MINUTES_OF_CALLS, 0f);
+    return prefs.getFloat(PreferencesUtils.MINUTES_OF_CALLS, 0f);
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.IS_GROUPE_CREATED, false);
+    return prefs.getBoolean(PreferencesUtils.IS_GROUPE_CREATED, false);
   }
 
   @Provides @Singleton @DebugMode Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.DEBUG_MODE, false);
+    return prefs.getBoolean(PreferencesUtils.DEBUG_MODE, false);
   }
 
   @Provides @Singleton @UISounds Preference<Boolean> provideUISounds(RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.UI_SOUNDS, true);
+    return prefs.getBoolean(PreferencesUtils.UI_SOUNDS, true);
   }
 
   @Provides @Singleton @TribeState Preference<Set<String>> provideTribeState(
       RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesConstants.TRIBE_STATE, new HashSet<>());
+    return prefs.getStringSet(PreferencesUtils.TRIBE_STATE, new HashSet<>());
   }
 
   @Provides @Singleton @RoutingMode Preference<String> provideRoutingMode(
       RxSharedPreferences prefs) {
-    return prefs.getString(PreferencesConstants.ROUTING_MODE, TribeLiveOptions.ROUTED);
+    return prefs.getString(PreferencesUtils.ROUTING_MODE, TribeLiveOptions.ROUTED);
   }
 
   @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
       RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesConstants.FULLSCREEN_NOTIFICATIONS, true);
+    return prefs.getBoolean(PreferencesUtils.FULLSCREEN_NOTIFICATIONS, true);
   }
 
   @Provides @Singleton @FullscreenNotificationState
   Preference<Set<String>> provideFullscreenNotificationState(RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesConstants.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
+    return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
+  }
+
+  @Provides @Singleton @CallTagsMap Preference<String> provideCallTagsMap(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.CALL_TAGS_MAP, "");
   }
 }

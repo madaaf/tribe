@@ -109,8 +109,7 @@ public class TagManagerUtils {
   /**
    * MIXPANEL PROPERTIES
    */
-  public static final String CALLS_RATINGS = "Calls_Ratings";
-  public static final String RATING = "rating";
+  public static final String RATE = "rate";
   public static final String ROOM_ID = "room_id";
 
   public static void manageTags(TagManager tagManager, Map<String, Object> tagMap) {

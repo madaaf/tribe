@@ -48,6 +48,8 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
@@ -153,6 +155,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Inject @RoutingMode Preference<String> routingMode;
 
+  @Inject @CallTagsMap Preference<String> callTagsMap;
+
   @BindView(R.id.viewLive) LiveView viewLive;
 
   @BindView(R.id.viewInviteLive) LiveInviteView viewInviteLive;
@@ -171,6 +175,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private TribeAudioManager audioManager;
   private Unbinder unbinder;
   private Live live;
+  private RoomConfiguration roomConfiguration;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
@@ -244,7 +249,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onDestroy() {
-    viewLive.onDestroy(false);
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
@@ -615,16 +619,23 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void putExtraHomeIntent() {
+    boolean willDisplayPopup = false;
     Intent returnIntent = new Intent();
+
     if (liveDurationIsMoreThan30sec && displayRatingNotifDependingFirebaseTrigger()) {
-      if (viewLive != null
-          && viewLive.getRoom() != null
-          && viewLive.getRoom().getOptions() != null) {
-        returnIntent.putExtra(ROOM_ID, viewLive.getRoom().getOptions().getRoomId());
+      if (roomConfiguration != null && !StringUtils.isEmpty(roomConfiguration.getRoomId())) {
+        returnIntent.putExtra(ROOM_ID, roomConfiguration.getRoomId());
       }
       returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
+      willDisplayPopup = true;
     }
+
+    if (!willDisplayPopup) {
+      TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
+      callTagsMap.set("");
+    }
+
     returnIntent.putExtra(DISPLAY_ENJOYING_NOTIFICATON, true);
     setResult(Activity.RESULT_OK, returnIntent);
   }
@@ -662,6 +673,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    viewLive.onDestroy(false);
     putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
@@ -688,10 +700,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
-    roomConfiguration.setRoutingMode(routingMode.get());
-    viewLive.joinRoom(roomConfiguration);
+    this.roomConfiguration = roomConfiguration;
+    this.roomConfiguration.setRoutingMode(routingMode.get());
+    viewLive.joinRoom(this.roomConfiguration);
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
-      livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
+      livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
   }
 

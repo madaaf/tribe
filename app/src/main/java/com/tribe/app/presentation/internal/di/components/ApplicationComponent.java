@@ -36,6 +36,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -290,6 +291,8 @@ public interface ApplicationComponent {
   @MinutesOfCalls Preference<Float> minutesOfCalls();
 
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
+
+  @CallTagsMap Preference<String> callTagsMap();
 
   SoundManager soundManager();
 

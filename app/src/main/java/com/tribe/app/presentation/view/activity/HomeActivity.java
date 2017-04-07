@@ -48,8 +48,10 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
@@ -111,6 +113,8 @@ public class HomeActivity extends BaseActivity
 
   @Inject @LastSync Preference<Long> lastSync;
 
+  @Inject @CallTagsMap Preference<String> callTagsMap;
+
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
   @BindView(android.R.id.content) ViewGroup rootView;
@@ -170,6 +174,7 @@ public class HomeActivity extends BaseActivity
     initSearch();
     manageDeepLink(getIntent());
     initPullToRefresh();
+    initPreviousCallTags();
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
@@ -514,6 +519,14 @@ public class HomeActivity extends BaseActivity
     appStateMonitor.start();
   }
 
+  private void initPreviousCallTags() {
+    String callTags = callTagsMap.get();
+    if (!StringUtils.isEmpty(callTags)) {
+      TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
+      callTagsMap.set("");
+    }
+  }
+
   @Override public void onDeepLink(String url) {
     if (!StringUtils.isEmpty(url)) {
       Uri uri = Uri.parse(url);
@@ -648,6 +661,7 @@ public class HomeActivity extends BaseActivity
       if (displayEnjoyingNotifView) {
         enjoyingTribeNotificationView.displayView();
       }
+
       if (displayRatingNotifView) {
         long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
         String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
