@@ -27,22 +27,17 @@ import javax.inject.Singleton;
 
 @Singleton public class NotificationBuilder {
 
-  private AndroidApplication application;
-  private NotificationManagerCompat notificationManager;
-  private Gson gson;
-  private TribeApi tribeApi;
-  private UserCache userCache;
-  private @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
+  @Inject NotificationManagerCompat notificationManager;
+  @Inject Gson gson;
+  @Inject TribeApi tribeApi;
+  @Inject UserCache userCache;
+  @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
 
-  @Inject public NotificationBuilder(AndroidApplication application,
-      NotificationManagerCompat notificationManager, Gson gson, TribeApi tribeApi,
-      UserCache userCache, @FullscreenNotifications Preference<Boolean> fullScreenNotifications) {
+  private AndroidApplication application;
+
+  @Inject public NotificationBuilder(AndroidApplication application) {
     this.application = application;
-    this.notificationManager = notificationManager;
-    this.gson = gson;
-    this.tribeApi = tribeApi;
-    this.userCache = userCache;
-    this.fullScreenNotifications = fullScreenNotifications;
+    this.application.getApplicationComponent().inject(this);
   }
 
   public void sendBundledNotification(RemoteMessage remoteMessage) {
@@ -58,10 +53,12 @@ import javax.inject.Singleton;
         Notification notification = buildNotification(notificationPayload);
         if (notification != null) {
           if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-              && fullScreenNotifications.get()) {
+              && fullScreenNotifications.get()
+              && !StringUtils.isEmpty(notificationPayload.getSound())) {
             sendFullScreenNotification(remoteMessage);
-          }// TODO add "else" statement when the missed call notif are ready in backend
-          notificationManager.notify(getNotificationId(notificationPayload), notification);
+          } else {
+            notificationManager.notify(getNotificationId(notificationPayload), notification);
+          }
         }
 
         if (notificationPayload.getClickAction()

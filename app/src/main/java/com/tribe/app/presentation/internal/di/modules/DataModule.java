@@ -6,6 +6,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
@@ -105,5 +106,10 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
       RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesConstants.FULLSCREEN_NOTIFICATIONS, true);
+  }
+
+  @Provides @Singleton @FullscreenNotificationState
+  Preference<Set<String>> provideFullscreenNotificationState(RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesConstants.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
   }
 }

@@ -108,26 +108,9 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     if (savedInstanceState == null) {
       Bundle extras = getIntent().getExtras();
-      if (extras == null) {
-        payload = null;
-      } else {
-        payload = (NotificationPayload) extras.getSerializable(PLAYLOAD_VALUE);
-        if (payload != null) {
-          boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
-          String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
-          String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
-          Glide.with(this).load(picture).centerCrop().into(containerView);
-          txtDisplayName.setText(EmojiParser.demojizedText(name));
-
-          if (isGroup) {
-            txtCallerName.setText(payload.getUserDisplayName());
-          } else {
-            txtCallerName.setVisibility(View.GONE);
-          }
-
-          avatar.setType(AvatarView.LIVE);
-          avatar.load(picture);
-        }
+      if (extras != null) {
+        payload = (NotificationPayload) getIntent().getExtras().getSerializable(PLAYLOAD_VALUE);
+        updateFromPayload(payload);
       }
     }
 
@@ -208,6 +191,25 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   private void initResources() {
     translationYAnimation = screenUtils.dpToPx(Y_TRANSLATION);
     translationYAction = screenUtils.dpToPx(ACTION_BUTTON_Y_TRANSLATION);
+  }
+
+  private void updateFromPayload(NotificationPayload payload) {
+    if (payload != null) {
+      boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
+      String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
+      String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
+      Glide.with(this).load(picture).centerCrop().into(containerView);
+      txtDisplayName.setText(EmojiParser.demojizedText(name));
+
+      if (isGroup) {
+        txtCallerName.setText(payload.getUserDisplayName());
+      } else {
+        txtCallerName.setVisibility(View.GONE);
+      }
+
+      avatar.setType(AvatarView.LIVE);
+      avatar.load(picture);
+    }
   }
 
   private void vibrate() {
@@ -338,6 +340,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
       if (payload.equals(notificationPayload) && !notificationPayload.getClickAction()
           .equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
+        updateFromPayload(notificationPayload);
         return;
       }
 

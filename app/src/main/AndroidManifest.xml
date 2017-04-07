@@ -194,7 +194,7 @@
     <activity
         android:name=".presentation.view.activity.LiveImmersiveNotificationActivity"
         android:keepScreenOn="true"
-        android:launchMode="singleTop"
+        android:launchMode="singleTask"
         android:noHistory="true"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.FullScreen"/>

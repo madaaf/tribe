@@ -168,7 +168,7 @@ public class CloudUserDataStore implements UserDataStore {
       operatorName = operatorName.replaceAll("[^a-zA-Z0-9]+", "");
     }
 
-    String model = "Bush 5\" Android";
+    String model = Build.MODEL;
 
     if (!StringUtils.isEmpty(model)) {
       model = model.replaceAll("[^a-zA-Z0-9]+", "").replace("\\\"", "");

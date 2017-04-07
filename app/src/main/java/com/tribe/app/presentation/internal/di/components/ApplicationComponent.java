@@ -37,6 +37,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
@@ -194,6 +195,8 @@ public interface ApplicationComponent {
 
   void inject(RemoveNewStatusContactJob removeNewStatusContactJob);
 
+  void inject(NotificationBuilder notificationBuilder);
+
   // SERVICES
   void inject(WSService wsService);
 
@@ -285,6 +288,8 @@ public interface ApplicationComponent {
   @NumberOfCalls Preference<Integer> numberOfCalls();
 
   @MinutesOfCalls Preference<Float> minutesOfCalls();
+
+  @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
 
   SoundManager soundManager();
 

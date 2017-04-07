@@ -317,10 +317,8 @@ import timber.log.Timber;
     return NotificationManagerCompat.from(safeContext);
   }
 
-  @Provides @Singleton public NotificationBuilder provideNotificationBuilder(
-      NotificationManagerCompat notificationManager, Gson gson, TribeApi tribeApi,
-      UserCache userCache, @FullscreenNotifications Preference<Boolean> fullScreenNotifications) {
-    return new NotificationBuilder(application, notificationManager, gson, tribeApi, userCache, fullScreenNotifications);
+  @Provides @Singleton public NotificationBuilder provideNotificationBuilder() {
+    return new NotificationBuilder(application);
   }
 
   // DATES
