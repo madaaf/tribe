@@ -205,7 +205,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onNewIntent(Intent intent) {
-    viewLive.onDestroy(true);
+    viewLive.dispose(true);
     viewLive.jump();
     initParams(intent);
     live.setCountdown(false);
@@ -673,7 +673,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
-    viewLive.onDestroy(false);
+    viewLive.dispose(false);
     putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);

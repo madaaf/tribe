@@ -176,7 +176,7 @@ public class LiveView extends FrameLayout {
     room.jump();
   }
 
-  public void onDestroy(boolean isJump) {
+  public void dispose(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
     if (live != null) {
@@ -237,14 +237,13 @@ public class LiveView extends FrameLayout {
 
     viewStatusName.dispose();
     viewControlsLive.dispose();
+    
+    tempSubscriptions.clear();
 
     if (!isJump) {
       persistentSubscriptions.clear();
-      tempSubscriptions.clear();
       viewLocalLive.dispose();
       unbinder.unbind();
-    } else {
-      tempSubscriptions.clear();
     }
   }
 
