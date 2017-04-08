@@ -113,7 +113,7 @@
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
 	
 	<!-- Grid -->
-	<string name="grid_status_live">Live Call</string>
+	<string name="grid_status_live">Live call</string>
 	<string name="grid_status_with_guests">and guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
@@ -413,8 +413,8 @@
 	
 	<!-- Create Group Popup -->
 	<string name="create_group_popup_title">Enjoy that call? Create a group with those friends!</string>
-	<string name="create_group_popup_adjust_members">Adjust Members</string>
-	<string name="create_group_popup_create">Create Now</string>
+	<string name="create_group_popup_adjust_members">Adjust members</string>
+	<string name="create_group_popup_create">Create now</string>
 	<string name="create_group_popup_swipe_to_dismiss">Swipe up to dismiss</string>
 	
 	<!-- Enjoying Tribe Popup -->
