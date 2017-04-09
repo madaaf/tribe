@@ -451,9 +451,6 @@
 	<string name="popup_create_grp_action1">Adjuster les membres</string>
 	<string name="popup_create_grp_action2">Créer maintenant</string>
 	
-	
-<!-- Popup Behavior -->
+	<!-- Popup Behavior -->
 	<string name="popup_behavior_swipe_dismiss">Glisser vers le bas pour fermer</string>
-
-	
 </resources>

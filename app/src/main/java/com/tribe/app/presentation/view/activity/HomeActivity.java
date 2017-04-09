@@ -647,24 +647,7 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-
-    if (data != null) {
-      boolean displayRatingNotifView =
-          data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
-
-      boolean displayEnjoyingNotifView =
-          data.getBooleanExtra(LiveActivity.DISPLAY_ENJOYING_NOTIFICATON, false);
-      if (displayEnjoyingNotifView) {
-        enjoyingTribeNotificationView.displayView();
-      }
-
-      if (displayRatingNotifView) {
-        long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
-        String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
-        ratingNotificationView.displayView(timeout, roomId);
-      }
-      notificationContainerView.displayNotification(data);
-    }
+    if (data != null) notificationContainerView.displayNotification(data);
   }
 
   /////////////////

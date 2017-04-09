@@ -647,8 +647,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       callTagsMap.set("");
     }
 
-    returnIntent.putExtra(DISPLAY_ENJOYING_NOTIFICATON, true);
-
     List<TribeGuest> peopleInLive = viewLive.getUsersInLiveRoom();
     for (TribeGuest guest : peopleInLive) {
       if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {

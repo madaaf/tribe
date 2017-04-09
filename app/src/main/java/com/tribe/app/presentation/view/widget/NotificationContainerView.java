@@ -90,16 +90,17 @@ public class NotificationContainerView extends FrameLayout {
   public void displayNotification(Intent data) {
 
     boolean displayRatingNotifView = data.getBooleanExtra(DISPLAY_RATING_NOTIFICATON, false);
+    boolean displayCreateGrpNotifView =
+        data.getBooleanExtra(DISPLAY_CREATE_GROUPE_NOTIFICATION, false);
+
     boolean displayEnjoyingTribeView = false;
+
     if (numberOfCalls.get() > EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT
         && minutesOfCalls.get() > EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
       displayEnjoyingTribeView = true;
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);
     }
-
-    boolean displayCreateGrpNotifView =
-        data.getBooleanExtra(DISPLAY_CREATE_GROUPE_NOTIFICATION, false);
 
     Bundle extra = data.getExtras();
 
