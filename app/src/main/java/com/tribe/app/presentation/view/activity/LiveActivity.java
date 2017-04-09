@@ -767,7 +767,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (live.getSubId().equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
+      if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
+          .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
         return;
       }
