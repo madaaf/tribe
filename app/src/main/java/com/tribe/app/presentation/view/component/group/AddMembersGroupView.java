@@ -76,7 +76,7 @@ public class AddMembersGroupView extends LinearLayout {
   private Membership membership;
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
-  private List<GroupMember> newMembers;
+  private List<GroupMember> newMembers = new ArrayList<>();
   private String currentFilter = "";
   private List<GroupMember> copieUserListTemp = new ArrayList<>();
   private List<String> newMembersIds = new ArrayList<>();
@@ -213,18 +213,21 @@ public class AddMembersGroupView extends LinearLayout {
   private void setupFriendList() {
     List<GroupMember> userListTemp = new ArrayList<>(user.getUserList());
     if (membership != null) membership.getGroup().computeGroupMembers(userListTemp);
-    copieUserListTemp.addAll(userListTemp);
+    if (newMembers != null && !newMembers.isEmpty()) {
 
-    for (GroupMember groupMember : newMembers) {
-      newMembersIds.add(groupMember.getUser().getId());
-    }
+      copieUserListTemp.addAll(userListTemp);
 
-    for (GroupMember groupMember : copieUserListTemp) {
-      if (newMembersIds.contains(groupMember.getUser().getId())) {
-        userListTemp.remove(groupMember);
+      for (GroupMember groupMember : newMembers) {
+        newMembersIds.add(groupMember.getUser().getId());
       }
+
+      for (GroupMember groupMember : copieUserListTemp) {
+        if (newMembersIds.contains(groupMember.getUser().getId())) {
+          userListTemp.remove(groupMember);
+        }
+      }
+      userListTemp.addAll(0, newMembers);
     }
-    userListTemp.addAll(0, newMembers);
     adapter.setItems(userListTemp);
   }
 
@@ -319,7 +322,6 @@ public class AddMembersGroupView extends LinearLayout {
   }
 
   public void addPrefildMumbers(List<GroupMember> prefilledMembers) {
-    newMembers = new ArrayList<>();
     newMembers.addAll(prefilledMembers);
   }
 }
