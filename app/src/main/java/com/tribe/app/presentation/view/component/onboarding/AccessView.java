@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.component.onboarding;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.IntDef;
@@ -13,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
@@ -103,6 +103,25 @@ public class AccessView extends LinearLayout {
     init();
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (status == NONE && imgIcon != null) {
+      imgIcon.getViewTreeObserver()
+          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+              imgIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+              imgIcon.animate()
+                  .alpha(1)
+                  .scaleX(1)
+                  .scaleY(1)
+                  .setDuration(800)
+                  .setInterpolator(new OvershootInterpolator(0.45f))
+                  .start();
+            }
+          });
+    }
+  }
+
   @Override protected void onDetachedFromWindow() {
     unbinder.unbind();
 
@@ -161,12 +180,7 @@ public class AccessView extends LinearLayout {
 
     imgIcon.setScaleX(10f);
     imgIcon.setScaleY(10f);
-    imgIcon.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setDuration(600)
-        .setInterpolator(new OvershootInterpolator(0.45f))
-        .start();
+    imgIcon.setAlpha(0f);
   }
 
   private void setLayout(View view, int width, int height) {
