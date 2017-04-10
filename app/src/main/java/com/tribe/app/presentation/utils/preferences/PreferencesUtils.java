@@ -6,7 +6,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by tiago on 04/07/2016.
@@ -42,5 +44,19 @@ public class PreferencesUtils {
   public static Map<String, Object> getMapFromJson(Preference<String> preference) {
     return new Gson().fromJson(preference.get(), new TypeToken<HashMap<String, Object>>() {
     }.getType());
+  }
+
+  public static void addToSet(Preference<Set<String>> preference, String value) {
+    Set<String> newStrSet = new HashSet<>();
+    newStrSet.add(value);
+    newStrSet.addAll(preference.get());
+    preference.set(newStrSet);
+  }
+
+  public static void removeFromSet(Preference<Set<String>> preference, String value) {
+    Set<String> newStrSet = new HashSet<>();
+    newStrSet.addAll(preference.get());
+    newStrSet.remove(value);
+    preference.set(newStrSet);
   }
 }

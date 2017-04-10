@@ -49,6 +49,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -69,7 +70,9 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.NotificationContainerView;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -113,6 +116,8 @@ public class HomeActivity extends BaseActivity
   @Inject @LastSync Preference<Long> lastSync;
 
   @Inject @CallTagsMap Preference<String> callTagsMap;
+
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
 
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
@@ -209,6 +214,7 @@ public class HomeActivity extends BaseActivity
   @Override protected void onStart() {
     super.onStart();
     tagManager.onStart(this);
+    fullScreenNotificationState.set(new HashSet<>());
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       syncContacts();

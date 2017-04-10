@@ -10,13 +10,17 @@ import java.io.Serializable;
 
 public class NotificationPayload implements Serializable {
 
-  @StringDef({ CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP }) public @interface ClickActionType {
+  @StringDef({
+      CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP, CLICK_ACTION_BUZZ, CLICK_ACTION_LIVE,
+      CLICK_ACTION_END_LIVE
+  }) public @interface ClickActionType {
   }
 
   public static final String CLICK_ACTION_ONLINE = "online";
   public static final String CLICK_ACTION_FRIENDSHIP = "friendship";
   public static final String CLICK_ACTION_LIVE = "live";
   public static final String CLICK_ACTION_BUZZ = "buzz";
+  public static final String CLICK_ACTION_END_LIVE = "end_live";
 
   private String user_id;
   private String body;

@@ -49,6 +49,7 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
@@ -81,6 +82,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -157,6 +159,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Inject @RoutingMode Preference<String> routingMode;
 
   @Inject @CallTagsMap Preference<String> callTagsMap;
+
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 

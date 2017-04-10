@@ -227,7 +227,7 @@ public class AddMembersGroupView extends LinearLayout {
     userListTemp.addAll(0, newMembers);
     adapter.setItems(userListTemp);
   }
-  
+
   public void updateGroup(Group group, boolean full) {
     if (full) {
       membership.setGroup(group);

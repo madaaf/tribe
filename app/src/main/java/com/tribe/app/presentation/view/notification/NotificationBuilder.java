@@ -20,11 +20,14 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import java.util.Date;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -35,6 +38,7 @@ import javax.inject.Singleton;
   @Inject TribeApi tribeApi;
   @Inject UserCache userCache;
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject JobManager jobManager;
 
   private AndroidApplication application;
@@ -57,22 +61,33 @@ import javax.inject.Singleton;
         if (friendshipRealm != null && friendshipRealm.isHidden()) {
           jobManager.addJobInBackground(new UnhideFriendshipJob(friendshipRealm));
         }
+      } else if (notificationPayload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+        PreferencesUtils.removeFromSet(fullScreenNotificationState,
+            notificationPayload.getThread());
       }
+
+      Notification notification = buildNotification(notificationPayload);
 
       if (application.getAppState() != null && application.getAppState()
           .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
         intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
         application.sendBroadcast(intentUnique);
+
+        if (notificationPayload.getClickAction()
+            .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+          notify(notificationPayload, notification);
+        }
       } else {
-        Notification notification = buildNotification(notificationPayload);
         if (notification != null) {
           if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
               && fullScreenNotifications.get()
-              && !StringUtils.isEmpty(notificationPayload.getSound())) {
+              && !StringUtils.isEmpty(notificationPayload.getSound())
+              && !fullScreenNotificationState.get().contains(notificationPayload.getThread())) {
             sendFullScreenNotification(remoteMessage);
           } else {
-            notificationManager.notify(getNotificationId(notificationPayload), notification);
+            notify(notificationPayload, notification);
           }
         }
 
@@ -82,10 +97,15 @@ import javax.inject.Singleton;
               application.getString(R.string.userfragment_infos),
               application.getString(R.string.friendshipfragment_info)))
               .subscribe(userRealm -> userCache.put(userRealm));
-          notificationManager.notify(getNotificationId(notificationPayload), notification);
+
+          notify(notificationPayload, notification);
         }
       }
     }
+  }
+
+  private void notify(NotificationPayload notificationPayload, Notification notification) {
+    notificationManager.notify(getNotificationId(notificationPayload), notification);
   }
 
   private NotificationPayload getPayload(RemoteMessage remoteMessage) {

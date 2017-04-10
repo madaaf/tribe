@@ -768,7 +768,7 @@ public class LiveView extends FrameLayout {
 
   private void refactorNotifyButton() {
     boolean enable = shouldEnableBuzz();
-    viewControlsLive.refactorNotifyButton(enable);
+    if (viewControlsLive != null) viewControlsLive.refactorNotifyButton(enable);
   }
 
   private void addView(LiveRowView liveRowView, TribeGuest guest, int color,

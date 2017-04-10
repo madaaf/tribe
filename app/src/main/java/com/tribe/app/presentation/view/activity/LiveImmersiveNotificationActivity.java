@@ -19,12 +19,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
@@ -35,6 +38,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -71,6 +75,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @Inject PaletteGrid paletteGrid;
   @Inject Navigator navigator;
   @Inject SoundManager soundManager;
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState;
 
   @BindView(R.id.txtDisplayName) TextViewFont txtDisplayName;
   @BindView(R.id.txtCallerName) TextViewFont txtCallerName;
@@ -129,6 +134,10 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
           soundManager.playSound(SoundManager.CALL_RING, SoundManager.SOUND_MAX);
           break;
       }
+    }
+
+    if (payload != null) {
+      PreferencesUtils.addToSet(fullscreenNotificationState, payload.getThread());
     }
 
     setAnimation();
@@ -282,6 +291,11 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
         .inject(this);
   }
 
+  private void endDismiss() {
+    shouldStartHome = false;
+    finish();
+  }
+
   private void setDownCounter() {
     startSubscription = Observable.timer(MAX_DURATION_NOTIFICATION, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -314,10 +328,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .translationY(translationYAction)
                 .alpha(0)
                 .setDuration(ACTION_BUTTON_DURATION_Y_TRANSLATION)
-                .withEndAction(() -> {
-                  shouldStartHome = false;
-                  finish();
-                })
+                .withEndAction(() -> endDismiss())
                 .start();
           }
 
@@ -340,7 +351,13 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
       if (payload.equals(notificationPayload) && !notificationPayload.getClickAction()
           .equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
-        updateFromPayload(notificationPayload);
+        if (notificationPayload.getClickAction()
+            .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+          finish();
+        } else {
+          updateFromPayload(notificationPayload);
+        }
+
         return;
       }
 
