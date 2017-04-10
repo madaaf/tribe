@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.notification;
 
 import android.support.annotation.StringDef;
+import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
 
 /**
@@ -137,6 +138,10 @@ public class NotificationPayload implements Serializable {
 
   public boolean isLive() {
     return click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(CLICK_ACTION_LIVE);
+  }
+
+  public boolean isUserCall() {
+    return StringUtils.isEmpty(getGroupId()) && !StringUtils.isEmpty(getUserId());
   }
 
   @Override public boolean equals(Object o) {

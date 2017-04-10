@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -14,6 +15,8 @@ import com.jenzz.appstate.AppState;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.job.UnhideFriendshipJob;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -32,6 +35,7 @@ import javax.inject.Singleton;
   @Inject TribeApi tribeApi;
   @Inject UserCache userCache;
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
+  @Inject JobManager jobManager;
 
   private AndroidApplication application;
 
@@ -44,6 +48,17 @@ import javax.inject.Singleton;
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
+      // If the user calling is hidden by the current user, we unhide it
+      // https://github.com/heytribe/roadmap/issues/530
+      if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+          && notificationPayload.isUserCall()) {
+        FriendshipRealm friendshipRealm =
+            userCache.friendshipForUserId(notificationPayload.getUserId());
+        if (friendshipRealm != null && friendshipRealm.isHidden()) {
+          jobManager.addJobInBackground(new UnhideFriendshipJob(friendshipRealm));
+        }
+      }
+
       if (application.getAppState() != null && application.getAppState()
           .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);

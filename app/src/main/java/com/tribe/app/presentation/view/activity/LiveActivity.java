@@ -403,14 +403,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
-  private boolean isRoomHasGuest() {
-    if (live.isInvite()) return true;
-    if (live.isGroup()) {
-      //int nbrPersonneInGrp = live.isGroup();
-    }
-    return false;
-  }
-
   private void initSubscriptions() {
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),

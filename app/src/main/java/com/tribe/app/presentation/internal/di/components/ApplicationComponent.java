@@ -16,6 +16,7 @@ import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
+import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -183,6 +184,8 @@ public interface ApplicationComponent {
 
   // JOBS
   void inject(BaseJob baseJob);
+
+  void inject(UnhideFriendshipJob updateFriendshipJob);
 
   void inject(UpdateUserJob updateUserJob);
 

@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.f2prateek.rx.preferences.Preference;
-import com.google.gson.Gson;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
 import com.tribe.app.data.cache.LiveCache;
@@ -15,7 +14,6 @@ import com.tribe.app.data.cache.LiveCacheImpl;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
-import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
@@ -42,7 +40,6 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -115,8 +112,9 @@ import timber.log.Timber;
     return contactCache;
   }
 
-  @Provides @Singleton RxContacts provideRxContacts(Context context, User user,
-      PhoneUtils phoneUtils, @AddressBook Preference<Boolean> addressBook) {
+  @Provides @Singleton RxContacts provideRxContacts(Context context,
+      @Named("userThreadSafe") User user, PhoneUtils phoneUtils,
+      @AddressBook Preference<Boolean> addressBook) {
     return new RxContacts(context, user, phoneUtils, addressBook);
   }
 
