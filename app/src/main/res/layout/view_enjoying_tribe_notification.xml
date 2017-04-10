@@ -1,99 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-  <FrameLayout
+
+  <LinearLayout
+      android:id="@+id/enjoyingTribePopupView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:clickable="true"
+      android:layout_marginBottom="100dp"
+      android:layout_marginLeft="30dp"
+      android:layout_marginRight="30dp"
+      android:layout_marginTop="70dp"
+      android:orientation="vertical"
       >
 
     <View
-        android:id="@+id/bgEnjoyingTribeNotificationView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:background="@color/black.opacity.50"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_enjoying_tribe"
         />
+
     <LinearLayout
-        android:id="@+id/enjoyingTribePopupView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="100dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="70dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="15dp"
+          android:gravity="center"
+          android:text="@string/enjoying_tribe_popup_title"
+          android:textSize="20sp"
+          style="@style/Title.2.Black"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:lineSpacingExtra="4dp"
+          android:text="@string/enjoying_tribe_popup_subtitle"
+          android:textColor="@color/grey.unblock"
+          style="@style/Title.2.Black"
+          />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         >
 
-      <View
-          android:layout_width="wrap_content"
-          android:layout_height="0dp"
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btnAction1"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:background="@drawable/bg_enjoying_tribe"
+          android:background="@color/grey.unblock"
+          android:gravity="center"
+          android:text="@string/enjoying_tribe_popup_action1"
+          style="@style/Title.2.White"
           />
 
-      <LinearLayout
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btnAction2"
           android:layout_width="match_parent"
-          android:layout_height="0dp"
+          android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:background="@android:color/white"
+          android:background="@drawable/shape_rect_blue13_bottom_corner"
           android:gravity="center"
-          android:orientation="vertical"
-          >
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:gravity="center"
-            android:text="@string/enjoying_tribe_popup_title"
-            android:textSize="20sp"
-            style="@style/Title.2.Black"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:text="@string/enjoying_tribe_popup_subtitle"
-            android:textColor="@color/grey.unblock"
-            style="@style/Title.2.Black"
-            />
-
-      </LinearLayout>
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="0dp"
-          android:layout_weight="1"
-          android:orientation="vertical"
-          >
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnAction1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/grey.unblock"
-            android:gravity="center"
-            android:text="@string/enjoying_tribe_popup_action1"
-            style="@style/Title.2.White"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnAction2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/shape_rect_blue13_bottom_corner"
-            android:gravity="center"
-            android:text="@string/enjoying_tribe_popup_action2"
-            style="@style/Title.2.White"
-            />
-      </LinearLayout>
-
-
+          android:text="@string/enjoying_tribe_popup_action2"
+          style="@style/Title.2.White"
+          />
     </LinearLayout>
-  </FrameLayout>
 
+  </LinearLayout>
 </merge>

@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.notifications;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -36,6 +36,7 @@ import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
