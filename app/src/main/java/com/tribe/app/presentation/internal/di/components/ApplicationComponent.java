@@ -38,6 +38,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -290,6 +291,8 @@ public interface ApplicationComponent {
   @IsGroupCreated Preference<Boolean> isGroupCreated();
 
   @NumberOfCalls Preference<Integer> numberOfCalls();
+
+  @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton();
 
   @MinutesOfCalls Preference<Float> minutesOfCalls();
 

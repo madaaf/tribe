@@ -6,6 +6,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -74,6 +75,12 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @NumberOfCalls Preference<Integer> provideNumberOfCalls(Context context,
       RxSharedPreferences prefs) {
     return prefs.getInteger(PreferencesUtils.NUMBER_OF_CALLS, 0);
+  }
+
+  @Provides @Singleton @CounterOfCallsForGrpButton
+  Preference<Integer> provideCounterOfCallsForGrpButton(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.COUNTER_CALL_GRP_BTN, 0);
   }
 
   @Provides @Singleton @MinutesOfCalls Preference<Float> provideMinutesOfCalls(Context context,

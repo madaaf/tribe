@@ -35,6 +35,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -103,6 +104,8 @@ public class LiveView extends FrameLayout {
   @Inject StateManager stateManager;
 
   @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
+
+  @Inject @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton;
 
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
@@ -194,6 +197,7 @@ public class LiveView extends FrameLayout {
       if (hasJoined && averageCountLive > 1) {
         state = TagManagerUtils.ENDED;
         numberOfCalls.set(numberOfCalls.get() + 1);
+        counterOfCallsForGrpButton.set(counterOfCallsForGrpButton.get() + 1);
         Float totalDuration = minutesOfCalls.get() + (float) duration;
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
@@ -239,7 +243,7 @@ public class LiveView extends FrameLayout {
 
     viewStatusName.dispose();
     viewControlsLive.dispose();
-    
+
     tempSubscriptions.clear();
 
     if (!isJump) {
