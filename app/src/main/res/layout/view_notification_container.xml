@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:orientation="vertical"
     >
 
-  <com.tribe.app.presentation.view.widget.RatingNotificationView
+  <View
+      android:id="@+id/bgView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@color/black.opacity.50"
+      />
+
+
+  <com.tribe.app.presentation.view.widget.notifications.NotificationView
+      android:id="@+id/notificationView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
+
+  <com.tribe.app.presentation.view.widget.notifications.RatingNotificationView
       android:id="@+id/ratingNotificationView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:clickable="true"
-      android:visibility="gone"
+      android:visibility="visible"
       />
 
-  <com.tribe.app.presentation.view.widget.EnjoyingTribeNotificationView
-      android:id="@+id/enjoyingTribeNotificationView"
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtDismiss"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:clickable="true"
-      android:visibility="gone"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="15dp"
+      android:gravity="center"
+      android:text="@string/popup_behavior_swipe_dismiss"
+      style="@style/Title.1.White"
       />
-
-  <com.tribe.app.presentation.view.widget.CreateGroupNotificationView
-      android:id="@+id/createGroupNotificationView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:clickable="true"
-      android:visibility="gone"
-      />
-
 </FrameLayout>

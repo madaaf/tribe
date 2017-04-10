@@ -1,130 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-  <FrameLayout
-      android:id="@+id/createGrpNotificationViewContainer"
+
+  <LinearLayout
+      android:id="@+id/createGrpNotificationView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:clickable="true"
+      android:layout_marginBottom="100dp"
+      android:layout_marginLeft="30dp"
+      android:layout_marginRight="30dp"
+      android:layout_marginTop="70dp"
+      android:background="@drawable/shape_rect_white_corner"
+      android:orientation="vertical"
+      android:weightSum="3"
       >
 
-    <View
-        android:id="@+id/bgCreateGrpNotificationView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:background="@color/black.opacity.50"
-        />
+
     <LinearLayout
-        android:id="@+id/createGrpNotificationView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="100dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="70dp"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:background="@drawable/shape_rect_white_corner"
+        android:gravity="center"
         android:orientation="vertical"
         >
-
-
-      <LinearLayout
+      <com.tribe.app.presentation.view.widget.TextViewFont
           android:layout_width="match_parent"
-          android:layout_height="0dp"
-          android:layout_weight="2"
-          android:background="@drawable/shape_rect_white_corner"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="15dp"
           android:gravity="center"
-          android:orientation="vertical"
-          >
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:gravity="center"
-            android:paddingEnd="30dp"
-            android:paddingStart="30dp"
-            android:text="@string/popup_create_grp_title"
-            android:textSize="20sp"
-            style="@style/Title.2.Black"
-            />
-
-        <LinearLayout
-            android:id="@+id/imgGrpMembersAvatar"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtGrpMembersNames"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:paddingEnd="30dp"
-            android:paddingStart="30dp"
-            android:text="@string/popup_create_grp_subtitle"
-            android:textColor="@color/grey.unblock"
-            style="@style/Title.2.Black"
-            />
-
-      </LinearLayout>
+          android:paddingEnd="30dp"
+          android:paddingStart="30dp"
+          android:text="@string/popup_create_grp_title"
+          android:textSize="20sp"
+          style="@style/Title.2.Black"
+          />
 
       <LinearLayout
+          android:id="@+id/imgGrpMembersAvatar"
           android:layout_width="match_parent"
-          android:layout_height="0dp"
-          android:layout_weight="1"
-          android:orientation="vertical"
-          android:weightSum="2"
-          >
+          android:layout_height="70dp"
+          android:layout_marginBottom="20dp"
+          android:layout_marginTop="20dp"
+          android:orientation="horizontal"
+          />
 
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnAction1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/purple.group"
-            android:drawableEnd="@drawable/picto_return_create_grp_notifview"
-            android:gravity="center"
-            android:paddingEnd="20dp"
-            android:paddingStart="20dp"
-            android:text="@string/popup_create_grp_action1"
-            style="@style/Title.2.White"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/black.4"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/btnAction2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/shape_rect_purple_bottom_corner"
-            android:gravity="center"
-            android:text="@string/popup_create_grp_action2"
-            style="@style/Title.2.White"
-            />
-      </LinearLayout>
-
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtGrpMembersNames"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:lineSpacingExtra="4dp"
+          android:paddingEnd="30dp"
+          android:paddingStart="30dp"
+          android:text="@string/popup_create_grp_subtitle"
+          android:textColor="@color/grey.unblock"
+          style="@style/Title.2.Black"
+          />
 
     </LinearLayout>
 
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="15dp"
-        android:gravity="center"
-        android:text="@string/popup_behavior_swipe_dismiss"
-        style="@style/Title.1.White"
-        />
-  </FrameLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:weightSum="2"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btnAction1"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:background="@color/purple.group"
+          android:drawableEnd="@drawable/picto_return_create_grp_notifview"
+          android:gravity="center"
+          android:paddingEnd="20dp"
+          android:paddingStart="20dp"
+          android:text="@string/popup_create_grp_action1"
+          style="@style/Title.2.White"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="0.5dp"
+          android:background="@color/black.4"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btnAction2"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:background="@drawable/shape_rect_purple_bottom_corner"
+          android:gravity="center"
+          android:text="@string/popup_create_grp_action2"
+          style="@style/Title.2.White"
+          />
+    </LinearLayout>
+
+  </LinearLayout>
 
 </merge>

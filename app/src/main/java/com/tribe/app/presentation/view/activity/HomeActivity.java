@@ -68,7 +68,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.app.presentation.view.widget.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +83,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.view.widget.notifications.NotificationContainerView.DISPLAY_RATING_NOTIFICATON;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
