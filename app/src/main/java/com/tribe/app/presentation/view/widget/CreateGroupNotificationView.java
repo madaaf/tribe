@@ -115,7 +115,7 @@ public class CreateGroupNotificationView extends FrameLayout {
     bgView.animate().setDuration(DURATION_ANIMATION).alpha(1f).start();
     setVisibility(VISIBLE);
     Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_from_top);
+        AnimationUtils.loadAnimation(getContext(), R.anim.notif_slide_in_from_top);
     slideInAnimation.setStartOffset(DURATION_OFFSET);
     slideInAnimation.setDuration(DURATION_ANIMATION);
     notificationView.startAnimation(slideInAnimation);
