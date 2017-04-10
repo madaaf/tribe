@@ -108,6 +108,7 @@ public class AndroidApplication extends Application {
 
   private void prepareRealm() {
     RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(7)
+        .deleteRealmIfMigrationNeeded()
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
