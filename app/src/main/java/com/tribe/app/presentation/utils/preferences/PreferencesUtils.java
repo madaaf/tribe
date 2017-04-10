@@ -24,6 +24,7 @@ public class PreferencesUtils {
   public static String NEW_CONTACT_TOOLTIP = "NEW_CONTACT_TOOLTIP";
   public static String FULLSCREEN_NOTIFICATIONS = "FULLSCREEN_NOTIFICATIONS";
   public static String NUMBER_OF_CALLS = "NUMBER_OF_CALLS";
+  public static String COUNTER_CALL_GRP_BTN = "COUNTER_CALL_GRP_BTN";
   public static String IS_GROUPE_CREATED = "IS_GROUPE_CREATED";
   public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
   public static String FULLSCREEN_NOTIFICATION_STATE = "FULLSCREEN_NOTIFICATION_STATE";

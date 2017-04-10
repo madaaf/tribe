@@ -28,9 +28,9 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
-import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -62,7 +62,7 @@ public class TopBarView extends FrameLayout {
 
   @Inject @IsGroupCreated Preference<Boolean> isGroupCreated;
 
-  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
+  @Inject @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -176,12 +176,11 @@ public class TopBarView extends FrameLayout {
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
-
-    if (numberOfCalls.get() < MIN_NUMBER_CALL && !isGroupCreated.get()) {
+    if (counterOfCallsForGrpButton.get() > MIN_NUMBER_CALL && !isGroupCreated.get()) {
       btnNew.setBackgroundResource(R.drawable.selectable_button_all_rounded_purple);
     }
   }
-
+  
   private void initResources() {
     avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
     clickActionThreshold = screenUtils.dpToPx(CLICK_ACTION_THRESHOLD);
