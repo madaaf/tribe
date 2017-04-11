@@ -69,6 +69,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -84,7 +85,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static com.tribe.app.presentation.view.widget.notifications.NotificationContainerView.DISPLAY_RATING_NOTIFICATON;
+import static android.view.View.VISIBLE;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
@@ -130,6 +131,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.searchView) SearchView searchView;
 
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
+
+  @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -395,6 +398,11 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
+          boolean displayPermissionNotif =
+              notificationContainerView.displayPermissionNotification();
+          if (displayPermissionNotif) {
+            return;
+          }
           if (recipient.getId().equals(Recipient.ID_MORE)) {
             navigator.openSmsForInvite(this, null);
           } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
@@ -490,8 +498,7 @@ public class HomeActivity extends BaseActivity
       navigator.openSmsForInvite(this, null);
     }));
 
-    subscriptions.add(
-        searchView.onShow().subscribe(aVoid -> searchView.setVisibility(View.VISIBLE)));
+    subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
 
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
@@ -655,7 +662,19 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (data != null) notificationContainerView.displayNotification(data);
+    if (data != null) {
+      if (!notificationContainerView.displayNotifFromIntent(data)) {
+        displayRatingNotifView(data);
+      }
+    }
+  }
+
+  private void displayRatingNotifView(Intent data) {
+    if (data.getBooleanExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, false)) {
+      long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
+      String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
+      ratingNotificationView.displayView(timeout, roomId);
+    }
   }
 
   /////////////////

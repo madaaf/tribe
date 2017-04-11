@@ -16,18 +16,10 @@
       />
 
 
-  <com.tribe.app.presentation.view.widget.notifications.NotificationView
+  <com.tribe.app.presentation.view.widget.notifications.LifeNotification
       android:id="@+id/notificationView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      />
-
-  <com.tribe.app.presentation.view.widget.notifications.RatingNotificationView
-      android:id="@+id/ratingNotificationView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:clickable="true"
-      android:visibility="visible"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -38,6 +30,6 @@
       android:layout_marginBottom="15dp"
       android:gravity="center"
       android:text="@string/popup_behavior_swipe_dismiss"
-      style="@style/Title.1.White"
+      style="@style/Title.2.White"
       />
 </FrameLayout>

@@ -15,10 +15,15 @@ public class PermissionUtils {
   public static final String PERMISSION_READ_WRITE_EXTERNAL =
       Manifest.permission.WRITE_EXTERNAL_STORAGE;
   public static final String PERMISSIONS_CONTACTS = Manifest.permission.READ_CONTACTS;
+
   public static final String[] PERMISSIONS_CAMERA = new String[] {
       Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO,
       Manifest.permission.WRITE_EXTERNAL_STORAGE
   };
+
+  public static final String RECORD_AUDIO = Manifest.permission.RECORD_AUDIO;
+  public static final String PERM_CAMERA = Manifest.permission.CAMERA;
+
   public static final String[] PERMISSIONS_HOME = new String[] {
       Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO,
       Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_COARSE, PERMISSION_FINE
@@ -26,6 +31,14 @@ public class PermissionUtils {
   public static final String[] PERMISSIONS_LIVE = new String[] {
       Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
   };
+
+  public static boolean hasPermissionsCameraOnly(RxPermissions rxPermissions) {
+    return rxPermissions.isGranted(PermissionUtils.PERM_CAMERA);
+  }
+
+  public static boolean hasPermissionsMicroOnly(RxPermissions rxPermissions) {
+    return rxPermissions.isGranted(PermissionUtils.RECORD_AUDIO);
+  }
 
   public static boolean hasPermissionsContact(RxPermissions rxPermissions) {
     return rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS);

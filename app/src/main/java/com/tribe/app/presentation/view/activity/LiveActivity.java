@@ -69,10 +69,11 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -82,6 +83,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -192,6 +194,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean takeScreenshotEnable = true;
   private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
   private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
+  private Intent returnIntent = new Intent();
   // RESOURCES
 
   // OBSERVABLES
@@ -341,6 +344,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }
       } else {
+        // returnIntent.putExtra(NotificationContainerView.DISPLAY_PERMISSION_NOTIF, true);
         finish();
       }
     }));
@@ -627,24 +631,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewScreenShot.startAnimation(scaleAnim);
   }
 
-  private void putExtraHomeIntent() {
+  private void putExtraRatingNotif() {
     boolean willDisplayPopup = false;
-    Intent returnIntent = new Intent();
-
     if (liveDurationIsMoreThan30sec && displayRatingNotifDependingFirebaseTrigger()) {
       if (roomConfiguration != null && !StringUtils.isEmpty(roomConfiguration.getRoomId())) {
         returnIntent.putExtra(ROOM_ID, roomConfiguration.getRoomId());
       }
-      returnIntent.putExtra(NotificationContainerView.DISPLAY_RATING_NOTIFICATON, true);
+      returnIntent.putExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
       willDisplayPopup = true;
     }
 
-    if (!willDisplayPopup) {
-      TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
+    Map<String, Object> tagMap = PreferencesUtils.getMapFromJson(callTagsMap);
+    if (!willDisplayPopup && tagMap != null) {
+      TagManagerUtils.manageTags(tagManager, tagMap);
       callTagsMap.set("");
     }
+  }
 
+  private void putExtraDisplayGrpNotif() {
     List<TribeGuest> peopleInLive = viewLive.getUsersInLiveRoom();
     for (TribeGuest guest : peopleInLive) {
       if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {
@@ -662,7 +667,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       usersIdsInvitedInLiveRoom.clear();
       activeUersIdsInvitedInLiveRoom.clear();
     }
+  }
 
+  private void putExtraHomeIntent() {
+    putExtraRatingNotif();
+    putExtraDisplayGrpNotif();
     setResult(Activity.RESULT_OK, returnIntent);
   }
 

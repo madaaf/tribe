@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.notifications;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -15,6 +16,8 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;

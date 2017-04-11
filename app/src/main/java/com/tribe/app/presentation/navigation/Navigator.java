@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.provider.Settings;
 import android.widget.Toast;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
@@ -29,7 +30,6 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
-import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -61,6 +61,13 @@ public class Navigator {
     Intent mIntent = new Intent(activity, HomeActivity.class);
     activity.finishAffinity();
     activity.startActivity(mIntent);
+  }
+
+  public void navigateToSettingApp(Context context) {
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", context.getPackageName(), null));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
   }
 
   /**
