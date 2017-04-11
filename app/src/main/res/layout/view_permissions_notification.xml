@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <LinearLayout
+      android:id="@+id/permissionsNotifView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="60dp"
+      android:layout_marginLeft="30dp"
+      android:layout_marginRight="30dp"
+      android:layout_marginTop="30dp"
+      android:background="@android:color/white"
+      android:orientation="vertical"
+      >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_permissions_notif"
+        android:scaleType="centerCrop"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="15dp"
+          android:gravity="center"
+          android:text="@string/camera_microphone_popup_title"
+          android:textSize="20sp"
+          style="@style/Title.2.Black"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:lineSpacingExtra="4dp"
+          android:text="@string/camera_microphone_popup_description"
+          android:textColor="@color/grey.unblock"
+          style="@style/Title.2.Black"
+          />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btnAction1"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="10dp"
+          android:layout_marginStart="10dp"
+          android:layout_weight="1"
+          android:background="@drawable/shape_btn_rect_blue13_corner"
+          android:gravity="center"
+          android:text="@string/camera_microphone_popup_camera_enabled"
+          style="@style/Title.2.White"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btnAction2"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="10dp"
+          android:layout_weight="1"
+          android:background="@drawable/shape_btn_rect_with_greyborder_corner"
+          android:gravity="center"
+          android:text="@string/camera_microphone_popup_enable_microphone"
+          android:textColor="@android:color/black"
+          style="@style/Title.2.White"
+          />
+    </LinearLayout>
+
+  </LinearLayout>
+</merge>

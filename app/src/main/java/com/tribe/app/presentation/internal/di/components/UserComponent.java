@@ -46,8 +46,8 @@ import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
-import com.tribe.app.presentation.view.widget.notifications.NotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import dagger.Component;
 
@@ -65,7 +65,7 @@ import dagger.Component;
 
   void inject(LiveImmersiveNotificationActivity liveImmersiveNotificationActivity);
 
-  void inject(NotificationView notificationView);
+  void inject(PermissionNotificationView permissionNotificationView);
 
   void inject(NotificationContainerView notificationContainerView);
 

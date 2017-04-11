@@ -58,4 +58,12 @@
       android:visibility="gone"
       />
 
+  <com.tribe.app.presentation.view.widget.notifications.RatingNotificationView
+      android:id="@+id/ratingNotificationView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clickable="true"
+      android:visibility="gone"
+      ></com.tribe.app.presentation.view.widget.notifications.RatingNotificationView>
+
 </FrameLayout>

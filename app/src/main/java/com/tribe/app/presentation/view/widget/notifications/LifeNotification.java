@@ -11,6 +11,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.Observable;
@@ -25,8 +26,9 @@ public class LifeNotification extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
   @Inject Navigator navigator;
+  @Inject TagManager tagManager;
 
-  protected CompositeSubscription subscriptions;
+  protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected PublishSubject<Void> onHideNotification = PublishSubject.create();
 
   public LifeNotification(@NonNull Context context) {
@@ -39,11 +41,10 @@ public class LifeNotification extends FrameLayout {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    subscriptions = new CompositeSubscription();
   }
 
   @Override protected void onDetachedFromWindow() {
-    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     clearAnimation();
     super.onDetachedFromWindow();
   }
