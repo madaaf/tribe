@@ -38,6 +38,8 @@ import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
+import com.tribe.app.data.network.interceptor.TribeInterceptor;
+import com.tribe.app.data.network.util.LookupApi;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -83,10 +85,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -233,29 +237,77 @@ import timber.log.Timber;
       TagManager tagManager) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.addInterceptor(chain -> {
-      if (tribeAuthorizer == null
-          || tribeAuthorizer.getAccessToken() == null
-          || StringUtils.isEmpty(tribeAuthorizer.getAccessToken().getAccessToken())) {
-        return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
-      }
+    httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
 
-      Request original = chain.request();
+    httpClientBuilder.authenticator(
+        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
+            tagManager));
 
-      Request.Builder requestBuilder =
-          original.newBuilder().header("Content-type", "application/json");
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
 
-      requestBuilder.header("Authorization",
-          tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
-              .getAccessToken());
-      appendUserAgent(context, requestBuilder);
-      requestBuilder.method(original.method(), original.body());
+    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+        //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
+        .callFactory(httpClientBuilder.build())
+        .build()
+        .create(TribeApi.class);
+  }
 
-      Request request = requestBuilder.build();
-      return chain.proceed(request);
-    });
+  @Provides @PerApplication LookupApi provideLookupApi(Context context, Gson gson,
+      @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
+      final LoginApi loginApi, final AccessToken accessToken, final UserCache userCache,
+      TagManager tagManager) {
+    OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
-    httpClientBuilder.authenticator((route, response) -> {
+    httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
+
+    httpClientBuilder.authenticator(
+        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
+            tagManager));
+
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
+
+    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+        //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
+        .callFactory(httpClientBuilder.build())
+        .build()
+        .create(LookupApi.class);
+  }
+
+  private class TribeAuthenticator implements Authenticator {
+
+    private Context context;
+    private AccessToken accessToken;
+    private LoginApi loginApi;
+    private UserCache userCache;
+    private TribeAuthorizer tribeAuthorizer;
+    private TagManager tagManager;
+
+    public TribeAuthenticator(Context context, AccessToken accessToken, LoginApi loginApi,
+        UserCache userCache, TribeAuthorizer tribeAuthorizer, TagManager tagManager) {
+      this.context = context;
+      this.accessToken = accessToken;
+      this.loginApi = loginApi;
+      this.userCache = userCache;
+      this.tribeAuthorizer = tribeAuthorizer;
+      this.tagManager = tagManager;
+    }
+
+    @Override public Request authenticate(Route route, okhttp3.Response response)
+        throws IOException {
       if (accessToken == null || accessToken.getRefreshToken() == null) return null;
 
       if (isRefreshing.compareAndSet(false, true)) {
@@ -349,22 +401,7 @@ import timber.log.Timber;
 
         return null;
       }
-    });
-
-    if (BuildConfig.DEBUG) {
-      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-      httpClientBuilder.addInterceptor(loggingInterceptor);
-      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
-
-    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
-        //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
-        .callFactory(httpClientBuilder.build())
-        .build()
-        .create(TribeApi.class);
   }
 
   private void clearLock() {
@@ -417,7 +454,7 @@ import timber.log.Timber;
       String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
       requestBuilder.header("Authorization", "Basic " + base64);
-      appendUserAgent(context, requestBuilder);
+      TribeApiUtils.appendUserAgent(context, requestBuilder);
       requestBuilder.method(original.method(), original.body());
 
       Request request = requestBuilder.build();
@@ -448,10 +485,6 @@ import timber.log.Timber;
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS);
-  }
-
-  private void appendUserAgent(Context context, Request.Builder requestBuilder) {
-    requestBuilder.header("User-Agent", TribeApiUtils.getUserAgent(context));
   }
 
   @Provides @Named("webSocketApi") @PerApplication WebSocketConnection provideWebSocketApi() {

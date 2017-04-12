@@ -7,6 +7,7 @@ import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.util.LookupApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.repository.user.contact.RxContacts;
@@ -31,6 +32,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   private final RxFacebook rxFacebook;
   private final TribeApi tribeApi;
   private final LoginApi loginApi;
+  private final LookupApi lookupApi;
   private final AccessToken accessToken;
   private final Installation installation;
   private final ReactiveLocationProvider reactiveLocationProvider;
@@ -39,7 +41,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
-      LoginApi loginApi, AccessToken accessToken, Installation installation,
+      LoginApi loginApi, LookupApi lookupApi, AccessToken accessToken, Installation installation,
       ReactiveLocationProvider reactiveLocationProvider,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @LastSync Preference<Long> lastSync) {
 
@@ -55,6 +57,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     this.rxFacebook = rxFacebook;
     this.tribeApi = tribeApi;
     this.loginApi = loginApi;
+    this.lookupApi = lookupApi;
     this.accessToken = accessToken;
     this.installation = installation;
     this.reactiveLocationProvider = reactiveLocationProvider;

@@ -174,9 +174,7 @@ public class ContactsHelper {
     ContactABRealm contact = new ContactABRealm();
     contact.setId(id);
 
-    HashMap<String, Pair<String, Boolean>> phonesPair = new HashMap<>();
-
-    int countInternational = 0;
+    List<String> phones = new ArrayList<>();
 
     String nextId = id;
     while (id.equals(nextId)) {
@@ -186,11 +184,7 @@ public class ContactsHelper {
           contact.setName(value);
           break;
         case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
-          String phoneNumberFormatted =
-              phoneUtils.formatMobileNumberForAddressBook(value, String.valueOf(countryCode));
-          boolean isFormatted = !StringUtils.isEmpty(phoneNumberFormatted);
-          phonesPair.put(isFormatted ? phoneNumberFormatted : value.trim(),
-              new Pair<>(isFormatted ? phoneNumberFormatted : value.trim(), isFormatted));
+          phones.add(value.trim());
           break;
       }
 
@@ -203,22 +197,17 @@ public class ContactsHelper {
 
     RealmList<PhoneRealm> realmList = new RealmList<>();
 
-    if (phonesPair != null && phonesPair.size() > 0) {
-      for (Pair<String, Boolean> phonePair : phonesPair.values()) {
+    if (phones != null && phones.size() > 0) {
+      for (String phone : phones) {
         PhoneRealm phoneRealm = new PhoneRealm();
-        phoneRealm.setPhone(phonePair.first);
-        phoneRealm.setInternational(phonePair.second);
+        phoneRealm.setPhone(phone);
         realmList.add(phoneRealm);
-
-        if (phonePair.second) countInternational++;
       }
     }
 
     contact.setPhones(realmList);
 
-    if (countInternational > 0) return contact;
-
-    return null;
+    return contact;
   }
 
   private static void log(List<ContactABRealm> contacts) {

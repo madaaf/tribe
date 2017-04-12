@@ -108,6 +108,7 @@
 	<string name="live_notification_peer_joining">%1$s est en train d\'arriver...</string>
 	<string name="live_notification_peer_joined">%1$s est arrivé</string>
 	<string name="live_notification_peer_left">%1$s est parti</string>
+	<string name="live_notification_guest_removed">%1$s a été supprimé</string>
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>

@@ -19,7 +19,6 @@ import timber.log.Timber;
 @Singleton public class RxContacts {
 
   private User user;
-  private int countryCode;
   private boolean withPhones;
   private Sorter sorter;
   private Filter[] filter;
@@ -45,9 +44,6 @@ import timber.log.Timber;
    * Run ContentResolver query and emit results to the Observable
    */
   public Observable<ContactABRealm> getContacts() {
-    this.countryCode = phoneUtils.getCountryCode(user.getPhone());
-    helper.setCountryCode(countryCode);
-
     if (contactsObservable == null) {
       contactsObservable = Observable.create((Subscriber<? super ContactABRealm> subscriber) -> {
         //emit(null, withPhones, sorter, filter, subscriber);

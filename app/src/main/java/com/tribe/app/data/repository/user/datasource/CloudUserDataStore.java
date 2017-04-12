@@ -17,6 +17,7 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
+import com.tribe.app.data.network.util.LookupApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
@@ -64,6 +65,7 @@ public class CloudUserDataStore implements UserDataStore {
 
   private final TribeApi tribeApi;
   private final LoginApi loginApi;
+  private final LookupApi lookupApi;
   private UserCache userCache = null;
   private LiveCache liveCache = null;
   private final ContactCache contactCache;
@@ -85,7 +87,7 @@ public class CloudUserDataStore implements UserDataStore {
    */
   public CloudUserDataStore(UserCache userCache, ContactCache contactCache, LiveCache liveCache,
       RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi,
-      AccessToken accessToken, Installation installation, Context context,
+      LookupApi lookupApi, AccessToken accessToken, Installation installation, Context context,
       @LastSync Preference<Long> lastSync) {
     this.userCache = userCache;
     this.contactCache = contactCache;
@@ -93,6 +95,7 @@ public class CloudUserDataStore implements UserDataStore {
     this.rxFacebook = rxFacebook;
     this.tribeApi = tribeApi;
     this.loginApi = loginApi;
+    this.lookupApi = lookupApi;
     this.context = context;
     this.accessToken = accessToken;
     this.installation = installation;
@@ -309,55 +312,37 @@ public class CloudUserDataStore implements UserDataStore {
         if (phones.size() > 0) {
           StringBuilder result = new StringBuilder();
 
-          int count = 0;
           for (String phone : phones.keySet()) {
             result.append("\"" + phone + "\"");
             result.append(",");
-            count++;
-
-            if (count % LOOKUP_LIMIT == 0) {
-              String req = context.getString(R.string.lookup_phone, 0,
-                  result.length() > 0 ? result.substring(0, result.length() - 1) : "");
-              requests.add(context.getString(R.string.lookup, req,
-                  context.getString(R.string.userfragment_infos)));
-              result = new StringBuilder();
-            }
           }
-
-          String req = context.getString(R.string.lookup_phone, 0,
-              result.length() > 0 ? result.substring(0, result.length() - 1) : "");
-          requests.add(context.getString(R.string.lookup, req,
-              context.getString(R.string.userfragment_infos)));
         }
 
-        if (fbIds.size() > 0) {
-          StringBuilder result = new StringBuilder();
+        //if (fbIds.size() > 0) {
+        //  StringBuilder result = new StringBuilder();
+        //
+        //  int count = 0;
+        //  for (String fbid : fbIds.keySet()) {
+        //    result.append("\"" + fbid + "\"");
+        //    result.append(",");
+        //    count++;
+        //
+        //    if (count % LOOKUP_LIMIT == 0) {
+        //      String req = context.getString(R.string.lookup_facebook, 0,
+        //          result.length() > 0 ? result.substring(0, result.length() - 1) : "");
+        //      requests.add(context.getString(R.string.lookup, req,
+        //          context.getString(R.string.userfragment_infos)));
+        //      result = new StringBuilder();
+        //    }
+        //  }
+        //
+        //  String req = context.getString(R.string.lookup_facebook, 0,
+        //      result.length() > 0 ? result.substring(0, result.length() - 1) : "");
+        //  requests.add(context.getString(R.string.lookup, req,
+        //      context.getString(R.string.userfragment_infos)));
+        //}
 
-          int count = 0;
-          for (String fbid : fbIds.keySet()) {
-            result.append("\"" + fbid + "\"");
-            result.append(",");
-            count++;
-
-            if (count % LOOKUP_LIMIT == 0) {
-              String req = context.getString(R.string.lookup_facebook, 0,
-                  result.length() > 0 ? result.substring(0, result.length() - 1) : "");
-              requests.add(context.getString(R.string.lookup, req,
-                  context.getString(R.string.userfragment_infos)));
-              result = new StringBuilder();
-            }
-          }
-
-          String req = context.getString(R.string.lookup_facebook, 0,
-              result.length() > 0 ? result.substring(0, result.length() - 1) : "");
-          requests.add(context.getString(R.string.lookup, req,
-              context.getString(R.string.userfragment_infos)));
-        }
-
-        return Observable.just(requests)
-            .flatMap(strings -> Observable.from(strings))
-            .flatMap(s -> tribeApi.lookup(s))
-            .toList()
+        return lookupApi.(s)
             .map(lookupEntities -> {
               for (LookupEntity lookupEntity : lookupEntities) {
                 for (UserRealm userRealm : lookupEntity.getLookup()) {

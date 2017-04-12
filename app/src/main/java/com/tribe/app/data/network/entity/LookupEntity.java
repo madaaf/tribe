@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class LookupEntity {
 
-  private List<UserRealm> lookupList;
+  private List<Object> lookupList;
 
   public List<UserRealm> getLookup() {
     return lookupList;
