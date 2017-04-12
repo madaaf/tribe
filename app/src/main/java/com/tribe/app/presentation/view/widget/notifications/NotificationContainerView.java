@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -43,8 +44,14 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class NotificationContainerView extends FrameLayout {
+  @StringDef({ DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF })
+  public @interface NotifType {
+
+  }
+
   public static final String DISPLAY_CREATE_GRP_NOTIF = "DISPLAY_CREATE_FRP_NOTIF";
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
+  private static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
 
   private final static int START_OFFSET_DURATION = 500;
   private final static int BACKGROUND_ANIM_DURATION = 1500;
@@ -62,13 +69,10 @@ public class NotificationContainerView extends FrameLayout {
 
   // VARIABLES
   private LayoutInflater inflater;
-  private View viewToDisplay = null;
+  private LifeNotification viewToDisplay;
   private Unbinder unbinder;
   private Context context;
   private GestureDetectorCompat gestureScanner;
-  private EnjoyingTribeNotificationView enjoyingTribeView;
-  private CreateGroupNotificationView createGrpNotifView;
-  private PermissionNotificationView permissionNotifView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -83,14 +87,53 @@ public class NotificationContainerView extends FrameLayout {
     initView(context);
   }
 
+  ///////////////////
+  //     PUBLIC   //
+  ///////////////////
+
+  public boolean showNotification(Intent data, @NotifType String type) {
+    boolean notifIsDisplayed = false;
+
+    if (type != null) {
+      switch (type) {
+        case DISPLAY_PERMISSION_NOTIF:
+          notifIsDisplayed = displayPermissionNotification();
+      }
+    } else if (data != null) {
+      notifIsDisplayed = displayNotifFromIntent(data);
+    }
+
+    initSubscription();
+    return notifIsDisplayed;
+  }
+  ///////////////////
+  //     PRIVATE   //
+  ///////////////////
+
+  private boolean displayNotifFromIntent(Intent data) {
+    boolean notifIsCreated = createNotifFromIntent(data);
+    if (notifIsCreated) animateView();
+    return notifIsCreated;
+  }
+
+  private boolean displayPermissionNotification() {
+    RxPermissions rxPermissions = new RxPermissions((Activity) getContext());
+    if (!PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
+        || !PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
+      viewToDisplay = new PermissionNotificationView(context);
+      addViewInContainer(viewToDisplay);
+      animateView();
+      return true;
+    }
+    return false;
+  }
+
   private void initView(Context context) {
     this.context = context;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_notification_container, this, true);
     unbinder = ButterKnife.bind(this);
-    initViews();
-
     container.setOnTouchListener(new OnTouchListener() {
       @Override public boolean onTouch(View v, MotionEvent event) {
         return gestureScanner.onTouchEvent(event);
@@ -99,28 +142,11 @@ public class NotificationContainerView extends FrameLayout {
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
   }
 
-  private void initViews() {
-    enjoyingTribeView = new EnjoyingTribeNotificationView(context);
-    createGrpNotifView = new CreateGroupNotificationView(context);
-    permissionNotifView = new PermissionNotificationView(context);
-
-    subscriptions.add(enjoyingTribeView.onHideNotification().subscribe(aVoid -> {
+  private void initSubscription() {
+    if (viewToDisplay == null) return;
+    subscriptions.add(viewToDisplay.onHideNotification().subscribe(aVoid -> {
       hideView();
     }));
-
-    subscriptions.add(createGrpNotifView.onHideNotification().subscribe(aVoid -> {
-      hideView();
-    }));
-
-    subscriptions.add(permissionNotifView.onHideNotification().subscribe(aVoid -> {
-      hideView();
-    }));
-  }
-
-  public boolean displayNotifFromIntent(Intent data) {
-    boolean notifIsCreated = createNotifFromIntent(data);
-    if (notifIsCreated) animateView();
-    return notifIsCreated;
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -129,19 +155,7 @@ public class NotificationContainerView extends FrameLayout {
     super.onDetachedFromWindow();
   }
 
-  public boolean displayPermissionNotification() {
-    RxPermissions rxPermissions = new RxPermissions((Activity) getContext());
-    if (!PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
-        || !PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
-      viewToDisplay = permissionNotifView;
-      addViewInContainer(viewToDisplay);
-      animateView();
-      return true;
-    }
-    return false;
-  }
-
-  public boolean createNotifFromIntent(Intent data) {
+  private boolean createNotifFromIntent(Intent data) {
     viewToDisplay = getViewFromIntent(data);
     if (viewToDisplay != null) addViewInContainer(viewToDisplay);
     return (viewToDisplay != null);
@@ -154,10 +168,6 @@ public class NotificationContainerView extends FrameLayout {
     }
     notificationView.addView(v);
   }
-
-  ///////////////////
-  //     PRIVATE   //
-  ///////////////////
 
   private void animateView() {
     setVisibility(VISIBLE);
@@ -198,7 +208,7 @@ public class NotificationContainerView extends FrameLayout {
     notificationView.startAnimation(slideInAnimation);
   }
 
-  private View getViewFromIntent(Intent data) {
+  private LifeNotification getViewFromIntent(Intent data) {
     Bundle extra = data.getExtras();
     boolean displayEnjoyingTribeView = false;
 
@@ -212,10 +222,9 @@ public class NotificationContainerView extends FrameLayout {
     if (data.getBooleanExtra(DISPLAY_CREATE_GRP_NOTIF, false) && extra != null) {
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);
-      viewToDisplay = createGrpNotifView;
-      createGrpNotifView.setMembers(members);
+      viewToDisplay = new CreateGroupNotificationView(context, members);
     } else if (displayEnjoyingTribeView) {
-      viewToDisplay = enjoyingTribeView;
+      viewToDisplay = new EnjoyingTribeNotificationView(context);
     }
     return viewToDisplay;
   }

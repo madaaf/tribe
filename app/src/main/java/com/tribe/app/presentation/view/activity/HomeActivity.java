@@ -398,8 +398,8 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
-          boolean displayPermissionNotif =
-              notificationContainerView.displayPermissionNotification();
+          boolean displayPermissionNotif = notificationContainerView.
+              showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
           if (displayPermissionNotif) {
             return;
           }
@@ -663,7 +663,7 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (data != null) {
-      if (!notificationContainerView.displayNotifFromIntent(data)) {
+      if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);
       }
     }
