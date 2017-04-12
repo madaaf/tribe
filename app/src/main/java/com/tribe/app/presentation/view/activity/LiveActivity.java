@@ -640,6 +640,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       returnIntent.putExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
       willDisplayPopup = true;
+      liveDurationIsMoreThan30sec = false;
     }
 
     Map<String, Object> tagMap = PreferencesUtils.getMapFromJson(callTagsMap);
