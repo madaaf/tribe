@@ -28,7 +28,7 @@ import com.tribe.app.R;
 
 public class UIUtils {
 
-  private static final int DURATION_REVEAL = 450;
+  public static final int DURATION_REVEAL = 300;
 
   public static void setBackgroundGrid(ScreenUtils screenUtils, View v, int position,
       boolean hasCorners) {

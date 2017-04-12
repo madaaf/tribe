@@ -28,6 +28,17 @@ public class TribePeerMediaConfiguration {
     session = tribeSession;
   }
 
+  public TribePeerMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
+    session = mediaConfiguration.getSession();
+    update(mediaConfiguration);
+  }
+
+  public void update(TribePeerMediaConfiguration mediaConfiguration) {
+    audioEnabled = mediaConfiguration.audioEnabled;
+    videoEnabled = mediaConfiguration.videoEnabled;
+    mediaConfigurationType = mediaConfiguration.getType();
+  }
+
   public void setAudioEnabled(boolean audioEnabled) {
     this.audioEnabled = audioEnabled;
   }

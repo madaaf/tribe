@@ -37,7 +37,7 @@ public class LiveRowView extends FrameLayout {
 
   @BindView(R.id.viewWaiting) LiveWaitingView viewWaiting;
 
-  @BindView(R.id.viewPeerState) LivePeerStateView viewPeerState;
+  @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
 
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
@@ -79,7 +79,7 @@ public class LiveRowView extends FrameLayout {
 
     if (guest != null) {
       viewWaiting.setGuest(guest);
-      viewPeerState.setGuest(guest);
+      viewPeerOverlay.setGuest(guest);
     }
 
     viewWaiting.setColor(color);
@@ -105,7 +105,7 @@ public class LiveRowView extends FrameLayout {
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     viewWaiting.setGuest(guest);
-    viewPeerState.setGuest(guest);
+    viewPeerOverlay.setGuest(guest);
   }
 
   public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
@@ -131,15 +131,26 @@ public class LiveRowView extends FrameLayout {
     subscriptions.add(this.remotePeerView.onMediaConfiguration()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribePeerMediaConfiguration -> {
-          if (!tribePeerMediaConfiguration.isVideoEnabled()
-              || !tribePeerMediaConfiguration.isAudioEnabled()
-              || tribePeerMediaConfiguration.isLowConnection()) {
-            viewPeerState.setVisibility(View.VISIBLE);
+          if (!tribePeerMediaConfiguration.isVideoEnabled()) {
+            UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                animation.removeAllListeners();
+                layoutStream.setVisibility(View.GONE);
+              }
+            });
           } else {
-            viewPeerState.setVisibility(View.GONE);
+            UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+              @Override public void onAnimationStart(Animator animation) {
+                layoutStream.setVisibility(View.VISIBLE);
+              }
+
+              @Override public void onAnimationEnd(Animator animation) {
+                animation.removeAllListeners();
+              }
+            });
           }
 
-          viewPeerState.setMediaConfiguration(tribePeerMediaConfiguration);
+          viewPeerOverlay.setMediaConfiguration(tribePeerMediaConfiguration);
         }));
 
     isWaiting = false;

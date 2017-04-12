@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -22,14 +24,17 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.view.LocalPeerView;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -44,7 +49,9 @@ public class LiveLocalView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.viewPeerState) LivePeerStateView viewPeerState;
+  @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
+
+  @BindView(R.id.cardViewStreamLayout) CardView cardViewStreamLayout;
 
   private LocalPeerView viewPeerLocal;
 
@@ -86,21 +93,30 @@ public class LiveLocalView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_local, this);
     unbinder = ButterKnife.bind(this);
 
+    cardViewStreamLayout.setPreventCornerOverlap(false);
+    cardViewStreamLayout.setMaxCardElevation(0);
+    cardViewStreamLayout.setCardElevation(0);
+    ViewCompat.setElevation(viewPeerOverlay, 0);
+
     gestureDetector = new GestureDetectorCompat(getContext(), new TapGestureListener());
 
     localMediaConfiguration = new TribePeerMediaConfiguration(
         new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
+    viewPeerOverlay.initMediaConfiguration(localMediaConfiguration);
 
     viewPeerLocal = new LocalPeerView(getContext(), localMediaConfiguration);
-    viewPeerLocal.setBackgroundColor(Color.BLACK);
-    addView(viewPeerLocal, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT));
+    viewPeerLocal.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
+
+    // We add the view in between the background and overlay
+    cardViewStreamLayout.addView(viewPeerLocal,
+        new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
 
-    viewPeerState.setGuest(
+    viewPeerOverlay.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
             null, false));
 
@@ -109,8 +125,11 @@ public class LiveLocalView extends FrameLayout {
 
   private void initSubscriptions() {
     subscriptions.add(Observable.merge(onEnableCamera, onEnableMicro)
-        .filter(mediaConfiguration -> (!mediaConfiguration.isVideoEnabled() || !mediaConfiguration.isAudioEnabled()))
-        .subscribe(mediaConfiguration -> viewPeerState.setMediaConfiguration(mediaConfiguration)));
+        .debounce(1000, TimeUnit.MILLISECONDS)
+        .distinct()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            mediaConfiguration -> viewPeerOverlay.setMediaConfiguration(mediaConfiguration)));
   }
 
   private void initResources() {
@@ -141,21 +160,26 @@ public class LiveLocalView extends FrameLayout {
   }
 
   private void computeDisplay(boolean animate) {
-    if (!localMediaConfiguration.isVideoEnabled() || !localMediaConfiguration.isAudioEnabled()) {
-      UIUtils.showReveal(viewPeerState, animate, new AnimatorListenerAdapter() {
-        @Override public void onAnimationStart(Animator animation) {
+    if (!localMediaConfiguration.isVideoEnabled()) {
+      UIUtils.hideReveal(cardViewStreamLayout, animate, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
           animation.removeAllListeners();
-          viewPeerState.setVisibility(View.VISIBLE);
+          cardViewStreamLayout.setVisibility(View.GONE);
         }
       });
     } else {
-      UIUtils.hideReveal(viewPeerState, animate, new AnimatorListenerAdapter() {
+      UIUtils.showReveal(cardViewStreamLayout, animate, new AnimatorListenerAdapter() {
+        @Override public void onAnimationStart(Animator animation) {
+          cardViewStreamLayout.setVisibility(View.VISIBLE);
+        }
+
         @Override public void onAnimationEnd(Animator animation) {
           animation.removeAllListeners();
-          viewPeerState.setVisibility(View.GONE);
         }
       });
     }
+
+    viewPeerOverlay.setMediaConfiguration(localMediaConfiguration);
   }
 
   /////////////////
@@ -190,7 +214,8 @@ public class LiveLocalView extends FrameLayout {
 
   public void dispose() {
     if (subscriptions != null) subscriptions.unsubscribe();
-    viewPeerLocal.onDestroy();
+    viewPeerLocal.dispose();
+    viewPeerOverlay.dispose();
   }
 
   public LocalPeerView getLocalPeerView() {

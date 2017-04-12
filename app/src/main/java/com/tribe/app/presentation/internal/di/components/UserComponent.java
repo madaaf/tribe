@@ -25,10 +25,10 @@ import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
-import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
-import com.tribe.app.presentation.view.component.live.LivePeerStateView;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
+import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
+import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
@@ -125,8 +125,6 @@ import dagger.Component;
 
   void inject(LiveRoomView liveRoomView);
 
-  void inject(LivePeerStateView liveAudioView);
-
   void inject(LiveWaitingView liveWaitingView);
 
   void inject(ChasingDotsView threeDotsView);
@@ -142,6 +140,8 @@ import dagger.Component;
   void inject(SettingsBlockedFriendsView settingsBlockedFriendsView);
 
   void inject(LiveLowConnectionView liveLowConnectionView);
+
+  void inject(LivePeerOverlayView livePeerOverlayView);
 
   void inject(LiveWaveView liveWaveView);
 }

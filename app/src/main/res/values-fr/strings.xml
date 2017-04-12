@@ -418,22 +418,23 @@
 	<string name="create_group_popup_swipe_to_dismiss">Glisser vers le haut pour fermer</string>
 	
 	<!-- Enjoying Tribe Popup -->
-	<string name="enjoying_tribe_popup_action1">Pas maintenant  :broken_heart:</string>
-	<string name="enjoying_tribe_popup_action2">J\'adore!  :heart:</string>
-	<string name="enjoying_tribe_popup_title">Tu as aimé tribe?</string>
-	<string name="enjoying_tribe_popup_subtitle">Clique sur une des deux \n options pour nous tenir au courant!</string>
+	<string name="enjoying_tribe_popup_action1">Pas maintenant :broken_heart:</string>
+	<string name="enjoying_tribe_popup_action2">J\'adore ! :heart:</string>
+	<string name="enjoying_tribe_popup_title">Tu as aimé tribe ?</string>
+	<string name="enjoying_tribe_popup_subtitle">Cliques sur l\'une des deux\noptions pour nous tenir au courant !</string>
 	
 	<!-- Popup Feedback -->
-	<string name="popup_feedback_title">Compris !</string>
-	<string name="popup_feedback_subtitle"></string>
+	<string name="popup_feedback_title">Compris ! :dizzy:</string>
+	<string name="popup_feedback_subtitle">Accepteriez-vous de nous envoyer un petit feedback pour nous dire ce que vous n\'appréciez pas ?</string>
 	<string name="popup_feedback_action1">Je suis occupé</string>
 	<string name="popup_feedback_action2">Envoyer un email</string>
-	<string name="popup_feedback_tribe_mail_subject"></string>
+	<string name="popup_feedback_tribe_mail_subject">Avis utilisateur</string>
 	<string name="popup_feedback_tribe_mail">support@tribe.pm</string>
 	
 	<!-- Popup Review -->
-	<string name="popup_review_playstore_title">Merci ! :hearts:</string>
-	<string name="popup_review_playstore_subtitle"></string>
+	<string name="popup_review_playstore_title">Merci ! :two_hearts:</string>
+	<string name="popup_review_playstore_subtitle">Accepteriez-vous de partager ceci sur le Play Store ? (:star::star::star::star::star:)</string>
+	<string name="popup_review_playstore_subtitle_ios">Accepteriez-vous de partager ceci sur l\'AppStore ? (:star::star::star::star::star:)</string>
 	<string name="popup_review_playstore_action1">Je suis occupé</string>
 	<string name="popup_review_playstore_action2">Laisser un avis</string>
 	

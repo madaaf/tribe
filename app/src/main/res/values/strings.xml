@@ -418,22 +418,23 @@
 	<string name="create_group_popup_swipe_to_dismiss">Swipe up to dismiss</string>
 	
 	<!-- Enjoying Tribe Popup -->
-	<string name="enjoying_tribe_popup_action1">Not yet  :broken_heart:</string>
-	<string name="enjoying_tribe_popup_action2">Love it!  :heart:</string>
+	<string name="enjoying_tribe_popup_action1">Not yet :broken_heart:</string>
+	<string name="enjoying_tribe_popup_action2">Love it! :heart:</string>
 	<string name="enjoying_tribe_popup_title">Enjoying tribe?</string>
-	<string name="enjoying_tribe_popup_subtitle">Tap one of there two \n options to let us know!</string>
+	<string name="enjoying_tribe_popup_subtitle">Tap one of these two\noptions to let us know!</string>
 	
 	<!-- Popup Feedback -->
-	<string name="popup_feedback_title">Got it!</string>
+	<string name="popup_feedback_title">Got it! :dizzy:</string>
 	<string name="popup_feedback_subtitle">Would you mind sharing a quick a quick feedback to let us know what you\'re not enjoying?</string>
 	<string name="popup_feedback_action1">I\'m busy</string>
-	<string name="popup_feedback_action2">send an email</string>
+	<string name="popup_feedback_action2">Send an email</string>
 	<string name="popup_feedback_tribe_mail_subject">User review</string>
 	<string name="popup_feedback_tribe_mail">support@tribe.pm</string>
 	
 	<!-- Popup Review -->
-	<string name="popup_review_playstore_title">Thanks! :hearts:</string>
+	<string name="popup_review_playstore_title">Thanks! :two_hearts:</string>
 	<string name="popup_review_playstore_subtitle">Would you mind sharing this on the Play Store? (:star::star::star::star::star:)</string>
+	<string name="popup_review_playstore_subtitle_ios">Would you mind sharing this on the App Store? (:star::star::star::star::star:)</string>
 	<string name="popup_review_playstore_action1">I\'m busy</string>
 	<string name="popup_review_playstore_action2">Leave a review</string>
 	

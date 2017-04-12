@@ -38,7 +38,7 @@ public class LocalPeerView extends PeerView {
     initVideoRenderer();
   }
 
-  public void onDestroy() {
+  public void dispose() {
     if (subscriptions != null) subscriptions.unsubscribe();
   }
 
