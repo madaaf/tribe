@@ -170,13 +170,14 @@ public class AccessView extends FrameLayout {
         lp.leftMargin = location[0] + ((circleSize - imgIcon.getMeasuredWidth()) >> 1);
         int heightDiff = screenUtils.getHeightPx() - getMeasuredHeight();
         lp.topMargin = (location[1] - heightDiff) + ((circleSize - imgIcon.getMeasuredHeight()) >> 1);
+        imgIcon.setLayoutParams(lp);
 
         imgIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
         imgIcon.animate()
             .alpha(1)
             .scaleX(1)
             .scaleY(1)
-            .setDuration(800)
+            .setDuration(600)
             .setInterpolator(new OvershootInterpolator(0.45f))
             .start();
       }
