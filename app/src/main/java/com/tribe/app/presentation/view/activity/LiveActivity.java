@@ -344,7 +344,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }
       } else {
-        // returnIntent.putExtra(NotificationContainerView.DISPLAY_PERMISSION_NOTIF, true);
         finish();
       }
     }));

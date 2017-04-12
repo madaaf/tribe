@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.widget.notifications;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -16,8 +15,6 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.PermissionUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -45,23 +42,25 @@ public class CreateGroupNotificationView extends LifeNotification {
   private Context context;
   private List<GroupMember> prefilledGrpMembers = new ArrayList<>();
 
-  public CreateGroupNotificationView(@NonNull Context context) {
+  public CreateGroupNotificationView(@NonNull Context context, List<TribeGuest> members) {
     super(context);
-    initView(context);
+    initView(context, members);
   }
 
-  public CreateGroupNotificationView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public CreateGroupNotificationView(@NonNull Context context, @Nullable AttributeSet attrs,
+      List<TribeGuest> members) {
     super(context, attrs);
-    initView(context);
+    initView(context, members);
   }
 
-  private void initView(Context context) {
+  private void initView(Context context, List<TribeGuest> members) {
     this.context = context;
 
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_create_grp_notification, this, true);
     unbinder = ButterKnife.bind(this);
+    setMembers(members);
   }
 
   @OnClick(R.id.btnAction1) void onClickAction1() {
@@ -74,7 +73,7 @@ public class CreateGroupNotificationView extends LifeNotification {
     hideView();
   }
 
-  public void setMembers(ArrayList<TribeGuest> members) {
+  private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
     drawAvatarsAndNamesMembers(members);
     prefilledGrpMembers = getUserList(members);
@@ -119,7 +118,7 @@ public class CreateGroupNotificationView extends LifeNotification {
     txtGrpMembersNames.setText(txtNames);
   }
 
-  private List<GroupMember> getUserList(ArrayList<TribeGuest> tribeGuests) {
+  private List<GroupMember> getUserList(List<TribeGuest> tribeGuests) {
     List<GroupMember> userList = new ArrayList<>();
 
     if (tribeGuests == null) return userList;

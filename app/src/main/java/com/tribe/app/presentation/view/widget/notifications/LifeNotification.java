@@ -13,6 +13,8 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -76,4 +78,5 @@ public class LifeNotification extends FrameLayout {
   public Observable<Void> onHideNotification() {
     return onHideNotification;
   }
+
 }
