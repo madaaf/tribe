@@ -69,9 +69,9 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.app.presentation.view.widget.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
@@ -653,7 +653,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
 
     if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty()) && peopleInLive.size() > 1) {
-      returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GROUPE_NOTIFICATION, true);
+      returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GRP_NOTIF, true);
       Bundle extra = new Bundle();
       extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
           (Serializable) peopleInLive);
