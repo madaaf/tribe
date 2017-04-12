@@ -15,8 +15,7 @@
       android:background="@color/black.opacity.50"
       />
 
-
-  <com.tribe.app.presentation.view.widget.notifications.LifeNotification
+  <FrameLayout
       android:id="@+id/notificationView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"

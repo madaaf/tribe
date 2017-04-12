@@ -55,7 +55,7 @@ public class NotificationContainerView extends FrameLayout {
   @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
-  @BindView(R.id.notificationView) LifeNotification notificationView;
+  @BindView(R.id.notificationView) FrameLayout notificationView;
   @BindView(R.id.bgView) View bgView;
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.txtDismiss) TextViewFont textDismiss;
