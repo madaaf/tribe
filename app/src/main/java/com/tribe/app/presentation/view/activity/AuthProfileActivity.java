@@ -221,8 +221,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @OnClick(R.id.txtAction) void onClickAction() {
     if (isReady()) {
       nextStep();
-    } else if (!profileInfoView.isAvatarSelected()) {
-      profileInfoView.shakeAvatar();
     } else if (!profileInfoView.isDisplayNameSelected()) {
       profileInfoView.shakeDisplayName();
     } else if (!profileInfoView.isUsernameSelected()) {
@@ -231,9 +229,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private boolean isReady() {
-    return profileInfoView.isUsernameSelected()
-        && profileInfoView.isDisplayNameSelected()
-        && profileInfoView.isAvatarSelected();
+    return profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected();
   }
 
   private void nextStep() {

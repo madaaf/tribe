@@ -166,6 +166,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
             .target(imgAvatar)
             .size(avatarSize)
             .hasHole(hasHole && isOnlineOrLive())
+            .hasPlaceholder(false)
             .load();
       } else if (!groupAvatarFile.exists()) {
         if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
@@ -179,8 +180,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
                       .hasHole(hasHole && isOnlineOrLive())
                       .load());
         }
-
-        loadPlaceholder(hasHole);
       }
     } else {
       load(url);
@@ -197,9 +196,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
           .size(avatarSize)
           .target(imgAvatar)
           .hasHole(hasHole && isOnlineOrLive())
+          .hasPlaceholder(false)
           .load();
     } else {
-      loadPlaceholder(hasHole);
+      loadPlaceholder(hasHole && isOnlineOrLive());
     }
   }
 

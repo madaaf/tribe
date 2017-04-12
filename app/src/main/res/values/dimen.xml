@@ -61,7 +61,7 @@
 
   <!-- HEIGHT -->
   <dimen name="view_share_profile_height">82dp</dimen>
-  <dimen name="view_profile_info_height">180dp</dimen>
+  <dimen name="view_profile_info_height">146dp</dimen>
   <dimen name="authentication_dialog_width">300dp</dimen>
 
   <!-- SIZES -->

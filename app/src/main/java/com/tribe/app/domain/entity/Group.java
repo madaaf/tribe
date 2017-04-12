@@ -79,8 +79,7 @@ public class Group implements Serializable {
 
       if (subMembers != null) {
         for (User user : subMembers) {
-          String url = user.getProfilePicture();
-          if (!StringUtils.isEmpty(url)) pics.add(url);
+          pics.add(user.getProfilePicture());
         }
       }
     }
