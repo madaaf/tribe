@@ -120,8 +120,11 @@ public class LivePeerOverlayView extends FrameLayout {
   }
 
   private void loadAvatar() {
-    if (guest == null) avatar.load("");
-    else avatar.load(guest.getPicture());
+    if (guest == null) {
+      avatar.load("");
+    } else {
+      avatar.load(guest.getPicture());
+    }
   }
 
   private void setName() {
@@ -212,7 +215,7 @@ public class LivePeerOverlayView extends FrameLayout {
         txtState.setAlpha(0f);
       }
 
-      visualizerView.hide(false);
+      visualizerView.hide(true);
 
       if (mediaConfiguration.isLowConnection()) {
         viewLowConnection.show();
