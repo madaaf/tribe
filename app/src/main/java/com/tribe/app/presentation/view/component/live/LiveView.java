@@ -199,8 +199,8 @@ public class LiveView extends FrameLayout {
 
       if (hasJoined && averageCountLive > 1) {
         state = TagManagerUtils.ENDED;
-        numberOfCalls.set(numberOfCalls.get() + 1);
         counterOfCallsForGrpButton.set(counterOfCallsForGrpButton.get() + 1);
+        numberOfCalls.set(numberOfCalls.get() + 1);
         Float totalDuration = minutesOfCalls.get() + (float) duration;
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);

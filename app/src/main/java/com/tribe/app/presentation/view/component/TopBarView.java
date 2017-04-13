@@ -176,11 +176,18 @@ public class TopBarView extends FrameLayout {
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
+
+    resfreshNewBtn();
+  }
+
+  public void resfreshNewBtn() {
     if (counterOfCallsForGrpButton.get() > MIN_NUMBER_CALL && !isGroupCreated.get()) {
       btnNew.setBackgroundResource(R.drawable.selectable_button_all_rounded_purple);
+    } else {
+      btnNew.setBackgroundResource(R.drawable.selectable_button_all_rounded_white_10);
     }
   }
-  
+
   private void initResources() {
     avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_smaller);
     clickActionThreshold = screenUtils.dpToPx(CLICK_ACTION_THRESHOLD);

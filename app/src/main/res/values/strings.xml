@@ -97,6 +97,7 @@
 	
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
+	<string name="live_notification_action_decline">Decline</string>
 	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
 	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
@@ -112,6 +113,7 @@
 	<string name="live_notification_buzzed">Buzzing!</string>
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
+	<string name="live_notification_guest_declined">%1$s can\'t answer now</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Live call</string>
