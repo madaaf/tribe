@@ -16,6 +16,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import timber.log.Timber;
 
@@ -34,8 +35,6 @@ public class PermissionNotificationView extends LifeNotification {
   private boolean cameraEnabledState = false;
   private boolean microEnabledState = false;
   private RxPermissions rxPermissions;
-  private boolean permmissionCameraAsked = false;
-  private boolean permmissionMicroaAsked = false;
 
   public PermissionNotificationView(@NonNull Context context) {
     super(context);
@@ -61,9 +60,7 @@ public class PermissionNotificationView extends LifeNotification {
   private void initParams() {
     rxPermissions = new RxPermissions((Activity) getContext());
     cameraEnabledState = PermissionUtils.hasPermissionsCameraOnly(rxPermissions);
-    permmissionCameraAsked = cameraEnabledState;
     microEnabledState = PermissionUtils.hasPermissionsMicroOnly(rxPermissions);
-    permmissionMicroaAsked = microEnabledState;
   }
 
   @OnClick(R.id.btnAction1) void onClickCameraEnable() {
@@ -78,13 +75,16 @@ public class PermissionNotificationView extends LifeNotification {
             Timber.d("Denied camera permission without ask never again");
           } else {
             Timber.d("Denied camera permission and ask never again");
-            navigator.navigateToSettingApp(getContext());
+            if (!stateManager.shouldDisplay(StateManager.NEVER_ASK_AGAIN_CAMERA_PERMISSION)) {
+              navigator.navigateToSettingApp(getContext());
+              hideView();
+            }
+            stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_CAMERA_PERMISSION);
           }
           Bundle bundle = new Bundle();
           bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED,
               PermissionUtils.hasPermissionsCameraOnly(rxPermissions));
           tagManager.setProperty(bundle);
-          permmissionCameraAsked = true;
           finish();
         }));
   }
@@ -102,19 +102,23 @@ public class PermissionNotificationView extends LifeNotification {
             Timber.d("Denied micro permission without ask never again");
           } else {
             Timber.d("Denied micro permission and ask never again");
-            navigator.navigateToSettingApp(getContext());
+            if (!stateManager.shouldDisplay(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION)) {
+              navigator.navigateToSettingApp(getContext());
+              hideView();
+            }
+            stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION);
           }
           Bundle bundle = new Bundle();
           bundle.putBoolean(TagManagerUtils.USER_MICROPHONE_ENABLED,
               PermissionUtils.hasPermissionsMicroOnly(rxPermissions));
           tagManager.setProperty(bundle);
-          permmissionMicroaAsked = true;
           finish();
         }));
   }
 
   private void finish() {
-    if (permmissionCameraAsked && permmissionMicroaAsked) {
+    if (PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
+        && PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
       hideView();
     }
   }

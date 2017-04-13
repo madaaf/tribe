@@ -54,8 +54,8 @@ public class NotificationContainerView extends FrameLayout {
   private static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
 
   private final static int START_OFFSET_DURATION = 500;
-  private final static int BACKGROUND_ANIM_DURATION = 1500;
-  private final static int NOTIF_DURATION = 800;
+  private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
+  private final static int BACKGROUND_ANIM_DURATION_EXIT = 800;
 
   @Inject TagManager tagManager;
   @Inject StateManager stateManager;
@@ -172,13 +172,12 @@ public class NotificationContainerView extends FrameLayout {
 
   private void animateView() {
     setVisibility(VISIBLE);
-    bgView.animate().setDuration(BACKGROUND_ANIM_DURATION).alpha(1f).start();
+    bgView.animate().setDuration(BACKGROUND_ANIM_DURATION_ENTER).alpha(1f).start();
     notificationView.setVisibility(VISIBLE);
     Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_from_top);
+        AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_enter_animation);
     slideInAnimation.setFillAfter(false);
     slideInAnimation.setStartOffset(START_OFFSET_DURATION);
-    slideInAnimation.setDuration(NOTIF_DURATION);
     slideInAnimation.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
@@ -190,23 +189,33 @@ public class NotificationContainerView extends FrameLayout {
 
   protected void hideView() {
     textDismiss.setVisibility(INVISIBLE);
-    Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_to_down);
-    setAnimation(slideInAnimation);
-    slideInAnimation.setFillAfter(false);
-    slideInAnimation.setDuration(NOTIF_DURATION);
-    slideInAnimation.setAnimationListener(new AnimationListenerAdapter() {
+    Animation slideOutAnimation =
+        AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
+    setAnimation(slideOutAnimation);
+    slideOutAnimation.setFillAfter(false);
+    slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
+
+      @Override public void onAnimationStart(Animation animation) {
+        super.onAnimationStart(animation);
+        bgView.animate()
+            .setDuration(BACKGROUND_ANIM_DURATION_EXIT)
+            .alpha(0f)
+            .withEndAction(new Runnable() {
+              @Override public void run() {
+                setVisibility(GONE);
+              }
+            })
+            .start();
+      }
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         clearAnimation();
-        bgView.animate().setDuration(NOTIF_DURATION).alpha(0f).start();
-        setVisibility(GONE);
         notificationView.removeAllViews();
         viewToDisplay = null;
       }
     });
-    notificationView.startAnimation(slideInAnimation);
+    notificationView.startAnimation(slideOutAnimation);
   }
 
   private LifeNotification getViewFromIntent(Intent data) {
