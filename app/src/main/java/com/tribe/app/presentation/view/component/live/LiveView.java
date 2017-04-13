@@ -48,7 +48,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -316,7 +315,7 @@ public class LiveView extends FrameLayout {
           @Override public void onGlobalLayout() {
             btnScreenshot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
-                R.dimen.horizontal_margin_smaller) + screenUtils.dpToPx(5.5f);
+                R.dimen.horizontal_margin_smaller) + screenUtils.dpToPx(0.5f);
           }
         });
     statusBarHeight = 0;
@@ -611,10 +610,13 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
       if (avatarView != null) {
-        float scaling = (1.0f - ((1.0f - AVATAR_SCALING) * alpha));
-        UIUtils.changeSizeOfView(avatarView, (int) (sizeAnimAvatarMax * scaling));
+        float scaling = (2.0f - alpha);
+        avatarView.setScaleX(scaling);
+        avatarView.setScaleY(scaling);
       }
-      btnScreenshot.setAlpha(alpha);
+
+      btnScreenshot.setScaleX(alpha);
+      btnScreenshot.setScaleY(alpha);
     }));
   }
 
