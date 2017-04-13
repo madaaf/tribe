@@ -569,6 +569,14 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(obs.subscribe(userList -> {
       if (!userList.isEmpty()) {
         anonymousInLive.addAll(userList);
+
+        for (User user : userList) {
+          if (liveRowViewMap.get(user.getId()) != null) {
+            LiveRowView liveRowView = liveRowViewMap.get(user.getId());
+            liveRowView.setGuest(user.asTribeGuest());
+          }
+        }
+
         onNotificationRemoteJoined.onNext(userList.get(0).getDisplayName());
       }
     }));
@@ -986,10 +994,7 @@ public class LiveView extends FrameLayout {
     }
 
     for (User user : anonymousInLive) {
-      TribeGuest guest = new TribeGuest(user.getId());
-      guest.setDisplayName(user.getDisplayName());
-      guest.setPicture(user.getProfilePicture());
-      anonymousGuestInLive.add(guest);
+      anonymousGuestInLive.add(user.asTribeGuest());
     }
 
     return new RoomMember(usersInLive, anonymousGuestInLive);

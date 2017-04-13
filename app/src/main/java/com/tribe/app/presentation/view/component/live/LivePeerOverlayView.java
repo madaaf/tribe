@@ -120,9 +120,8 @@ public class LivePeerOverlayView extends FrameLayout {
   }
 
   private void loadAvatar() {
-    if (guest == null) return;
-
-    avatar.load(guest.getPicture());
+    if (guest == null) avatar.load("");
+    else avatar.load(guest.getPicture());
   }
 
   private void setName() {
@@ -143,8 +142,14 @@ public class LivePeerOverlayView extends FrameLayout {
   }
 
   public void setGuest(TribeGuest tribeGuest) {
-    mediaConfiguration =
-        new TribePeerMediaConfiguration(new TribeSession(tribeGuest.getId(), tribeGuest.getId()));
+    if (tribeGuest == null) {
+      mediaConfiguration = new TribePeerMediaConfiguration(
+          new TribeSession(TribeSession.ANONYMOUS, TribeSession.ANONYMOUS));
+    } else {
+      mediaConfiguration =
+          new TribePeerMediaConfiguration(new TribeSession(tribeGuest.getId(), tribeGuest.getId()));
+    }
+
     guest = tribeGuest;
     loadAvatar();
     setName();
