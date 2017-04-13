@@ -986,6 +986,7 @@ public class LiveView extends FrameLayout {
 
   public RoomMember getUsersInLiveRoom() {
     ArrayList<TribeGuest> usersInLive = new ArrayList<>();
+    ArrayList<String> myFriendIds = new ArrayList<>();
     ArrayList<TribeGuest> anonymousGuestInLive = new ArrayList<>();
 
     for (String liveRowViewId : liveRowViewMap.getMap().keySet()) {
@@ -998,11 +999,24 @@ public class LiveView extends FrameLayout {
       }
     }
 
+    for (Friendship friendship : user.getFriendships()) {
+      myFriendIds.add(friendship.getFriend().getId());
+    }
+
+    for (TribeGuest guest : usersInLive) {
+      if (myFriendIds.contains(guest.getId())) {
+        guest.setAnonymous(false);
+      } else {
+        guest.setAnonymous(true);
+      }
+    }
+
     for (User user : anonymousInLive) {
       TribeGuest guest = new TribeGuest(user.getId());
       guest.setDisplayName(user.getDisplayName());
       guest.setPicture(user.getProfilePicture());
       guest.setUserName(user.getUsername());
+      guest.setAnonymous(true);
       anonymousGuestInLive.add(guest);
     }
 

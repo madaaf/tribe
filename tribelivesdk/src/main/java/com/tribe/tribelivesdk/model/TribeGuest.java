@@ -22,6 +22,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   private boolean isInvite;
   private List<String> memberPics;
   private boolean canRemove;
+  private boolean isAnonymous = false;
 
   public TribeGuest(String id) {
     this.id = id;
@@ -37,6 +38,14 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     this.memberPics = memberPics;
     this.canRemove = canRemove;
     this.userName = userName;
+  }
+
+  public boolean isAnonymous() {
+    return isAnonymous;
+  }
+
+  public void setAnonymous(boolean anonymous) {
+    isAnonymous = anonymous;
   }
 
   public void setDisplayName(String displayName) {

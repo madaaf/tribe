@@ -130,7 +130,11 @@ public class CreateGroupNotificationView extends LifeNotification {
       u.setUsername(guest.getUserName());
       GroupMember groupMember = new GroupMember(u);
       groupMember.setMember(true);
-      groupMember.setFriend(true);
+      if (guest.isAnonymous()) {
+        groupMember.setFriend(false);
+      }else {
+        groupMember.setFriend(true);
+      }
       userList.add(groupMember);
     }
 
