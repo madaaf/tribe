@@ -149,7 +149,7 @@ public class VisualizerView extends FrameLayout {
     } else if (viewCircle != null) viewCircle.setRadius(0);
   }
 
-  public void release() {
+  public void dispose() {
     if (viewCircle != null) viewCircle.clearAnimation();
     if (vaCircle != null) {
       vaCircle.removeAllUpdateListeners();

@@ -264,8 +264,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
-    viewLiveContainer.dispose();
-
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     soundManager.cancelMediaPlayer();
@@ -710,6 +708,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    viewLiveContainer.dispose();
     viewLive.dispose(false);
     putExtraHomeIntent();
     super.finish();

@@ -301,7 +301,8 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
-	<string name="live_unknown_user">Invité</string>
+	<string name="live_unknown_user">Invité inconnu</string>
+	<string name="live_external_user">Invité externe</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

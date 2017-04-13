@@ -48,7 +48,7 @@ public class LivePeerOverlayView extends FrameLayout {
 
   @BindView(R.id.bgDisabledFull) View bgDisabledFull;
 
-  @BindView(R.id.viewLowConnection) View viewLowConnection;
+  @BindView(R.id.viewLowConnection) LiveLowConnectionView viewLowConnection;
 
   @BindView(R.id.avatar) AvatarView avatar;
 
@@ -84,11 +84,6 @@ public class LivePeerOverlayView extends FrameLayout {
   public LivePeerOverlayView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     init();
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    if (subscriptions != null) subscriptions.clear();
   }
 
   private void init() {
@@ -141,7 +136,9 @@ public class LivePeerOverlayView extends FrameLayout {
   ////////////
 
   public void dispose() {
-    visualizerView.release();
+    if (subscriptions != null) subscriptions.clear();
+    viewLowConnection.dispose();
+    visualizerView.dispose();
     if (unbinder != null) unbinder.unbind();
   }
 
@@ -158,9 +155,14 @@ public class LivePeerOverlayView extends FrameLayout {
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
-    boolean shouldAnimateAvatar =
-        this.mediaConfiguration.isVideoEnabled() && !mediaConfiguration.isVideoEnabled();
-    this.mediaConfiguration.update(mediaConfiguration);
+    boolean wasLowConnection = false, shouldAnimateAvatar = false;
+
+    if (this.mediaConfiguration != null) {
+      wasLowConnection = this.mediaConfiguration.isLowConnection();
+      shouldAnimateAvatar =
+          this.mediaConfiguration.isVideoEnabled() && !mediaConfiguration.isVideoEnabled();
+      this.mediaConfiguration.update(mediaConfiguration);
+    }
 
     int icon = MediaConfigurationUtils.getStateResource(mediaConfiguration);
 
@@ -208,13 +210,13 @@ public class LivePeerOverlayView extends FrameLayout {
       visualizerView.hide(false);
 
       if (mediaConfiguration.isLowConnection()) {
-        AnimationUtils.fadeIn(viewLowConnection, DURATION);
+        viewLowConnection.show();
       } else {
-        AnimationUtils.fadeOut(viewLowConnection, DURATION);
+        viewLowConnection.hide();
       }
     } else {
       txtState.setText(MediaConfigurationUtils.getStateLabel(getContext(), mediaConfiguration));
-      AnimationUtils.fadeOut(viewLowConnection, DURATION);
+      viewLowConnection.hide();
 
       if (mediaConfiguration.isAudioEnabled()) {
         visualizerView.show();
@@ -241,7 +243,8 @@ public class LivePeerOverlayView extends FrameLayout {
     }
 
     if (!isViewVisible) {
-      subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
+      int timer = wasLowConnection ? viewLowConnection.getTimeToHide() : DURATION;
+      subscriptions.add(Observable.timer(timer, TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> setVisibility(View.GONE)));
     } else {

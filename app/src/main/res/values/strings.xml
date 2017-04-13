@@ -301,7 +301,8 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
-	<string name="live_unknown_user">Guest</string>
+	<string name="live_unknown_user">Unknown guest</string>
+	<string name="live_external_user">External guest</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
