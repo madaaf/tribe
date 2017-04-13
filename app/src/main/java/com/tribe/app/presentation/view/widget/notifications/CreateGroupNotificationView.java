@@ -93,8 +93,8 @@ public class CreateGroupNotificationView extends LifeNotification {
     String txtNames = "";
     for (int i = 0; i < members.size(); i++) {
 
-      TribeGuest groupMember = members.get(i);
-      txtNames += groupMember.getDisplayName();
+      TribeGuest tribeGuest = members.get(i);
+      txtNames += tribeGuest.getDisplayName();
       if (!((members.size() - 1) == i)) {
         txtNames += ", ";
       }
@@ -102,7 +102,7 @@ public class CreateGroupNotificationView extends LifeNotification {
       avatarView.setBackgroundResource(R.drawable.shape_circle_white);
       int padding = getResources().getDimensionPixelSize(R.dimen.margin_horizonta_avatrs);
       avatarView.setPadding(padding, padding, padding, padding);
-      avatarView.load(groupMember.getPicture());
+      avatarView.load(tribeGuest.getPicture());
       LinearLayout.LayoutParams layoutParams =
           new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 

@@ -57,6 +57,8 @@ public interface UserRepository {
    */
   Observable<User> userInfos(final String userId);
 
+  Observable<List<User>> getUsersInfosList(final List<String> usersIds);
+
   /**
    * Get an {@link Observable} which will emit a {@link List<Friendship>}
    */
