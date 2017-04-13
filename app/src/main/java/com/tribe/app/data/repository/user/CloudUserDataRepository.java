@@ -88,6 +88,13 @@ import rx.Observable;
     }).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
+  @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.userInfosList(userIds).doOnError(throwable -> {
+      throwable.printStackTrace();
+    }).map(userRealm -> this.userRealmDataMapper.transform(userRealm, false));
+  }
+
   @Override public Observable<List<Friendship>> friendships() {
     return null;
   }

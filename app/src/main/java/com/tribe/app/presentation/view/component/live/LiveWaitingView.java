@@ -252,6 +252,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     viewAvatar.showCountdown(timeJoinRoom / 1000);
 
     subscriptionCountdown = Observable.interval(1, TimeUnit.SECONDS)
+        .onBackpressureDrop()
         .map(time -> startCountdown - time)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(time -> {
@@ -496,10 +497,9 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void incomingPeer() {
     stopPulse();
     subscriptions.add(Observable.interval(500, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          animatePulse(DURATION_PULSE_FAST);
-        }));
+        .subscribe(aLong -> animatePulse(DURATION_PULSE_FAST)));
   }
 
   private void showRemovePeer() {
@@ -554,8 +554,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     if (guest != null) {
-      if ((guest.isGroup() && StringUtils.isEmpty(guest.getPicture()))
-          || guest.getMemberPics() != null) {
+      if (guest.isGroup() && (StringUtils.isEmpty(guest.getPicture())
+          || guest.getMemberPics() != null)) {
         viewAvatar.loadGroupAvatar(guest.getPicture(), null, guest.getId(), guest.getMemberPics());
       } else {
         viewAvatar.load(guest.getPicture());

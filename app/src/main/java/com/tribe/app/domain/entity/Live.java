@@ -14,6 +14,7 @@ public class Live implements Serializable {
   private String id;
   private String subId;
   private String displayName;
+  private String userName;
   private String picture;
   private List<User> memberList;
   private boolean isGroup;
@@ -35,6 +36,7 @@ public class Live implements Serializable {
     this.subId = builder.subId;
     this.countdown = builder.countdown;
     this.intent = builder.intent;
+    this.userName = builder.userName;
   }
 
   public String getId() {
@@ -47,6 +49,14 @@ public class Live implements Serializable {
 
   public String getDisplayName() {
     return displayName;
+  }
+
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
   }
 
   public void setDisplayName(String displayName) {
@@ -164,6 +174,7 @@ public class Live implements Serializable {
     private int color;
     private boolean countdown = true;
     private boolean intent = false;
+    private String userName;
 
     public Builder(String id, String subId) {
       this.id = id;
@@ -172,6 +183,11 @@ public class Live implements Serializable {
 
     public Builder displayName(String displayName) {
       this.displayName = displayName;
+      return this;
+    }
+
+    public Builder userName(String userName) {
+      this.userName = userName;
       return this;
     }
 

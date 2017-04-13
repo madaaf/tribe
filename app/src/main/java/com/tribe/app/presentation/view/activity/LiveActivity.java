@@ -40,6 +40,8 @@ import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.RoomMember;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -114,6 +116,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
         .displayName(recipient.getDisplayName())
+        .userName(recipient.getUsername())
         .isGroup(recipient.isGroup())
         .countdown(!recipient.isLive())
         .picture(recipient.getProfilePicture());
@@ -195,11 +198,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
   private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   private Intent returnIntent = new Intent();
+  private List anonymousIdList = new ArrayList();
   // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
+  private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -420,6 +425,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           List<String> idsToFilter = new ArrayList<>();
           idsToFilter.addAll(liveMap.keySet());
           idsToFilter.addAll(invitesMap.keySet());
+
           usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
           Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
@@ -528,6 +534,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         takeScreenshot();
       }
     }));
+
+    subscriptions.add(viewLive.onAnonymousJoined().subscribe(anonymousId -> {
+      anonymousIdList.clear();
+      anonymousIdList.add(anonymousId);
+      if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
+    }));
+
+    viewLive.initAnonymousSubscription(onAnonymousReceived());
   }
 
   @Override
@@ -650,14 +664,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void putExtraDisplayGrpNotif() {
-    List<TribeGuest> peopleInLive = viewLive.getUsersInLiveRoom();
+    RoomMember roomMember = viewLive.getUsersInLiveRoom();
+    List<TribeGuest> friendInLive = roomMember.getTribeGuestList();
+    List<TribeGuest> anonymousInLive = roomMember.getAnonymousGuestList();
+
+    List<TribeGuest> peopleInLive = new ArrayList<>();
+    peopleInLive.addAll(friendInLive);
+    peopleInLive.addAll(anonymousInLive);
+
     for (TribeGuest guest : peopleInLive) {
       if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {
         activeUersIdsInvitedInLiveRoom.add(guest.getId());
       }
     }
 
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty()) && peopleInLive.size() > 1) {
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
+        && peopleInLive.size() > 1) {
       returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GRP_NOTIF, true);
       Bundle extra = new Bundle();
       extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
@@ -667,6 +689,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       usersIdsInvitedInLiveRoom.clear();
       activeUersIdsInvitedInLiveRoom.clear();
     }
+  }
+
+  @Override public void onReceivedAnonymousMemberInRoom(List<User> users) {
+    onAnonymousReceived.onNext(users);
   }
 
   private void putExtraHomeIntent() {
@@ -708,6 +734,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    viewLiveContainer.dispose();
     viewLive.dispose(false);
     putExtraHomeIntent();
     super.finish();
@@ -717,6 +744,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   ////////////////
   //   PUBLIC   //
   ////////////////
+
+  public Observable<List<User>> onAnonymousReceived() {
+    return onAnonymousReceived;
+  }
 
   @Override public void onRecipientInfos(Recipient recipient) {
     if (recipient instanceof Membership) {
@@ -793,7 +824,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, false, null, true);
+                    false, false, null, true, null);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               }

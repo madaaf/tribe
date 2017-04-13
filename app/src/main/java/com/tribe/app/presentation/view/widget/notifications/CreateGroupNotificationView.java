@@ -20,6 +20,7 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/04/2017.
@@ -93,8 +94,8 @@ public class CreateGroupNotificationView extends LifeNotification {
     String txtNames = "";
     for (int i = 0; i < members.size(); i++) {
 
-      TribeGuest groupMember = members.get(i);
-      txtNames += groupMember.getDisplayName();
+      TribeGuest tribeGuest = members.get(i);
+      txtNames += tribeGuest.getDisplayName();
       if (!((members.size() - 1) == i)) {
         txtNames += ", ";
       }
@@ -102,7 +103,7 @@ public class CreateGroupNotificationView extends LifeNotification {
       avatarView.setBackgroundResource(R.drawable.shape_circle_white);
       int padding = getResources().getDimensionPixelSize(R.dimen.margin_horizonta_avatrs);
       avatarView.setPadding(padding, padding, padding, padding);
-      avatarView.load(groupMember.getPicture());
+      avatarView.load(tribeGuest.getPicture());
       LinearLayout.LayoutParams layoutParams =
           new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
@@ -126,6 +127,9 @@ public class CreateGroupNotificationView extends LifeNotification {
     for (TribeGuest guest : tribeGuests) {
       User u = new User(guest.getId());
       u.setProfilePicture(guest.getPicture());
+      u.setDisplayName(guest.getDisplayName());
+      u.setUsername(guest.getUserName());
+      Timber.e("SOEF " + guest.getDisplayName() + " " + guest.getUserName());
       GroupMember groupMember = new GroupMember(u);
       groupMember.setMember(true);
       groupMember.setFriend(true);

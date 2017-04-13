@@ -14,6 +14,9 @@ public class UserListDeserializer<T> implements JsonDeserializer<T> {
       throws JsonParseException {
 
     JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("users");
+    if (results == null) {
+      results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("lookupByUserId");
+    }
 
     return new Gson().fromJson(results, typeOfT);
   }

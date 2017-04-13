@@ -100,6 +100,11 @@ import rx.Observable;
         });
   }
 
+
+  @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
+    return null;
+  }
+
   @Override public Observable<List<Friendship>> friendships() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();

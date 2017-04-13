@@ -197,6 +197,17 @@
         %2$s
     </string>
 
+
+  <string name="lookup.userid" translatable="false">
+        {
+            lookupByUserId (userIds : [%1$s]) {
+                   ...UserInfos
+            }
+        }
+
+        %2$s
+    </string>
+
   <string name="friendship.mutation" translatable="false">
         mutation {
             %1$s
@@ -277,6 +288,7 @@
         %2$s
         %3$s
     </string>
+
 
   <string name="get.group.members" translatable="false">
         {

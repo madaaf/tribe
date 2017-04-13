@@ -63,15 +63,7 @@ public class VisualizerView extends FrameLayout {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-
-    subscriptions.add(Observable.interval(0, DURATION, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          if (isActive) {
-            int radius = randomRadius(radiusMin, radiusMax);
-            animateToRadius(radius);
-          }
-        }));
+    start();
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -117,6 +109,18 @@ public class VisualizerView extends FrameLayout {
     radiusMax = screenUtils.dpToPx(RADIUS_MAX);
   }
 
+  private void start() {
+    subscriptions.add(Observable.interval(DURATION, DURATION, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (isActive) {
+            int radius = randomRadius(radiusMin, radiusMax);
+            animateToRadius(radius);
+          }
+        }));
+  }
+
   private void animateToRadius(float radius) {
     if (vaCircle != null) vaCircle.cancel();
 
@@ -139,20 +143,25 @@ public class VisualizerView extends FrameLayout {
 
   public void show() {
     isActive = true;
+    if (viewCircle != null) viewCircle.setRadius(0);
+    start();
   }
 
   public void hide(boolean animate) {
     isActive = false;
+    subscriptions.clear();
+
     if (animate) {
       animateToRadius(0);
     } else if (viewCircle != null) viewCircle.setRadius(0);
   }
 
-  public void release() {
+  public void dispose() {
     if (viewCircle != null) viewCircle.clearAnimation();
     if (vaCircle != null) {
       vaCircle.removeAllUpdateListeners();
       vaCircle.cancel();
     }
+    subscriptions.clear();
   }
 }

@@ -3,6 +3,7 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -284,6 +285,13 @@ public class User implements Serializable, BaseListInterface {
 
   public boolean isNew() {
     return isNew;
+  }
+
+  public TribeGuest asTribeGuest() {
+    TribeGuest guest = new TribeGuest(getId());
+    guest.setDisplayName(getDisplayName());
+    guest.setPicture(getProfilePicture());
+    return guest;
   }
 
   @Override public boolean equals(Object o) {

@@ -662,6 +662,7 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+    topBarContainer.refreshTopBarView();
     if (data != null) {
       if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);

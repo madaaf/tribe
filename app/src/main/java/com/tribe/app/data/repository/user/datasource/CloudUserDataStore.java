@@ -135,6 +135,13 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.membershipfragment_info))).doOnNext(saveToCacheUser);
   }
 
+  @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
+    String userIdsListFormated = listToJson(userIdsList);
+    return this.tribeApi.getUserListInfos(
+        context.getString(R.string.lookup_userid, userIdsListFormated,
+            context.getString(R.string.userfragment_infos)));
+  }
+
   @Override public Observable<List<FriendshipRealm>> friendships() {
     return null;
   }

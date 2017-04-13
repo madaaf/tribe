@@ -55,7 +55,7 @@ public class StreamManager {
         .subscribe(mediaConfiguration -> onMediaChanged.onNext(mediaConfiguration)));
 
     subscriptionRenderingWell =
-        Observable.interval(0, DURATION, TimeUnit.SECONDS).subscribe(aLong -> {
+        Observable.interval(0, DURATION, TimeUnit.SECONDS).onBackpressureDrop().subscribe(aLong -> {
           Collection<RemotePeer> remotePeerCollection = remotePeerMap.getMap().values();
           for (RemotePeer remotePeer : remotePeerCollection) {
             boolean isRenderingWell = remotePeer.isRenderingWell();
