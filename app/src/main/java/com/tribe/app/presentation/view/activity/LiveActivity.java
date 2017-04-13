@@ -116,6 +116,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
         .displayName(recipient.getDisplayName())
+        .userName(recipient.getUsername())
         .isGroup(recipient.isGroup())
         .countdown(!recipient.isLive())
         .picture(recipient.getProfilePicture());
@@ -823,7 +824,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, false, null, true);
+                    false, false, null, true, null);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               }

@@ -12,9 +12,11 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public static final String ID = "id";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
+  public static final String USERNAME = "username";
 
   private String id;
   private String displayName;
+  private String userName;
   private String picture;
   private boolean isGroup;
   private boolean isInvite;
@@ -26,7 +28,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   }
 
   public TribeGuest(String id, String displayName, String picture, boolean isGroup,
-      boolean isInvite, List<String> memberPics, boolean canRemove) {
+      boolean isInvite, List<String> memberPics, boolean canRemove, String userName) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
@@ -34,6 +36,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     this.isInvite = isInvite;
     this.memberPics = memberPics;
     this.canRemove = canRemove;
+    this.userName = userName;
   }
 
   public void setDisplayName(String displayName) {
@@ -42,6 +45,14 @@ public class TribeGuest extends GroupJoiner implements Serializable {
 
   public String getDisplayName() {
     return displayName;
+  }
+
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
   }
 
   public String getPicture() {

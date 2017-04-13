@@ -595,7 +595,7 @@ public class LiveView extends FrameLayout {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
-          false, false, null, true);
+          false, false, null, true, tileView.getRecipient().getUsername());
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
@@ -666,7 +666,7 @@ public class LiveView extends FrameLayout {
 
     TribeGuest guest =
         new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
-            live.isInvite(), live.getMembersPics(), false);
+            live.isInvite(), live.getMembersPics(), false, live.getUserName());
 
     LiveRowView liveRowView = new LiveRowView(getContext());
     liveRowViewMap.put(guest.getId(), liveRowView);
@@ -701,7 +701,7 @@ public class LiveView extends FrameLayout {
       if (liveRowView != null) {
         liveRowView.setGuest(
             new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(),
-                live.isGroup(), live.isInvite(), live.getMembersPics(), false));
+                live.isGroup(), live.isInvite(), live.getMembersPics(), false, live.getUserName()));
       }
     }
   }
@@ -916,7 +916,7 @@ public class LiveView extends FrameLayout {
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
         return new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-            friendship.getProfilePicture(), false, false, null, true);
+            friendship.getProfilePicture(), false, false, null, true, friendship.getUsername());
       }
     }
 
@@ -931,6 +931,7 @@ public class LiveView extends FrameLayout {
       jsonPut(invitedGuest, TribeGuest.ID, liveRowView.getGuest().getId());
       jsonPut(invitedGuest, TribeGuest.DISPLAY_NAME, liveRowView.getGuest().getDisplayName());
       jsonPut(invitedGuest, TribeGuest.PICTURE, liveRowView.getGuest().getPicture());
+      jsonPut(invitedGuest, TribeGuest.USERNAME, liveRowView.getGuest().getUserName());
       array.put(invitedGuest);
     }
     jsonPut(jsonObject, Room.MESSAGE_INVITE_ADDED, array);
@@ -989,12 +990,18 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = liveRowViewMap.getMap().get(liveRowViewId);
       if (!liveRowView.isWaiting()) {
         TribeGuest guest = liveRowView.getGuest();
-        if (guest != null) usersInLive.add(guest);
+        if (guest != null) {
+          usersInLive.add(guest);
+        }
       }
     }
 
     for (User user : anonymousInLive) {
-      anonymousGuestInLive.add(user.asTribeGuest());
+      TribeGuest guest = new TribeGuest(user.getId());
+      guest.setDisplayName(user.getDisplayName());
+      guest.setPicture(user.getProfilePicture());
+      guest.setUserName(user.getUsername());
+      anonymousGuestInLive.add(guest);
     }
 
     return new RoomMember(usersInLive, anonymousGuestInLive);

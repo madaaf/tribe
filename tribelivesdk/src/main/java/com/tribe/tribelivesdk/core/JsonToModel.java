@@ -173,8 +173,10 @@ public class JsonToModel {
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
+              Timber.e("SOEF " + guest.toString());
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                  guest.getString("picture"), false, false, null, true));
+                  guest.getString("picture"), false, false, null, true,
+                  guest.getString("username")));
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
