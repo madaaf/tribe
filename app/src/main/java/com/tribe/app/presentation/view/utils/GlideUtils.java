@@ -94,7 +94,7 @@ public class GlideUtils {
       } else if (StringUtils.isEmpty(url)) {
         drawableRequestBuilder = Glide.with(context).load(randomPlaceholder);
       } else {
-        drawableRequestBuilder = Glide.with(context).load(url);
+        drawableRequestBuilder = Glide.with(context).load(url).error(randomPlaceholder);
       }
 
       if (hasPlaceholder) {

@@ -554,8 +554,8 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     if (guest != null) {
-      if ((guest.isGroup() && StringUtils.isEmpty(guest.getPicture()))
-          || guest.getMemberPics() != null) {
+      if (guest.isGroup() && (StringUtils.isEmpty(guest.getPicture())
+          || guest.getMemberPics() != null)) {
         viewAvatar.loadGroupAvatar(guest.getPicture(), null, guest.getId(), guest.getMemberPics());
       } else {
         viewAvatar.load(guest.getPicture());
