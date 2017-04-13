@@ -190,7 +190,7 @@ public class Navigator {
   public void navigateToCreateGroup(Activity activity) {
     if (activity != null) {
       Intent intent = GroupActivity.getCallingIntent(activity, null);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, 0);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
@@ -200,7 +200,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = GroupActivity.getCallingIntentWithMembers(activity, prefilledGrpMembers,
           createGrpDirectly);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, 0);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
