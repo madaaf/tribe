@@ -28,6 +28,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -143,6 +144,7 @@ public class LiveView extends FrameLayout {
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
   private View view;
   private int sizeAnimAvatarMax;
+  private List<User> anonymousInLive = new ArrayList<>();
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -166,6 +168,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationRemoteWaiting = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerBuzzed = PublishSubject.create();
   private PublishSubject<String> onNotificationRemoteJoined = PublishSubject.create();
+  private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -480,6 +483,12 @@ public class LiveView extends FrameLayout {
           joinLive = true;
           displayJoinLivePopupTutorial();
 
+          String username = getDisplayNameNotification(remotePeer.getSession().getUserId());
+          if (username == null || username.isEmpty()) {
+            Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
+            onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
+          }
+
           Timber.d("Remote peer added with id : "
               + remotePeer.getSession().getPeerId()
               + " & view : "
@@ -554,6 +563,15 @@ public class LiveView extends FrameLayout {
 
     Timber.d("Initiating Room");
     room.connect(options);
+  }
+
+  public void initAnonymousSubscription(Observable<List<User>> obs) {
+    persistentSubscriptions.add(obs.subscribe(userList -> {
+      if (!userList.isEmpty()) {
+        anonymousInLive.addAll(userList);
+        onNotificationRemoteJoined.onNext(userList.get(0).getDisplayName());
+      }
+    }));
   }
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
@@ -955,20 +973,26 @@ public class LiveView extends FrameLayout {
     return count;
   }
 
-  public List<TribeGuest> getUsersInLiveRoom() {
+  public RoomMember getUsersInLiveRoom() {
     ArrayList<TribeGuest> usersInLive = new ArrayList<>();
+    ArrayList<TribeGuest> anonymousGuestInLive = new ArrayList<>();
+
     for (String liveRowViewId : liveRowViewMap.getMap().keySet()) {
       LiveRowView liveRowView = liveRowViewMap.getMap().get(liveRowViewId);
       if (!liveRowView.isWaiting()) {
         TribeGuest guest = liveRowView.getGuest();
-          /* if (guest == null) { // TODO waiting for rules
-          guest = new TribeGuest(liveRowViewId);
-          guest.setDisplayName("anonymous");
-        }*/
         if (guest != null) usersInLive.add(guest);
       }
     }
-    return usersInLive;
+
+    for (User user : anonymousInLive) {
+      TribeGuest guest = new TribeGuest(user.getId());
+      guest.setDisplayName(user.getDisplayName());
+      guest.setPicture(user.getProfilePicture());
+      anonymousGuestInLive.add(guest);
+    }
+
+    return new RoomMember(usersInLive, anonymousGuestInLive);
   }
 
   private boolean isTherePeopleWaiting() {
@@ -1076,7 +1100,7 @@ public class LiveView extends FrameLayout {
   }
 
   private String getDisplayNameNotification(String id) {
-    String tribeGuestName = "Anonymous";
+    String tribeGuestName = null;
     for (Membership membership : user.getMembershipList()) {
       for (User member : membership.getGroup().getMembers()) {
         if (member.getId().equals(id)) {
@@ -1091,11 +1115,14 @@ public class LiveView extends FrameLayout {
         tribeGuestName = friend.getDisplayName();
       }
     }
-    return tribeGuestName;
-  }
 
-  public int getInviteMembersNbr() {
-    return liveInviteMap.size();
+    for (User anonymousUser : anonymousInLive) {
+      if (anonymousUser.getId().equals(id)) {
+        tribeGuestName = anonymousUser.getDisplayName();
+      }
+    }
+
+    return tribeGuestName;
   }
 
   //////////////////////
@@ -1144,6 +1171,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<String> onNotificationRemoteJoined() {
     return onNotificationRemoteJoined;
+  }
+
+  public Observable<String> onAnonymousJoined() {
+    return onAnonymousJoined;
   }
 
   public Observable<String> onNotificationonRemotePeerRemoved() {

@@ -48,6 +48,10 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     return picture;
   }
 
+  public void setPicture(String picture) {
+    this.picture = picture;
+  }
+
   public String getId() {
     return id;
   }

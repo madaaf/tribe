@@ -108,6 +108,7 @@ public class NotificationContainerView extends FrameLayout {
   }
   ///////////////////
   //     PRIVATE   //
+
   ///////////////////
 
   private boolean displayNotifFromIntent(Intent data) {
@@ -212,8 +213,8 @@ public class NotificationContainerView extends FrameLayout {
     Bundle extra = data.getExtras();
     boolean displayEnjoyingTribeView = false;
 
-    if (numberOfCalls.get() > EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT
-        && minutesOfCalls.get() > EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
+    if (numberOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT
+        && minutesOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
       displayEnjoyingTribeView = true;
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);

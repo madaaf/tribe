@@ -56,6 +56,8 @@ public interface UserDataStore {
    */
   Observable<UserRealm> userInfos(final String userId);
 
+  Observable<List<UserRealm>> userInfosList(List<String> userIds);
+
   /**
    * Get an {@link Observable} which will emit a {@link List<Friendship>}
    */
