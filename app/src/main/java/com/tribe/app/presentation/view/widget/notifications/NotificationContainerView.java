@@ -228,7 +228,7 @@ public class NotificationContainerView extends FrameLayout {
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);
     }
-
+    
     if (data.getBooleanExtra(DISPLAY_CREATE_GRP_NOTIF, false) && extra != null) {
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);
