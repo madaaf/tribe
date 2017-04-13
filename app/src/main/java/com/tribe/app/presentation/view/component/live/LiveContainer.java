@@ -131,24 +131,6 @@ public class LiveContainer extends FrameLayout {
     springRight.addListener(springRightListener);
   }
 
-  @Override protected void onDetachedFromWindow() {
-    springRight.removeListener(springRightListener);
-
-    if (unbinder != null) unbinder.unbind();
-
-    if (subscriptions != null && subscriptions.hasSubscriptions()) {
-      subscriptions.unsubscribe();
-      subscriptions.clear();
-    }
-
-    if (timerSubscription != null) {
-      timerSubscription.unsubscribe();
-      timerSubscription = null;
-    }
-
-    super.onDetachedFromWindow();
-  }
-
   @Override protected void onFinishInflate() {
     super.onFinishInflate();
 
@@ -162,6 +144,22 @@ public class LiveContainer extends FrameLayout {
     initDimen();
     initUI();
     initSubscriptions();
+  }
+
+  public void dispose() {
+    springRight.removeListener(springRightListener);
+
+    if (unbinder != null) unbinder.unbind();
+
+    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+      subscriptions.unsubscribe();
+      subscriptions.clear();
+    }
+
+    if (timerSubscription != null) {
+      timerSubscription.unsubscribe();
+      timerSubscription = null;
+    }
   }
 
   private void initUI() {

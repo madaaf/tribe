@@ -153,9 +153,7 @@ public class AccessView extends FrameLayout {
     expandAndContract();
 
     subscriptions.add(Observable.interval(PULSATING_DURATION, TimeUnit.MILLISECONDS,
-        AndroidSchedulers.mainThread()).onBackpressureDrop().subscribe(aVoid -> {
-      expandAndContract();
-    }));
+        AndroidSchedulers.mainThread()).onBackpressureDrop().subscribe(aVoid -> expandAndContract()));
 
     imgIcon.setScaleX(30f);
     imgIcon.setScaleY(30f);

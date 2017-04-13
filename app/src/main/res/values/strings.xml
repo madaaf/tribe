@@ -108,6 +108,7 @@
 	<string name="live_notification_peer_joining">%1$s joining...</string>
 	<string name="live_notification_peer_joined">%1$s joined</string>
 	<string name="live_notification_peer_left">%1$s left</string>
+	<string name="live_notification_guest_removed">%1$s removed</string>
 	<string name="live_notification_buzzed">Buzzing!</string>
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
@@ -193,7 +194,7 @@
 	<string name="onboarding_user_title">Set your profile</string>
 	<string name="onboarding_user_mandatory_avatar">Profile picture required</string>
 	<string name="onboarding_user_displayname_placeholder">Display name*</string>
-	<string name="onboarding_user_username_placeholder">\@username*</string>
+	<string name="onboarding_user_username_placeholder">username*</string>
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
@@ -300,6 +301,7 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
+	<string name="live_unknown_user">Guest</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

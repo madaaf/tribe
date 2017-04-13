@@ -108,6 +108,7 @@
 	<string name="live_notification_peer_joining">%1$s est en train d\'arriver...</string>
 	<string name="live_notification_peer_joined">%1$s est arrivé</string>
 	<string name="live_notification_peer_left">%1$s est parti</string>
+	<string name="live_notification_guest_removed">%1$s a été supprimé</string>
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
@@ -193,7 +194,7 @@
 	<string name="onboarding_user_title">Configurer votre profil</string>
 	<string name="onboarding_user_mandatory_avatar">Avatar obligatoire</string>
 	<string name="onboarding_user_displayname_placeholder">Nom d\'affichage*</string>
-	<string name="onboarding_user_username_placeholder">\@nom-d\'utilisateur*</string>
+	<string name="onboarding_user_username_placeholder">nom-d\'utilisateur*</string>
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Aller plus vite avec facebook !</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
@@ -300,6 +301,7 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
+	<string name="live_unknown_user">Invité</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

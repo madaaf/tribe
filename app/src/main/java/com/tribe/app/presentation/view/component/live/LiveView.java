@@ -313,7 +313,7 @@ public class LiveView extends FrameLayout {
           @Override public void onGlobalLayout() {
             btnScreenshot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             margin = btnScreenshot.getTop() + getResources().getDimensionPixelSize(
-                R.dimen.margin_horizontal) + screenUtils.dpToPx(5.5f);
+                R.dimen.horizontal_margin_smaller) + screenUtils.dpToPx(5.5f);
           }
         });
     statusBarHeight = 0;
@@ -459,6 +459,7 @@ public class LiveView extends FrameLayout {
         timeStart = System.currentTimeMillis();
 
         tempSubscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
+            .onBackpressureDrop()
             .subscribe(intervalCount -> {
               totalSizeLive += nbLiveInRoom() + 1;
               averageCountLive = (double) totalSizeLive / (intervalCount + 1);
@@ -730,6 +731,8 @@ public class LiveView extends FrameLayout {
 
   public void setCameraEnabled(boolean enable,
       @TribePeerMediaConfiguration.MediaConfigurationType String type) {
+    if (viewLocalLive == null) return;
+
     if (enable) {
       viewLocalLive.enableCamera(false);
     } else {

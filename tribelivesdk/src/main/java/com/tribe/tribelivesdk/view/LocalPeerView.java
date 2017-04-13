@@ -39,6 +39,7 @@ public class LocalPeerView extends PeerView {
   }
 
   public void dispose() {
+    super.dispose();
     if (subscriptions != null) subscriptions.unsubscribe();
   }
 

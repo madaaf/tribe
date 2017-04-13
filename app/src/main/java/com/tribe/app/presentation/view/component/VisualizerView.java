@@ -65,6 +65,7 @@ public class VisualizerView extends FrameLayout {
     super.onAttachedToWindow();
 
     subscriptions.add(Observable.interval(0, DURATION, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           if (isActive) {

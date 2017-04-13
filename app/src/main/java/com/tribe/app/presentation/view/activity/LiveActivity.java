@@ -264,6 +264,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
+    viewLiveContainer.dispose();
+
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     soundManager.cancelMediaPlayer();
