@@ -19,6 +19,7 @@ public class TribeInterceptor implements Interceptor {
   private Context context;
 
   public TribeInterceptor(Context context, TribeAuthorizer tribeAuthorizer) {
+    this.context = context;
     this.tribeAuthorizer = tribeAuthorizer;
   }
 

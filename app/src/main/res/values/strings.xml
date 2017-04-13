@@ -97,6 +97,7 @@
 	
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
+	<string name="live_notification_action_decline">Decline</string>
 	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
 	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
@@ -112,6 +113,7 @@
 	<string name="live_notification_buzzed">Buzzing!</string>
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
+	<string name="live_notification_guest_declined">%1$s can\'t answer now</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Live call</string>
@@ -194,7 +196,7 @@
 	<string name="onboarding_user_title">Set your profile</string>
 	<string name="onboarding_user_mandatory_avatar">Profile picture required</string>
 	<string name="onboarding_user_displayname_placeholder">Display name*</string>
-	<string name="onboarding_user_username_placeholder">\@username*</string>
+	<string name="onboarding_user_username_placeholder">username*</string>
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
@@ -301,6 +303,8 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
+	<string name="live_unknown_user">Unknown guest</string>
+	<string name="live_external_user">External guest</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

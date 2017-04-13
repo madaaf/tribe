@@ -97,6 +97,7 @@
 	
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Rejoindre !</string>
+	<string name="live_notification_action_decline">Rejeter</string>
 	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
@@ -112,6 +113,7 @@
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
+	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Appel...</string>
@@ -194,7 +196,7 @@
 	<string name="onboarding_user_title">Configurer votre profil</string>
 	<string name="onboarding_user_mandatory_avatar">Avatar obligatoire</string>
 	<string name="onboarding_user_displayname_placeholder">Nom d\'affichage*</string>
-	<string name="onboarding_user_username_placeholder">\@nom-d\'utilisateur*</string>
+	<string name="onboarding_user_username_placeholder">nom-d\'utilisateur*</string>
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Aller plus vite avec facebook !</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
@@ -301,6 +303,8 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>
 	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
+	<string name="live_unknown_user">Invité inconnu</string>
+	<string name="live_external_user">Invité externe</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

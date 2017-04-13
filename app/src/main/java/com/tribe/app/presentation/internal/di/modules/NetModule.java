@@ -27,7 +27,6 @@ import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
-import com.tribe.app.data.network.deserializer.LookupDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
@@ -36,7 +35,6 @@ import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
-import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.interceptor.TribeInterceptor;
 import com.tribe.app.data.network.util.LookupApi;
@@ -148,7 +146,6 @@ import timber.log.Timber;
             new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
         .registerTypeAdapter(new TypeToken<List<UserRealm>>() {
         }.getType(), new UserListDeserializer<>())
-        .registerTypeAdapter(LookupEntity.class, new LookupDeserializer())
         .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
         .registerTypeAdapter(new TypeToken<List<Integer>>() {
         }.getType(), new HowManyFriendsDeserializer())
@@ -278,7 +275,7 @@ import timber.log.Timber;
       httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
 
-    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
+    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_LOOKUP)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
         //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())

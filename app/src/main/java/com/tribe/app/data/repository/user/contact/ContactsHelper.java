@@ -203,11 +203,12 @@ public class ContactsHelper {
         phoneRealm.setPhone(phone);
         realmList.add(phoneRealm);
       }
+
+      contact.setPhones(realmList);
+      return contact;
     }
 
-    contact.setPhones(realmList);
-
-    return contact;
+    return null;
   }
 
   private static void log(List<ContactABRealm> contacts) {

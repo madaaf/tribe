@@ -1,6 +1,5 @@
 package com.tribe.app.data.network.entity;
 
-import com.tribe.app.data.realm.UserRealm;
 import java.util.List;
 
 /**
@@ -8,13 +7,13 @@ import java.util.List;
  */
 public class LookupEntity {
 
-  private List<Object> lookupList;
+  private List<LookupObject> lookupList;
 
-  public List<UserRealm> getLookup() {
+  public List<LookupObject> getLookupList() {
     return lookupList;
   }
 
-  public void setLookup(List<UserRealm> lookupList) {
+  public void setLookupList(List<LookupObject> lookupList) {
     this.lookupList = lookupList;
   }
 }

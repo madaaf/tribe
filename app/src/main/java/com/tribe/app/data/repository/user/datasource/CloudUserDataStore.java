@@ -14,7 +14,6 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.network.util.LookupApi;
@@ -41,6 +40,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -75,6 +75,7 @@ public class CloudUserDataStore implements UserDataStore {
   private AccessToken accessToken = null;
   private Installation installation = null;
   private @LastSync Preference<Long> lastSync;
+  private PhoneUtils phoneUtils;
 
   /**
    * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -88,7 +89,7 @@ public class CloudUserDataStore implements UserDataStore {
   public CloudUserDataStore(UserCache userCache, ContactCache contactCache, LiveCache liveCache,
       RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi,
       LookupApi lookupApi, AccessToken accessToken, Installation installation, Context context,
-      @LastSync Preference<Long> lastSync) {
+      @LastSync Preference<Long> lastSync, PhoneUtils phoneUtils) {
     this.userCache = userCache;
     this.contactCache = contactCache;
     this.rxContacts = rxContacts;
@@ -101,6 +102,7 @@ public class CloudUserDataStore implements UserDataStore {
     this.installation = installation;
     this.liveCache = liveCache;
     this.lastSync = lastSync;
+    this.phoneUtils = phoneUtils;
   }
 
   @Override public Observable<PinRealm> requestCode(String phoneNumber) {
@@ -286,7 +288,6 @@ public class CloudUserDataStore implements UserDataStore {
 
           return contactList;
         }).flatMap(contactList -> {
-      List<String> requests = new ArrayList<>();
       Map<String, ContactInterface> phones = new HashMap<>();
       Map<String, ContactInterface> fbIds = new HashMap<>();
 
@@ -294,7 +295,7 @@ public class CloudUserDataStore implements UserDataStore {
         if (contactI instanceof ContactABRealm) {
           ContactABRealm contactABRealm = (ContactABRealm) contactI;
           for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
-            if (phoneRealm.isInternational()) phones.put(phoneRealm.getPhone(), contactI);
+            phones.put(phoneRealm.getPhone(), contactI);
           }
         } else if (contactI instanceof ContactFBRealm) {
           ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
@@ -308,79 +309,53 @@ public class CloudUserDataStore implements UserDataStore {
         phones.remove(currentUser.getPhone());
       }
 
+      List<String> lookupPhones = new ArrayList<>();
       if (phones.size() > 0 || fbIds.size() > 0) {
         if (phones.size() > 0) {
-          StringBuilder result = new StringBuilder();
-
-          for (String phone : phones.keySet()) {
-            result.append("\"" + phone + "\"");
-            result.append(",");
-          }
+          lookupPhones.addAll(phones.keySet());
         }
 
-        //if (fbIds.size() > 0) {
-        //  StringBuilder result = new StringBuilder();
+        String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
+
+        return lookupApi.lookup(regionCode, lookupPhones)
+            .flatMap(lookupObjects -> Observable.from(lookupObjects))
+            .flatMap(lookupObject -> {
+              if (StringUtils.isEmpty(lookupObject.getUserId())) {
+                return Observable.just(lookupObject);
+              } else {
+                return Observable.just(lookupObject);
+              }
+            })
+            .toList();
+
+        //for (LookupEntity lookupEntity : lookupEntities) {
+        //  for (UserRealm userRealm : lookupEntity.getLookup()) {
+        //    for (String phone : phones.keySet()) {
+        //      if (userRealm.getPhone().equals(phone)) {
+        //        ContactInterface contactInterface = phones.get(phone);
+        //        contactInterface.addUser(userRealm);
+        //        if (!contactInterface.isNew() && lastSync.get() != null && lastSync.get() > 0) {
+        //          contactInterface.setNew(userRealm.getCreatedAt().getTime() > lastSync.get());
+        //        }
+        //      }
+        //    }
         //
-        //  int count = 0;
-        //  for (String fbid : fbIds.keySet()) {
-        //    result.append("\"" + fbid + "\"");
-        //    result.append(",");
-        //    count++;
-        //
-        //    if (count % LOOKUP_LIMIT == 0) {
-        //      String req = context.getString(R.string.lookup_facebook, 0,
-        //          result.length() > 0 ? result.substring(0, result.length() - 1) : "");
-        //      requests.add(context.getString(R.string.lookup, req,
-        //          context.getString(R.string.userfragment_infos)));
-        //      result = new StringBuilder();
+        //    for (String fbId : fbIds.keySet()) {
+        //      if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid().equals(fbId)) {
+        //        ContactInterface contactInterface = fbIds.get(fbId);
+        //        contactInterface.addUser(userRealm);
+        //        if (!contactInterface.isNew() && lastSync.get() != null && lastSync.get() > 0) {
+        //          contactInterface.setNew(userRealm.getCreatedAt().getTime() > lastSync.get());
+        //        }
+        //      }
         //    }
         //  }
-        //
-        //  String req = context.getString(R.string.lookup_facebook, 0,
-        //      result.length() > 0 ? result.substring(0, result.length() - 1) : "");
-        //  requests.add(context.getString(R.string.lookup, req,
-        //      context.getString(R.string.userfragment_infos)));
         //}
 
-        return lookupApi.(s)
-            .map(lookupEntities -> {
-              for (LookupEntity lookupEntity : lookupEntities) {
-                for (UserRealm userRealm : lookupEntity.getLookup()) {
-                  for (String phone : phones.keySet()) {
-                    if (userRealm.getPhone().equals(phone)) {
-                      ContactInterface contactInterface = phones.get(phone);
-                      contactInterface.addUser(userRealm);
-                      if (!contactInterface.isNew()
-                          && lastSync.get() != null
-                          && lastSync.get() > 0) {
-                        contactInterface.setNew(
-                            userRealm.getCreatedAt().getTime() > lastSync.get());
-                      }
-                    }
-                  }
-
-                  for (String fbId : fbIds.keySet()) {
-                    if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid()
-                        .equals(fbId)) {
-                      ContactInterface contactInterface = fbIds.get(fbId);
-                      contactInterface.addUser(userRealm);
-                      if (!contactInterface.isNew()
-                          && lastSync.get() != null
-                          && lastSync.get() > 0) {
-                        contactInterface.setNew(
-                            userRealm.getCreatedAt().getTime() > lastSync.get());
-                      }
-                    }
-                  }
-                }
-              }
-
-              return Pair.create(phones, null);
-            });
       }
 
-      return Observable.just(Pair.create(phones, null));
-    }, (contactList, entityPair) -> contactList).doOnNext(saveToCacheContacts);
+      return Observable.empty();
+    }, (contactList, lookupList) -> contactList).doOnNext(saveToCacheContacts);
   }
 
   @Override public Observable<List<ContactInterface>> contactsFB() {
