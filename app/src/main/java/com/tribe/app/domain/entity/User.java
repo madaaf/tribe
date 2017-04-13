@@ -291,6 +291,7 @@ public class User implements Serializable, BaseListInterface {
     TribeGuest guest = new TribeGuest(getId());
     guest.setDisplayName(getDisplayName());
     guest.setPicture(getProfilePicture());
+    guest.setUserName(getUsername());
     return guest;
   }
 

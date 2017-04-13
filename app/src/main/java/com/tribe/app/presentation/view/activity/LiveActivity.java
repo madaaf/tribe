@@ -667,10 +667,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     RoomMember roomMember = viewLive.getUsersInLiveRoom();
     List<TribeGuest> friendInLive = roomMember.getTribeGuestList();
     List<TribeGuest> anonymousInLive = roomMember.getAnonymousGuestList();
+    List<String> guestsIdsInLive = new ArrayList<>();
+
+    for (TribeGuest guest : friendInLive) {
+      guestsIdsInLive.add(guest.getId());
+    }
 
     List<TribeGuest> peopleInLive = new ArrayList<>();
     peopleInLive.addAll(friendInLive);
-    peopleInLive.addAll(anonymousInLive);
+
+    for (TribeGuest anonymous : anonymousInLive) {
+      if (!guestsIdsInLive.contains(anonymous.getId())) peopleInLive.add(anonymous);
+    }
 
     for (TribeGuest guest : peopleInLive) {
       if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {

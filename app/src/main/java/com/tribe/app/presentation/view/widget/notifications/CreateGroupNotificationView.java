@@ -20,7 +20,6 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/04/2017.
@@ -129,7 +128,6 @@ public class CreateGroupNotificationView extends LifeNotification {
       u.setProfilePicture(guest.getPicture());
       u.setDisplayName(guest.getDisplayName());
       u.setUsername(guest.getUserName());
-      Timber.e("SOEF " + guest.getDisplayName() + " " + guest.getUserName());
       GroupMember groupMember = new GroupMember(u);
       groupMember.setMember(true);
       groupMember.setFriend(true);
