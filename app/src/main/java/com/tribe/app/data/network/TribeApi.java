@@ -1,7 +1,6 @@
 package com.tribe.app.data.network;
 
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
-import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
@@ -44,8 +43,6 @@ public interface TribeApi {
 
   @Multipart @POST("/graphql") Observable<UserRealm> updateUserMedia(
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
-
-  @FormUrlEncoded @POST("/graphql") Observable<LookupEntity> lookup(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<CreateFriendshipEntity> createFriendship(
       @Field("query") String query);

@@ -14,6 +14,7 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.network.util.LookupApi;
@@ -54,6 +55,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
+import timber.log.Timber;
 
 /**
  * {@link UserDataStore} implementation based on connections to the api (Cloud).
@@ -295,74 +297,47 @@ public class CloudUserDataStore implements UserDataStore {
 
           return contactList;
         }).flatMap(contactList -> {
-      Map<String, ContactInterface> phones = new HashMap<>();
-      Map<String, ContactInterface> fbIds = new HashMap<>();
+      if (contactList == null || contactList.size() == 0) return Observable.empty();
 
-      for (ContactInterface contactI : contactList) {
-        if (contactI instanceof ContactABRealm) {
-          ContactABRealm contactABRealm = (ContactABRealm) contactI;
-          for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
-            phones.put(phoneRealm.getPhone(), contactI);
-          }
-        } else if (contactI instanceof ContactFBRealm) {
-          ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
-          fbIds.put(contactFBRealm.getId(), contactI);
-        }
-      }
+      List<ContactInterface> phones = new ArrayList<>();
+      List<ContactInterface> fbIds = new ArrayList<>();
 
       UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
 
-      if (currentUser != null) {
-        phones.remove(currentUser.getPhone());
-      }
-
-      List<String> lookupPhones = new ArrayList<>();
-      if (phones.size() > 0 || fbIds.size() > 0) {
-        if (phones.size() > 0) {
-          lookupPhones.addAll(phones.keySet());
-        }
-
-        String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
-
-        return lookupApi.lookup(regionCode, lookupPhones)
-            .flatMap(lookupObjects -> Observable.from(lookupObjects))
-            .flatMap(lookupObject -> {
-              if (StringUtils.isEmpty(lookupObject.getUserId())) {
-                return Observable.just(lookupObject);
-              } else {
-                return Observable.just(lookupObject);
+      List<LookupEntity> lookupPhones = new ArrayList<>();
+      if (contactList.size() > 0) {
+        for (ContactInterface contactI : contactList) {
+          if (contactI instanceof ContactABRealm) {
+            ContactABRealm contactABRealm = (ContactABRealm) contactI;
+            boolean shouldAdd = true;
+            for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
+              if (phoneRealm.getPhone().equals(currentUser.getPhone())) {
+                shouldAdd = false;
               }
-            })
-            .toList();
+            }
 
-        //for (LookupEntity lookupEntity : lookupEntities) {
-        //  for (UserRealm userRealm : lookupEntity.getLookup()) {
-        //    for (String phone : phones.keySet()) {
-        //      if (userRealm.getPhone().equals(phone)) {
-        //        ContactInterface contactInterface = phones.get(phone);
-        //        contactInterface.addUser(userRealm);
-        //        if (!contactInterface.isNew() && lastSync.get() != null && lastSync.get() > 0) {
-        //          contactInterface.setNew(userRealm.getCreatedAt().getTime() > lastSync.get());
-        //        }
-        //      }
-        //    }
-        //
-        //    for (String fbId : fbIds.keySet()) {
-        //      if (!StringUtils.isEmpty(userRealm.getFbid()) && userRealm.getFbid().equals(fbId)) {
-        //        ContactInterface contactInterface = fbIds.get(fbId);
-        //        contactInterface.addUser(userRealm);
-        //        if (!contactInterface.isNew() && lastSync.get() != null && lastSync.get() > 0) {
-        //          contactInterface.setNew(userRealm.getCreatedAt().getTime() > lastSync.get());
-        //        }
-        //      }
-        //    }
-        //  }
-        //}
-
+            if (shouldAdd) {
+              phones.add(contactI);
+              ContactABRealm ab = (ContactABRealm) contactI;
+              lookupPhones.add(new LookupEntity(ab.getPhones().get(0).getPhone(), null, null));
+            }
+          }
+        }
       }
 
-      return Observable.empty();
-    }, (contactList, lookupList) -> contactList).doOnNext(saveToCacheContacts);
+      String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
+
+      return lookupApi.lookup(regionCode, lookupPhones);
+    }, (contactList, lookupList) -> {
+      return new Pair<>(contactList, lookupList);
+    }).flatMap(listListPair -> {
+      return Observable.from(listListPair.second).flatMap(lookupObject -> {
+        Timber.d("lookup : " + lookupObject.getUserId());
+        return Observable.just(lookupObject);
+      }).toList();
+    }, (listListPair, lookupObject) -> {
+      return listListPair.first;
+    }).doOnNext(saveToCacheContacts);
   }
 
   @Override public Observable<List<ContactInterface>> contactsFB() {

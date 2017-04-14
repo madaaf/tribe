@@ -114,6 +114,7 @@
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
 	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
+	<string name="live_reconnecting">Reconnexion en cours...</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Appel...</string>
