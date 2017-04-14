@@ -233,7 +233,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
     MarginLayoutParams paramsInd = (MarginLayoutParams) imgInd.getLayoutParams();
     paramsInd.width = paramsInd.height = indSize;
-    paramsInd.bottomMargin = paramsInd.rightMargin = -(int) (indSize * (type == PHONE ? HoleTransformation.RATIO : 0));
+    paramsInd.bottomMargin = paramsInd.rightMargin = -(int) (indSize * (type == PHONE ? HoleTransformation.RATIO * 1.1f : 0));
     imgInd.setLayoutParams(paramsInd);
   }
 
