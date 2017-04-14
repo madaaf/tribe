@@ -338,12 +338,10 @@ public class TileView extends SquareCardView {
     if (type == TYPE_INVITE_LIVE_CO) {
       FrameLayout.LayoutParams imgIndParams =
           (FrameLayout.LayoutParams) imgIndInvite.getLayoutParams();
-      imgIndParams.leftMargin = sizeAvatar / 3;
+      imgIndParams.leftMargin = sizeAvatar / 4;
       imgIndParams.topMargin = imgIndParams.leftMargin;
       imgIndParams.height = sizeAvatar / 3;
       imgIndParams.width = imgIndParams.height;
-      int padding = screenUtils.dpToPx(1);
-      imgIndInvite.setPadding(padding, padding, padding, padding);
       imgIndInvite.setLayoutParams(imgIndParams);
     }
   }

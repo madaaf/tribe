@@ -229,8 +229,12 @@ public class AvatarView extends RelativeLayout implements Avatar {
     params.width = params.height = avatarSize;
     imgAvatar.setLayoutParams(params);
 
-    int indSize = (int) (avatarSize * HoleTransformation.RATIO * 2);
-    UIUtils.changeSizeOfView(imgInd, indSize);
+    int indSize = (int) (avatarSize * HoleTransformation.RATIO * (type == PHONE ? 3f : 2f));
+
+    MarginLayoutParams paramsInd = (MarginLayoutParams) imgInd.getLayoutParams();
+    paramsInd.width = paramsInd.height = indSize;
+    paramsInd.bottomMargin = paramsInd.rightMargin = -(int) (indSize * (type == PHONE ? HoleTransformation.RATIO : 0));
+    imgInd.setLayoutParams(paramsInd);
   }
 
   private void loadPlaceholder(boolean hasHole) {
@@ -265,9 +269,11 @@ public class AvatarView extends RelativeLayout implements Avatar {
   public void setType(@AvatarType int type) {
     this.type = type;
 
+    //if (getMeasuredWidth() != 0) refactorSize(getWidth());
+
     if (type == PHONE) {
       imgInd.setVisibility(View.VISIBLE);
-      imgInd.setImageResource(R.drawable.picto_bolt);
+      imgInd.setImageResource(R.drawable.picto_call);
     } else if (type == LIVE && hasInd) {
       imgInd.setVisibility(View.VISIBLE);
       imgInd.setImageResource(R.drawable.picto_live);

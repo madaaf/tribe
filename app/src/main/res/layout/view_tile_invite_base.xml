@@ -22,7 +22,6 @@
       android:layout_gravity="center"
       android:scaleType="fitXY"
       android:src="@drawable/picto_live"
-
       />
 
 </merge>
