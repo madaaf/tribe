@@ -57,6 +57,7 @@ public class EmojiParser {
     IEmojiMap.put(":bell:", "\uD83D\uDD14");
     IEmojiMap.put(":no_bell:", "\uD83D\uDD15");
     IEmojiMap.put(":hearts:", "\uD83D\uDC95");
+    IEmojiMap.put(":two_hearts:", "\uD83D\uDC95");
     IEmojiMap.put(":love_letter:", "\uD83D\uDC8C");
     IEmojiMap.put(":x:", "\u274C");
     IEmojiMap.put(":honeybee:", "\uD83D\uDC1D");
