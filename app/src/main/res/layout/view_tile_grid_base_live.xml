@@ -12,18 +12,18 @@
       android:gravity="center"
       android:orientation="vertical"
       >
-    
+
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/shape_rect_rounded_5_red"
-        android:drawablePadding="5.25dp"
-        android:drawableStart="@drawable/picto_live_face"
-        android:paddingBottom="5dp"
-        android:paddingLeft="7dp"
-        android:paddingRight="7dp"
-        android:paddingTop="6dp"
+        android:background="@drawable/shape_rect_rounded_white_10"
+        android:drawableStart="@drawable/picto_live_small"
+        android:gravity="center"
+        android:paddingBottom="2dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="11dp"
+        android:paddingTop="3dp"
         android:singleLine="true"
         android:text="@string/grid_status_live"
         style="@style/Body.Two.White"

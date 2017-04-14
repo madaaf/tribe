@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -32,7 +33,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
-import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -362,7 +362,31 @@ public class TileView extends SquareCardView {
       longClick.onNext(v);
       return true;
     });
-    setOnClickListener(v -> click.onNext(v));
+
+    avatar.setOnClickListener(v -> {
+      avatar.animate()
+          .scaleX(1.1f)
+          .scaleY(1.1f)
+          .setInterpolator(new OvershootInterpolator(2f))
+          .setDuration(300)
+          .setListener(new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+              avatar.animate()
+                  .scaleX(1f)
+                  .scaleY(1f)
+                  .setInterpolator(new DecelerateInterpolator())
+                  .setDuration(300)
+                  .setListener(new AnimatorListenerAdapter() {
+                    @Override public void onAnimationEnd(Animator animation) {
+                      click.onNext(TileView.this);
+                      avatar.animate().setListener(null).start();
+                    }
+                  })
+                  .start();
+            }
+          })
+          .start();
+    });
   }
 
   private void reset() {
@@ -399,8 +423,8 @@ public class TileView extends SquareCardView {
   }
 
   public void setAvatar() {
-    avatar.setType(recipient.isLive() ? AvatarView.LIVE
-        : (recipient.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
+    avatar.setType(isGrid() ? AvatarView.PHONE : (recipient.isLive() ? AvatarView.LIVE
+        : (recipient.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR)));
     avatar.load(recipient);
   }
 
