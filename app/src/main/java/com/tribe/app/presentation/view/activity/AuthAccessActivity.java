@@ -42,7 +42,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
-  private static final int TIMER_START = 3000;
+  private static final int TIMER_START = 4000;
 
   public static Intent getCallingIntent(Context context) {
     Intent intent = new Intent(context, AuthAccessActivity.class);

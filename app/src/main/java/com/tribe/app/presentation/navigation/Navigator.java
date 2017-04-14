@@ -1,17 +1,17 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
+import android.provider.Settings;
 import android.widget.Toast;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
@@ -30,7 +30,6 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
-import java.io.File;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -62,6 +61,13 @@ public class Navigator {
     Intent mIntent = new Intent(activity, HomeActivity.class);
     activity.finishAffinity();
     activity.startActivity(mIntent);
+  }
+
+  public void navigateToSettingApp(Context context) {
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", context.getPackageName(), null));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
   }
 
   /**
@@ -184,7 +190,17 @@ public class Navigator {
   public void navigateToCreateGroup(Activity activity) {
     if (activity != null) {
       Intent intent = GroupActivity.getCallingIntent(activity, null);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, 0);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToPrefilledCreationGroup(Activity activity,
+      List<GroupMember> prefilledGrpMembers, boolean createGrpDirectly) {
+    if (activity != null) {
+      Intent intent = GroupActivity.getCallingIntentWithMembers(activity, prefilledGrpMembers,
+          createGrpDirectly);
+      activity.startActivityForResult(intent, 0);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
@@ -339,16 +355,6 @@ public class Navigator {
     }
   }
 
-  public void invite(String phone, int nbFriends, Activity activity) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:" + phone));
-    sendIntent.putExtra("sms_body", activity.getResources()
-        .getString(R.string.share_add_friends_addressbook_suggestions, nbFriends,
-            BuildConfig.TRIBE_URL));
-    activity.startActivity(sendIntent);
-    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-  }
-
   public void openFacebookMessenger(String body, Activity activity) {
     Intent sendIntent = new Intent();
     sendIntent.setAction(Intent.ACTION_SEND);
@@ -377,40 +383,5 @@ public class Navigator {
       // TODO externalize this string
       Toast.makeText(activity, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
     }
-  }
-
-  public void shareHandle(Context context, String handle, File file, String selectedPackage) {
-    if (file != null) {
-      Intent share = new Intent(Intent.ACTION_SEND);
-      share.setType("image/jpeg");
-      share.putExtra(Intent.EXTRA_TEXT,
-          EmojiParser.demojizedText(context.getString(R.string.share_add_friends_handle)));
-
-      Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
-
-      share.putExtra(Intent.EXTRA_STREAM, uri);
-
-      if (StringUtils.isEmpty(selectedPackage)) {
-        try {
-          context.startActivity(Intent.createChooser(share,
-              context.getString(R.string.contacts_share_profile_button)));
-        } catch (ActivityNotFoundException ex) {
-          basicShare(context, share);
-        }
-      } else {
-        try {
-          share.setPackage(selectedPackage);
-          context.startActivity(share);
-        } catch (Exception ex) {
-          share.setPackage(null);
-          basicShare(context, share);
-        }
-      }
-    }
-  }
-
-  private void basicShare(Context context, Intent share) {
-    context.startActivity(
-        Intent.createChooser(share, context.getString(R.string.contacts_share_profile_button)));
   }
 }

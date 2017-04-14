@@ -25,13 +25,15 @@ import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
-import com.tribe.app.presentation.view.component.live.LiveAudioView;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
+import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
+import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
+import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -41,7 +43,12 @@ import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriends
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
-import com.tribe.app.presentation.view.widget.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
+import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import dagger.Component;
 
 /**
@@ -54,7 +61,15 @@ import dagger.Component;
 
   void inject(DebugActivity debugActivity);
 
+  void inject(LifeNotification lifeNotification);
+
   void inject(LiveImmersiveNotificationActivity liveImmersiveNotificationActivity);
+
+  void inject(PermissionNotificationView permissionNotificationView);
+
+  void inject(NotificationContainerView notificationContainerView);
+
+  void inject(CreateGroupNotificationView createGroupNotificationView);
 
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
@@ -110,11 +125,11 @@ import dagger.Component;
 
   void inject(RatingNotificationView ratingNotificationView);
 
+  void inject(EnjoyingTribeNotificationView enjoyingTribeNotificationView);
+
   void inject(LiveLocalView liveLocalView);
 
   void inject(LiveRoomView liveRoomView);
-
-  void inject(LiveAudioView liveAudioView);
 
   void inject(LiveWaitingView liveWaitingView);
 
@@ -129,4 +144,10 @@ import dagger.Component;
   void inject(LiveStatusNameView liveStatusNameView);
 
   void inject(SettingsBlockedFriendsView settingsBlockedFriendsView);
+
+  void inject(LiveLowConnectionView liveLowConnectionView);
+
+  void inject(LivePeerOverlayView livePeerOverlayView);
+
+  void inject(LiveWaveView liveWaveView);
 }

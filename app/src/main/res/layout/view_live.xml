@@ -40,27 +40,27 @@
 
   <ImageView
       android:id="@+id/btnLeave"
-      android:layout_width="@dimen/nav_icon_size"
-      android:layout_height="@dimen/nav_icon_size"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:layout_gravity="right|top"
-      android:layout_margin="0dp"
+      android:layout_margin="7dp"
       android:background="@drawable/selectable_button_oval"
       android:clickable="true"
       android:scaleType="centerInside"
       android:src="@drawable/picto_leave_live"
       />
 
-
   <ImageView
       android:id="@+id/btnScreenshot"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="left|top"
-      android:layout_margin="@dimen/margin_horizontal"
+      android:layout_margin="@dimen/horizontal_margin_smaller"
       android:alpha="0"
       android:background="@drawable/selectable_button_oval"
       android:clickable="true"
       android:scaleType="centerInside"
       android:src="@drawable/picto_btn_screenshot"
+      android:visibility="invisible"
       />
 </merge>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+  <com.tribe.app.presentation.view.component.live.LiveLowConnectionView
+      android:id="@+id/viewLowConnection"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="gone"
+      />
+
+  <com.tribe.app.presentation.view.component.VisualizerView
+      android:id="@+id/viewVisualizer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginBottom="60dp"
+      android:gravity="center"
+      android:maxLines="1"
+      style="@style/Title.2.White"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size_big_shadow"
+      android:layout_height="@dimen/avatar_size_big_shadow"
+      android:layout_gravity="center"
+      app:avatarType="regular"
+      app:hasHole="false"
+      app:hasInd="false"
+      app:hasShadow="true"
+      />
+
+  <View
+      android:id="@+id/bgDisabledPartial"
+      android:layout_width="@dimen/avatar_size_big_shadow"
+      android:layout_height="@dimen/avatar_size_big_shadow"
+      android:layout_gravity="center"
+      android:alpha="0"
+      android:background="@drawable/shape_oval_black40"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtState"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginTop="60dp"
+      android:gravity="center"
+      android:maxLines="1"
+      style="@style/Body.Two.White40"
+      />
+
+  <View
+      android:id="@+id/bgDisabledFull"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@color/black.opacity.40"
+      />
+
+  <ImageView
+      android:id="@+id/imgIcon"
+      android:layout_width="@dimen/nav_icon_size"
+      android:layout_height="@dimen/nav_icon_size"
+      android:layout_gravity="center"
+      android:background="@drawable/selectable_button_oval_light"
+      android:scaleType="centerInside"
+      />
+</merge>

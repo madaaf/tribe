@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -14,55 +15,80 @@ import com.jenzz.appstate.AppState;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.job.UnhideFriendshipJob;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import java.util.Date;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton public class NotificationBuilder {
 
-  private AndroidApplication application;
-  private NotificationManagerCompat notificationManager;
-  private Gson gson;
-  private TribeApi tribeApi;
-  private UserCache userCache;
-  private @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
+  @Inject NotificationManagerCompat notificationManager;
+  @Inject Gson gson;
+  @Inject TribeApi tribeApi;
+  @Inject UserCache userCache;
+  @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+  @Inject JobManager jobManager;
 
-  @Inject public NotificationBuilder(AndroidApplication application,
-      NotificationManagerCompat notificationManager, Gson gson, TribeApi tribeApi,
-      UserCache userCache, @FullscreenNotifications Preference<Boolean> fullScreenNotifications) {
+  private AndroidApplication application;
+
+  @Inject public NotificationBuilder(AndroidApplication application) {
     this.application = application;
-    this.notificationManager = notificationManager;
-    this.gson = gson;
-    this.tribeApi = tribeApi;
-    this.userCache = userCache;
-    this.fullScreenNotifications = fullScreenNotifications;
+    this.application.getApplicationComponent().inject(this);
   }
 
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
+      // If the user calling is hidden by the current user, we unhide it
+      // https://github.com/heytribe/roadmap/issues/530
+      if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+          && notificationPayload.isUserCall()) {
+        FriendshipRealm friendshipRealm =
+            userCache.friendshipForUserId(notificationPayload.getUserId());
+        if (friendshipRealm != null && friendshipRealm.isHidden()) {
+          jobManager.addJobInBackground(new UnhideFriendshipJob(friendshipRealm));
+        }
+      } else if (notificationPayload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+        PreferencesUtils.removeFromSet(fullScreenNotificationState,
+            notificationPayload.getThread());
+      }
+
+      Notification notification = buildNotification(notificationPayload);
+
       if (application.getAppState() != null && application.getAppState()
           .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
         intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
         application.sendBroadcast(intentUnique);
+
+        if (notificationPayload.getClickAction()
+            .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+          notify(notificationPayload, notification);
+        }
       } else {
-        Notification notification = buildNotification(notificationPayload);
         if (notification != null) {
           if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-              && fullScreenNotifications.get()) {
+              && fullScreenNotifications.get()
+              && !StringUtils.isEmpty(notificationPayload.getSound())
+              && !fullScreenNotificationState.get().contains(notificationPayload.getThread())) {
             sendFullScreenNotification(remoteMessage);
-          } else {
-            notificationManager.notify(getNotificationId(notificationPayload), notification);
           }
+
+          notify(notificationPayload, notification);
         }
 
         if (notificationPayload.getClickAction()
@@ -71,9 +97,15 @@ import javax.inject.Singleton;
               application.getString(R.string.userfragment_infos),
               application.getString(R.string.friendshipfragment_info)))
               .subscribe(userRealm -> userCache.put(userRealm));
+
+          notify(notificationPayload, notification);
         }
       }
     }
+  }
+
+  private void notify(NotificationPayload notificationPayload, Notification notification) {
+    notificationManager.notify(getNotificationId(notificationPayload), notification);
   }
 
   private NotificationPayload getPayload(RemoteMessage remoteMessage) {
@@ -140,12 +172,9 @@ import javax.inject.Singleton;
 
   private NotificationCompat.Builder addCommonActions(NotificationCompat.Builder builder,
       NotificationPayload payload) {
-    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_grid,
-        application.getString(R.string.live_notification_action_see_online),
-        getPendingIntentForHome(payload)).build())
-        .addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
-            application.getString(R.string.live_notification_action_hang_live),
-            getPendingIntentForLive(payload)).build());
+    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
+        application.getString(R.string.live_notification_action_hang_live),
+        getPendingIntentForLive(payload)).build());
   }
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {

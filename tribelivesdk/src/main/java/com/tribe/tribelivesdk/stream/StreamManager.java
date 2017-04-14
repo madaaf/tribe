@@ -10,14 +10,19 @@ import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import rx.Observable;
+import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class StreamManager {
+
+  private static final int DURATION = 5; // S
 
   private Context context;
   private TribeLiveLocalStream liveLocalStream;
@@ -26,7 +31,8 @@ public class StreamManager {
 
   // OBSERVABLES
   private CompositeSubscription localSubscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onMediaChanged = PublishSubject.create();
+  private Subscription subscriptionRenderingWell;
+  private PublishSubject<TribePeerMediaConfiguration> onMediaChanged = PublishSubject.create();
 
   public StreamManager(Context context) {
     this.context = context;
@@ -41,13 +47,31 @@ public class StreamManager {
     localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
 
     localSubscriptions.add(this.localPeerView.onEnableCamera()
-        .doOnNext(enabled -> setLocalCameraEnabled(enabled))
-        .map(aBoolean -> null)
-        .subscribe(o -> onMediaChanged.onNext(null)));
+        .doOnNext(mediaConfiguration -> setLocalCameraEnabled(mediaConfiguration.isVideoEnabled()))
+        .subscribe(mediaConfiguration -> onMediaChanged.onNext(mediaConfiguration)));
 
-    localSubscriptions.add(this.localPeerView.onEnableMicro().doOnNext(enabled -> {
-      setLocalAudioEnabled(enabled);
-    }).map(aBoolean -> null).subscribe(o -> onMediaChanged.onNext(null)));
+    localSubscriptions.add(this.localPeerView.onEnableMicro()
+        .doOnNext(mediaConfiguration -> setLocalAudioEnabled(mediaConfiguration.isAudioEnabled()))
+        .subscribe(mediaConfiguration -> onMediaChanged.onNext(mediaConfiguration)));
+
+    subscriptionRenderingWell =
+        Observable.interval(0, DURATION, TimeUnit.SECONDS).onBackpressureDrop().subscribe(aLong -> {
+          Collection<RemotePeer> remotePeerCollection = remotePeerMap.getMap().values();
+          for (RemotePeer remotePeer : remotePeerCollection) {
+            boolean isRenderingWell = remotePeer.isRenderingWell();
+            TribePeerMediaConfiguration mediaConfiguration = remotePeer.getMediaConfiguration();
+
+            if (!isRenderingWell
+                && mediaConfiguration.isAudioEnabled()
+                && mediaConfiguration.isVideoEnabled()) {
+              mediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.FPS_DROP);
+              remotePeer.setMediaConfiguration(mediaConfiguration);
+            } else if (mediaConfiguration.isLowConnection()) {
+              mediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.NONE);
+              remotePeer.setMediaConfiguration(mediaConfiguration);
+            }
+          }
+        });
   }
 
   public MediaStream generateLocalStream(Context context,
@@ -122,15 +146,6 @@ public class StreamManager {
     remotePeer.setMediaConfiguration(tribePeerMediaConfiguration);
   }
 
-  public void setLocalMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
-    if (localPeerView == null) {
-      Timber.d("setLocalMediaConfiguration impossible liveLocalStream isNull");
-      return;
-    }
-
-    localPeerView.shouldSwitchMode(tribePeerMediaConfiguration);
-  }
-
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
     if (liveLocalStream == null) {
       return;
@@ -179,6 +194,14 @@ public class StreamManager {
     return liveLocalStream.isCameraEnabled();
   }
 
+  public TribePeerMediaConfiguration getMediaConfiguration() {
+    if (localPeerView == null) {
+      return null;
+    }
+
+    return localPeerView.getMediaConfiguration();
+  }
+
   public void dispose(boolean shouldDisposeLocal) {
     Timber.d("Init dispose StreamManager");
 
@@ -207,6 +230,8 @@ public class StreamManager {
         localPeerView.dispose();
         localPeerView = null;
       }
+
+      if (subscriptionRenderingWell != null) subscriptionRenderingWell.unsubscribe();
     }
 
     Timber.d("End disposing stream manager");
@@ -217,7 +242,7 @@ public class StreamManager {
     return remotePeerMap.getObservable();
   }
 
-  public Observable<Void> onMediaChanged() {
+  public Observable<TribePeerMediaConfiguration> onMediaChanged() {
     return onMediaChanged;
   }
 }

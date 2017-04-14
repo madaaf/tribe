@@ -88,8 +88,7 @@ public class ProfileInfoView extends LinearLayout {
   // VARIABLES
   private String usernameInit;
   private String displayNameInit;
-  private boolean avatarSelected = false, usernameSelected = false, displayNameSelected = false,
-      displayNameChanged = false;
+  private boolean usernameSelected = false, displayNameSelected = false, displayNameChanged = false;
   private int avatarSize;
   private String imgUri;
 
@@ -139,10 +138,13 @@ public class ProfileInfoView extends LinearLayout {
   }
 
   public void loadAvatar(String url) {
-    avatarSelected = true;
     refactorInfosValid();
 
-    new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
+    new GlideUtils.Builder(getContext()).url(url)
+        .size(avatarSize)
+        .target(imgAvatar)
+        .hasPlaceholder(false)
+        .load();
   }
 
   public void setEditDisplayName(String displayName) {
@@ -161,10 +163,6 @@ public class ProfileInfoView extends LinearLayout {
 
   public String getUsername() {
     return editUsername.getText().toString();
-  }
-
-  public boolean isAvatarSelected() {
-    return avatarSelected;
   }
 
   public boolean isDisplayNameSelected() {
@@ -286,7 +284,6 @@ public class ProfileInfoView extends LinearLayout {
           }
         });
 
-    avatarSelected = true;
     editDisplayName.setText(facebookEntity.getName());
     editUsername.setText(facebookEntity.getUsername());
   }
@@ -398,7 +395,7 @@ public class ProfileInfoView extends LinearLayout {
   }
 
   private void refactorInfosValid() {
-    infoValid.onNext(displayNameSelected && avatarSelected && usernameSelected);
+    infoValid.onNext(displayNameSelected && usernameSelected);
   }
 
   @OnClick(R.id.layoutUsername) void clickLayoutUsername() {
@@ -457,7 +454,6 @@ public class ProfileInfoView extends LinearLayout {
 
   public void loadUri(Uri uri) {
     imgUri = uri.toString();
-    avatarSelected = true;
     loadAvatar(uri.toString());
   }
 

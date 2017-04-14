@@ -68,6 +68,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return this.userCache.userInfos(accessToken.getUserId());
   }
 
+  @Override public Observable<List<UserRealm>> userInfosList(List<String> userIds) {
+    return null;
+  }
+
   @Override public Observable<List<FriendshipRealm>> friendships() {
     return this.userCache.friendships();
   }

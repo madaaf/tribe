@@ -13,7 +13,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
-import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -31,7 +30,6 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -223,8 +221,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @OnClick(R.id.txtAction) void onClickAction() {
     if (isReady()) {
       nextStep();
-    } else if (!profileInfoView.isAvatarSelected()) {
-      profileInfoView.shakeAvatar();
     } else if (!profileInfoView.isDisplayNameSelected()) {
       profileInfoView.shakeDisplayName();
     } else if (!profileInfoView.isUsernameSelected()) {
@@ -233,9 +229,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private boolean isReady() {
-    return profileInfoView.isUsernameSelected()
-        && profileInfoView.isDisplayNameSelected()
-        && profileInfoView.isAvatarSelected();
+    return profileInfoView.isUsernameSelected() && profileInfoView.isDisplayNameSelected();
   }
 
   private void nextStep() {

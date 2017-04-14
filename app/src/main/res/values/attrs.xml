@@ -13,11 +13,20 @@
       <enum name="live" value="0"/>
       <enum name="online" value="1"/>
       <enum name="regular" value="2"/>
+      <enum name="phone" value="3"/>
     </attr>
 
     <attr format="boolean" name="hasShadow"/>
     <attr format="boolean" name="hasInd"/>
     <attr format="boolean" name="hasHole"/>
+  </declare-styleable>
+
+  <declare-styleable name="NotificationView">
+    <attr format="enum" name="notifType">
+      <enum name="enjoyingTribe" value="0"/>
+      <enum name="createGrp" value="1"/>
+      <enum name="permission" value="2"/>
+    </attr>
   </declare-styleable>
 
   <declare-styleable name="RoundedCornerLayout">

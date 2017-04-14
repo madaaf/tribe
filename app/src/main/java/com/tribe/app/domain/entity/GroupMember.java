@@ -3,12 +3,13 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.tribelivesdk.model.GroupJoiner;
 import java.io.Serializable;
 
 /**
  * Created by tiago on 23/11/2016.
  */
-public class GroupMember implements Serializable, BaseListInterface {
+public class GroupMember extends GroupJoiner implements Serializable, BaseListInterface {
 
   private boolean ogMember = false;
   private boolean member = false;

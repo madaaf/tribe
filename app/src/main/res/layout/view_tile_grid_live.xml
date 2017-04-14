@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <include layout="@layout/view_tile_background" />
+  <include layout="@layout/view_tile_background"/>
 
   <com.tribe.app.presentation.view.widget.PulseLayout
       android:id="@+id/layoutPulse"
@@ -11,7 +11,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:background="@null"
-      app:pulseColor="@android:color/white"
+      app:pulseColor="@color/red.new.contacts"
       app:pulseCount="2"
       app:pulseDuration="3000"
       >
@@ -22,7 +22,8 @@
         android:layout_height="@dimen/avatar_size"
         android:layout_centerInParent="true"
         android:background="@null"
-        app:avatarType="live"
+        android:clickable="true"
+        app:avatarType="phone"
         app:hasHole="true"
         app:hasInd="true"
         app:hasShadow="true"
@@ -30,6 +31,6 @@
 
   </com.tribe.app.presentation.view.widget.PulseLayout>
 
-  <include layout="@layout/view_tile_grid_base_live" />
+  <include layout="@layout/view_tile_grid_base_live"/>
 
 </merge>

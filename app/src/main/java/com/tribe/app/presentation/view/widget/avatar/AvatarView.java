@@ -39,12 +39,13 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private static final float SHADOW_RATIO = 0.22f;
 
-  @IntDef({ LIVE, ONLINE, REGULAR }) public @interface AvatarType {
+  @IntDef({ LIVE, ONLINE, REGULAR, PHONE }) public @interface AvatarType {
   }
 
   public static final int LIVE = 0;
   public static final int ONLINE = 1;
   public static final int REGULAR = 2;
+  public static final int PHONE = 3;
 
   @Inject ScreenUtils screenUtils;
 
@@ -166,6 +167,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
             .target(imgAvatar)
             .size(avatarSize)
             .hasHole(hasHole && isOnlineOrLive())
+            .hasPlaceholder(false)
             .load();
       } else if (!groupAvatarFile.exists()) {
         if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
@@ -179,8 +181,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
                       .hasHole(hasHole && isOnlineOrLive())
                       .load());
         }
-
-        loadPlaceholder(hasHole);
       }
     } else {
       load(url);
@@ -197,9 +197,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
           .size(avatarSize)
           .target(imgAvatar)
           .hasHole(hasHole && isOnlineOrLive())
+          .hasPlaceholder(false)
           .load();
     } else {
-      loadPlaceholder(hasHole);
+      loadPlaceholder(hasHole && isOnlineOrLive());
     }
   }
 
@@ -228,8 +229,12 @@ public class AvatarView extends RelativeLayout implements Avatar {
     params.width = params.height = avatarSize;
     imgAvatar.setLayoutParams(params);
 
-    int indSize = (int) (avatarSize * HoleTransformation.RATIO * 2);
-    UIUtils.changeSizeOfView(imgInd, indSize);
+    int indSize = (int) (avatarSize * HoleTransformation.RATIO * (type == PHONE ? 3f : 2f));
+
+    MarginLayoutParams paramsInd = (MarginLayoutParams) imgInd.getLayoutParams();
+    paramsInd.width = paramsInd.height = indSize;
+    paramsInd.bottomMargin = paramsInd.rightMargin = -(int) (indSize * (type == PHONE ? HoleTransformation.RATIO * 1.1f : 0));
+    imgInd.setLayoutParams(paramsInd);
   }
 
   private void loadPlaceholder(boolean hasHole) {
@@ -258,13 +263,18 @@ public class AvatarView extends RelativeLayout implements Avatar {
   }
 
   private boolean isOnlineOrLive() {
-    return type == LIVE || type == ONLINE;
+    return type == LIVE || type == ONLINE || type == PHONE;
   }
 
   public void setType(@AvatarType int type) {
     this.type = type;
 
-    if (type == LIVE && hasInd) {
+    //if (getMeasuredWidth() != 0) refactorSize(getWidth());
+
+    if (type == PHONE) {
+      imgInd.setVisibility(View.VISIBLE);
+      imgInd.setImageResource(R.drawable.picto_call);
+    } else if (type == LIVE && hasInd) {
       imgInd.setVisibility(View.VISIBLE);
       imgInd.setImageResource(R.drawable.picto_live);
     } else if (type == ONLINE && hasInd) {

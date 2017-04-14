@@ -130,6 +130,13 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.membershipfragment_info))).doOnNext(saveToCacheUser);
   }
 
+  @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
+    String userIdsListFormated = listToJson(userIdsList);
+    return this.tribeApi.getUserListInfos(
+        context.getString(R.string.lookup_userid, userIdsListFormated,
+            context.getString(R.string.userfragment_infos)));
+  }
+
   @Override public Observable<List<FriendshipRealm>> friendships() {
     return null;
   }
@@ -168,11 +175,15 @@ public class CloudUserDataStore implements UserDataStore {
       operatorName = operatorName.replaceAll("[^a-zA-Z0-9]+", "");
     }
 
-    String base =
-        context.getString(R.string.install_base, accessToken.getUserId(), token, "android",
-            Build.VERSION.RELEASE, Build.MANUFACTURER, Build.MODEL,
-            DeviceUtils.getVersionName(context), context.getPackageName(),
-            context.getResources().getConfiguration().locale.toString(), operatorName);
+    String model = Build.MODEL;
+
+    if (!StringUtils.isEmpty(model)) {
+      model = model.replaceAll("[^a-zA-Z0-9]+", "").replace("\\\"", "");
+    }
+
+    String base = context.getString(R.string.install_base, token, "android", Build.VERSION.RELEASE,
+        Build.MANUFACTURER, model, DeviceUtils.getVersionName(context), context.getPackageName(),
+        context.getResources().getConfiguration().locale.toString(), operatorName);
 
     String req =
         installation == null || StringUtils.isEmpty(installation.getToken()) ? context.getString(
@@ -831,12 +842,21 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    String memberIdsJson = listToArrayReq(memberIds);
-    String request = context.getString(R.string.add_members_group, groupId, memberIdsJson);
+    StringBuffer buffer = new StringBuffer();
+    String mutationCreateMembership = null;
 
-    return this.tribeApi.addMembersToGroup(request)
-        .doOnNext(aVoid -> userCache.addMembersToGroup(groupId, memberIds))
-        .doOnNext(aVoid -> clearGroupAvatar(groupId));
+    int count = 0;
+    for (String id : memberIds) {
+      buffer.append(context.getString(R.string.create_membership_user, count, groupId, id));
+      count++;
+    }
+
+    mutationCreateMembership = context.getString(R.string.mutation, buffer.toString());
+
+    return (StringUtils.isEmpty(mutationCreateMembership) ? Observable.empty()
+        : tribeApi.createMembershipsForUsers(mutationCreateMembership)
+            .doOnNext(aVoid -> userCache.addMembersToGroup(groupId, memberIds))
+            .doOnNext(aVoid -> clearGroupAvatar(groupId)));
   }
 
   @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {

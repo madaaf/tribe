@@ -116,26 +116,22 @@ public class Room {
           hasJoined = true;
         })
         .delay(1000, TimeUnit.MILLISECONDS)
-        .doOnNext(tribeJoinRoom -> sendToPeers(webRTCClient.getJSONMedia(), false))
-        .subscribe(joinedRoom -> {
+        .doOnNext(tribeJoinRoom -> sendToPeers(
+            webRTCClient.getJSONMedia(webRTCClient.getMediaConfiguration()), false))
+        .subscribe());
 
-        }));
+    persistentSubscriptions.add(jsonToModel.onReceivedOffer()
+        .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
+            tribeOffer.getSessionDescription())));
 
-    persistentSubscriptions.add(jsonToModel.onReceivedOffer().subscribe(tribeOffer -> {
-      webRTCClient.setRemoteDescription(tribeOffer.getSession(),
-          tribeOffer.getSessionDescription());
-    }));
-
-    persistentSubscriptions.add(jsonToModel.onCandidate().subscribe(tribeCandidate -> {
-      webRTCClient.addIceCandidate(tribeCandidate.getSession().getPeerId(),
-          tribeCandidate.getIceCandidate());
-    }));
+    persistentSubscriptions.add(jsonToModel.onCandidate()
+        .subscribe(
+            tribeCandidate -> webRTCClient.addIceCandidate(tribeCandidate.getSession().getPeerId(),
+                tribeCandidate.getIceCandidate())));
 
     persistentSubscriptions.add(jsonToModel.onLeaveRoom()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(tribeSession -> {
-          webRTCClient.removePeerConnection(tribeSession);
-        }));
+        .subscribe(tribeSession -> webRTCClient.removePeerConnection(tribeSession)));
 
     persistentSubscriptions.add(
         jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
@@ -143,10 +139,9 @@ public class Room {
     persistentSubscriptions.add(
         jsonToModel.onRemovedTribeGuestList().subscribe(onRemovedTribeGuestList));
 
-    persistentSubscriptions.add(
-        jsonToModel.onTribePeerMediaConfiguration().subscribe(tribePeerMediaConfiguration -> {
-          webRTCClient.setRemoteMediaConfiguration(tribePeerMediaConfiguration);
-        }));
+    persistentSubscriptions.add(jsonToModel.onTribePeerMediaConfiguration()
+        .subscribe(tribePeerMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
+            tribePeerMediaConfiguration)));
 
     persistentSubscriptions.add(jsonToModel.onTribeMediaConstraints()
         .filter(tribeMediaConstraints -> hasJoined)
@@ -154,17 +149,10 @@ public class Room {
           webRTCClient.updateMediaConstraints(tribeMediaConstraints);
         }));
 
-    persistentSubscriptions.add(jsonToModel.onShouldSwitchLocalMediaMode()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(tribeMediaConfiguration -> {
-          webRTCClient.setLocalMediaConfiguation(tribeMediaConfiguration);
-        }));
-
     persistentSubscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(tribeMediaConfiguration -> {
-          webRTCClient.setRemoteMediaConfiguration(tribeMediaConfiguration);
-        }));
+        .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
+            tribeMediaConfiguration)));
   }
 
   public void initLocalStream(LocalPeerView localPeerView) {

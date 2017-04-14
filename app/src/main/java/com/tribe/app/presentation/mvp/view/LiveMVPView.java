@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.User;
 import java.util.List;
 
 /**
@@ -20,4 +21,6 @@ public interface LiveMVPView extends MVPView {
   void onJoinedRoom(RoomConfiguration roomConfiguration);
 
   void onJoinRoomFailed(String message);
+
+  void onReceivedAnonymousMemberInRoom(List<User> users);
 }

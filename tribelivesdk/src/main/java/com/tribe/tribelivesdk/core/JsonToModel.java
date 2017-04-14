@@ -40,8 +40,6 @@ public class JsonToModel {
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
   private PublishSubject<TribeMediaConstraints> onTribeMediaConstraints = PublishSubject.create();
-  private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchLocalMediaMode =
-      PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode =
       PublishSubject.create();
 
@@ -141,15 +139,6 @@ public class JsonToModel {
         Timber.d("User configuration message received");
         JSONObject d = object.getJSONObject("d");
         computeMediaConstraints(d, true);
-      } else if (localWebSocketType.equals(Room.MESSAGE_LOCAL_SWITCH_MODE)) {
-        Timber.d("Receiving local switch mode (low connectivity)");
-        TribePeerMediaConfiguration peerMediaConfiguration = new TribePeerMediaConfiguration(
-            new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
-        JSONObject d = object.getJSONObject("d");
-        peerMediaConfiguration.setAudioEnabled(d.getBoolean("audio"));
-        peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
-        peerMediaConfiguration.setLowConnectivityMode(true);
-        onShouldSwitchLocalMediaMode.onNext(peerMediaConfiguration);
       } else if (localWebSocketType.equals(Room.MESSAGE_REMOTE_SWITCH_MODE)) {
 
         Timber.d("Receiving remote switch mode (low connectivity)");
@@ -162,7 +151,7 @@ public class JsonToModel {
             new TribePeerMediaConfiguration(tribeSession);
         peerMediaConfiguration.setAudioEnabled(d.getBoolean("audio"));
         peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
-        peerMediaConfiguration.setLowConnectivityMode(true);
+        peerMediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.LOW_BANDWIDTH);
         onShouldSwitchRemoteMediaMode.onNext(peerMediaConfiguration);
       } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
 
@@ -176,7 +165,6 @@ public class JsonToModel {
         JSONObject message = d.getJSONObject("message");
 
         if (message.has(Room.MESSAGE_APP)) {
-
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
           if (app.has(Room.MESSAGE_INVITE_ADDED)) {
 
@@ -185,8 +173,10 @@ public class JsonToModel {
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
+              Timber.e("SOEF " + guest.toString());
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                  guest.getString("picture"), false, false, null, true));
+                  guest.getString("picture"), false, false, null, true,
+                  guest.getString("username")));
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
@@ -200,12 +190,15 @@ public class JsonToModel {
             onRemovedTribeGuestList.onNext(guestRemovedList);
           }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
-
           Timber.d("Receiving media configuration");
           TribePeerMediaConfiguration peerMediaConfiguration =
               new TribePeerMediaConfiguration(tribeSession);
           peerMediaConfiguration.setAudioEnabled(message.getBoolean("isAudioEnabled"));
           peerMediaConfiguration.setVideoEnabled(message.getBoolean("isVideoEnabled"));
+          if (message.has("videoChangeReason")) {
+            peerMediaConfiguration.setMediaConfigurationType(
+                TribePeerMediaConfiguration.computeType(message.getString("videoChangeReason")));
+          }
           onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
         }
       } else if (object != null && object.has(Room.MESSAGE_ERROR)) {
@@ -313,10 +306,6 @@ public class JsonToModel {
 
   public Observable<TribeMediaConstraints> onTribeMediaConstraints() {
     return onTribeMediaConstraints;
-  }
-
-  public Observable<TribePeerMediaConfiguration> onShouldSwitchLocalMediaMode() {
-    return onShouldSwitchLocalMediaMode;
   }
 
   public Observable<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode() {

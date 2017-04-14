@@ -127,9 +127,12 @@ public class GroupPresenter implements Presenter {
   }
 
   public void createGroup(GroupEntity groupEntity) {
-    groupView.showLoading();
     createGroup.prepare(groupEntity);
     createGroup.execute(new CreateGroupSubscriber());
+    if (groupView == null) {
+      return;
+    }
+    groupView.showLoading();
   }
 
   private final class CreateGroupSubscriber extends DefaultSubscriber<Membership> {
@@ -143,6 +146,9 @@ public class GroupPresenter implements Presenter {
     }
 
     @Override public void onNext(Membership membership) {
+      if (groupView == null) {
+        return;
+      }
       groupView.hideLoading();
       groupView.onGroupCreatedSuccess(membership);
     }

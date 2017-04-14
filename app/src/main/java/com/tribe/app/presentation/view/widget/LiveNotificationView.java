@@ -6,13 +6,17 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -55,7 +59,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private boolean marginSet;
   private int sound = -1;
   private long duration = DISPLAY_TIME_IN_SECONDS;
-
+  private GestureDetectorCompat gestureScanner;
   // RESOURCES
   private int margin;
 
@@ -103,6 +107,14 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
     screen.setOnClickListener(v -> {
       hide();
+    });
+
+    gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
+
+    notificationContainer.setOnTouchListener(new OnTouchListener() {
+      @Override public boolean onTouch(View v, MotionEvent event) {
+        return gestureScanner.onTouchEvent(event);
+      }
     });
 
     setAnimation();
@@ -317,5 +329,39 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
   public Observable<LiveNotificationActionView.Action> onClickAction() {
     return onClickAction;
+  }
+
+  ///////////////////
+  //  GESTURE  IMP //
+  ///////////////////
+
+  private class TapGestureListener implements GestureDetector.OnGestureListener {
+
+    @Override public boolean onDown(MotionEvent e) {
+      return false;
+    }
+
+    @Override public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override public boolean onSingleTapUp(MotionEvent e) {
+      return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+      return false;
+    }
+
+    @Override public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+      hide();
+      return false;
+    }
   }
 }

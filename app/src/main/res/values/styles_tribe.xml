@@ -65,6 +65,10 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
+  <style name="Body.Two.White40" parent="@style/Body.Two">
+    <item name="android:textColor">@color/white.opacity.40</item>
+  </style>
+
   <style name="Body.Two.Black15" parent="@style/Body.Two">
     <item name="android:textColor">@color/black.opacity.15</item>
   </style>

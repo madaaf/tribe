@@ -1,31 +1,35 @@
 package com.tribe.tribelivesdk.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by tiago on 07/02/2017.
  */
 
-public class TribeGuest {
+public class TribeGuest extends GroupJoiner implements Serializable {
 
   public static final String ID = "id";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
+  public static final String USERNAME = "username";
 
   private String id;
   private String displayName;
+  private String userName;
   private String picture;
   private boolean isGroup;
   private boolean isInvite;
   private List<String> memberPics;
   private boolean canRemove;
+  private boolean isAnonymous = false;
 
   public TribeGuest(String id) {
     this.id = id;
   }
 
   public TribeGuest(String id, String displayName, String picture, boolean isGroup,
-      boolean isInvite, List<String> memberPics, boolean canRemove) {
+      boolean isInvite, List<String> memberPics, boolean canRemove, String userName) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
@@ -33,14 +37,39 @@ public class TribeGuest {
     this.isInvite = isInvite;
     this.memberPics = memberPics;
     this.canRemove = canRemove;
+    this.userName = userName;
+  }
+
+  public boolean isAnonymous() {
+    return isAnonymous;
+  }
+
+  public void setAnonymous(boolean anonymous) {
+    isAnonymous = anonymous;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   public String getDisplayName() {
     return displayName;
   }
 
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
   public String getPicture() {
     return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
   }
 
   public String getId() {

@@ -2,21 +2,20 @@ package com.tribe.app.presentation.view.component.onboarding;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextSwitcher;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +38,7 @@ import rx.subscriptions.CompositeSubscription;
  * AccessView.java
  * Created by tiago on 12/14/16
  */
-public class AccessView extends LinearLayout {
+public class AccessView extends FrameLayout {
 
   private final static int DURATION = 300;
   private final static int DURATION_SHORT = 100;
@@ -131,9 +130,6 @@ public class AccessView extends LinearLayout {
   }
 
   private void init() {
-    setOrientation(VERTICAL);
-    setGravity(Gravity.CENTER);
-
     status = NONE;
 
     hideView(layoutFriends, false);
@@ -150,23 +146,40 @@ public class AccessView extends LinearLayout {
     setLayout(layoutFriends, circleSize - screenUtils.dpToPx(20),
         circleSize - screenUtils.dpToPx(20));
     setLayout(viewPulse, pulseSize, pulseSize);
-    setLayout(layoutPulse, pulseSize + screenUtils.dpToPx(60), pulseSize + screenUtils.dpToPx(60));
+
+    int layoutPulseSize = pulseSize + screenUtils.dpToPx(60);
+    setLayout(layoutPulse, layoutPulseSize, layoutPulseSize);
 
     expandAndContract();
 
     subscriptions.add(Observable.interval(PULSATING_DURATION, TimeUnit.MILLISECONDS,
-        AndroidSchedulers.mainThread()).onBackpressureDrop().subscribe(aVoid -> {
-      expandAndContract();
-    }));
+        AndroidSchedulers.mainThread()).onBackpressureDrop().subscribe(aVoid -> expandAndContract()));
 
-    imgIcon.setScaleX(10f);
-    imgIcon.setScaleY(10f);
-    imgIcon.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setDuration(600)
-        .setInterpolator(new OvershootInterpolator(0.45f))
-        .start();
+    imgIcon.setScaleX(30f);
+    imgIcon.setScaleY(30f);
+    imgIcon.setAlpha(0f);
+
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        int[] location = new int[2];
+        imgCircle.getLocationOnScreen(location);
+
+        MarginLayoutParams lp = (MarginLayoutParams) imgIcon.getLayoutParams();
+        lp.leftMargin = location[0] + ((circleSize - imgIcon.getMeasuredWidth()) >> 1);
+        int heightDiff = screenUtils.getHeightPx() - getMeasuredHeight();
+        lp.topMargin = (location[1] - heightDiff) + ((circleSize - imgIcon.getMeasuredHeight()) >> 1);
+        imgIcon.setLayoutParams(lp);
+
+        imgIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        imgIcon.animate()
+            .alpha(1)
+            .scaleX(1)
+            .scaleY(1)
+            .setDuration(600)
+            .setInterpolator(new OvershootInterpolator(0.45f))
+            .start();
+      }
+    });
   }
 
   private void setLayout(View view, int width, int height) {

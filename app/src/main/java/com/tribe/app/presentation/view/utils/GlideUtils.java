@@ -7,11 +7,11 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.StringSignature;
-import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.transformer.HoleTransformation;
 import java.io.File;
+import java.util.Random;
 
 /**
  * Created by tiago on 08/02/2017.
@@ -78,6 +78,11 @@ public class GlideUtils {
     public void load() {
       DrawableRequestBuilder drawableRequestBuilder;
 
+      Random random = new Random();
+      int r = random.nextInt(6 - 1) + 1; // From 1 to 6
+      int randomPlaceholder = context.getResources()
+          .getIdentifier("picto_placeholder_" + r, "drawable", context.getPackageName());
+
       if (bitmap != null) {
         drawableRequestBuilder = Glide.with(context).load(bitmap);
       } else if (resourceId != 0) {
@@ -87,15 +92,15 @@ public class GlideUtils {
             .load(file)
             .signature(new StringSignature(String.valueOf(file.lastModified())));
       } else if (StringUtils.isEmpty(url)) {
-        drawableRequestBuilder = Glide.with(context).load(R.drawable.picto_placeholder_avatar);
+        drawableRequestBuilder = Glide.with(context).load(randomPlaceholder);
       } else {
-        drawableRequestBuilder = Glide.with(context).load(url);
+        drawableRequestBuilder = Glide.with(context).load(url).error(randomPlaceholder);
       }
 
       if (hasPlaceholder) {
         drawableRequestBuilder = drawableRequestBuilder.thumbnail(0.25f)
-            .error(R.drawable.picto_placeholder_avatar)
-            .placeholder(R.drawable.picto_placeholder_avatar);
+            .error(randomPlaceholder)
+            .placeholder(randomPlaceholder);
       }
 
       if (size != 0) {

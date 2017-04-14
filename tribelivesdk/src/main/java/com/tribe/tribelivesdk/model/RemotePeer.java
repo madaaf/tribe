@@ -13,9 +13,11 @@ public class RemotePeer extends Peer {
 
   private TribeSession session;
   private RemotePeerView peerView;
+  private TribePeerMediaConfiguration mediaConfiguration;
 
   public RemotePeer(TribeSession session) {
     this.session = session;
+    mediaConfiguration = new TribePeerMediaConfiguration(session);
   }
 
   public TribeSession getSession() {
@@ -35,7 +37,17 @@ public class RemotePeer extends Peer {
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
+    this.mediaConfiguration = mediaConfiguration;
     if (peerView != null) peerView.setMediaConfiguration(mediaConfiguration);
+  }
+
+  public TribePeerMediaConfiguration getMediaConfiguration() {
+    return mediaConfiguration;
+  }
+
+  public boolean isRenderingWell() {
+    if (peerView != null) return peerView.isRenderingWell();
+    return true;
   }
 
   public void dispose() {

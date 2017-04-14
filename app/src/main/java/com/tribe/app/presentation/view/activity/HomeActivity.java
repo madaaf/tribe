@@ -48,8 +48,11 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
@@ -65,9 +68,12 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import com.tribe.app.presentation.view.widget.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -78,6 +84,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static android.view.View.VISIBLE;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, HomeGridMVPView,
@@ -110,6 +118,10 @@ public class HomeActivity extends BaseActivity
 
   @Inject @LastSync Preference<Long> lastSync;
 
+  @Inject @CallTagsMap Preference<String> callTagsMap;
+
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
   @BindView(android.R.id.content) ViewGroup rootView;
@@ -117,6 +129,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.topBarContainer) TopBarContainer topBarContainer;
 
   @BindView(R.id.searchView) SearchView searchView;
+
+  @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
 
   @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
 
@@ -166,6 +180,7 @@ public class HomeActivity extends BaseActivity
     initSearch();
     manageDeepLink(getIntent());
     initPullToRefresh();
+    initPreviousCallTags();
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
@@ -204,6 +219,7 @@ public class HomeActivity extends BaseActivity
   @Override protected void onStart() {
     super.onStart();
     tagManager.onStart(this);
+    fullScreenNotificationState.set(new HashSet<>());
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       syncContacts();
@@ -382,22 +398,15 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
+          boolean displayPermissionNotif = notificationContainerView.
+              showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
+          if (displayPermissionNotif) {
+            return;
+          }
           if (recipient.getId().equals(Recipient.ID_MORE)) {
             navigator.openSmsForInvite(this, null);
           } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
             navigator.navigateToVideo(this);
-          } else if (stateManager.shouldDisplay(StateManager.ENTER_FIRST_LIVE)) {
-            subscriptions.add(
-                DialogFactory.dialog(this, getString(R.string.tips_enterfirstlive_title),
-                    getString(R.string.tips_enterfirstlive_message, recipient.getDisplayName()),
-                    getString(R.string.tips_enterfirstlive_action1),
-                    getString(R.string.tips_enterfirstlive_action2))
-                    .filter(x -> x == true)
-                    .subscribe(a -> {
-                      navigator.navigateToLive(this, recipient,
-                          PaletteGrid.get(recipient.getPosition()));
-                    }));
-            stateManager.addTutorialKey(StateManager.ENTER_FIRST_LIVE);
           } else {
             navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
           }
@@ -489,8 +498,7 @@ public class HomeActivity extends BaseActivity
       navigator.openSmsForInvite(this, null);
     }));
 
-    subscriptions.add(
-        searchView.onShow().subscribe(aVoid -> searchView.setVisibility(View.VISIBLE)));
+    subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
 
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
@@ -520,6 +528,14 @@ public class HomeActivity extends BaseActivity
     appStateMonitor = RxAppStateMonitor.create(getApplication());
     appStateMonitor.addListener(this);
     appStateMonitor.start();
+  }
+
+  private void initPreviousCallTags() {
+    String callTags = callTagsMap.get();
+    if (!StringUtils.isEmpty(callTags)) {
+      TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
+      callTagsMap.set("");
+    }
   }
 
   @Override public void onDeepLink(String url) {
@@ -646,15 +662,19 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-
+    topBarContainer.refreshTopBarView();
     if (data != null) {
-      boolean displayRatingNotifView =
-          data.getBooleanExtra(LiveActivity.DISPLAY_RATING_NOTIFICATON, false);
+      if (!notificationContainerView.showNotification(data, null)) {
+        displayRatingNotifView(data);
+      }
+    }
+  }
+
+  private void displayRatingNotifView(Intent data) {
+    if (data.getBooleanExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, false)) {
       long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
       String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
-      if (displayRatingNotifView) {
-        ratingNotificationView.displayView(timeout, roomId);
-      }
+      ratingNotificationView.displayView(timeout, roomId);
     }
   }
 

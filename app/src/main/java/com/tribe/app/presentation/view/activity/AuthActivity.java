@@ -222,7 +222,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     if (!StringUtils.isEmpty(phoneInput)) {
       outState.putString(PHONE_NUMBER, phoneInput.trim().replace(" ", ""));
     }
-
     if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
     if (countdownActive) outState.putInt(COUNTDOWN, viewCode.getCurrentCountdown());
     if (shouldPauseOnRestore) {
@@ -452,13 +451,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
         .setDuration(animate ? DURATION : 0)
         .start();
 
-    viewPhoneNumber.clearPhoneFocus();
+    viewPhoneNumber.clearFocus();
   }
 
   private void showViewPhoneNumber() {
     pin = null;
 
-    viewPhoneNumber.enablePhoneFocus();
+    viewPhoneNumber.enableFocus();
 
     txtMessage.setText(R.string.onboarding_step_phone);
     viewPhoneNumber.hideLoading();

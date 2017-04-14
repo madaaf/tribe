@@ -141,6 +141,11 @@ import rx.schedulers.Schedulers;
             bitmapList.add(
                 Pair.create(pair.first, BitmapFactoryUtils.scale(temp, finalSize, true)));
           }
+        } else if (pair.second == null) {
+          int finalSize = urls.size() > 3 ? (halfSize) : (pair.first == 0 ? avatarSize : halfSize);
+          Bitmap image = Bitmap.createBitmap(finalSize, finalSize, Bitmap.Config.ARGB_8888);
+          image.eraseColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
+          bitmapList.add(Pair.create(pair.first, image));
         }
       }
 

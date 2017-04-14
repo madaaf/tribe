@@ -70,8 +70,8 @@ import static android.R.attr.id;
   }
 
   public void initSubscriptions() {
-    subscriptions.add(streamManager.onMediaChanged().subscribe(aVoid -> {
-      JSONObject jsonMedia = getJSONMedia();
+    subscriptions.add(streamManager.onMediaChanged().subscribe(mediaConfiguration -> {
+      JSONObject jsonMedia = getJSONMedia(mediaConfiguration);
       onSendToPeers.onNext(jsonMedia);
     }));
   }
@@ -149,11 +149,8 @@ import static android.R.attr.id;
     streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
   }
 
-  public void setLocalMediaConfiguation(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
-    Timber.d("setMediaConfiguration for peerId : " + tribePeerMediaConfiguration.getSession()
-        .getPeerId());
-
-    streamManager.setLocalMediaConfiguration(tribePeerMediaConfiguration);
+  public TribePeerMediaConfiguration getMediaConfiguration() {
+    return streamManager.getMediaConfiguration();
   }
 
   public void updateMediaConstraints(TribeMediaConstraints tribeMediaConstraints) {
@@ -216,10 +213,11 @@ import static android.R.attr.id;
     return peerConnections.values();
   }
 
-  public JSONObject getJSONMedia() {
+  public JSONObject getJSONMedia(TribePeerMediaConfiguration mediaConfiguration) {
     JSONObject obj = new JSONObject();
-    jsonPut(obj, "isAudioEnabled", streamManager.isLocalAudioEnabled());
-    jsonPut(obj, "isVideoEnabled", streamManager.isLocalCameraEnabled());
+    jsonPut(obj, "isAudioEnabled", mediaConfiguration.isAudioEnabled());
+    jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
+    jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
     return obj;
   }
 

@@ -16,6 +16,7 @@ import com.tribe.app.data.network.job.DeleteContactsFBJob;
 import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
+import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -36,12 +37,18 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
+import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
@@ -58,7 +65,6 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.component.RatingView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
@@ -137,8 +143,6 @@ public interface ApplicationComponent {
 
   void inject(VisualizerView visualizerView);
 
-  void inject(RatingView ratingView);
-
   void inject(TextViewAnimatedDots textViewAnimatedDots);
 
   void inject(TileView tileView);
@@ -182,6 +186,8 @@ public interface ApplicationComponent {
   // JOBS
   void inject(BaseJob baseJob);
 
+  void inject(UnhideFriendshipJob updateFriendshipJob);
+
   void inject(UpdateUserJob updateUserJob);
 
   void inject(SynchroContactsJob synchroContactsJob);
@@ -193,6 +199,8 @@ public interface ApplicationComponent {
   void inject(DeleteContactsFBJob deleteContactsFBJob);
 
   void inject(RemoveNewStatusContactJob removeNewStatusContactJob);
+
+  void inject(NotificationBuilder notificationBuilder);
 
   // SERVICES
   void inject(WSService wsService);
@@ -279,6 +287,18 @@ public interface ApplicationComponent {
   @RoutingMode Preference<String> routingMode();
 
   @FullscreenNotifications Preference<Boolean> fullscreenNotifications();
+
+  @IsGroupCreated Preference<Boolean> isGroupCreated();
+
+  @NumberOfCalls Preference<Integer> numberOfCalls();
+
+  @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton();
+
+  @MinutesOfCalls Preference<Float> minutesOfCalls();
+
+  @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
+
+  @CallTagsMap Preference<String> callTagsMap();
 
   SoundManager soundManager();
 

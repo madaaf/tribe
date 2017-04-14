@@ -46,13 +46,13 @@ public class FriendMemberAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getAddedButton() {
-    return new ButtonModel(context.getString(R.string.group_add_members_added),
+    return new ButtonModel(context.getString(R.string.action_member_added),
         ContextCompat.getColor(context, R.color.violet_opacity_10),
         ContextCompat.getColor(context, R.color.violet));
   }
 
   private ButtonModel getAddButton() {
-    return new ButtonModel(context.getString(R.string.group_add_members_in_group),
+    return new ButtonModel(context.getString(R.string.action_add_member),
         ContextCompat.getColor(context, R.color.violet), Color.WHITE);
   }
 

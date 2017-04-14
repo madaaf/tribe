@@ -40,6 +40,8 @@ import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.RoomMember;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -48,6 +50,9 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
@@ -68,13 +73,21 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
+import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -88,7 +101,6 @@ import static android.view.View.VISIBLE;
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
-  public static final String DISPLAY_RATING_NOTIFICATON = "DISPLAY_RATING_NOTIFICATON";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
@@ -104,6 +116,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
         .displayName(recipient.getDisplayName())
+        .userName(recipient.getUsername())
         .isGroup(recipient.isGroup())
         .countdown(!recipient.isLive())
         .picture(recipient.getProfilePicture());
@@ -151,6 +164,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Inject @RoutingMode Preference<String> routingMode;
 
+  @Inject @CallTagsMap Preference<String> callTagsMap;
+
+  @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
   @BindView(R.id.viewLive) LiveView viewLive;
 
   @BindView(R.id.viewInviteLive) LiveInviteView viewInviteLive;
@@ -169,6 +186,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private TribeAudioManager audioManager;
   private Unbinder unbinder;
   private Live live;
+  private RoomConfiguration roomConfiguration;
+  private boolean liveIsInvite = false;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
@@ -176,12 +195,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
   private boolean takeScreenshotEnable = true;
-
+  private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
+  private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
+  private Intent returnIntent = new Intent();
+  private List anonymousIdList = new ArrayList();
   // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
+  private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -198,7 +221,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onNewIntent(Intent intent) {
-    viewLive.onDestroy(true);
+    viewLive.dispose(true);
     viewLive.jump();
     initParams(intent);
     live.setCountdown(false);
@@ -207,6 +230,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onStart() {
     super.onStart();
+    fullScreenNotificationState.set(new HashSet<>());
     livePresenter.onViewAttached(this);
   }
 
@@ -242,7 +266,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onDestroy() {
-    viewLive.onDestroy(false);
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
@@ -385,10 +408,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           getString(R.string.tips_startfirstlive_message),
           getString(R.string.tips_startfirstlive_action1), null)
           .filter(x -> x == true)
-          .subscribe(a -> subscriptions.add(
-              Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()))));
+          .subscribe(a -> {
+            subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()));
+          }));
       stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
     }
   }
@@ -402,13 +426,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           idsToFilter.addAll(liveMap.keySet());
           idsToFilter.addAll(invitesMap.keySet());
 
+          usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
           Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
           List<Friendship> filteredFriendships = new ArrayList<>();
-
+          liveIsInvite = live.isInvite();
           if (live.getMembers() != null) {
             for (Friendship fr : friendshipList) {
               if (!live.isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
+                  .getId()
                   .equals(live.getSubId()) && !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
@@ -421,7 +447,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               }
             }
           }
-
           return filteredFriendships;
         })
         .delay(500, TimeUnit.MILLISECONDS)
@@ -436,8 +461,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       displayStartFirstPopupTutorial();
     }));
 
-    // We put a delay to wait for the info of the peers in the room (invited peers are received
-    // only when the connection is established)
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
       if (!live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
@@ -511,6 +534,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         takeScreenshot();
       }
     }));
+
+    subscriptions.add(viewLive.onAnonymousJoined().subscribe(anonymousId -> {
+      anonymousIdList.clear();
+      anonymousIdList.add(anonymousId);
+      if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
+    }));
+
+    viewLive.initAnonymousSubscription(onAnonymousReceived());
   }
 
   @Override
@@ -613,18 +644,69 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewScreenShot.startAnimation(scaleAnim);
   }
 
-  private void putExtraHomeIntent() {
-    Intent returnIntent = new Intent();
+  private void putExtraRatingNotif() {
+    boolean willDisplayPopup = false;
     if (liveDurationIsMoreThan30sec && displayRatingNotifDependingFirebaseTrigger()) {
-      if (viewLive != null
-          && viewLive.getRoom() != null
-          && viewLive.getRoom().getOptions() != null) {
-        returnIntent.putExtra(ROOM_ID, viewLive.getRoom().getOptions().getRoomId());
+      if (roomConfiguration != null && !StringUtils.isEmpty(roomConfiguration.getRoomId())) {
+        returnIntent.putExtra(ROOM_ID, roomConfiguration.getRoomId());
       }
-      returnIntent.putExtra(DISPLAY_RATING_NOTIFICATON, true);
+      returnIntent.putExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, true);
       returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
-      setResult(Activity.RESULT_OK, returnIntent);
+      willDisplayPopup = true;
+      liveDurationIsMoreThan30sec = false;
     }
+
+    Map<String, Object> tagMap = PreferencesUtils.getMapFromJson(callTagsMap);
+    if (!willDisplayPopup && tagMap != null) {
+      TagManagerUtils.manageTags(tagManager, tagMap);
+      callTagsMap.set("");
+    }
+  }
+
+  private void putExtraDisplayGrpNotif() {
+    RoomMember roomMember = viewLive.getUsersInLiveRoom();
+    List<TribeGuest> friendInLive = roomMember.getTribeGuestList();
+    List<TribeGuest> anonymousInLive = roomMember.getAnonymousGuestList();
+    List<String> guestsIdsInLive = new ArrayList<>();
+
+    for (TribeGuest guest : friendInLive) {
+      guestsIdsInLive.add(guest.getId());
+    }
+
+    List<TribeGuest> peopleInLive = new ArrayList<>();
+    peopleInLive.addAll(friendInLive);
+
+    for (TribeGuest anonymous : anonymousInLive) {
+      if (!guestsIdsInLive.contains(anonymous.getId())) peopleInLive.add(anonymous);
+    }
+
+    for (TribeGuest guest : peopleInLive) {
+      if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {
+        activeUersIdsInvitedInLiveRoom.add(guest.getId());
+      }
+    }
+
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
+        && peopleInLive.size() > 1) {
+      returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GRP_NOTIF, true);
+      Bundle extra = new Bundle();
+      extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
+          (Serializable) peopleInLive);
+      returnIntent.putExtras(extra);
+      liveIsInvite = false;
+      usersIdsInvitedInLiveRoom.clear();
+      activeUersIdsInvitedInLiveRoom.clear();
+    }
+  }
+
+  @Override public void onReceivedAnonymousMemberInRoom(List<User> users) {
+    onAnonymousReceived.onNext(users);
+  }
+
+  private void putExtraHomeIntent() {
+    putExtraRatingNotif();
+    putExtraDisplayGrpNotif();
+    setResult(Activity.RESULT_OK, returnIntent);
   }
 
   private void displayNotification(String txt) {
@@ -660,6 +742,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    viewLiveContainer.dispose();
+    viewLive.dispose(false);
     putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
@@ -668,6 +752,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   ////////////////
   //   PUBLIC   //
   ////////////////
+
+  public Observable<List<User>> onAnonymousReceived() {
+    return onAnonymousReceived;
+  }
 
   @Override public void onRecipientInfos(Recipient recipient) {
     if (recipient instanceof Membership) {
@@ -686,10 +774,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
-    roomConfiguration.setRoutingMode(routingMode.get());
-    viewLive.joinRoom(roomConfiguration);
+    this.roomConfiguration = roomConfiguration;
+    this.roomConfiguration.setRoutingMode(routingMode.get());
+    viewLive.joinRoom(this.roomConfiguration);
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
-      livePresenter.inviteUserToRoom(roomConfiguration.getRoomId(), live.getSubId());
+      livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
   }
 
@@ -703,11 +792,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onAppDidEnterForeground() {
-    if (viewLive != null) viewLive.setCameraEnabled(true);
+    if (viewLive != null) {
+      viewLive.setCameraEnabled(true, TribePeerMediaConfiguration.APP_IN_BACKGROUND);
+    }
   }
 
   @Override public void onAppDidEnterBackground() {
-    if (viewLive != null) viewLive.setCameraEnabled(false);
+    if (viewLive != null) {
+      viewLive.setCameraEnabled(false, TribePeerMediaConfiguration.APP_IN_BACKGROUND);
+    }
   }
 
   /////////////////
@@ -739,7 +832,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, false, null, true);
+                    false, false, null, true, null);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               }

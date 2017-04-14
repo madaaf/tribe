@@ -104,7 +104,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
       if (searchResult.isSearchDone()) {
         displayName = "No user found";
       } else {
-        displayName = context.getString(R.string.contacts_section_search_searching);
+        displayName = context.getString(R.string.search_searching);
       }
     } else if (item instanceof Membership) {
       Membership membership = (Membership) item;

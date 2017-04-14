@@ -7,6 +7,7 @@ package com.tribe.tribelivesdk.model;
 public class TribeSession {
 
   public static final String PUBLISHER_ID = "publisher";
+  public static final String ANONYMOUS = "anonymous";
 
   private String peerId;
   private String userId;

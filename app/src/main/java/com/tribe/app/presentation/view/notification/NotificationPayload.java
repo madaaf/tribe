@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.notification;
 
 import android.support.annotation.StringDef;
+import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
 
 /**
@@ -9,13 +10,17 @@ import java.io.Serializable;
 
 public class NotificationPayload implements Serializable {
 
-  @StringDef({ CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP }) public @interface ClickActionType {
+  @StringDef({
+      CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP, CLICK_ACTION_BUZZ, CLICK_ACTION_LIVE,
+      CLICK_ACTION_END_LIVE
+  }) public @interface ClickActionType {
   }
 
   public static final String CLICK_ACTION_ONLINE = "online";
   public static final String CLICK_ACTION_FRIENDSHIP = "friendship";
   public static final String CLICK_ACTION_LIVE = "live";
   public static final String CLICK_ACTION_BUZZ = "buzz";
+  public static final String CLICK_ACTION_END_LIVE = "end_live";
 
   private String user_id;
   private String body;
@@ -137,6 +142,10 @@ public class NotificationPayload implements Serializable {
 
   public boolean isLive() {
     return click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(CLICK_ACTION_LIVE);
+  }
+
+  public boolean isUserCall() {
+    return StringUtils.isEmpty(getGroupId()) && !StringUtils.isEmpty(getUserId());
   }
 
   @Override public boolean equals(Object o) {

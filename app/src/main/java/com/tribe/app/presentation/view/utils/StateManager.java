@@ -19,7 +19,8 @@ import javax.inject.Singleton;
 
   @StringDef({
       LEAVING_ROOM, DRAGGING_GUEST, DROPPING_GUEST, ENTER_FIRST_LIVE, START_FIRST_LIVE,
-      WAINTING_FRIENDS_LIVE, JOIN_FRIEND_LIVE
+      WAINTING_FRIENDS_LIVE, JOIN_FRIEND_LIVE, NEVER_ASK_AGAIN_MICRO_PERMISSION,
+      NEVER_ASK_AGAIN_CAMERA_PERMISSION
   }) public @interface StateKey {
   }
 
@@ -30,6 +31,8 @@ import javax.inject.Singleton;
   public static final String START_FIRST_LIVE = "START_FIRST_LIVE";
   public static final String WAINTING_FRIENDS_LIVE = "WAINTING_FRIENDS_LIVE";
   public static final String JOIN_FRIEND_LIVE = "JOIN_FRIEND_LIVE";
+  public static final String NEVER_ASK_AGAIN_MICRO_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
+  public static final String NEVER_ASK_AGAIN_CAMERA_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
 
   @Inject public StateManager(@TribeState Preference<Set<String>> tutorialState) {
     this.tutorialState = tutorialState;

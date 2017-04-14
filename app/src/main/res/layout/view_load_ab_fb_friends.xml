@@ -14,14 +14,13 @@
       android:id="@+id/viewFriendsAddressBookLoad"
       android:layout_width="match_parent"
       android:layout_height="@dimen/load_friends_height"
-      android:clickable="true"
       android:background="@android:color/white"
+      android:clickable="true"
       android:foreground="@drawable/selectable_button"
-      app:loadTitle="@string/search_add_addressbook_title"
-      app:loadBody="@string/search_add_addressbook_subtitle"
-      app:loadType="addressbook"
       app:loadBG="@drawable/bg_addressbook_load"
       app:loadIcon="@drawable/picto_addressbook_load"
+      app:loadTitle="@string/search_add_addressbook_title"
+      app:loadType="addressbook"
       />
 
   <View
@@ -35,14 +34,13 @@
       android:id="@+id/viewFriendsFBLoad"
       android:layout_width="match_parent"
       android:layout_height="@dimen/load_friends_height"
-      android:clickable="true"
       android:background="@android:color/white"
+      android:clickable="true"
       android:foreground="@drawable/selectable_button"
-      app:loadTitle="@string/search_add_facebook_title"
-      app:loadBody="@string/search_add_facebook_subtitle"
-      app:loadType="fb"
       app:loadBG="@drawable/bg_facebook_load"
       app:loadIcon="@drawable/picto_facebook_load"
+      app:loadTitle="@string/search_add_facebook_title"
+      app:loadType="fb"
       />
 
   <View
