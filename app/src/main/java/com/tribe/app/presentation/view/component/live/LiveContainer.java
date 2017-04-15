@@ -229,7 +229,7 @@ public class LiveContainer extends FrameLayout {
 
   @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
     boolean isTouchInInviteView =
-        ev.getRawX() >= screenUtils.getWidthPx() - viewInviteLive.getWidth();
+        ev.getRawX() >= screenUtils.getWidthPx() - screenUtils.dpToPx(LiveInviteView.WIDTH);
     if (!isEnabled() || hiddenControls) {
       return false;
     }

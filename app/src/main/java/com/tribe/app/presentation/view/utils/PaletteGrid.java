@@ -132,8 +132,10 @@ import javax.inject.Singleton;
   }
 
   public static int getLength() {
+    if (theme == null) return 0;
+
     if (theme.get() == 0) {
-      return paletteOne.length;
+      return paletteOne != null ? paletteOne.length : 0;
     } else if (theme.get() == 1) {
       return paletteTwo.length;
     } else if (theme.get() == 2) {

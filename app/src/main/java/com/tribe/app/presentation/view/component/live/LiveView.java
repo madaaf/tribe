@@ -103,6 +103,8 @@ public class LiveView extends FrameLayout {
 
   @Inject StateManager stateManager;
 
+  @Inject PaletteGrid paletteGrid;
+
   @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
 
   @Inject @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton;
