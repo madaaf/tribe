@@ -344,12 +344,9 @@ public class TextureViewRenderer extends TextureView
     if (lastRenderingCheck != 0L) {
       long timeIntervalSinceLastCheck = System.currentTimeMillis() - lastRenderingCheck;
       int framesRenderedSinceLastCheck = framesRendered;
-      float fps = (framesRenderedSinceLastCheck / (timeIntervalSinceLastCheck / 1000));
-      Timber.d("Frames : " + framesRenderedSinceLastCheck + " / Fps : " + fps);
-      if (com.tribe.tribelivesdk.BuildConfig.DEBUG) {
-        Timber.d("Using DEBUG config");
-        isRenderingWell = fps > 20;
-      } else {
+      float timeIntervalInSecs = (timeIntervalSinceLastCheck / 1000);
+      if (timeIntervalInSecs > 0) {
+        float fps = (framesRenderedSinceLastCheck / timeIntervalInSecs);
         isRenderingWell = fps > 5;
       }
     }

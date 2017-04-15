@@ -49,6 +49,8 @@ public class LiveLocalView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject PaletteGrid paletteGrid;
+
   @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
 
   @BindView(R.id.cardViewStreamLayout) CardView cardViewStreamLayout;
