@@ -16,6 +16,8 @@ public interface ContactInterface {
 
   void addUser(UserRealm userRealm);
 
+  void setPhone(String phone);
+
   void setUserList(RealmList<UserRealm> userRealmList);
 
   List<UserRealm> getUsers();

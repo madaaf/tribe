@@ -114,6 +114,7 @@
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
 	<string name="live_notification_guest_declined">%1$s can\'t answer now</string>
+	<string name="live_notification_blocked">This user blocked you :broken_heart:</string>
 	<string name="live_reconnecting">Reconnecting...</string>
 	
 	<!-- Grid -->
@@ -315,9 +316,12 @@
 	<string name="profile_video_demo_subtitle">Master Tribe in 30 seconds!</string>
 	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
+	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
+	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you. If you want to add someone as friend, you\'ll need to do it yourself.</string>
+	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked friends</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>

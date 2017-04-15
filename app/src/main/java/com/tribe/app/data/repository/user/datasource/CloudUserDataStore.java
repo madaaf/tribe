@@ -15,6 +15,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
 import com.tribe.app.data.network.util.LookupApi;
@@ -55,7 +56,6 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
-import timber.log.Timber;
 
 /**
  * {@link UserDataStore} implementation based on connections to the api (Cloud).
@@ -330,13 +330,47 @@ public class CloudUserDataStore implements UserDataStore {
       return lookupApi.lookup(regionCode, lookupPhones);
     }, (contactList, lookupList) -> {
       return new Pair<>(contactList, lookupList);
-    }).flatMap(listListPair -> {
-      return Observable.from(listListPair.second).flatMap(lookupObject -> {
-        Timber.d("lookup : " + lookupObject.getUserId());
-        return Observable.just(lookupObject);
-      }).toList();
-    }, (listListPair, lookupObject) -> {
-      return listListPair.first;
+    }).flatMap(pairContactLookupResult -> {
+      StringBuilder resultLookupUserIds = new StringBuilder();
+
+      for (LookupObject lookupObject : pairContactLookupResult.second) {
+        if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+          resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
+          resultLookupUserIds.append(",");
+        }
+      }
+
+      return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
+          resultLookupUserIds.length() > 0 ? resultLookupUserIds.substring(0,
+              resultLookupUserIds.length() - 1) : "",
+          context.getString(R.string.userfragment_infos)));
+    }, (pairContactLookupResult, lookupUsers) -> {
+      List<LookupObject> listLookup = pairContactLookupResult.second;
+      for (int i = 0; i < listLookup.size(); i++) {
+        LookupObject lookupObject = listLookup.get(i);
+        if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+          for (UserRealm user : lookupUsers) {
+            if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
+          }
+        }
+
+        if (lookupObject != null) {
+          ContactInterface ci = pairContactLookupResult.first.get(i);
+
+          if (lookupObject.getUserRealm() != null) {
+            ci.addUser(lookupObject.getUserRealm());
+            if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
+              ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
+            }
+          } else {
+            ci.setHowManyFriends(lookupObject.getHowManyFriends());
+          }
+
+          ci.setPhone(lookupObject.getPhone());
+        }
+      }
+
+      return pairContactLookupResult.first;
     }).doOnNext(saveToCacheContacts);
   }
 

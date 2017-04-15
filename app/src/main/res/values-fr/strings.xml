@@ -114,6 +114,7 @@
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
 	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
+	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
 	<string name="live_reconnecting">Reconnexion en cours...</string>
 	
 	<!-- Grid -->
@@ -315,9 +316,12 @@
 	<string name="profile_video_demo_subtitle">Apprenez Tribe en 30 secondes !</string>
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
+	<string name="profile_invisible_mode_enable_alert_title">Expérience dégradée :warning:</string>
+	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de désactiver pour tout le monde, y compris vos amis, le fait de pouvoir vous ajouter. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
+	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
