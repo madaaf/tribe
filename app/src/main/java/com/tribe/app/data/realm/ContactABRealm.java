@@ -19,6 +19,8 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private RealmList<UserRealm> userList;
   private int howManyFriends;
   private boolean isNew = false;
+  private String firstName;
+  private String lastName;
 
   public ContactABRealm() {
 
@@ -114,5 +116,21 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
 
   @Override public List<UserRealm> getUsers() {
     return userList;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
   }
 }

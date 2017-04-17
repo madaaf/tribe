@@ -328,9 +328,7 @@ public class CloudUserDataStore implements UserDataStore {
       String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
 
       return lookupApi.lookup(regionCode, lookupPhones);
-    }, (contactList, lookupList) -> {
-      return new Pair<>(contactList, lookupList);
-    }).flatMap(pairContactLookupResult -> {
+    }, (contactList, lookupList) -> new Pair<>(contactList, lookupList)).flatMap(pairContactLookupResult -> {
       StringBuilder resultLookupUserIds = new StringBuilder();
 
       for (LookupObject lookupObject : pairContactLookupResult.second) {

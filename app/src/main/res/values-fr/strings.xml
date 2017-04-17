@@ -135,6 +135,7 @@
 	<string name="grid_menu_friendship_unblock"></string>
 	<string name="grid_menu_friendship_mute">Désactiver les notifications :no_bell:</string>
 	<string name="grid_menu_friendship_unmute">Activer les notifications :bell:</string>
+	<string name="grid_menu_invite_decline">Rejeter l\'appel</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>

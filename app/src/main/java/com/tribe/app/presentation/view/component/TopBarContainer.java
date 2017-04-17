@@ -275,6 +275,7 @@ public class TopBarContainer extends FrameLayout {
   public void refreshTopBarView() {
     topBarView.resfreshNewBtn();
   }
+
   private boolean canChildScrollUp() {
     return ViewCompat.canScrollVertically(recyclerView, -1);
   }

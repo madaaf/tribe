@@ -17,6 +17,7 @@ import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import timber.log.Timber;
 
 import static android.provider.ContactsContract.CommonDataKinds;
 import static android.provider.ContactsContract.Contacts;
@@ -33,10 +34,10 @@ public class ContactsHelper {
   };
 
   private static final String[] DATA_PROJECTION_FULL = {
-      ContactsContract.Data.DATA1,    // email / phone
+      ContactsContract.Data.DATA1, ContactsContract.Data.DATA2, CommonDataKinds.StructuredName.DISPLAY_NAME,
+      CommonDataKinds.StructuredName.GIVEN_NAME, CommonDataKinds.StructuredName.DISPLAY_NAME,
       ContactsContract.Data.MIMETYPE, ContactsContract.Data.CONTACT_ID,
-      ContactsContract.Data.PHOTO_THUMBNAIL_URI, ContactsContract.Data.STARRED,
-      ContactsContract.Data.LAST_TIME_CONTACTED, ContactsContract.Data.DATA_VERSION
+      ContactsContract.Data.DATA_VERSION
   };
 
   private static final String[] CONTACTS_PROJECTION = new String[] {
@@ -179,10 +180,19 @@ public class ContactsHelper {
     String nextId = id;
     while (id.equals(nextId)) {
       String value = c.getString(c.getColumnIndex(ContactsContract.Data.DATA1));
+
+      String given =
+          c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
+      String family = c.getString(
+          c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
+
+      Timber.d("Given : " + given);
+      Timber.d("Family : " + family);
+
       switch (c.getString(c.getColumnIndex(ContactsContract.Data.MIMETYPE))) {
         case CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
           contact.setName(value);
-          break;
+
         case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
           phones.add(value.trim());
           break;
