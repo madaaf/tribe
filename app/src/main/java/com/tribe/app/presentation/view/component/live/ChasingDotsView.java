@@ -1,14 +1,13 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.Unbinder;
 import com.tribe.app.R;
@@ -19,10 +18,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -30,19 +26,21 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ChasingDotsView extends FrameLayout {
 
-  private final static int DURATION = 1500;
-  private final static int NB_VIEWS = 8;
-  private final static int TRANSLATION_FROM_CENTER = 15;
+  private final static long DURATION = (long) 800.0f;
+  private final static float NB_VIEWS = 5.0f;
+  private final static int TRANSLATION_FROM_CENTER = 12;
+  private final static float OFFSET_SCALE_DURATION_BETWEEN_DOTS = 0.30f;
+  private final static int WAITING_DURATION_RESTARTING_ANIM = 1000;
 
   @Inject ScreenUtils screenUtils;
 
   // VARIABLES
   private Unbinder unbinder;
   private List<View> viewDots;
-  private boolean stopped = false;
-
-  // RESOURCES
+  private float centerX = 0.0f;
+  private float centerY = 0.0f;
   private int sizeDot;
+  private ArrayList<Float> scaleDots = new ArrayList<>();
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -74,13 +72,10 @@ public class ChasingDotsView extends FrameLayout {
 
   private void init() {
     viewDots = new ArrayList<>();
-
     initDependencyInjector();
     initResources();
-
     setBackground(null);
     setClipToPadding(false);
-
     initViews();
   }
 
@@ -89,62 +84,66 @@ public class ChasingDotsView extends FrameLayout {
   }
 
   private void initViews() {
-    int translationFromCenter = screenUtils.dpToPx(TRANSLATION_FROM_CENTER);
+    float MIN_SCALE = 0.4f;
 
     for (int i = 0; i < NB_VIEWS; i++) {
       View v = new View(getContext());
-      v.setScaleX(0);
-      v.setScaleY(0);
+      float scale = (i / NB_VIEWS) + (MIN_SCALE * (1 - (i / NB_VIEWS)));
       v.setBackgroundResource(R.drawable.shape_oval_white);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
-
-      float angleDeg = (i * (360.0f / NB_VIEWS)) - 90.0f;
-      float angleRad = (float) (angleDeg * Math.PI / 180.0f);
-      v.setTranslationX(translationFromCenter * (float) Math.cos(angleRad));
-      v.setTranslationY(translationFromCenter * (float) Math.sin(angleRad));
-
       viewDots.add(v);
       addView(v);
+      scaleDots.add(scale);
     }
   }
 
   private void animateSpin() {
     for (int i = 0; i < viewDots.size(); i++) {
-      final View viewDot = viewDots.get(i);
       final boolean last = (i == (viewDots.size() - 1));
+      View viewDot = viewDots.get(i);
 
-      subscriptions.add(Observable.timer(i * (DURATION / viewDots.size()), TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f, 0f);
-            animator.setDuration(DURATION);
-            animator.setInterpolator(new DecelerateInterpolator());
-            animator.addUpdateListener(animation -> {
-              float value = (float) animation.getAnimatedValue();
-              viewDot.setScaleX(value);
-              viewDot.setScaleY(value);
-            });
+      ValueAnimator va = ValueAnimator.ofFloat(-90f, 270.0f);
+      va.setDuration(DURATION);
+      va.setInterpolator(new AccelerateDecelerateInterpolator());
+      float delayBetweenDots = (i / NB_VIEWS) * (DURATION * OFFSET_SCALE_DURATION_BETWEEN_DOTS);
+      long startDelay = (long) delayBetweenDots;
+      va.setStartDelay(startDelay);
+      float scaleAsc = scaleDots.get(i);
+      float scaleDesc = scaleDots.get(scaleDots.size() - (i + 1));
 
-            if (last) {
-              animator.addListener(new AnimatorListenerAdapter() {
-                @Override public void onAnimationStart(Animator animation) {
-                  if (!stopped) animateSpin();
-                }
+      va.addUpdateListener(animation -> {
+        Float angleDeg = (float) animation.getAnimatedValue();
 
-                @Override public void onAnimationEnd(Animator animation) {
-                  animator.removeAllListeners();
-                }
+        if (angleDeg < (-90.0f + 180.0f)) {
+          viewDot.setScaleX(scaleAsc);
+          viewDot.setScaleY(scaleAsc);
+        } else {
+          viewDot.setScaleX(scaleDesc);
+          viewDot.setScaleY(scaleDesc);
+        }
 
-                @Override public void onAnimationCancel(Animator animation) {
-                  animator.removeAllListeners();
-                }
-              });
+        float angleRad = (float) Math.toRadians(angleDeg);
+        float x =
+            (float) (centerX + screenUtils.dpToPx(TRANSLATION_FROM_CENTER) * Math.cos(angleRad));
+        float y =
+            (float) (centerY + screenUtils.dpToPx(TRANSLATION_FROM_CENTER) * Math.sin(angleRad));
+
+        viewDot.setTranslationX(x);
+        viewDot.setTranslationY(y);
+
+        if (angleDeg == 270.0f && last) {
+          Handler mHandler = new Handler();
+          mHandler.postDelayed(new Runnable() {
+            public void run() {
+              animateSpin();
             }
+          }, WAITING_DURATION_RESTARTING_ANIM);
+        }
+      });
 
-            animator.start();
-          }));
+      va.start();
     }
   }
 
@@ -169,7 +168,6 @@ public class ChasingDotsView extends FrameLayout {
   //////////////
 
   public void dispose() {
-    stopped = true;
     subscriptions.clear();
   }
 }
