@@ -13,6 +13,7 @@ public class RoomConfiguration implements Serializable {
   private String websocketUrl;
   private RTCPeerConfiguration rtcPeerConfiguration;
   private @TribeLiveOptions.RoutingMode String routingMode;
+  private Exception exception;
 
   public String getRoomId() {
     return room_id;
@@ -48,6 +49,14 @@ public class RoomConfiguration implements Serializable {
     if (routingMode.equals(TribeLiveOptions.P2P)) {
       websocketUrl = "wss://coreos-3e7241e7-a2f8-43dc-84cd-93b162fa307e.tribedev.pm:48521/api";
     }
+  }
+
+  public void setException(Exception exception) {
+    this.exception = exception;
+  }
+
+  public Exception getException() {
+    return exception;
   }
 
   @Override public String toString() {

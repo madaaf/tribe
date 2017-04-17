@@ -268,6 +268,7 @@
 	<string name="search_room_name">Appel «%1$s»</string>
 	<string name="search_room_joinable">Vous pouvez rejoindre cet appel</string>
 	<string name="search_searching">Recherche en cours</string>
+	<string name="search_new_friends">Récemment inscrits sur Tribe :clock3:</string>
 	<string name="search_already_friends">Ils sont déjà sur Tribe :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>

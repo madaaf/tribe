@@ -123,7 +123,15 @@ public class LivePresenter implements Presenter {
     }
 
     @Override public void onNext(RoomConfiguration roomConfiguration) {
-      if (liveMVPView != null) liveMVPView.onJoinedRoom(roomConfiguration);
+      if (liveMVPView != null) {
+        if (roomConfiguration.getException() != null) {
+          String errorMessage =
+              ErrorMessageFactory.create(liveMVPView.context(), roomConfiguration.getException());
+          if (liveMVPView != null) liveMVPView.onJoinRoomFailed(errorMessage);
+        } else {
+          liveMVPView.onJoinedRoom(roomConfiguration);
+        }
+      }
     }
   }
 
