@@ -33,6 +33,7 @@ import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
@@ -387,6 +388,9 @@ public class HomeActivity extends BaseActivity
               navigator.navigateToGroupDetails(this, membership);
             } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
               homeGridPresenter.leaveGroup(recipient.getId());
+            } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+              Invite invite = (Invite) recipient;
+              homeGridPresenter.declineInvite(invite.getRoomId());
             }
           }
 

@@ -400,4 +400,8 @@ import rx.Observable;
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
   }
+
+  @Override public Observable<Void> declineInvite(String roomId) {
+    return null;
+  }
 }

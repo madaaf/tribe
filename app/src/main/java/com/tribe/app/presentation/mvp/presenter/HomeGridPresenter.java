@@ -17,6 +17,7 @@ import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.CreateMembership;
+import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
@@ -55,6 +56,7 @@ public class HomeGridPresenter implements Presenter {
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
+  private DeclineInvite declineInvite;
 
   // SUBSCRIBERS
   private FriendListSubscriber diskFriendListSubscriber;
@@ -69,7 +71,7 @@ public class HomeGridPresenter implements Presenter {
       CreateMembership createMembership, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUser updateUser, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList) {
+      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite) {
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.leaveGroup = leaveGroup;
@@ -83,6 +85,7 @@ public class HomeGridPresenter implements Presenter {
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
+    this.declineInvite = declineInvite;
   }
 
   @Override public void onViewDetached() {
@@ -97,6 +100,7 @@ public class HomeGridPresenter implements Presenter {
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
     updateFriendship.unsubscribe();
+    declineInvite.unsubscribe();
     homeGridView = null;
   }
 
@@ -367,5 +371,10 @@ public class HomeGridPresenter implements Presenter {
     @Override public void onNext(List<Contact> contactList) {
       homeGridView.renderContactsOnApp(contactList);
     }
+  }
+
+  public void declineInvite(String roomId) {
+    declineInvite.prepare(roomId);
+    declineInvite.execute(new DefaultSubscriber());
   }
 }

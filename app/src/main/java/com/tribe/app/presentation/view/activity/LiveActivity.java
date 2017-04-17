@@ -780,6 +780,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
       livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
+    live.setSessionId(roomConfiguration.getRoomId());
   }
 
   @Override public void onJoinRoomFailed(String message) {
@@ -816,6 +817,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
           .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
+        if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+          displayNotification(context.getString(R.string.live_notification_guest_declined,
+              notificationPayload.getUserDisplayName()));
+        }
+
         return;
       }
 

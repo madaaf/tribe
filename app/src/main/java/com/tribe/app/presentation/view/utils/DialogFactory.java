@@ -14,8 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
@@ -163,6 +163,9 @@ public final class DialogFactory {
       moreTypeList.add(new LabelType(
           context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
           LabelType.BLOCK_HIDE));
+    } else if (recipient instanceof Invite) {
+      moreTypeList.add(
+          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
     }
 
     return moreTypeList;

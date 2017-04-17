@@ -302,4 +302,10 @@ import rx.Observable;
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.buzzRoom(roomId);
   }
+
+  @Override public Observable<Void> declineInvite(String roomId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.declineInvite(roomId);
+  }
 }

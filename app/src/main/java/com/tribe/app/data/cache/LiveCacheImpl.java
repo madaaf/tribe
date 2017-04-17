@@ -56,6 +56,10 @@ public class LiveCacheImpl implements LiveCache {
     this.inviteMap.remove(invite.getRoomId());
   }
 
+  @Override public void removeInviteFromRoomId(String roomId) {
+    this.inviteMap.remove(roomId);
+  }
+
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return inviteMap.getMapObservable().startWith(inviteMap.getMap());
   }
