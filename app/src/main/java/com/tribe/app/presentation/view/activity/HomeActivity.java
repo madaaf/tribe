@@ -222,9 +222,9 @@ public class HomeActivity extends BaseActivity
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-      syncContacts();
-    }
+    //if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+    syncContacts(); //SOEF
+    //}
   }
 
   @Override protected void onRestart() {

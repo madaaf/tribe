@@ -277,6 +277,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
     this.filteredContactList.clear();
 
     boolean hasDoneSuggested = false, hasDoneContacts = false;
+    boolean hasNewFriends = false;
 
     for (Object obj : contactList) {
       boolean shouldAdd = false;
@@ -306,15 +307,33 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         } else if (!hasDoneContacts && obj instanceof Contact) {
           Contact contact = (Contact) obj;
           if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-            if (!hasDoneSuggested) {
-              hasDoneSuggested = true;
-              this.filteredContactList.add(EmojiParser.demojizedText(
-                  getContext().getString(R.string.search_already_friends)));
-            }
-
             User user = contact.getUserList().get(0);
             user.setNew(contact.isNew());
-            this.filteredContactList.add(contact.getUserList().get(0));
+
+            if (contact.isNew()) {
+              hasNewFriends = true;
+            }
+            if (hasNewFriends) {
+              String titleNewfriend =
+                  EmojiParser.demojizedText(getContext().getString(R.string.search_new_friends));
+              if (!filteredContactList.contains(titleNewfriend)) {
+                this.filteredContactList.add(0, titleNewfriend);
+              }
+              this.filteredContactList.add(1, user);
+            }
+
+            if (!hasDoneSuggested) {
+              hasDoneSuggested = true;
+              String titleAlreadyFriend = EmojiParser.demojizedText(
+                  getContext().getString(R.string.search_already_friends));
+              if (!filteredContactList.contains(titleAlreadyFriend)) {
+                this.filteredContactList.add(titleAlreadyFriend);
+              }
+            }
+
+            if (!filteredContactList.contains(user)) {
+              this.filteredContactList.add(user);
+            }
 
             shouldAdd = false;
           } else {
