@@ -96,7 +96,7 @@
   <dimen name="code_progress_size">25dp</dimen>
   <dimen name="waiting_view_progress_bar_size">95dp</dimen>
   <dimen name="waiting_view_avatar_size">100dp</dimen>
-  <dimen name="waiting_view_dot_size">9dp</dimen>
+  <dimen name="waiting_view_dot_size">7dp</dimen>
 
   <!-- THRESHOLDS -->
   <dimen name="threshold_dismiss">100dp</dimen>
