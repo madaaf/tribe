@@ -1,39 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    tools:background="@android:color/holo_blue_bright"
     >
 
-  <LinearLayout
-      android:layout_width="match_parent"
+  <RelativeLayout
+      android:id="@+id/dragFriendPopupView"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:orientation="vertical"
+      android:layout_gravity="center"
+      android:clipToPadding="false"
+      android:padding="20dp"
       >
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/shape_rect_white_rounded_corners_top"
-        >
 
+    <LinearLayout
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_rect_white_corner"
+        android:elevation="10dp"
+        android:orientation="vertical"
+
+        >
       <ImageView
-          android:layout_width="match_parent"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:scaleType="fitStart"
           android:src="@drawable/bg_drag_friend_popup_view"
           />
-    </FrameLayout>
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/textViewFont"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:background="@drawable/shape_rect_white_bottom_corner"
-        android:gravity="center"
-        android:lineSpacingExtra="4sp"
-        android:padding="30dp"
-        android:text="@string/live_tutorial_drag_as_guest"
-        />
-  </LinearLayout>
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/textViewFont"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginTop="-20dp"
+          android:gravity="center"
+          android:paddingBottom="30dp"
+          android:paddingEnd="10dp"
+          android:paddingStart="10dp"
+          android:paddingTop="30dp"
+          android:text="@string/live_tutorial_drag_as_guest"
+          />
+    </LinearLayout>
 
-</FrameLayout>
+  </RelativeLayout>
+  <ImageView
+      android:id="@+id/imageView2"
+      android:layout_width="12dp"
+      android:layout_height="50dp"
+      android:layout_alignBottom="@+id/dragFriendPopupView"
+      android:layout_marginBottom="12dp"
+      android:layout_marginStart="-22dp"
+      android:layout_toEndOf="@+id/dragFriendPopupView"
+      android:scaleType="fitXY"
+      android:src="@drawable/shape_triangle_right"
+      />
+
+</RelativeLayout>
+
+
+

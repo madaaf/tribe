@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
@@ -25,11 +27,13 @@ import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
+import com.tribe.app.presentation.view.widget.PopupContainerView;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -73,7 +77,11 @@ public class LiveContainer extends FrameLayout {
 
   @BindView(R.id.viewInviteLive) LiveInviteView viewInviteLive;
 
+  @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
+
   @BindView(R.id.viewShadowRight) View viewShadowRight;
+
+  @Nullable @BindView(R.id.nativeDialogsView) PopupContainerView nativeDialogsView;
 
   // SPRINGS
   private SpringSystem springSystem = null;
@@ -102,6 +110,7 @@ public class LiveContainer extends FrameLayout {
   private int initialTileHeight = 0;
   private boolean hiddenControls = false;
   boolean enabledTimer = false;
+  private int nbrCall = 0;
   // DIMENS
   private int thresholdEnd;
 
@@ -202,6 +211,16 @@ public class LiveContainer extends FrameLayout {
         } else {
           closeInviteView();
         }
+      }
+    }));
+
+    subscriptions.add(viewLive.onBuzzPopup().subscribe(displayName -> {
+      closeInviteView();
+      if (stateManager.shouldDisplay(StateManager.BUZZ_FRIEND_POPUP) && (nbrCall % 2) == 0) {
+        nativeDialogsView.displayPopup(viewLive.viewControlsLive.btnNotify,
+            PopupContainerView.DISPLAY_BUZZ_POPUP,
+            getResources().getString(R.string.live_tutorial_buzz, displayName));
+        nbrCall++;
       }
     }));
 
@@ -402,7 +421,6 @@ public class LiveContainer extends FrameLayout {
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         } else {
           onDropped.onNext(draggedTileView);
-          stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
           enabledTimer = true;
           resetTimer();
           viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
@@ -583,6 +601,10 @@ public class LiveContainer extends FrameLayout {
       springRight.setEndValue(-viewInviteLive.getWidth());
     }
     resetTimer();
+    if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP)) {
+      nativeDialogsView.displayPopup(viewInviteLive,
+          PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);
+    }
   }
 
   private void closeInviteView() {

@@ -410,22 +410,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return time == 0 ? 10 : time;
   }
 
-  private void displayStartFirstPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.START_FIRST_LIVE)) {
-      subscriptions.add(DialogFactory.dialog(this,
-          EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
-          getString(R.string.tips_startfirstlive_message),
-          getString(R.string.tips_startfirstlive_action1), null)
-          .filter(x -> x == true)
-          .subscribe(a -> {
-            subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()));
-          }));
-      stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
-    }
-  }
-
   private void initSubscriptions() {
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
@@ -466,19 +450,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
+      displayBuzzPopupTutorial();
       joinRoom();
-      displayStartFirstPopupTutorial();
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
       if (!live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
-        if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-          subscriptions.add(
-              Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
-        }
       }
     }));
 
@@ -490,7 +468,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
+      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
         subscriptions.add(DialogFactory.dialog(this,
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
             EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
@@ -498,7 +476,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
           finish();
         }));
-        stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
+        stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
       } else {
         finish();
       }
@@ -575,6 +553,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         break;
       }
     }
+  }
+
+  public void displayBuzzPopupTutorial() {
+    subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          viewLive.displayWaitLivePopupTutorial(live.getDisplayName());
+        }));
   }
 
   private void takeScreenshot() {
@@ -734,16 +720,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
-  }
-
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      subscriptions.add(DialogFactory.dialog(this, getString(R.string.tips_draggingguest_title),
-          getString(R.string.tips_draggingguest_message),
-          getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
   }
 
   private void ready() {

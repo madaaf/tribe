@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -25,7 +24,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.NativeDialogsContainerView;
+import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -43,6 +42,8 @@ public class LiveControlsView extends FrameLayout {
   private static final int DURATION_PARAM = 450;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.btnInviteLive) View btnInviteLive;
 
@@ -63,8 +64,6 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.layoutContainerParamLive) FrameLayout layoutContainerParamLive;
 
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
-
-  @BindView(R.id.nativeDialogsView) NativeDialogsContainerView nativeDialogsView;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -119,15 +118,6 @@ public class LiveControlsView extends FrameLayout {
 
     setBackground(null);
     initUI();
-
-    // SOEF
-    btnNotify.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            nativeDialogsView.displayPopup(btnNotify, null);
-            btnNotify.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-          }
-        });
   }
 
   private void initUI() {
@@ -285,6 +275,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnNotify) void clickNotify() {
+    stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
     resetTimer();
 
     btnNotify.setEnabled(false);

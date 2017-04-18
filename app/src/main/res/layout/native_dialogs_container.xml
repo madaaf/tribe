@@ -6,10 +6,10 @@
       android:id="@+id/nativeDialogsContainer"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:layout_centerHorizontal="true"
+      android:layout_centerVertical="true"
       android:orientation="vertical"
-      android:background="@color/black.opacity.50"
       >
-
 
   </FrameLayout>
 </merge>

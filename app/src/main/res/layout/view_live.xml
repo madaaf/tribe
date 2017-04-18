@@ -63,4 +63,5 @@
       android:src="@drawable/picto_btn_screenshot"
       android:visibility="invisible"
       />
+
 </merge>
