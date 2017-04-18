@@ -281,7 +281,7 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {
-    return Observable.zip(rxContacts.getContacts().toList(), rxFacebook.requestFriends(),
+    return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
         (contactABRealmList, contactFBRealmList) -> {
           List<ContactInterface> contactList = new ArrayList<>();
 
@@ -296,80 +296,85 @@ public class CloudUserDataStore implements UserDataStore {
           contactCache.updateFromDB(contactList);
 
           return contactList;
-        }).flatMap(contactList -> {
-      if (contactList == null || contactList.size() == 0) return Observable.empty();
+        })
+        .flatMap(contactList -> {
+          if (contactList == null || contactList.size() == 0) return Observable.empty();
 
-      List<ContactInterface> phones = new ArrayList<>();
-      List<ContactInterface> fbIds = new ArrayList<>();
+          List<ContactInterface> phones = new ArrayList<>();
+          List<ContactInterface> fbIds = new ArrayList<>();
 
-      UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
+          UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
 
-      List<LookupEntity> lookupPhones = new ArrayList<>();
-      if (contactList.size() > 0) {
-        for (ContactInterface contactI : contactList) {
-          if (contactI instanceof ContactABRealm) {
-            ContactABRealm contactABRealm = (ContactABRealm) contactI;
-            boolean shouldAdd = true;
-            for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
-              if (phoneRealm.getPhone().equals(currentUser.getPhone())) {
-                shouldAdd = false;
+          List<LookupEntity> lookupPhones = new ArrayList<>();
+          if (contactList.size() > 0) {
+            for (ContactInterface contactI : contactList) {
+              if (contactI instanceof ContactABRealm) {
+                ContactABRealm contactABRealm = (ContactABRealm) contactI;
+                boolean shouldAdd = true;
+                for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
+                  if (phoneRealm.getPhone().equals(currentUser.getPhone())) {
+                    shouldAdd = false;
+                  }
+                }
+
+                if (shouldAdd) {
+                  phones.add(contactI);
+                  ContactABRealm ab = (ContactABRealm) contactI;
+                  lookupPhones.add(
+                      new LookupEntity(ab.getPhones().get(0).getPhone(), ab.getFirstName(),
+                          ab.getLastName()));
+                }
+              }
+            }
+          }
+
+          String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
+
+          return lookupApi.lookup(regionCode, lookupPhones);
+        }, (contactList, lookupList) -> new Pair<>(contactList, lookupList))
+        .flatMap(pairContactLookupResult -> {
+          StringBuilder resultLookupUserIds = new StringBuilder();
+
+          for (LookupObject lookupObject : pairContactLookupResult.second) {
+            if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+              resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
+              resultLookupUserIds.append(",");
+            }
+          }
+
+          return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
+              resultLookupUserIds.length() > 0 ? resultLookupUserIds.substring(0,
+                  resultLookupUserIds.length() - 1) : "",
+              context.getString(R.string.userfragment_infos)));
+        }, (pairContactLookupResult, lookupUsers) -> {
+          List<LookupObject> listLookup = pairContactLookupResult.second;
+          for (int i = 0; i < listLookup.size(); i++) {
+            LookupObject lookupObject = listLookup.get(i);
+            if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+              for (UserRealm user : lookupUsers) {
+                if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
               }
             }
 
-            if (shouldAdd) {
-              phones.add(contactI);
-              ContactABRealm ab = (ContactABRealm) contactI;
-              lookupPhones.add(new LookupEntity(ab.getPhones().get(0).getPhone(), null, null));
+            if (lookupObject != null) {
+              ContactInterface ci = pairContactLookupResult.first.get(i);
+
+              if (lookupObject.getUserRealm() != null) {
+                ci.addUser(lookupObject.getUserRealm());
+                if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
+                  ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
+                }
+              } else {
+                ci.setHowManyFriends(lookupObject.getHowManyFriends());
+              }
+
+              ci.setPhone(lookupObject.getPhone());
             }
           }
-        }
-      }
 
-      String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
-
-      return lookupApi.lookup(regionCode, lookupPhones);
-    }, (contactList, lookupList) -> new Pair<>(contactList, lookupList)).flatMap(pairContactLookupResult -> {
-      StringBuilder resultLookupUserIds = new StringBuilder();
-
-      for (LookupObject lookupObject : pairContactLookupResult.second) {
-        if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
-          resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
-          resultLookupUserIds.append(",");
-        }
-      }
-
-      return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
-          resultLookupUserIds.length() > 0 ? resultLookupUserIds.substring(0,
-              resultLookupUserIds.length() - 1) : "",
-          context.getString(R.string.userfragment_infos)));
-    }, (pairContactLookupResult, lookupUsers) -> {
-      List<LookupObject> listLookup = pairContactLookupResult.second;
-      for (int i = 0; i < listLookup.size(); i++) {
-        LookupObject lookupObject = listLookup.get(i);
-        if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
-          for (UserRealm user : lookupUsers) {
-            if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
-          }
-        }
-
-        if (lookupObject != null) {
-          ContactInterface ci = pairContactLookupResult.first.get(i);
-
-          if (lookupObject.getUserRealm() != null) {
-            ci.addUser(lookupObject.getUserRealm());
-            if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
-              ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
-            }
-          } else {
-            ci.setHowManyFriends(lookupObject.getHowManyFriends());
-          }
-
-          ci.setPhone(lookupObject.getPhone());
-        }
-      }
-
-      return pairContactLookupResult.first;
-    }).doOnNext(saveToCacheContacts);
+          return pairContactLookupResult.first;
+        })
+        .doOnNext(saveToCacheContacts);
   }
 
   @Override public Observable<List<ContactInterface>> contactsFB() {

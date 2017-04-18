@@ -133,4 +133,8 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   public String getLastName() {
     return lastName;
   }
+
+  public boolean hasAPhone() {
+    return phones != null && phones.size() > 0;
+  }
 }

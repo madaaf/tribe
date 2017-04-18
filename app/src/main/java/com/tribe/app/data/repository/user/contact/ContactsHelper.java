@@ -17,7 +17,6 @@ import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import timber.log.Timber;
 
 import static android.provider.ContactsContract.CommonDataKinds;
 import static android.provider.ContactsContract.Contacts;
@@ -33,11 +32,18 @@ public class ContactsHelper {
       ContactsContract.Data.MIMETYPE
   };
 
+  private static final String[] DATA_PROJECTION_WITH_NAMES = {
+      ContactsContract.RawContacts.CONTACT_ID, ContactsContract.Data.MIMETYPE,
+      ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+      ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
+      CommonDataKinds.StructuredName.DISPLAY_NAME
+  };
+
   private static final String[] DATA_PROJECTION_FULL = {
-      ContactsContract.Data.DATA1, ContactsContract.Data.DATA2, CommonDataKinds.StructuredName.DISPLAY_NAME,
-      CommonDataKinds.StructuredName.GIVEN_NAME, CommonDataKinds.StructuredName.DISPLAY_NAME,
-      ContactsContract.Data.MIMETYPE, ContactsContract.Data.CONTACT_ID,
-      ContactsContract.Data.DATA_VERSION
+      ContactsContract.Data.DATA1, ContactsContract.Data.DATA2,
+      CommonDataKinds.StructuredName.DISPLAY_NAME, CommonDataKinds.StructuredName.GIVEN_NAME,
+      CommonDataKinds.StructuredName.FAMILY_NAME, ContactsContract.Data.MIMETYPE,
+      ContactsContract.Data.CONTACT_ID, ContactsContract.Data.DATA_VERSION
   };
 
   private static final String[] CONTACTS_PROJECTION = new String[] {
@@ -158,51 +164,38 @@ public class ContactsHelper {
   }
 
   Cursor getFastContactsCursor() {
-    String where = ContactsContract.Data.MIMETYPE + "=?";
-    String[] wheres = { where, where, where };
-    String[] selectionArgs = {
-        CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-    };
-    String selection = TextUtils.join(" OR ", wheres);
-    Cursor data = resolver.query(ContactsContract.Data.CONTENT_URI, DATA_PROJECTION_FULL, selection,
-        selectionArgs, ContactsContract.Data.CONTACT_ID);
+    String where = ContactsContract.Data.HAS_PHONE_NUMBER + " != 0";
+
+    where += " AND "
+        + ContactsContract.Data.MIMETYPE
+        + " IN ('"
+        + ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
+        + "', '"
+        + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+        + "')";
+
+    Cursor data =
+        resolver.query(ContactsContract.Data.CONTENT_URI, DATA_PROJECTION_WITH_NAMES, where, null,
+            ContactsContract.Data.DISPLAY_NAME);
 
     return data;
   }
 
-  @NonNull ContactABRealm fetchContactFast(Cursor c) {
-    String id = c.getString(c.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-    ContactABRealm contact = new ContactABRealm();
-    contact.setId(id);
-
+  @NonNull ContactABRealm fetchContactFast(Cursor c, ContactABRealm contact) {
     List<String> phones = new ArrayList<>();
 
-    String nextId = id;
-    while (id.equals(nextId)) {
-      String value = c.getString(c.getColumnIndex(ContactsContract.Data.DATA1));
-
-      String given =
+    String mimeType = c.getString(c.getColumnIndex(ContactsContract.Data.MIMETYPE));
+    if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+      String phone = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+      phones.add(phone);
+    } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
+      String givenName =
           c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
-      String family = c.getString(
+      contact.setFirstName(givenName);
+
+      String familyName = c.getString(
           c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
-
-      Timber.d("Given : " + given);
-      Timber.d("Family : " + family);
-
-      switch (c.getString(c.getColumnIndex(ContactsContract.Data.MIMETYPE))) {
-        case CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
-          contact.setName(value);
-
-        case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
-          phones.add(value.trim());
-          break;
-      }
-
-      if (c.moveToNext()) {
-        nextId = c.getString(c.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-      } else {
-        break;
-      }
+      contact.setLastName(familyName);
     }
 
     RealmList<PhoneRealm> realmList = new RealmList<>();

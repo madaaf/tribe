@@ -264,7 +264,11 @@
 	<!-- Search -->
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
 	<string name="search_usernames">Résultat</string>
+	<string name="search_rooms">Appels</string>
+	<string name="search_room_name">Appel «%1$s»</string>
+	<string name="search_room_joinable">Vous pouvez rejoindre cet appel</string>
 	<string name="search_searching">Recherche en cours</string>
+	<string name="search_new_friends">Récemment inscrits sur Tribe :clock3:</string>
 	<string name="search_already_friends">Ils sont déjà sur Tribe :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
@@ -308,6 +312,8 @@
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
 	<string name="live_unknown_user">Invité inconnu</string>
 	<string name="live_external_user">Invité externe</string>
+	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
+	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant\ndes amis dans l\'appel !</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -318,7 +324,7 @@
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Expérience dégradée :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de désactiver pour tout le monde, y compris vos amis, le fait de pouvoir vous ajouter. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
