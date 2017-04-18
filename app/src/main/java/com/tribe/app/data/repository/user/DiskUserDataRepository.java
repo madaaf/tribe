@@ -100,7 +100,6 @@ import rx.Observable;
         });
   }
 
-
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }
@@ -243,10 +242,6 @@ import rx.Observable;
     }
 
     if (shouldAdd) result.add(contact);
-  }
-
-  @Override public Observable<Void> howManyFriends() {
-    return null;
   }
 
   @Override public Observable<SearchResult> findByUsername(String username) {

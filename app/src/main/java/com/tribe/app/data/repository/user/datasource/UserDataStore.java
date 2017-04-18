@@ -97,11 +97,6 @@ public interface UserDataStore {
   Observable<List<ContactInterface>> contactsToInvite();
 
   /**
-   * Get an {@link Observable} which will get the number of friends from each address book member
-   */
-  Observable<Void> howManyFriends();
-
-  /**
    * Get an {@link Observable} which will emit a {@link SearchResultRealm} containing infos
    * about the search results.
    */

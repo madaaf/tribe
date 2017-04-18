@@ -1,19 +1,25 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
+import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,21 +37,20 @@ public class SearchPresenter implements Presenter {
   private SearchLocally searchLocally;
   private UseCase synchroContactList;
   private RxFacebook rxFacebook;
-  private UseCase refreshHowManyFriends;
+  private UpdateUser updateUser;
 
   // SUBSCRIBERS
   private CreateFriendshipSubscriber createFriendshipSubscriber;
   private DefaultSubscriber findByUsernameSubscriber;
   private ContactListSubscriber contactListSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
-  private RefreshHowManyFriendsSubscriber refreshHowManyFriendsSubscriber;
 
   @Inject public SearchPresenter(JobManager jobManager,
       @Named("cloudFindByUsername") FindByUsername findByUsername,
       @Named("diskSearchResults") DiskSearchResults diskSearchResults,
       CreateFriendship createFriendship, SearchLocally searchLocally,
       @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
-      @Named("refreshHowManyFriends") UseCase refreshHowManyFriends) {
+      UpdateUser updateUser) {
     super();
     this.jobManager = jobManager;
     this.findByUsername = findByUsername;
@@ -54,7 +59,7 @@ public class SearchPresenter implements Presenter {
     this.searchLocally = searchLocally;
     this.synchroContactList = synchroContactList;
     this.rxFacebook = rxFacebook;
-    this.refreshHowManyFriends = refreshHowManyFriends;
+    this.updateUser = updateUser;
   }
 
   @Override public void onViewDetached() {
@@ -63,7 +68,6 @@ public class SearchPresenter implements Presenter {
     createFriendship.unsubscribe();
     searchLocally.unsubscribe();
     synchroContactList.unsubscribe();
-    refreshHowManyFriends.unsubscribe();
     searchView = null;
   }
 
@@ -168,7 +172,7 @@ public class SearchPresenter implements Presenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      refreshHowManyFriends();
+      searchView.syncDone();
     }
   }
 
@@ -186,24 +190,11 @@ public class SearchPresenter implements Presenter {
     }
   }
 
-  public void refreshHowManyFriends() {
-    if (refreshHowManyFriendsSubscriber != null) refreshHowManyFriendsSubscriber.unsubscribe();
-    refreshHowManyFriendsSubscriber = new RefreshHowManyFriendsSubscriber();
-    refreshHowManyFriends.execute(refreshHowManyFriendsSubscriber);
-  }
+  public void updateUser(String fbid) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(UserRealm.FBID, fbid));
 
-  private class RefreshHowManyFriendsSubscriber extends DefaultSubscriber<List<Void>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-      searchView.syncDone();
-    }
-
-    @Override public void onNext(List<Void> contactList) {
-      searchView.syncDone();
-    }
+    updateUser.prepare(values);
+    updateUser.execute(new DefaultSubscriber());
   }
 }

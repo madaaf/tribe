@@ -34,7 +34,9 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(contactList));
+      obsRealm.executeTransaction(realm1 -> {
+        realm1.insertOrUpdate(contactList);
+      });
     } finally {
       obsRealm.close();
     }

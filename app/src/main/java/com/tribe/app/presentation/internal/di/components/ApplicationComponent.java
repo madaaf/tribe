@@ -13,7 +13,6 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
-import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideFriendshipJob;
@@ -191,8 +190,6 @@ public interface ApplicationComponent {
   void inject(UpdateUserJob updateUserJob);
 
   void inject(SynchroContactsJob synchroContactsJob);
-
-  void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
 
   void inject(DeleteContactsABJob deleteContactsABJob);
 

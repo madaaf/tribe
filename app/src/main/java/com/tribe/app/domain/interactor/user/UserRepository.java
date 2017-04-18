@@ -100,11 +100,6 @@ public interface UserRepository {
   Observable<List<Object>> searchLocally(String s);
 
   /**
-   * Get an {@link Observable} which will emit
-   */
-  Observable<Void> howManyFriends();
-
-  /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos
    * about the user searched.
    */

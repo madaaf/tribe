@@ -196,6 +196,10 @@ public class ContactsHelper {
       String familyName = c.getString(
           c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
       contact.setLastName(familyName);
+
+      String displayName =
+          c.getString(c.getColumnIndex(CommonDataKinds.StructuredName.DISPLAY_NAME));
+      contact.setName(displayName);
     }
 
     RealmList<PhoneRealm> realmList = new RealmList<>();
