@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -53,7 +54,7 @@ public class NotificationContainerView extends FrameLayout {
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
   private static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
 
-  private final static int START_OFFSET_DURATION = 500;
+  private final static int START_OFFSET_DURATION = 0;
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
   private final static int BACKGROUND_ANIM_DURATION_EXIT = 800;
 
@@ -173,18 +174,24 @@ public class NotificationContainerView extends FrameLayout {
   private void animateView() {
     setVisibility(VISIBLE);
     bgView.animate().setDuration(BACKGROUND_ANIM_DURATION_ENTER).alpha(1f).start();
-    notificationView.setVisibility(VISIBLE);
-    Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_enter_animation);
-    slideInAnimation.setFillAfter(false);
-    slideInAnimation.setStartOffset(START_OFFSET_DURATION);
-    slideInAnimation.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        textDismiss.setVisibility(VISIBLE);
-      }
-    });
-    notificationView.startAnimation(slideInAnimation);
+
+    notificationView.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            ViewTreeObserver.OnGlobalLayoutListener victim = this;
+            Animation slideInAnimation =
+                AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_enter_animation);
+            slideInAnimation.setFillAfter(false);
+            slideInAnimation.setAnimationListener(new AnimationListenerAdapter() {
+              @Override public void onAnimationEnd(Animation animation) {
+                super.onAnimationEnd(animation);
+                textDismiss.setVisibility(VISIBLE);
+                notificationView.getViewTreeObserver().removeOnGlobalLayoutListener(victim);
+              }
+            });
+            notificationView.startAnimation(slideInAnimation);
+          }
+        });
   }
 
   protected void hideView() {
@@ -200,11 +207,7 @@ public class NotificationContainerView extends FrameLayout {
         bgView.animate()
             .setDuration(BACKGROUND_ANIM_DURATION_EXIT)
             .alpha(0f)
-            .withEndAction(new Runnable() {
-              @Override public void run() {
-                setVisibility(GONE);
-              }
-            })
+            .withEndAction(() -> setVisibility(GONE))
             .start();
       }
 
@@ -228,7 +231,7 @@ public class NotificationContainerView extends FrameLayout {
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);
     }
-    
+
     if (data.getBooleanExtra(DISPLAY_CREATE_GRP_NOTIF, false) && extra != null) {
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);

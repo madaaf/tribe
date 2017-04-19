@@ -55,7 +55,7 @@
       android:id="@+id/notificationContainerView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:visibility="gone"
+      android:visibility="invisible"
       />
 
   <com.tribe.app.presentation.view.widget.notifications.RatingNotificationView

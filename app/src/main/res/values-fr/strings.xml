@@ -472,4 +472,9 @@
 	
 	<!-- Popup Behavior -->
 	<string name="popup_behavior_swipe_dismiss">Glisser vers le bas pour fermer</string>
+	
+	<!-- Callback Notification -->
+	<string name="callback_notification_title_one">Vous avez récement manqué un appel ! Tapez pour savoir qui rappeler.</string>
+	<string name="callback_notification_title_multiple">Vous avez récement manqué %1$d appels ! Tapez pour savoir qui rappeler.</string>
+	<string name="callback_notification_action">Rappeler %1$s (missed %2$s)</string>
 </resources>
