@@ -311,6 +311,7 @@ public class RatingNotificationView extends FrameLayout implements View.OnClickL
 
   @OnClick(R.id.txtAction) void onClickTextAction() {
     Map<String, Object> map = PreferencesUtils.getMapFromJson(callTagsMap);
+    if (map == null) return;
 
     if (indexStar > 0) {
       map.put(TagManagerUtils.RATE, String.valueOf(indexStar));

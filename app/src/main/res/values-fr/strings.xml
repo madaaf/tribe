@@ -312,6 +312,8 @@
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
 	<string name="live_unknown_user">Invité inconnu</string>
 	<string name="live_external_user">Invité externe</string>
+	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
+	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant\ndes amis dans l\'appel !</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -330,6 +332,7 @@
 	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
+	<string name="profile_contact_us">Contactez-nous :envelope:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>
 	
 	<!-- Carousel -->

@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -97,6 +98,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   // RESOURCES
   private int translationYAnimation = 0;
   private int translationYAction = 0;
+  private String noUrl;
 
   // OBSERVABLES
   private Subscription startSubscription;
@@ -200,6 +202,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   private void initResources() {
     translationYAnimation = screenUtils.dpToPx(Y_TRANSLATION);
     translationYAction = screenUtils.dpToPx(ACTION_BUTTON_Y_TRANSLATION);
+    noUrl = getString(R.string.no_profile_picture_url);
   }
 
   private void updateFromPayload(NotificationPayload payload) {
@@ -207,7 +210,17 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
       String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
       String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
-      Glide.with(this).load(picture).centerCrop().into(containerView);
+
+      if (StringUtils.isEmpty(picture) || picture.equals(noUrl)) {
+        Random random = new Random();
+        int r = random.nextInt(9 - 1) + 1;
+        int randomPlaceholder =
+            getResources().getIdentifier("bg_call_" + r, "drawable", getPackageName());
+        Glide.with(this).load(randomPlaceholder).centerCrop().into(containerView);
+      } else {
+        Glide.with(this).load(picture).centerCrop().into(containerView);
+      }
+
       txtDisplayName.setText(EmojiParser.demojizedText(name));
 
       if (isGroup) {

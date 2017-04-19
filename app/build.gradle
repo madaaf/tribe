@@ -121,6 +121,7 @@ android {
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""
       buildConfigField "String", "MIXPANEL_GOOGLE_API", "\"${mixpanel_google_debug}\""
+      buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin_debug}\""
     }
 
     tribe2 {
@@ -157,6 +158,7 @@ android {
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
       buildConfigField "String", "MIXPANEL_GOOGLE_API", "\"${mixpanel_google_prod}\""
+      buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin}\""
 
       proguardFiles getDefaultProguardFile('proguard-android.txt'),
           'proguard-google-play-services.pro',

@@ -95,6 +95,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
@@ -230,18 +231,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onStart() {
     super.onStart();
+    notificationManager.cancelAll();
     fullScreenNotificationState.set(new HashSet<>());
     livePresenter.onViewAttached(this);
   }
 
   @Override protected void onStop() {
-    livePresenter.onViewDetached();
+    Timber.d("onStop");
     super.onStop();
-  }
-
-  @Override protected void onRestart() {
-    super.onRestart();
-    notificationManager.cancelAll();
   }
 
   @Override protected void onResume() {
@@ -266,6 +263,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onDestroy() {
+    Timber.d("onDestroy");
     appStateMonitor.removeListener(this);
     appStateMonitor.stop();
 
@@ -742,6 +740,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    livePresenter.onViewDetached();
     viewLiveContainer.dispose();
     viewLive.dispose(false);
     putExtraHomeIntent();

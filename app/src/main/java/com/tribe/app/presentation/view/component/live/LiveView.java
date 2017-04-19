@@ -51,6 +51,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -188,7 +189,10 @@ public class LiveView extends FrameLayout {
   public void dispose(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
+    Timber.d("dispose");
     if (live != null) {
+      Timber.d("dispose live");
+
       double duration = 0.0D;
 
       if (timeStart > 0) {
@@ -228,16 +232,19 @@ public class LiveView extends FrameLayout {
     }
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
+      Timber.d("liverowview dispose");
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
 
     for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
+      Timber.d("liveinviteview dispose");
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
 
     if (room != null && !isJump) {
+      Timber.d("room leave");
       room.leaveRoom();
     }
 
@@ -250,7 +257,9 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.clear();
 
+    Timber.d("isJump : " + isJump);
     if (!isJump) {
+      Timber.d("dispose !isJump");
       persistentSubscriptions.clear();
       viewLocalLive.dispose();
       unbinder.unbind();
@@ -449,12 +458,15 @@ public class LiveView extends FrameLayout {
   ///////////////////
 
   public void joinRoom(RoomConfiguration roomConfiguration) {
+    Map<String, String> headers = new HashMap<>();
+    headers.put(WebSocketConnection.ORIGIN, com.tribe.app.BuildConfig.TRIBE_ORIGIN);
     TribeLiveOptions options = new TribeLiveOptions.TribeLiveOptionsBuilder(getContext()).wsUrl(
         roomConfiguration.getWebsocketUrl())
         .tokenId(accessToken.getAccessToken())
         .iceServers(roomConfiguration.getRtcPeerConfiguration().getIceServers())
         .roomId(roomConfiguration.getRoomId())
         .routingMode(roomConfiguration.getRoutingMode())
+        .headers(headers)
         .build();
 
     tempSubscriptions.add(room.onRoomStateChanged().subscribe(state -> {

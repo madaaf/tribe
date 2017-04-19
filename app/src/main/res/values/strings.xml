@@ -312,6 +312,8 @@
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	<string name="live_unknown_user">Unknown guest</string>
 	<string name="live_external_user">External guest</string>
+	<string name="live_tutorial_buzz">Get %1$s\'s attention\nwith a buzz!</string>
+	<string name="live_tutorial_drag_as_guest">Spice it up by dragging\nfriends in the call!</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
@@ -330,6 +332,7 @@
 	<string name="profile_blocked_friends">Blocked friends</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
+	<string name="profile_contact_us">Contact us :envelope:</string>
 	<string name="profile_logout">Logout :skull:</string>
 	
 	<!-- Carousel -->

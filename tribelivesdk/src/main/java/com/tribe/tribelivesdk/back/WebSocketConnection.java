@@ -9,17 +9,54 @@ import com.neovisionaries.ws.client.WebSocketListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-@Singleton public class WebSocketConnection {
+public class WebSocketConnection {
+
+  public static WebSocketConnection newInstance() {
+    SSLContext sslContext = null;
+
+    try {
+      sslContext = SSLContext.getInstance("SSL");
+      sslContext.init(null, new TrustManager[] {
+          new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+              Timber.d("getAcceptedIssuers =============");
+              return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+              Timber.d("checkClientTrusted =============");
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+              Timber.d("checkServerTrusted =============");
+            }
+          }
+      }, new SecureRandom());
+    } catch (KeyManagementException e) {
+      e.printStackTrace();
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+
+    WebSocketFactory factory = new WebSocketFactory();
+    factory.setSSLContext(sslContext);
+    return new WebSocketConnection(factory);
+  }
 
   private static final int CONNECT_TIMEOUT = 1000;
   private static final int CLOSE_TIMEOUT = 1000;
@@ -39,6 +76,7 @@ import timber.log.Timber;
   public static final String AUTHORIZATION = "Authorization";
   public static final String USER_AGENT = "User-Agent";
   public static final String CONTENT_TYPE = "Content-Type";
+  public static final String ORIGIN = "Origin";
 
   private @WebSocketState String state;
   private WebSocket webSocketClient;
@@ -56,7 +94,7 @@ import timber.log.Timber;
   private PublishSubject<String> onConnectError = PublishSubject.create();
   private PublishSubject<String> onError = PublishSubject.create();
 
-  @Inject public WebSocketConnection(WebSocketFactory clientFactory) {
+  public WebSocketConnection(WebSocketFactory clientFactory) {
     state = STATE_NEW;
     this.clientFactory = clientFactory;
   }
@@ -66,8 +104,8 @@ import timber.log.Timber;
   }
 
   public void connect(final String url) {
-    if (state == STATE_CONNECTED) {
-      Timber.d("WebSocket is already connected.");
+    if (state == STATE_CONNECTED || state == STATE_CONNECTING) {
+      Timber.d("WebSocket is already connected or connecting.");
       return;
     }
 
@@ -246,6 +284,7 @@ import timber.log.Timber;
         @Override public void handleCallbackError(WebSocket websocket, Throwable cause)
             throws Exception {
           Timber.d("WebSocket handleCallbackError : " + cause.getMessage());
+          disconnect(false);
         }
 
         @Override public void onSendingHandshake(WebSocket websocket, String requestLine,
@@ -298,7 +337,12 @@ import timber.log.Timber;
     subscriptions.clear();
 
     if (webSocketClient != null && (state == STATE_CONNECTED || state == STATE_CONNECTING)) {
+      Timber.d("Disconnecting");
       state = STATE_DISCONNECTED;
+      webSocketClient.setPongInterval(0);
+      webSocketClient.setPingInterval(0);
+      webSocketClient.clearListeners();
+      webSocketClient.clearUserInfo();
       webSocketClient.disconnect();
 
       // Wait for WebSocket close event to prevent WS library from

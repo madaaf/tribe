@@ -2,6 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by tiago on 30/01/2017.
