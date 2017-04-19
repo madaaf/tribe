@@ -354,6 +354,16 @@ public class HomeActivity extends BaseActivity
         }));
   }
 
+  private void onClickItem(Recipient recipient) {
+    if (recipient.getId().equals(Recipient.ID_MORE)) {
+      navigator.openSmsForInvite(this, null);
+    } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
+      navigator.navigateToVideo(this);
+    } else {
+      navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+    }
+  }
+
   private void initRecyclerView() {
     initUIRecyclerView();
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
@@ -405,14 +415,13 @@ public class HomeActivity extends BaseActivity
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
           if (displayPermissionNotif) {
-            return;
-          }
-          if (recipient.getId().equals(Recipient.ID_MORE)) {
-            navigator.openSmsForInvite(this, null);
-          } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
-            navigator.navigateToVideo(this);
+            notificationContainerView.onAcceptedPermission().subscribe(permissionGranted -> {
+              if (permissionGranted) {
+                onClickItem(recipient);
+              }
+            });
           } else {
-            navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+            onClickItem(recipient);
           }
         }));
 
