@@ -361,29 +361,32 @@ public class TileView extends SquareCardView {
       return true;
     });
 
-    avatar.setOnClickListener(v -> {
-      avatar.animate()
-          .scaleX(1.05f)
-          .scaleY(1.05f)
-          .setInterpolator(new OvershootInterpolator(0.45f))
-          .setDuration(200)
-          .setListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              avatar.animate()
-                  .scaleX(1f)
-                  .scaleY(1f)
-                  .setInterpolator(new DecelerateInterpolator())
-                  .setDuration(200)
-                  .setListener(new AnimatorListenerAdapter() {
-                    @Override public void onAnimationEnd(Animator animation) {
-                      click.onNext(TileView.this);
-                      avatar.animate().setListener(null).start();
-                    }
-                  })
-                  .start();
-            }
-          })
-          .start();
+    avatar.setOnClickListener(v -> avatar.animate()
+        .scaleX(1.05f)
+        .scaleY(1.05f)
+        .setInterpolator(new OvershootInterpolator(0.45f))
+        .setDuration(200)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            avatar.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(new DecelerateInterpolator())
+                .setDuration(200)
+                .setListener(new AnimatorListenerAdapter() {
+                  @Override public void onAnimationEnd(Animator animation) {
+                    click.onNext(TileView.this);
+                    avatar.animate().setListener(null).start();
+                  }
+                })
+                .start();
+          }
+        })
+        .start());
+
+    avatar.setOnLongClickListener(v -> {
+      longClick.onNext(TileView.this);
+      return true;
     });
   }
 

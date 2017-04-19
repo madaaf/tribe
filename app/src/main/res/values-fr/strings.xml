@@ -102,7 +102,7 @@
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
-	<string name="live_notification_decline">Pas disponible, je te rappelle très vite!</string>
+	<string name="live_notification_decline">Refuser l\'appel</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -268,12 +268,12 @@
 	<string name="search_room_name">Appel «%1$s»</string>
 	<string name="search_room_joinable">Vous pouvez rejoindre cet appel</string>
 	<string name="search_searching">Recherche en cours</string>
-	<string name="search_new_friends">Récemment inscrits sur Tribe :clock3:</string>
-	<string name="search_already_friends">Ils sont déjà sur Tribe :purple_heart:</string>
+	<string name="search_new_friends">Nouveaux sur Tribe :clock3:</string>
+	<string name="search_already_friends">Déjà sur Tribe :purple_heart:</string>
 	<string name="search_add_friends">Ils sont déjà connectés sur Tribe</string>
 	<string name="search_invite_friends">Ils sont en train de manquer leurs amis</string>
 	<string name="search_suggest_friends">Vous les connaissez peut-être :bee:</string>
-	<string name="search_invite_contacts">Vous devriez les inviter :love_letter:</string>
+	<string name="search_invite_contacts">Contacts à inviter sur Tribe :love_letter:</string>
 	<string name="search_no_friends_to_add">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_invite">Aucun ami actuellement connectés</string>
 	<string name="search_no_friends_to_suggest">Aucun ami actuellement connectés</string>
@@ -326,8 +326,8 @@
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
-	<string name="profile_invisible_mode_enable_alert_title">Expérience dégradée :warning:</string>
-	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de désactiver pour tout le monde, y compris vos amis, le fait de pouvoir vous ajouter. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
+	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
+	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de désactiver l\'abilité pour tout le monde, y compris vos amis, de vous ajouter en tant qu\'amis. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
