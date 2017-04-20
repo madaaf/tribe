@@ -367,7 +367,7 @@ public class CloudUserDataStore implements UserDataStore {
             lookupHolder.setContactPhoneList(phones);
             lookupHolder.setLookupObjectList(lookupObjects);
 
-            if (lookupFBResult.getLookup() != null) {
+            if (lookupFBResult != null && lookupFBResult.getLookup() != null) {
               for (int i = 0; i < lookupFBResult.getLookup().size(); i++) {
                 UserRealm user = lookupFBResult.getLookup().get(i);
                 ContactInterface ci = fbIds.get(i);

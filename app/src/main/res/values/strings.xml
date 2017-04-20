@@ -102,7 +102,7 @@
 	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to join %1$s</string>
-	<string name="live_notification_decline">Can\'t answer now, calling you back soon!</string>
+	<string name="live_notification_decline">Decline the call</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -269,11 +269,11 @@
 	<string name="search_room_joinable">You can join this call</string>
 	<string name="search_searching">Searching</string>
 	<string name="search_new_friends">Recently joined Tribe :clock3:</string>
-	<string name="search_already_friends">People you know on Tribe :purple_heart:</string>
+	<string name="search_already_friends">Already on Tribe :purple_heart:</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Your friends are missing out!</string>
 	<string name="search_suggest_friends">People you may know :bee:</string>
-	<string name="search_invite_contacts">People you should invite :love_letter:</string>
+	<string name="search_invite_contacts">Contacts to invite on Tribe :love_letter:</string>
 	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
@@ -332,6 +332,7 @@
 	<string name="profile_blocked_friends">Blocked friends</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
+	<string name="profile_contact_us">Contact us :envelope:</string>
 	<string name="profile_logout">Logout :skull:</string>
 	
 	<!-- Carousel -->
@@ -471,4 +472,9 @@
 	
 	<!-- Popup Behavior -->
 	<string name="popup_behavior_swipe_dismiss">Swipe to dismiss</string>
+	
+	<!-- Callback Notification -->
+	<string name="callback_notification_title_one">You recently missed a call!\nTap to see who to call back</string>
+	<string name="callback_notification_title_multiple">You recently missed %1$d calls!\nTap to see who to call back</string>
+	<string name="callback_notification_action">Call back %1$s (missed %2$s)</string>
 </resources>
