@@ -14,6 +14,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v8.renderscript.RenderScript;
+import com.tribe.tribelivesdk.rs.ColorMatrix;
 import com.tribe.tribelivesdk.rs.RSCompute;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -55,20 +56,20 @@ import rx.subjects.PublishSubject;
           synchronized (stateLock) {
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
-                .doOnNext(frame -> {
-                  //if (rsCompute != null) {
-                  //  capturerObserver.onByteBufferFrameCaptured(
-                  //      rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
-                  //      frame.getWidth(), frame.getHeight(), frame.getRotation(),
-                  //      frame.getTimestamp());
-                  //}
-                  capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
-                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
-                })
-                //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
-                //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
-                //        frame.getHeight()), frame.getWidth(), frame.getHeight(),
-                //    frame.getRotation(), frame.getTimestamp()))
+                //.doOnNext(frame -> {
+                //  if (rsCompute != null) {
+                //    capturerObserver.onByteBufferFrameCaptured(
+                //        rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
+                //        frame.getWidth(), frame.getHeight(), frame.getRotation(),
+                //        frame.getTimestamp());
+                //  }
+                //  //capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
+                //  //    frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+                //})
+                .doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
+                    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
+                        frame.getHeight()), frame.getWidth(), frame.getHeight(),
+                    frame.getRotation(), frame.getTimestamp()))
                 .subscribe(frame -> {
                   processing = false;
                 });

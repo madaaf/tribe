@@ -472,4 +472,9 @@
 	
 	<!-- Popup Behavior -->
 	<string name="popup_behavior_swipe_dismiss">Swipe to dismiss</string>
+	
+	<!-- Callback Notification -->
+	<string name="callback_notification_title_one">You recently missed a call!\nTap to see who to call back</string>
+	<string name="callback_notification_title_multiple">You recently missed %1$d calls!\nTap to see who to call back</string>
+	<string name="callback_notification_action">Call back %1$s (missed %2$s)</string>
 </resources>
