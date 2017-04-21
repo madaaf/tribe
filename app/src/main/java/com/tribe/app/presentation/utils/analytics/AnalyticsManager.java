@@ -52,9 +52,6 @@ import javax.inject.Singleton;
         bundleMixpanel.putString("$phone", user.getPhone());
       }
       mixpanel.setProperty(bundleMixpanel);
-
-      if (!StringUtils.isEmpty(user.getId())) Crashlytics.setUserIdentifier(user.getId());
-      if (!StringUtils.isEmpty(user.getUsername())) Crashlytics.setUserName(user.getUsername());
     }
 
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
