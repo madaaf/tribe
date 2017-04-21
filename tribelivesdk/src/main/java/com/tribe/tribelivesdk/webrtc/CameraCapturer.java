@@ -14,7 +14,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v8.renderscript.RenderScript;
-import com.tribe.tribelivesdk.rs.ColorMatrix;
 import com.tribe.tribelivesdk.rs.RSCompute;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
@@ -56,20 +55,22 @@ import rx.subjects.PublishSubject;
           synchronized (stateLock) {
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
-                //.doOnNext(frame -> {
-                //  if (rsCompute != null) {
-                //    capturerObserver.onByteBufferFrameCaptured(
-                //        rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
-                //        frame.getWidth(), frame.getHeight(), frame.getRotation(),
-                //        frame.getTimestamp());
-                //  }
-                //  //capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
-                //  //    frame.getHeight(), frame.getRotation(), frame.getTimestamp());
-                //})
-                .doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
-                    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
-                        frame.getHeight()), frame.getWidth(), frame.getHeight(),
-                    frame.getRotation(), frame.getTimestamp()))
+                .doOnNext(frame -> {
+                  //if (rsCompute != null) {
+                  //  capturerObserver.onByteBufferFrameCaptured(
+                  //      rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
+                  //      frame.getWidth(), frame.getHeight(), frame.getRotation(),
+                  //      frame.getTimestamp());
+                  //}
+                  capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
+                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+
+                  rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight());
+                })
+                //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
+                //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
+                //        frame.getHeight()), frame.getWidth(), frame.getHeight(),
+                //    frame.getRotation(), frame.getTimestamp()))
                 .subscribe(frame -> {
                   processing = false;
                 });
@@ -193,7 +194,7 @@ import rx.subjects.PublishSubject;
 
         if (rsCompute == null) rsCompute = new RSCompute(renderScript, width, height);
 
-        if (!processing) onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
+        onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
       }
     }
 
@@ -294,7 +295,8 @@ import rx.subjects.PublishSubject;
     this.surfaceHelper = surfaceTextureHelper;
     this.cameraThreadHandler =
         surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
-    this.renderScript = RenderScript.create(applicationContext);
+    this.renderScript = RenderScript.create(applicationContext, RenderScript.ContextType.DEBUG);
+    //this.renderScript = RenderScript.create(applicationContext);
   }
 
   @Override public void startCapture(int width, int height, int framerate) {

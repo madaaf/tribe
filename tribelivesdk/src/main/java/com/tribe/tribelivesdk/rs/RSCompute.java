@@ -42,6 +42,7 @@ public class RSCompute {
 
   // Script vars
   ScriptIntrinsicYuvToRGB scriptIntrinsicYuvToRGB;
+  ScriptC_rgb2yuv scriptRGB2Yuv;
 
   // Allocations
   Allocation inAllocation; // Allocation for the frame in
@@ -55,7 +56,6 @@ public class RSCompute {
     inAllocation.copyFrom(dataIn);
     // Run the scripts
     //conversion to RGB
-    scriptIntrinsicYuvToRGB.setInput(inAllocation);
     scriptIntrinsicYuvToRGB.forEach(midAllocation);
 
     long stepYuvToRGB = System.nanoTime();
@@ -63,16 +63,19 @@ public class RSCompute {
 
     byte[] dataOut = new byte[dataIn.length];
 
-    final ScriptC_rgb2yuv script = new ScriptC_rgb2yuv(renderScript);
-    script.set_gOut(outAllocation);
-    script.set_width(width);
-    script.set_height(height);
-    script.set_frameSize(width * height);
-    script.forEach_convert(midAllocation);
+    Timber.d("Created dataOut");
 
-    outAllocation.copyTo(dataOut);
+    //scriptRGB2Yuv.forEach_convert(midAllocation);
+
+    //Timber.d("Script rgb2yuv done");
+
+    //outAllocation.copyTo(dataOut);
+
+    //Timber.d("copy to out allocation done");
 
     renderScript.finish();
+
+    Timber.d("renderscript finish");
 
     long stepEnd = System.nanoTime();
     Timber.d("RS time total : " + (stepEnd - stepStart) / 1000000.0f + " ms");
@@ -90,11 +93,13 @@ public class RSCompute {
     // allocation for the YUV input from the camera
     inAllocation =
         Allocation.createTyped(renderScript, yuvTypeBuilder.setX(width).setY(height).create(),
-            android.renderscript.Allocation.USAGE_SCRIPT);
+            Allocation.USAGE_SCRIPT);
 
     // create the instance of the YUV2RGB (built-in) RS intrinsic
     scriptIntrinsicYuvToRGB =
         ScriptIntrinsicYuvToRGB.create(renderScript, Element.U8_4(renderScript));
+
+    scriptIntrinsicYuvToRGB.setInput(inAllocation);
 
     Type.Builder rgbaType =
         new Type.Builder(renderScript, Element.RGBA_8888(renderScript)).setX(width).setY(height);
@@ -103,6 +108,13 @@ public class RSCompute {
         Allocation.createTyped(renderScript, rgbaType.create(), Allocation.USAGE_SCRIPT);
 
     outAllocation =
-        Allocation.createTyped(renderScript, yuvTypeBuilder.create(), Allocation.USAGE_SCRIPT);
+        Allocation.createTyped(renderScript, yuvTypeBuilder.setX(width).setY(height).create(),
+            Allocation.USAGE_SCRIPT);
+
+    scriptRGB2Yuv = new ScriptC_rgb2yuv(renderScript);
+    scriptRGB2Yuv.set_gOut(outAllocation);
+    scriptRGB2Yuv.set_width(width);
+    scriptRGB2Yuv.set_height(height);
+    scriptRGB2Yuv.set_frameSize(width * height);
   }
 }

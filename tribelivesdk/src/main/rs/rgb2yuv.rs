@@ -11,6 +11,10 @@ void RS_KERNEL convert(uchar4 in, uint32_t x, uint32_t y) {
     uchar g = in.g;
     uchar b = in.b;
 
+    rsDebug("Red : ", r);
+    rsDebug("Green : ", g);
+    rsDebug("Blue : ", b);
+
     int yInt = (int) (  0.257f * r + 0.504f * g + 0.098f * b) + 16;
     int uInt = (int) (- 0.148f * r - 0.291f * g + 0.439f * b) + 128;
     int vInt = (int) (  0.439f * r - 0.368f * g - 0.071f * b) + 128;
