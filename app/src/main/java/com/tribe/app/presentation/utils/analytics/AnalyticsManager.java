@@ -3,7 +3,6 @@ package com.tribe.app.presentation.utils.analytics;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import com.crashlytics.android.Crashlytics;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -52,9 +51,6 @@ import javax.inject.Singleton;
         bundleMixpanel.putString("$phone", user.getPhone());
       }
       mixpanel.setProperty(bundleMixpanel);
-
-      if (!StringUtils.isEmpty(user.getId())) Crashlytics.setUserIdentifier(user.getId());
-      if (!StringUtils.isEmpty(user.getUsername())) Crashlytics.setUserName(user.getUsername());
     }
 
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
