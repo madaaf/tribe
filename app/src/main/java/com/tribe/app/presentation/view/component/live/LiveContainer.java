@@ -160,7 +160,8 @@ public class LiveContainer extends FrameLayout {
 
     try {
       if (unbinder != null) unbinder.unbind();
-    } catch (IllegalStateException ex) {}
+    } catch (IllegalStateException ex) {
+    }
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
@@ -216,11 +217,10 @@ public class LiveContainer extends FrameLayout {
 
     subscriptions.add(viewLive.onBuzzPopup().subscribe(displayName -> {
       closeInviteView();
-      if (stateManager.shouldDisplay(StateManager.BUZZ_FRIEND_POPUP) && (nbrCall % 2) == 0) {
+      if (stateManager.shouldDisplay(StateManager.BUZZ_FRIEND_POPUP)) {
         nativeDialogsView.displayPopup(viewLive.viewControlsLive.btnNotify,
             PopupContainerView.DISPLAY_BUZZ_POPUP,
             getResources().getString(R.string.live_tutorial_buzz, displayName));
-        nbrCall++;
       }
     }));
 
@@ -601,9 +601,10 @@ public class LiveContainer extends FrameLayout {
       springRight.setEndValue(-viewInviteLive.getWidth());
     }
     resetTimer();
-    if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP)) {
+    if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP) && (nbrCall % 2) == 0) {
       nativeDialogsView.displayPopup(viewInviteLive,
           PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);
+      nbrCall++;
     }
   }
 
