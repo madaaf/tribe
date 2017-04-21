@@ -219,9 +219,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initResources();
     initAppState();
     initRemoteConfig();
+    manageClickNotification(getIntent());
   }
 
   @Override protected void onNewIntent(Intent intent) {
+    manageClickNotification(getIntent());
     viewLive.dispose(true);
     viewLive.jump();
     initParams(intent);
@@ -386,6 +388,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         firebaseRemoteConfig.activateFetched();
       }
     });
+  }
+
+  private void manageClickNotification(Intent intent) {
+    if (intent != null && intent.hasExtra(Constants.NOTIFICATION_LIVE)) {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.CATEGORY,
+          intent.getStringExtra(Constants.NOTIFICATION_LIVE));
+      tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+    }
   }
 
   private Boolean displayRatingNotifDependingFirebaseTrigger() {

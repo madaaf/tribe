@@ -6,6 +6,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 
@@ -139,10 +140,15 @@ public class NotificationUtils {
     String sessionId = payload.getSessionId();
     String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
     String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
-    return LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId);
+    Intent intent =
+        LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId);
+    intent.putExtra(Constants.NOTIFICATION_LIVE, payload.getClickAction());
+    return intent;
   }
 
   public static Intent getIntentForHome(Context context, NotificationPayload payload) {
-    return new Intent(context, HomeActivity.class);
+    Intent intent = new Intent(context, HomeActivity.class);
+    if (payload != null) intent.putExtra(Constants.NOTIFICATION_HOME, payload.getClickAction());
+    return intent;
   }
 }

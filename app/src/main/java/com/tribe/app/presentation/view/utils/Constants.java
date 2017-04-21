@@ -14,4 +14,8 @@ public class Constants {
   public static final String FIREBASE_GROUP_DEFAULT_NAMES = "group_default_names";
   public static final String FIREBASE_RATING_NOTIF_TRIGGER = "calls_ratings_trigger";
   public static final String FIREBASE_RATING_NOTIF_TIMEOUT = "calls_ratings_timeout";
+
+  // NOTIFICATIONS
+  public static final String NOTIFICATION_HOME = "home";
+  public static final String NOTIFICATION_LIVE = "live";
 }

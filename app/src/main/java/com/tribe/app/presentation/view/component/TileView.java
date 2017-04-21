@@ -52,7 +52,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileView extends SquareCardView {
 
-  public final static float RATIO_AVATAR_TILE = 0.5f;
+  public final static float RATIO_AVATAR_TILE = 0.6f;
   public final static int TYPE_GRID_LIVE = 0;
   public final static int TYPE_GRID_CONNECTED = 1;
   public final static int TYPE_INVITE_LIVE_CO = 2;

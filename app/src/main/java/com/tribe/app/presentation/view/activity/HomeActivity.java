@@ -62,6 +62,7 @@ import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -180,6 +181,7 @@ public class HomeActivity extends BaseActivity
     initTopBar();
     initSearch();
     manageDeepLink(getIntent());
+    manageClickNotification(getIntent());
     initPullToRefresh();
     initPreviousCallTags();
 
@@ -215,6 +217,7 @@ public class HomeActivity extends BaseActivity
   @Override protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     manageDeepLink(intent);
+    manageClickNotification(intent);
   }
 
   @Override protected void onStart() {
@@ -606,6 +609,15 @@ public class HomeActivity extends BaseActivity
       if (intent.getData() != null) {
         homeGridPresenter.getHeadDeepLink(intent.getDataString());
       }
+    }
+  }
+
+  private void manageClickNotification(Intent intent) {
+    if (intent != null && intent.hasExtra(Constants.NOTIFICATION_HOME)) {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.CATEGORY,
+          intent.getStringExtra(Constants.NOTIFICATION_HOME));
+      tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
     }
   }
 
