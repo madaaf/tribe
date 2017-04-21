@@ -62,6 +62,14 @@
             android:scheme="https"/>
         <data android:pathPrefix="/g"/>
         <data android:pathPrefix="/"/>
+
+        <data
+            android:host="get.tribe.pm"
+            android:scheme="http"/>
+
+        <data
+            android:host="get.tribe.pm"
+            android:scheme="https"/>
       </intent-filter>
 
       <intent-filter>

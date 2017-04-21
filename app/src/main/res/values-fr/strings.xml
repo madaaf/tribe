@@ -313,7 +313,7 @@
 	<string name="live_unknown_user">Invité inconnu</string>
 	<string name="live_external_user">Invité externe</string>
 	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
-	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant\ndes amis dans l\'appel !</string>
+	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -327,7 +327,7 @@
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
-	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de désactiver l\'abilité pour tout le monde, y compris vos amis, de vous ajouter en tant qu\'amis. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
+	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'amis. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
