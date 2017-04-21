@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -120,6 +121,9 @@ public class PermissionNotificationView extends LifeNotification {
     if (PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
         && PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
       hideView();
+
+      Handler mHandler = new Handler();
+      mHandler.postDelayed(() -> onAcceptedPermission.onNext(true), 300);
     }
   }
 

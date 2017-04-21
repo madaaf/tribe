@@ -1002,5 +1002,14 @@ public class CloudUserDataStore implements UserDataStore {
 
     return this.tribeApi.buzzRoom(request);
   }
+
+  @Override public Observable<Void> declineInvite(String roomId) {
+    liveCache.removeInviteFromRoomId(roomId);
+
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.declineInvite, roomId));
+
+    return this.tribeApi.declineInvite(request);
+  }
 }
 

@@ -33,6 +33,7 @@ public class LabelType implements Serializable {
   public static final String MUTE = "mute";
   public static final String UNMUTE = "unmute";
   public static final String UNHIDE = "unhide";
+  public static final String DECLINE = "decline";
   public static final String BLOCK_HIDE = "blockHide";
   public static final String GROUP_INFO = "groupInfo";
   public static final String GROUP_LEAVE = "groupLeave";

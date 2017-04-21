@@ -437,7 +437,7 @@ public class UserCacheImpl implements UserCache {
         for (UserRealm userRealm : userRealmList) {
           UserRealm userDB =
               realm1.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
-          updateUser(userRealm, userDB);
+          if (userDB != null) updateUser(userRealm, userDB);
         }
       });
     } finally {
@@ -453,7 +453,7 @@ public class UserCacheImpl implements UserCache {
         for (GroupRealm groupRealm : groupRealmList) {
           GroupRealm groupRealmDB =
               realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-          updateGroup(realm1, groupRealm, groupRealmDB);
+          if (groupRealmDB != null) updateGroup(realm1, groupRealm, groupRealmDB);
         }
       });
     } finally {

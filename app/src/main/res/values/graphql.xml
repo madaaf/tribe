@@ -555,4 +555,8 @@
         %2$s
         %3$s
     </string>
+
+  <string name="declineInvite" translatable="false">
+    declineInvite(roomId : \"%1$s\")
+  </string>
 </resources>

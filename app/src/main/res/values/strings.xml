@@ -102,7 +102,7 @@
 	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to join %1$s</string>
-	<string name="live_notification_decline">Can\'t answer now, calling you back soon!</string>
+	<string name="live_notification_decline">Decline the call</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -114,6 +114,7 @@
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
 	<string name="live_notification_guest_declined">%1$s can\'t answer now</string>
+	<string name="live_notification_blocked">This user blocked you :broken_heart:</string>
 	<string name="live_reconnecting">Reconnecting...</string>
 	
 	<!-- Grid -->
@@ -134,6 +135,7 @@
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
 	<string name="grid_menu_friendship_mute">Disable notifications :no_bell:</string>
 	<string name="grid_menu_friendship_unmute">Enable notifications :bell:</string>
+	<string name="grid_menu_invite_decline">Decline the call</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -262,12 +264,16 @@
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>
 	<string name="search_usernames">Result</string>
+	<string name="search_rooms">Calls</string>
+	<string name="search_room_name">Call «%1$s»</string>
+	<string name="search_room_joinable">You can join this call</string>
 	<string name="search_searching">Searching</string>
-	<string name="search_already_friends">People you know on Tribe :purple_heart:</string>
+	<string name="search_new_friends">Recently joined Tribe :clock3:</string>
+	<string name="search_already_friends">Already on Tribe :purple_heart:</string>
 	<string name="search_add_friends">They are already connected on Tribe</string>
 	<string name="search_invite_friends">Your friends are missing out!</string>
 	<string name="search_suggest_friends">People you may know :bee:</string>
-	<string name="search_invite_contacts">People you should invite :love_letter:</string>
+	<string name="search_invite_contacts">Contacts to invite on Tribe :love_letter:</string>
 	<string name="search_no_friends_to_add">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_invite">No friends connected on Tribe</string>
 	<string name="search_no_friends_to_suggest">No friends connected on Tribe</string>
@@ -306,6 +312,8 @@
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	<string name="live_unknown_user">Unknown guest</string>
 	<string name="live_external_user">External guest</string>
+	<string name="live_tutorial_buzz">Get %1$s\'s attention\nwith a buzz!</string>
+	<string name="live_tutorial_drag_as_guest">Spice it up by dragging\nfriends in the call!</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
@@ -315,12 +323,16 @@
 	<string name="profile_video_demo_subtitle">Master Tribe in 30 seconds!</string>
 	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience &#9888;&#65039;</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
+	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
+	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you. If you want to add someone as friend, you\'ll need to do it yourself.</string>
+	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked friends</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
+	<string name="profile_contact_us">Contact us :envelope:</string>
 	<string name="profile_logout">Logout :skull:</string>
 	
 	<!-- Carousel -->
@@ -460,4 +472,9 @@
 	
 	<!-- Popup Behavior -->
 	<string name="popup_behavior_swipe_dismiss">Swipe to dismiss</string>
+	
+	<!-- Callback Notification -->
+	<string name="callback_notification_title_one">You recently missed a call!\nTap to see who to call back</string>
+	<string name="callback_notification_title_multiple">You recently missed %1$d calls!\nTap to see who to call back</string>
+	<string name="callback_notification_action">Call back %1$s (missed %2$s)</string>
 </resources>

@@ -172,6 +172,7 @@ public class AuthPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      hideViewLoading();
     }
 
     @Override public void onNext(User user) {

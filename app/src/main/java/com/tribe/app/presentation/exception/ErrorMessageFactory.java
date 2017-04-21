@@ -2,6 +2,7 @@ package com.tribe.app.presentation.exception;
 
 import android.content.Context;
 import com.tribe.app.R;
+import com.tribe.app.data.exception.BlockedException;
 import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.data.exception.NetworkConnectionException;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -23,14 +24,14 @@ public class ErrorMessageFactory {
    * @return {@link String} an error message.
    */
   public static String create(Context context, Exception exception) {
-    exception.printStackTrace();
-
     String message = context.getString(R.string.error_unknown);
 
     if (exception instanceof NetworkConnectionException) {
       message = context.getString(R.string.error_no_network);
     } else if (exception instanceof JoinRoomException) {
       message = context.getString(R.string.error_join_room);
+    } else if (exception instanceof BlockedException) {
+      message = EmojiParser.demojizedText(context.getString(R.string.live_notification_blocked));
     }
 
     message = EmojiParser.demojizedText(message);

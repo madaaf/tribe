@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.webrtc.PeerConnection;
 
 /**
@@ -25,6 +26,7 @@ public class TribeLiveOptions {
   private String tokenId;
   private String room_id;
   private @TribeLiveOptions.RoutingMode String routingMode;
+  private Map<String, String> headers;
 
   private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
     this.wsUrl = builder.wsUrl;
@@ -32,6 +34,7 @@ public class TribeLiveOptions {
     this.tokenId = builder.tokenId;
     this.room_id = builder.roomId;
     this.routingMode = builder.routingMode;
+    this.headers = builder.headers;
   }
 
   public static class TribeLiveOptionsBuilder {
@@ -41,6 +44,7 @@ public class TribeLiveOptions {
     private String tokenId;
     private String roomId;
     private @RoutingMode String routingMode;
+    private Map<String, String> headers;
 
     public TribeLiveOptionsBuilder(Context context) {
       this.context = context;
@@ -75,6 +79,11 @@ public class TribeLiveOptions {
 
     public TribeLiveOptionsBuilder routingMode(@RoutingMode String routingMode) {
       this.routingMode = routingMode;
+      return this;
+    }
+
+    public TribeLiveOptionsBuilder headers(Map<String, String> headers) {
+      this.headers = headers;
       return this;
     }
 
@@ -121,5 +130,13 @@ public class TribeLiveOptions {
 
   public void setRoutingMode(String routingMode) {
     this.routingMode = routingMode;
+  }
+
+  public Map<String, String> getHeaders() {
+    return headers;
+  }
+
+  public void setHeaders(Map<String, String> headers) {
+    this.headers = headers;
   }
 }

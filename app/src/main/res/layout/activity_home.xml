@@ -64,6 +64,6 @@
       android:layout_height="match_parent"
       android:clickable="true"
       android:visibility="gone"
-      ></com.tribe.app.presentation.view.widget.notifications.RatingNotificationView>
+      />
 
 </FrameLayout>

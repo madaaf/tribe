@@ -160,6 +160,8 @@ public class Room {
   }
 
   public void connect(TribeLiveOptions options) {
+    if (webSocketConnection == null) return;
+
     this.options = options;
 
     jsonToModel.setOptions(options);
@@ -167,6 +169,7 @@ public class Room {
     webRTCClient.setOptions(this.options);
     webRTCClient.setIceServers(this.options.getIceServers());
 
+    webSocketConnection.setHeaders(options.getHeaders());
     webSocketConnection.connect(options.getWsUrl());
 
     tempSubscriptions.add(webSocketConnection.onStateChanged().map(state -> {
@@ -205,6 +208,7 @@ public class Room {
   }
 
   public void joinRoom() {
+    if (webSocketConnection == null) return;
     Timber.d("Joining room");
 
     webRTCClient.initSubscriptions();
@@ -262,10 +266,13 @@ public class Room {
 
     options = null;
     webSocketConnection.disconnect(false);
+    webSocketConnection = null;
     webRTCClient.dispose(shouldDisposeLocal);
   }
 
   public void sendToPeers(JSONObject obj, boolean isAppMessage) {
+    if (webSocketConnection == null) return;
+
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
       if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
         webSocketConnection.send(
@@ -275,6 +282,8 @@ public class Room {
   }
 
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
+    if (webSocketConnection == null) return;
+
     if (remotePeer != null && !remotePeer.getSession()
         .getPeerId()
         .equals(TribeSession.PUBLISHER_ID)) {

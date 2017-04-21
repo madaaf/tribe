@@ -20,6 +20,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -120,17 +121,36 @@ public class ProfileView extends ScrollView {
   private void initSubscriptions() {
     subscriptions = new CompositeSubscription();
 
-    subscriptions.add(viewActionVisible.onChecked().subscribe(isChecked -> {
+    subscriptions.add(viewActionVisible.onChecked().flatMap(isChecked -> {
+      if (!isChecked) {
+        return DialogFactory.dialog(getContext(), EmojiParser.demojizedText(
+            getContext().getString(R.string.profile_invisible_mode_enable_alert_title)),
+            getContext().getString(R.string.profile_invisible_mode_enable_alert_msg),
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_disable),
+            getContext().getString(R.string.action_cancel));
+      } else {
+        return Observable.just(true);
+      }
+    }, (isChecked, proceed) -> Pair.create(isChecked, proceed)).filter(pair -> {
+      boolean shouldContinue = true;
+
+      if (!pair.second) {
+        shouldContinue = false;
+        viewActionVisible.setValue(true);
+      }
+
+      return shouldContinue;
+    }).subscribe(pair -> {
       Bundle bundle = new Bundle();
-      bundle.putBoolean(TagManagerUtils.USER_INVISIBLE_ENABLED, isChecked);
+      bundle.putBoolean(TagManagerUtils.USER_INVISIBLE_ENABLED, pair.first);
       tagManager.setProperty(bundle);
-      onChangeVisible.onNext(!isChecked);
+      onChangeVisible.onNext(!pair.first);
     }));
 
     subscriptions.add(viewActionPhoneIntegration.onChecked().flatMap(isChecked -> {
       if (!isChecked) {
-        return DialogFactory.dialog(getContext(),
-            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_title),
+        return DialogFactory.dialog(getContext(), EmojiParser.demojizedText(
+            getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_title)),
             getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_msg),
             getContext().getString(R.string.profile_fullscreen_notifications_disable_alert_disable),
             getContext().getString(R.string.action_cancel));

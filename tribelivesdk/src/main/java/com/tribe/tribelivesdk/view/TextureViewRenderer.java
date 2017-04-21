@@ -22,7 +22,6 @@ import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
 import org.webrtc.ThreadUtils;
 import org.webrtc.VideoRenderer;
-import timber.log.Timber;
 
 /**
  * Implements org.webrtc.VideoRenderer.Callbacks by displaying the video stream on a SurfaceView.

@@ -177,4 +177,6 @@ public interface UserRepository {
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 
   Observable<Boolean> buzzRoom(String roomId);
+
+  Observable<Void> declineInvite(String roomId);
 }

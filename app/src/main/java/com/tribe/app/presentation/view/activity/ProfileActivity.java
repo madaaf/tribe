@@ -255,6 +255,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         }));
 
     subscriptions.add(viewProfile.onChangeVisible()
+        .filter(aBoolean -> getCurrentUser().isInvisibleMode() != aBoolean)
         .subscribe(aBoolean -> profilePresenter.updateUserInvisibleMode(aBoolean)));
 
     subscriptions.add(

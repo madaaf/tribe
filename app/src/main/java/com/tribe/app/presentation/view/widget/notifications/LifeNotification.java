@@ -32,6 +32,7 @@ public class LifeNotification extends FrameLayout {
 
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected PublishSubject<Void> onHideNotification = PublishSubject.create();
+  protected PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
 
   public LifeNotification(@NonNull Context context) {
     super(context);
@@ -77,5 +78,9 @@ public class LifeNotification extends FrameLayout {
 
   public Observable<Void> onHideNotification() {
     return onHideNotification;
+  }
+
+  public Observable<Boolean> onAcceptedPermission() {
+    return onAcceptedPermission;
   }
 }

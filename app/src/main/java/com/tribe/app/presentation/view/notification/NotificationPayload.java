@@ -12,7 +12,7 @@ public class NotificationPayload implements Serializable {
 
   @StringDef({
       CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP, CLICK_ACTION_BUZZ, CLICK_ACTION_LIVE,
-      CLICK_ACTION_END_LIVE
+      CLICK_ACTION_END_LIVE, CLICK_ACTION_DECLINE
   }) public @interface ClickActionType {
   }
 
@@ -21,6 +21,7 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_LIVE = "live";
   public static final String CLICK_ACTION_BUZZ = "buzz";
   public static final String CLICK_ACTION_END_LIVE = "end_live";
+  public static final String CLICK_ACTION_DECLINE = "decline_live";
 
   private String user_id;
   private String body;

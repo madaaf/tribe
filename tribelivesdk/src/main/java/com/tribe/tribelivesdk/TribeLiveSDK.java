@@ -12,15 +12,13 @@ import javax.inject.Singleton;
 
 @Singleton public class TribeLiveSDK {
 
-  private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;
 
-  @Inject public TribeLiveSDK(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
-    this.webSocketConnection = webSocketConnection;
+  @Inject public TribeLiveSDK(WebRTCClient webRTCClient) {
     this.webRTCClient = webRTCClient;
   }
 
   public Room newRoom() {
-    return new Room(webSocketConnection, webRTCClient);
+    return new Room(WebSocketConnection.newInstance(), webRTCClient);
   }
 }

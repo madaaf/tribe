@@ -149,7 +149,9 @@ public class LiveContainer extends FrameLayout {
   public void dispose() {
     springRight.removeListener(springRightListener);
 
-    if (unbinder != null) unbinder.unbind();
+    try {
+      if (unbinder != null) unbinder.unbind();
+    } catch (IllegalStateException ex) {}
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();

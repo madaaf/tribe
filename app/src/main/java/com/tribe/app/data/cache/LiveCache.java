@@ -26,6 +26,8 @@ import rx.Observable;
 
   void removeInvite(Invite invite);
 
+  void removeInviteFromRoomId(String roomId);
+
   Observable<Map<String, Invite>> inviteMap();
 
   Map<String, Invite> getInviteMap();
