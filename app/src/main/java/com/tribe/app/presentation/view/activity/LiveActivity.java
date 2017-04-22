@@ -153,6 +153,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
+  public static Intent getCallingIntent(Context context, String roomId) {
+    Intent intent = new Intent(context, LiveActivity.class);
+
+    Live live = new Live.Builder(Live.WEB, Live.WEB).countdown(false)
+        .sessionId(roomId)
+        .intent(true)
+        .build();
+
+    intent.putExtra(EXTRA_LIVE, live);
+
+    return intent;
+  }
+
   @Inject NotificationManagerCompat notificationManager;
 
   @Inject SoundManager soundManager;

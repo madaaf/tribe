@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Live implements Serializable {
 
+  public static final String WEB = "WEB";
+
   private String id;
   private String subId;
   private String displayName;

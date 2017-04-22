@@ -835,24 +835,26 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = guestFromRemotePeer(remotePeer);
 
       if (nbLiveInRoom() == 0) { // First user joining in a group call
-
         if (live.isGroup()) { // if it's a group
           String groupId = getGroupWaiting();
           if (!StringUtils.isEmpty(groupId)) {
             liveRowView = liveRowViewMap.remove(groupId);
-            animateGroupAvatar(liveRowView);
-            liveRowView.setGuest(guest);
-            liveRowView.setPeerView(remotePeer.getPeerView());
           }
         } else if (live.isInvite()) { // if it's an invite
           String inviteId = getInviteWaiting();
-          if (!StringUtils.isEmpty(getInviteWaiting())) {
+          if (!StringUtils.isEmpty(inviteId)) {
             liveRowView = liveRowViewMap.remove(inviteId);
-            animateGroupAvatar(liveRowView);
-            liveRowView.setGuest(guest);
-            liveRowView.setPeerView(remotePeer.getPeerView());
+          }
+        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+          LiveRowView liveRowViewWeb = liveRowViewMap.get(Live.WEB);
+          if (liveRowViewWeb != null) {
+            liveRowView = liveRowViewMap.remove(Live.WEB);
           }
         }
+
+        animateGroupAvatar(liveRowView);
+        liveRowView.setGuest(guest);
+        liveRowView.setPeerView(remotePeer.getPeerView());
       }
 
       if (liveRowView == null) {
