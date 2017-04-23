@@ -105,10 +105,6 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
         .map(contactABRealms -> new ArrayList<ContactInterface>(contactABRealms));
   }
 
-  @Override public Observable<Void> howManyFriends() {
-    return null;
-  }
-
   @Override public Observable<SearchResultRealm> findByUsername(String username) {
     return contactCache.findContactByUsername(username);
   }

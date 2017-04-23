@@ -7,42 +7,23 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.tribe.app.data.network.entity.LookupEntity;
+import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.realm.UserRealm;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
+public class LookupFBDeserializer implements JsonDeserializer<LookupFBResult> {
 
-  @Override
-  public LookupEntity deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
+  @Override public LookupFBResult deserialize(JsonElement je, Type typeOfT,
+      JsonDeserializationContext context) throws JsonParseException {
     JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
 
     Gson gson = new Gson();
     int count = 0;
-    LookupEntity lookupEntity = new LookupEntity();
+    LookupFBResult lookupResult = new LookupFBResult();
     List<UserRealm> lookup = new ArrayList<>();
     boolean hasResult = true;
-
-    while (hasResult) {
-      JsonArray array = results.getAsJsonArray("lookupPhone" + count);
-      if (array != null) {
-        for (final JsonElement jsonElement : array) {
-          if (!jsonElement.isJsonNull()) {
-            lookup.add(gson.fromJson(jsonElement, UserRealm.class));
-          }
-        }
-      } else {
-        hasResult = false;
-      }
-
-      count++;
-    }
-
-    hasResult = true;
-    count = 0;
 
     while (hasResult) {
       JsonArray array = results.getAsJsonArray("lookupFB" + count);
@@ -59,8 +40,8 @@ public class LookupDeserializer implements JsonDeserializer<LookupEntity> {
       count++;
     }
 
-    lookupEntity.setLookup(lookup);
+    lookupResult.setLookup(lookup);
 
-    return lookupEntity;
+    return lookupResult;
   }
 }

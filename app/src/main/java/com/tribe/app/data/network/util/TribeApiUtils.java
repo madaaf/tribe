@@ -5,6 +5,7 @@ import android.os.Build;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import okhttp3.Request;
 
 public class TribeApiUtils {
 
@@ -23,5 +24,9 @@ public class TribeApiUtils {
         + " okhttp/3.2"
         + " Agent/"
         + agent;
+  }
+
+  public static void appendUserAgent(Context context, Request.Builder requestBuilder) {
+    requestBuilder.header("User-Agent", TribeApiUtils.getUserAgent(context));
   }
 }

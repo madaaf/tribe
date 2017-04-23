@@ -27,7 +27,6 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
-import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
@@ -270,11 +269,6 @@ import timber.log.Timber;
   @Provides @Named("synchroContactList") UseCase provideSynchroContactList(
       SynchroContactList synchroContactList) {
     return synchroContactList;
-  }
-
-  @Provides @Named("refreshHowManyFriends") UseCase provideRefreshHowManyFriends(
-      RefreshHowManyFriends refreshHowManyFriends) {
-    return refreshHowManyFriends;
   }
 
   @Provides @Singleton JobManager provideJobManager() {

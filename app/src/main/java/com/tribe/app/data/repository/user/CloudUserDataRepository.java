@@ -138,11 +138,6 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Void> howManyFriends() {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.howManyFriends();
-  }
-
   @Override public Observable<SearchResult> findByUsername(String username) {
     final UserDataStore cloudDataStore = this.userDataStoreFactory.createCloudDataStore();
 

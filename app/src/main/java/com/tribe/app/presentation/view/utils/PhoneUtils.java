@@ -156,6 +156,22 @@ import javax.inject.Singleton;
     return phoneUtil.getCountryCodeForRegion(codeCountry);
   }
 
+  public String getRegionCodeForNumber(String phoneNumber) {
+    Phonenumber.PhoneNumber numberProto = null;
+
+    try {
+      numberProto = phoneUtil.parse(phoneNumber, "");
+    } catch (NumberParseException e) {
+      System.err.println("NumberParseException was thrown: " + e.toString());
+    }
+
+    if (numberProto != null) {
+      return phoneUtil.getRegionCodeForNumber(numberProto);
+    } else {
+      return "";
+    }
+  }
+
   public LinkedList<String> getSupportedRegions() {
     return new LinkedList<>(phoneUtil.getSupportedRegions());
   }

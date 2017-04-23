@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user.contact;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.util.Log;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -9,6 +10,10 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -19,13 +24,13 @@ import timber.log.Timber;
 @Singleton public class RxContacts {
 
   private User user;
-  private int countryCode;
   private boolean withPhones;
   private Sorter sorter;
   private Filter[] filter;
   private PhoneUtils phoneUtils;
   private ContactsHelper helper;
   private Preference<Boolean> addressBook;
+  private Map<String, ContactABRealm> mapContact;
 
   @Inject
   public RxContacts(Context context, @Named("userThreadSafe") User user, PhoneUtils phoneUtils,
@@ -37,22 +42,21 @@ import timber.log.Timber;
     filter = new Filter[] { Filter.HAS_PHONE };
     helper = new ContactsHelper(context, phoneUtils);
     this.addressBook = addressBook;
+    this.mapContact = new HashMap<>();
   }
 
-  private Observable<ContactABRealm> contactsObservable;
+  private Observable<List<ContactABRealm>> contactsObservable;
 
   /**
    * Run ContentResolver query and emit results to the Observable
    */
-  public Observable<ContactABRealm> getContacts() {
-    this.countryCode = phoneUtils.getCountryCode(user.getPhone());
-    helper.setCountryCode(countryCode);
-
+  public Observable<List<ContactABRealm>> getContacts() {
     if (contactsObservable == null) {
-      contactsObservable = Observable.create((Subscriber<? super ContactABRealm> subscriber) -> {
-        //emit(null, withPhones, sorter, filter, subscriber);
-        emitFast(subscriber);
-      }).onBackpressureBuffer().serialize();
+      contactsObservable =
+          Observable.create((Subscriber<? super List<ContactABRealm>> subscriber) -> {
+            //emit(null, withPhones, sorter, filter, subscriber);
+            emitFast(subscriber);
+          }).onBackpressureBuffer().serialize();
     }
 
     return contactsObservable;
@@ -103,7 +107,7 @@ import timber.log.Timber;
     subscriber.onCompleted();
   }
 
-  private void emitFast(Subscriber<? super ContactABRealm> subscriber) {
+  private void emitFast(Subscriber<? super List<ContactABRealm>> subscriber) {
     if (addressBook.get()) {
       long timeStart = System.nanoTime();
       Cursor c = helper.getFastContactsCursor();
@@ -111,28 +115,41 @@ import timber.log.Timber;
       int contactCount = 0;
 
       if (count != 0) {
-        c.moveToNext();
         ContactABRealm contact;
-        while (c.getPosition() < count) {
-          contact = helper.fetchContactFast(c);
-          if (contact != null) {
+        while (c.moveToNext()) {
+          String contactId =
+              String.valueOf(c.getLong(c.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID)));
+          contact = mapContact.get(contactId);
+
+          if (contact == null) {
+            contact = new ContactABRealm();
+            contact.setId(contactId);
+            mapContact.put(contactId, contact);
             contactCount++;
+          }
 
-            if (!subscriber.isUnsubscribed()) {
-              subscriber.onNext(contact);
-            } else {
-              break;
-            }
+          helper.fetchContactFast(c, contact);
 
-            if (ContactsHelper.DEBUG) {
-              Log.i("emit fast",
-                  contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());
-            }
+          if (ContactsHelper.DEBUG) {
+            Log.i("emit fast",
+                contact.toString() + " is subscribed=" + !subscriber.isUnsubscribed());
           }
         }
       }
 
       c.close();
+
+      if (mapContact.size() > 0) {
+        List<ContactABRealm> contactABRealmList = new ArrayList<>();
+        for (ContactABRealm contact : mapContact.values()) {
+          if (contact.hasAPhone()) {
+            contactABRealmList.add(contact);
+          }
+        }
+
+        if (!contactABRealmList.isEmpty()) subscriber.onNext(contactABRealmList);
+        subscriber.onCompleted();
+      }
 
       long timeEnd = System.nanoTime();
       Timber.d("Total parsing contact of "

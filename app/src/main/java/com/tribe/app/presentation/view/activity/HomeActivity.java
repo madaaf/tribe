@@ -73,8 +73,10 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -302,6 +304,7 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(onNewContacts.observeOn(Schedulers.computation()).map(contactList -> {
       List<Contact> result = new ArrayList<>();
+      Map<String, Contact> mapContact = new HashMap<>();
 
       if (getCurrentUser().getFriendships() == null) {
         result.addAll(contactList);
@@ -315,9 +318,17 @@ public class HomeActivity extends BaseActivity
             for (Friendship friendship : getCurrentUser().getFriendships()) {
               if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
             }
+
+            if (mapContact.containsKey(linkedUser.getId())) {
+              shouldAdd = false;
+            } else {
+              mapContact.put(linkedUser.getId(), contact);
+            }
           }
 
-          if (shouldAdd) result.add(contact);
+          if (shouldAdd) {
+            result.add(contact);
+          }
         }
       }
 

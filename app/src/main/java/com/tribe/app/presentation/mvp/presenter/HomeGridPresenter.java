@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
@@ -341,7 +340,6 @@ public class HomeGridPresenter implements Presenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
       if (homeGridView != null) homeGridView.onSyncDone();
     }
   }
