@@ -26,7 +26,6 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 17/04/2017.
@@ -40,6 +39,7 @@ public class PopupContainerView extends FrameLayout {
   public static final String DISPLAY_BUZZ_POPUP = "DISPLAY_BUZZ_POPUP";
   public static final String DISPLAY_DRAGING_FRIEND_POPUP = "DISPLAY_DRAGING_FRIEND_POPUP";
   private static int DURATION_EXIT_POPUP = 800;
+  private static float OVERSHOOT_TENSION = 1.5f;
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.nativeDialogsContainer) FrameLayout nativeDialogsContainer;
@@ -58,6 +58,8 @@ public class PopupContainerView extends FrameLayout {
   private boolean isInLeft = false;
   private boolean isInRight = false;
   private boolean isCentred = false;
+  private boolean buzzPopupDisplayed = false;
+  private boolean dragFriendPopupDisplayed = false;
 
   public PopupContainerView(@NonNull Context context) {
     super(context);
@@ -67,59 +69,6 @@ public class PopupContainerView extends FrameLayout {
   public PopupContainerView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     initView(context);
-  }
-
-  private void initView(Context context) {
-    initDependencyInjector();
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.native_dialogs_container, this, true);
-    defaultMargin = screenUtils.dpToPx(5);
-    unbinder = ButterKnife.bind(this);
-    setOnTouchListener((v, event) -> {
-      hideViews();
-      return false;
-    });
-  }
-
-  protected void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
-  }
-
-  protected ApplicationComponent getApplicationComponent() {
-    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-  }
-
-  protected ActivityModule getActivityModule() {
-    return new ActivityModule(((Activity) getContext()));
-  }
-
-  private int getDrawable(@PopupType String type) {
-    switch (type) {
-      case DISPLAY_BUZZ_POPUP:
-        return R.layout.buzz_popup_view;
-      case DISPLAY_DRAGING_FRIEND_POPUP:
-        return R.layout.drag_friend_popup_view;
-    }
-    return 0;
-  }
-
-  private void resetContainer() {
-    marginBottom = 0;
-    marginTop = 0;
-    marginLeft = 0;
-    marginRight = 0;
-
-    isInBottom = false;
-    isInTop = false;
-    isInLeft = false;
-    isInRight = false;
-    isCentred = false;
-
-    hideViews();
   }
 
   public void displayPopup(View v, @PopupType String type, String txt) {
@@ -176,6 +125,49 @@ public class PopupContainerView extends FrameLayout {
         });
   }
 
+  ///////////////////////
+  //       PRIVATE     //
+  ///////////////////////
+
+  private void initView(Context context) {
+    initDependencyInjector();
+    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.native_dialogs_container, this, true);
+    defaultMargin = screenUtils.dpToPx(5);
+    unbinder = ButterKnife.bind(this);
+    setOnTouchListener((v, event) -> {
+      hideViews();
+      return true;
+    });
+  }
+
+  private int getDrawable(@PopupType String type) {
+    switch (type) {
+      case DISPLAY_BUZZ_POPUP:
+        buzzPopupDisplayed = true;
+        return R.layout.buzz_popup_view;
+      case DISPLAY_DRAGING_FRIEND_POPUP:
+        dragFriendPopupDisplayed = true;
+        return R.layout.drag_friend_popup_view;
+    }
+    return 0;
+  }
+
+  private void resetContainer() {
+    marginBottom = 0;
+    marginTop = 0;
+    marginLeft = 0;
+    marginRight = 0;
+
+    isInBottom = false;
+    isInTop = false;
+    isInLeft = false;
+    isInRight = false;
+    isCentred = false;
+
+    hideViews();
+  }
+
   private void displayView(@PopupType String type) {
     View view = inflater.inflate(getDrawable(type), null);
     setLayoutParam(view);
@@ -184,7 +176,9 @@ public class PopupContainerView extends FrameLayout {
     Animation scaleAnimation = android.view.animation.AnimationUtils.loadAnimation(getContext(),
         R.anim.scale_appear_popup);
     scaleAnimation.setDuration(DURATION_EXIT_POPUP);
-    view.setAnimation(scaleAnimation);
+    scaleAnimation.setFillAfter(true);
+    scaleAnimation.setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION));
+    startAnimation(scaleAnimation);
   }
 
   private void setLayoutParam(View view) {
@@ -217,16 +211,37 @@ public class PopupContainerView extends FrameLayout {
       ScaleAnimation scale = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f,
           Animation.RELATIVE_TO_SELF, 0.5f);
       scale.setDuration(DURATION_EXIT_POPUP);
-      scale.setInterpolator(new OvershootInterpolator());
       scale.setFillAfter(true);
       scale.setAnimationListener(new AnimationListenerAdapter() {
         @Override public void onAnimationEnd(Animation animation) {
           super.onAnimationEnd(animation);
           ((ViewGroup) v.getParent()).removeView(v);
+          if (nativeDialogsContainer != null && dragFriendPopupDisplayed && buzzPopupDisplayed) {
+            setOnTouchListener(null);
+          }
         }
       });
       v.startAnimation(scale);
     }
   }
-}
 
+  ///////////////////////
+  //     CYCLE LIFE    //
+  ///////////////////////
+
+  protected void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
+}

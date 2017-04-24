@@ -227,6 +227,7 @@
 	<string name="onboarding_popup_error_sent_to">Code envoyé à :</string>
 	<string name="onboarding_popup_error_edit_button_title">Fermer</string>
 	<string name="onboarding_popup_error_resend_button_title">Réessayer</string>
+	<string name="onboarding_popup_error_call_me_button_title">Appelez-moi</string>
 	<string name="onboarding_popup_error_team_notified">Notre équipe a été notifiée et vous viendra en aide rapidement. En attendant, n\'hésitez pas à réessayer.</string>
 	
 	<!-- Onboarding Friends To Add -->
@@ -332,7 +333,7 @@
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
-	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'amis. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
+	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
