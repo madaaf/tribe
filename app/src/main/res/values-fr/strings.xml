@@ -239,6 +239,11 @@
 	<string name="onboarding_friends_to_add_popup_cancel">Rester seul</string>
 	<string name="onboarding_friends_to_add_popup_confirm">Bien sûr !</string>
 	
+	<!-- Onboarding Popup Invite -->
+	<string name="onboarding_invite_popup_title">Envoie des sms gratuitement à tes amis pour les inviter à rejoindre !</string>
+	<string name="onboarding_invite_popup_message">Votre nom ne sera pas affiché dans le sms envoyé. Soyez prêts à accueillir vos amis dans les prochaines minutes</string>
+	<string name="onboarding_invite_popup_confirm">C\'est parti !</string>
+	
 	<!-- Legal -->
 	<string name="legal_terms">Conditions d\'Utilisation</string>
 	<string name="legal_privacy">Politique de Confidentialité</string>

@@ -46,8 +46,7 @@ public class LauncherActivity extends BaseActivity {
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
       navigator.navigateToLogin(this, deepLink);
     } else {
-      //navigator.navigateToAuthAccess(this, deepLink);
-      navigator.navigateToHome(this, true, deepLink);
+      navigator.navigateToHomeFromStart(this, deepLink);
     }
 
     finish();

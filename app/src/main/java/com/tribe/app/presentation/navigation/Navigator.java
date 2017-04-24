@@ -106,9 +106,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToAuthAccess(Activity activity, Uri deepLink) {
+  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
     if (activity != null) {
-      Intent intent = AuthAccessActivity.getCallingIntent(activity);
+      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
       intent.setData(deepLink);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -121,28 +121,32 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHome(Activity activity, boolean start, Uri uriDeepLink) {
+  public void navigateToHomeFromStart(Activity activity, Uri uriDeepLink) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
-      if (start) {
-        if (uriDeepLink != null) {
-          intent.setData(uriDeepLink);
-          intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        }
-
-        activity.startActivity(intent);
-      } else {
-        if (uriDeepLink != null) {
-          intent.setData(uriDeepLink);
-          intent.putExtra(Extras.IS_FROM_LOGIN, true);
-        }
-
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-            | Intent.FLAG_ACTIVITY_CLEAR_TASK
-            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        activity.startActivity(intent);
-        activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      if (uriDeepLink != null) {
+        intent.setData(uriDeepLink);
       }
+      intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      activity.startActivity(intent);
+    }
+  }
+
+  /**
+   * Goes to the main grid.
+   *
+   * @param activity An activity needed to open the destiny activity.
+   */
+  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode) {
+    if (activity != null) {
+      Intent intent = HomeActivity.getCallingIntent(activity);
+      intent.putExtra(Extras.IS_FROM_LOGIN, true);
+      intent.putExtra(Extras.COUNTRY_CODE, countryCode);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
     }
   }
 

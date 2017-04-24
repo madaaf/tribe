@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.view.AccessMVPView;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -44,8 +45,9 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   private static final int TIMER_START = 4000;
 
-  public static Intent getCallingIntent(Context context) {
+  public static Intent getCallingIntent(Context context, String countryCode) {
     Intent intent = new Intent(context, AuthAccessActivity.class);
+    intent.putExtra(Extras.COUNTRY_CODE, countryCode);
     return intent;
   }
 
@@ -72,6 +74,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   private int nbFriends = 0;
   private long timeSyncStart = 0;
   private RxPermissions rxPermissions;
+  private String countryCode = null;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -88,6 +91,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     initDependencyInjector();
     init();
     initResources();
+    initIntent(getIntent());
     manageDeepLink(getIntent());
   }
 
@@ -132,6 +136,10 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     totalTimeSynchro = getResources().getInteger(R.integer.time_synchro);
   }
 
+  private void initIntent(Intent intent) {
+    if (intent != null) countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
+  }
+
   private void manageDeepLink(Intent intent) {
     if (intent != null && intent.getData() != null) {
       deepLink = intent.getData();
@@ -152,7 +160,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
       showCongrats();
     } else if (viewAccess.getStatus() == AccessView.DONE) {
       endSubscription.unsubscribe();
-      navigator.navigateToHome(this, false, deepLink);
+      navigator.navigateToHomeFromLogin(this, deepLink, countryCode);
     }
   }
 
@@ -236,7 +244,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     txtAction.setVisibility(View.VISIBLE);
 
     endSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
-        .subscribe(aLong -> navigator.navigateToHome(this, false, deepLink));
+        .subscribe(aLong -> navigator.navigateToHomeFromLogin(this, deepLink, countryCode));
 
     CommonConfetti.rainingConfetti(layoutConfettis, new int[] {
         ContextCompat.getColor(this, R.color.confetti_1),

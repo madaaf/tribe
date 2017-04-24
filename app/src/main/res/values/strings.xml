@@ -239,6 +239,11 @@
 	<string name="onboarding_friends_to_add_popup_cancel">Stay alone</string>
 	<string name="onboarding_friends_to_add_popup_confirm">Sure!</string>
 	
+	<!-- Onboarding Popup Invite -->
+	<string name="onboarding_invite_popup_title">Send free anonymous texts to your friends and see who joins!</string>
+	<string name="onboarding_invite_popup_message">Your name will not be displayed on the text messages. Be ready to see your friends join in the next mins</string>
+	<string name="onboarding_invite_popup_confirm">Let\'s go!</string>
+	
 	<!-- Legal -->
 	<string name="legal_terms">Terms of Service</string>
 	<string name="legal_privacy">Privacy Policy</string>

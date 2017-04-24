@@ -71,10 +71,6 @@ public class AuthPresenter implements Presenter {
     cloudUserInfos.execute(new UserInfoSubscriber());
   }
 
-  public void goToHome() {
-    this.introView.goToHome();
-  }
-
   public void loginError(ErrorLogin errorLogin) {
     this.introView.loginError(errorLogin);
   }

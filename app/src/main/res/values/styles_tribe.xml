@@ -142,6 +142,10 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="Title.2.Black40" parent="@style/Title.2">
+    <item name="android:textColor">@color/black.opacity.40</item>
+  </style>
+
   <style name="Title.2.Blue" parent="@style/Title.2">
     <item name="android:textColor">@color/blue.text</item>
   </style>
@@ -231,6 +235,10 @@
   </style>
 
   <style name="Headline.Black.1" parent="@style/Headline.Black">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="Headline.Black.2" parent="@style/Headline.Black">
     <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 

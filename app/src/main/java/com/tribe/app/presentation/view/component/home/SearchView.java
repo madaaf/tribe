@@ -50,10 +50,8 @@ import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -280,12 +278,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private void refactorContacts(List<Object> contactList) {
     this.filteredContactList.clear();
 
-    boolean hasDoneSuggested = false, hasDoneContacts = false;
-<<<<<<< HEAD
-    boolean hasNewFriends = false;
-=======
+    boolean hasDoneSuggested = false, hasDoneContacts = false, hasNewFriends = false;
     Set<String> setLinkedUser = new HashSet<>();
->>>>>>> feature-new-lookup
 
     for (Object obj : contactList) {
       boolean shouldAdd = false;

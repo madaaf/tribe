@@ -24,6 +24,8 @@ import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -44,6 +46,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -158,6 +161,7 @@ public class HomeActivity extends BaseActivity
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
   private boolean searchViewDisplayed = false;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // DIMEN
 
@@ -186,6 +190,7 @@ public class HomeActivity extends BaseActivity
     manageClickNotification(getIntent());
     initPullToRefresh();
     initPreviousCallTags();
+    manageLogin(getIntent());
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
@@ -628,6 +633,39 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.CATEGORY,
           intent.getStringExtra(Constants.NOTIFICATION_HOME));
       tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+    }
+  }
+
+  private void manageLogin(Intent intent) {
+    if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN) && addressBook.get()) {
+      String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
+      Timber.d("Country code : " + countryCode);
+      if (StringUtils.isEmpty(countryCode)) return;
+
+      firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+      firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
+      firebaseRemoteConfig.activateFetched();
+
+      firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          firebaseRemoteConfig.activateFetched();
+
+          String countryCodesMaster =
+              firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
+
+          if (!StringUtils.isEmpty(countryCodesMaster)) {
+            String[] countryCodes = countryCodesMaster.split(",");
+
+            for (String countryCodeInvite : countryCodes) {
+              Timber.d("Trying country code : " + countryCodeInvite);
+              if (countryCodeInvite.equals(countryCode)) {
+                notificationContainerView.showNotification(null,
+                    NotificationContainerView.DISPLAY_INVITE_NOTIF);
+              }
+            }
+          }
+        }
+      });
     }
   }
 
