@@ -601,6 +601,7 @@ public class LiveContainer extends FrameLayout {
       springRight.setEndValue(-viewInviteLive.getWidth());
     }
     resetTimer();
+    
     if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP) && (nbrCall % 2) == 0) {
       nativeDialogsView.displayPopup(viewInviteLive,
           PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);

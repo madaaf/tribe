@@ -52,7 +52,7 @@
           android:lineSpacingExtra="4dp"
           android:text="@string/camera_microphone_popup_description"
           android:textColor="@color/grey.unblock"
-          style="@style/Title.2.Black"
+          style="@style/Title.2.Black40"
           />
 
     </LinearLayout>
