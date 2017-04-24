@@ -14,6 +14,7 @@
       android:gravity="center"
       android:padding="20dp"
       android:text="@string/live_tutorial_buzz"
+      style="@style/Title.2.Black"
       />
 
 </FrameLayout>
