@@ -45,6 +45,7 @@ import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
@@ -296,6 +297,8 @@ public interface ApplicationComponent {
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
 
   @CallTagsMap Preference<String> callTagsMap();
+
+  @LookupResult Preference<String> lookupResult();
 
   SoundManager soundManager();
 

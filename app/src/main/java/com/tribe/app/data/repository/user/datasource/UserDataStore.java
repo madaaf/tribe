@@ -171,4 +171,6 @@ public interface UserDataStore {
   Observable<Boolean> buzzRoom(String roomId);
 
   Observable<Void> declineInvite(String roomId);
+
+  Observable<Void> sendInvitations();
 }

@@ -541,9 +541,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onRemotePeerUpdated()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(remotePeer -> {
-          Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId());
-        }));
+        .subscribe(remotePeer -> Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())

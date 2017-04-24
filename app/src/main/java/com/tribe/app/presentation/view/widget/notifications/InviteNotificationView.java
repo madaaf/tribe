@@ -39,7 +39,8 @@ public class InviteNotificationView extends LifeNotification {
   ///////////////////
 
   @OnClick(R.id.btnAction1) void onClickAction1() {
-    // TODO tiago
+    onSendInvitations.onNext(null);
+    hideView();
   }
 
   ///////////////////

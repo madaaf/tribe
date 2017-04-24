@@ -87,6 +87,7 @@ public class NotificationContainerView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
+  private PublishSubject<Void> onSendInvitations = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -157,11 +158,7 @@ public class NotificationContainerView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_notification_container, this, true);
     unbinder = ButterKnife.bind(this);
-    container.setOnTouchListener(new OnTouchListener() {
-      @Override public boolean onTouch(View v, MotionEvent event) {
-        return gestureScanner.onTouchEvent(event);
-      }
-    });
+    container.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
   }
 
@@ -171,9 +168,9 @@ public class NotificationContainerView extends FrameLayout {
       hideView();
     }));
 
-    subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(granted -> {
-      onAcceptedPermission.onNext(granted);
-    }));
+    subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
+
+    subscriptions.add(viewToDisplay.onSendInvitations().subscribe(onSendInvitations));
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -280,6 +277,10 @@ public class NotificationContainerView extends FrameLayout {
 
   public Observable<Boolean> onAcceptedPermission() {
     return onAcceptedPermission;
+  }
+
+  public Observable<Void> onSendInvitations() {
+    return onSendInvitations;
   }
 
   ///////////////////

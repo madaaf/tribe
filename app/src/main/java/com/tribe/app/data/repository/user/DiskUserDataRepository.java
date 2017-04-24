@@ -399,4 +399,8 @@ import rx.Observable;
   @Override public Observable<Void> declineInvite(String roomId) {
     return null;
   }
+
+  @Override public Observable<Void> sendInvitations() {
+    return null;
+  }
 }

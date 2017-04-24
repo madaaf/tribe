@@ -227,6 +227,7 @@
 	<string name="onboarding_popup_error_sent_to">Code sent to:</string>
 	<string name="onboarding_popup_error_edit_button_title">Close</string>
 	<string name="onboarding_popup_error_resend_button_title">Resend it</string>
+	<string name="onboarding_popup_error_call_me_button_title">Call me instead</string>
 	<string name="onboarding_popup_error_team_notified">Our Support team has been notified and will help you shortly. Until then, feel free to try to resend your code.</string>
 	
 	<!-- Onboarding Friends To Add -->

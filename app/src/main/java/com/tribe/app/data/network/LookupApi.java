@@ -1,4 +1,4 @@
-package com.tribe.app.data.network.util;
+package com.tribe.app.data.network;
 
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.LookupObject;

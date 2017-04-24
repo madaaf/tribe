@@ -16,7 +16,9 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
+import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
+import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
@@ -39,7 +41,6 @@ import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.interceptor.TribeInterceptor;
-import com.tribe.app.data.network.util.LookupApi;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -285,6 +286,34 @@ import timber.log.Timber;
         .callFactory(httpClientBuilder.build())
         .build()
         .create(LookupApi.class);
+  }
+
+  @Provides @PerApplication GrowthApi provideGrowthApi(Context context, Gson gson,
+      @Named("tribeApiOKHttp") OkHttpClient okHttpClient, TribeAuthorizer tribeAuthorizer,
+      final LoginApi loginApi, final AccessToken accessToken, final UserCache userCache,
+      TagManager tagManager) {
+    OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
+
+    httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
+
+    httpClientBuilder.authenticator(
+        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
+            tagManager));
+
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
+
+    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_GROWTH)
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+        //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
+        .callFactory(httpClientBuilder.build())
+        .build()
+        .create(GrowthApi.class);
   }
 
   private class TribeAuthenticator implements Authenticator {

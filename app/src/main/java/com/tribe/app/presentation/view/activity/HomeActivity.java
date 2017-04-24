@@ -659,8 +659,17 @@ public class HomeActivity extends BaseActivity
             for (String countryCodeInvite : countryCodes) {
               Timber.d("Trying country code : " + countryCodeInvite);
               if (countryCodeInvite.equals(countryCode)) {
-                notificationContainerView.showNotification(null,
-                    NotificationContainerView.DISPLAY_INVITE_NOTIF);
+                subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> {
+                      notificationContainerView.showNotification(null,
+                          NotificationContainerView.DISPLAY_INVITE_NOTIF);
+
+                      subscriptions.add(notificationContainerView.onSendInvitations()
+                          .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
+                    }));
+
+                return;
               }
             }
           }

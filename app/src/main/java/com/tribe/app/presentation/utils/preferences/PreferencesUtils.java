@@ -4,9 +4,11 @@ import com.f2prateek.rx.preferences.Preference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.tribe.app.data.network.entity.LookupObject;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +34,7 @@ public class PreferencesUtils {
   public static String FULLSCREEN_NOTIFICATION_STATE = "FULLSCREEN_NOTIFICATION_STATE";
   public static String TRIBE_STATE = "TRIBE_STATE";
   public static String CALL_TAGS_MAP = "CALL_TAGS_MAP";
+  public static String LOOKUP_RESULT = "LOOKUP_RESULT";
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();
@@ -58,5 +61,18 @@ public class PreferencesUtils {
     newStrSet.addAll(preference.get());
     newStrSet.remove(value);
     preference.set(newStrSet);
+  }
+
+  public static void saveLookupAsJson(List<LookupObject> lookupObjectList,
+      Preference<String> preference) {
+    Gson gson = new GsonBuilder().create();
+    Type type = new TypeToken<List<LookupObject>>() {
+    }.getType();
+    preference.set(gson.toJson(lookupObjectList, type));
+  }
+
+  public static List<LookupObject> getLookup(Preference<String> preference) {
+    return new Gson().fromJson(preference.get(), new TypeToken<List<LookupObject>>() {
+    }.getType());
   }
 }

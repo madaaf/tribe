@@ -10,7 +10,9 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
+import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -19,7 +21,6 @@ import com.tribe.app.data.network.entity.LookupHolder;
 import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.network.entity.RegisterEntity;
 import com.tribe.app.data.network.entity.UsernameEntity;
-import com.tribe.app.data.network.util.LookupApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
@@ -42,6 +43,8 @@ import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LookupResult;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import java.io.File;
@@ -68,6 +71,7 @@ public class CloudUserDataStore implements UserDataStore {
   private final TribeApi tribeApi;
   private final LoginApi loginApi;
   private final LookupApi lookupApi;
+  private final GrowthApi growthApi;
   private UserCache userCache = null;
   private LiveCache liveCache = null;
   private final ContactCache contactCache;
@@ -78,6 +82,7 @@ public class CloudUserDataStore implements UserDataStore {
   private Installation installation = null;
   private @LastSync Preference<Long> lastSync;
   private PhoneUtils phoneUtils;
+  private @LookupResult Preference<String> lookupResult;
 
   /**
    * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -90,8 +95,9 @@ public class CloudUserDataStore implements UserDataStore {
    */
   public CloudUserDataStore(UserCache userCache, ContactCache contactCache, LiveCache liveCache,
       RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi,
-      LookupApi lookupApi, AccessToken accessToken, Installation installation, Context context,
-      @LastSync Preference<Long> lastSync, PhoneUtils phoneUtils) {
+      LookupApi lookupApi, GrowthApi growthApi, AccessToken accessToken, Installation installation,
+      Context context, @LastSync Preference<Long> lastSync, PhoneUtils phoneUtils,
+      @LookupResult Preference<String> lookupResult) {
     this.userCache = userCache;
     this.contactCache = contactCache;
     this.rxContacts = rxContacts;
@@ -99,12 +105,14 @@ public class CloudUserDataStore implements UserDataStore {
     this.tribeApi = tribeApi;
     this.loginApi = loginApi;
     this.lookupApi = lookupApi;
+    this.growthApi = growthApi;
     this.context = context;
     this.accessToken = accessToken;
     this.installation = installation;
     this.liveCache = liveCache;
     this.lastSync = lastSync;
     this.phoneUtils = phoneUtils;
+    this.lookupResult = lookupResult;
   }
 
   @Override public Observable<PinRealm> requestCode(String phoneNumber) {
@@ -360,7 +368,9 @@ public class CloudUserDataStore implements UserDataStore {
       String reqLookup = context.getString(R.string.lookup, buffer.toString(),
           context.getString(R.string.userfragment_infos));
 
-      return Observable.zip(lookupApi.lookup(regionCode, lookupPhones),
+      return Observable.zip(lookupApi.lookup(regionCode, lookupPhones)
+              .doOnNext(
+                  lookupObjects -> PreferencesUtils.saveLookupAsJson(lookupObjects, lookupResult)),
           StringUtils.isEmpty(fbRequests) ? Observable.just(null)
               : tribeApi.lookupFacebook(reqLookup), (lookupObjects, lookupFBResult) -> {
             LookupHolder lookupHolder = new LookupHolder();
@@ -962,6 +972,11 @@ public class CloudUserDataStore implements UserDataStore {
         context.getString(R.string.mutation, context.getString(R.string.declineInvite, roomId));
 
     return this.tribeApi.declineInvite(request);
+  }
+
+  @Override public Observable<Void> sendInvitations() {
+    return growthApi.sendInvitations(PreferencesUtils.getLookup(lookupResult))
+        .doOnNext(aVoid -> lookupResult.set(""));
   }
 }
 
