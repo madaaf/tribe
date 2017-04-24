@@ -127,8 +127,6 @@ public class Navigator {
       if (uriDeepLink != null) {
         intent.setData(uriDeepLink);
       }
-      intent.putExtra(Extras.IS_FROM_LOGIN, true);
-      intent.putExtra(Extras.COUNTRY_CODE, "+850");
       activity.startActivity(intent);
     }
   }
