@@ -55,18 +55,18 @@
         <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
-            android:host="tribe.pm"
+            android:host="@string/web_host"
             android:scheme="http"/>
         <data
-            android:host="tribe.pm"
+            android:host="@string/web_host"
             android:scheme="https"/>
 
         <data
-            android:host="get.tribe.pm"
+            android:host="@string/branch_host"
             android:scheme="http"/>
 
         <data
-            android:host="get.tribe.pm"
+            android:host="@string/branch_host"
             android:scheme="https"/>
 
         <data android:pathPrefix="/"/>

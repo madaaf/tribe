@@ -153,13 +153,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, String roomId) {
+  public static Intent getCallingIntent(Context context, String linkId) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder(Live.WEB, Live.WEB).countdown(false)
-        .sessionId(roomId)
-        .intent(true)
-        .build();
+    Live live =
+        new Live.Builder(Live.WEB, Live.WEB).countdown(false).linkId(linkId).intent(true).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -351,7 +349,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
-        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+        } else if (live.isSessionOrLink()) {
           viewLive.start(live);
           ready();
         } else if (!live.isGroup()) {
@@ -776,7 +774,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.roomConfiguration = roomConfiguration;
     this.roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(this.roomConfiguration);
-    if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
+    if (!live.isGroup() && !live.isSessionOrLink()) {
       livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
     live.setSessionId(roomConfiguration.getRoomId());

@@ -98,10 +98,10 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
-	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
-	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Tap to video call %1$s</string>
+	<string name="live_notification_action_hang_live_group">Tap to video call %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
-	<string name="live_notification_leave">Leave to join %1$s</string>
+	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>
 	
 	<!-- Live Small Notifications -->
@@ -227,6 +227,7 @@
 	<string name="onboarding_popup_error_sent_to">Code sent to:</string>
 	<string name="onboarding_popup_error_edit_button_title">Close</string>
 	<string name="onboarding_popup_error_resend_button_title">Resend it</string>
+	<string name="onboarding_popup_error_call_me_button_title">Call me instead</string>
 	<string name="onboarding_popup_error_team_notified">Our Support team has been notified and will help you shortly. Until then, feel free to try to resend your code.</string>
 	
 	<!-- Onboarding Friends To Add -->
@@ -238,6 +239,11 @@
 	<string name="onboarding_friends_to_add_popup_message">Would you like to start with your friends already on Tribe?</string>
 	<string name="onboarding_friends_to_add_popup_cancel">Stay alone</string>
 	<string name="onboarding_friends_to_add_popup_confirm">Sure!</string>
+	
+	<!-- Onboarding Popup Invite -->
+	<string name="onboarding_invite_popup_title">Send free anonymous texts to your friends and see who joins!</string>
+	<string name="onboarding_invite_popup_message">Your name will not be displayed on the text messages. Be ready to see your friends join in the next mins</string>
+	<string name="onboarding_invite_popup_confirm">Let\'s go!</string>
 	
 	<!-- Legal -->
 	<string name="legal_terms">Terms of Service</string>
@@ -260,6 +266,7 @@
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
+	<string name="share_live">Just started a video call on Tribe! Join here: %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>

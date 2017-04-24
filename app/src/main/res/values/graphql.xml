@@ -507,8 +507,14 @@
     }
   </string>
 
-  <string name="joinRoomWithId" translatable="false">
+  <string name="joinRoomWithRoomId" translatable="false">
     getRoomParameters(roomId : \"%1$s\") {
+      ...RoomInfos
+    }
+  </string>
+
+  <string name="joinRoomWithLinkId" translatable="false">
+    getRoomParameters(linkId : \"%1$s\") {
       ...RoomInfos
     }
   </string>

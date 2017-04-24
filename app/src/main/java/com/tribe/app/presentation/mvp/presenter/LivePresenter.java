@@ -107,7 +107,7 @@ public class LivePresenter implements Presenter {
   public void joinRoom(Live live) {
     Timber.d("joinRoom");
     joinRoom.setup(!live.isGroup() ? live.getId() : live.getSubId(), live.isGroup(),
-        live.getSessionId());
+        live.getSessionId(), live.getLinkId());
     joinRoom.execute(new JoinRoomSubscriber());
   }
 

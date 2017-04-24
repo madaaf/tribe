@@ -610,7 +610,11 @@ public class HomeActivity extends BaseActivity
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
       } else if (intent.getData() != null) {
         String path = intent.getData().getPath();
-        navigator.navigateToLive(this, "w__" + path.substring(1, path.length()));
+        String host = intent.getData().getHost();
+
+        if (host.startsWith(getString(R.string.web_host))) {
+          navigator.navigateToLive(this, path.substring(1, path.length()));
+        }
       }
     }
   }

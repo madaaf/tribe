@@ -240,9 +240,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToLive(Activity activity, String roomId) {
+  public void navigateToLive(Activity activity, String linkId) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, roomId);
+      Intent intent = LiveActivity.getCallingIntent(activity, linkId);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }

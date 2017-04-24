@@ -23,6 +23,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   private List<String> memberPics;
   private boolean canRemove;
   private boolean isAnonymous = false;
+  private boolean isExternal = false;
 
   public TribeGuest(String id) {
     this.id = id;
@@ -106,5 +107,13 @@ public class TribeGuest extends GroupJoiner implements Serializable {
 
   public void setCanRemove(boolean canRemove) {
     this.canRemove = canRemove;
+  }
+
+  public void setExternal(boolean external) {
+    isExternal = external;
+  }
+
+  public boolean isExternal() {
+    return isExternal;
   }
 }

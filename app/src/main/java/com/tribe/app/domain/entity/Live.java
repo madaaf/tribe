@@ -22,6 +22,7 @@ public class Live implements Serializable {
   private boolean isGroup;
   private boolean isInvite;
   private String sessionId;
+  private String linkId;
   private int color = 0;
   private boolean countdown = true;
   private boolean intent = false;
@@ -39,6 +40,7 @@ public class Live implements Serializable {
     this.countdown = builder.countdown;
     this.intent = builder.intent;
     this.userName = builder.userName;
+    this.linkId = builder.linkId;
   }
 
   public String getId() {
@@ -163,6 +165,18 @@ public class Live implements Serializable {
     return pics;
   }
 
+  public void setLinkId(String linkId) {
+    this.linkId = linkId;
+  }
+
+  public String getLinkId() {
+    return linkId;
+  }
+
+  public boolean isSessionOrLink() {
+    return !StringUtils.isEmpty(sessionId) || !StringUtils.isEmpty(linkId);
+  }
+
   public static class Builder {
 
     private String id;
@@ -173,6 +187,7 @@ public class Live implements Serializable {
     private boolean isGroup;
     private boolean isInvite = false;
     private String sessionId;
+    private String linkId;
     private int color;
     private boolean countdown = true;
     private boolean intent = false;
@@ -215,6 +230,11 @@ public class Live implements Serializable {
 
     public Builder sessionId(String sessionId) {
       this.sessionId = sessionId;
+      return this;
+    }
+
+    public Builder linkId(String linkId) {
+      this.linkId = linkId;
       return this;
     }
 

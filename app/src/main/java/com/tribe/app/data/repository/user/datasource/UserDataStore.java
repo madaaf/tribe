@@ -169,7 +169,7 @@ public interface UserDataStore {
 
   Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
 
-  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId);
+  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId);
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 

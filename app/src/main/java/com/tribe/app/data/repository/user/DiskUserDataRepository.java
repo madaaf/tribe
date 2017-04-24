@@ -389,7 +389,7 @@ import rx.Observable;
   }
 
   @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId) {
     return null;
   }
 
