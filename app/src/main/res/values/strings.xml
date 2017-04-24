@@ -98,10 +98,10 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
-	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
-	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Tap to video call %1$s</string>
+	<string name="live_notification_action_hang_live_group">Tap to video call %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
-	<string name="live_notification_leave">Leave to join %1$s</string>
+	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>
 	
 	<!-- Live Small Notifications -->
@@ -115,7 +115,7 @@
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
 	<string name="live_notification_guest_declined">%1$s can\'t answer now</string>
 	<string name="live_notification_blocked">This user blocked you :broken_heart:</string>
-	<string name="live_reconnecting">Reconnecting...</string>
+	<string name="live_reconnecting">Reconnecting in %1$ds...</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Live call</string>
@@ -148,6 +148,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Invite link</string>
+	<string name="group_details_invite_link_generating">Generating your link...</string>
 	<string name="group_details_notifications_title">Group notifications :bell:</string>
 	<string name="group_details_leave_title">Leave group :skull:</string>
 	<string name="group_details_delete_title">Delete group</string>
@@ -266,6 +267,7 @@
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
+	<string name="share_live">Just started a video call on Tribe! Join here: %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>

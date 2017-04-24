@@ -287,6 +287,8 @@ public class LiveView extends FrameLayout {
 
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+    if (viewControlsLive == null) return;
+
     onShouldCloseInvites.onNext(null);
 
     ViewGroup.LayoutParams lp = view.getLayoutParams();
@@ -541,7 +543,8 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onRemotePeerUpdated()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(remotePeer -> Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
+        .subscribe(remotePeer -> Timber.d(
+            "Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
