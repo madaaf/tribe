@@ -7,4 +7,5 @@ package com.tribe.app.data.exception;
 public class Constants {
 
   public static final String USER_BLOCKED = "USERBLOCKED";
+  public static final String ROOM_FULL = "ROOMFULL";
 }

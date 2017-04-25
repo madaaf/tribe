@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.exception.BlockedException;
 import com.tribe.app.data.exception.Constants;
+import com.tribe.app.data.exception.RoomFullException;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import java.lang.reflect.Type;
 
@@ -27,6 +28,8 @@ public class RoomConfigurationDeserializer implements JsonDeserializer<RoomConfi
 
       if (message.equals(Constants.USER_BLOCKED)) {
         roomConfiguration.setException(new BlockedException());
+      } else if (message.equals(Constants.ROOM_FULL)) {
+        roomConfiguration.setException(new RoomFullException());
       }
 
       return roomConfiguration;

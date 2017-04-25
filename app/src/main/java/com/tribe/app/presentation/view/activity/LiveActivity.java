@@ -468,18 +468,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
-        subscriptions.add(DialogFactory.dialog(this,
-            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-            getString(R.string.tips_leavingroom_action1),
-            getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
-          finish();
-        }));
-        stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
-      } else {
-        finish();
-      }
+      leave();
     }));
 
     subscriptions.add(
@@ -615,6 +604,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                   .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
             }
           }));
+    }
+  }
+
+  private void leave() {
+    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
+      subscriptions.add(DialogFactory.dialog(this,
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
+          getString(R.string.tips_leavingroom_action1),
+          getString(R.string.tips_leavingroom_action2))
+          .filter(x -> x == true)
+          .subscribe(a -> finish()));
+      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
+    } else {
+      finish();
     }
   }
 
@@ -804,6 +808,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+          // TODO HANDLE LEAVE
           displayNotification(context.getString(R.string.live_notification_guest_declined,
               notificationPayload.getUserDisplayName()));
         }

@@ -5,6 +5,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.exception.BlockedException;
 import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.data.exception.NetworkConnectionException;
+import com.tribe.app.data.exception.RoomFullException;
 import com.tribe.app.presentation.utils.EmojiParser;
 
 /**
@@ -32,6 +33,8 @@ public class ErrorMessageFactory {
       message = context.getString(R.string.error_join_room);
     } else if (exception instanceof BlockedException) {
       message = EmojiParser.demojizedText(context.getString(R.string.live_notification_blocked));
+    } else if (exception instanceof RoomFullException) {
+      message = EmojiParser.demojizedText(context.getString(R.string.live_join_impossible, 8));
     }
 
     message = EmojiParser.demojizedText(message);

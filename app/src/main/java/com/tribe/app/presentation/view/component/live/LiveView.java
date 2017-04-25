@@ -269,10 +269,6 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  public void setOpenInviteValue(float valueOpenInvite) {
-    viewRoom.setOpenInviteValue(valueOpenInvite);
-  }
-
   @Override protected void onFinishInflate() {
     view = LayoutInflater.from(getContext()).inflate(R.layout.view_live, this);
     unbinder = ButterKnife.bind(this);
@@ -533,7 +529,7 @@ public class LiveView extends FrameLayout {
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
 
-          if (liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && live != null) {
+          if (shouldLeave()) {
             onLeave.onNext(null);
           }
 
@@ -775,6 +771,14 @@ public class LiveView extends FrameLayout {
     count += liveInviteMap.getMap().size();
 
     return count + 1;
+  }
+
+  public void setOpenInviteValue(float valueOpenInvite) {
+    viewRoom.setOpenInviteValue(valueOpenInvite);
+  }
+
+  public boolean shouldLeave() {
+    return liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && live != null;
   }
 
   ////////////////
