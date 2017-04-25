@@ -38,8 +38,8 @@ public class PopupContainerView extends FrameLayout {
 
   public static final String DISPLAY_BUZZ_POPUP = "DISPLAY_BUZZ_POPUP";
   public static final String DISPLAY_DRAGING_FRIEND_POPUP = "DISPLAY_DRAGING_FRIEND_POPUP";
-  private static int DURATION_EXIT_POPUP = 800;
-  private static float OVERSHOOT_TENSION = 1.5f;
+  private static int DURATION_EXIT_POPUP = 300;
+  private static float OVERSHOOT_TENSION = 1.15f;
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.nativeDialogsContainer) FrameLayout nativeDialogsContainer;
@@ -166,8 +166,8 @@ public class PopupContainerView extends FrameLayout {
     Animation scaleAnimation = android.view.animation.AnimationUtils.loadAnimation(getContext(),
         R.anim.scale_appear_popup);
     scaleAnimation.setDuration(DURATION_EXIT_POPUP);
-    scaleAnimation.setFillAfter(true);
     scaleAnimation.setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION));
+    scaleAnimation.setFillAfter(true);
     startAnimation(scaleAnimation);
   }
 
