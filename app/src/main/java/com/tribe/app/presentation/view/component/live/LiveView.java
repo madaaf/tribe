@@ -661,6 +661,10 @@ public class LiveView extends FrameLayout {
     }));
   }
 
+  public void reduceParam() {
+    viewControlsLive.reduceParam();
+  }
+
   public void start(Live live) {
     this.live = live;
 

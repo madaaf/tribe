@@ -216,6 +216,7 @@ public class LiveContainer extends FrameLayout {
     }));
 
     subscriptions.add(viewLive.onBuzzPopup().subscribe(displayName -> {
+      viewLive.reduceParam();
       closeInviteView();
       if (stateManager.shouldDisplay(StateManager.BUZZ_FRIEND_POPUP)) {
         nativeDialogsView.displayPopup(viewLive.viewControlsLive.btnNotify,

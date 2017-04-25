@@ -48,18 +48,10 @@ public class PopupContainerView extends FrameLayout {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private int defaultMargin;
-  private int marginBottom = 0;
-  private int marginTop = 0;
-  private int marginLeft = 0;
-  private int marginRight = 0;
 
-  private boolean isInBottom = false;
-  private boolean isInTop = false;
-  private boolean isInLeft = false;
-  private boolean isInRight = false;
-  private boolean isCentred = false;
-  private boolean buzzPopupDisplayed = false;
-  private boolean dragFriendPopupDisplayed = false;
+  private int marginBottom = 0, marginTop = 0, marginLeft = 0, marginRight = 0;
+  private boolean isInBottom = false, isInTop = false, isInLeft = false, isInRight = false,
+      isCentred = false;
 
   public PopupContainerView(@NonNull Context context) {
     super(context);
@@ -137,17 +129,15 @@ public class PopupContainerView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
     setOnTouchListener((v, event) -> {
       hideViews();
-      return true;
+      return false;
     });
   }
 
   private int getDrawable(@PopupType String type) {
     switch (type) {
       case DISPLAY_BUZZ_POPUP:
-        buzzPopupDisplayed = true;
         return R.layout.buzz_popup_view;
       case DISPLAY_DRAGING_FRIEND_POPUP:
-        dragFriendPopupDisplayed = true;
         return R.layout.drag_friend_popup_view;
     }
     return 0;
@@ -216,9 +206,6 @@ public class PopupContainerView extends FrameLayout {
         @Override public void onAnimationEnd(Animation animation) {
           super.onAnimationEnd(animation);
           ((ViewGroup) v.getParent()).removeView(v);
-          if (nativeDialogsContainer != null && dragFriendPopupDisplayed && buzzPopupDisplayed) {
-            setOnTouchListener(null);
-          }
         }
       });
       v.startAnimation(scale);

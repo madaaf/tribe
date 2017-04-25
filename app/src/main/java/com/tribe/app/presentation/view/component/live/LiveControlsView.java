@@ -147,9 +147,7 @@ public class LiveControlsView extends FrameLayout {
     timerSubscription = Observable.timer(MAX_DURATION_LAYOUT_CONTROLS, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aVoid -> {
-          if (isParamExpanded) {
-            expandParam();
-          }
+          reduceParam();
         });
   }
 
@@ -158,35 +156,42 @@ public class LiveControlsView extends FrameLayout {
     setTimer();
   }
 
-  private void expandParam() {
+  private void clickOnParam() {
     if (!isParamExpanded) {
-      resetTimer();
-      isParamExpanded = true;
-
-      int widthExtended = layoutContainerParamExtendedLive.getWidth();
-      layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
-      layoutContainerParamExtendedLive.setVisibility(VISIBLE);
-
-      btnExpand.setImageResource(R.drawable.picto_extend_left_live);
-
-      setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
-      setXTranslateAnimation(layoutContainerParamLive, getWidth());
-
-      if (cameraEnabled) {
-        setXTranslateAnimation(btnExpand, widthExtended);
-      } else {
-        setXTranslateAnimation(btnExpand,
-            layoutContainerParamExtendedLive.getWidth() - xTranslation);
-      }
+      expendParam();
     } else {
-      isParamExpanded = false;
-      layoutContainerParamExtendedLive.setTranslationX(0);
-      btnExpand.setImageResource(R.drawable.picto_extend_right_live);
-
-      setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
-      setXTranslateAnimation(layoutContainerParamLive, 0);
-      setXTranslateAnimation(btnExpand, 0);
+      reduceParam();
     }
+  }
+
+  private void expendParam() {
+    resetTimer();
+    isParamExpanded = true;
+
+    int widthExtended = layoutContainerParamExtendedLive.getWidth();
+    layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
+    layoutContainerParamExtendedLive.setVisibility(VISIBLE);
+
+    btnExpand.setImageResource(R.drawable.picto_extend_left_live);
+
+    setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
+    setXTranslateAnimation(layoutContainerParamLive, getWidth());
+
+    if (cameraEnabled) {
+      setXTranslateAnimation(btnExpand, widthExtended);
+    } else {
+      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation);
+    }
+  }
+
+  public void reduceParam() {
+    isParamExpanded = false;
+    layoutContainerParamExtendedLive.setTranslationX(0);
+    btnExpand.setImageResource(R.drawable.picto_extend_right_live);
+
+    setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
+    setXTranslateAnimation(layoutContainerParamLive, 0);
+    setXTranslateAnimation(btnExpand, 0);
   }
 
   private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
@@ -226,7 +231,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnExpand) void clickExpandParam() {
-    expandParam();
+    clickOnParam();
   }
 
   @OnClick(R.id.btnCameraOn) void clickCameraEnable() {
