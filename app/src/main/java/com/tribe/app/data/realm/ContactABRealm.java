@@ -2,6 +2,7 @@ package com.tribe.app.data.realm;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private boolean isNew = false;
   private String firstName;
   private String lastName;
+
+  @Ignore
+  private List<String> emails;
 
   public ContactABRealm() {
 
@@ -48,6 +52,14 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
 
   public void setPhones(RealmList<PhoneRealm> phones) {
     this.phones = phones;
+  }
+
+  public List<String> getEmails() {
+    return emails;
+  }
+
+  public void setEmails(List<String> emails) {
+    this.emails = emails;
   }
 
   public long getLastTimeContacted() {

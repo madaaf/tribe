@@ -36,7 +36,7 @@ public class ContactsHelper {
       ContactsContract.RawContacts.CONTACT_ID, ContactsContract.Data.MIMETYPE,
       ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
       ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
-      CommonDataKinds.StructuredName.DISPLAY_NAME
+      CommonDataKinds.StructuredName.DISPLAY_NAME, CommonDataKinds.Email.DATA
   };
 
   private static final String[] DATA_PROJECTION_FULL = {
@@ -172,6 +172,8 @@ public class ContactsHelper {
         + ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
         + "', '"
         + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+        + "', '"
+        + ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE
         + "')";
 
     Cursor data =
@@ -183,9 +185,13 @@ public class ContactsHelper {
 
   @NonNull ContactABRealm fetchContactFast(Cursor c, ContactABRealm contact) {
     List<String> phones = new ArrayList<>();
+    List<String> emails = new ArrayList<>();
 
     String mimeType = c.getString(c.getColumnIndex(ContactsContract.Data.MIMETYPE));
-    if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+    if (mimeType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+      String email = c.getString(c.getColumnIndex(CommonDataKinds.Email.ADDRESS));
+      if (isValidEmail(email)) emails.add(email);
+    } else if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
       String phone = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
       phones.add(phone);
     } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
@@ -215,6 +221,10 @@ public class ContactsHelper {
       return contact;
     }
 
+    if (emails != null && emails.size() > 0) {
+      contact.setEmails(emails);
+    }
+
     return null;
   }
 
@@ -227,5 +237,10 @@ public class ContactsHelper {
 
   public void setCountryCode(int countryCode) {
     this.countryCode = countryCode;
+  }
+
+  private boolean isValidEmail(CharSequence target) {
+    return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target)
+        .matches();
   }
 }

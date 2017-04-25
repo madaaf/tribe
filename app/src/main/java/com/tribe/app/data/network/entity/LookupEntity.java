@@ -11,11 +11,13 @@ public class LookupEntity {
   @SerializedName("n") private String phone;
   @SerializedName("fn") private String firstName;
   @SerializedName("ln") private String lastName;
+  @SerializedName("e") private String email;
 
-  public LookupEntity(String phone, String firstName, String lastName) {
+  public LookupEntity(String phone, String firstName, String lastName, String email) {
     this.phone = phone;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.email = email;
   }
 
   public String getPhone() {
@@ -40,5 +42,13 @@ public class LookupEntity {
 
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getEmail() {
+    return email;
   }
 }

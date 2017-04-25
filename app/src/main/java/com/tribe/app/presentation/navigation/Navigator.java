@@ -239,8 +239,12 @@ public class Navigator {
 
   public void navigateToIntent(Activity activity, Intent intent) {
     if (activity != null) {
-      activity.startActivityForResult(intent, FROM_LIVE);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      if (activity instanceof LiveActivity) {
+        activity.startActivity(intent);
+      } else {
+        activity.startActivityForResult(intent, FROM_LIVE);
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      }
     }
   }
 

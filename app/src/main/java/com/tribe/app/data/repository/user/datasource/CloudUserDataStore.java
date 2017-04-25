@@ -329,7 +329,7 @@ public class CloudUserDataStore implements UserDataStore {
               phones.add(contactI);
               ContactABRealm ab = (ContactABRealm) contactI;
               lookupPhones.add(new LookupEntity(ab.getPhones().get(0).getPhone(), ab.getFirstName(),
-                  ab.getLastName()));
+                  ab.getLastName(), (ab.getEmails() != null && ab.getEmails().size() > 0) ? ab.getEmails().get(0) : null));
             }
           } else if (contactI instanceof ContactFBRealm) {
             ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
