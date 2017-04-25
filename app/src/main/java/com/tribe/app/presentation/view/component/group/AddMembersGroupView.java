@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +52,7 @@ public class AddMembersGroupView extends LinearLayout {
   private int DURATION_FADE = 150;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
+  private int DURATION_CONTAINER_ANIM = 500;
 
   @Inject TagManager tagManager;
 
@@ -72,6 +74,10 @@ public class AddMembersGroupView extends LinearLayout {
 
   @BindView(R.id.editGroupName) EditTextFont editGroupName;
 
+  @BindView(R.id.addMembersContainer) LinearLayout addMembersContainer;
+
+  @BindView(R.id.addMembersHeader) LinearLayout addMembersHeader;
+
   // VARIABLES
   private FriendMembersLayoutManager layoutManager;
   private FriendMembersAdapter adapter;
@@ -83,6 +89,7 @@ public class AddMembersGroupView extends LinearLayout {
   private String currentFilter = "";
   private List<GroupMember> copieUserListTemp = new ArrayList<>();
   private List<String> newMembersIds = new ArrayList<>();
+  boolean containerAnimationFinish = true;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -169,7 +176,15 @@ public class AddMembersGroupView extends LinearLayout {
     subscriptions.add(
         RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
           filter(s);
+          animateContainer(s);
         }));
+
+    editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        animateContainer("");
+      }
+      return false;
+    });
 
     subscriptions.add(adapter.clickAdd()
         .map(view -> {
@@ -252,6 +267,29 @@ public class AddMembersGroupView extends LinearLayout {
     } else {
       membership.getGroup().setPicture(group.getPicture());
       membership.getGroup().setName(group.getName());
+    }
+  }
+
+  private void animateContainer(String txt) {
+    if (txt != null && !txt.isEmpty()) {
+      if (containerAnimationFinish) {
+        containerAnimationFinish = false;
+        addMembersContainer.animate()
+            .translationY(-addMembersHeader.getHeight())
+            .setDuration(DURATION_CONTAINER_ANIM)
+            .withEndAction(() -> {
+              LayoutParams params = (LayoutParams) addMembersContainer.getLayoutParams();
+              params.setMargins(0, 0, 0, -addMembersHeader.getHeight());
+              addMembersContainer.setLayoutParams(params);
+            })
+            .start();
+      }
+    } else {
+      addMembersContainer.animate()
+          .translationY(0)
+          .setDuration(DURATION_CONTAINER_ANIM)
+          .withEndAction(() -> containerAnimationFinish = true)
+          .start();
     }
   }
 

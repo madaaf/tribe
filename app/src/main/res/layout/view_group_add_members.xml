@@ -9,9 +9,9 @@
     >
 
   <LinearLayout
-      android:layout_width="match_parent"
+      android:id="@+id/addMembersHeader"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:background="@null"
       android:orientation="vertical"
       >
     <LinearLayout
@@ -38,18 +38,28 @@
           android:backgroundTint="@android:color/black"
           android:gravity="center_vertical"
           android:hint="@string/group_identification_custom_name_placeholder"
+          android:maxLines="1"
           android:paddingStart="20dp"
           android:textColorHint="@color/black.opacity.40"
           style="@style/Title.2.Black40"
           />
     </LinearLayout>
-
     <include layout="@layout/view_separator_simple" />
     <View
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@color/grey.background.profile_info"
         />
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/addMembersContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@android:color/white"
+      android:orientation="vertical"
+      >
 
     <include layout="@layout/view_separator_simple" />
     <LinearLayout
@@ -67,7 +77,7 @@
           android:layout_marginLeft="@dimen/horizontal_margin_small"
           android:layout_marginRight="@dimen/horizontal_margin_small"
           android:layout_marginTop="@dimen/horizontal_margin_small"
-          android:singleLine="true"
+          android:maxLines="1"
           style="@style/Title.2.Black"
           />
 
@@ -130,26 +140,25 @@
     </LinearLayout>
 
     <include layout="@layout/view_separator_simple" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+    <LinearLayout
+        android:id="@+id/viewGroupFocus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        >
+
+      <requestFocus />
+    </LinearLayout>
   </LinearLayout>
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/recyclerView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@null"
-      android:clipToPadding="false"
-      android:scrollbars="none"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
-      />
-
-  <LinearLayout
-      android:id="@+id/viewGroupFocus"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:focusable="true"
-      android:focusableInTouchMode="true"
-      >
-
-    <requestFocus />
-  </LinearLayout>
 </com.tribe.app.presentation.view.component.group.AddMembersGroupView>

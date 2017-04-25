@@ -98,8 +98,8 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Rejoindre !</string>
 	<string name="live_notification_action_decline">Rejeter</string>
-	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
-	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Appeler %1$s</string>
+	<string name="live_notification_action_hang_live_group">Appeler %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
@@ -113,7 +113,8 @@
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
-	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
+	<string name="live_notification_guest_declined">%1$s a refusé votre appel :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined_in_group">%1$s a refusé votre appel dans %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
 	<string name="live_reconnecting">Reconnexion dans %1$ds...</string>
 	
