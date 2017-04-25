@@ -267,7 +267,7 @@
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
-	<string name="share_live">Just started a video call on Tribe! Join here: %1$s</string>
+	<string name="share_live">Just started a video call on Tribe! Join it from the app or from the web: %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>
