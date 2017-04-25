@@ -231,9 +231,9 @@ public class HomeActivity extends BaseActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
-    //if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       syncContacts();
-    //}
+    }
   }
 
   @Override protected void onRestart() {
@@ -639,7 +639,6 @@ public class HomeActivity extends BaseActivity
   private void manageLogin(Intent intent) {
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN) && addressBook.get()) {
       String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
-      Timber.d("Country code : " + countryCode);
       if (StringUtils.isEmpty(countryCode)) return;
 
       firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
@@ -650,6 +649,8 @@ public class HomeActivity extends BaseActivity
         if (task.isSuccessful()) {
           firebaseRemoteConfig.activateFetched();
 
+          boolean displayingPopup = false;
+
           String countryCodesMaster =
               firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
 
@@ -657,8 +658,9 @@ public class HomeActivity extends BaseActivity
             String[] countryCodes = countryCodesMaster.split(",");
 
             for (String countryCodeInvite : countryCodes) {
-              Timber.d("Trying country code : " + countryCodeInvite);
               if (countryCodeInvite.equals(countryCode)) {
+                displayingPopup = true;
+
                 subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(aLong -> {
@@ -672,6 +674,8 @@ public class HomeActivity extends BaseActivity
                 return;
               }
             }
+
+            if (!displayingPopup) homeGridPresenter.sendInvitations();
           }
         }
       });
