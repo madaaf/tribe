@@ -163,7 +163,7 @@
 	<string name="group_search_friends_placeholder">Search friends</string>
 	
 	<!-- Group Members -->
-	<string name="group_members_remove_member_alert_message">Would you like to remove this friends from the members ?</string>
+	<string name="group_members_remove_member_alert_message">Would you like to remove this friend from the members ?</string>
 	<string name="group_members_remove_member_alert_confirm">Remove %1$s</string>
 	
 	<!-- Settings -->
@@ -188,9 +188,12 @@
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
+	<string name="onboarding_step_call">We just called you to verify.</string>
 	<string name="onboarding_phone_number">Phone number</string>
 	<string name="onboarding_code_sending_status">Sending verification code…</string>
+	<string name="onboarding_code_calling_status">Calling…</string>
 	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_called_status">Called %1$s</string>
 	<string name="onboarding_code_resend_status">Haven\'t received the code? Tap to resend!</string>
 	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
@@ -226,6 +229,7 @@
 	<string name="onboarding_popup_error_title">We\'re here to help!</string>
 	<string name="onboarding_popup_error_description">Sounds like the code didn\'t\nget through to your phone.</string>
 	<string name="onboarding_popup_error_sent_to">Code sent to:</string>
+	<string name="onboarding_popup_error_calling">Calling:</string>
 	<string name="onboarding_popup_error_edit_button_title">Close</string>
 	<string name="onboarding_popup_error_resend_button_title">Resend it</string>
 	<string name="onboarding_popup_error_call_me_button_title">Call me instead</string>
@@ -267,7 +271,7 @@
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
-	<string name="share_live">Just started a video call on Tribe! Join it from the app or from the web: %1$s</string>
+	<string name="share_live">Just started a video call on Tribe! Join now from the app or from the web: %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>

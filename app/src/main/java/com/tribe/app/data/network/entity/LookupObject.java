@@ -12,6 +12,10 @@ public class LookupObject {
   @SerializedName("n") private String phone;
   @SerializedName("u") private String userId;
   @SerializedName("f") private int howManyFriends;
+  @SerializedName("ln") private String lastName;
+  @SerializedName("fn") private String firstName;
+  @SerializedName("e") private String email;
+
   private UserRealm userRealm;
 
   public String getPhone() {
@@ -24,6 +28,18 @@ public class LookupObject {
 
   public int getHowManyFriends() {
     return howManyFriends;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
   }
 
   public void setUserRealm(UserRealm userRealm) {
