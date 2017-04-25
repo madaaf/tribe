@@ -288,6 +288,8 @@ public class LiveView extends FrameLayout {
 
   @Override public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
+    if (viewControlsLive == null) return;
+
     onShouldCloseInvites.onNext(null);
 
     ViewGroup.LayoutParams lp = view.getLayoutParams();
