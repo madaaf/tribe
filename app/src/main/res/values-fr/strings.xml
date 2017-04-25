@@ -148,6 +148,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Lien d\'invitation</string>
+	<string name="group_details_invite_link_generating">Génération de votre lien...</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_leave_title">Quitter le groupe</string>
 	<string name="group_details_delete_title">Supprimer le groupe</string>

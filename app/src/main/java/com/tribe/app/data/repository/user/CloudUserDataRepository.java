@@ -308,4 +308,10 @@ import rx.Observable;
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.declineInvite(roomId);
   }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.getRoomLink(roomId);
+  }
 }

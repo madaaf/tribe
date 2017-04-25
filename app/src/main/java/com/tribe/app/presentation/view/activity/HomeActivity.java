@@ -613,7 +613,8 @@ public class HomeActivity extends BaseActivity
         String host = intent.getData().getHost();
 
         if (host.startsWith(getString(R.string.web_host))) {
-          navigator.navigateToLive(this, path.substring(1, path.length()));
+          navigator.navigateToLive(this, path.substring(1, path.length()),
+              intent.getData().toString());
         }
       }
     }

@@ -2,6 +2,7 @@ package com.tribe.app.data.network;
 
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
+import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
@@ -118,4 +119,7 @@ public interface TribeApi {
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> declineInvite(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<RoomLinkEntity> getRoomLink(
+      @Field("query") String query);
 }

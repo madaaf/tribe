@@ -240,9 +240,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToLive(Activity activity, String linkId) {
+  public void navigateToLive(Activity activity, String linkId, String url) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, linkId);
+      Intent intent = LiveActivity.getCallingIntent(activity, linkId, url);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -360,6 +360,11 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
+  }
+
+  public void inviteToRoom(Activity activity, String roomLink) {
+    String text = EmojiParser.demojizedText(activity.getString(R.string.share_live, roomLink));
+    shareGenericText(text, activity);
   }
 
   public void openFacebookMessenger(String body, Activity activity) {

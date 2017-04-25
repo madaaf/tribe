@@ -1013,5 +1013,12 @@ public class CloudUserDataStore implements UserDataStore {
 
     return this.tribeApi.declineInvite(request);
   }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.getRoomLink, roomId));
+
+    return this.tribeApi.getRoomLink(request).map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
+  }
 }
 

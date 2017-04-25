@@ -404,4 +404,8 @@ import rx.Observable;
   @Override public Observable<Void> declineInvite(String roomId) {
     return null;
   }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
+    return null;
+  }
 }

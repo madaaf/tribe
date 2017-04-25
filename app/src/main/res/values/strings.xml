@@ -148,6 +148,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Invite link</string>
+	<string name="group_details_invite_link_generating">Generating your link...</string>
 	<string name="group_details_notifications_title">Group notifications :bell:</string>
 	<string name="group_details_leave_title">Leave group :skull:</string>
 	<string name="group_details_delete_title">Delete group</string>
