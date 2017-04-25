@@ -29,4 +29,50 @@
         style="@style/Title.2.Black40"
         />
   </LinearLayout>
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="100dp"
+      android:layout_gravity="center"
+      android:background="@android:color/white"
+      android:padding="15dp"
+      >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_search_bar_grp"
+        >
+      <ImageView
+          android:id="@+id/imgSearch"
+          android:layout_width="@dimen/icons_end"
+          android:layout_height="@dimen/icons_end"
+          android:layout_gravity="center_vertical"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_search_icon"
+          />
+
+      <com.tribe.app.presentation.view.widget.EditTextFont
+          android:id="@+id/editTextSearch"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/icons_end"
+          android:layout_gravity="center_vertical"
+          android:layout_marginEnd="@dimen/icons_end"
+          android:layout_marginStart="@dimen/icons_end"
+          android:background="@null"
+          android:backgroundTint="@android:color/black"
+          android:gravity="center_vertical"
+          android:hint="@string/group_add_members_search_placeholder"
+          android:imeOptions="actionDone"
+          android:singleLine="true"
+          android:textColorHint="@color/black.opacity.40"
+          style="@style/Title.1.Black"
+          />
+
+    </FrameLayout>
+
+
+  </FrameLayout>
+
 </LinearLayout>
