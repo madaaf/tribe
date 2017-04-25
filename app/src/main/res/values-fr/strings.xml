@@ -101,7 +101,7 @@
 	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
-	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
+	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
 	
 	<!-- Live Small Notifications -->
@@ -115,7 +115,7 @@
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
 	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
 	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
-	<string name="live_reconnecting">Reconnexion en cours...</string>
+	<string name="live_reconnecting">Reconnexion dans %1$ds...</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Appel...</string>
@@ -148,6 +148,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Lien d\'invitation</string>
+	<string name="group_details_invite_link_generating">Génération de votre lien...</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_leave_title">Quitter le groupe</string>
 	<string name="group_details_delete_title">Supprimer le groupe</string>
@@ -266,6 +267,7 @@
 	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
+	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>

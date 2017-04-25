@@ -136,7 +136,7 @@ public class LiveView extends FrameLayout {
   private AvatarView avatarView;
   private ObjectAnimator animatorBuzzAvatar;
   private Map<String, Object> tagMap;
-  private int wizzCount = 0, invitedCount = 0, totalSizeLive = 0;
+  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0;
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
@@ -222,6 +222,7 @@ public class LiveView extends FrameLayout {
       tagMap.put(TagManagerUtils.STATE, state);
       tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
       tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
+      tagMap.put(TagManagerUtils.SCREENSHOT_COUNT, screenshotCount);
       tagMap.put(TagManagerUtils.TYPE,
           live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
       // We are entering another call, so we send the tags regarless
@@ -440,6 +441,7 @@ public class LiveView extends FrameLayout {
   }
 
   @OnClick(R.id.btnScreenshot) void onClickScreenshot() {
+    screenshotCount++;
     viewControlsLive.prepareForScreenshot();
     onScreenshot.onNext(null);
   }
@@ -541,7 +543,8 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onRemotePeerUpdated()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(remotePeer -> Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
+        .subscribe(remotePeer -> Timber.d(
+            "Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
