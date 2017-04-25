@@ -8,7 +8,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.GroupMember;
@@ -248,6 +247,14 @@ public class Navigator {
     }
   }
 
+  public void navigateToLive(Activity activity, String linkId, String url) {
+    if (activity != null) {
+      Intent intent = LiveActivity.getCallingIntent(activity, linkId, url);
+      activity.startActivityForResult(intent, FROM_LIVE);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
   /**
    * Goes to the app page in the playstore so the user may rate the app.
    *
@@ -349,7 +356,7 @@ public class Navigator {
   public void openSmsForInvite(Activity activity, String phoneNumber) {
     String text = EmojiParser.demojizedText(
         activity.getString(R.string.share_invite, user.getUsername(),
-            BuildConfig.TRIBE_URL + "/" + user.getUsername()));
+            activity.getString(R.string.share_messenger_url)));
 
     if (StringUtils.isEmpty(phoneNumber)) {
       shareGenericText(text, activity);
@@ -360,6 +367,11 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
+  }
+
+  public void inviteToRoom(Activity activity, String roomLink) {
+    String text = EmojiParser.demojizedText(activity.getString(R.string.share_live, roomLink));
+    shareGenericText(text, activity);
   }
 
   public void openFacebookMessenger(String body, Activity activity) {

@@ -935,12 +935,14 @@ public class CloudUserDataStore implements UserDataStore {
     if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
   }
 
-  @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
+      String linkId) {
     String body;
 
     if (!StringUtils.isEmpty(roomId)) {
-      body = context.getString(R.string.joinRoomWithId, roomId);
+      body = context.getString(R.string.joinRoomWithRoomId, roomId);
+    } else if (!StringUtils.isEmpty(linkId)) {
+      body = context.getString(R.string.joinRoomWithLinkId, linkId);
     } else {
       body = context.getString(isGroup ? R.string.joinRoomGroup : R.string.joinRoomFriendship, id);
     }
@@ -977,6 +979,13 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public Observable<Void> sendInvitations() {
     return growthApi.sendInvitations(PreferencesUtils.getLookup(lookupResult))
         .doOnNext(aVoid -> lookupResult.set(""));
+  }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.getRoomLink, roomId));
+
+    return this.tribeApi.getRoomLink(request).map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
   }
 }
 

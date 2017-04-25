@@ -32,19 +32,4 @@
       style="@style/Body.Two.White"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtStatus2"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="top|center_horizontal"
-      android:layout_marginTop="30dp"
-      android:background="@null"
-      android:shadowColor="@color/black.opacity.50"
-      android:shadowDx="3"
-      android:shadowDy="3"
-      android:shadowRadius="10"
-      android:singleLine="true"
-      android:visibility="gone"
-      style="@style/Body.Two.White"
-      />
 </merge>

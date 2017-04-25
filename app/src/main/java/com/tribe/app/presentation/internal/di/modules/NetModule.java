@@ -33,6 +33,7 @@ import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
+import com.tribe.app.data.network.deserializer.RoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
@@ -41,6 +42,7 @@ import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.interceptor.TribeInterceptor;
+import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -162,6 +164,7 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<List<Invite>>() {
         }.getType(), new InvitesListDeserializer<>())
         .registerTypeAdapter(LookupFBResult.class, new LookupFBDeserializer())
+        .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .create();
   }
 

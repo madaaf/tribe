@@ -8,30 +8,25 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by tiago on 04/05/2016.
+ * Created by tiago on 04/24/2017.
  */
-public class JoinRoom extends UseCase {
+public class GetRoomLink extends UseCase {
 
-  private String id;
-  private boolean isGroup;
-  private String roomId;
-  private String linkId;
   private UserRepository userRepository;
 
-  @Inject public JoinRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  private String roomId;
+
+  @Inject public GetRoomLink(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.userRepository = userRepository;
   }
 
-  public void setup(String id, boolean isGroup, String roomId, String linkId) {
-    this.id = id;
-    this.isGroup = isGroup;
+  public void setup(String roomId) {
     this.roomId = roomId;
-    this.linkId = linkId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.joinRoom(id, isGroup, roomId, linkId);
+    return this.userRepository.getRoomLink(roomId);
   }
 }

@@ -8,13 +8,20 @@ public class TribeSession {
 
   public static final String PUBLISHER_ID = "publisher";
   public static final String ANONYMOUS = "anonymous";
+  public static final String WEB_ID = "H1tSjT45l";
 
   private String peerId;
   private String userId;
+  private boolean isExternal = false;
 
   public TribeSession(String peerId, String userId) {
     this.peerId = peerId;
     this.userId = userId;
+
+    if (userId == null || userId.equals("") || userId.equals(WEB_ID)) {
+      isExternal = true;
+      this.userId = peerId;
+    }
   }
 
   public String getPeerId() {
@@ -23,5 +30,9 @@ public class TribeSession {
 
   public String getUserId() {
     return userId;
+  }
+
+  public boolean isExternal() {
+    return isExternal;
   }
 }

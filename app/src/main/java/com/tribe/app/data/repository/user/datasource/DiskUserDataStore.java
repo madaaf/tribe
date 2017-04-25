@@ -198,8 +198,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.liveMap();
   }
 
-  @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
+      String linkId) {
     return null;
   }
 
@@ -215,7 +215,9 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<Void> sendInvitations() {
+  @Override public Observable<Void> sendInvitations() { return null; }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
     return null;
   }
 

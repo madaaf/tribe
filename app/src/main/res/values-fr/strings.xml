@@ -113,7 +113,8 @@
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
-	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
+	<string name="live_notification_guest_declined">%1$s a refusé votre appel :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined_in_group">%1$s a refusé votre appel dans %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
 	<string name="live_reconnecting">Reconnexion dans %1$ds...</string>
 	
@@ -311,7 +312,7 @@
 	<string name="live_invite_link">Lien pour\ninviter</string>
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
-	<string name="live_join_impossible">:lock: Seulement %1$d amis en appel en même temps !</string>
+	<string name="live_join_impossible">:lock: Seulement 8 amis en appel en même temps !</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>

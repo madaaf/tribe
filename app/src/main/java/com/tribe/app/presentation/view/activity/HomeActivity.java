@@ -169,12 +169,6 @@ public class HomeActivity extends BaseActivity
     getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
 
-    finish = getIntent().getBooleanExtra(IntentUtils.FINISH, false);
-    if (finish) {
-      finish();
-      return;
-    }
-
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 
     initDependencyInjector();
@@ -186,11 +180,10 @@ public class HomeActivity extends BaseActivity
     initRecyclerView();
     initTopBar();
     initSearch();
-    manageDeepLink(getIntent());
-    manageClickNotification(getIntent());
     initPullToRefresh();
     initPreviousCallTags();
     manageLogin(getIntent());
+    manageIntent(getIntent());
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
@@ -223,8 +216,7 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
-    manageDeepLink(intent);
-    manageClickNotification(intent);
+    manageIntent(intent);
   }
 
   @Override protected void onStart() {
@@ -619,20 +611,28 @@ public class HomeActivity extends BaseActivity
     if (token != null) homeGridPresenter.sendToken(token);
   }
 
-  private void manageDeepLink(Intent intent) {
+  private void manageIntent(Intent intent) {
     if (intent != null) {
-      if (intent.getData() != null) {
-        homeGridPresenter.getHeadDeepLink(intent.getDataString());
-      }
-    }
-  }
+      if (intent.hasExtra(IntentUtils.FINISH)) {
+        finish = intent.getBooleanExtra(IntentUtils.FINISH, false);
+        if (finish) {
+          finish();
+          return;
+        }
+      } else if (intent.hasExtra(Constants.NOTIFICATION_HOME)) {
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerUtils.CATEGORY,
+            intent.getStringExtra(Constants.NOTIFICATION_HOME));
+        tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+      } else if (intent.getData() != null) {
+        String path = intent.getData().getPath();
+        String host = intent.getData().getHost();
 
-  private void manageClickNotification(Intent intent) {
-    if (intent != null && intent.hasExtra(Constants.NOTIFICATION_HOME)) {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.CATEGORY,
-          intent.getStringExtra(Constants.NOTIFICATION_HOME));
-      tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+        if (host.startsWith(getString(R.string.web_host))) {
+          navigator.navigateToLive(this, path.substring(1, path.length()),
+              intent.getData().toString());
+        }
+      }
     }
   }
 

@@ -34,7 +34,7 @@ public class ErrorMessageFactory {
     } else if (exception instanceof BlockedException) {
       message = EmojiParser.demojizedText(context.getString(R.string.live_notification_blocked));
     } else if (exception instanceof RoomFullException) {
-      message = EmojiParser.demojizedText(context.getString(R.string.live_join_impossible, 8));
+      message = EmojiParser.demojizedText(context.getString(R.string.live_join_impossible));
     }
 
     message = EmojiParser.demojizedText(message);

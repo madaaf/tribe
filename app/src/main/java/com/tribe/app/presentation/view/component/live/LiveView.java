@@ -55,6 +55,7 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -494,7 +495,7 @@ public class LiveView extends FrameLayout {
           joinLive = true;
 
           String username = getDisplayNameNotification(remotePeer.getSession().getUserId());
-          if (username == null || username.isEmpty()) {
+          if ((username == null || username.isEmpty()) && !remotePeer.getSession().isExternal()) {
             Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
@@ -506,8 +507,7 @@ public class LiveView extends FrameLayout {
           addView(remotePeer);
           btnScreenshot.setVisibility(VISIBLE);
           AnimationUtils.fadeIn(btnScreenshot, 300);
-          onNotificationRemoteWaiting.onNext(
-              getDisplayNameNotification(remotePeer.getSession().getUserId()));
+          onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
           room.sendToPeer(remotePeer, getInvitedPayload(), true);
           refactorNotifyButton();
@@ -515,10 +515,8 @@ public class LiveView extends FrameLayout {
           tempSubscriptions.add(remotePeer.getPeerView()
               .onNotificatinRemoteJoined()
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aVoid -> {
-                onNotificationRemoteJoined.onNext(
-                    getDisplayNameNotification(remotePeer.getSession().getUserId()));
-              }));
+              .subscribe(aVoid -> onNotificationRemoteJoined.onNext(
+                  getDisplayNameFromSession(remotePeer.getSession()))));
         }));
 
     tempSubscriptions.add(room.onRemotePeerRemoved()
@@ -536,7 +534,7 @@ public class LiveView extends FrameLayout {
           refactorNotifyButton();
 
           onNotificationRemotePeerRemoved.onNext(
-              getDisplayNameNotification(remotePeer.getSession().getUserId()));
+              getDisplayNameFromSession(remotePeer.getSession()));
         }));
 
     tempSubscriptions.add(room.onRemotePeerUpdated()
@@ -846,24 +844,26 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = guestFromRemotePeer(remotePeer);
 
       if (nbLiveInRoom() == 0) { // First user joining in a group call
-
         if (live.isGroup()) { // if it's a group
           String groupId = getGroupWaiting();
           if (!StringUtils.isEmpty(groupId)) {
             liveRowView = liveRowViewMap.remove(groupId);
-            animateGroupAvatar(liveRowView);
-            liveRowView.setGuest(guest);
-            liveRowView.setPeerView(remotePeer.getPeerView());
           }
         } else if (live.isInvite()) { // if it's an invite
           String inviteId = getInviteWaiting();
-          if (!StringUtils.isEmpty(getInviteWaiting())) {
+          if (!StringUtils.isEmpty(inviteId)) {
             liveRowView = liveRowViewMap.remove(inviteId);
-            animateGroupAvatar(liveRowView);
-            liveRowView.setGuest(guest);
-            liveRowView.setPeerView(remotePeer.getPeerView());
+          }
+        } else if (!StringUtils.isEmpty(live.getLinkId())) {
+          LiveRowView liveRowViewWeb = liveRowViewMap.get(Live.WEB);
+          if (liveRowViewWeb != null) {
+            liveRowView = liveRowViewMap.remove(Live.WEB);
           }
         }
+
+        animateGroupAvatar(liveRowView);
+        liveRowView.setGuest(guest);
+        liveRowView.setPeerView(remotePeer.getPeerView());
       }
 
       if (liveRowView == null) {
@@ -905,8 +905,9 @@ public class LiveView extends FrameLayout {
   private TribeGuest guestFromRemotePeer(RemotePeer remotePeer) {
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
-        return new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
+        TribeGuest tribeGuest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
             friendship.getProfilePicture(), false, false, null, true, friendship.getUsername());
+        tribeGuest.setExternal(remotePeer.getSession().isExternal());
       }
     }
 
@@ -981,7 +982,7 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = liveRowViewMap.getMap().get(liveRowViewId);
       if (!liveRowView.isWaiting()) {
         TribeGuest guest = liveRowView.getGuest();
-        if (guest != null) {
+        if (guest != null && !guest.isExternal()) {
           usersInLive.add(guest);
         }
       }
@@ -1113,6 +1114,11 @@ public class LiveView extends FrameLayout {
 
           animatorLeftMargin.start();
         }));
+  }
+
+  private String getDisplayNameFromSession(TribeSession tribeSession) {
+    return tribeSession.isExternal() ? getContext().getString(R.string.live_external_user)
+        : getDisplayNameNotification(tribeSession.getUserId());
   }
 
   private String getDisplayNameNotification(String id) {

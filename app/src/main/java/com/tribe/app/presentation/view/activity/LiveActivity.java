@@ -153,6 +153,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
+  public static Intent getCallingIntent(Context context, String linkId, String url) {
+    Intent intent = new Intent(context, LiveActivity.class);
+
+    Live live = new Live.Builder(Live.WEB, Live.WEB).countdown(false)
+        .linkId(linkId)
+        .url(url)
+        .intent(true)
+        .build();
+
+    intent.putExtra(EXTRA_LIVE, live);
+
+    return intent;
+  }
+
   @Inject NotificationManagerCompat notificationManager;
 
   @Inject SoundManager soundManager;
@@ -338,7 +352,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
-        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+        } else if (live.isSessionOrLink()) {
           viewLive.start(live);
           ready();
         } else if (!live.isGroup()) {
@@ -481,7 +495,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this, null);
+
+      if (StringUtils.isEmpty(live.getLinkId())) {
+        livePresenter.getRoomLink(roomConfiguration.getRoomId());
+        Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
+            .show();
+      } else {
+        navigator.inviteToRoom(this, live.getUrl());
+      }
     }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
@@ -702,6 +723,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     onAnonymousReceived.onNext(users);
   }
 
+  @Override public void onRoomLink(String roomLink) {
+    navigator.inviteToRoom(this, roomLink);
+  }
+
   private void putExtraHomeIntent() {
     putExtraRatingNotif();
     putExtraDisplayGrpNotif();
@@ -767,7 +792,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.roomConfiguration = roomConfiguration;
     this.roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(this.roomConfiguration);
-    if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
+    if (!live.isGroup() && !live.isSessionOrLink()) {
       livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
     live.setSessionId(roomConfiguration.getRoomId());
