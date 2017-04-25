@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -13,14 +14,18 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
@@ -32,6 +37,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +66,8 @@ public class AddMembersGroupView extends LinearLayout {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject RxImagePicker rxImagePicker;
+
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
   @BindView(R.id.recyclerViewGroupMembers) RecyclerView recyclerViewGroupMembers;
@@ -78,6 +86,8 @@ public class AddMembersGroupView extends LinearLayout {
 
   @BindView(R.id.addMembersHeader) LinearLayout addMembersHeader;
 
+  @BindView(R.id.avatarView) AvatarView avatarView;
+
   // VARIABLES
   private FriendMembersLayoutManager layoutManager;
   private FriendMembersAdapter adapter;
@@ -85,7 +95,8 @@ public class AddMembersGroupView extends LinearLayout {
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
   private List<GroupMember> newMembers = new ArrayList<>();
-  private String groupeName = null;
+  private String groupName = null;
+  private String avatarGrpUri = null;
   private String currentFilter = "";
   private List<GroupMember> copieUserListTemp = new ArrayList<>();
   private List<String> newMembersIds = new ArrayList<>();
@@ -168,9 +179,10 @@ public class AddMembersGroupView extends LinearLayout {
     recyclerView.setHasFixedSize(true);
     recyclerView.setNestedScrollingEnabled(membership != null);
 
+    avatarView.setBackgroundResource(R.drawable.picto_camera_grpsetting);
     subscriptions.add(
         RxTextView.textChanges(editGroupName).map(CharSequence::toString).subscribe(s -> {
-          groupeName = s;
+          groupName = s;
         }));
 
     subscriptions.add(
@@ -252,6 +264,33 @@ public class AddMembersGroupView extends LinearLayout {
       userListTemp.addAll(0, newMembers);
     }
     adapter.setItems(userListTemp);
+  }
+
+  @OnClick(R.id.avatarView) void clickAvatar() {
+    subscriptions.add(DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+      if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      }
+    }));
+  }
+
+  public void loadUri(Uri uri) {
+    this.avatarGrpUri = uri.toString();
+    avatarView.load(uri.toString());
+  }
+
+  public String getAvatarUri() {
+    return avatarGrpUri;
+  }
+
+  public String getGroupName() {
+    return groupName;
   }
 
   public void updateGroup(Group group, boolean full) {
@@ -365,10 +404,6 @@ public class AddMembersGroupView extends LinearLayout {
   // OBSERVABLES
   public Observable<List<GroupMember>> onMembersChanged() {
     return membersChanged;
-  }
-
-  public String getGroupeName() {
-    return groupeName;
   }
 
   public void addPrefildMumbers(List<GroupMember> prefilledMembers) {

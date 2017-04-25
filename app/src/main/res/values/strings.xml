@@ -103,6 +103,9 @@
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>
+	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
+	<string name="live_notification_call_after_decline">Video call %1$s</string>
+	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -312,7 +315,7 @@
 	<string name="live_invite_link">Invite\nlink</string>
 	<string name="live_drop_friend">Drop here to add your friend</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
-	<string name="live_join_impossible">:lock: Only %1$d friends at the same time!</string>
+	<string name="live_join_impossible">:lock: Only 8 friends at the same time!</string>
 	<string name="live_dismiss_invitation_title">Remove guest :skull:</string>
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>

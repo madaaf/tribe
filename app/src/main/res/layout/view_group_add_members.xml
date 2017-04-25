@@ -19,12 +19,16 @@
         android:layout_height="70dp"
         android:orientation="horizontal"
         >
-      <ImageView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+          android:id="@+id/avatarView"
+          android:layout_width="@dimen/avatar_size_medium"
+          android:layout_height="@dimen/avatar_size_medium"
           android:layout_gravity="center"
-          android:padding="10dp"
-          android:src="@drawable/picto_camera_grpsetting"
+          android:layout_margin="15dp"
+          app:hasHole="false"
+          app:hasInd="false"
+          app:hasShadow="false"
           />
 
       <include layout="@layout/view_separator_vertical_simple" />

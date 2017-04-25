@@ -271,7 +271,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     groupEntity = new GroupEntity();
     groupEntity.setMembersId(membersId);
-    String grpName = viewAddMembersGroup.getGroupeName();
+    String avatarUri = viewAddMembersGroup.getAvatarUri();
+    if (avatarUri != null) groupEntity.setImgPath(avatarUri);
+    String grpName = viewAddMembersGroup.getGroupName();
     if (grpName != null && !grpName.isEmpty()) {
       groupEntity.setName(grpName);
     } else {
