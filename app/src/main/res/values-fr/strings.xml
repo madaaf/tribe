@@ -163,7 +163,7 @@
 	<string name="group_search_friends_placeholder">Rechercher vos amis</string>
 	
 	<!-- Group Members -->
-	<string name="group_members_remove_member_alert_message">Would you like to remove this friends from the members ?</string>
+	<string name="group_members_remove_member_alert_message">Voulez-vous supprimer cet ami des membres du groupe ?</string>
 	<string name="group_members_remove_member_alert_confirm">Supprimer %1$s</string>
 	
 	<!-- Settings -->
@@ -186,13 +186,16 @@
 	
 	<!-- Onboarding Phone -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
-	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
+	<string name="onboarding_phone_disclaimer">En vous enregistrant, vous acceptez les CGU et la Politique de confidentialité</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
+	<string name="onboarding_step_call">Entrez le code de vérification reçu par téléphone.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
-	<string name="onboarding_code_sending_status">Sending verification code…</string>
-	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_sending_status">Envoi du code de vérification…</string>
+	<string name="onboarding_code_calling_status">Appel en cours…</string>
+	<string name="onboarding_code_sent_status">Code envoyé au %1$s</string>
+	<string name="onboarding_code_called_status">Appel au %1$s</string>
 	<string name="onboarding_code_resend_status">Vous n\'avez pas reçu le code ? Appuyez pour renvoyer !</string>
-	<string name="onboarding_code_error_status">An error occured. Retry</string>
+	<string name="onboarding_code_error_status">Une erreur a eu lieu. Réessayez</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
 	
@@ -226,6 +229,7 @@
 	<string name="onboarding_popup_error_title">À votre service !</string>
 	<string name="onboarding_popup_error_description">Il semblerait que vous\nn\'ayez pas reçu le code.</string>
 	<string name="onboarding_popup_error_sent_to">Code envoyé à :</string>
+	<string name="onboarding_popup_error_calling">Appel au :</string>
 	<string name="onboarding_popup_error_edit_button_title">Fermer</string>
 	<string name="onboarding_popup_error_resend_button_title">Réessayer</string>
 	<string name="onboarding_popup_error_call_me_button_title">Appelez-moi</string>
@@ -267,7 +271,7 @@
 	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
-	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! %1$s</string>
+	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! Rejoins-le ici depuis l\'app ou depuis le web : %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>

@@ -47,8 +47,8 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
-import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -271,8 +271,12 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     groupEntity = new GroupEntity();
     groupEntity.setMembersId(membersId);
-    groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
-
+    String grpName = viewAddMembersGroup.getGroupeName();
+    if (grpName != null && !grpName.isEmpty()) {
+      groupEntity.setName(grpName);
+    } else {
+      groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+    }
     groupPresenter.createGroup(groupEntity);
   }
 

@@ -70,6 +70,8 @@ public class AddMembersGroupView extends LinearLayout {
 
   @BindView(R.id.layoutMembers) ViewGroup layoutMembers;
 
+  @BindView(R.id.editGroupName) EditTextFont editGroupName;
+
   // VARIABLES
   private FriendMembersLayoutManager layoutManager;
   private FriendMembersAdapter adapter;
@@ -77,6 +79,7 @@ public class AddMembersGroupView extends LinearLayout {
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
   private List<GroupMember> newMembers = new ArrayList<>();
+  private String groupeName = null;
   private String currentFilter = "";
   private List<GroupMember> copieUserListTemp = new ArrayList<>();
   private List<String> newMembersIds = new ArrayList<>();
@@ -157,6 +160,11 @@ public class AddMembersGroupView extends LinearLayout {
         new DividerFirstLastItemDecoration(screenUtils.dpToPx(15f), screenUtils.dpToPx(10), 1));
     recyclerView.setHasFixedSize(true);
     recyclerView.setNestedScrollingEnabled(membership != null);
+
+    subscriptions.add(
+        RxTextView.textChanges(editGroupName).map(CharSequence::toString).subscribe(s -> {
+          groupeName = s;
+        }));
 
     subscriptions.add(
         RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
@@ -319,6 +327,10 @@ public class AddMembersGroupView extends LinearLayout {
   // OBSERVABLES
   public Observable<List<GroupMember>> onMembersChanged() {
     return membersChanged;
+  }
+
+  public String getGroupeName() {
+    return groupeName;
   }
 
   public void addPrefildMumbers(List<GroupMember> prefilledMembers) {
