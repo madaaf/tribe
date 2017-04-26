@@ -49,6 +49,7 @@ import javax.inject.Singleton;
     if (tutorialState.get().contains(key)) {
       contain = true;
     }
+
     return !contain;
   }
 }

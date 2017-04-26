@@ -1,5 +1,9 @@
 package com.tribe.app.presentation.view.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,19 +15,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.OvershootInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 
@@ -39,7 +43,8 @@ public class PopupContainerView extends FrameLayout {
   public static final String DISPLAY_BUZZ_POPUP = "DISPLAY_BUZZ_POPUP";
   public static final String DISPLAY_DRAGING_FRIEND_POPUP = "DISPLAY_DRAGING_FRIEND_POPUP";
   private static int DURATION_EXIT_POPUP = 300;
-  private static float OVERSHOOT_TENSION = 1.15f;
+  private static double TENSION = 400;
+  private static double DAMPER = 20;
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.nativeDialogsContainer) FrameLayout nativeDialogsContainer;
@@ -162,13 +167,19 @@ public class PopupContainerView extends FrameLayout {
     View view = inflater.inflate(getDrawable(type), null);
     setLayoutParam(view);
     nativeDialogsContainer.addView(view);
+    SpringSystem springSystem = SpringSystem.create();
+    Spring spring = springSystem.createSpring();
+    SpringConfig config = new SpringConfig(TENSION, DAMPER);
+    spring.setSpringConfig(config);
 
-    Animation scaleAnimation = android.view.animation.AnimationUtils.loadAnimation(getContext(),
-        R.anim.scale_appear_popup);
-    scaleAnimation.setDuration(DURATION_EXIT_POPUP);
-    scaleAnimation.setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION));
-    scaleAnimation.setFillAfter(true);
-    startAnimation(scaleAnimation);
+    spring.addListener(new SimpleSpringListener() {
+      @Override public void onSpringUpdate(Spring spring) {
+        float value = (float) spring.getCurrentValue();
+        view.setScaleX(value);
+        view.setScaleY(value);
+      }
+    });
+    spring.setEndValue(1);
   }
 
   private void setLayoutParam(View view) {
@@ -198,17 +209,25 @@ public class PopupContainerView extends FrameLayout {
   private void hideViews() {
     for (int i = 0; i < nativeDialogsContainer.getChildCount(); i++) {
       View v = nativeDialogsContainer.getChildAt(i);
-      ScaleAnimation scale = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f,
-          Animation.RELATIVE_TO_SELF, 0.5f);
-      scale.setDuration(DURATION_EXIT_POPUP);
-      scale.setFillAfter(true);
-      scale.setAnimationListener(new AnimationListenerAdapter() {
-        @Override public void onAnimationEnd(Animation animation) {
+      ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(v, "scaleX", 0f);
+      ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(v, "scaleY", 0f);
+      scaleDownX.setDuration(DURATION_EXIT_POPUP);
+      scaleDownY.setDuration(DURATION_EXIT_POPUP);
+
+      AnimatorSet scaleDown = new AnimatorSet();
+      scaleDown.play(scaleDownX).with(scaleDownY);
+      scaleDownX.addUpdateListener(valueAnimator -> {
+        float value = (float) valueAnimator.getAnimatedValue();
+        v.setAlpha(value);
+      });
+
+      scaleDownX.addListener(new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
           super.onAnimationEnd(animation);
           ((ViewGroup) v.getParent()).removeView(v);
         }
       });
-      v.startAnimation(scale);
+      scaleDown.start();
     }
   }
 
