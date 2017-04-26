@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -9,17 +10,22 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
@@ -31,6 +37,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +58,15 @@ public class AddMembersGroupView extends LinearLayout {
   private int DURATION_FADE = 150;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
+  private int DURATION_CONTAINER_ANIM = 500;
 
   @Inject TagManager tagManager;
 
   @Inject User user;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject RxImagePicker rxImagePicker;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -70,6 +80,14 @@ public class AddMembersGroupView extends LinearLayout {
 
   @BindView(R.id.layoutMembers) ViewGroup layoutMembers;
 
+  @BindView(R.id.editGroupName) EditTextFont editGroupName;
+
+  @BindView(R.id.addMembersContainer) LinearLayout addMembersContainer;
+
+  @BindView(R.id.addMembersHeader) LinearLayout addMembersHeader;
+
+  @BindView(R.id.avatarView) AvatarView avatarView;
+
   // VARIABLES
   private FriendMembersLayoutManager layoutManager;
   private FriendMembersAdapter adapter;
@@ -77,9 +95,12 @@ public class AddMembersGroupView extends LinearLayout {
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
   private List<GroupMember> newMembers = new ArrayList<>();
+  private String groupName = null;
+  private String avatarGrpUri = null;
   private String currentFilter = "";
   private List<GroupMember> copieUserListTemp = new ArrayList<>();
   private List<String> newMembersIds = new ArrayList<>();
+  boolean containerAnimationFinish = true;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -158,10 +179,24 @@ public class AddMembersGroupView extends LinearLayout {
     recyclerView.setHasFixedSize(true);
     recyclerView.setNestedScrollingEnabled(membership != null);
 
+    avatarView.setBackgroundResource(R.drawable.picto_camera_grpsetting);
+    subscriptions.add(
+        RxTextView.textChanges(editGroupName).map(CharSequence::toString).subscribe(s -> {
+          groupName = s;
+        }));
+
     subscriptions.add(
         RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
           filter(s);
+          animateContainer(s);
         }));
+
+    editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        animateContainer("");
+      }
+      return false;
+    });
 
     subscriptions.add(adapter.clickAdd()
         .map(view -> {
@@ -231,6 +266,33 @@ public class AddMembersGroupView extends LinearLayout {
     adapter.setItems(userListTemp);
   }
 
+  @OnClick(R.id.avatarView) void clickAvatar() {
+    subscriptions.add(DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+      if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      }
+    }));
+  }
+
+  public void loadUri(Uri uri) {
+    this.avatarGrpUri = uri.toString();
+    avatarView.load(uri.toString());
+  }
+
+  public String getAvatarUri() {
+    return avatarGrpUri;
+  }
+
+  public String getGroupName() {
+    return groupName;
+  }
+
   public void updateGroup(Group group, boolean full) {
     if (full) {
       membership.setGroup(group);
@@ -244,6 +306,29 @@ public class AddMembersGroupView extends LinearLayout {
     } else {
       membership.getGroup().setPicture(group.getPicture());
       membership.getGroup().setName(group.getName());
+    }
+  }
+
+  private void animateContainer(String txt) {
+    if (txt != null && !txt.isEmpty()) {
+      if (containerAnimationFinish) {
+        containerAnimationFinish = false;
+        addMembersContainer.animate()
+            .translationY(-addMembersHeader.getHeight())
+            .setDuration(DURATION_CONTAINER_ANIM)
+            .withEndAction(() -> {
+              LayoutParams params = (LayoutParams) addMembersContainer.getLayoutParams();
+              params.setMargins(0, 0, 0, -addMembersHeader.getHeight());
+              addMembersContainer.setLayoutParams(params);
+            })
+            .start();
+      }
+    } else {
+      addMembersContainer.animate()
+          .translationY(0)
+          .setDuration(DURATION_CONTAINER_ANIM)
+          .withEndAction(() -> containerAnimationFinish = true)
+          .start();
     }
   }
 
