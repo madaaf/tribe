@@ -861,9 +861,11 @@ public class LiveView extends FrameLayout {
           }
         }
 
-        animateGroupAvatar(liveRowView);
-        liveRowView.setGuest(guest);
-        liveRowView.setPeerView(remotePeer.getPeerView());
+        if (liveRowView != null) {
+          animateGroupAvatar(liveRowView);
+          liveRowView.setGuest(guest);
+          liveRowView.setPeerView(remotePeer.getPeerView());
+        }
       }
 
       if (liveRowView == null) {
