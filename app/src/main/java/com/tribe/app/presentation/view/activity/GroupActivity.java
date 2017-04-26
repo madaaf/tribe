@@ -410,6 +410,11 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     }
     viewAddMembersGroup =
         (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_group_add_members, param);
+    if (param == null) {
+      viewAddMembersGroup.addMembersGroupViewType(AddMembersGroupView.ADD_MEMBERS_FROM_GRID);
+    } else {
+      viewAddMembersGroup.addMembersGroupViewType(AddMembersGroupView.ADD_MEMBERS_FROM_SETTING);
+    }
     viewAddMembersGroup.addPrefildMumbers(prefilledGrpMembers);
     subscriptions.add(viewAddMembersGroup.onMembersChanged().subscribe(addedMembers -> {
       newMembers.clear();

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.group;
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.support.annotation.StringDef;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -54,6 +55,14 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class AddMembersGroupView extends LinearLayout {
+
+  @StringDef({
+      ADD_MEMBERS_FROM_SETTING, ADD_MEMBERS_FROM_GRID
+  }) public @interface AddMembersGroupViewType {
+  }
+
+  public static final String ADD_MEMBERS_FROM_SETTING = "ADD_MEMBERS_FROM_SETTING";
+  public static final String ADD_MEMBERS_FROM_GRID = "ADD_MEMBERS_FROM_GRID";
 
   private int DURATION_FADE = 150;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
@@ -408,5 +417,13 @@ public class AddMembersGroupView extends LinearLayout {
 
   public void addPrefildMumbers(List<GroupMember> prefilledMembers) {
     newMembers.addAll(prefilledMembers);
+  }
+
+  public void addMembersGroupViewType(@AddMembersGroupViewType String type) {
+    if (type == ADD_MEMBERS_FROM_SETTING) {
+      addMembersHeader.setVisibility(GONE);
+    } else {
+      addMembersHeader.setVisibility(VISIBLE);
+    }
   }
 }
