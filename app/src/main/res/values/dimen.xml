@@ -34,7 +34,7 @@
   <dimen name="margin_buzz">75dp</dimen>
   <dimen name="margin_horizontal">5dp</dimen>
   <dimen name="margin_horizonta_avatrs">3dp</dimen>
-
+  
   <!-- PADDING -->
   <dimen name="icons_padding">3.75dp</dimen>
   <dimen name="section_button_vertical_padding">12dp</dimen>
