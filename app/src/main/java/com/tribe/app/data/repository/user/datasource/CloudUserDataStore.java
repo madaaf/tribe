@@ -305,7 +305,7 @@ public class CloudUserDataStore implements UserDataStore {
 
           return contactList;
         }).flatMap(contactList -> {
-      if (contactList == null || contactList.size() == 0) return Observable.empty();
+      if (contactList == null || contactList.size() == 0) return Observable.just(null);
 
       List<ContactInterface> phones = new ArrayList<>();
       List<ContactInterface> fbIds = new ArrayList<>();
@@ -329,7 +329,9 @@ public class CloudUserDataStore implements UserDataStore {
               phones.add(contactI);
               ContactABRealm ab = (ContactABRealm) contactI;
               lookupPhones.add(new LookupEntity(ab.getPhones().get(0).getPhone(), ab.getFirstName(),
-                  ab.getLastName(), (ab.getEmails() != null && ab.getEmails().size() > 0) ? ab.getEmails().get(0) : null));
+                  ab.getLastName(),
+                  (ab.getEmails() != null && ab.getEmails().size() > 0) ? ab.getEmails().get(0)
+                      : null));
             }
           } else if (contactI instanceof ContactFBRealm) {
             ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
@@ -398,10 +400,12 @@ public class CloudUserDataStore implements UserDataStore {
     }, (contactList, lookupHolder) -> lookupHolder).flatMap(lookupHolder -> {
       StringBuilder resultLookupUserIds = new StringBuilder();
 
-      for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
-        if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
-          resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
-          resultLookupUserIds.append(",");
+      if (lookupHolder != null) {
+        for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
+          if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+            resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
+            resultLookupUserIds.append(",");
+          }
         }
       }
 
@@ -410,32 +414,36 @@ public class CloudUserDataStore implements UserDataStore {
               resultLookupUserIds.length() - 1) : "",
           context.getString(R.string.userfragment_infos)));
     }, (lookupHolder, lookupUsers) -> {
-      List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
-      for (int i = 0; i < listLookup.size(); i++) {
-        LookupObject lookupObject = listLookup.get(i);
-        if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
-          for (UserRealm user : lookupUsers) {
-            if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
-          }
-        }
-
-        if (lookupObject != null) {
-          ContactInterface ci = lookupHolder.getContactPhoneList().get(i);
-
-          if (lookupObject.getUserRealm() != null) {
-            ci.addUser(lookupObject.getUserRealm());
-            if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
-              ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
+      if (lookupHolder != null && lookupUsers != null) {
+        List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
+        for (int i = 0; i < listLookup.size(); i++) {
+          LookupObject lookupObject = listLookup.get(i);
+          if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+            for (UserRealm user : lookupUsers) {
+              if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
             }
-          } else {
-            ci.setHowManyFriends(lookupObject.getHowManyFriends());
           }
 
-          ci.setPhone(lookupObject.getPhone());
+          if (lookupObject != null) {
+            ContactInterface ci = lookupHolder.getContactPhoneList().get(i);
+
+            if (lookupObject.getUserRealm() != null) {
+              ci.addUser(lookupObject.getUserRealm());
+              if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
+                ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
+              }
+            } else {
+              ci.setHowManyFriends(lookupObject.getHowManyFriends());
+            }
+
+            ci.setPhone(lookupObject.getPhone());
+          }
         }
+
+        return lookupHolder.getContactAllList();
       }
 
-      return lookupHolder.getContactAllList();
+      return null;
     }).doOnNext(saveToCacheContacts).doOnError(throwable -> Timber.d(throwable));
   }
 
@@ -985,7 +993,8 @@ public class CloudUserDataStore implements UserDataStore {
     final String request =
         context.getString(R.string.mutation, context.getString(R.string.getRoomLink, roomId));
 
-    return this.tribeApi.getRoomLink(request).map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
+    return this.tribeApi.getRoomLink(request)
+        .map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
   }
 }
 

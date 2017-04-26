@@ -149,6 +149,9 @@ import timber.log.Timber;
 
         if (!contactABRealmList.isEmpty()) subscriber.onNext(contactABRealmList);
         subscriber.onCompleted();
+      } else if (!subscriber.isUnsubscribed()) {
+        subscriber.onNext(new ArrayList<ContactABRealm>());
+        subscriber.onCompleted();
       }
 
       long timeEnd = System.nanoTime();
@@ -157,8 +160,9 @@ import timber.log.Timber;
           + " / "
           + (timeEnd - timeStart) / 1000000.0f
           + " ms");
+    } else if (!subscriber.isUnsubscribed()) {
+      subscriber.onNext(new ArrayList<ContactABRealm>());
+      subscriber.onCompleted();
     }
-
-    subscriber.onCompleted();
   }
 }
