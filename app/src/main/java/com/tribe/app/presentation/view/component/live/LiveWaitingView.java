@@ -51,8 +51,6 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveWaitingView extends FrameLayout implements View.OnClickListener {
 
-  private final static int TIMER_DISMISS_REMOVE = 5000;
-
   private final static int DURATION_FAST_FURIOUS = 60;
   private final static int DURATION_FAST = 300;
   private final static int DELAY_COUNTDOWN = 500;
@@ -61,6 +59,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   private final static int DURATION_SCALE = 1000;
   private final static int SCALE_DELAY = 250;
   private final static int DURATION_BUZZ = 300;
+  private final static int TIMER_SHOW_REMOVE = 30000;
 
   private final static float OVERSHOOT_SCALE = 1.25f;
 
@@ -105,7 +104,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription subscriptionCountdown, subscriptionDismissRemove;
+  private Subscription subscriptionCountdown, subscriptionShowRemove;
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotifyStepDone = PublishSubject.create();
   private PublishSubject<TribeGuest> onShouldRemoveGuest = PublishSubject.create();
@@ -218,8 +217,6 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   @OnClick(R.id.btnRemove) void remove() {
-    subscriptionDismissRemove.unsubscribe();
-
     subscriptions.add(DialogFactory.dialog(getContext(),
         EmojiParser.demojizedText(getContext().getString(R.string.live_dismiss_invitation_title)),
         getContext().getString(R.string.live_dismiss_invitation_message),
@@ -326,6 +323,10 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
         }
       }, null);
     } else {
+      subscriptionShowRemove = Observable.timer(TIMER_SHOW_REMOVE, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> showRemovePeer());
+
       startPulseImmediate();
     }
   }
@@ -416,6 +417,11 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   }
 
   public void stopPulse() {
+    if (subscriptionShowRemove != null) {
+      subscriptionShowRemove.unsubscribe();
+      subscriptionShowRemove = null;
+    }
+
     clearAnimator(animatorPulse);
     clearAnimator(animatorScaleAvatar);
     clearAnimator(animatorScaleUp);
@@ -511,14 +517,9 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
     subscriptions.add(Observable.timer(DURATION_FAST, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> animateRemovePeer(false)));
-
-    subscriptionDismissRemove = Observable.timer(TIMER_DISMISS_REMOVE, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> hideRemovePeer());
   }
 
   private void hideRemovePeer() {
-    subscriptionDismissRemove.unsubscribe();
     removeMode = false;
     subscriptions.add(Observable.timer(DURATION_FAST, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -573,7 +574,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
 
   public void dispose() {
     if (subscriptionCountdown != null) subscriptionCountdown.unsubscribe();
-    if (subscriptionDismissRemove != null) subscriptionDismissRemove.unsubscribe();
+    if (subscriptionShowRemove != null) subscriptionShowRemove.unsubscribe();
     subscriptions.clear();
     stopPulse();
     progressBarJoining.clearAnimation();

@@ -103,6 +103,9 @@
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
+	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
+	<string name="live_notification_call_after_decline">Appeler %1$s</string>
+	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>

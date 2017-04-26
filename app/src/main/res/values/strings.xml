@@ -103,6 +103,9 @@
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>
+	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
+	<string name="live_notification_call_after_decline">Video call %1$s</string>
+	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
