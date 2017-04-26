@@ -714,10 +714,41 @@ public class CloudUserDataStore implements UserDataStore {
         !StringUtils.isEmpty(members) ? members : "",
         context.getString(R.string.groupfragment_info));
 
-    return this.tribeApi.createGroup(request)
-        .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-        .flatMap(groupRealm -> createMembership(groupRealm.getId()),
-            (groupRealm, newMembership) -> newMembership);
+    if (groupEntity.getImgPath() == null) {
+      return this.tribeApi.createGroup(request)
+          .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
+          .flatMap(groupRealm -> createMembership(groupRealm.getId()),
+              (groupRealm, newMembership) -> newMembership);
+    } else {
+      RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+
+      File file = new File(Uri.parse(groupEntity.getImgPath()).getPath());
+
+      if (!(file != null && file.exists() && file.length() > 0)) {
+        InputStream inputStream = null;
+        file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
+        try {
+          inputStream =
+              context.getContentResolver().openInputStream(Uri.parse(groupEntity.getImgPath()));
+          FileUtils.copyInputStreamToFile(inputStream, file);
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      RequestBody requestFile = null;
+      MultipartBody.Part body = null;
+
+      requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+      body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
+
+      return this.tribeApi.createGroupMedia(query, body)
+          .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
+          .flatMap(groupRealm -> createMembership(groupRealm.getId()),
+              (groupRealm, newMembership) -> newMembership);
+    }
   }
 
   @Override
