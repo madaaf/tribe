@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.notification;
 import android.support.annotation.StringDef;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by tiago on 29/01/2017.
@@ -36,6 +37,12 @@ public class NotificationPayload implements Serializable {
   private boolean shouldDisplayDrag = true;
   private String thread;
   private int live_users_length;
+  private List<MissedCallAction> missedCallList;
+  private long time;
+
+  public void setTime(long time) {
+    this.time = time;
+  }
 
   public void setUserId(String userId) {
     this.user_id = userId;
@@ -55,6 +62,14 @@ public class NotificationPayload implements Serializable {
 
   public void setClickAction(String clickAction) {
     this.click_action = clickAction;
+  }
+
+  public List<MissedCallAction> getMissedCallList() {
+    return missedCallList;
+  }
+
+  public void setMissedCallActionList(List<MissedCallAction> missedCallList) {
+    this.missedCallList = missedCallList;
   }
 
   public String getClickAction() {

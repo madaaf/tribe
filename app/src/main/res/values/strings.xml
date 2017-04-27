@@ -275,7 +275,7 @@
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
-	<string name="share_live">Just started a video call on Tribe! Join now from the app or from the web: %1$s</string>
+	<string name="share_live">Just started a video call on Tribe! Join now from the app or from your laptop: %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>
@@ -493,4 +493,8 @@
 	<string name="callback_notification_title_one">You recently missed a call!\nTap to see who to call back</string>
 	<string name="callback_notification_title_multiple">You recently missed %1$d calls!\nTap to see who to call back</string>
 	<string name="callback_notification_action">Call back %1$s (missed %2$s)</string>
+	<string name="callback_notification_default_action">Tap to see who to call back</string>
+	<string name="callback_notification_missed_call_title">Missed calls</string>
+	<string name="callback_notification_many_missed_call">(%1$s missed calls)</string>
+	<string name="callback_notification_one_missed_call">(%1$s missed call)</string>
 </resources>

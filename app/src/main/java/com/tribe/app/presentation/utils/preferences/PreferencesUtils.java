@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.entity.LookupObject;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,8 @@ public class PreferencesUtils {
   public static String NEW_CONTACT_TOOLTIP = "NEW_CONTACT_TOOLTIP";
   public static String FULLSCREEN_NOTIFICATIONS = "FULLSCREEN_NOTIFICATIONS";
   public static String NUMBER_OF_CALLS = "NUMBER_OF_CALLS";
+  public static String NUMBER_OF_MISSED_CALLS = "NUMBER_OF_MISSED_CALLS";
+  public static String MISSED_PLAYLOAD_NOTIF = "MISSED_PLAYLOAD_NOTIF";
   public static String COUNTER_CALL_GRP_BTN = "COUNTER_CALL_GRP_BTN";
   public static String IS_GROUPE_CREATED = "IS_GROUPE_CREATED";
   public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
@@ -69,6 +72,20 @@ public class PreferencesUtils {
     Type type = new TypeToken<List<LookupObject>>() {
     }.getType();
     preference.set(gson.toJson(lookupObjectList, type));
+  }
+
+  public static void savePlayloadNotificationAsJson(
+      List<NotificationPayload> notificationPayloadList, Preference<String> preference) {
+    Gson gson = new GsonBuilder().create();
+    Type type = new TypeToken<List<NotificationPayload>>() {
+    }.getType();
+    preference.set(gson.toJson(notificationPayloadList, type));
+  }
+
+  public static List<NotificationPayload> getPlayloadNotificationList(
+      Preference<String> preference) {
+    return new Gson().fromJson(preference.get(), new TypeToken<List<NotificationPayload>>() {
+    }.getType());
   }
 
   public static List<LookupObject> getLookup(Preference<String> preference) {

@@ -17,6 +17,7 @@ import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
+import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -63,6 +64,8 @@ import dagger.Component;
   void inject(DebugActivity debugActivity);
 
   void inject(LifeNotification lifeNotification);
+
+  void inject(MissedCallDetailActivity missedCallDetailActivity);
 
   void inject(PopupContainerView popupContainerView);
 

@@ -68,6 +68,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -118,6 +119,8 @@ public class HomeActivity extends BaseActivity
   @Inject StateManager stateManager;
 
   @Inject SoundManager soundManager;
+
+  @Inject MissedCallManager missedCallManager;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
@@ -259,6 +262,8 @@ public class HomeActivity extends BaseActivity
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
     }
+
+    initMissedCall();
   }
 
   @Override protected void onPause() {
@@ -338,6 +343,15 @@ public class HomeActivity extends BaseActivity
 
       return new Pair<>(nbContacts, hasNewContacts);
     }).subscribe(onNewContactsInfos));
+  }
+
+  private void initMissedCall() {
+    if (missedCallManager != null && missedCallManager.getNbrOfMissedCall() > 0) {
+      Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
+      intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
+          missedCallManager.buildNotificationBuilderFromMissedCallList());
+      sendBroadcast(intentUnique);
+    }
   }
 
   private void initUi() {
@@ -835,12 +849,12 @@ public class HomeActivity extends BaseActivity
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
+              missedCallManager);
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()

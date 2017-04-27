@@ -16,6 +16,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -78,6 +79,11 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getInteger(PreferencesUtils.NUMBER_OF_CALLS, 0);
   }
 
+  @Provides @Singleton Preference<Integer> provideNumberOfMissedCalls(
+      Context context, RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.NUMBER_OF_MISSED_CALLS, 0);
+  }
+
   @Provides @Singleton @CounterOfCallsForGrpButton
   Preference<Integer> provideCounterOfCallsForGrpButton(Context context,
       RxSharedPreferences prefs) {
@@ -120,6 +126,12 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @FullscreenNotificationState
   Preference<Set<String>> provideFullscreenNotificationState(RxSharedPreferences prefs) {
     return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
+  }
+
+  @Provides @Singleton @MissedPlayloadNotification
+  Preference<String> providedMissedPlayloadNotification(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.MISSED_PLAYLOAD_NOTIF, null);
   }
 
   @Provides @Singleton @CallTagsMap Preference<String> provideCallTagsMap(
