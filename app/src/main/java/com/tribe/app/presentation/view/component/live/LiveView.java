@@ -189,13 +189,10 @@ public class LiveView extends FrameLayout {
     return live.getDisplayName();
   }
 
-  public void dispose(boolean isJump) {
+  public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
-    Timber.d("dispose");
     if (live != null) {
-      Timber.d("dispose live");
-
       double duration = 0.0D;
 
       if (timeStart > 0) {
@@ -252,6 +249,18 @@ public class LiveView extends FrameLayout {
       room.leaveRoom();
     }
 
+    tempSubscriptions.clear();
+
+    if (!isJump) {
+      Timber.d("dispose !isJump");
+      persistentSubscriptions.clear();
+      viewLocalLive.dispose();
+    }
+  }
+
+  public void dispose(boolean isJump) {
+    Timber.d("disposing");
+
     if (animatorBuzzAvatar != null) {
       animatorBuzzAvatar.cancel();
     }
@@ -259,13 +268,9 @@ public class LiveView extends FrameLayout {
     viewStatusName.dispose();
     viewControlsLive.dispose();
 
-    tempSubscriptions.clear();
-
     Timber.d("isJump : " + isJump);
     if (!isJump) {
       Timber.d("dispose !isJump");
-      persistentSubscriptions.clear();
-      viewLocalLive.dispose();
       unbinder.unbind();
     }
   }

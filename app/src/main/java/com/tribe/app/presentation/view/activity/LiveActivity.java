@@ -237,8 +237,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onNewIntent(Intent intent) {
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    boolean isJump = true;
     manageClickNotification(getIntent());
-    viewLive.dispose(true);
+    viewLive.endCall(isJump);
+    viewLive.dispose(isJump);
     viewLive.jump();
     initParams(intent);
     live.setCountdown(false);
@@ -254,6 +257,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onStop() {
     Timber.d("onStop");
+    livePresenter.onViewDetached();
     super.onStop();
   }
 
@@ -286,6 +290,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     soundManager.cancelMediaPlayer();
+
+    viewLiveContainer.dispose();
+    viewLive.dispose(false);
 
     if (audioManager != null) {
       audioManager.stop();
@@ -756,9 +763,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
-    livePresenter.onViewDetached();
-    viewLiveContainer.dispose();
-    viewLive.dispose(false);
+    viewLive.endCall(false);
     putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
