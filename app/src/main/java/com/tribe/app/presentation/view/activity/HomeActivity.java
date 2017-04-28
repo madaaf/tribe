@@ -674,9 +674,9 @@ public class HomeActivity extends BaseActivity
                 return;
               }
             }
-
-            if (!displayingPopup) homeGridPresenter.sendInvitations();
           }
+
+          if (!displayingPopup) homeGridPresenter.sendInvitations();
         }
       });
     }

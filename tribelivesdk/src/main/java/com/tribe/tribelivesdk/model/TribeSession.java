@@ -8,7 +8,7 @@ public class TribeSession {
 
   public static final String PUBLISHER_ID = "publisher";
   public static final String ANONYMOUS = "anonymous";
-  public static final String WEB_ID = "H1tSjT45l";
+  public static final String WEB_ID = "anon__";
 
   private String peerId;
   private String userId;
@@ -18,7 +18,7 @@ public class TribeSession {
     this.peerId = peerId;
     this.userId = userId;
 
-    if (userId == null || userId.equals("") || userId.equals(WEB_ID)) {
+    if (userId == null || userId.equals("") || userId.startsWith(WEB_ID)) {
       isExternal = true;
       this.userId = peerId;
     }
