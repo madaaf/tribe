@@ -231,7 +231,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initParams(getIntent());
     init();
     initResources();
-    initAppState();
     initRemoteConfig();
     manageClickNotification(getIntent());
   }
@@ -253,6 +252,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     notificationManager.cancelAll();
     fullScreenNotificationState.set(new HashSet<>());
     livePresenter.onViewAttached(this);
+    initAppState();
   }
 
   @Override protected void onStop() {
@@ -284,8 +284,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onDestroy() {
     Timber.d("onDestroy");
-    appStateMonitor.removeListener(this);
-    appStateMonitor.stop();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -387,9 +385,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initAppState() {
-    appStateMonitor = RxAppStateMonitor.create(getApplication());
-    appStateMonitor.addListener(this);
-    appStateMonitor.start();
+    if (appStateMonitor == null) {
+      appStateMonitor = RxAppStateMonitor.create(getApplication());
+      appStateMonitor.addListener(this);
+      appStateMonitor.start();
+    }
   }
 
   private void ratingNotificationSubscribe() {
@@ -763,6 +763,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
+    appStateMonitor.stop();
+    appStateMonitor.removeListener(this);
     viewLive.endCall(false);
     putExtraHomeIntent();
     super.finish();

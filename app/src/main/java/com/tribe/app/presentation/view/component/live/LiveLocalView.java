@@ -165,7 +165,7 @@ public class LiveLocalView extends FrameLayout {
     if (!localMediaConfiguration.isVideoEnabled()) {
       UIUtils.hideReveal(cardViewStreamLayout, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
-          animation.removeAllListeners();
+          if (animation != null) animation.removeAllListeners();
           cardViewStreamLayout.setVisibility(View.GONE);
         }
       });
@@ -176,7 +176,7 @@ public class LiveLocalView extends FrameLayout {
         }
 
         @Override public void onAnimationEnd(Animator animation) {
-          animation.removeAllListeners();
+          if (animation != null) animation.removeAllListeners();
         }
       });
     }
