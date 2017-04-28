@@ -64,6 +64,11 @@ android {
     resValue "string", "no_profile_picture_url", "http://no"
   }
 
+  sourceSets.main {
+    jni.srcDirs = []
+    jniLibs.srcDir 'src/main/jniLibs'
+  }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8

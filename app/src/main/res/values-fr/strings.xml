@@ -98,11 +98,14 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Rejoindre !</string>
 	<string name="live_notification_action_decline">Rejeter</string>
-	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
-	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Appeler %1$s</string>
+	<string name="live_notification_action_hang_live_group">Appeler %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
-	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
+	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
+	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
+	<string name="live_notification_call_after_decline">Appeler %1$s</string>
+	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -113,9 +116,10 @@
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
-	<string name="live_notification_guest_declined">%1$s n\'est pas disponible</string>
+	<string name="live_notification_guest_declined">%1$s a refusé votre appel :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined_in_group">%1$s a refusé votre appel dans %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
-	<string name="live_reconnecting">Reconnexion en cours...</string>
+	<string name="live_reconnecting">Reconnexion dans %1$ds...</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Appel...</string>
@@ -148,6 +152,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Lien d\'invitation</string>
+	<string name="group_details_invite_link_generating">Génération de votre lien...</string>
 	<string name="group_details_notifications_title">Notifications</string>
 	<string name="group_details_leave_title">Quitter le groupe</string>
 	<string name="group_details_delete_title">Supprimer le groupe</string>
@@ -162,7 +167,7 @@
 	<string name="group_search_friends_placeholder">Rechercher vos amis</string>
 	
 	<!-- Group Members -->
-	<string name="group_members_remove_member_alert_message">Would you like to remove this friends from the members ?</string>
+	<string name="group_members_remove_member_alert_message">Voulez-vous supprimer cet ami des membres du groupe ?</string>
 	<string name="group_members_remove_member_alert_confirm">Supprimer %1$s</string>
 	
 	<!-- Settings -->
@@ -185,13 +190,16 @@
 	
 	<!-- Onboarding Phone -->
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
-	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
+	<string name="onboarding_phone_disclaimer">En vous enregistrant, vous acceptez les CGU et la Politique de confidentialité</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
+	<string name="onboarding_step_call">Entrez le code de vérification reçu par téléphone.</string>
 	<string name="onboarding_phone_number">Numéro de téléphone</string>
-	<string name="onboarding_code_sending_status">Sending verification code…</string>
-	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_sending_status">Envoi du code de vérification…</string>
+	<string name="onboarding_code_calling_status">Appel en cours…</string>
+	<string name="onboarding_code_sent_status">Code envoyé au %1$s</string>
+	<string name="onboarding_code_called_status">Appel au %1$s</string>
 	<string name="onboarding_code_resend_status">Vous n\'avez pas reçu le code ? Appuyez pour renvoyer !</string>
-	<string name="onboarding_code_error_status">An error occured. Retry</string>
+	<string name="onboarding_code_error_status">Une erreur a eu lieu. Réessayez</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
 	
@@ -225,8 +233,10 @@
 	<string name="onboarding_popup_error_title">À votre service !</string>
 	<string name="onboarding_popup_error_description">Il semblerait que vous\nn\'ayez pas reçu le code.</string>
 	<string name="onboarding_popup_error_sent_to">Code envoyé à :</string>
+	<string name="onboarding_popup_error_calling">Appel au :</string>
 	<string name="onboarding_popup_error_edit_button_title">Fermer</string>
 	<string name="onboarding_popup_error_resend_button_title">Réessayer</string>
+	<string name="onboarding_popup_error_call_me_button_title">Appelez-moi</string>
 	<string name="onboarding_popup_error_team_notified">Notre équipe a été notifiée et vous viendra en aide rapidement. En attendant, n\'hésitez pas à réessayer.</string>
 	
 	<!-- Onboarding Friends To Add -->
@@ -238,6 +248,11 @@
 	<string name="onboarding_friends_to_add_popup_message">Souhaitez-vous commencer avec vos amis déjà connectés sur Tribe ?</string>
 	<string name="onboarding_friends_to_add_popup_cancel">Rester seul</string>
 	<string name="onboarding_friends_to_add_popup_confirm">Bien sûr !</string>
+	
+	<!-- Onboarding Popup Invite -->
+	<string name="onboarding_invite_popup_title">Envoie des sms gratuitement à tes amis pour les inviter à rejoindre !</string>
+	<string name="onboarding_invite_popup_message">Votre nom ne sera pas affiché dans le sms envoyé. Soyez prêts à accueillir vos amis dans les prochaines minutes</string>
+	<string name="onboarding_invite_popup_confirm">C\'est parti !</string>
 	
 	<!-- Legal -->
 	<string name="legal_terms">Conditions d\'Utilisation</string>
@@ -260,6 +275,7 @@
 	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
+	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! Rejoins-le ici depuis l\'app ou depuis le web : %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
@@ -299,7 +315,7 @@
 	<string name="live_invite_link">Lien pour\ninviter</string>
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
-	<string name="live_join_impossible">:lock: Seulement %1$d amis en appel en même temps !</string>
+	<string name="live_join_impossible">:lock: Seulement 8 amis en appel en même temps !</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
@@ -327,7 +343,7 @@
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
-	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'amis. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
+	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>

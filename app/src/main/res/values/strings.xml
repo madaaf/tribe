@@ -98,11 +98,14 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
-	<string name="live_notification_action_hang_live_friend">Tap to join %1$s</string>
-	<string name="live_notification_action_hang_live_group">Tap to join %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Video call %1$s</string>
+	<string name="live_notification_action_hang_live_group">Video call %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
-	<string name="live_notification_leave">Leave to join %1$s</string>
+	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>
+	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
+	<string name="live_notification_call_after_decline">Video call %1$s</string>
+	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -113,9 +116,10 @@
 	<string name="live_notification_buzzed">Buzzing!</string>
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
-	<string name="live_notification_guest_declined">%1$s can\'t answer now</string>
+	<string name="live_notification_guest_declined">%1$s declined your call :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined_in_group">%1$s declined your call in %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">This user blocked you :broken_heart:</string>
-	<string name="live_reconnecting">Reconnecting...</string>
+	<string name="live_reconnecting">Reconnecting in %1$ds...</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Live call</string>
@@ -148,6 +152,7 @@
 	
 	<!-- Group Details -->
 	<string name="group_details_invite_link">Invite link</string>
+	<string name="group_details_invite_link_generating">Generating your link...</string>
 	<string name="group_details_notifications_title">Group notifications :bell:</string>
 	<string name="group_details_leave_title">Leave group :skull:</string>
 	<string name="group_details_delete_title">Delete group</string>
@@ -162,7 +167,7 @@
 	<string name="group_search_friends_placeholder">Search friends</string>
 	
 	<!-- Group Members -->
-	<string name="group_members_remove_member_alert_message">Would you like to remove this friends from the members ?</string>
+	<string name="group_members_remove_member_alert_message">Would you like to remove this friend from the members ?</string>
 	<string name="group_members_remove_member_alert_confirm">Remove %1$s</string>
 	
 	<!-- Settings -->
@@ -187,9 +192,12 @@
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
+	<string name="onboarding_step_call">We just called you to verify.</string>
 	<string name="onboarding_phone_number">Phone number</string>
 	<string name="onboarding_code_sending_status">Sending verification code…</string>
+	<string name="onboarding_code_calling_status">Calling…</string>
 	<string name="onboarding_code_sent_status">Code sent to %1$s</string>
+	<string name="onboarding_code_called_status">Called %1$s</string>
 	<string name="onboarding_code_resend_status">Haven\'t received the code? Tap to resend!</string>
 	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
@@ -225,8 +233,10 @@
 	<string name="onboarding_popup_error_title">We\'re here to help!</string>
 	<string name="onboarding_popup_error_description">Sounds like the code didn\'t\nget through to your phone.</string>
 	<string name="onboarding_popup_error_sent_to">Code sent to:</string>
+	<string name="onboarding_popup_error_calling">Calling:</string>
 	<string name="onboarding_popup_error_edit_button_title">Close</string>
 	<string name="onboarding_popup_error_resend_button_title">Resend it</string>
+	<string name="onboarding_popup_error_call_me_button_title">Call me instead</string>
 	<string name="onboarding_popup_error_team_notified">Our Support team has been notified and will help you shortly. Until then, feel free to try to resend your code.</string>
 	
 	<!-- Onboarding Friends To Add -->
@@ -238,6 +248,11 @@
 	<string name="onboarding_friends_to_add_popup_message">Would you like to start with your friends already on Tribe?</string>
 	<string name="onboarding_friends_to_add_popup_cancel">Stay alone</string>
 	<string name="onboarding_friends_to_add_popup_confirm">Sure!</string>
+	
+	<!-- Onboarding Popup Invite -->
+	<string name="onboarding_invite_popup_title">Send free anonymous texts to your friends and see who joins!</string>
+	<string name="onboarding_invite_popup_message">Your name will not be displayed on the text messages. Be ready to see your friends join in the next mins</string>
+	<string name="onboarding_invite_popup_confirm">Let\'s go!</string>
 	
 	<!-- Legal -->
 	<string name="legal_terms">Terms of Service</string>
@@ -260,6 +275,7 @@
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>
 	<string name="share_snapchat_story_explanation_ok">OK</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
+	<string name="share_live">Just started a video call on Tribe! Join now from the app or from your laptop: %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>
@@ -299,7 +315,7 @@
 	<string name="live_invite_link">Invite\nlink</string>
 	<string name="live_drop_friend">Drop here to add your friend</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
-	<string name="live_join_impossible">:lock: Only %1$d friends at the same time!</string>
+	<string name="live_join_impossible">:lock: Only 8 friends at the same time!</string>
 	<string name="live_dismiss_invitation_title">Remove guest :skull:</string>
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>
