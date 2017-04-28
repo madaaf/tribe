@@ -224,7 +224,9 @@ public class PopupContainerView extends FrameLayout {
       scaleDownX.addListener(new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
           super.onAnimationEnd(animation);
-          ((ViewGroup) v.getParent()).removeView(v);
+          if (v != null && v.getParent() != null) {
+            ((ViewGroup) v.getParent()).removeView(v);
+          }
         }
       });
       scaleDown.start();
