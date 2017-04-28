@@ -383,7 +383,8 @@ public class LiveView extends FrameLayout {
       viewLocalLive.enableMicro(isMicroActivated, TribePeerMediaConfiguration.USER_UPDATE);
     }));
 
-    persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(aVoid -> {
+    persistentSubscriptions.add(viewControlsLive.onClickParamExpand().subscribe(expanded -> {
+      isParamExpended = expanded;
       onHiddenControls.onNext(isParamExpended);
     }));
 

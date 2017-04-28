@@ -75,7 +75,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Void> onClickCameraOrientation = PublishSubject.create();
   private PublishSubject<Boolean> onClickMicro = PublishSubject.create();
-  private PublishSubject<Void> onClickParamExpand = PublishSubject.create();
+  private PublishSubject<Boolean> onClickParamExpand = PublishSubject.create();
   private PublishSubject<Void> onClickCameraEnable = PublishSubject.create();
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
@@ -168,6 +168,8 @@ public class LiveControlsView extends FrameLayout {
     resetTimer();
     isParamExpanded = true;
 
+    onClickParamExpand.onNext(isParamExpanded);
+
     int widthExtended = layoutContainerParamExtendedLive.getWidth();
     layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
     layoutContainerParamExtendedLive.setVisibility(VISIBLE);
@@ -186,6 +188,7 @@ public class LiveControlsView extends FrameLayout {
 
   public void reduceParam() {
     isParamExpanded = false;
+    onClickParamExpand.onNext(isParamExpanded);
     layoutContainerParamExtendedLive.setTranslationX(0);
     btnExpand.setImageResource(R.drawable.picto_extend_right_live);
 
@@ -355,7 +358,7 @@ public class LiveControlsView extends FrameLayout {
     return onClickMicro;
   }
 
-  public Observable<Void> onClickParamExpand() {
+  public Observable<Boolean> onClickParamExpand() {
     return onClickParamExpand;
   }
 
