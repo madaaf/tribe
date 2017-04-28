@@ -43,8 +43,8 @@
           android:gravity="center_vertical"
           android:hint="@string/group_identification_custom_name_placeholder"
           android:imeOptions="actionDone"
-          android:maxLines="1"
           android:paddingStart="20dp"
+          android:singleLine="true"
           android:textColorHint="@color/black.opacity.40"
           style="@style/Title.2.Black40"
           />

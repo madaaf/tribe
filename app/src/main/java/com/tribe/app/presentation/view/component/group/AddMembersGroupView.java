@@ -152,7 +152,7 @@ public class AddMembersGroupView extends LinearLayout {
   public void onDestroy() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
-
+  
   @Override public boolean dispatchTouchEvent(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
       if (editTextSearch.hasFocus()) {
@@ -209,28 +209,26 @@ public class AddMembersGroupView extends LinearLayout {
       }
       return false;
     });
-    editTextSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-      @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_DONE) {
-          animateContainer(false);
-        }
-        return false;
+    editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        animateContainer(false);
       }
+      return false;
     });
-    editTextSearch.setOnFocusChangeListener(new OnFocusChangeListener() {
-      @Override public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-          animateContainer(true);
-        } else {
-          animateContainer(false);
-        }
+    editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
+      if (hasFocus) {
+        animateContainer(true);
+      } else {
+        animateContainer(false);
       }
     });
 
-    // editGroupName.setOnFocusChangeListener(new onFocusChangeListener());
+    editTextSearch.setOnKeyListener((v, keyCode, event) -> {
+      animateContainer(false);
+      return false;
+    });
 
     subscriptions.add(adapter.clickAdd().
-
         map(view ->
 
         {
