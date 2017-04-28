@@ -42,6 +42,7 @@
           android:backgroundTint="@android:color/black"
           android:gravity="center_vertical"
           android:hint="@string/group_identification_custom_name_placeholder"
+          android:imeOptions="actionDone"
           android:maxLines="1"
           android:paddingStart="20dp"
           android:textColorHint="@color/black.opacity.40"
@@ -120,6 +121,7 @@
               android:scaleType="centerInside"
               android:src="@drawable/picto_search_icon"
               />
+
 
           <com.tribe.app.presentation.view.widget.EditTextFont
               android:id="@+id/editTextSearch"
