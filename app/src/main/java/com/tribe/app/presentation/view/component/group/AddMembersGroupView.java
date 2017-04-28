@@ -8,11 +8,15 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -148,7 +152,7 @@ public class AddMembersGroupView extends LinearLayout {
   public void onDestroy() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
-
+  
   @Override public boolean dispatchTouchEvent(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
       if (editTextSearch.hasFocus()) {
@@ -197,22 +201,44 @@ public class AddMembersGroupView extends LinearLayout {
     subscriptions.add(
         RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
           filter(s);
-          animateContainer(s);
         }));
 
-    editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
+    editGroupName.setOnEditorActionListener((v, actionId, event) -> {
       if (actionId == EditorInfo.IME_ACTION_DONE) {
-        animateContainer("");
+        hideKeyboard(editGroupName);
       }
       return false;
     });
+    editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        animateContainer(false);
+      }
+      return false;
+    });
+    editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
+      if (hasFocus) {
+        animateContainer(true);
+      } else {
+        animateContainer(false);
+      }
+    });
 
-    subscriptions.add(adapter.clickAdd()
-        .map(view -> {
+    editTextSearch.setOnKeyListener((v, keyCode, event) -> {
+      animateContainer(false);
+      return false;
+    });
+
+    subscriptions.add(adapter.clickAdd().
+        map(view ->
+
+        {
           int position = recyclerView.getChildLayoutPosition(view);
           return new Pair<>(position, (GroupMember) adapter.getItemAtPosition(position));
-        })
-        .doOnNext(pair -> {
+        }).
+
+        doOnNext(pair ->
+
+        {
           GroupMember groupMember = pair.second;
           boolean add = membersAdapter.isAdd(groupMember);
           if (add) {
@@ -225,22 +251,43 @@ public class AddMembersGroupView extends LinearLayout {
           } else {
             onRemoved.onNext(pair);
           }
-        })
-        .delay(300, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(pair -> {
+        }).
+
+        delay(300, TimeUnit.MILLISECONDS).
+
+        observeOn(AndroidSchedulers.mainThread()).
+
+        subscribe(pair ->
+
+        {
           editTextSearch.setText("");
         }));
 
-    subscriptions.add(onRemoved.flatMap(
-        pair -> DialogFactory.dialog(getContext(), pair.second.getUser().getDisplayName(),
-            getContext().getString(R.string.group_members_remove_member_alert_message),
-            getContext().getString(R.string.group_members_remove_member_alert_confirm,
-                pair.second.getUser().getDisplayName()),
-            getContext().getString(R.string.action_nevermind)),
-        (pair, aBoolean) -> new Pair<>(pair, aBoolean))
-        .filter(pair -> pair.second == true)
-        .subscribe(pair -> {
+    subscriptions.add(onRemoved.flatMap(pair -> DialogFactory.dialog(
+
+        getContext(), pair.second.getUser().
+
+            getDisplayName(),
+
+        getContext().
+
+            getString(R.string.group_members_remove_member_alert_message),
+
+        getContext().
+
+            getString(R.string.group_members_remove_member_alert_confirm, pair.second.getUser().
+
+                getDisplayName()),
+
+        getContext().
+
+            getString(R.string.action_nevermind)), (pair, aBoolean) -> new Pair<>(pair, aBoolean)).
+
+        filter(pair -> pair.second == true).
+
+        subscribe(pair ->
+
+        {
           GroupMember groupMember = pair.first.second;
           groupMember.setMember(false);
           adapter.notifyItemChanged(pair.first.first);
@@ -251,6 +298,7 @@ public class AddMembersGroupView extends LinearLayout {
         }));
 
     setupMembers();
+
     refactorMembers();
   }
 
@@ -318,8 +366,8 @@ public class AddMembersGroupView extends LinearLayout {
     }
   }
 
-  private void animateContainer(String txt) {
-    if (txt != null && !txt.isEmpty()) {
+  private void animateContainer(boolean expanded) {
+    if (expanded) {
       if (containerAnimationFinish) {
         containerAnimationFinish = false;
         addMembersContainer.animate()
@@ -336,7 +384,11 @@ public class AddMembersGroupView extends LinearLayout {
       addMembersContainer.animate()
           .translationY(0)
           .setDuration(DURATION_CONTAINER_ANIM)
-          .withEndAction(() -> containerAnimationFinish = true)
+          .withEndAction(() -> {
+            editTextSearch.clearFocus();
+            hideKeyboard(editTextSearch);
+            containerAnimationFinish = true;
+          })
           .start();
     }
   }
@@ -425,5 +477,15 @@ public class AddMembersGroupView extends LinearLayout {
     } else {
       addMembersHeader.setVisibility(VISIBLE);
     }
+  }
+
+  public EditTextFont getEditTextFont() {
+    return editTextSearch;
+  }
+
+  private void hideKeyboard(View v) {
+    InputMethodManager imm =
+        (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
   }
 }

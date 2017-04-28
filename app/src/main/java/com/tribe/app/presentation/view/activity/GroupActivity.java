@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +49,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import java.io.Serializable;
@@ -330,7 +333,15 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         .inject(this);
   }
 
+  private void hideKeyboard() {
+    EditTextFont v = viewAddMembersGroup.getEditTextFont();
+    InputMethodManager imm =
+        (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+  }
+
   @OnClick(R.id.imgBack) void clickBack() {
+    hideKeyboard();
     if (!tagMap.containsKey(TagManagerUtils.ACTION) && tagMap.containsKey(TagManagerUtils.EVENT)) {
       tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CANCELLED);
 
