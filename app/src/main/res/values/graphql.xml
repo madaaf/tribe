@@ -15,6 +15,7 @@
 
                 invites {
                     room_id
+                    room_name
 
                     group {
                         ...GroupInfos
@@ -546,6 +547,8 @@
             user {
                 invites {
                     room_id
+                    room_name
+
                     group {
                         ...GroupInfos
                     }

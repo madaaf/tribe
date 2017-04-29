@@ -494,6 +494,7 @@
 	<string name="callback_notification_title_multiple">You recently missed %1$d calls!\nTap to see who to call back</string>
 	<string name="callback_notification_action">Call back %1$s (missed %2$s)</string>
 	<string name="callback_notification_default_action">Tap to see who to call back</string>
-	<string name="missed_call_title">Missed calls</string>
-	<string name="missed_call_nbr">(%1$s missed calls)</string>
+	<string name="callback_notification_missed_call_title">Missed calls</string>
+	<string name="callback_notification_many_missed_call">(%1$s missed calls)</string>
+	<string name="callback_notification_one_missed_call">(%1$s missed call)</string>
 </resources>
