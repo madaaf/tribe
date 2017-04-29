@@ -70,16 +70,12 @@
             android:scheme="https"/>
 
         <data android:pathPrefix="/"/>
-      </intent-filter>
 
-      <intent-filter>
         <data
-            android:host="open"
-            android:scheme="tribe://"/>
-        <action android:name="android.intent.action.VIEW"/>
+            android:host="room"
+            android:scheme="@string/deeplink_host"/>
 
-        <category android:name="android.intent.category.DEFAULT"/>
-        <category android:name="android.intent.category.BROWSABLE"/>
+        <action android:name="android.intent.action.VIEW"/>
       </intent-filter>
     </activity>
 

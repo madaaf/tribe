@@ -327,9 +327,11 @@
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	<string name="live_unknown_user">Unknown guest</string>
-	<string name="live_external_user">External guest</string>
+	<string name="live_external_user">Guest</string>
 	<string name="live_tutorial_buzz">Get %1$s\'s attention\nwith a buzz!</string>
 	<string name="live_tutorial_drag_as_guest">Spice it up by dragging\nfriends in the call!</string>
+	<string name="live_share_new_call_description">Share call link and wait for your friends to join here!</string>
+	<string name="live_share_new_call_button">Share call link</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

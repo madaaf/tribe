@@ -627,18 +627,23 @@ public class HomeActivity extends BaseActivity
       } else if (intent.getData() != null) {
         String path = intent.getData().getPath();
         String host = intent.getData().getHost();
+        String scheme = intent.getData().getScheme();
         String roomId = intent.getData().getQueryParameter("roomId");
-        String linkId, url;
+        String linkId, url, deepLinkScheme = getString(R.string.deeplink_host);
 
         if (!StringUtils.isEmpty(roomId)) {
           linkId = roomId;
           url = intent.getData().getScheme() + "://" + host + "/" + linkId;
         } else {
           linkId = path.substring(1, path.length());
-          url = intent.getData().toString();
+          if (deepLinkScheme.equals(scheme)) {
+            url = "https://" + getString(R.string.web_host) + "/" + linkId;
+          } else {
+            url = intent.getData().toString();
+          }
         }
 
-        if (host.startsWith(getString(R.string.web_host))) {
+        if (host.startsWith(getString(R.string.web_host)) || deepLinkScheme.equals(scheme)) {
           navigator.navigateToLive(this, linkId, url);
         }
       }

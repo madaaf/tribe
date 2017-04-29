@@ -113,6 +113,7 @@ android {
       resValue "string", "facebook_app_id", "1868589180063532"
       resValue "string", "web_host", "\"${tribe_web_host_debug}\""
       resValue "string", "branch_host", "\"${tribe_branch_host_debug}\""
+      resValue "string", "deeplink_host", "\"${tribe_deeplink_host_debug}\""
 
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
@@ -138,6 +139,7 @@ android {
       resValue "string", "facebook_app_id", "1743579545897830"
       resValue "string", "web_host", "\"${tribe_web_host}\""
       resValue "string", "branch_host", "\"${tribe_branch_host}\""
+      resValue "string", "deeplink_host", "\"${tribe_deeplink_host}\""
 
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
