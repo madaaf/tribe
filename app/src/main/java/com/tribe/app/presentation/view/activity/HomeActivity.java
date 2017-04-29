@@ -627,10 +627,19 @@ public class HomeActivity extends BaseActivity
       } else if (intent.getData() != null) {
         String path = intent.getData().getPath();
         String host = intent.getData().getHost();
+        String roomId = intent.getData().getQueryParameter("roomId");
+        String linkId, url;
+
+        if (!StringUtils.isEmpty(roomId)) {
+          linkId = roomId;
+          url = intent.getData().getScheme() + "://" + host + "/" + linkId;
+        } else {
+          linkId = path.substring(1, path.length());
+          url = intent.getData().toString();
+        }
 
         if (host.startsWith(getString(R.string.web_host))) {
-          navigator.navigateToLive(this, path.substring(1, path.length()),
-              intent.getData().toString());
+          navigator.navigateToLive(this, linkId, url);
         }
       }
     }
