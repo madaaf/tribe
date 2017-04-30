@@ -382,6 +382,6 @@ public class HomeGridPresenter implements Presenter {
   }
 
   public void sendInvitations() {
-    sendInvitations.execute(new DefaultSubscriber());
+    //sendInvitations.execute(new DefaultSubscriber());
   }
 }
