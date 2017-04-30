@@ -710,7 +710,7 @@ public class LiveView extends FrameLayout {
         onShouldJoinRoom.onNext(null);
       }
     } else {
-      viewLocalLive.showShareOverlay();
+      if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay();
       onShouldJoinRoom.onNext(null);
     }
   }
