@@ -13,7 +13,6 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
-import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideFriendshipJob;
@@ -46,6 +45,7 @@ import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
@@ -192,8 +192,6 @@ public interface ApplicationComponent {
 
   void inject(SynchroContactsJob synchroContactsJob);
 
-  void inject(RefreshHowManyFriendsJob refreshHowManyFriendsJob);
-
   void inject(DeleteContactsABJob deleteContactsABJob);
 
   void inject(DeleteContactsFBJob deleteContactsFBJob);
@@ -299,6 +297,8 @@ public interface ApplicationComponent {
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
 
   @CallTagsMap Preference<String> callTagsMap();
+
+  @LookupResult Preference<String> lookupResult();
 
   SoundManager soundManager();
 

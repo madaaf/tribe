@@ -50,14 +50,17 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class NotificationContainerView extends FrameLayout {
-  @StringDef({ DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF })
-  public @interface NotifType {
 
+  @StringDef({
+      DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF,
+      DISPLAY_INVITE_NOTIF
+  }) public @interface NotifType {
   }
 
   public static final String DISPLAY_CREATE_GRP_NOTIF = "DISPLAY_CREATE_FRP_NOTIF";
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
-  private static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
+  public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
+  public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
 
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
   private final static int NOTIF_ANIM_DURATION_ENTER = 500;
@@ -84,6 +87,7 @@ public class NotificationContainerView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
+  private PublishSubject<Void> onSendInvitations = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -106,6 +110,10 @@ public class NotificationContainerView extends FrameLayout {
       switch (type) {
         case DISPLAY_PERMISSION_NOTIF:
           notifIsDisplayed = displayPermissionNotification();
+          break;
+        case DISPLAY_INVITE_NOTIF:
+          notifIsDisplayed = displayInviteNotification();
+          break;
       }
     } else if (data != null) {
       notifIsDisplayed = displayNotifFromIntent(data);
@@ -137,17 +145,20 @@ public class NotificationContainerView extends FrameLayout {
     return false;
   }
 
+  private boolean displayInviteNotification() {
+    viewToDisplay = new InviteNotificationView(context);
+    addViewInContainer(viewToDisplay);
+    animateView();
+    return true;
+  }
+
   private void initView(Context context) {
     this.context = context;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_notification_container, this, true);
     unbinder = ButterKnife.bind(this);
-    container.setOnTouchListener(new OnTouchListener() {
-      @Override public boolean onTouch(View v, MotionEvent event) {
-        return gestureScanner.onTouchEvent(event);
-      }
-    });
+    container.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
   }
 
@@ -157,9 +168,9 @@ public class NotificationContainerView extends FrameLayout {
       hideView();
     }));
 
-    subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(granted -> {
-      onAcceptedPermission.onNext(granted);
-    }));
+    subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
+
+    subscriptions.add(viewToDisplay.onSendInvitations().subscribe(onSendInvitations));
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -266,6 +277,10 @@ public class NotificationContainerView extends FrameLayout {
 
   public Observable<Boolean> onAcceptedPermission() {
     return onAcceptedPermission;
+  }
+
+  public Observable<Void> onSendInvitations() {
+    return onSendInvitations;
   }
 
   ///////////////////

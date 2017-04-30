@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
@@ -88,7 +87,6 @@ public class AccessPresenter implements Presenter {
       }
 
       accessView.renderFriendList(new ArrayList<>(friendList.values()));
-      jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
     }
   }
 

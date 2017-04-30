@@ -134,7 +134,7 @@ public class LiveRowView extends FrameLayout {
           if (!tribePeerMediaConfiguration.isVideoEnabled()) {
             UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
-                animation.removeAllListeners();
+                if (animation != null) animation.removeAllListeners();
                 layoutStream.setVisibility(View.GONE);
               }
             });
@@ -145,7 +145,7 @@ public class LiveRowView extends FrameLayout {
               }
 
               @Override public void onAnimationEnd(Animator animation) {
-                animation.removeAllListeners();
+                if (animation != null) animation.removeAllListeners();
               }
             });
           }

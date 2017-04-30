@@ -8,20 +8,20 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by tiago on 04/05/2016.
- * It launches the how many friends function
+ * Created by tiago on 04/24/2017.
  */
-public class RefreshHowManyFriends extends UseCase {
+public class SendInvitations extends UseCase {
 
   private UserRepository userRepository;
 
-  @Inject public RefreshHowManyFriends(CloudUserDataRepository userRepository,
-      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+  @Inject
+  public SendInvitations(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.userRepository = userRepository;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.howManyFriends();
+    return this.userRepository.sendInvitations();
   }
 }

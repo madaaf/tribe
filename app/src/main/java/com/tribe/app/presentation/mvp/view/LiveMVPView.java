@@ -23,4 +23,6 @@ public interface LiveMVPView extends MVPView {
   void onJoinRoomFailed(String message);
 
   void onReceivedAnonymousMemberInRoom(List<User> users);
+
+  void onRoomLink(String roomLink);
 }

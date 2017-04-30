@@ -13,6 +13,10 @@ public class FacebookUtils {
     return accessToken != null;
   }
 
+  public static AccessToken accessToken() {
+    return AccessToken.getCurrentAccessToken();
+  }
+
   public static void logout() {
     LoginManager.getInstance().logOut();
   }

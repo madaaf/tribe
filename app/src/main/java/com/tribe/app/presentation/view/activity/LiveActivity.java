@@ -153,6 +153,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
+  public static Intent getCallingIntent(Context context, String linkId, String url) {
+    Intent intent = new Intent(context, LiveActivity.class);
+
+    Live live = new Live.Builder(Live.WEB, Live.WEB).countdown(false)
+        .linkId(linkId)
+        .url(url)
+        .intent(true)
+        .build();
+
+    intent.putExtra(EXTRA_LIVE, live);
+
+    return intent;
+  }
+
   @Inject NotificationManagerCompat notificationManager;
 
   @Inject SoundManager soundManager;
@@ -217,12 +231,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initParams(getIntent());
     init();
     initResources();
-    initAppState();
     initRemoteConfig();
+    manageClickNotification(getIntent());
   }
 
   @Override protected void onNewIntent(Intent intent) {
-    viewLive.dispose(true);
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    boolean isJump = true;
+    manageClickNotification(getIntent());
+    viewLive.endCall(isJump);
+    viewLive.dispose(isJump);
     viewLive.jump();
     initParams(intent);
     live.setCountdown(false);
@@ -234,10 +252,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     notificationManager.cancelAll();
     fullScreenNotificationState.set(new HashSet<>());
     livePresenter.onViewAttached(this);
+    initAppState();
   }
 
   @Override protected void onStop() {
     Timber.d("onStop");
+    livePresenter.onViewDetached();
     super.onStop();
   }
 
@@ -264,12 +284,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onDestroy() {
     Timber.d("onDestroy");
-    appStateMonitor.removeListener(this);
-    appStateMonitor.stop();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     soundManager.cancelMediaPlayer();
+
+    viewLiveContainer.dispose();
+    viewLive.dispose(false);
 
     if (audioManager != null) {
       audioManager.stop();
@@ -336,7 +357,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
-        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+        } else if (live.isSessionOrLink()) {
           viewLive.start(live);
           ready();
         } else if (!live.isGroup()) {
@@ -364,9 +385,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initAppState() {
-    appStateMonitor = RxAppStateMonitor.create(getApplication());
-    appStateMonitor.addListener(this);
-    appStateMonitor.start();
+    if (appStateMonitor == null) {
+      appStateMonitor = RxAppStateMonitor.create(getApplication());
+      appStateMonitor.addListener(this);
+      appStateMonitor.start();
+    }
   }
 
   private void ratingNotificationSubscribe() {
@@ -388,6 +411,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     });
   }
 
+  private void manageClickNotification(Intent intent) {
+    if (intent != null && intent.hasExtra(Constants.NOTIFICATION_LIVE)) {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.CATEGORY,
+          intent.getStringExtra(Constants.NOTIFICATION_LIVE));
+      tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+    }
+  }
+
   private Boolean displayRatingNotifDependingFirebaseTrigger() {
     Random rn = new Random();
     int randomNumber = rn.nextInt(101);
@@ -397,22 +429,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private Long getFirebaseTimeoutConfig() {
     Long time = firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
     return time == 0 ? 10 : time;
-  }
-
-  private void displayStartFirstPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.START_FIRST_LIVE)) {
-      subscriptions.add(DialogFactory.dialog(this,
-          EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
-          getString(R.string.tips_startfirstlive_message),
-          getString(R.string.tips_startfirstlive_action1), null)
-          .filter(x -> x == true)
-          .subscribe(a -> {
-            subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()));
-          }));
-      stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
-    }
   }
 
   private void initSubscriptions() {
@@ -455,19 +471,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
+      displayBuzzPopupTutorial();
       joinRoom();
-      displayStartFirstPopupTutorial();
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
       if (!live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
-        if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-          subscriptions.add(
-              Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
-        }
       }
     }));
 
@@ -479,18 +489,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
-        subscriptions.add(DialogFactory.dialog(this,
-            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-            getString(R.string.tips_leavingroom_action1),
-            getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
-          finish();
-        }));
-        stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
-      } else {
-        finish();
-      }
+      leave();
     }));
 
     subscriptions.add(
@@ -503,7 +502,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this, null);
+
+      if (StringUtils.isEmpty(live.getLinkId())) {
+        livePresenter.getRoomLink(roomConfiguration.getRoomId());
+        Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
+            .show();
+      } else {
+        navigator.inviteToRoom(this, live.getUrl());
+      }
     }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
@@ -566,6 +572,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
+  public void displayBuzzPopupTutorial() {
+    subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          viewLive.displayWaitLivePopupTutorial(live.getDisplayName());
+        }));
+  }
+
   private void takeScreenshot() {
     if (takeScreenshotEnable) {
       takeScreenshotEnable = false;
@@ -618,6 +632,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                   .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
             }
           }));
+    }
+  }
+
+  private void leave() {
+    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
+      subscriptions.add(DialogFactory.dialog(this,
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
+          getString(R.string.tips_leavingroom_action1),
+          getString(R.string.tips_leavingroom_action2))
+          .filter(x -> x == true)
+          .subscribe(a -> finish()));
+      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
+    } else {
+      finish();
     }
   }
 
@@ -701,6 +730,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     onAnonymousReceived.onNext(users);
   }
 
+  @Override public void onRoomLink(String roomLink) {
+    navigator.inviteToRoom(this, roomLink);
+  }
+
   private void putExtraHomeIntent() {
     putExtraRatingNotif();
     putExtraDisplayGrpNotif();
@@ -725,24 +758,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      subscriptions.add(DialogFactory.dialog(this, getString(R.string.tips_draggingguest_title),
-          getString(R.string.tips_draggingguest_message),
-          getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
-  }
-
   private void ready() {
     viewLive.update(live);
   }
 
   @Override public void finish() {
-    livePresenter.onViewDetached();
-    viewLiveContainer.dispose();
-    viewLive.dispose(false);
+    appStateMonitor.stop();
+    appStateMonitor.removeListener(this);
+    viewLive.endCall(false);
     putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
@@ -776,7 +799,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.roomConfiguration = roomConfiguration;
     this.roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(this.roomConfiguration);
-    if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
+    if (!live.isGroup() && !live.isSessionOrLink()) {
       livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
     live.setSessionId(roomConfiguration.getRoomId());
@@ -817,6 +840,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+          // TODO HANDLE LEAVE
           displayNotification(context.getString(R.string.live_notification_guest_declined,
               notificationPayload.getUserDisplayName()));
         }

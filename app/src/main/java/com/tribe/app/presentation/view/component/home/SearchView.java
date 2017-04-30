@@ -50,7 +50,9 @@ import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -276,8 +278,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private void refactorContacts(List<Object> contactList) {
     this.filteredContactList.clear();
 
-    boolean hasDoneSuggested = false, hasDoneContacts = false;
-    boolean hasNewFriends = false;
+    boolean hasDoneSuggested = false, hasDoneContacts = false, hasNewFriends = false;
+    Set<String> setLinkedUser = new HashSet<>();
 
     for (Object obj : contactList) {
       boolean shouldAdd = false;
@@ -331,8 +333,9 @@ public class SearchView extends FrameLayout implements SearchMVPView {
               }
             }
 
-            if (!filteredContactList.contains(user)) {
+            if (!filteredContactList.contains(user) && !setLinkedUser.contains(user.getId())) {
               this.filteredContactList.add(user);
+              setLinkedUser.add(user.getId());
             }
 
             shouldAdd = false;
@@ -542,6 +545,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   @Override public void successFacebookLogin() {
     sync();
+    searchPresenter.updateUser(FacebookUtils.accessToken().getUserId());
   }
 
   @Override public void errorFacebookLogin() {

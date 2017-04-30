@@ -136,7 +136,9 @@ public class UIUtils {
         anim.start();
       });
     } else {
+      if (listenerAdapter != null) listenerAdapter.onAnimationStart(null);
       v.setVisibility(View.VISIBLE);
+      if (listenerAdapter != null) listenerAdapter.onAnimationEnd(null);
     }
   }
 
@@ -155,7 +157,9 @@ public class UIUtils {
         anim.start();
       });
     } else {
+      if (listenerAdapter != null) listenerAdapter.onAnimationStart(null);
       v.setVisibility(View.GONE);
+      if (listenerAdapter != null) listenerAdapter.onAnimationEnd(null);
     }
   }
 

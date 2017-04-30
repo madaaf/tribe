@@ -271,7 +271,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
-    navigator.navigateToAuthAccess(this, deepLink);
+    navigator.navigateToAuthAccess(this, deepLink, loginEntity.getCountryCode());
   }
 
   @Override public void successFacebookLogin() {

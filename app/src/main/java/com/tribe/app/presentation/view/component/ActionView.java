@@ -156,6 +156,7 @@ public class ActionView extends FrameLayout {
   public void setTitle(String str) {
     title = str;
     computeTitle();
+
   }
 
   public void setBody(String str) {

@@ -43,18 +43,15 @@
           android:layout_marginBottom="15dp"
           android:gravity="center"
           android:text="@string/enjoying_tribe_popup_title"
-          android:textSize="20sp"
-          style="@style/Title.2.Black"
+          style="@style/Headline.Black.2"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:gravity="center"
-          android:lineSpacingExtra="4dp"
           android:text="@string/enjoying_tribe_popup_subtitle"
-          android:textColor="@color/grey.unblock"
-          style="@style/Title.2.Black"
+          style="@style/Headline.Black40.2"
           />
 
     </LinearLayout>
@@ -74,7 +71,7 @@
           android:background="@color/grey.unblock"
           android:gravity="center"
           android:text="@string/enjoying_tribe_popup_action1"
-          style="@style/Title.2.White"
+          style="@style/Headline.White.2"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
@@ -85,7 +82,7 @@
           android:background="@drawable/shape_rect_blue13_bottom_corner"
           android:gravity="center"
           android:text="@string/enjoying_tribe_popup_action2"
-          style="@style/Title.2.White"
+          style="@style/Headline.White.2"
           />
     </LinearLayout>
 

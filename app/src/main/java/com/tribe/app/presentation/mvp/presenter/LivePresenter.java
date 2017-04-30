@@ -11,6 +11,7 @@ import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
+import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
@@ -32,6 +33,7 @@ public class LivePresenter implements Presenter {
   private InviteUserToRoom inviteUserToRoom;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
+  private GetRoomLink getRoomLink;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -39,13 +41,14 @@ public class LivePresenter implements Presenter {
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList) {
+      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
     this.inviteUserToRoom = inviteUserToRoom;
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
+    this.getRoomLink = getRoomLink;
   }
 
   @Override public void onViewDetached() {
@@ -55,6 +58,7 @@ public class LivePresenter implements Presenter {
     cloudUserInfosList.unsubscribe();
     inviteUserToRoom.unsubscribe();
     getRecipientInfos.unsubscribe();
+    getRoomLink.unsubscribe();
     liveMVPView = null;
   }
 
@@ -107,7 +111,7 @@ public class LivePresenter implements Presenter {
   public void joinRoom(Live live) {
     Timber.d("joinRoom");
     joinRoom.setup(!live.isGroup() ? live.getId() : live.getSubId(), live.isGroup(),
-        live.getSessionId());
+        live.getSessionId(), live.getLinkId());
     joinRoom.execute(new JoinRoomSubscriber());
   }
 
@@ -165,5 +169,23 @@ public class LivePresenter implements Presenter {
 
     cloudUserInfosList.setUserIdsList(useridsList);
     cloudUserInfosList.execute(getUserInfoListSubscriber);
+  }
+
+  public void getRoomLink(String roomId) {
+    getRoomLink.setup(roomId);
+    getRoomLink.execute(new GetRoomLinkSubscriber());
+  }
+
+  private final class GetRoomLinkSubscriber extends DefaultSubscriber<String> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+    }
+
+    @Override public void onNext(String roomLink) {
+      liveMVPView.onRoomLink(roomLink);
+    }
   }
 }
