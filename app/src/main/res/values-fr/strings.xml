@@ -261,7 +261,7 @@
 	
 	<!-- Top Bar -->
 	<string name="topbar_new_live">+ Groupe</string>
-	<string name="topbar_new_call">Appel</string>
+	<string name="topbar_new_call">Appeler</string>
 	<string name="topbar_search">Amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -332,7 +332,7 @@
 	<string name="live_external_user">Invité(e)</string>
 	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
 	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
-	<string name="live_new_call_title_alone">Nouvel appel</string>
+	<string name="live_new_call_title_alone">Appeler</string>
 	<string name="live_new_call_title_with_guests">%1$s et invités</string>
 	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vous amis vous rejoigne !</string>
 	<string name="live_share_new_call_button">Partager le lien de l\'appel</string>

@@ -24,9 +24,8 @@
       android:layout_marginEnd="@dimen/horizontal_margin_smaller"
       android:layout_marginStart="@dimen/horizontal_margin_smaller"
       android:layout_marginTop="@dimen/horizontal_margin_small"
-      android:background="@drawable/shape_oval_white"
+      android:background="@drawable/selectable_button_all_rounded_5_white"
       android:clickable="true"
-      android:foreground="@drawable/selectable_button_oval"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont

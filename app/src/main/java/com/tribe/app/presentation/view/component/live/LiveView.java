@@ -218,6 +218,7 @@ public class LiveView extends FrameLayout {
       }
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
+      tagMap.put(TagManagerUtils.SOURCE, live.getSource());
       tagMap.put(TagManagerUtils.DURATION, duration);
       tagMap.put(TagManagerUtils.STATE, state);
       tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);

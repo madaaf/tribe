@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -469,9 +468,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       }
     }));
 
-    subscriptions.add(viewDetailsGroup.onHangLive().subscribe(friendship -> {
-      navigator.navigateToLive(this, friendship, PaletteGrid.get(0));
-    }));
+    subscriptions.add(viewDetailsGroup.onHangLive()
+        .subscribe(friendship -> navigator.navigateToLive(this, friendship, PaletteGrid.get(0),
+            LiveActivity.SOURCE_FRIENDS)));
 
     subscriptions.add(viewDetailsGroup.onAddMembers().subscribe(aVoid -> {
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);

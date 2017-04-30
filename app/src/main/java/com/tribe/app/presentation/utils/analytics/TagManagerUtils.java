@@ -86,6 +86,7 @@ public class TagManagerUtils {
   public static final String SCREENSHOT_COUNT = "screenshot_count";
   public static final String MEMBERS_INVITED = "members_invited";
   public static final String CATEGORY = "category";
+  public static final String SOURCE = "source";
 
   /**
    * USER PROPERTIES

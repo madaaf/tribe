@@ -228,9 +228,10 @@ public class Navigator {
    * @param recipient recipient to go live with
    * @param color the color of the tile
    */
-  public void navigateToLive(Activity activity, Recipient recipient, int color) {
+  public void navigateToLive(Activity activity, Recipient recipient, int color,
+      @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color);
+      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -247,9 +248,10 @@ public class Navigator {
     }
   }
 
-  public void navigateToLive(Activity activity, String linkId, String url) {
+  public void navigateToLive(Activity activity, String linkId, String url,
+      @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, linkId, url);
+      Intent intent = LiveActivity.getCallingIntent(activity, linkId, url, source);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -257,7 +259,7 @@ public class Navigator {
 
   public void navigateToNewCall(Activity activity) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity);
+      Intent intent = LiveActivity.getCallingIntent(activity, LiveActivity.SOURCE_TOP_RIGHT_BUTTON);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }

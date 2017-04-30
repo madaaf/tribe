@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,6 +102,24 @@ import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
+  @StringDef({
+      SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
+      SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
+      SOURCE_TOP_RIGHT_BUTTON
+  }) public @interface Source {
+  }
+
+  public static final String SOURCE_GRID = "Grid";
+  public static final String SOURCE_DEEPLINK = "DeepLink";
+  public static final String SOURCE_SEARCH = "Search";
+  public static final String SOURCE_CALLKIT = "CallKit";
+  public static final String SOURCE_SHORTCUT_ITEM = "ShortcutItem";
+  public static final String SOURCE_DRAGGED_AS_GUEST = "DraggedAsGuest";
+  public static final String SOURCE_ONLINE_NOTIFICATION = "OnlineNotification";
+  public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
+  public static final String SOURCE_FRIENDS = "Friends";
+  public static final String SOURCE_TOP_RIGHT_BUTTON = "TopRightButton";
+
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
@@ -112,7 +131,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private final int SCREENSHOT_DURATION = 300;
   private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
-  public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
+  public static Intent getCallingIntent(Context context, Recipient recipient, int color,
+      @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
@@ -120,7 +140,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .userName(recipient.getUsername())
         .isGroup(recipient.isGroup())
         .countdown(!recipient.isLive())
-        .picture(recipient.getProfilePicture());
+        .picture(recipient.getProfilePicture())
+        .source(source);
 
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
@@ -137,7 +158,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
-      String picture, String name, String sessionId) {
+      String picture, String name, String sessionId, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     Live live = new Live.Builder(recipientId, recipientId).displayName(name)
@@ -146,6 +167,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .countdown(StringUtils.isEmpty(sessionId))
         .sessionId(sessionId)
         .intent(true)
+        .source(source)
         .build();
 
     intent.putExtra(EXTRA_LIVE, live);
@@ -153,23 +175,27 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, String linkId, String url) {
+  public static Intent getCallingIntent(Context context, String linkId, String url,
+      @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder(Live.WEB, Live.WEB).linkId(linkId).url(url).build();
+    Live live = new Live.Builder(Live.WEB, Live.WEB).linkId(linkId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context) {
+  public static Intent getCallingIntent(Context context, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     String linkId = StringUtils.generateLinkId();
     String url = StringUtils.getUrlFromLinkId(context, linkId);
 
-    Live live = new Live.Builder(Live.NEW_CALL, Live.NEW_CALL).linkId(linkId).url(url).build();
+    Live live = new Live.Builder(Live.NEW_CALL, Live.NEW_CALL).linkId(linkId)
+        .url(url)
+        .source(source)
+        .build();
 
     intent.putExtra(EXTRA_LIVE, live);
 

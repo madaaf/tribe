@@ -370,7 +370,9 @@ public class HomeActivity extends BaseActivity
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
-      navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+      navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()),
+          recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+              : LiveActivity.SOURCE_GRID);
     }
   }
 
@@ -526,7 +528,8 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
     subscriptions.add(searchView.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0))));
+        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
+            LiveActivity.SOURCE_SEARCH)));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
@@ -644,7 +647,7 @@ public class HomeActivity extends BaseActivity
         }
 
         if (host.startsWith(getString(R.string.web_host)) || deepLinkScheme.equals(scheme)) {
-          navigator.navigateToLive(this, linkId, url);
+          navigator.navigateToLive(this, linkId, url, LiveActivity.SOURCE_DEEPLINK);
         }
       }
     }
