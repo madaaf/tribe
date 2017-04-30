@@ -500,13 +500,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         })
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(filteredFriendships -> {
-          viewInviteLive.renderFriendshipList(filteredFriendships);
-        }));
+        .subscribe(
+            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
-      displayBuzzPopupTutorial();
+      if (!StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
       joinRoom();
     }));
 
@@ -611,9 +610,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public void displayBuzzPopupTutorial() {
     subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          viewLive.displayWaitLivePopupTutorial(live.getDisplayName());
-        }));
+        .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getDisplayName())));
   }
 
   private void takeScreenshot() {
