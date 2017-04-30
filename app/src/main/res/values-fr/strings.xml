@@ -140,6 +140,7 @@
 	<string name="grid_menu_friendship_mute">Désactiver les notifications :no_bell:</string>
 	<string name="grid_menu_friendship_unmute">Activer les notifications :bell:</string>
 	<string name="grid_menu_invite_decline">Rejeter l\'appel</string>
+	<string name="grid_menu_call_placeholder">Appel vidéo</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
@@ -260,6 +261,7 @@
 	
 	<!-- Top Bar -->
 	<string name="topbar_new_live">+ Groupe</string>
+	<string name="topbar_new_call">Appel</string>
 	<string name="topbar_search">Amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -330,8 +332,12 @@
 	<string name="live_external_user">Invité(e)</string>
 	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
 	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
-	<string name="live_share_new_call_description">Share call link and wait for your friends to join here!</string>
-	<string name="live_share_new_call_button">Share call link</string>
+	<string name="live_new_call_title_alone">Nouvel appel</string>
+	<string name="live_new_call_title_with_guests">%1$s et invités</string>
+	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vous amis vous rejoigne !</string>
+	<string name="live_share_new_call_button">Partager le lien de l\'appel</string>
+	<string name="live_share_new_call_button_simple">Lien</string>
+	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

@@ -255,6 +255,14 @@ public class Navigator {
     }
   }
 
+  public void navigateToNewCall(Activity activity) {
+    if (activity != null) {
+      Intent intent = LiveActivity.getCallingIntent(activity);
+      activity.startActivityForResult(intent, FROM_LIVE);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
   /**
    * Goes to the app page in the playstore so the user may rate the app.
    *

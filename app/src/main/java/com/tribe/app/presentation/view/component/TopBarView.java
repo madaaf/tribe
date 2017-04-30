@@ -28,8 +28,6 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
-import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -59,10 +57,6 @@ public class TopBarView extends FrameLayout {
   @Inject User user;
 
   @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
-
-  @Inject @IsGroupCreated Preference<Boolean> isGroupCreated;
-
-  @Inject @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -176,16 +170,6 @@ public class TopBarView extends FrameLayout {
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
-
-    resfreshNewBtn();
-  }
-
-  public void resfreshNewBtn() {
-    if (counterOfCallsForGrpButton.get() > MIN_NUMBER_CALL && !isGroupCreated.get()) {
-      btnNew.setBackgroundResource(R.drawable.selectable_button_all_rounded_purple);
-    } else {
-      btnNew.setBackgroundResource(R.drawable.selectable_button_all_rounded_white_10);
-    }
   }
 
   private void initResources() {

@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Live implements Serializable {
 
+  public static final String NEW_CALL = "NEW_CALL";
   public static final String WEB = "WEB";
 
   private String id;

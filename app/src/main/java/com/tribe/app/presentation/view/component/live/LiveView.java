@@ -145,6 +145,7 @@ public class LiveView extends FrameLayout {
   private View view;
   private int sizeAnimAvatarMax;
   private List<User> anonymousInLive = new ArrayList<>();
+  private boolean isFirstToJoin = true;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -163,6 +164,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
+  private PublishSubject<Void> onShare = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -369,6 +371,8 @@ public class LiveView extends FrameLayout {
       onHiddenControls.onNext(isParamExpended);
     }));
 
+    persistentSubscriptions.add(viewLocalLive.onShare().subscribe(onShare));
+
     persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
       if (!hiddenControls) onOpenInvite.onNext(null);
     }));
@@ -497,6 +501,12 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
+          if (isFirstToJoin) {
+            isFirstToJoin = !isFirstToJoin;
+            viewLocalLive.hideShareOverlay();
+            viewStatusName.refactorTitle();
+          }
+
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
 
@@ -623,6 +633,8 @@ public class LiveView extends FrameLayout {
   public void initOnAlphaSubscription(Observable<Float> obs) {
     persistentSubscriptions.add(obs.subscribe(alpha -> {
       viewControlsLive.setAlpha(alpha);
+      viewLocalLive.computeAlpha(alpha);
+
       if (avatarView != null) {
         float scaling = (2.0f - alpha);
         avatarView.setScaleX(scaling);
@@ -673,27 +685,32 @@ public class LiveView extends FrameLayout {
 
     viewStatusName.setLive(live);
 
-    TribeGuest guest =
-        new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
-            live.isInvite(), live.getMembersPics(), false, live.getUserName());
+    if (StringUtils.isEmpty(live.getLinkId())) {
+      TribeGuest guest =
+          new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isGroup(),
+              live.isInvite(), live.getMembersPics(), false, live.getUserName());
 
-    LiveRowView liveRowView = new LiveRowView(getContext());
-    liveRowViewMap.put(guest.getId(), liveRowView);
-    addView(liveRowView, guest, live.getColor(), false);
-    liveRowView.showGuest(live.isCountdown());
+      LiveRowView liveRowView = new LiveRowView(getContext());
+      liveRowViewMap.put(guest.getId(), liveRowView);
+      addView(liveRowView, guest, live.getColor(), false);
+      liveRowView.showGuest(live.isCountdown());
 
-    if (live.isCountdown()) {
-      tempSubscriptions.add(liveRowView.onShouldJoinRoom()
-          .distinct()
-          .doOnNext(aVoid -> onJoining())
-          .subscribe(onShouldJoinRoom));
+      if (live.isCountdown()) {
+        tempSubscriptions.add(liveRowView.onShouldJoinRoom()
+            .distinct()
+            .doOnNext(aVoid -> onJoining())
+            .subscribe(onShouldJoinRoom));
 
-      tempSubscriptions.add(liveRowView.onNotifyStepDone()
-          .subscribe(aVoid -> viewStatusName.setStatus(LiveStatusNameView.WAITING)));
+        tempSubscriptions.add(liveRowView.onNotifyStepDone()
+            .subscribe(aVoid -> viewStatusName.setStatus(LiveStatusNameView.WAITING)));
+      } else {
+        viewStatusName.setStatus(LiveStatusNameView.WAITING);
+        liveRowView.startPulse();
+        onJoining();
+        onShouldJoinRoom.onNext(null);
+      }
     } else {
-      viewStatusName.setStatus(LiveStatusNameView.WAITING);
-      liveRowView.startPulse();
-      onJoining();
+      viewLocalLive.showShareOverlay();
       onShouldJoinRoom.onNext(null);
     }
   }
@@ -859,11 +876,6 @@ public class LiveView extends FrameLayout {
           String inviteId = getInviteWaiting();
           if (!StringUtils.isEmpty(inviteId)) {
             liveRowView = liveRowViewMap.remove(inviteId);
-          }
-        } else if (!StringUtils.isEmpty(live.getLinkId())) {
-          LiveRowView liveRowViewWeb = liveRowViewMap.get(Live.WEB);
-          if (liveRowViewWeb != null) {
-            liveRowView = liveRowViewMap.remove(Live.WEB);
           }
         }
 
@@ -1225,6 +1237,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Map<String, LiveRowView>> onLiveChanged() {
     return liveRowViewMap.getMapObservable();
+  }
+
+  public Observable<Void> onShare() {
+    return onShare;
   }
 }
 

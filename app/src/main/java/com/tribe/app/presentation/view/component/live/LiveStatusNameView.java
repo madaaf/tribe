@@ -12,6 +12,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -40,6 +41,8 @@ public class LiveStatusNameView extends FrameLayout {
   }
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject User user;
 
   @BindView(R.id.txtName) TextViewFont txtName;
 
@@ -122,17 +125,32 @@ public class LiveStatusNameView extends FrameLayout {
   public void setLive(Live live) {
     this.live = live;
 
-    if (!StringUtils.isEmpty(live.getLinkId())) setVisibility(View.GONE);
+    if (!StringUtils.isEmpty(live.getLinkId())) {
+      if (live.getId().equals(Live.WEB)) {
+        txtName.setText(
+            getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
+      } else if (live.getId().equals(Live.NEW_CALL)) {
+        txtName.setText(getContext().getString(R.string.live_new_call_title_alone));
+      }
 
-    if (live.isGroup()) {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0, 0);
+      txtStatus1.setVisibility(View.GONE);
     } else {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      if (live.isGroup()) {
+        txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0,
+            0);
+      } else {
+        txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      }
+
+      txtName.setText(live.getDisplayName());
+
+      setStatus(INITIATING);
     }
+  }
 
-    txtName.setText(live.getDisplayName());
-
-    setStatus(INITIATING);
+  public void refactorTitle() {
+    if (!live.getId().equals(Live.NEW_CALL)) return;
+    txtName.setText(getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
   }
 
   public void setStatus(@StatusType int status) {

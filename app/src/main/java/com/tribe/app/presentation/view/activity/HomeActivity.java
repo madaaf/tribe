@@ -478,7 +478,7 @@ public class HomeActivity extends BaseActivity
 
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickNew().subscribe(aVoid -> {
-      navigateToCreateGroup();
+      navigateToNewCall();
     }));
 
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
@@ -637,7 +637,7 @@ public class HomeActivity extends BaseActivity
         } else {
           linkId = path.substring(1, path.length());
           if (deepLinkScheme.equals(scheme)) {
-            url = "https://" + getString(R.string.web_host) + "/" + linkId;
+            url = StringUtils.getUrlFromLinkId(this, linkId);
           } else {
             url = intent.getData().toString();
           }
@@ -744,8 +744,8 @@ public class HomeActivity extends BaseActivity
     navigator.navigateToProfile(HomeActivity.this);
   }
 
-  private void navigateToCreateGroup() {
-    HomeActivity.this.navigator.navigateToCreateGroup(this);
+  private void navigateToNewCall() {
+    HomeActivity.this.navigator.navigateToNewCall(this);
   }
 
   private void syncContacts() {
@@ -762,7 +762,6 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    topBarContainer.refreshTopBarView();
     if (data != null) {
       if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);

@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
+import com.tribe.app.presentation.view.component.live.LiveShareOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
@@ -153,4 +154,6 @@ import dagger.Component;
   void inject(LivePeerOverlayView livePeerOverlayView);
 
   void inject(LiveWaveView liveWaveView);
+
+  void inject(LiveShareOverlayView liveShareOverlayView);
 }
