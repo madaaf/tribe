@@ -948,15 +948,24 @@ public class LiveView extends FrameLayout {
   }
 
   private TribeGuest guestFromRemotePeer(RemotePeer remotePeer) {
+    TribeGuest guest = null;
+
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
-        TribeGuest tribeGuest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
+        guest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
             friendship.getProfilePicture(), false, false, null, true, friendship.getUsername());
-        tribeGuest.setExternal(remotePeer.getSession().isExternal());
+        guest.setExternal(remotePeer.getSession().isExternal());
       }
     }
 
-    return null;
+    if (guest == null) {
+      guest =
+          new TribeGuest(remotePeer.getSession().getUserId(), "", null, false, false, null, false,
+              "");
+      guest.setExternal(remotePeer.getSession().isExternal());
+    }
+
+    return guest;
   }
 
   private JSONObject getInvitedPayload() {

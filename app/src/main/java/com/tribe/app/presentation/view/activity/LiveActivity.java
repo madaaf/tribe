@@ -271,6 +271,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initResources();
     initRemoteConfig();
     manageClickNotification(getIntent());
+    initAppState();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -290,7 +291,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     notificationManager.cancelAll();
     fullScreenNotificationState.set(new HashSet<>());
     livePresenter.onViewAttached(this);
-    initAppState();
   }
 
   @Override protected void onStop() {

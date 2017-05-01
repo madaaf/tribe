@@ -129,6 +129,7 @@ public class LiveRowView extends FrameLayout {
         })));
 
     subscriptions.add(this.remotePeerView.onMediaConfiguration()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribePeerMediaConfiguration -> {
           if (!tribePeerMediaConfiguration.isVideoEnabled()) {
