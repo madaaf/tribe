@@ -317,7 +317,7 @@
 	<string name="live_invite_link">Lien pour\ninviter</string>
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
-	<string name="live_join_impossible">:lock: Seulement 8 amis en appel en même temps !</string>
+	<string name="live_join_impossible">:lock: 8 amis max. en même temps !</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
