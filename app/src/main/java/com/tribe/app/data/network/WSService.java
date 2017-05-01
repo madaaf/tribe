@@ -186,6 +186,11 @@ import timber.log.Timber;
                   }
 
                   if (shouldAdd) {
+                    if (!StringUtils.isEmpty(invite.getRoomName())) {
+                      newInvite.setRoomName(
+                          getApplicationContext().getString(R.string.grid_menu_call_placeholder));
+                    }
+
                     liveCache.putInvite(newInvite);
                   }
                 }

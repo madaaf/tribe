@@ -1,24 +1,33 @@
 package com.tribe.tribelivesdk.model.error;
 
+import android.support.annotation.IntDef;
+
 /**
  * Created by tiago on 26/01/2017.
  */
 
 public class WebSocketError {
 
-    private String message;
-    private String id;
+  @IntDef({
+      ERROR_ROOM_FULL
+  }) public @interface ErrorType {
+  }
 
-    public WebSocketError(String id, String message) {
-        this.id = id;
-        this.message = message;
-    }
+  public static final int ERROR_ROOM_FULL = 0x524;
 
-    public String getMessage() {
-        return message;
-    }
+  private String message;
+  private int id;
 
-    public String getId() {
-        return id;
-    }
+  public WebSocketError(int id, String message) {
+    this.id = id;
+    this.message = message;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public int getId() {
+    return id;
+  }
 }

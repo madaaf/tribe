@@ -78,11 +78,11 @@
 	<string name="permission_global_popup_cancel">Plus tard</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
 	<string name="permission_facebook_popup_title">Retrouver facilement vos amis Facebook</string>
-	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisés avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">En savoir plus</string>
 	<string name="permission_addressbook_popup_title">Retrouver facilement les contacts de votre Carnet d\'Adresses</string>
-	<string name="permission_addressbook_popup_message">Vos amis seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_addressbook_popup_message">Vos amis seront synchronisés avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_addressbook_popup_ok">Parfait !</string>
 	<string name="permission_addressbook_popup_ko">En savoir plus</string>
 	

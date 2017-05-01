@@ -333,7 +333,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
                 .withEndAction(() -> {
                   shouldStartHome = true;
                   finish();
-                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload));
+                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload, true));
                 })
                 .start();
           } else {

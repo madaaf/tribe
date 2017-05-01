@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -334,6 +333,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   private void hideKeyboard() {
+    if (viewAddMembersGroup == null) return;
+    
     EditTextFont v = viewAddMembersGroup.getEditTextFont();
     InputMethodManager imm =
         (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -342,6 +343,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
   @OnClick(R.id.imgBack) void clickBack() {
     hideKeyboard();
+
     if (!tagMap.containsKey(TagManagerUtils.ACTION) && tagMap.containsKey(TagManagerUtils.EVENT)) {
       tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CANCELLED);
 
@@ -469,9 +471,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       }
     }));
 
-    subscriptions.add(viewDetailsGroup.onHangLive().subscribe(friendship -> {
-      navigator.navigateToLive(this, friendship, PaletteGrid.get(0));
-    }));
+    subscriptions.add(viewDetailsGroup.onHangLive()
+        .subscribe(friendship -> navigator.navigateToLive(this, friendship, PaletteGrid.get(0),
+            LiveActivity.SOURCE_FRIENDS)));
 
     subscriptions.add(viewDetailsGroup.onAddMembers().subscribe(aVoid -> {
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);

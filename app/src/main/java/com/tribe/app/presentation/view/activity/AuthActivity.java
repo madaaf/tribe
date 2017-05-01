@@ -243,6 +243,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     }
   }
 
+  @Override public void onBackPressed() {
+    // We override this behavior so that users can't leave this screen.
+  }
+
   private void stopService() {
     Intent i = new Intent(this, WSService.class);
     stopService(i);
