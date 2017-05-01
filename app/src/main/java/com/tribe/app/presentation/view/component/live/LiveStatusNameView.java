@@ -1,25 +1,24 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -43,16 +42,15 @@ public class LiveStatusNameView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject User user;
+
   @BindView(R.id.txtName) TextViewFont txtName;
 
   @BindView(R.id.txtStatus1) TextViewFont txtStatus1;
 
-  @BindView(R.id.txtStatus2) TextViewFont txtStatus2;
-
   // VARIABLES
   private Unbinder unbinder;
   private Live live;
-  private TextViewFont txtStatusLast;
   private @StatusType int status;
 
   // RESOURCES
@@ -116,95 +114,57 @@ public class LiveStatusNameView extends FrameLayout {
         .inject(this);
   }
 
-  private void showView(TextViewFont view) {
-    txtStatusLast = view;
-    view.animate()
-        .translationY(0)
-        .alpha(1)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationStart(Animator animation) {
-            view.setAlpha(0);
-            view.setVisibility(View.VISIBLE);
-          }
-
-          @Override public void onAnimationEnd(Animator animation) {
-            view.animate().setListener(null).start();
-          }
-        })
-        .start();
-  }
-
-  private void hideView(View view) {
-    view.animate()
-        .translationY(translationY)
-        .alpha(0)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            view.animate().setListener(null).start();
-            view.setVisibility(View.GONE);
-          }
-        })
-        .start();
-  }
-
-  private void clear() {
-    txtStatus1.clearAnimation();
-    txtStatus2.clearAnimation();
-  }
-
   //////////////
   //  PUBLIC  //
   //////////////
 
   public void dispose() {
     txtStatus1.clearAnimation();
-    txtStatus2.clearAnimation();
   }
 
   public void setLive(Live live) {
     this.live = live;
 
-    if (live.isGroup()) {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0, 0);
+    if (!StringUtils.isEmpty(live.getLinkId())) {
+      if (live.getId().equals(Live.WEB)) {
+        txtName.setText(
+            getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
+      } else if (live.getId().equals(Live.NEW_CALL)) {
+        txtName.setText(getContext().getString(R.string.live_new_call_title_alone));
+      }
+
+      txtStatus1.setVisibility(View.GONE);
     } else {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      if (live.isGroup()) {
+        txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0,
+            0);
+      } else {
+        txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      }
+
+      txtName.setText(live.getDisplayName());
+
+      setStatus(INITIATING);
     }
+  }
 
-    txtName.setText(live.getDisplayName());
-
-    setStatus(INITIATING);
+  public void refactorTitle() {
+    if (!live.getId().equals(Live.NEW_CALL)) return;
+    txtName.setText(getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
   }
 
   public void setStatus(@StatusType int status) {
-    if (this.status == DONE) return;
+    if (this.status == DONE || !StringUtils.isEmpty(live.getLinkId())) return;
 
     this.status = status;
 
     if (status == DONE) {
       txtStatus1.setVisibility(View.GONE);
-      //hideView(txtStatus1);
-      //hideView(txtStatus2);
       return;
     }
 
     txtStatus1.setText(
         EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
-
-    //if (txtStatusLast == null || txtStatusLast == txtStatus2) {
-    //  txtStatus1.setText(
-    //      EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
-    //  hideView(txtStatus2);
-    //  showView(txtStatus1);
-    //} else {
-    //  txtStatus2.setText(
-    //      EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
-    //  hideView(txtStatus1);
-    //  showView(txtStatus2);
-    //}
   }
 
   public @LiveStatusNameView.StatusType int getStatus() {

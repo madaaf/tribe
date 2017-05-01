@@ -2,24 +2,35 @@ package com.tribe.app.presentation.view.component.group;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.support.annotation.StringDef;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.adapter.FriendMembersAdapter;
 import com.tribe.app.presentation.view.adapter.MembersAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
@@ -31,6 +42,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,15 +60,26 @@ import rx.subscriptions.CompositeSubscription;
 
 public class AddMembersGroupView extends LinearLayout {
 
+  @StringDef({
+      ADD_MEMBERS_FROM_SETTING, ADD_MEMBERS_FROM_GRID
+  }) public @interface AddMembersGroupViewType {
+  }
+
+  public static final String ADD_MEMBERS_FROM_SETTING = "ADD_MEMBERS_FROM_SETTING";
+  public static final String ADD_MEMBERS_FROM_GRID = "ADD_MEMBERS_FROM_GRID";
+
   private int DURATION_FADE = 150;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
+  private int DURATION_CONTAINER_ANIM = 500;
 
   @Inject TagManager tagManager;
 
   @Inject User user;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject RxImagePicker rxImagePicker;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -70,6 +93,14 @@ public class AddMembersGroupView extends LinearLayout {
 
   @BindView(R.id.layoutMembers) ViewGroup layoutMembers;
 
+  @BindView(R.id.editGroupName) EditTextFont editGroupName;
+
+  @BindView(R.id.addMembersContainer) LinearLayout addMembersContainer;
+
+  @BindView(R.id.addMembersHeader) LinearLayout addMembersHeader;
+
+  @BindView(R.id.avatarView) AvatarView avatarView;
+
   // VARIABLES
   private FriendMembersLayoutManager layoutManager;
   private FriendMembersAdapter adapter;
@@ -77,9 +108,12 @@ public class AddMembersGroupView extends LinearLayout {
   private MembersLayoutManager layoutMembersManager;
   private MembersAdapter membersAdapter;
   private List<GroupMember> newMembers = new ArrayList<>();
+  private String groupName = null;
+  private String avatarGrpUri = null;
   private String currentFilter = "";
   private List<GroupMember> copieUserListTemp = new ArrayList<>();
   private List<String> newMembersIds = new ArrayList<>();
+  boolean containerAnimationFinish = true;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -118,7 +152,7 @@ public class AddMembersGroupView extends LinearLayout {
   public void onDestroy() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
-
+  
   @Override public boolean dispatchTouchEvent(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_DOWN) {
       if (editTextSearch.hasFocus()) {
@@ -158,17 +192,53 @@ public class AddMembersGroupView extends LinearLayout {
     recyclerView.setHasFixedSize(true);
     recyclerView.setNestedScrollingEnabled(membership != null);
 
+    avatarView.setBackgroundResource(R.drawable.picto_camera_grpsetting);
+    subscriptions.add(
+        RxTextView.textChanges(editGroupName).map(CharSequence::toString).subscribe(s -> {
+          groupName = s;
+        }));
+
     subscriptions.add(
         RxTextView.textChanges(editTextSearch).map(CharSequence::toString).subscribe(s -> {
           filter(s);
         }));
 
-    subscriptions.add(adapter.clickAdd()
-        .map(view -> {
+    editGroupName.setOnEditorActionListener((v, actionId, event) -> {
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        hideKeyboard(editGroupName);
+      }
+      return false;
+    });
+    editTextSearch.setOnEditorActionListener((v, actionId, event) -> {
+      if (actionId == EditorInfo.IME_ACTION_DONE) {
+        animateContainer(false);
+      }
+      return false;
+    });
+    editTextSearch.setOnFocusChangeListener((v, hasFocus) -> {
+      if (hasFocus) {
+        animateContainer(true);
+      } else {
+        animateContainer(false);
+      }
+    });
+
+    editTextSearch.setOnKeyListener((v, keyCode, event) -> {
+      animateContainer(false);
+      return false;
+    });
+
+    subscriptions.add(adapter.clickAdd().
+        map(view ->
+
+        {
           int position = recyclerView.getChildLayoutPosition(view);
           return new Pair<>(position, (GroupMember) adapter.getItemAtPosition(position));
-        })
-        .doOnNext(pair -> {
+        }).
+
+        doOnNext(pair ->
+
+        {
           GroupMember groupMember = pair.second;
           boolean add = membersAdapter.isAdd(groupMember);
           if (add) {
@@ -181,22 +251,43 @@ public class AddMembersGroupView extends LinearLayout {
           } else {
             onRemoved.onNext(pair);
           }
-        })
-        .delay(300, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(pair -> {
+        }).
+
+        delay(300, TimeUnit.MILLISECONDS).
+
+        observeOn(AndroidSchedulers.mainThread()).
+
+        subscribe(pair ->
+
+        {
           editTextSearch.setText("");
         }));
 
-    subscriptions.add(onRemoved.flatMap(
-        pair -> DialogFactory.dialog(getContext(), pair.second.getUser().getDisplayName(),
-            getContext().getString(R.string.group_members_remove_member_alert_message),
-            getContext().getString(R.string.group_members_remove_member_alert_confirm,
-                pair.second.getUser().getDisplayName()),
-            getContext().getString(R.string.action_nevermind)),
-        (pair, aBoolean) -> new Pair<>(pair, aBoolean))
-        .filter(pair -> pair.second == true)
-        .subscribe(pair -> {
+    subscriptions.add(onRemoved.flatMap(pair -> DialogFactory.dialog(
+
+        getContext(), pair.second.getUser().
+
+            getDisplayName(),
+
+        getContext().
+
+            getString(R.string.group_members_remove_member_alert_message),
+
+        getContext().
+
+            getString(R.string.group_members_remove_member_alert_confirm, pair.second.getUser().
+
+                getDisplayName()),
+
+        getContext().
+
+            getString(R.string.action_nevermind)), (pair, aBoolean) -> new Pair<>(pair, aBoolean)).
+
+        filter(pair -> pair.second == true).
+
+        subscribe(pair ->
+
+        {
           GroupMember groupMember = pair.first.second;
           groupMember.setMember(false);
           adapter.notifyItemChanged(pair.first.first);
@@ -207,6 +298,7 @@ public class AddMembersGroupView extends LinearLayout {
         }));
 
     setupMembers();
+
     refactorMembers();
   }
 
@@ -231,6 +323,33 @@ public class AddMembersGroupView extends LinearLayout {
     adapter.setItems(userListTemp);
   }
 
+  @OnClick(R.id.avatarView) void clickAvatar() {
+    subscriptions.add(DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+      if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+        subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+          loadUri(uri);
+        }));
+      }
+    }));
+  }
+
+  public void loadUri(Uri uri) {
+    this.avatarGrpUri = uri.toString();
+    avatarView.load(uri.toString());
+  }
+
+  public String getAvatarUri() {
+    return avatarGrpUri;
+  }
+
+  public String getGroupName() {
+    return groupName;
+  }
+
   public void updateGroup(Group group, boolean full) {
     if (full) {
       membership.setGroup(group);
@@ -244,6 +363,33 @@ public class AddMembersGroupView extends LinearLayout {
     } else {
       membership.getGroup().setPicture(group.getPicture());
       membership.getGroup().setName(group.getName());
+    }
+  }
+
+  private void animateContainer(boolean expanded) {
+    if (expanded) {
+      if (containerAnimationFinish) {
+        containerAnimationFinish = false;
+        addMembersContainer.animate()
+            .translationY(-addMembersHeader.getHeight())
+            .setDuration(DURATION_CONTAINER_ANIM)
+            .withEndAction(() -> {
+              LayoutParams params = (LayoutParams) addMembersContainer.getLayoutParams();
+              params.setMargins(0, 0, 0, -addMembersHeader.getHeight());
+              addMembersContainer.setLayoutParams(params);
+            })
+            .start();
+      }
+    } else {
+      addMembersContainer.animate()
+          .translationY(0)
+          .setDuration(DURATION_CONTAINER_ANIM)
+          .withEndAction(() -> {
+            editTextSearch.clearFocus();
+            hideKeyboard(editTextSearch);
+            containerAnimationFinish = true;
+          })
+          .start();
     }
   }
 
@@ -323,5 +469,23 @@ public class AddMembersGroupView extends LinearLayout {
 
   public void addPrefildMumbers(List<GroupMember> prefilledMembers) {
     newMembers.addAll(prefilledMembers);
+  }
+
+  public void addMembersGroupViewType(@AddMembersGroupViewType String type) {
+    if (type == ADD_MEMBERS_FROM_SETTING) {
+      addMembersHeader.setVisibility(GONE);
+    } else {
+      addMembersHeader.setVisibility(VISIBLE);
+    }
+  }
+
+  public EditTextFont getEditTextFont() {
+    return editTextSearch;
+  }
+
+  private void hideKeyboard(View v) {
+    InputMethodManager imm =
+        (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
   }
 }

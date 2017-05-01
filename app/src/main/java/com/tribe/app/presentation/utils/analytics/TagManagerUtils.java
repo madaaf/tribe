@@ -43,6 +43,7 @@ public class TagManagerUtils {
   public static final String Invites = "Invites";
   public static final String Logout = "Logout";
   public static final String Calls = "Calls";
+  public static final String Notification_AppOpen = "Notification_AppOpen";
 
   /**
    * ERRORS
@@ -82,7 +83,10 @@ public class TagManagerUtils {
   public static final String MISSED = "missed";
   public static final String ENDED = "ended";
   public static final String WIZZ_COUNT = "wizz_count";
+  public static final String SCREENSHOT_COUNT = "screenshot_count";
   public static final String MEMBERS_INVITED = "members_invited";
+  public static final String CATEGORY = "category";
+  public static final String SOURCE = "source";
 
   /**
    * USER PROPERTIES

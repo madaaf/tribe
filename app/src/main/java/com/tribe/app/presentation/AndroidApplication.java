@@ -108,7 +108,6 @@ public class AndroidApplication extends Application {
 
   private void prepareRealm() {
     RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(7)
-        .deleteRealmIfMigrationNeeded()
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -121,6 +120,19 @@ public class AndroidApplication extends Application {
             RealmObjectSchema contactFBSchema = schema.get("ContactFBRealm");
             if (!contactFBSchema.hasField("isNew")) {
               contactFBSchema.addField("isNew", boolean.class);
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 7) {
+            RealmObjectSchema contactABSchema = schema.get("ContactABRealm");
+            if (!contactABSchema.hasField("firstName")) {
+              contactABSchema.addField("firstName", String.class);
+            }
+
+            if (!contactABSchema.hasField("lastName")) {
+              contactABSchema.addField("lastName", String.class);
             }
 
             oldVersion++;

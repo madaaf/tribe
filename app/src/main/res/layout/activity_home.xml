@@ -64,6 +64,14 @@
       android:layout_height="match_parent"
       android:clickable="true"
       android:visibility="gone"
-      ></com.tribe.app.presentation.view.widget.notifications.RatingNotificationView>
+      />
+
+  <com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView
+      android:id="@+id/errorNotificationView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clickable="true"
+      android:visibility="gone"
+      />
 
 </FrameLayout>

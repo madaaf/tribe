@@ -14,6 +14,7 @@ import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
@@ -124,5 +125,10 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @CallTagsMap Preference<String> provideCallTagsMap(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.CALL_TAGS_MAP, "");
+  }
+
+  @Provides @Singleton @LookupResult Preference<String> provideLookupResult(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.LOOKUP_RESULT, "");
   }
 }

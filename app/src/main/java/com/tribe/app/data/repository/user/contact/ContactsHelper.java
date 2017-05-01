@@ -32,11 +32,18 @@ public class ContactsHelper {
       ContactsContract.Data.MIMETYPE
   };
 
+  private static final String[] DATA_PROJECTION_WITH_NAMES = {
+      ContactsContract.RawContacts.CONTACT_ID, ContactsContract.Data.MIMETYPE,
+      ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+      ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
+      CommonDataKinds.StructuredName.DISPLAY_NAME, CommonDataKinds.Email.DATA
+  };
+
   private static final String[] DATA_PROJECTION_FULL = {
-      ContactsContract.Data.DATA1,    // email / phone
-      ContactsContract.Data.MIMETYPE, ContactsContract.Data.CONTACT_ID,
-      ContactsContract.Data.PHOTO_THUMBNAIL_URI, ContactsContract.Data.STARRED,
-      ContactsContract.Data.LAST_TIME_CONTACTED, ContactsContract.Data.DATA_VERSION
+      ContactsContract.Data.DATA1, ContactsContract.Data.DATA2,
+      CommonDataKinds.StructuredName.DISPLAY_NAME, CommonDataKinds.StructuredName.GIVEN_NAME,
+      CommonDataKinds.StructuredName.FAMILY_NAME, ContactsContract.Data.MIMETYPE,
+      ContactsContract.Data.CONTACT_ID, ContactsContract.Data.DATA_VERSION
   };
 
   private static final String[] CONTACTS_PROJECTION = new String[] {
@@ -157,66 +164,66 @@ public class ContactsHelper {
   }
 
   Cursor getFastContactsCursor() {
-    String where = ContactsContract.Data.MIMETYPE + "=?";
-    String[] wheres = { where, where, where };
-    String[] selectionArgs = {
-        CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-    };
-    String selection = TextUtils.join(" OR ", wheres);
-    Cursor data = resolver.query(ContactsContract.Data.CONTENT_URI, DATA_PROJECTION_FULL, selection,
-        selectionArgs, ContactsContract.Data.CONTACT_ID);
+    String where = ContactsContract.Data.HAS_PHONE_NUMBER + " != 0";
+
+    where += " AND "
+        + ContactsContract.Data.MIMETYPE
+        + " IN ('"
+        + ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
+        + "', '"
+        + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+        + "', '"
+        + ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE
+        + "')";
+
+    Cursor data =
+        resolver.query(ContactsContract.Data.CONTENT_URI, DATA_PROJECTION_WITH_NAMES, where, null,
+            ContactsContract.Data.DISPLAY_NAME);
 
     return data;
   }
 
-  @NonNull ContactABRealm fetchContactFast(Cursor c) {
-    String id = c.getString(c.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-    ContactABRealm contact = new ContactABRealm();
-    contact.setId(id);
+  @NonNull ContactABRealm fetchContactFast(Cursor c, ContactABRealm contact) {
+    List<String> phones = new ArrayList<>();
+    List<String> emails = new ArrayList<>();
 
-    HashMap<String, Pair<String, Boolean>> phonesPair = new HashMap<>();
+    String mimeType = c.getString(c.getColumnIndex(ContactsContract.Data.MIMETYPE));
+    if (mimeType.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+      String email = c.getString(c.getColumnIndex(CommonDataKinds.Email.ADDRESS));
+      if (isValidEmail(email)) emails.add(email);
+    } else if (mimeType.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+      String phone = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+      phones.add(phone);
+    } else if (mimeType.equals(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)) {
+      String givenName =
+          c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME));
+      contact.setFirstName(givenName);
 
-    int countInternational = 0;
+      String familyName = c.getString(
+          c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME));
+      contact.setLastName(familyName);
 
-    String nextId = id;
-    while (id.equals(nextId)) {
-      String value = c.getString(c.getColumnIndex(ContactsContract.Data.DATA1));
-      switch (c.getString(c.getColumnIndex(ContactsContract.Data.MIMETYPE))) {
-        case CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
-          contact.setName(value);
-          break;
-        case CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
-          String phoneNumberFormatted =
-              phoneUtils.formatMobileNumberForAddressBook(value, String.valueOf(countryCode));
-          boolean isFormatted = !StringUtils.isEmpty(phoneNumberFormatted);
-          phonesPair.put(isFormatted ? phoneNumberFormatted : value.trim(),
-              new Pair<>(isFormatted ? phoneNumberFormatted : value.trim(), isFormatted));
-          break;
-      }
-
-      if (c.moveToNext()) {
-        nextId = c.getString(c.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-      } else {
-        break;
-      }
+      String displayName =
+          c.getString(c.getColumnIndex(CommonDataKinds.StructuredName.DISPLAY_NAME));
+      contact.setName(displayName);
     }
 
     RealmList<PhoneRealm> realmList = new RealmList<>();
 
-    if (phonesPair != null && phonesPair.size() > 0) {
-      for (Pair<String, Boolean> phonePair : phonesPair.values()) {
+    if (phones != null && phones.size() > 0) {
+      for (String phone : phones) {
         PhoneRealm phoneRealm = new PhoneRealm();
-        phoneRealm.setPhone(phonePair.first);
-        phoneRealm.setInternational(phonePair.second);
+        phoneRealm.setPhone(phone);
         realmList.add(phoneRealm);
-
-        if (phonePair.second) countInternational++;
       }
+
+      contact.setPhones(realmList);
+      return contact;
     }
 
-    contact.setPhones(realmList);
-
-    if (countInternational > 0) return contact;
+    if (emails != null && emails.size() > 0) {
+      contact.setEmails(emails);
+    }
 
     return null;
   }
@@ -230,5 +237,10 @@ public class ContactsHelper {
 
   public void setCountryCode(int countryCode) {
     this.countryCode = countryCode;
+  }
+
+  private boolean isValidEmail(CharSequence target) {
+    return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target)
+        .matches();
   }
 }

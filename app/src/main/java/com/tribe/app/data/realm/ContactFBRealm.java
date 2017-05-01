@@ -81,6 +81,10 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     if (shouldAdd) this.userList.add(userRealm);
   }
 
+  @Override public void setPhone(String phone) {
+
+  }
+
   @Override public List<UserRealm> getUsers() {
     return userList;
   }

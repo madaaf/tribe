@@ -173,7 +173,6 @@ public class JsonToModel {
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
-              Timber.e("SOEF " + guest.toString());
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
                   guest.getString("picture"), false, false, null, true,
                   guest.getString("username")));
@@ -206,7 +205,7 @@ public class JsonToModel {
 
         if (!success) {
           String error = object.getString("e");
-          onError.onNext(new WebSocketError(error, "Can't connect"));
+          onError.onNext(new WebSocketError(Integer.parseInt(error), "Can't connect"));
         }
       }
     } catch (JSONException e) {
@@ -229,10 +228,10 @@ public class JsonToModel {
     try {
       object = new JSONObject(json);
 
-      if (object.has("a")) {
+      if (object.has("a") && !object.has(Room.MESSAGE_ERROR)) {
         String a = object.getString("a");
         return Room.getWebSocketMessageType(a);
-      } else if (object.has("error")) {
+      } else if (object.has(Room.MESSAGE_ERROR)) {
         return Room.MESSAGE_ERROR;
       }
     } catch (JSONException e) {

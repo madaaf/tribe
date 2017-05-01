@@ -6,6 +6,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 
@@ -105,11 +106,12 @@ public class NotificationUtils {
       return builder.addAction(ACTION_HANG_LIVE,
           context.getString(R.string.live_notification_action_hang_live_friend,
               notificationPayload.getUserDisplayName()),
-          getIntentForLive(context, notificationPayload));
+          getIntentForLive(context, notificationPayload, false));
     } else {
       return builder.addAction(ACTION_HANG_LIVE,
           context.getString(R.string.live_notification_action_hang_live_group,
-              notificationPayload.getGroupName()), getIntentForLive(context, notificationPayload));
+              notificationPayload.getGroupName()),
+          getIntentForLive(context, notificationPayload, false));
     }
   }
 
@@ -129,20 +131,37 @@ public class NotificationUtils {
   private static LiveNotificationView.Builder addLeaveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
     return builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
-        notificationPayload.getUserDisplayName()), getIntentForLive(context, notificationPayload));
+        notificationPayload.getUserDisplayName()),
+        getIntentForLive(context, notificationPayload, false));
   }
 
-  public static Intent getIntentForLive(Context context, NotificationPayload payload) {
+  public static Intent getIntentForLive(Context context, NotificationPayload payload,
+      boolean isFromCallkit) {
     String recipientId =
         !StringUtils.isEmpty(payload.getGroupId()) ? payload.getGroupId() : payload.getUserId();
     boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
     String sessionId = payload.getSessionId();
     String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
     String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
-    return LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId);
+
+    String source = "";
+    if (isFromCallkit) {
+      source = LiveActivity.SOURCE_CALLKIT;
+    } else {
+      source = payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
+          ? LiveActivity.SOURCE_ONLINE_NOTIFICATION : LiveActivity.SOURCE_LIVE_NOTIFICATION;
+    }
+
+    Intent intent =
+        LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId,
+            source);
+    intent.putExtra(Constants.NOTIFICATION_LIVE, payload.getClickAction());
+    return intent;
   }
 
   public static Intent getIntentForHome(Context context, NotificationPayload payload) {
-    return new Intent(context, HomeActivity.class);
+    Intent intent = new Intent(context, HomeActivity.class);
+    if (payload != null) intent.putExtra(Constants.NOTIFICATION_HOME, payload.getClickAction());
+    return intent;
   }
 }

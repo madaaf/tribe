@@ -24,6 +24,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -41,6 +42,8 @@ public class LiveControlsView extends FrameLayout {
   private static final int DURATION_PARAM = 450;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.btnInviteLive) View btnInviteLive;
 
@@ -72,7 +75,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Void> onClickCameraOrientation = PublishSubject.create();
   private PublishSubject<Boolean> onClickMicro = PublishSubject.create();
-  private PublishSubject<Void> onClickParamExpand = PublishSubject.create();
+  private PublishSubject<Boolean> onClickParamExpand = PublishSubject.create();
   private PublishSubject<Void> onClickCameraEnable = PublishSubject.create();
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
@@ -144,9 +147,7 @@ public class LiveControlsView extends FrameLayout {
     timerSubscription = Observable.timer(MAX_DURATION_LAYOUT_CONTROLS, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aVoid -> {
-          if (isParamExpanded) {
-            expandParam();
-          }
+          reduceParam();
         });
   }
 
@@ -155,35 +156,45 @@ public class LiveControlsView extends FrameLayout {
     setTimer();
   }
 
-  private void expandParam() {
+  private void clickOnParam() {
     if (!isParamExpanded) {
-      resetTimer();
-      isParamExpanded = true;
-
-      int widthExtended = layoutContainerParamExtendedLive.getWidth();
-      layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
-      layoutContainerParamExtendedLive.setVisibility(VISIBLE);
-
-      btnExpand.setImageResource(R.drawable.picto_extend_left_live);
-
-      setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
-      setXTranslateAnimation(layoutContainerParamLive, getWidth());
-
-      if (cameraEnabled) {
-        setXTranslateAnimation(btnExpand, widthExtended);
-      } else {
-        setXTranslateAnimation(btnExpand,
-            layoutContainerParamExtendedLive.getWidth() - xTranslation);
-      }
+      expendParam();
     } else {
-      isParamExpanded = false;
-      layoutContainerParamExtendedLive.setTranslationX(0);
-      btnExpand.setImageResource(R.drawable.picto_extend_right_live);
-
-      setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
-      setXTranslateAnimation(layoutContainerParamLive, 0);
-      setXTranslateAnimation(btnExpand, 0);
+      reduceParam();
     }
+  }
+
+  private void expendParam() {
+    resetTimer();
+    isParamExpanded = true;
+
+    onClickParamExpand.onNext(isParamExpanded);
+
+    int widthExtended = layoutContainerParamExtendedLive.getWidth();
+    layoutContainerParamExtendedLive.setTranslationX(-(screenUtils.getWidthPx()));
+    layoutContainerParamExtendedLive.setVisibility(VISIBLE);
+
+    btnExpand.setImageResource(R.drawable.picto_extend_left_live);
+
+    setXTranslateAnimation(layoutContainerParamExtendedLive, 0);
+    setXTranslateAnimation(layoutContainerParamLive, getWidth());
+
+    if (cameraEnabled) {
+      setXTranslateAnimation(btnExpand, widthExtended);
+    } else {
+      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation);
+    }
+  }
+
+  public void reduceParam() {
+    isParamExpanded = false;
+    onClickParamExpand.onNext(isParamExpanded);
+    layoutContainerParamExtendedLive.setTranslationX(0);
+    btnExpand.setImageResource(R.drawable.picto_extend_right_live);
+
+    setXTranslateAnimation(layoutContainerParamExtendedLive, -screenUtils.getWidthPx());
+    setXTranslateAnimation(layoutContainerParamLive, 0);
+    setXTranslateAnimation(btnExpand, 0);
   }
 
   private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
@@ -223,7 +234,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnExpand) void clickExpandParam() {
-    expandParam();
+    clickOnParam();
   }
 
   @OnClick(R.id.btnCameraOn) void clickCameraEnable() {
@@ -272,6 +283,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnNotify) void clickNotify() {
+    stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
     resetTimer();
 
     btnNotify.setEnabled(false);
@@ -346,7 +358,7 @@ public class LiveControlsView extends FrameLayout {
     return onClickMicro;
   }
 
-  public Observable<Void> onClickParamExpand() {
+  public Observable<Boolean> onClickParamExpand() {
     return onClickParamExpand;
   }
 

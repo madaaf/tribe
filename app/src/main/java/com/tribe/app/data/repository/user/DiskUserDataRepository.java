@@ -100,7 +100,6 @@ import rx.Observable;
         });
   }
 
-
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }
@@ -245,10 +244,6 @@ import rx.Observable;
     if (shouldAdd) result.add(contact);
   }
 
-  @Override public Observable<Void> howManyFriends() {
-    return null;
-  }
-
   @Override public Observable<SearchResult> findByUsername(String username) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
@@ -389,7 +384,7 @@ import rx.Observable;
   }
 
   @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId) {
     return null;
   }
 
@@ -402,6 +397,12 @@ import rx.Observable;
   }
 
   @Override public Observable<Void> declineInvite(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<Void> sendInvitations() { return null; }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
     return null;
   }
 }

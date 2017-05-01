@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
@@ -23,6 +22,7 @@ import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.LeaveGroup;
 import com.tribe.app.domain.interactor.user.RemoveGroup;
+import com.tribe.app.domain.interactor.user.SendInvitations;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.domain.interactor.user.UpdateUser;
@@ -57,6 +57,7 @@ public class HomeGridPresenter implements Presenter {
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
   private DeclineInvite declineInvite;
+  private SendInvitations sendInvitations;
 
   // SUBSCRIBERS
   private FriendListSubscriber diskFriendListSubscriber;
@@ -71,7 +72,8 @@ public class HomeGridPresenter implements Presenter {
       CreateMembership createMembership, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUser updateUser, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite) {
+      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
+      SendInvitations sendInvitations) {
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.leaveGroup = leaveGroup;
@@ -86,6 +88,7 @@ public class HomeGridPresenter implements Presenter {
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
     this.declineInvite = declineInvite;
+    this.sendInvitations = sendInvitations;
   }
 
   @Override public void onViewDetached() {
@@ -101,6 +104,7 @@ public class HomeGridPresenter implements Presenter {
     getDiskContactOnAppList.unsubscribe();
     updateFriendship.unsubscribe();
     declineInvite.unsubscribe();
+    sendInvitations.unsubscribe();
     homeGridView = null;
   }
 
@@ -341,7 +345,6 @@ public class HomeGridPresenter implements Presenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
       if (homeGridView != null) homeGridView.onSyncDone();
     }
   }
@@ -376,5 +379,9 @@ public class HomeGridPresenter implements Presenter {
   public void declineInvite(String roomId) {
     declineInvite.prepare(roomId);
     declineInvite.execute(new DefaultSubscriber());
+  }
+
+  public void sendInvitations() {
+    sendInvitations.execute(new DefaultSubscriber());
   }
 }

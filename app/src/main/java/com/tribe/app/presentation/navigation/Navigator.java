@@ -8,7 +8,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.GroupMember;
@@ -106,9 +105,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToAuthAccess(Activity activity, Uri deepLink) {
+  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
     if (activity != null) {
-      Intent intent = AuthAccessActivity.getCallingIntent(activity);
+      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
       intent.setData(deepLink);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -121,28 +120,31 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHome(Activity activity, boolean start, Uri uriDeepLink) {
+  public void navigateToHomeFromStart(Activity activity, Uri uriDeepLink) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
-      if (start) {
-        if (uriDeepLink != null) {
-          intent.setData(uriDeepLink);
-          intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        }
-
-        activity.startActivity(intent);
-      } else {
-        if (uriDeepLink != null) {
-          intent.setData(uriDeepLink);
-          intent.putExtra(Extras.IS_FROM_LOGIN, true);
-        }
-
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-            | Intent.FLAG_ACTIVITY_CLEAR_TASK
-            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        activity.startActivity(intent);
-        activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      if (uriDeepLink != null) {
+        intent.setData(uriDeepLink);
       }
+      activity.startActivity(intent);
+    }
+  }
+
+  /**
+   * Goes to the main grid.
+   *
+   * @param activity An activity needed to open the destiny activity.
+   */
+  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode) {
+    if (activity != null) {
+      Intent intent = HomeActivity.getCallingIntent(activity);
+      intent.putExtra(Extras.IS_FROM_LOGIN, true);
+      intent.putExtra(Extras.COUNTRY_CODE, countryCode);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
     }
   }
 
@@ -226,9 +228,10 @@ public class Navigator {
    * @param recipient recipient to go live with
    * @param color the color of the tile
    */
-  public void navigateToLive(Activity activity, Recipient recipient, int color) {
+  public void navigateToLive(Activity activity, Recipient recipient, int color,
+      @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color);
+      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -236,6 +239,27 @@ public class Navigator {
 
   public void navigateToIntent(Activity activity, Intent intent) {
     if (activity != null) {
+      if (activity instanceof LiveActivity) {
+        activity.startActivity(intent);
+      } else {
+        activity.startActivityForResult(intent, FROM_LIVE);
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      }
+    }
+  }
+
+  public void navigateToLive(Activity activity, String linkId, String url,
+      @LiveActivity.Source String source) {
+    if (activity != null) {
+      Intent intent = LiveActivity.getCallingIntent(activity, linkId, url, source);
+      activity.startActivityForResult(intent, FROM_LIVE);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToNewCall(Activity activity) {
+    if (activity != null) {
+      Intent intent = LiveActivity.getCallingIntent(activity, LiveActivity.SOURCE_NEW_CALL);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -342,7 +366,7 @@ public class Navigator {
   public void openSmsForInvite(Activity activity, String phoneNumber) {
     String text = EmojiParser.demojizedText(
         activity.getString(R.string.share_invite, user.getUsername(),
-            BuildConfig.TRIBE_URL + "/" + user.getUsername()));
+            activity.getString(R.string.share_messenger_url)));
 
     if (StringUtils.isEmpty(phoneNumber)) {
       shareGenericText(text, activity);
@@ -353,6 +377,11 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
+  }
+
+  public void inviteToRoom(Activity activity, String roomLink) {
+    String text = EmojiParser.demojizedText(activity.getString(R.string.share_live, roomLink));
+    shareGenericText(text, activity);
   }
 
   public void openFacebookMessenger(String body, Activity activity) {

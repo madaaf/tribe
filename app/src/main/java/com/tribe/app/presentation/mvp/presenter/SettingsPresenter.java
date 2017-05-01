@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.network.job.RefreshHowManyFriendsJob;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
@@ -116,7 +115,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      jobManager.addJobInBackground(new RefreshHowManyFriendsJob());
     }
   }
 
@@ -130,16 +128,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      //            int countInApp = 0;
-      //
-      //            if (contactList != null) {
-      //                for (Contact contact : contactList) {
-      //                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-      //                        countInApp++;
-      //                    }
-      //                }
-      //            }
-
       if (contactList != null) {
         settingsView.onAddressBookContactSync(contactList.size());
       }
@@ -156,16 +144,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      //            int countInApp = 0;
-      //
-      //            if (contactList != null) {
-      //                for (Contact contact : contactList) {
-      //                    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-      //                        countInApp++;
-      //                    }
-      //                }
-      //            }
-
       if (contactList != null) {
         settingsView.onFBContactsSync(contactList.size());
       }

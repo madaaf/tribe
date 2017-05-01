@@ -24,6 +24,8 @@ import com.facebook.AccessToken;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -44,6 +46,7 @@ import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -62,6 +65,7 @@ import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -69,11 +73,14 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -135,6 +142,8 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
 
+  @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
+
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -155,18 +164,13 @@ public class HomeActivity extends BaseActivity
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
   private boolean searchViewDisplayed = false;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // DIMEN
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
-
-    finish = getIntent().getBooleanExtra(IntentUtils.FINISH, false);
-    if (finish) {
-      finish();
-      return;
-    }
 
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 
@@ -179,9 +183,10 @@ public class HomeActivity extends BaseActivity
     initRecyclerView();
     initTopBar();
     initSearch();
-    manageDeepLink(getIntent());
     initPullToRefresh();
     initPreviousCallTags();
+    manageLogin(getIntent());
+    manageIntent(getIntent());
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
@@ -214,14 +219,13 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
-    manageDeepLink(intent);
+    manageIntent(intent);
   }
 
   @Override protected void onStart() {
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
-
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       syncContacts();
     }
@@ -300,6 +304,7 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(onNewContacts.observeOn(Schedulers.computation()).map(contactList -> {
       List<Contact> result = new ArrayList<>();
+      Map<String, Contact> mapContact = new HashMap<>();
 
       if (getCurrentUser().getFriendships() == null) {
         result.addAll(contactList);
@@ -313,9 +318,17 @@ public class HomeActivity extends BaseActivity
             for (Friendship friendship : getCurrentUser().getFriendships()) {
               if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
             }
+
+            if (mapContact.containsKey(linkedUser.getId())) {
+              shouldAdd = false;
+            } else {
+              mapContact.put(linkedUser.getId(), contact);
+            }
           }
 
-          if (shouldAdd) result.add(contact);
+          if (shouldAdd) {
+            result.add(contact);
+          }
         }
       }
 
@@ -352,6 +365,18 @@ public class HomeActivity extends BaseActivity
             canEndRefresh = false;
           }
         }));
+  }
+
+  private void onClickItem(Recipient recipient) {
+    if (recipient.getId().equals(Recipient.ID_MORE)) {
+      navigator.openSmsForInvite(this, null);
+    } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
+      navigator.navigateToVideo(this);
+    } else {
+      navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()),
+          recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+              : LiveActivity.SOURCE_GRID);
+    }
   }
 
   private void initRecyclerView() {
@@ -405,14 +430,13 @@ public class HomeActivity extends BaseActivity
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
           if (displayPermissionNotif) {
-            return;
-          }
-          if (recipient.getId().equals(Recipient.ID_MORE)) {
-            navigator.openSmsForInvite(this, null);
-          } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
-            navigator.navigateToVideo(this);
+            notificationContainerView.onAcceptedPermission().subscribe(permissionGranted -> {
+              if (permissionGranted) {
+                onClickItem(recipient);
+              }
+            });
           } else {
-            navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()));
+            onClickItem(recipient);
           }
         }));
 
@@ -459,7 +483,7 @@ public class HomeActivity extends BaseActivity
 
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickNew().subscribe(aVoid -> {
-      navigateToCreateGroup();
+      navigateToNewCall();
     }));
 
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
@@ -507,7 +531,8 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
     subscriptions.add(searchView.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0))));
+        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
+            LiveActivity.SOURCE_SEARCH)));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
@@ -592,11 +617,88 @@ public class HomeActivity extends BaseActivity
     if (token != null) homeGridPresenter.sendToken(token);
   }
 
-  private void manageDeepLink(Intent intent) {
+  private void manageIntent(Intent intent) {
     if (intent != null) {
-      if (intent.getData() != null) {
-        homeGridPresenter.getHeadDeepLink(intent.getDataString());
+      if (intent.hasExtra(IntentUtils.FINISH)) {
+        finish = intent.getBooleanExtra(IntentUtils.FINISH, false);
+        if (finish) {
+          finish();
+          return;
+        }
+      } else if (intent.hasExtra(Constants.NOTIFICATION_HOME)) {
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerUtils.CATEGORY,
+            intent.getStringExtra(Constants.NOTIFICATION_HOME));
+        tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+      } else if (intent.getData() != null) {
+        String path = intent.getData().getPath();
+        String host = intent.getData().getHost();
+        String scheme = intent.getData().getScheme();
+        String roomId = intent.getData().getQueryParameter("roomId");
+        String linkId, url, deepLinkScheme = getString(R.string.deeplink_host);
+
+        if (!StringUtils.isEmpty(roomId)) {
+          linkId = roomId;
+          url = intent.getData().getScheme() + "://" + host + "/" + linkId;
+        } else {
+          linkId = path.substring(1, path.length());
+          if (deepLinkScheme.equals(scheme)) {
+            url = StringUtils.getUrlFromLinkId(this, linkId);
+          } else {
+            url = intent.getData().toString();
+          }
+        }
+
+        if (host.startsWith(getString(R.string.web_host)) || deepLinkScheme.equals(scheme)) {
+          navigator.navigateToLive(this, linkId, url, LiveActivity.SOURCE_DEEPLINK);
+        }
       }
+    }
+  }
+
+  private void manageLogin(Intent intent) {
+    if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN) && addressBook.get()) {
+      String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
+      if (StringUtils.isEmpty(countryCode)) return;
+
+      firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+      firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
+      firebaseRemoteConfig.activateFetched();
+
+      firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          firebaseRemoteConfig.activateFetched();
+
+          boolean displayingPopup = false;
+
+          String countryCodesMaster =
+              firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
+
+          if (!StringUtils.isEmpty(countryCodesMaster)) {
+            String[] countryCodes = countryCodesMaster.split(",");
+
+            for (String countryCodeInvite : countryCodes) {
+              if (countryCodeInvite.equals(countryCode)) {
+                displayingPopup = true;
+
+                subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong -> {
+                      notificationContainerView.showNotification(null,
+                          NotificationContainerView.DISPLAY_INVITE_NOTIF);
+
+                      subscriptions.add(notificationContainerView.onSendInvitations()
+                          .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
+                    }));
+
+                return;
+              }
+            }
+          }
+
+          if (!displayingPopup) homeGridPresenter.sendInvitations();
+        }
+      });
     }
   }
 
@@ -648,8 +750,8 @@ public class HomeActivity extends BaseActivity
     navigator.navigateToProfile(HomeActivity.this);
   }
 
-  private void navigateToCreateGroup() {
-    HomeActivity.this.navigator.navigateToCreateGroup(this);
+  private void navigateToNewCall() {
+    HomeActivity.this.navigator.navigateToNewCall(this);
   }
 
   private void syncContacts() {
@@ -666,9 +768,10 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    topBarContainer.refreshTopBarView();
     if (data != null) {
-      if (!notificationContainerView.showNotification(data, null)) {
+      if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
+        errorNotificationView.displayView();
+      } else if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);
       }
     }

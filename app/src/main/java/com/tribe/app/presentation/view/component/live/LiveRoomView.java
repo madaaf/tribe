@@ -235,12 +235,10 @@ public class LiveRoomView extends FrameLayout {
 
     flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
-
     lp.flexGrow = 1;
 
     switch (viewIndex) {
       case 0:
-      case 1:
         LiveLocalView viewLocalLive = (LiveLocalView) flexboxLayout.getChildAt(0);
         if (viewLocalLive.getParent() != null) {
           ((ViewGroup) viewLocalLive.getParent()).removeView(viewLocalLive);
@@ -250,8 +248,6 @@ public class LiveRoomView extends FrameLayout {
         lp1.flexGrow = 1;
         viewLocalLive.setLayoutParams(lp1);
         flexboxLayout.addView(viewLocalLive);
-        liveRowView.setLayoutParams(lp);
-        flexboxLayout.addView(liveRowView);
         break;
       default:
         if (guestDraguedByMe) {

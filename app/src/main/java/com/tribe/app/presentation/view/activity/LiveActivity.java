@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +75,7 @@ import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -101,6 +103,24 @@ import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
 
+  @StringDef({
+      SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
+      SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
+      SOURCE_NEW_CALL
+  }) public @interface Source {
+  }
+
+  public static final String SOURCE_GRID = "Grid";
+  public static final String SOURCE_DEEPLINK = "DeepLink";
+  public static final String SOURCE_SEARCH = "Search";
+  public static final String SOURCE_CALLKIT = "CallKit";
+  public static final String SOURCE_SHORTCUT_ITEM = "ShortcutItem";
+  public static final String SOURCE_DRAGGED_AS_GUEST = "DraggedAsGuest";
+  public static final String SOURCE_ONLINE_NOTIFICATION = "OnlineNotification";
+  public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
+  public static final String SOURCE_FRIENDS = "Friends";
+  public static final String SOURCE_NEW_CALL = "NewCall";
+
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
@@ -112,7 +132,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private final int SCREENSHOT_DURATION = 300;
   private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
-  public static Intent getCallingIntent(Context context, Recipient recipient, int color) {
+  public static Intent getCallingIntent(Context context, Recipient recipient, int color,
+      @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
@@ -120,7 +141,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .userName(recipient.getUsername())
         .isGroup(recipient.isGroup())
         .countdown(!recipient.isLive())
-        .picture(recipient.getProfilePicture());
+        .picture(recipient.getProfilePicture())
+        .source(source);
 
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
@@ -137,7 +159,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
-      String picture, String name, String sessionId) {
+      String picture, String name, String sessionId, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     Live live = new Live.Builder(recipientId, recipientId).displayName(name)
@@ -146,6 +168,34 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .countdown(StringUtils.isEmpty(sessionId))
         .sessionId(sessionId)
         .intent(true)
+        .source(source)
+        .build();
+
+    intent.putExtra(EXTRA_LIVE, live);
+
+    return intent;
+  }
+
+  public static Intent getCallingIntent(Context context, String linkId, String url,
+      @Source String source) {
+    Intent intent = new Intent(context, LiveActivity.class);
+
+    Live live = new Live.Builder(Live.WEB, Live.WEB).linkId(linkId).url(url).source(source).build();
+
+    intent.putExtra(EXTRA_LIVE, live);
+
+    return intent;
+  }
+
+  public static Intent getCallingIntent(Context context, @Source String source) {
+    Intent intent = new Intent(context, LiveActivity.class);
+
+    String linkId = StringUtils.generateLinkId();
+    String url = StringUtils.getUrlFromLinkId(context, linkId);
+
+    Live live = new Live.Builder(Live.NEW_CALL, Live.NEW_CALL).linkId(linkId)
+        .url(url)
+        .source(source)
         .build();
 
     intent.putExtra(EXTRA_LIVE, live);
@@ -200,6 +250,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   private Intent returnIntent = new Intent();
   private List anonymousIdList = new ArrayList();
+  private boolean finished = false;
+
   // RESOURCES
 
   // OBSERVABLES
@@ -217,12 +269,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initParams(getIntent());
     init();
     initResources();
-    initAppState();
     initRemoteConfig();
+    manageClickNotification(getIntent());
+    initAppState();
   }
 
   @Override protected void onNewIntent(Intent intent) {
-    viewLive.dispose(true);
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    boolean isJump = true;
+    manageClickNotification(getIntent());
+    viewLive.endCall(isJump);
+    viewLive.dispose(isJump);
     viewLive.jump();
     initParams(intent);
     live.setCountdown(false);
@@ -238,6 +295,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onStop() {
     Timber.d("onStop");
+    livePresenter.onViewDetached();
     super.onStop();
   }
 
@@ -264,12 +322,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onDestroy() {
     Timber.d("onDestroy");
-    appStateMonitor.removeListener(this);
-    appStateMonitor.stop();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     soundManager.cancelMediaPlayer();
+
+    viewLiveContainer.dispose();
+    viewLive.dispose(false);
 
     if (audioManager != null) {
       audioManager.stop();
@@ -336,7 +395,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
-        } else if (!StringUtils.isEmpty(live.getSessionId())) {
+        } else if (live.isSessionOrLink()) {
           viewLive.start(live);
           ready();
         } else if (!live.isGroup()) {
@@ -364,9 +423,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initAppState() {
-    appStateMonitor = RxAppStateMonitor.create(getApplication());
-    appStateMonitor.addListener(this);
-    appStateMonitor.start();
+    if (appStateMonitor == null) {
+      appStateMonitor = RxAppStateMonitor.create(getApplication());
+      appStateMonitor.addListener(this);
+      appStateMonitor.start();
+    }
   }
 
   private void ratingNotificationSubscribe() {
@@ -388,6 +449,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     });
   }
 
+  private void manageClickNotification(Intent intent) {
+    if (intent != null && intent.hasExtra(Constants.NOTIFICATION_LIVE)) {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.CATEGORY,
+          intent.getStringExtra(Constants.NOTIFICATION_LIVE));
+      tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+    }
+  }
+
   private Boolean displayRatingNotifDependingFirebaseTrigger() {
     Random rn = new Random();
     int randomNumber = rn.nextInt(101);
@@ -397,22 +467,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private Long getFirebaseTimeoutConfig() {
     Long time = firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
     return time == 0 ? 10 : time;
-  }
-
-  private void displayStartFirstPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.START_FIRST_LIVE)) {
-      subscriptions.add(DialogFactory.dialog(this,
-          EmojiParser.demojizedText((getString(R.string.tips_startfirstlive_title))),
-          getString(R.string.tips_startfirstlive_message),
-          getString(R.string.tips_startfirstlive_action1), null)
-          .filter(x -> x == true)
-          .subscribe(a -> {
-            subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial()));
-          }));
-      stateManager.addTutorialKey(StateManager.START_FIRST_LIVE);
-    }
   }
 
   private void initSubscriptions() {
@@ -449,25 +503,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         })
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(filteredFriendships -> {
-          viewInviteLive.renderFriendshipList(filteredFriendships);
-        }));
+        .subscribe(
+            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
+      if (StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
       joinRoom();
-      displayStartFirstPopupTutorial();
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      if (!live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
+      if (StringUtils.isEmpty(live.getLinkId()) && !live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
-        if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-          subscriptions.add(
-              Observable.timer(MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aVoid -> displayDragingGuestPopupTutorial()));
-        }
       }
     }));
 
@@ -479,18 +526,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM)) {
-        subscriptions.add(DialogFactory.dialog(this,
-            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-            EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-            getString(R.string.tips_leavingroom_action1),
-            getString(R.string.tips_leavingroom_action2)).filter(x -> x == true).subscribe(a -> {
-          finish();
-        }));
-        stateManager.addTutorialKey(StateManager.LEAVING_ROOM);
-      } else {
-        finish();
-      }
+      leave();
     }));
 
     subscriptions.add(
@@ -498,13 +534,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           invite(recipient.getSubId());
         }));
 
-    subscriptions.add(viewInviteLive.onInviteLiveClick().subscribe(view -> {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
-      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this, null);
-    }));
+    subscriptions.add(
+        Observable.merge(viewInviteLive.onInviteLiveClick(), viewLive.onShare()).subscribe(view -> {
+          Bundle bundle = new Bundle();
+          bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
+          bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+          tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+
+          if (StringUtils.isEmpty(live.getLinkId())) {
+            livePresenter.getRoomLink(roomConfiguration.getRoomId());
+            Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
+                .show();
+          } else {
+            navigator.inviteToRoom(this, live.getUrl());
+          }
+        }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
       displayNotification(getString(R.string.live_notification_peer_added, userName));
@@ -539,6 +583,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
     }));
 
+    subscriptions.add(viewLive.onRoomFull().subscribe(aVoid -> roomFull()));
+
     viewLive.initAnonymousSubscription(onAnonymousReceived());
   }
 
@@ -564,6 +610,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         break;
       }
     }
+  }
+
+  public void displayBuzzPopupTutorial() {
+    subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getDisplayName())));
   }
 
   private void takeScreenshot() {
@@ -621,6 +673,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
+  private void leave() {
+    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
+      subscriptions.add(DialogFactory.dialog(this,
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
+          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
+          getString(R.string.tips_leavingroom_action1),
+          getString(R.string.tips_leavingroom_action2))
+          .filter(x -> x == true)
+          .subscribe(a -> finish()));
+      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
+    } else {
+      finish();
+    }
+  }
+
   private void setScreenShotAnimation() {
     Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
     scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
@@ -659,6 +726,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       TagManagerUtils.manageTags(tagManager, tagMap);
       callTagsMap.set("");
     }
+  }
+
+  private void putExtraErrorNotif() {
+    returnIntent.putExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, true);
   }
 
   private void putExtraDisplayGrpNotif() {
@@ -701,6 +772,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     onAnonymousReceived.onNext(users);
   }
 
+  @Override public void onRoomLink(String roomLink) {
+    navigator.inviteToRoom(this, roomLink);
+  }
+
   private void putExtraHomeIntent() {
     putExtraRatingNotif();
     putExtraDisplayGrpNotif();
@@ -725,24 +800,26 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 
-  private void displayDragingGuestPopupTutorial() {
-    if (stateManager.shouldDisplay(StateManager.DRAGGING_GUEST)) {
-      subscriptions.add(DialogFactory.dialog(this, getString(R.string.tips_draggingguest_title),
-          getString(R.string.tips_draggingguest_message),
-          getString(R.string.tips_draggingguest_action1), null).subscribe(a -> {
-      }));
-      stateManager.addTutorialKey(StateManager.DRAGGING_GUEST);
-    }
-  }
-
   private void ready() {
     viewLive.update(live);
   }
 
+  private void roomFull() {
+    putExtraErrorNotif();
+    finish();
+  }
+
   @Override public void finish() {
-    livePresenter.onViewDetached();
-    viewLiveContainer.dispose();
-    viewLive.dispose(false);
+    if (finished) return;
+
+    finished = true;
+
+    if (appStateMonitor != null) {
+      appStateMonitor.stop();
+      appStateMonitor.removeListener(this);
+    }
+
+    viewLive.endCall(false);
     putExtraHomeIntent();
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
@@ -776,15 +853,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.roomConfiguration = roomConfiguration;
     this.roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(this.roomConfiguration);
-    if (!live.isGroup() && StringUtils.isEmpty(live.getSessionId())) {
+    if (!live.isGroup() && !live.isSessionOrLink()) {
       livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
     live.setSessionId(roomConfiguration.getRoomId());
   }
 
   @Override public void onJoinRoomFailed(String message) {
-    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    finish();
+    roomFull();
   }
 
   @Override public Context context() {
@@ -817,6 +893,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+          // TODO HANDLE LEAVE
           displayNotification(context.getString(R.string.live_notification_guest_declined,
               notificationPayload.getUserDisplayName()));
         }

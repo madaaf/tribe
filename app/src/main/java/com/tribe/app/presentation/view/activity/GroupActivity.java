@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,8 +48,9 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
-import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -271,8 +273,14 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     groupEntity = new GroupEntity();
     groupEntity.setMembersId(membersId);
-    groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
-
+    String avatarUri = viewAddMembersGroup.getAvatarUri();
+    if (avatarUri != null) groupEntity.setImgPath(avatarUri);
+    String grpName = viewAddMembersGroup.getGroupName();
+    if (grpName != null && !grpName.isEmpty()) {
+      groupEntity.setName(grpName);
+    } else {
+      groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+    }
     groupPresenter.createGroup(groupEntity);
   }
 
@@ -324,7 +332,18 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         .inject(this);
   }
 
+  private void hideKeyboard() {
+    if (viewAddMembersGroup == null) return;
+    
+    EditTextFont v = viewAddMembersGroup.getEditTextFont();
+    InputMethodManager imm =
+        (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+  }
+
   @OnClick(R.id.imgBack) void clickBack() {
+    hideKeyboard();
+
     if (!tagMap.containsKey(TagManagerUtils.ACTION) && tagMap.containsKey(TagManagerUtils.EVENT)) {
       tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CANCELLED);
 
@@ -404,6 +423,11 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
     }
     viewAddMembersGroup =
         (AddMembersGroupView) viewStack.pushWithParameter(R.layout.view_group_add_members, param);
+    if (param == null) {
+      viewAddMembersGroup.addMembersGroupViewType(AddMembersGroupView.ADD_MEMBERS_FROM_GRID);
+    } else {
+      viewAddMembersGroup.addMembersGroupViewType(AddMembersGroupView.ADD_MEMBERS_FROM_SETTING);
+    }
     viewAddMembersGroup.addPrefildMumbers(prefilledGrpMembers);
     subscriptions.add(viewAddMembersGroup.onMembersChanged().subscribe(addedMembers -> {
       newMembers.clear();
@@ -447,9 +471,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       }
     }));
 
-    subscriptions.add(viewDetailsGroup.onHangLive().subscribe(friendship -> {
-      navigator.navigateToLive(this, friendship, PaletteGrid.get(0));
-    }));
+    subscriptions.add(viewDetailsGroup.onHangLive()
+        .subscribe(friendship -> navigator.navigateToLive(this, friendship, PaletteGrid.get(0),
+            LiveActivity.SOURCE_FRIENDS)));
 
     subscriptions.add(viewDetailsGroup.onAddMembers().subscribe(aVoid -> {
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Groups_Infos);

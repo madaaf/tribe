@@ -153,10 +153,12 @@ public class AccessView extends FrameLayout {
     expandAndContract();
 
     subscriptions.add(Observable.interval(PULSATING_DURATION, TimeUnit.MILLISECONDS,
-        AndroidSchedulers.mainThread()).onBackpressureDrop().subscribe(aVoid -> expandAndContract()));
+        AndroidSchedulers.mainThread())
+        .onBackpressureDrop()
+        .subscribe(aVoid -> expandAndContract()));
 
-    imgIcon.setScaleX(30f);
-    imgIcon.setScaleY(30f);
+    imgIcon.setScaleX(80f);
+    imgIcon.setScaleY(80f);
     imgIcon.setAlpha(0f);
 
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -167,7 +169,8 @@ public class AccessView extends FrameLayout {
         MarginLayoutParams lp = (MarginLayoutParams) imgIcon.getLayoutParams();
         lp.leftMargin = location[0] + ((circleSize - imgIcon.getMeasuredWidth()) >> 1);
         int heightDiff = screenUtils.getHeightPx() - getMeasuredHeight();
-        lp.topMargin = (location[1] - heightDiff) + ((circleSize - imgIcon.getMeasuredHeight()) >> 1);
+        lp.topMargin =
+            (location[1] - heightDiff) + ((circleSize - imgIcon.getMeasuredHeight()) >> 1);
         imgIcon.setLayoutParams(lp);
 
         imgIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -175,7 +178,8 @@ public class AccessView extends FrameLayout {
             .alpha(1)
             .scaleX(1)
             .scaleY(1)
-            .setDuration(600)
+            .setStartDelay(0)
+            .setDuration(800)
             .setInterpolator(new OvershootInterpolator(0.45f))
             .start();
       }

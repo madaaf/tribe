@@ -138,11 +138,6 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Void> howManyFriends() {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.howManyFriends();
-  }
-
   @Override public Observable<SearchResult> findByUsername(String username) {
     final UserDataStore cloudDataStore = this.userDataStoreFactory.createCloudDataStore();
 
@@ -284,11 +279,11 @@ import rx.Observable;
     return null;
   }
 
-  @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
+      String linkId) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.joinRoom(id, isGroup, roomId);
+    return cloudDataStore.joinRoom(id, isGroup, roomId, linkId);
   }
 
   @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
@@ -307,5 +302,17 @@ import rx.Observable;
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.declineInvite(roomId);
+  }
+
+  @Override public Observable<Void> sendInvitations() {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.sendInvitations();
+  }
+  
+  @Override public Observable<String> getRoomLink(String roomId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.getRoomLink(roomId);
   }
 }

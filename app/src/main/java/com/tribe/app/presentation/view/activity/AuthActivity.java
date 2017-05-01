@@ -38,9 +38,9 @@ import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
-import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +80,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
   @Inject AuthPresenter authPresenter;
 
+  @Inject PhoneUtils phoneUtils;
+
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
   //@Inject SmsListener smsListener;
@@ -107,7 +109,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   // VARIABLES
   private Unbinder unbinder;
   private Uri deepLink;
-  private SurpriseDialogFragment surpriseDialogFragment;
   private AuthenticationDialogFragment authenticationDialogFragment;
   private Pin pin;
   private ErrorLogin errorLogin;
@@ -240,6 +241,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
       countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
       viewPhoneNumber.initWithCodeCountry(countryCode);
     }
+  }
+
+  @Override public void onBackPressed() {
+    // We override this behavior so that users can't leave this screen.
   }
 
   private void stopService() {
@@ -574,10 +579,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     goToCodeView(true);
   }
 
-  @Override public void goToHome() {
-    navigator.navigateToHome(this, false, null);
-  }
-
   @Override public void goToConnected(User user) {
     this.user.copy(user);
 
@@ -606,7 +607,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
           } else {
             tagManager.updateUser(user);
             tagManager.setUserId(user.getId());
-            navigator.navigateToAuthAccess(this, deepLink);
+            navigator.navigateToAuthAccess(this, deepLink,
+                "+" + phoneUtils.getCountryCode(loginEntity.getUsername()));
           }
         }));
   }

@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,11 +35,14 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -44,21 +50,25 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class NotificationContainerView extends FrameLayout {
-  @StringDef({ DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF })
-  public @interface NotifType {
 
+  @StringDef({
+      DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF,
+      DISPLAY_INVITE_NOTIF
+  }) public @interface NotifType {
   }
 
   public static final String DISPLAY_CREATE_GRP_NOTIF = "DISPLAY_CREATE_FRP_NOTIF";
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
-  private static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
+  public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
+  public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
 
-  private final static int START_OFFSET_DURATION = 500;
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
-  private final static int BACKGROUND_ANIM_DURATION_EXIT = 800;
+  private final static int NOTIF_ANIM_DURATION_ENTER = 500;
+  private final static int BACKGROUND_ANIM_DURATION_EXIT = 500;
 
   @Inject TagManager tagManager;
   @Inject StateManager stateManager;
+  @Inject ScreenUtils screenUtils;
   @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
@@ -76,6 +86,8 @@ public class NotificationContainerView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
+  private PublishSubject<Void> onSendInvitations = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -98,6 +110,10 @@ public class NotificationContainerView extends FrameLayout {
       switch (type) {
         case DISPLAY_PERMISSION_NOTIF:
           notifIsDisplayed = displayPermissionNotification();
+          break;
+        case DISPLAY_INVITE_NOTIF:
+          notifIsDisplayed = displayInviteNotification();
+          break;
       }
     } else if (data != null) {
       notifIsDisplayed = displayNotifFromIntent(data);
@@ -129,17 +145,20 @@ public class NotificationContainerView extends FrameLayout {
     return false;
   }
 
+  private boolean displayInviteNotification() {
+    viewToDisplay = new InviteNotificationView(context);
+    addViewInContainer(viewToDisplay);
+    animateView();
+    return true;
+  }
+
   private void initView(Context context) {
     this.context = context;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_notification_container, this, true);
     unbinder = ButterKnife.bind(this);
-    container.setOnTouchListener(new OnTouchListener() {
-      @Override public boolean onTouch(View v, MotionEvent event) {
-        return gestureScanner.onTouchEvent(event);
-      }
-    });
+    container.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
   }
 
@@ -148,6 +167,10 @@ public class NotificationContainerView extends FrameLayout {
     subscriptions.add(viewToDisplay.onHideNotification().subscribe(aVoid -> {
       hideView();
     }));
+
+    subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
+
+    subscriptions.add(viewToDisplay.onSendInvitations().subscribe(onSendInvitations));
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -171,20 +194,21 @@ public class NotificationContainerView extends FrameLayout {
   }
 
   private void animateView() {
+    notificationView.setTranslationY(-screenUtils.getHeightPx());
+
     setVisibility(VISIBLE);
     bgView.animate().setDuration(BACKGROUND_ANIM_DURATION_ENTER).alpha(1f).start();
-    notificationView.setVisibility(VISIBLE);
-    Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_enter_animation);
-    slideInAnimation.setFillAfter(false);
-    slideInAnimation.setStartOffset(START_OFFSET_DURATION);
-    slideInAnimation.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        textDismiss.setVisibility(VISIBLE);
-      }
-    });
-    notificationView.startAnimation(slideInAnimation);
+    notificationView.animate()
+        .translationY(0f)
+        .setDuration(NOTIF_ANIM_DURATION_ENTER)
+        .setInterpolator(new OvershootInterpolator(1.15f))
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            super.onAnimationEnd(animation);
+            textDismiss.setVisibility(VISIBLE);
+          }
+        })
+        .start();
   }
 
   protected void hideView() {
@@ -200,11 +224,7 @@ public class NotificationContainerView extends FrameLayout {
         bgView.animate()
             .setDuration(BACKGROUND_ANIM_DURATION_EXIT)
             .alpha(0f)
-            .withEndAction(new Runnable() {
-              @Override public void run() {
-                setVisibility(GONE);
-              }
-            })
+            .withEndAction(() -> setVisibility(GONE))
             .start();
       }
 
@@ -228,7 +248,7 @@ public class NotificationContainerView extends FrameLayout {
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);
     }
-    
+
     if (data.getBooleanExtra(DISPLAY_CREATE_GRP_NOTIF, false) && extra != null) {
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);
@@ -253,6 +273,14 @@ public class NotificationContainerView extends FrameLayout {
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) getContext()));
+  }
+
+  public Observable<Boolean> onAcceptedPermission() {
+    return onAcceptedPermission;
+  }
+
+  public Observable<Void> onSendInvitations() {
+    return onSendInvitations;
   }
 
   ///////////////////

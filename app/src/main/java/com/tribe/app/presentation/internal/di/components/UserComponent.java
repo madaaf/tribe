@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
+import com.tribe.app.presentation.view.component.live.LiveShareOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
@@ -43,8 +44,10 @@ import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriends
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
+import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
@@ -62,6 +65,8 @@ import dagger.Component;
   void inject(DebugActivity debugActivity);
 
   void inject(LifeNotification lifeNotification);
+
+  void inject(PopupContainerView popupContainerView);
 
   void inject(LiveImmersiveNotificationActivity liveImmersiveNotificationActivity);
 
@@ -150,4 +155,8 @@ import dagger.Component;
   void inject(LivePeerOverlayView livePeerOverlayView);
 
   void inject(LiveWaveView liveWaveView);
+
+  void inject(LiveShareOverlayView liveShareOverlayView);
+
+  void inject(ErrorNotificationView errorNotificationView);
 }

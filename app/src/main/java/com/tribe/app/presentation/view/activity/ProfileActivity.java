@@ -287,7 +287,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     }));
 
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0))));
+        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
+            LiveActivity.SOURCE_FRIENDS)));
 
     profilePresenter.loadBlockedFriendshipList();
   }

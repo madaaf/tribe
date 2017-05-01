@@ -13,6 +13,7 @@ import java.util.List;
 public class Invite extends Recipient {
 
   private String room_id;
+  private String room_name;
   private Group group;
   private List<Friendship> friendships;
 
@@ -40,6 +41,14 @@ public class Invite extends Recipient {
     this.room_id = roomId;
   }
 
+  public String getRoomName() {
+    return room_name;
+  }
+
+  public void setRoomName(String roomName) {
+    this.room_name = roomName;
+  }
+
   @Override public boolean isActionAvailable(User currentUser) {
     return false;
   }
@@ -49,7 +58,8 @@ public class Invite extends Recipient {
   }
 
   @Override public String getDisplayName() {
-    return isGroup() ? group.getName() : getFriendshipsName();
+    return isGroup() ? group.getName()
+        : (!StringUtils.isEmpty(room_name) ? room_name : getFriendshipsName());
   }
 
   @Override public String getUsername() {

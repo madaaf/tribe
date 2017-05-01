@@ -18,19 +18,15 @@ import javax.inject.Singleton;
   private Preference<Set<String>> tutorialState;
 
   @StringDef({
-      LEAVING_ROOM, DRAGGING_GUEST, DROPPING_GUEST, ENTER_FIRST_LIVE, START_FIRST_LIVE,
-      WAINTING_FRIENDS_LIVE, JOIN_FRIEND_LIVE, NEVER_ASK_AGAIN_MICRO_PERMISSION,
+      LEAVING_ROOM_POPUP, DRAG_FRIEND_POPUP, BUZZ_FRIEND_POPUP, NEVER_ASK_AGAIN_MICRO_PERMISSION,
       NEVER_ASK_AGAIN_CAMERA_PERMISSION
   }) public @interface StateKey {
   }
 
-  public static final String LEAVING_ROOM = "LEAVING_ROOM";
-  public static final String DRAGGING_GUEST = "DRAGGING_GUEST";
-  public static final String DROPPING_GUEST = "DROPPING_GUEST";
-  public static final String ENTER_FIRST_LIVE = "ENTER_FIRST_LIVE";
-  public static final String START_FIRST_LIVE = "START_FIRST_LIVE";
-  public static final String WAINTING_FRIENDS_LIVE = "WAINTING_FRIENDS_LIVE";
-  public static final String JOIN_FRIEND_LIVE = "JOIN_FRIEND_LIVE";
+  public static final String LEAVING_ROOM_POPUP = "LEAVING_ROOM_POPUP";
+  public static final String DRAG_FRIEND_POPUP = "DRAG_FRIEND_POPUP";
+  public static final String BUZZ_FRIEND_POPUP = "BUZZ_FRIEND_POPUP";
+
   public static final String NEVER_ASK_AGAIN_MICRO_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
   public static final String NEVER_ASK_AGAIN_CAMERA_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
 

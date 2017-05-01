@@ -33,8 +33,7 @@
           android:paddingEnd="30dp"
           android:paddingStart="30dp"
           android:text="@string/popup_create_grp_title"
-          android:textSize="20sp"
-          style="@style/Title.2.Black"
+          style="@style/Headline.Black.2"
           />
 
       <LinearLayout
@@ -56,8 +55,7 @@
           android:paddingEnd="30dp"
           android:paddingStart="30dp"
           android:text="@string/popup_create_grp_subtitle"
-          android:textColor="@color/grey.unblock"
-          style="@style/Title.2.Black"
+          style="@style/Title.2.Black40"
           />
 
     </LinearLayout>

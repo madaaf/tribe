@@ -100,11 +100,6 @@ public interface UserRepository {
   Observable<List<Object>> searchLocally(String s);
 
   /**
-   * Get an {@link Observable} which will emit
-   */
-  Observable<Void> howManyFriends();
-
-  /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos
    * about the user searched.
    */
@@ -172,11 +167,15 @@ public interface UserRepository {
 
   Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
 
-  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId);
+  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId);
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 
   Observable<Boolean> buzzRoom(String roomId);
 
   Observable<Void> declineInvite(String roomId);
+
+  Observable<Void> sendInvitations();
+
+  Observable<String> getRoomLink(String roomId);
 }

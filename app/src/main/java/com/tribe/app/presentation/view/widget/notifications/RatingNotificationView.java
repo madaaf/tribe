@@ -50,6 +50,7 @@ import rx.android.schedulers.AndroidSchedulers;
  */
 
 public class RatingNotificationView extends FrameLayout implements View.OnClickListener {
+
   public static final String DISPLAY_RATING_NOTIF = "DISPLAY_RATING_NOTIF";
 
   private final static int DURATION = 300;

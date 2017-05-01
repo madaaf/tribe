@@ -60,7 +60,6 @@ android {
     multiDexEnabled = true;
 
     resValue "string", "app_name", "Tribe"
-    resValue "string", "facebook_app_id", "1743579545897830"
     resValue "string", "no_profile_picture_url", "http://no"
   }
   
@@ -111,34 +110,23 @@ android {
       applicationIdSuffix = ".debug"
       resValue "string", "app_name", "Tribe DEBUG"
       resValue "string", "branch_io", "\"${branch_io_debug}\""
+      resValue "string", "facebook_app_id", "1868589180063532"
+      resValue "string", "web_host", "\"${tribe_web_host_debug}\""
+      resValue "string", "branch_host", "\"${tribe_branch_host_debug}\""
+      resValue "string", "deeplink_host", "\"${tribe_deeplink_host_debug}\""
 
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
       buildConfigField "String", "TRIBE_API", "\"https://api.tribedev.pm\""
       buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribedev.pm\""
+      buildConfigField "String", "TRIBE_LOOKUP", "\"https://lookup.tribedev.pm\""
+      buildConfigField "String", "TRIBE_GROWTH", "\"https://growth.tribedev.pm\""
       buildConfigField "String", "TRIBE_WSS", "\"wss://api.tribedev.pm\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_debug}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""
       buildConfigField "String", "MIXPANEL_GOOGLE_API", "\"${mixpanel_google_debug}\""
       buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin_debug}\""
-    }
-
-    tribe2 {
-      debuggable false
-      signingConfig signingConfigs.release
-      applicationIdSuffix = ".Tribe2"
-      resValue "string", "app_name", "Tribe2"
-      resValue "string", "branch_io", "\"${branch_io_prod}\""
-
-      buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_tribe2}\""
-      buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_tribe2}\""
-      buildConfigField "String", "TRIBE_API", "\"https://api.tribe.pm\""
-      buildConfigField "String", "TRIBE_AUTH", "\"https://auth.tribe.pm\""
-      buildConfigField "String", "TRIBE_WSS", "\"wss://api.tribe.pm\""
-      buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
-      buildConfigField "String", "TRIBE_URL", "\"${tribe_url_tribe2}\""
-      buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_tribe2}\""
     }
 
     release {
@@ -148,12 +136,18 @@ android {
       signingConfig signingConfigs.release
       resValue "string", "app_name", "Tribe"
       resValue "string", "branch_io", "\"${branch_io_prod}\""
+      resValue "string", "facebook_app_id", "1743579545897830"
+      resValue "string", "web_host", "\"${tribe_web_host}\""
+      resValue "string", "branch_host", "\"${tribe_branch_host}\""
+      resValue "string", "deeplink_host", "\"${tribe_deeplink_host}\""
 
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
       buildConfigField "String", "TRIBE_API", "\"https://api2.tribe.pm\""
       buildConfigField "String", "TRIBE_AUTH", "\"https://auth2.tribe.pm\""
       buildConfigField "String", "TRIBE_WSS", "\"wss://api2.tribe.pm\""
+      buildConfigField "String", "TRIBE_LOOKUP", "\"https://lookup.tribe.pm\""
+      buildConfigField "String", "TRIBE_GROWTH", "\"https://growth.tribe.pm\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""

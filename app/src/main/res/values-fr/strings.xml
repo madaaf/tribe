@@ -31,7 +31,7 @@
 	<!-- Errors -->
 	<string name="error_unknown">:bird: Léger problème. Réessayez dans 30s.</string>
 	<string name="error_technical">:warning: Problème technique</string>
-	<string name="error_no_network">:satellite: Aucune connexion.</string>
+	<string name="error_no_network">:satellite: Aucune connexion</string>
 	<string name="error_join_room">Impossible de rejoindre la conversation pour l\'instant. Réessayez dans 30s.</string>
 	
 	<!-- Image Picker -->
@@ -78,11 +78,11 @@
 	<string name="permission_global_popup_cancel">Plus tard</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
 	<string name="permission_facebook_popup_title">Retrouver facilement vos amis Facebook</string>
-	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisés avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">En savoir plus</string>
 	<string name="permission_addressbook_popup_title">Retrouver facilement les contacts de votre Carnet d\'Adresses</string>
-	<string name="permission_addressbook_popup_message">Vos amis seront synchronisé avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
+	<string name="permission_addressbook_popup_message">Vos amis seront synchronisés avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_addressbook_popup_ok">Parfait !</string>
 	<string name="permission_addressbook_popup_ko">En savoir plus</string>
 	
@@ -140,6 +140,7 @@
 	<string name="grid_menu_friendship_mute">Désactiver les notifications :no_bell:</string>
 	<string name="grid_menu_friendship_unmute">Activer les notifications :bell:</string>
 	<string name="grid_menu_invite_decline">Rejeter l\'appel</string>
+	<string name="grid_menu_call_placeholder">Appel vidéo</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
@@ -260,6 +261,7 @@
 	
 	<!-- Top Bar -->
 	<string name="topbar_new_live">+ Groupe</string>
+	<string name="topbar_new_call">Appeler</string>
 	<string name="topbar_search">Amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -315,7 +317,7 @@
 	<string name="live_invite_link">Lien pour\ninviter</string>
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
-	<string name="live_join_impossible">:lock: Seulement 8 amis en appel en même temps !</string>
+	<string name="live_join_impossible">:lock: 8 amis max. en même temps !</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
@@ -327,9 +329,15 @@
 	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
 	<string name="live_unknown_user">Invité inconnu</string>
-	<string name="live_external_user">Invité externe</string>
+	<string name="live_external_user">Invité(e)</string>
 	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
 	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
+	<string name="live_new_call_title_alone">Appeler</string>
+	<string name="live_new_call_title_with_guests">%1$s et invités</string>
+	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vous amis vous rejoigne !</string>
+	<string name="live_share_new_call_button">Partager le lien de l\'appel</string>
+	<string name="live_share_new_call_button_simple">Lien</string>
+	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -494,6 +502,7 @@
 	<string name="callback_notification_title_multiple">Vous avez récement manqué %1$d appels !\nTapez pour savoir qui rappeler.</string>
 	<string name="callback_notification_action">Rappeler %1$s (missed %2$s)</string>
 	<string name="callback_notification_default_action">Tapez pour savoir qui rappeler.</string>
-	<string name="missed_call_title">Appels manqués</string>
-	<string name="missed_call_nbr"></string>
+	<string name="callback_notification_missed_call_title">Appels manqués</string>
+	<string name="callback_notification_many_missed_call">(%1$s appels manqués)</string>
+	<string name="callback_notification_one_missed_call">(%1$s appels manqué)</string>
 </resources>

@@ -26,7 +26,6 @@ import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
-import com.tribe.app.domain.interactor.user.RefreshHowManyFriends;
 import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
@@ -177,10 +176,5 @@ import javax.inject.Named;
       CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
-  }
-
-  @Provides @Named("refreshHowManyFriends") UseCase provideRefreshHowManyFriends(
-      RefreshHowManyFriends refreshHowManyFriends) {
-    return refreshHowManyFriends;
   }
 }

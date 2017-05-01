@@ -72,7 +72,7 @@ import org.json.JSONObject;
   }
 
   @Override public void clear() {
-    mixpanelAPI.reset();
+    //mixpanelAPI.reset();
   }
 
   private JSONObject buildProperties(Bundle properties) {

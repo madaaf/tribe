@@ -4,52 +4,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@null"
+    android:background="@android:color/white"
     tools:context=".presentation.view.activity.GroupActivity"
     >
 
   <LinearLayout
-      android:layout_width="match_parent"
+      android:id="@+id/addMembersHeader"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:background="@null"
       android:orientation="vertical"
       >
-
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_bar_height"
-        android:background="@null"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
         >
 
-      <ImageView
-          android:id="@+id/imgSearch"
-          android:layout_width="@dimen/icons_end"
-          android:layout_height="@dimen/icons_end"
-          android:layout_gravity="center_vertical"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_search_icon"
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+          android:id="@+id/avatarView"
+          android:layout_width="@dimen/avatar_size_medium"
+          android:layout_height="@dimen/avatar_size_medium"
+          android:layout_gravity="center"
+          android:layout_margin="15dp"
+          app:hasHole="false"
+          app:hasInd="false"
+          app:hasShadow="false"
           />
 
+      <include layout="@layout/view_separator_vertical_simple" />
+
       <com.tribe.app.presentation.view.widget.EditTextFont
-          android:id="@+id/editTextSearch"
+          android:id="@+id/editGroupName"
           android:layout_width="match_parent"
-          android:layout_height="@dimen/icons_end"
-          android:layout_gravity="center_vertical"
-          android:layout_marginEnd="@dimen/icons_end"
-          android:layout_marginStart="@dimen/icons_end"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
           android:background="@null"
           android:backgroundTint="@android:color/black"
           android:gravity="center_vertical"
-          android:hint="@string/group_add_members_search_placeholder"
+          android:hint="@string/group_identification_custom_name_placeholder"
           android:imeOptions="actionDone"
+          android:paddingStart="20dp"
           android:singleLine="true"
-          style="@style/Title.1.Black"
           android:textColorHint="@color/black.opacity.40"
+          style="@style/Title.2.Black40"
           />
-    </FrameLayout>
+    </LinearLayout>
+    <include layout="@layout/view_separator_simple" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/grey.background.profile_info"
+        />
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/addMembersContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@android:color/white"
+      android:orientation="vertical"
+      >
 
     <include layout="@layout/view_separator_simple" />
-
     <LinearLayout
         android:id="@+id/layoutMembers"
         android:layout_width="match_parent"
@@ -65,7 +82,7 @@
           android:layout_marginLeft="@dimen/horizontal_margin_small"
           android:layout_marginRight="@dimen/horizontal_margin_small"
           android:layout_marginTop="@dimen/horizontal_margin_small"
-          android:singleLine="true"
+          android:maxLines="1"
           style="@style/Title.2.Black"
           />
 
@@ -76,29 +93,78 @@
           android:layout_gravity="bottom"
           android:layout_marginTop="5dp"
           />
+
+      <include layout="@layout/view_separator_simple" />
+
+      <FrameLayout
+          android:layout_width="match_parent"
+          android:layout_height="70dp"
+          android:layout_gravity="center"
+          android:paddingBottom="15dp"
+          android:paddingEnd="15dp"
+          android:paddingStart="15dp"
+          android:paddingTop="15dp"
+          >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_search_bar_grp"
+            >
+          <ImageView
+              android:id="@+id/imgSearch"
+              android:layout_width="@dimen/action_button_height"
+              android:layout_height="@dimen/action_button_height"
+              android:layout_gravity="center_vertical"
+              android:layout_marginStart="10dp"
+              android:scaleType="centerInside"
+              android:src="@drawable/picto_search_icon"
+              />
+
+
+          <com.tribe.app.presentation.view.widget.EditTextFont
+              android:id="@+id/editTextSearch"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_vertical"
+              android:layout_marginEnd="@dimen/icons_end"
+              android:layout_marginStart="@dimen/icons_end"
+              android:background="@null"
+              android:backgroundTint="@android:color/black"
+              android:gravity="center_vertical"
+              android:hint="@string/group_add_members_search_placeholder"
+              android:imeOptions="actionDone"
+              android:singleLine="true"
+              android:textColorHint="@color/black.opacity.40"
+              style="@style/Title.1.Black"
+              />
+
+        </FrameLayout>
+      </FrameLayout>
+
     </LinearLayout>
 
     <include layout="@layout/view_separator_simple" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+    <LinearLayout
+        android:id="@+id/viewGroupFocus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        >
+
+      <requestFocus />
+    </LinearLayout>
   </LinearLayout>
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/recyclerView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@null"
-      android:clipToPadding="false"
-      android:scrollbars="none"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
-      />
-
-  <LinearLayout
-      android:id="@+id/viewGroupFocus"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:focusable="true"
-      android:focusableInTouchMode="true"
-      >
-
-    <requestFocus />
-  </LinearLayout>
 </com.tribe.app.presentation.view.component.group.AddMembersGroupView>
