@@ -73,6 +73,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
@@ -140,6 +141,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
 
   @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
+
+  @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -766,7 +769,9 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (data != null) {
-      if (!notificationContainerView.showNotification(data, null)) {
+      if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
+        errorNotificationView.displayView();
+      } else if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);
       }
     }

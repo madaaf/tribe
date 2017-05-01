@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +29,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 04/29/17.
  */
 public class LiveShareOverlayView extends LinearLayout {
+
+  private static final int DURATION = 300;
 
   @Inject ScreenUtils screenUtils;
 
@@ -92,11 +97,31 @@ public class LiveShareOverlayView extends LinearLayout {
   ////////////
 
   public void show() {
-    setVisibility(View.VISIBLE);
+    if (getVisibility() == View.VISIBLE) return;
+
+    setAlpha(0f);
+    animate().alpha(1f).setListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        animate().setListener(null).start();
+        animation.removeAllListeners();
+      }
+
+      @Override public void onAnimationStart(Animator animation) {
+        setVisibility(View.VISIBLE);
+      }
+    }).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
   }
 
   public void hide() {
-    setVisibility(View.GONE);
+    if (getVisibility() == View.GONE) return;
+
+    animate().alpha(0f).setListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        setVisibility(View.GONE);
+        animate().setListener(null).start();
+        animation.removeAllListeners();
+      }
+    }).setDuration(DURATION).setInterpolator(new DecelerateInterpolator()).start();
   }
 
   ////////////

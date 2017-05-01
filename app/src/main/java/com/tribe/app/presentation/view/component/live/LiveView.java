@@ -165,6 +165,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
+  private PublishSubject<Void> onRoomFull = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -500,11 +501,12 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
 
+    tempSubscriptions.add(room.onRoomFull().subscribe(onRoomFull));
+
     tempSubscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
           if (isFirstToJoin) {
             isFirstToJoin = !isFirstToJoin;
-            viewLocalLive.hideShareOverlay();
             viewStatusName.refactorTitle();
           }
 
@@ -527,6 +529,8 @@ public class LiveView extends FrameLayout {
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
           room.sendToPeer(remotePeer, getInvitedPayload(), true);
+
+          refactorShareOverlay();
           refactorNotifyButton();
 
           tempSubscriptions.add(remotePeer.getPeerView()
@@ -539,6 +543,7 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(room.onRemotePeerRemoved()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
+
           soundManager.playSound(SoundManager.QUIT_CALL, SoundManager.SOUND_MAX);
 
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
@@ -548,6 +553,7 @@ public class LiveView extends FrameLayout {
             onLeave.onNext(null);
           }
 
+          refactorShareOverlay();
           refactorNotifyButton();
 
           onNotificationRemotePeerRemoved.onNext(
@@ -664,6 +670,7 @@ public class LiveView extends FrameLayout {
       refactorNotifyButton();
 
       tempSubscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
+        refactorShareOverlay();
         stateManager.addTutorialKey(StateManager.DRAG_FRIEND_POPUP);
         invitedCount++;
         latestView.showGuest(false);
@@ -769,6 +776,7 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(liveRowView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
       removeFromInvites(tribeGuest.getId());
       room.sendToPeers(getRemovedPayload(tribeGuest), true);
+      refactorShareOverlay();
     }).subscribe());
   }
 
@@ -811,6 +819,17 @@ public class LiveView extends FrameLayout {
   private void refactorNotifyButton() {
     boolean enable = shouldEnableBuzz();
     if (viewControlsLive != null) viewControlsLive.refactorNotifyButton(enable);
+  }
+
+  private void refactorShareOverlay() {
+    if (!live.getId().equals(Live.NEW_CALL)) return;
+
+    int nbPeople = nbInRoom();
+    if (nbPeople > 1) {
+      viewLocalLive.hideShareOverlay();
+    } else {
+      viewLocalLive.showShareOverlay();
+    }
   }
 
   private void addView(LiveRowView liveRowView, TribeGuest guest, int color,
@@ -1243,6 +1262,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShare() {
     return onShare;
+  }
+
+  public Observable<Void> onRoomFull() {
+    return onRoomFull;
   }
 }
 

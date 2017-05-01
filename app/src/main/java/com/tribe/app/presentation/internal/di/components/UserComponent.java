@@ -47,6 +47,7 @@ import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
@@ -156,4 +157,6 @@ import dagger.Component;
   void inject(LiveWaveView liveWaveView);
 
   void inject(LiveShareOverlayView liveShareOverlayView);
+
+  void inject(ErrorNotificationView errorNotificationView);
 }

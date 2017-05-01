@@ -84,6 +84,7 @@ public class Room {
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
+  private PublishSubject<Void> onRoomFull = PublishSubject.create();
 
   public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
     this.webSocketConnection = webSocketConnection;
@@ -132,6 +133,11 @@ public class Room {
     persistentSubscriptions.add(jsonToModel.onLeaveRoom()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeSession -> webRTCClient.removePeerConnection(tribeSession)));
+
+    persistentSubscriptions.add(
+        jsonToModel.onError().observeOn(AndroidSchedulers.mainThread()).subscribe(error -> {
+          if (error.getId() == WebSocketError.ERROR_ROOM_FULL) onRoomFull.onNext(null);
+        }));
 
     persistentSubscriptions.add(
         jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
@@ -416,5 +422,9 @@ public class Room {
 
   public Observable<Void> onShouldLeaveRoom() {
     return onShouldLeaveRoom;
+  }
+
+  public Observable<Void> onRoomFull() {
+    return onRoomFull;
   }
 }

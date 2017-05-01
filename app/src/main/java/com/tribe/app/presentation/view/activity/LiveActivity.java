@@ -75,6 +75,7 @@ import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -505,7 +506,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
-      if (!StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
+      if (StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
       joinRoom();
     }));
 
@@ -579,6 +580,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       anonymousIdList.add(anonymousId);
       if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
     }));
+
+    subscriptions.add(viewLive.onRoomFull().subscribe(aVoid -> roomFull()));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
   }
@@ -723,6 +726,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
+  private void putExtraErrorNotif() {
+    returnIntent.putExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, true);
+  }
+
   private void putExtraDisplayGrpNotif() {
     RoomMember roomMember = viewLive.getUsersInLiveRoom();
     List<TribeGuest> friendInLive = roomMember.getTribeGuestList();
@@ -795,6 +802,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLive.update(live);
   }
 
+  private void roomFull() {
+    putExtraErrorNotif();
+    finish();
+  }
+
   @Override public void finish() {
     appStateMonitor.stop();
     appStateMonitor.removeListener(this);
@@ -839,8 +851,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onJoinRoomFailed(String message) {
-    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    finish();
+    roomFull();
   }
 
   @Override public Context context() {
