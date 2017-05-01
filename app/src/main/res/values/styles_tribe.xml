@@ -138,6 +138,10 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="Title.2.White40" parent="@style/Title.2">
+    <item name="android:textColor">@color/white.opacity.40</item>
+  </style>
+
   <style name="Title.2.Black" parent="@style/Title.2">
     <item name="android:textColor">@android:color/black</item>
   </style>
@@ -316,7 +320,7 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
-  <style name="Text" />
+  <style name="Text"/>
 
   <style name="Text.Input">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>

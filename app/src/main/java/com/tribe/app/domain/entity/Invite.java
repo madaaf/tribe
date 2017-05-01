@@ -41,6 +41,14 @@ public class Invite extends Recipient {
     this.room_id = roomId;
   }
 
+  public String getRoomName() {
+    return room_name;
+  }
+
+  public void setRoomName(String roomName) {
+    this.room_name = roomName;
+  }
+
   @Override public boolean isActionAvailable(User currentUser) {
     return false;
   }

@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class Live implements Serializable {
 
+  public static final String NEW_CALL = "NEW_CALL";
   public static final String WEB = "WEB";
 
   private String id;
@@ -27,6 +29,7 @@ public class Live implements Serializable {
   private int color = 0;
   private boolean countdown = true;
   private boolean intent = false;
+  private @LiveActivity.Source String source;
 
   private Live(Builder builder) {
     this.id = builder.id;
@@ -43,6 +46,7 @@ public class Live implements Serializable {
     this.userName = builder.userName;
     this.linkId = builder.linkId;
     this.url = builder.url;
+    this.source = builder.source;
   }
 
   public String getId() {
@@ -187,6 +191,14 @@ public class Live implements Serializable {
     this.url = url;
   }
 
+  @LiveActivity.Source public String getSource() {
+    return source;
+  }
+
+  public void setSource(@LiveActivity.Source String source) {
+    this.source = source;
+  }
+
   public static class Builder {
 
     private String id;
@@ -203,6 +215,7 @@ public class Live implements Serializable {
     private boolean countdown = true;
     private boolean intent = false;
     private String userName;
+    private @LiveActivity.Source String source;
 
     public Builder(String id, String subId) {
       this.id = id;
@@ -266,6 +279,11 @@ public class Live implements Serializable {
 
     public Builder intent(boolean fromIntent) {
       this.intent = fromIntent;
+      return this;
+    }
+
+    public Builder source(@LiveActivity.Source String source) {
+      this.source = source;
       return this;
     }
 

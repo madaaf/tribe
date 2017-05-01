@@ -27,6 +27,7 @@ public class TribeLiveOptions {
   private String room_id;
   private @TribeLiveOptions.RoutingMode String routingMode;
   private Map<String, String> headers;
+  private int orientation;
 
   private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
     this.wsUrl = builder.wsUrl;
@@ -35,6 +36,7 @@ public class TribeLiveOptions {
     this.room_id = builder.roomId;
     this.routingMode = builder.routingMode;
     this.headers = builder.headers;
+    this.orientation = builder.orientation;
   }
 
   public static class TribeLiveOptionsBuilder {
@@ -45,6 +47,7 @@ public class TribeLiveOptions {
     private String roomId;
     private @RoutingMode String routingMode;
     private Map<String, String> headers;
+    private int orientation;
 
     public TribeLiveOptionsBuilder(Context context) {
       this.context = context;
@@ -84,6 +87,11 @@ public class TribeLiveOptions {
 
     public TribeLiveOptionsBuilder headers(Map<String, String> headers) {
       this.headers = headers;
+      return this;
+    }
+
+    public TribeLiveOptionsBuilder orientation(int orientation) {
+      this.orientation = orientation;
       return this;
     }
 
@@ -138,5 +146,13 @@ public class TribeLiveOptions {
 
   public void setHeaders(Map<String, String> headers) {
     this.headers = headers;
+  }
+
+  public int getOrientation() {
+    return orientation;
+  }
+
+  public void setOrientation(int orientation) {
+    this.orientation = orientation;
   }
 }

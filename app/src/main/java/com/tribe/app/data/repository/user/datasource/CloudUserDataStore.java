@@ -77,7 +77,7 @@ public class CloudUserDataStore implements UserDataStore {
   private final ContactCache contactCache;
   private final RxContacts rxContacts;
   private final RxFacebook rxFacebook;
-  private final Context context;
+  private Context context = null;
   private AccessToken accessToken = null;
   private Installation installation = null;
   private @LastSync Preference<Long> lastSync;
@@ -619,6 +619,7 @@ public class CloudUserDataStore implements UserDataStore {
       if (userRealm.getInvites() != null) {
         for (Invite newInvite : userRealm.getInvites()) {
           boolean shouldAdd = true;
+
           if (newInvite.getFriendships() != null) {
             for (Friendship friendship : newInvite.getFriendships()) {
               if (friendship.getSubId().equals(accessToken.getUserId())) {
@@ -628,6 +629,10 @@ public class CloudUserDataStore implements UserDataStore {
           }
 
           if (shouldAdd) {
+            if (!StringUtils.isEmpty(newInvite.getRoomName())) {
+              newInvite.setRoomName(context.getString(R.string.grid_menu_call_placeholder));
+            }
+
             liveCache.putInvite(newInvite);
           }
         }

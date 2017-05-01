@@ -1,9 +1,13 @@
 package com.tribe.app.presentation.utils;
 
+import android.content.Context;
 import android.util.Patterns;
+import com.tribe.app.R;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -82,5 +86,32 @@ public class StringUtils {
 
   public static String getLastBitFromUrl(final String url) {
     return url.replaceFirst(".*/([^/?]+).*", "$1");
+  }
+
+  public static String generateLinkId() {
+    MessageDigest instance = null;
+    try {
+      instance = MessageDigest.getInstance("MD5");
+      byte[] messageDigest = instance.digest(String.valueOf(System.nanoTime()).getBytes());
+      StringBuilder hexString = new StringBuilder();
+      for (int i = 0; i < messageDigest.length; i++) {
+        String hex = Integer.toHexString(0xFF & messageDigest[i]);
+        if (hex.length() == 1) {
+          // could use a for loop, but we're only dealing with a single
+          // byte
+          hexString.append('0');
+        }
+        hexString.append(hex);
+      }
+      return hexString.toString();
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+
+    return "" + String.valueOf(System.currentTimeMillis()).hashCode();
+  }
+
+  public static String getUrlFromLinkId(Context context, String linkId) {
+    return "https://" + context.getString(R.string.web_host) + "/" + linkId;
   }
 }
