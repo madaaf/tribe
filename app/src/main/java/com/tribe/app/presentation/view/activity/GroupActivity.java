@@ -333,6 +333,8 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
   }
 
   private void hideKeyboard() {
+    if (viewAddMembersGroup == null) return;
+    
     EditTextFont v = viewAddMembersGroup.getEditTextFont();
     InputMethodManager imm =
         (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -341,6 +343,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
   @OnClick(R.id.imgBack) void clickBack() {
     hideKeyboard();
+
     if (!tagMap.containsKey(TagManagerUtils.ACTION) && tagMap.containsKey(TagManagerUtils.EVENT)) {
       tagMap.put(TagManagerUtils.ACTION, TagManagerUtils.CANCELLED);
 

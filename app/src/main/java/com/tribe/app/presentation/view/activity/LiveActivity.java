@@ -250,6 +250,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   private Intent returnIntent = new Intent();
   private List anonymousIdList = new ArrayList();
+  private boolean finished = false;
+
   // RESOURCES
 
   // OBSERVABLES
@@ -808,8 +810,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void finish() {
-    appStateMonitor.stop();
-    appStateMonitor.removeListener(this);
+    if (finished) return;
+    
+    finished = true;
+
+    if (appStateMonitor != null) {
+      appStateMonitor.stop();
+      appStateMonitor.removeListener(this);
+    }
+
     viewLive.endCall(false);
     putExtraHomeIntent();
     super.finish();
