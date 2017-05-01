@@ -41,6 +41,7 @@ import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.Degrees;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -296,6 +297,8 @@ public class LiveView extends FrameLayout {
     super.onConfigurationChanged(newConfig);
     if (viewControlsLive == null) return;
 
+    if (room != null) room.sendOrientationToPeers(Degrees.getNormalizedDegrees(getContext()));
+
     onShouldCloseInvites.onNext(null);
 
     ViewGroup.LayoutParams lp = view.getLayoutParams();
@@ -478,6 +481,7 @@ public class LiveView extends FrameLayout {
         .roomId(roomConfiguration.getRoomId())
         .routingMode(roomConfiguration.getRoutingMode())
         .headers(headers)
+        .orientation(Degrees.getNormalizedDegrees(getContext()))
         .build();
 
     tempSubscriptions.add(room.onRoomStateChanged().subscribe(state -> {

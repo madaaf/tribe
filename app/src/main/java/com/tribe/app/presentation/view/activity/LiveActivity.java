@@ -106,7 +106,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
-      SOURCE_TOP_RIGHT_BUTTON
+      SOURCE_NEW_CALL
   }) public @interface Source {
   }
 
@@ -119,7 +119,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String SOURCE_ONLINE_NOTIFICATION = "OnlineNotification";
   public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
   public static final String SOURCE_FRIENDS = "Friends";
-  public static final String SOURCE_TOP_RIGHT_BUTTON = "TopRightButton";
+  public static final String SOURCE_NEW_CALL = "NewCall";
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
@@ -513,7 +513,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      if (!live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
+      if (StringUtils.isEmpty(live.getLinkId()) && !live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
       }
     }));
@@ -811,7 +811,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void finish() {
     if (finished) return;
-    
+
     finished = true;
 
     if (appStateMonitor != null) {

@@ -259,7 +259,7 @@ public class Navigator {
 
   public void navigateToNewCall(Activity activity) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, LiveActivity.SOURCE_TOP_RIGHT_BUTTON);
+      Intent intent = LiveActivity.getCallingIntent(activity, LiveActivity.SOURCE_NEW_CALL);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }

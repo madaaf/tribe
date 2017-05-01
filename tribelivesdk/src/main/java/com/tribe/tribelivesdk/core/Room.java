@@ -219,7 +219,8 @@ public class Room {
 
     webRTCClient.initSubscriptions();
 
-    webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId()).toString());
+    webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId(),
+        options.getOrientation()).toString());
 
     tempSubscriptions.add(webRTCClient.onReadyToSendSdpOffer()
         .doOnError(Throwable::printStackTrace)
@@ -287,6 +288,16 @@ public class Room {
     }
   }
 
+  public void sendOrientationToPeers(int orientation) {
+    if (webSocketConnection == null) return;
+
+    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
+      if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+        webSocketConnection.send(getSendOrientation(orientation).toString());
+      }
+    }
+  }
+
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
@@ -328,12 +339,23 @@ public class Room {
     }
   }
 
-  private JSONObject getJoinPayload(String roomId, String tokenId) {
+  private JSONObject getJoinPayload(String roomId, String tokenId, int orientation) {
     JSONObject a = new JSONObject();
     JsonUtils.jsonPut(a, "a", "join");
     JSONObject d = new JSONObject();
     JsonUtils.jsonPut(d, "roomId", roomId);
     JsonUtils.jsonPut(d, "bearer", tokenId);
+    JsonUtils.jsonPut(d, "platform", "Android");
+    JsonUtils.jsonPut(d, "orientation", orientation);
+    JsonUtils.jsonPut(a, "d", d);
+    return a;
+  }
+
+  private JSONObject getSendOrientation(int orientation) {
+    JSONObject a = new JSONObject();
+    JsonUtils.jsonPut(a, "a", "orientationChange");
+    JSONObject d = new JSONObject();
+    JsonUtils.jsonPut(d, "orientation", orientation);
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }

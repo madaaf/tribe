@@ -82,6 +82,24 @@ public class Degrees {
     return DEGREES_0;
   }
 
+  // USED FOR WEBRTCSIGNALING (based on iOS orientation)
+  @DegreeUnits public static int getNormalizedDegrees(Context context) {
+    @DegreeUnits final int rotation = getDisplayRotation(context);
+    switch (rotation) {
+      case DEGREES_0:
+        return DEGREES_90;
+      case DEGREES_90:
+        return DEGREES_0;
+      case DEGREES_180:
+        return DEGREES_270;
+      case DEGREES_270:
+        return DEGREES_180;
+      default:
+        Log.e("Degrees", "Unknown screen orientation. Defaulting to portrait.");
+        return DEGREES_90;
+    }
+  }
+
   @SuppressWarnings("ResourceType") @DegreeUnits
   public static int getDisplayOrientation(@Degrees.DegreeUnits int sensorOrientation,
       @Degrees.DegreeUnits int displayOrientation, boolean front) {
