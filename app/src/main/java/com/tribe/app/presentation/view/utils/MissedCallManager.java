@@ -41,12 +41,15 @@ import javax.inject.Singleton;
   }
 
   public List<NotificationPayload> getNotificationPayloadList() {
+    if (PreferencesUtils.getPlayloadNotificationList(missedNotificationPlayloadPreference)
+        == null) {
+      return new ArrayList<>();
+    }
     return PreferencesUtils.getPlayloadNotificationList(missedNotificationPlayloadPreference);
   }
 
   public int getNbrOfMissedCall() {
-    return PreferencesUtils.getPlayloadNotificationList(missedNotificationPlayloadPreference)
-        .size();
+    return getNotificationPayloadList().size();
   }
 
   public NotificationPayload buildNotificationBuilderFromMissedCallList() {

@@ -44,6 +44,10 @@ public class NotificationPayload implements Serializable {
     this.time = time;
   }
 
+  public long getTime() {
+    return time;
+  }
+
   public void setUserId(String userId) {
     this.user_id = userId;
   }

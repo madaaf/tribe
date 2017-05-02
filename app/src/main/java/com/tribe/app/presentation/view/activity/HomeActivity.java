@@ -346,7 +346,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initMissedCall() {
-    if (missedCallManager != null && missedCallManager.getNbrOfMissedCall() > 0) {
+    if (missedCallManager != null
+        && missedCallManager.getNotificationPayloadList() != null
+        && missedCallManager.getNbrOfMissedCall() > 0) {
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
           missedCallManager.buildNotificationBuilderFromMissedCallList());

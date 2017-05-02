@@ -43,7 +43,7 @@ public class MissedCallActionDelegate extends BaseListAdapterDelegate {
           Integer.toString(missedCallAction.getNbrMissedCall())));
     }
 
-    String time = formatDate(System.currentTimeMillis());
+    String time = formatDate(missedCallAction.getNotificationPayload().getTime());
     vh.txtFriend.setText(time);
     vh.btnAdd.setOnClickListener(v -> {
       clickHangLive.onNext(vh.itemView);

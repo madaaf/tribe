@@ -30,8 +30,8 @@
 	
 	<!-- Errors -->
 	<string name="error_unknown">:bird: Something went wrong. Try again in 30s.</string>
-	<string name="error_technical">:warning: Technical turbulence.</string>
-	<string name="error_no_network">:satellite: No Internet here.</string>
+	<string name="error_technical">:warning: Technical turbulence</string>
+	<string name="error_no_network">:satellite: No Internet here</string>
 	<string name="error_join_room">Can\'t enter the call, try again is 30s.</string>
 	
 	<!-- Image Picker -->
@@ -123,7 +123,7 @@
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Live call</string>
-	<string name="grid_status_with_guests">and guests</string>
+	<string name="grid_status_with_guests">with guests</string>
 	<string name="grid_status_connected">Online</string>
 	<string name="grid_status_last_seen">%1$s ago</string>
 	<string name="grid_status_last_seen_minutes">Few mins ago</string>
@@ -140,6 +140,7 @@
 	<string name="grid_menu_friendship_mute">Disable notifications :no_bell:</string>
 	<string name="grid_menu_friendship_unmute">Enable notifications :bell:</string>
 	<string name="grid_menu_invite_decline">Decline the call</string>
+	<string name="grid_menu_call_placeholder">Video call</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -260,6 +261,7 @@
 	
 	<!-- Top Bar -->
 	<string name="topbar_new_live">New group</string>
+	<string name="topbar_new_call">New call</string>
 	<string name="topbar_search">Friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
@@ -327,9 +329,15 @@
 	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	<string name="live_unknown_user">Unknown guest</string>
-	<string name="live_external_user">External guest</string>
+	<string name="live_external_user">Guest</string>
 	<string name="live_tutorial_buzz">Get %1$s\'s attention\nwith a buzz!</string>
 	<string name="live_tutorial_drag_as_guest">Spice it up by dragging\nfriends in the call!</string>
+	<string name="live_new_call_title_alone">New call</string>
+	<string name="live_new_call_title_with_guests">%1$s and guests</string>
+	<string name="live_share_new_call_description">Share call link and wait for\nyour friends to join here!</string>
+	<string name="live_share_new_call_button">Share call link</string>
+	<string name="live_share_new_call_button_simple">Share</string>
+	<string name="live_share_new_call_button_title">Call link</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

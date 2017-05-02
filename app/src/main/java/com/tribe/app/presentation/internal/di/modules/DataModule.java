@@ -79,8 +79,8 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getInteger(PreferencesUtils.NUMBER_OF_CALLS, 0);
   }
 
-  @Provides @Singleton Preference<Integer> provideNumberOfMissedCalls(
-      Context context, RxSharedPreferences prefs) {
+  @Provides @Singleton Preference<Integer> provideNumberOfMissedCalls(Context context,
+      RxSharedPreferences prefs) {
     return prefs.getInteger(PreferencesUtils.NUMBER_OF_MISSED_CALLS, 0);
   }
 
@@ -131,7 +131,7 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @MissedPlayloadNotification
   Preference<String> providedMissedPlayloadNotification(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getString(PreferencesUtils.MISSED_PLAYLOAD_NOTIF, null);
+    return prefs.getString(PreferencesUtils.MISSED_PLAYLOAD_NOTIF, "");
   }
 
   @Provides @Singleton @CallTagsMap Preference<String> provideCallTagsMap(
