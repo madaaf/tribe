@@ -23,8 +23,7 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private String firstName;
   private String lastName;
 
-  @Ignore
-  private List<String> emails;
+  @Ignore private List<String> emails;
 
   public ContactABRealm() {
 
