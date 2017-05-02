@@ -157,12 +157,6 @@ public class LiveLocalView extends FrameLayout {
         .inject(this);
   }
 
-  public void switchCamera() {
-    if (!hiddenControls) {
-      onSwitchCamera.onNext(null);
-    }
-  }
-
   private void computeDisplay(boolean animate) {
     if (!localMediaConfiguration.isVideoEnabled()) {
       UIUtils.hideReveal(cardViewStreamLayout, animate, new AnimatorListenerAdapter() {
@@ -216,6 +210,12 @@ public class LiveLocalView extends FrameLayout {
   //   PUBLIC    //
   /////////////////
 
+  public void switchCamera() {
+    if (!hiddenControls) {
+      onSwitchCamera.onNext(null);
+    }
+  }
+
   public void computeAlpha(float alpha) {
     viewShareOverlay.setAlpha(alpha);
   }
@@ -262,6 +262,10 @@ public class LiveLocalView extends FrameLayout {
     localMediaConfiguration.setMediaConfigurationType(type);
     onEnableCamera.onNext(localMediaConfiguration);
     computeDisplay(animate);
+  }
+
+  public boolean isFrontFacing() {
+    return viewPeerLocal.isFrontFacing();
   }
 
   //////////////////

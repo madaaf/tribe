@@ -41,6 +41,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
+import io.realm.exceptions.RealmMigrationNeededException;
 import timber.log.Timber;
 
 /**
@@ -107,7 +108,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(7)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(8)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -140,6 +141,15 @@ public class AndroidApplication extends Application {
         })
         .build();
     Realm.setDefaultConfiguration(realmConfiguration);
+
+    Realm realm = null;
+    try {
+      realm = Realm.getDefaultInstance();
+    } catch (RealmMigrationNeededException e) {
+      Realm.deleteRealm(realmConfiguration);
+    } finally {
+      if (realm != null) realm.close();
+    }
   }
 
   private void initFacebook() {
