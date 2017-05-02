@@ -74,6 +74,10 @@ public class LocalPeerView extends PeerView {
     return mediaConfiguration;
   }
 
+  public boolean isFrontFacing() {
+    return frontFacing;
+  }
+
   /////////////////
   // OBSERVABLES //
   /////////////////

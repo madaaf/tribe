@@ -219,8 +219,9 @@ public class Room {
 
     webRTCClient.initSubscriptions();
 
-    webSocketConnection.send(getJoinPayload(options.getRoomId(), options.getTokenId(),
-        options.getOrientation()).toString());
+    webSocketConnection.send(
+        getJoinPayload(options.getRoomId(), options.getTokenId(), options.getOrientation(),
+            options.isFrontCamera()).toString());
 
     tempSubscriptions.add(webRTCClient.onReadyToSendSdpOffer()
         .doOnError(Throwable::printStackTrace)
@@ -288,14 +289,10 @@ public class Room {
     }
   }
 
-  public void sendOrientationToPeers(int orientation) {
+  public void sendOrientation(int orientation, boolean frontFacing) {
     if (webSocketConnection == null) return;
 
-    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
-        webSocketConnection.send(getSendOrientation(orientation).toString());
-      }
-    }
+    webSocketConnection.send(getSendOrientation(orientation, frontFacing).toString());
   }
 
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
@@ -339,7 +336,8 @@ public class Room {
     }
   }
 
-  private JSONObject getJoinPayload(String roomId, String tokenId, int orientation) {
+  private JSONObject getJoinPayload(String roomId, String tokenId, int orientation,
+      boolean frontFacing) {
     JSONObject a = new JSONObject();
     JsonUtils.jsonPut(a, "a", "join");
     JSONObject d = new JSONObject();
@@ -347,15 +345,17 @@ public class Room {
     JsonUtils.jsonPut(d, "bearer", tokenId);
     JsonUtils.jsonPut(d, "platform", "Android");
     JsonUtils.jsonPut(d, "orientation", orientation);
+    JsonUtils.jsonPut(d, "camera", frontFacing ? "front" : "back");
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }
 
-  private JSONObject getSendOrientation(int orientation) {
+  private JSONObject getSendOrientation(int orientation, boolean frontFacing) {
     JSONObject a = new JSONObject();
     JsonUtils.jsonPut(a, "a", "orientationChange");
     JSONObject d = new JSONObject();
     JsonUtils.jsonPut(d, "orientation", orientation);
+    JsonUtils.jsonPut(d, "camera", frontFacing ? "front" : "back");
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }

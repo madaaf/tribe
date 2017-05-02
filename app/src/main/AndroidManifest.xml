@@ -75,7 +75,6 @@
             android:host="room"
             android:scheme="@string/deeplink_host"/>
 
-        <action android:name="android.intent.action.VIEW"/>
       </intent-filter>
     </activity>
 

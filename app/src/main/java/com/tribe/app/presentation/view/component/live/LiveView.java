@@ -297,7 +297,10 @@ public class LiveView extends FrameLayout {
     super.onConfigurationChanged(newConfig);
     if (viewControlsLive == null) return;
 
-    if (room != null) room.sendOrientationToPeers(Degrees.getNormalizedDegrees(getContext()));
+    if (room != null) {
+      room.sendOrientation(Degrees.getNormalizedDegrees(getContext()),
+          viewLocalLive.isFrontFacing());
+    }
 
     onShouldCloseInvites.onNext(null);
 
@@ -384,6 +387,10 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
       viewLocalLive.switchCamera();
+      if (room != null) {
+        room.sendOrientation(Degrees.getNormalizedDegrees(getContext()),
+            viewLocalLive.isFrontFacing());
+      }
     }));
 
     persistentSubscriptions.add(viewControlsLive.onClickMicro().subscribe(aBoolean -> {
@@ -482,6 +489,7 @@ public class LiveView extends FrameLayout {
         .routingMode(roomConfiguration.getRoutingMode())
         .headers(headers)
         .orientation(Degrees.getNormalizedDegrees(getContext()))
+        .frontCamera(viewLocalLive.isFrontFacing())
         .build();
 
     tempSubscriptions.add(room.onRoomStateChanged().subscribe(state -> {
