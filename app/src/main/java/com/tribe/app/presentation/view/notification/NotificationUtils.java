@@ -133,7 +133,7 @@ public class NotificationUtils {
     if (missedCallAction.size() < MissedCallManager.MAX_NBR_MISSED_USER_CALL) {
       for (MissedCallAction missedCall : missedCallAction) {
         builder.addAction(ACTION_HANG_LIVE, missedCall.getNotificationPayload().getBody(),
-            getIntentForLive(context, missedCall.getNotificationPayload()));
+            getIntentForLive(context, missedCall.getNotificationPayload(), false));
       }
     } else {
       builder.addAction(ACTION_MISSED_CALL_DETAIL,

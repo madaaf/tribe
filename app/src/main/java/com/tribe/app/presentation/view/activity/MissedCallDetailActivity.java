@@ -102,7 +102,7 @@ public class MissedCallDetailActivity extends BaseActivity {
       return missedCallAction;
     }).subscribe(missedCallAction -> {
       Intent intent =
-          NotificationUtils.getIntentForLive(this, missedCallAction.getNotificationPayload());
+          NotificationUtils.getIntentForLive(this, missedCallAction.getNotificationPayload(), false);
       startActivity(intent);
       finish();
     }));
