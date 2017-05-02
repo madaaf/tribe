@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.notification;
 import android.support.annotation.StringDef;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class NotificationPayload implements Serializable {
   private boolean shouldDisplayDrag = true;
   private String thread;
   private int live_users_length;
-  private List<MissedCallAction> missedCallList;
+  private List<MissedCallAction> missedCallList = new ArrayList<>();
   private long time;
 
   public void setTime(long time) {

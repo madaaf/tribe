@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.notification;
 import android.content.Context;
 import android.content.Intent;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -12,6 +13,7 @@ import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * Created by madaaflak on 20/02/2017.
@@ -23,6 +25,7 @@ public class NotificationUtils {
   public static final String ACTION_HANG_LIVE = "hang";
   public static final String ACTION_LEAVE = "leave";
   public static final String ACTION_MISSED_CALL_DETAIL = "ACTION_MISSED_CALL_DETAIL";
+  public static final String ACTION_DECLINE = "Decline";
 
   public static LiveNotificationView getNotificationViewFromPayload(Context context,
       NotificationPayload notificationPayload, MissedCallManager missedCallManager) {
@@ -99,6 +102,11 @@ public class NotificationUtils {
 
       builder.sound(SoundManager.FRIEND_ONLINE);
       liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+
+      liveNotificationView =
+          buildDeclinedCallNotification(context, liveNotificationView, notificationPayload);
     }
 
     return liveNotificationView;
@@ -114,17 +122,48 @@ public class NotificationUtils {
 
   private static LiveNotificationView.Builder addHangLiveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
+
+    String title;
     if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      return builder.addAction(ACTION_HANG_LIVE,
-          context.getString(R.string.live_notification_action_hang_live_friend,
-              notificationPayload.getUserDisplayName()),
-          getIntentForLive(context, notificationPayload, false));
+      title = context.getString(R.string.live_notification_action_hang_live_friend,
+          notificationPayload.getUserDisplayName());
     } else {
-      return builder.addAction(ACTION_HANG_LIVE,
-          context.getString(R.string.live_notification_action_hang_live_group,
-              notificationPayload.getGroupName()),
-          getIntentForLive(context, notificationPayload, false));
+      title = context.getString(R.string.live_notification_action_hang_live_group,
+          notificationPayload.getGroupName());
     }
+
+    builder.addAction(ACTION_HANG_LIVE, title,
+        getIntentForLive(context, notificationPayload, false));
+
+    addDeclinedCallActions(context, builder, notificationPayload);
+
+    return builder;
+  }
+
+  private static LiveNotificationView.Builder addDeclinedCallActions(Context context,
+      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
+
+    builder.addAction(ACTION_DECLINE, context.getString(R.string.live_notification_action_decline),
+        notificationPayload.getSessionId());
+
+    return builder;
+  }
+
+  private static LiveNotificationView buildDeclinedCallNotification(Context context,
+      LiveNotificationView liveNotifView, NotificationPayload notificationPayload) {
+    String title;
+    if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
+      title = EmojiParser.demojizedText(context.getString(R.string.live_notification_guest_declined,
+          notificationPayload.getUserDisplayName()));
+    } else {
+      title = EmojiParser.demojizedText(
+          context.getString(R.string.live_notification_action_hang_live_group,
+              notificationPayload.getGroupName()));
+    }
+    notificationPayload.setBody(title);
+    LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+    liveNotifView = builder.build();
+    return liveNotifView;
   }
 
   private static LiveNotificationView.Builder addMissedCallActions(Context context,
@@ -148,19 +187,22 @@ public class NotificationUtils {
     if (notificationPayload.isShouldDisplayDrag()) {
       builder.addAction(ACTION_ADD_AS_GUEST,
           context.getString(R.string.live_notification_add_as_guest,
-              notificationPayload.getUserDisplayName()), null);
+              notificationPayload.getUserDisplayName()));
     }
 
     builder = addLeaveAction(context, builder, notificationPayload);
-
+    builder = addDeclinedCallActions(context, builder, notificationPayload);
     return builder;
   }
 
   private static LiveNotificationView.Builder addLeaveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-    return builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
+
+    builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
         notificationPayload.getUserDisplayName()),
         getIntentForLive(context, notificationPayload, false));
+
+    return builder;
   }
 
   public static Intent getIntentForLive(Context context, NotificationPayload payload,

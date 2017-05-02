@@ -129,11 +129,27 @@ public class LiveNotificationActionView extends LinearLayout {
     private String id;
     private String title;
     private Intent intent;
+    private String sessionId;
+
+    Action(String id, String title) {
+      this.id = id;
+      this.title = title;
+    }
 
     Action(String id, String title, Intent intent) {
       this.id = id;
       this.title = title;
       this.intent = intent;
+    }
+
+    Action(String id, String title, String sessionId) {
+      this.id = id;
+      this.title = title;
+      this.sessionId = sessionId;
+    }
+
+    public String getSessionId() {
+      return sessionId;
     }
 
     public Intent getIntent() {

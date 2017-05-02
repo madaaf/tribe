@@ -294,8 +294,18 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
       return this;
     }
 
+    public Builder addAction(String id, String title) {
+      this.actionList.add(new LiveNotificationActionView.Action(id, title));
+      return this;
+    }
+
     public Builder addAction(String id, String title, Intent intent) {
       this.actionList.add(new LiveNotificationActionView.Action(id, title, intent));
+      return this;
+    }
+
+    public Builder addAction(String id, String title, String sessionId) {
+      this.actionList.add(new LiveNotificationActionView.Action(id, title, sessionId));
       return this;
     }
 

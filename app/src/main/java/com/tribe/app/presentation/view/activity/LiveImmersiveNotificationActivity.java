@@ -22,6 +22,8 @@ import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.LiveImmersiveNotificationPresenter;
+import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -31,6 +33,7 @@ import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -52,7 +55,7 @@ import timber.log.Timber;
  * Created by madaaflak on 15/03/2017.
  */
 
-public class LiveImmersiveNotificationActivity extends BaseActivity {
+public class LiveImmersiveNotificationActivity extends BaseActivity implements MVPView {
   public final static String PLAYLOAD_VALUE = "PLAYLOAD_VALUE";
 
   private final static int ACTION_BUTTON_Y_TRANSLATION = 200;
@@ -77,6 +80,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
   @Inject Navigator navigator;
   @Inject SoundManager soundManager;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState;
+  @Inject LiveImmersiveNotificationPresenter presenter;
+  @Inject MissedCallManager missedCallManager;
 
   @BindView(R.id.txtDisplayName) TextViewFont txtDisplayName;
   @BindView(R.id.txtCallerName) TextViewFont txtCallerName;
@@ -145,6 +150,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
     setAnimation();
     setDownCounter();
     callAction.setOnTouchListener(new onTouchJoinButton());
+
+    presenter.onViewAttached(this);
   }
 
   ////////////////
@@ -189,6 +196,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
     soundManager.cancelMediaPlayer();
     dispose();
+    if (presenter != null) presenter.onViewDetached();
     subscriptions.unsubscribe();
     if (unbinder != null) unbinder.unbind();
     if (startSubscription != null) startSubscription.unsubscribe();
@@ -306,6 +314,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
 
   private void endDismiss() {
     shouldStartHome = false;
+    presenter.declineInvite(payload.getSessionId());
     finish();
   }
 
@@ -375,7 +384,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity {
       }
 
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload, null);
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
+              missedCallManager);
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()

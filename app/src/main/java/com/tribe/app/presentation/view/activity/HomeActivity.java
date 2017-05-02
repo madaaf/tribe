@@ -582,6 +582,10 @@ public class HomeActivity extends BaseActivity
     }
   }
 
+  private void declineInvitation(String sessionId) {
+    homeGridPresenter.declineInvite(sessionId);
+  }
+
   @Override public void onDeepLink(String url) {
     if (!StringUtils.isEmpty(url)) {
       Uri uri = Uri.parse(url);
@@ -783,8 +787,15 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
     if (data != null) {
-      if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
+      if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
+        NotificationPayload notificationPayload = (NotificationPayload) data.getSerializableExtra(
+            NotificationPayload.CLICK_ACTION_DECLINE);
+        if (notificationPayload != null) {
+          displayDeclinedCallNotification(notificationPayload);
+        }
+      } else if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
         errorNotificationView.displayView();
       } else if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);
@@ -868,6 +879,13 @@ public class HomeActivity extends BaseActivity
     homeGridAdapter.notifyDataSetChanged();
   }
 
+  private void displayDeclinedCallNotification(NotificationPayload notificationPayload) {
+    LiveNotificationView liveNotificationView =
+        NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
+            missedCallManager);
+    Alerter.create(HomeActivity.this, liveNotificationView).show();
+  }
+
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
@@ -880,11 +898,14 @@ public class HomeActivity extends BaseActivity
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()
-            .filter(action -> action.getIntent() != null)
             .delay(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(action -> {
-              navigator.navigateToIntent(HomeActivity.this, action.getIntent());
+              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
+                declineInvitation(action.getSessionId());
+              } else if (action.getIntent() != null) {
+                navigator.navigateToIntent(HomeActivity.this, action.getIntent());
+              }
             }));
 
         Alerter.create(HomeActivity.this, liveNotificationView).show();

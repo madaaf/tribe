@@ -66,6 +66,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -218,6 +219,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
+  @Inject MissedCallManager missedCallManager;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -513,7 +516,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      if (StringUtils.isEmpty(live.getLinkId()) && !live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
+      if (StringUtils.isEmpty(live.getLinkId())
+          && !live.isGroup()
+          && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
       }
     }));
@@ -776,12 +781,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     navigator.inviteToRoom(this, roomLink);
   }
 
-  private void putExtraHomeIntent() {
-    putExtraRatingNotif();
-    putExtraDisplayGrpNotif();
-    setResult(Activity.RESULT_OK, returnIntent);
-  }
-
   private void displayNotification(String txt) {
     txtRemotePeerAdded.setText(txt);
     txtRemotePeerAdded.setVisibility(VISIBLE);
@@ -806,6 +805,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void roomFull() {
     putExtraErrorNotif();
+    finish();
+  }
+
+  private void putExtraHomeIntent() {
+    putExtraRatingNotif();
+    putExtraDisplayGrpNotif();
+    setResult(Activity.RESULT_OK, returnIntent);
+  }
+
+  private void finishActivityAfterCallDeclined(NotificationPayload notificationPayload) {
+    returnIntent.putExtra(NotificationPayload.CLICK_ACTION_DECLINE, notificationPayload);
+    setResult(Activity.RESULT_OK, returnIntent);
     finish();
   }
 
@@ -883,6 +894,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   //  BROADCAST  //
   /////////////////
 
+  private void declineInvitation(String sessionId) {
+    livePresenter.declineInvite(sessionId);
+  }
+
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
@@ -892,17 +907,24 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
           .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
           && live.getSessionId().equals(notificationPayload.getSessionId()))) {
+
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
-          // TODO HANDLE LEAVE
-          displayNotification(context.getString(R.string.live_notification_guest_declined,
-              notificationPayload.getUserDisplayName()));
+          displayNotification(EmojiParser.demojizedText(
+              context.getString(R.string.live_notification_guest_declined,
+                  notificationPayload.getUserDisplayName())));
+          if (viewLive.getRowsInLive() < 3 && !live.isGroup()) {
+            finishActivityAfterCallDeclined(notificationPayload);
+          } else {
+            viewLive.removeUserFromGrid(notificationPayload.getUserId());
+          }
         }
 
         return;
       }
 
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload, null);
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
+              missedCallManager);
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()
@@ -917,6 +939,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                     false, false, null, true, null);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
+              } else if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
+                declineInvitation(action.getSessionId());
               }
             }));
 

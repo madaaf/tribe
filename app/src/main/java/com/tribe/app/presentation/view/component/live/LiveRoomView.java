@@ -23,6 +23,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 
@@ -39,6 +40,8 @@ public class LiveRoomView extends FrameLayout {
   private static final int DEFAULT_TYPE = GRID;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject Navigator navigator;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -140,6 +143,23 @@ public class LiveRoomView extends FrameLayout {
     setConfigurationScreen();
   }
 
+  public int getRowsInLive() {
+    return flexboxLayout.getChildCount();
+  }
+
+  public void removeGuest(String userId) {
+    LiveRowView liveRowView;
+    for (int i = 0; i < flexboxLayout.getChildCount(); i++) {
+      View view = flexboxLayout.getChildAt(i);
+      if (view instanceof LiveRowView) {
+        liveRowView = (LiveRowView) view;
+        if (liveRowView.getGuest().getId().equals(userId)) {
+          removeView(liveRowView);
+        }
+      }
+    }
+  }
+
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
     setScreenSize(0);
@@ -151,14 +171,6 @@ public class LiveRoomView extends FrameLayout {
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
     this.type = type;
-
-    for (int i = 0; i < getChildCount(); i++) {
-      View child = getChildAt(i);
-      if (child instanceof LiveRowView) {
-        LiveRowView liveRowView = (LiveRowView) child;
-        liveRowView.setRoomType(type);
-      }
-    }
     setScreenSize(0);
     setConfigurationScreen();
   }

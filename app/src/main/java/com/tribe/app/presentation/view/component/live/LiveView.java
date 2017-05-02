@@ -193,6 +193,14 @@ public class LiveView extends FrameLayout {
     return live.getDisplayName();
   }
 
+  public int getRowsInLive() {
+    return viewRoom.getRowsInLive();
+  }
+
+  public void removeUserFromGrid(String userId) {
+    viewRoom.removeGuest(userId);
+  }
+
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 

@@ -8,6 +8,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
+import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
@@ -34,6 +35,7 @@ public class LivePresenter implements Presenter {
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
   private GetRoomLink getRoomLink;
+  private DeclineInvite declineInvite;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -41,7 +43,8 @@ public class LivePresenter implements Presenter {
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink) {
+      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
+      DeclineInvite declineInvite) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
@@ -49,6 +52,7 @@ public class LivePresenter implements Presenter {
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
     this.getRoomLink = getRoomLink;
+    this.declineInvite = declineInvite;
   }
 
   @Override public void onViewDetached() {
@@ -57,6 +61,7 @@ public class LivePresenter implements Presenter {
     buzzRoom.unsubscribe();
     cloudUserInfosList.unsubscribe();
     inviteUserToRoom.unsubscribe();
+    declineInvite.unsubscribe();
     getRecipientInfos.unsubscribe();
     getRoomLink.unsubscribe();
     liveMVPView = null;
@@ -174,6 +179,11 @@ public class LivePresenter implements Presenter {
   public void getRoomLink(String roomId) {
     getRoomLink.setup(roomId);
     getRoomLink.execute(new GetRoomLinkSubscriber());
+  }
+
+  public void declineInvite(String roomId) {
+    declineInvite.prepare(roomId);
+    declineInvite.execute(new DefaultSubscriber());
   }
 
   private final class GetRoomLinkSubscriber extends DefaultSubscriber<String> {
