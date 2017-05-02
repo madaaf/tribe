@@ -28,6 +28,7 @@ public class TribeLiveOptions {
   private @TribeLiveOptions.RoutingMode String routingMode;
   private Map<String, String> headers;
   private int orientation;
+  private boolean frontCamera;
 
   private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
     this.wsUrl = builder.wsUrl;
@@ -37,6 +38,7 @@ public class TribeLiveOptions {
     this.routingMode = builder.routingMode;
     this.headers = builder.headers;
     this.orientation = builder.orientation;
+    this.frontCamera = builder.frontCamera;
   }
 
   public static class TribeLiveOptionsBuilder {
@@ -48,6 +50,7 @@ public class TribeLiveOptions {
     private @RoutingMode String routingMode;
     private Map<String, String> headers;
     private int orientation;
+    private boolean frontCamera;
 
     public TribeLiveOptionsBuilder(Context context) {
       this.context = context;
@@ -92,6 +95,11 @@ public class TribeLiveOptions {
 
     public TribeLiveOptionsBuilder orientation(int orientation) {
       this.orientation = orientation;
+      return this;
+    }
+
+    public TribeLiveOptionsBuilder frontCamera(boolean front) {
+      this.frontCamera = front;
       return this;
     }
 
@@ -154,5 +162,13 @@ public class TribeLiveOptions {
 
   public void setOrientation(int orientation) {
     this.orientation = orientation;
+  }
+
+  public boolean isFrontCamera() {
+    return frontCamera;
+  }
+
+  public void setFrontCamera(boolean frontCamera) {
+    this.frontCamera = frontCamera;
   }
 }
