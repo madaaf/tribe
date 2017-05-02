@@ -91,9 +91,9 @@ public class MemberListAdapter extends RecyclerView.Adapter {
   }
 
   private String refactorMembers(List<GroupMember> items) {
-    return items.size() + " " +
-        (items.size() > 1 ? context.getResources().getString(R.string.group_members)
-            : context.getResources().getString(R.string.group_member));
+    return items.size() + " " + (items.size() > 1 ? context.getResources()
+        .getString(R.string.group_members)
+        : context.getResources().getString(R.string.group_member));
   }
 
   // OBSERVABLES

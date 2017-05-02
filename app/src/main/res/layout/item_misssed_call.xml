@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutContent"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="horizontal"
+    android:padding="20dp"
+    tools:background="@color/white.opacity.70"
+    >
+
+  <ImageView
+      android:id="@+id/imgAvatar"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_gravity="center_vertical|right"
+      android:background="@drawable/shape_oval_grey_lighter"
+      android:scaleType="centerCrop"
+      />
+
+  <View
+      android:id="@+id/viewRing"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_gravity="center_vertical|right"
+      android:background="@drawable/shape_oval_purple_ring"
+      android:visibility="gone"
+      />
+
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:paddingStart="20dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        style="@style/Title.2.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtName"
+        android:layout_marginTop="5dp"
+        android:singleLine="true"
+        style="@style/Body.One.Black40"
+        />
+  </RelativeLayout>
+
+  <FrameLayout
+      android:id="@+id/btnHangLive"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/action_button_height"
+      android:layout_gravity="center_vertical|end"
+      android:background="@drawable/shape_rect_rounded_100_green"
+      android:clickable="true"
+      android:foreground="@drawable/selectable_button_all_rounded_100_white_10"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:maxLines="1"
+        android:text="@string/action_add_friend"
+        style="@style/Body.Two.White"
+        />
+  </FrameLayout>
+
+</LinearLayout>

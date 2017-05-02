@@ -6,9 +6,12 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import java.util.List;
 
 /**
  * Created by madaaflak on 20/02/2017.
@@ -19,9 +22,10 @@ public class NotificationUtils {
   public static final String ACTION_ADD_AS_GUEST = "guest";
   public static final String ACTION_HANG_LIVE = "hang";
   public static final String ACTION_LEAVE = "leave";
+  public static final String ACTION_MISSED_CALL_DETAIL = "ACTION_MISSED_CALL_DETAIL";
 
   public static LiveNotificationView getNotificationViewFromPayload(Context context,
-      NotificationPayload notificationPayload) {
+      NotificationPayload notificationPayload, MissedCallManager missedCallManager) {
     boolean isGrid = context instanceof HomeActivity;
 
     if (notificationPayload == null) {
@@ -29,9 +33,17 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if (notificationPayload == null || notificationPayload.getClickAction() == null) return null;
+    if (notificationPayload.getClickAction() == null) return null;
 
     LiveNotificationView liveNotificationView = null;
+
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder = addMissedCallActions(context, builder, notificationPayload);
+      builder.sound(SoundManager.WIZZ);
+      liveNotificationView = builder.build();
+      missedCallManager.reset();
+    }
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
         && !isGrid) {
@@ -113,6 +125,22 @@ public class NotificationUtils {
               notificationPayload.getGroupName()),
           getIntentForLive(context, notificationPayload, false));
     }
+  }
+
+  private static LiveNotificationView.Builder addMissedCallActions(Context context,
+      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
+    List<MissedCallAction> missedCallAction = notificationPayload.getMissedCallList();
+    if (missedCallAction.size() < MissedCallManager.MAX_NBR_MISSED_USER_CALL) {
+      for (MissedCallAction missedCall : missedCallAction) {
+        builder.addAction(ACTION_HANG_LIVE, missedCall.getNotificationPayload().getBody(),
+            getIntentForLive(context, missedCall.getNotificationPayload()));
+      }
+    } else {
+      builder.addAction(ACTION_MISSED_CALL_DETAIL,
+          context.getString(R.string.callback_notification_default_action),
+          MissedCallDetailActivity.getIntentForMissedCallDetail(context, missedCallAction));
+    }
+    return builder;
   }
 
   private static LiveNotificationView.Builder addLiveActions(Context context,

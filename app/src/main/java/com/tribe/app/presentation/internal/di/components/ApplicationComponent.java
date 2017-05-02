@@ -47,6 +47,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -80,6 +81,7 @@ import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -294,6 +296,8 @@ public interface ApplicationComponent {
 
   @MinutesOfCalls Preference<Float> minutesOfCalls();
 
+  @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
+
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
 
   @CallTagsMap Preference<String> callTagsMap();
@@ -303,4 +307,6 @@ public interface ApplicationComponent {
   SoundManager soundManager();
 
   StateManager stateManager();
+
+  MissedCallManager missedCallManager();
 }

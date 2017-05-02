@@ -26,6 +26,7 @@ import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import java.util.Date;
 import java.util.Set;
 import javax.inject.Inject;
@@ -40,7 +41,7 @@ import javax.inject.Singleton;
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject JobManager jobManager;
-
+  @Inject MissedCallManager missedCallManager;
   private AndroidApplication application;
 
   @Inject public NotificationBuilder(AndroidApplication application) {
@@ -51,6 +52,11 @@ import javax.inject.Singleton;
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+      if (application.getAppState() != null) {
+        missedCallManager.setMissedNotificationPlayload(notificationPayload);
+      }
+    }
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       // If the user calling is hidden by the current user, we unhide it
       // https://github.com/heytribe/roadmap/issues/530
