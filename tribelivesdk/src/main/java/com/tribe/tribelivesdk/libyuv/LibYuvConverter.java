@@ -1,23 +1,12 @@
 package com.tribe.tribelivesdk.libyuv;
 
-@SuppressWarnings("JniMissingFunction") public class LibYuvConverter {
+public class LibYuvConverter {
 
   static {
-    System.loadLibrary("libyuv");
+    System.loadLibrary("hello-jni");
   }
 
-  private byte[] mBgr;
+  public native String stringFromJNI();
 
-  public void rgbToYuv(byte[] rgb, int width, int height, byte[] yuv) {
-    if (mBgr == null || mBgr.length < rgb.length) {
-      mBgr = new byte[rgb.length];
-    }
-
-    rgbToBgrInternal(rgb, width, height, mBgr);
-    bgrToYuvInternal(mBgr, width, height, yuv);
-  }
-
-  private native void rgbToBgrInternal(byte[] rgb, int width, int height, byte[] bgr);
-
-  private native void bgrToYuvInternal(byte[] bgr, int width, int height, byte[] yuv);
+  public native String unimplementedStringFromJNI();
 }

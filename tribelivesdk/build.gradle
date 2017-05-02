@@ -19,12 +19,29 @@ android {
     versionName "1.0"
 
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    externalNativeBuild {
+      cmake {
+        arguments '-DANDROID_TOOLCHAIN=clang'
+      }
+    }
+
+    ndk {
+      abiFilters 'mips', 'mips64', 'x86', 'x86_64'
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "src/main/cpp/CMakeLists.txt"
+    }
   }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+
   sourceSets {
     main {
       renderscript.srcDirs = ['src/main/rs/']

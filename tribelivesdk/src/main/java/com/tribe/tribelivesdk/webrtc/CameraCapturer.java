@@ -14,7 +14,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v8.renderscript.RenderScript;
-import com.tribe.tribelivesdk.rs.RSCompute;
+import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import org.webrtc.CameraEnumerator;
@@ -25,6 +25,7 @@ import org.webrtc.ThreadUtils;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 @SuppressWarnings("deprecation") abstract class CameraCapturer implements CameraVideoCapturer {
   enum SwitchState {
@@ -65,7 +66,7 @@ import rx.subjects.PublishSubject;
                   capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
                       frame.getHeight(), frame.getRotation(), frame.getTimestamp());
 
-                  rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight());
+                  Timber.d("String from JNI : " + libYuvConverter.stringFromJNI());
                 })
                 //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
                 //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
@@ -192,7 +193,7 @@ import rx.subjects.PublishSubject;
         }
         cameraStatistics.addFrame();
 
-        if (rsCompute == null) rsCompute = new RSCompute(renderScript, width, height);
+        if (libYuvConverter == null) libYuvConverter = new LibYuvConverter();
 
         onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
       }
@@ -231,7 +232,7 @@ import rx.subjects.PublishSubject;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
   private RenderScript renderScript;
-  private RSCompute rsCompute;
+  private LibYuvConverter libYuvConverter;
 
   private final Object stateLock = new Object();
   private boolean sessionOpening; /* guarded by stateLock */
