@@ -13,7 +13,6 @@ import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.List;
-import javax.inject.Inject;
 
 /**
  * Created by madaaflak on 20/02/2017.
@@ -43,7 +42,6 @@ public class NotificationUtils {
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder = addMissedCallActions(context, builder, notificationPayload);
-      builder.sound(SoundManager.WIZZ);
       liveNotificationView = builder.build();
       missedCallManager.reset();
     }
@@ -162,6 +160,7 @@ public class NotificationUtils {
     }
     notificationPayload.setBody(title);
     LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+    builder.sound(SoundManager.NO_SOUND);
     liveNotifView = builder.build();
     return liveNotifView;
   }
@@ -179,6 +178,7 @@ public class NotificationUtils {
           context.getString(R.string.callback_notification_default_action),
           MissedCallDetailActivity.getIntentForMissedCallDetail(context, missedCallAction));
     }
+    builder.sound(SoundManager.NO_SOUND);
     return builder;
   }
 

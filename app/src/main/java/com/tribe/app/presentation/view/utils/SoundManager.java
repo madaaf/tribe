@@ -21,6 +21,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final float SOUND_MID = 0.5f;
   public static final float SOUND_LOW = 0.1f;
 
+  public static final int NO_SOUND = -1;
   public static final int CALL_RING = 0;
   public static final int WAITING_FRIEND = 1;
   public static final int FRIEND_ONLINE = 2;
@@ -77,7 +78,9 @@ import rx.android.schedulers.AndroidSchedulers;
   }
 
   public void playSound(int index, float volumeRate) {
-    if (index == WAITING_FRIEND || index == CALL_RING) {
+    if (index == NO_SOUND) {
+      cancelMediaPlayer();
+    } else if (index == WAITING_FRIEND || index == CALL_RING) {
       if (mediaPlayer != null) cancelMediaPlayer();
 
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));
