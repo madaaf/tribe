@@ -533,7 +533,7 @@ public class LiveView extends FrameLayout {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
 
-          String username = getDisplayNameNotification(remotePeer.getSession().getUserId());
+          String username = getDisplayNameFromId(remotePeer.getSession().getUserId());
           if ((username == null || username.isEmpty()) && !remotePeer.getSession().isExternal()) {
             Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
@@ -975,9 +975,9 @@ public class LiveView extends FrameLayout {
     }
 
     if (guest == null) {
-      guest =
-          new TribeGuest(remotePeer.getSession().getUserId(), "", null, false, false, null, false,
-              "");
+      guest = new TribeGuest(remotePeer.getSession().getUserId(),
+          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, null,
+          false, "");
       guest.setExternal(remotePeer.getSession().isExternal());
     }
 
@@ -1188,11 +1188,11 @@ public class LiveView extends FrameLayout {
 
   private String getDisplayNameFromSession(TribeSession tribeSession) {
     return tribeSession.isExternal() ? getContext().getString(R.string.live_external_user)
-        : getDisplayNameNotification(tribeSession.getUserId());
+        : getDisplayNameFromId(tribeSession.getUserId());
   }
 
-  private String getDisplayNameNotification(String id) {
-    String tribeGuestName = null;
+  private String getDisplayNameFromId(String id) {
+    String tribeGuestName = "";
     for (Membership membership : user.getMembershipList()) {
       for (User member : membership.getGroup().getMembers()) {
         if (member.getId().equals(id)) {
