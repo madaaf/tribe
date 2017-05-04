@@ -142,7 +142,7 @@ public class LiveView extends FrameLayout {
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
-  private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
+  private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true, hasShared = false;
   private View view;
   private int sizeAnimAvatarMax;
   private List<User> anonymousInLive = new ArrayList<>();
@@ -215,7 +215,7 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
       } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) ||
-          (live.getId().equals(Live.NEW_CALL) && invitedCount > 0)) {
+          (live.getId().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -380,7 +380,7 @@ public class LiveView extends FrameLayout {
       onHiddenControls.onNext(isParamExpended);
     }));
 
-    persistentSubscriptions.add(viewLocalLive.onShare().subscribe(onShare));
+    persistentSubscriptions.add(viewLocalLive.onShare().doOnNext(aVoid -> hasShared = true).subscribe(onShare));
 
     persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
       if (!hiddenControls) onOpenInvite.onNext(null);
