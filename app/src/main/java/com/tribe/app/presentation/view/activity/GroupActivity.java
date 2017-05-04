@@ -273,11 +273,16 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     groupEntity = new GroupEntity();
     groupEntity.setMembersId(membersId);
-    String avatarUri = viewAddMembersGroup.getAvatarUri();
-    if (avatarUri != null) groupEntity.setImgPath(avatarUri);
-    String grpName = viewAddMembersGroup.getGroupName();
-    if (grpName != null && !grpName.isEmpty()) {
-      groupEntity.setName(grpName);
+    
+    if (viewAddMembersGroup != null) {
+      String avatarUri = viewAddMembersGroup.getAvatarUri();
+      if (avatarUri != null) groupEntity.setImgPath(avatarUri);
+      String grpName = viewAddMembersGroup.getGroupName();
+      if (grpName != null && !grpName.isEmpty()) {
+        groupEntity.setName(grpName);
+      } else {
+        groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
+      }
     } else {
       groupEntity.setName(EmojiParser.demojizedText(getDefaultGroupName()));
     }
@@ -334,7 +339,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
   private void hideKeyboard() {
     if (viewAddMembersGroup == null) return;
-    
+
     EditTextFont v = viewAddMembersGroup.getEditTextFont();
     InputMethodManager imm =
         (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

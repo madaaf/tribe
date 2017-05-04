@@ -2,6 +2,8 @@ package com.tribe.app.presentation.utils.analytics;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import com.crashlytics.android.Crashlytics;
 import com.f2prateek.rx.preferences.Preference;
@@ -10,6 +12,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -51,8 +54,16 @@ import javax.inject.Singleton;
       if (!StringUtils.isEmpty(user.getPhone())) {
         bundleMixpanel.putString("$phone", user.getPhone());
       }
+
       mixpanel.setProperty(bundleMixpanel);
     }
+
+    Resources resources = context.getResources();
+    Locale locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? resources.getConfiguration()
+        .getLocales()
+        .getFirstMatch(resources.getAssets().getLocales()) : resources.getConfiguration().locale;
+
+    bundle.putString(TagManagerUtils.USER_LANGUAGE, locale.getLanguage().toUpperCase());
 
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
         true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
