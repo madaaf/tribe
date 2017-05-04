@@ -1,9 +1,23 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-add_library(hello-jni SHARED
-            hello-jni.c)
+# configure import libs
+set(jniLibs_DIR ${CMAKE_SOURCE_DIR}/../jniLibs)
 
-# Include libraries needed for hello-jni lib
-target_link_libraries(hello-jni
+add_library(lib_libyuv SHARED IMPORTED)
+set_target_properties(lib_libyuv PROPERTIES IMPORTED_LOCATION
+    ${jniLibs_DIR}/${ANDROID_ABI}/libyuv.so)
+
+# build application's shared lib
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+
+add_library(tribelibyuv SHARED
+            tribelibyuv.cpp)
+
+target_include_directories(tribelibyuv PRIVATE
+                           ./include
+                           ./include)
+
+target_link_libraries(tribelibyuv
                       android
+                      lib_libyuv
                       log)

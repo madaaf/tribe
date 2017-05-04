@@ -22,7 +22,7 @@ android {
 
     externalNativeBuild {
       cmake {
-        arguments '-DANDROID_TOOLCHAIN=clang'
+        arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
       }
     }
 

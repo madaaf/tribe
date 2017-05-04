@@ -11,10 +11,15 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v8.renderscript.RenderScript;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import org.webrtc.CameraEnumerator;
@@ -43,6 +48,7 @@ import timber.log.Timber;
   private final CameraEventsHandler eventsHandler;
   private final Handler uiThreadHandler;
   private boolean processing = false;
+  private int frameCount = 0;
 
   private Subscription subscription;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
@@ -57,21 +63,22 @@ import timber.log.Timber;
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
                 .doOnNext(frame -> {
-                  //if (rsCompute != null) {
-                  //  capturerObserver.onByteBufferFrameCaptured(
-                  //      rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
-                  //      frame.getWidth(), frame.getHeight(), frame.getRotation(),
-                  //      frame.getTimestamp());
-                  //}
                   capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
                       frame.getHeight(), frame.getRotation(), frame.getTimestamp());
 
-                  Timber.d("String from JNI : " + libYuvConverter.stringFromJNI());
+                  if (frameCount == 30) {
+                    Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    byte[] rgb = new byte[frame.getWidth() * frame.getHeight() * 4];
+                    libYuvConverter.yuvToRgb(frame.getData(), width, height, rgb);
+                    Timber.d("libYuvConverter done");
+                    Timber.d("Bmp : " + bmp);
+                    bmp = BitmapFactory.decodeByteArray(rgb, 0, rgb.length);
+                    Timber.d("Heyyyaaaa");
+                    Timber.d("Bmp 2 : " + bmp);
+                  }
+
+                  frameCount++;
                 })
-                //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
-                //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
-                //        frame.getHeight()), frame.getWidth(), frame.getHeight(),
-                //    frame.getRotation(), frame.getTimestamp()))
                 .subscribe(frame -> {
                   processing = false;
                 });
@@ -231,7 +238,6 @@ import timber.log.Timber;
   private Context applicationContext;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
-  private RenderScript renderScript;
   private LibYuvConverter libYuvConverter;
 
   private final Object stateLock = new Object();
@@ -296,8 +302,6 @@ import timber.log.Timber;
     this.surfaceHelper = surfaceTextureHelper;
     this.cameraThreadHandler =
         surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
-    this.renderScript = RenderScript.create(applicationContext, RenderScript.ContextType.DEBUG);
-    //this.renderScript = RenderScript.create(applicationContext);
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -468,4 +472,16 @@ import timber.log.Timber;
       CameraSession.CreateSessionCallback createSessionCallback, CameraSession.Events events,
       Context applicationContext, SurfaceTextureHelper surfaceTextureHelper, String cameraName,
       int width, int height, int framerate);
+
+  public void saveByteArrayToPNG(byte[] bytes) {
+    try {
+      String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tiago.jpg";
+      FileOutputStream stream = new FileOutputStream(path);
+      stream.write(bytes);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }
