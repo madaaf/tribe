@@ -137,8 +137,8 @@
 	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
-	<string name="grid_menu_friendship_mute">Disable notifications :no_bell:</string>
-	<string name="grid_menu_friendship_unmute">Enable notifications :bell:</string>
+	<string name="grid_menu_friendship_mute">:no_bell: \'is online\' notification</string>
+	<string name="grid_menu_friendship_unmute">:bell: \'is online\' notification</string>
 	<string name="grid_menu_invite_decline">Decline the call</string>
 	<string name="grid_menu_call_placeholder">Video call</string>
 	

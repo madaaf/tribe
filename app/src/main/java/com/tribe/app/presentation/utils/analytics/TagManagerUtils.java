@@ -109,6 +109,7 @@ public class TagManagerUtils {
   public static final String USER_INVITES_SENT_COUNT = "user_invites_sent_count";
   public static final String USER_HAS_PROFILE_PICTURE = "user_has_profile_picture";
   public static final String USER_ONBOARDING_COMPLETED = "user_onboarding_completed";
+  public static final String USER_LANGUAGE = "user_language";
 
   /**
    * MIXPANEL PROPERTIES
