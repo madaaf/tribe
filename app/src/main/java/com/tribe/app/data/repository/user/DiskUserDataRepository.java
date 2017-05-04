@@ -64,7 +64,7 @@ import rx.Observable;
     this.membershipRealmDataMapper = membershipRealmDataMapper;
   }
 
-  @Override public Observable<Pin> requestCode(String phoneNumber) {
+  @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
     return null;
   }
 
@@ -383,8 +383,8 @@ import rx.Observable;
     });
   }
 
-  @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
+      String linkId) {
     return null;
   }
 
@@ -400,7 +400,9 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Void> sendInvitations() { return null; }
+  @Override public Observable<Void> sendInvitations() {
+    return null;
+  }
 
   @Override public Observable<String> getRoomLink(String roomId) {
     return null;

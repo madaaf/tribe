@@ -54,15 +54,15 @@ import javax.inject.Singleton;
         bundleMixpanel.putString("$phone", user.getPhone());
       }
 
-      Resources resources = context.getResources();
-      Locale locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? resources.getConfiguration()
-          .getLocales()
-          .getFirstMatch(resources.getAssets().getLocales()) : resources.getConfiguration().locale;
-
-      bundleMixpanel.putString(TagManagerUtils.USER_LANGUAGE, locale.getLanguage().toUpperCase());
-
       mixpanel.setProperty(bundleMixpanel);
     }
+
+    Resources resources = context.getResources();
+    Locale locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? resources.getConfiguration()
+        .getLocales()
+        .getFirstMatch(resources.getAssets().getLocales()) : resources.getConfiguration().locale;
+
+    bundle.putString(TagManagerUtils.USER_LANGUAGE, locale.getLanguage().toUpperCase());
 
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
         true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS

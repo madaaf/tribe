@@ -220,9 +220,12 @@ public class CodeView extends FrameLayout {
     }, delay);
   }
 
-  public void startCountdown() {
-    timeCodeCountdown = getContext().getResources().getInteger(R.integer.time_code_countdown);
+  public void startCountdown(boolean isCall) {
+    timeCodeCountdown =
+        isCall ? getContext().getResources().getInteger(R.integer.time_code_countdown_call)
+            : getContext().getResources().getInteger(R.integer.time_code_countdown_pin);
     progressBarCountdown.setProgress(timeCodeCountdown);
+    progressBarCountdown.setMax(timeCodeCountdown);
     layoutCountdown.setVisibility(View.VISIBLE);
 
     animator = ObjectAnimator.ofInt(progressBarCountdown, "progress", 0);

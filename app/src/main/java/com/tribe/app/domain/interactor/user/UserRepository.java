@@ -32,7 +32,7 @@ public interface UserRepository {
    *
    * @param phoneNumber The phoneNumber used to login.
    */
-  Observable<Pin> requestCode(final String phoneNumber);
+  Observable<Pin> requestCode(final String phoneNumber, boolean shouldCall);
 
   /**
    * Get an {@link Observable} which will emit a {@link User}.

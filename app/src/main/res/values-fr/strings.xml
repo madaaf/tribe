@@ -133,7 +133,7 @@
 	<string name="grid_status_more_friends">Partager votre nom d\'utilisateur !</string>
 	<string name="grid_name_video_demo">Démo vidéo</string>
 	<string name="grid_status_video_demo">Apprenez tout en 30 sec !</string>
-	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
+	<string name="grid_menu_friendship_hide">Supprimer %1$s</string>
 	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
 	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
 	<string name="grid_menu_friendship_unblock"></string>
@@ -304,7 +304,7 @@
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">%1$s</string>
 	<string name="spring_cleaning_friendship_description">Vous pourrez ajouter à nouveau\n%1$s depuis les réglages.</string>
-	<string name="spring_cleaning_friendship_hide">Masquer cet ami</string>
+	<string name="spring_cleaning_friendship_hide">Supprimer cet ami</string>
 	<string name="spring_cleaning_friendship_block">Bloquer cet ami</string>
 	<string name="spring_cleaning_membership_title">%1$s</string>
 	<string name="spring_cleaning_membership_description">Vous devrez être à nouveau invité\npour rejoindre le groupe.</string>

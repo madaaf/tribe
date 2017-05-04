@@ -14,9 +14,11 @@ public class LoginEntity implements Serializable {
   private String pinId;
   private String countryCode;
   private String nationalNumber;
+  private String call;
 
-  public LoginEntity(String to) {
+  public LoginEntity(String to, boolean shouldCall) {
     this.to = to;
+    this.call = shouldCall ? "1" : "0";
   }
 
   public LoginEntity(String phoneNumber, String code, String pinId) {

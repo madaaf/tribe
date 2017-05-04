@@ -2,7 +2,7 @@ package com.tribe.app.presentation.view.dialog_fragment;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +43,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
 
   @BindView(R.id.layoutParent) LinearLayout layoutParent;
 
-  @BindView(R.id.layoutBottom) LinearLayout layoutBottom;
+  @Nullable @BindView(R.id.layoutBottom) LinearLayout layoutBottom;
 
   @BindView(R.id.textTitle) TextViewFont textTitle;
 
@@ -53,7 +53,7 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
 
   @BindView(R.id.textConfirm) TextViewFont textConfirm;
 
-  @BindView(R.id.textTrans) TextViewFont textTrans;
+  @Nullable @BindView(R.id.textTrans) TextViewFont textTrans;
 
   private static final String PHONE_NUMBER = "phoneNumber";
   private static final String RESEND = "resend";
@@ -80,8 +80,18 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
 
   @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    final View fragmentView =
-        inflater.inflate(R.layout.dialog_fragment_authentication, container, false);
+    Bundle args = getArguments();
+    resend = args.getBoolean(RESEND);
+    phoneNumber = args.getString(PHONE_NUMBER);
+    View fragmentView = null;
+
+    if (!resend) {
+      fragmentView = inflater.inflate(R.layout.dialog_fragment_authentication, container, false);
+    } else {
+      fragmentView =
+          inflater.inflate(R.layout.dialog_fragment_authentication_call, container, false);
+    }
+
     initDependencyInjector();
     initUi(fragmentView);
     return fragmentView;
@@ -105,20 +115,21 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
     getDialog().getWindow()
         .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-    Bundle args = getArguments();
-    resend = args.getBoolean(RESEND);
-    phoneNumber = args.getString(PHONE_NUMBER);
     WIDTH_MAX = (int) getResources().getDimension(R.dimen.authentication_dialog_width);
 
     if (resend) {
       textTitle.setText(R.string.onboarding_popup_error_title);
       textSummary.setText(getString(R.string.onboarding_popup_error_description));
-      textCancel.setText(getString(R.string.onboarding_popup_error_edit_button_title));
-      textConfirm.setText(getString(R.string.onboarding_popup_error_resend_button_title));
-      LinearLayout.LayoutParams layoutBottomParams =
-          (LinearLayout.LayoutParams) layoutBottom.getLayoutParams();
-      layoutBottomParams.setMargins(0, 0, 0, 0);
-      layoutBottom.setLayoutParams(layoutBottomParams);
+      textCancel.setText(getString(R.string.onboarding_popup_error_resend_button_title));
+      textConfirm.setText(getString(R.string.onboarding_popup_error_call_me_button_title));
+
+      if (layoutBottom != null) {
+        LinearLayout.LayoutParams layoutBottomParams =
+            (LinearLayout.LayoutParams) layoutBottom.getLayoutParams();
+        layoutBottomParams.setMargins(0, 0, 0, 0);
+        layoutBottom.setLayoutParams(layoutBottomParams);
+      }
+
       CodeSentToView codeSentToView = new CodeSentToView(getContext());
       LinearLayout.LayoutParams codeSentToViewLayoutParams =
           new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -126,7 +137,6 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
       codeSentToViewLayoutParams.setMargins(0,
           getResources().getDimensionPixelOffset(R.dimen.vertical_margin_xlarge), 0, 0);
       codeSentToView.setLayoutParams(codeSentToViewLayoutParams);
-      codeSentToView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red_2));
       layoutParent.addView(codeSentToView, 3);
       codeSentToView.initUi();
       codeSentToView.setTextPhoneNumber(phoneNumber);
@@ -136,10 +146,12 @@ public class AuthenticationDialogFragment extends BaseDialogFragment {
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(time -> {
-            textTrans.animate()
-                .setStartDelay(AnimationUtils.NO_START_DELAY)
-                .alpha(AnimationUtils.ALPHA_FULL)
-                .start();
+            if (textTrans != null) {
+              textTrans.animate()
+                  .setStartDelay(AnimationUtils.NO_START_DELAY)
+                  .alpha(AnimationUtils.ALPHA_FULL)
+                  .start();
+            }
           }));
     } else {
       textTitle.setText(phoneNumber);

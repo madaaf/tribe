@@ -46,47 +46,41 @@
         style="@style/Title.1.Black"
         />
 
-    <LinearLayout
-        android:id="@+id/layoutBottom"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:layout_marginTop="@dimen/vertical_margin_xlarge"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_rect_blue_opaque_rounded_bottom"
+        android:orientation="vertical"
         >
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/textCancel"
-          android:layout_width="0dp"
-          android:layout_height="match_parent"
-          android:layout_weight="1"
-          android:background="@drawable/shape_rect_grey_auth_rounded_bottom_left_corner"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/bottom_bar_height"
+          android:clickable="true"
+          android:foreground="@drawable/selectable_button_white_30"
           android:gravity="center"
           style="@style/Title.2.White"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="0.5dp"
+          android:layout_marginTop="@dimen/bottom_bar_height"
+          android:background="@color/black.opacity.20"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/textConfirm"
-          android:layout_width="0dp"
-          android:layout_height="match_parent"
-          android:layout_weight="1"
-          android:background="@drawable/shape_rect_blue_opaue_rounded_bottom_right"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/bottom_bar_height"
+          android:layout_marginTop="@dimen/bottom_bar_height"
+          android:clickable="true"
+          android:foreground="@drawable/selectable_button_rounded_white_30_bottom"
           android:gravity="center"
           style="@style/Title.2.White"
           />
 
-    </LinearLayout>
-
+    </FrameLayout>
   </LinearLayout>
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/textTrans"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/vertical_margin_mid"
-      android:alpha="0"
-      android:gravity="center"
-      android:text="@string/onboarding_popup_error_team_notified"
-      style="@style/Title.1.White"
-      />
-
 </LinearLayout>

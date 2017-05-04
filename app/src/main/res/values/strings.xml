@@ -133,7 +133,7 @@
 	<string name="grid_status_more_friends">Invite your friends!</string>
 	<string name="grid_name_video_demo">Video Demo</string>
 	<string name="grid_status_video_demo">Master it in 30sec!</string>
-	<string name="grid_menu_friendship_hide">Hide %1$s</string>
+	<string name="grid_menu_friendship_hide">Delete %1$s</string>
 	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
@@ -304,7 +304,7 @@
 	<!-- Spring Cleaning -->
 	<string name="spring_cleaning_friendship_title">%1$s</string>
 	<string name="spring_cleaning_friendship_description">You will be able to add back\n%1$s from the Settings.</string>
-	<string name="spring_cleaning_friendship_hide">Hide friend</string>
+	<string name="spring_cleaning_friendship_hide">Delete friend</string>
 	<string name="spring_cleaning_friendship_block">Block friend</string>
 	<string name="spring_cleaning_membership_title">%1$s</string>
 	<string name="spring_cleaning_membership_description">You will need to be invited\nto joined the group.</string>

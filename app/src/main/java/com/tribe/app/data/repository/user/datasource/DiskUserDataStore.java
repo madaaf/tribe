@@ -51,7 +51,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     this.contactCache = contactCache;
   }
 
-  @Override public Observable<PinRealm> requestCode(String phoneNumber) {
+  @Override public Observable<PinRealm> requestCode(String phoneNumber, boolean shouldCall) {
     return null;
   }
 
@@ -215,7 +215,9 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<Void> sendInvitations() { return null; }
+  @Override public Observable<Void> sendInvitations() {
+    return null;
+  }
 
   @Override public Observable<String> getRoomLink(String roomId) {
     return null;

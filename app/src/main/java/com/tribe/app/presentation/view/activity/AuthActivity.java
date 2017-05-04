@@ -29,6 +29,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
 import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -49,7 +50,6 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListener.SmsCallback {
 
@@ -58,6 +58,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   private static int DURATION_LONG = 600;
   private static int DURATION_FAST = 150;
   private static int TIMER_SURPRISE_DIALOG = 1000;
+  private static int COUNT_PIN_ERROR_MAX = 3;
 
   private static final String COUNTRY_CODE = "COUNTRY_CODE";
   private static final String DEEP_LINK = "DEEP_LINK";
@@ -119,6 +120,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   private String code;
   private int currentCountdown;
   private boolean shouldPauseOnRestore = false;
+  private boolean isCall = false;
+  private int countPinError = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -340,6 +343,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     }
 
     subscriptions.add(viewCode.backClicked().subscribe(aVoid -> {
+      countPinError = 0;
       backToPhoneNumber();
     }));
 
@@ -531,14 +535,21 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   private void requestCode() {
+    isCall = false;
     viewStatus.showSendingCode();
-    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted());
+    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted(), false);
+  }
+
+  private void requestCall() {
+    isCall = true;
+    viewStatus.showSendingCode();
+    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted(), true);
   }
 
   private void initCountdown() {
     if (!countdownActive) {
       countdownActive = true;
-      viewCode.startCountdown();
+      viewCode.startCountdown(isCall);
       countdownSubscription = viewCode.countdownExpired().subscribe(aVoid -> {
         resend();
         cleanCountdown();
@@ -558,12 +569,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
         AuthenticationDialogFragment.class.getName());
     subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
       authenticationDialogFragment.dismiss();
-      requestCode();
+      requestCall();
     }));
 
     subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
       authenticationDialogFragment.dismiss();
-      viewStatus.showResend();
+      requestCode();
     }));
   }
 
@@ -618,7 +629,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {
-    Timber.d("Pin error");
+    countPinError++;
+
+    if (countPinError == COUNT_PIN_ERROR_MAX) {
+      resend();
+      cleanCountdown();
+    } else {
+      showError(EmojiParser.demojizedText(getString(R.string.onboarding_error_wrong_pin)));
+    }
+
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
   }
 

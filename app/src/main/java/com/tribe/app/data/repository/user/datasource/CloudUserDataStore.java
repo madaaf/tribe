@@ -115,8 +115,8 @@ public class CloudUserDataStore implements UserDataStore {
     this.lookupResult = lookupResult;
   }
 
-  @Override public Observable<PinRealm> requestCode(String phoneNumber) {
-    return this.loginApi.requestCode(new LoginEntity(phoneNumber));
+  @Override public Observable<PinRealm> requestCode(String phoneNumber, boolean shouldCall) {
+    return this.loginApi.requestCode(new LoginEntity(phoneNumber, shouldCall));
   }
 
   @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {

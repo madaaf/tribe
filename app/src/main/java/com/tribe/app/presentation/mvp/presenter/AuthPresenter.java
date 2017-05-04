@@ -50,9 +50,9 @@ public class AuthPresenter implements Presenter {
     introView = (AuthMVPView) v;
   }
 
-  public void requestCode(String phoneNumber) {
+  public void requestCode(String phoneNumber, boolean shouldCall) {
     showViewLoading();
-    cloudGetRequestCodeUseCase.prepare(phoneNumber);
+    cloudGetRequestCodeUseCase.prepare(phoneNumber, shouldCall);
     cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
   }
 
@@ -138,8 +138,6 @@ public class AuthPresenter implements Presenter {
               goToConnected(null);
             } else if (errorLogin != null && !errorLogin.isVerified()) {
               introView.pinError(errorLogin);
-              introView.showError(EmojiParser.demojizedText(
-                  introView.context().getString(R.string.onboarding_error_wrong_pin)));
             }
           } catch (IOException io) {
             hideViewLoading();
