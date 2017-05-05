@@ -6,8 +6,8 @@
   <integer name="time_tap_to_cancel">3000</integer>
   <integer name="time_record">60000</integer>
   <integer name="time_synchro">3000</integer>
-  <integer name="time_code_countdown_pin">3000</integer>
-  <integer name="time_code_countdown_call">9000</integer>
+  <integer name="time_code_countdown_pin">60000</integer>
+  <integer name="time_code_countdown_call">90000</integer>
   <integer name="time_join_room">3000</integer>
   <integer name="time_notify">5000</integer>
 
