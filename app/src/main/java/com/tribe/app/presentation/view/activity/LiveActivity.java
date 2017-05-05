@@ -530,9 +530,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
 
-    subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      leave();
-    }));
+    subscriptions.add(
+        viewLive.onLeave().observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> leave()));
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
