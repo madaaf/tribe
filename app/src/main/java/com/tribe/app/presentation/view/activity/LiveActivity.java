@@ -513,7 +513,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      if (StringUtils.isEmpty(live.getLinkId()) && !live.isGroup() && tribeJoinRoom.getRoomSize() < 2) {
+      if (StringUtils.isEmpty(live.getLinkId())
+          && !live.isGroup()
+          && tribeJoinRoom.getRoomSize() < 2) {
         viewLiveContainer.openInviteView();
       }
     }));
@@ -525,14 +527,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
 
-    subscriptions.add(viewLive.onLeave().subscribe(aVoid -> {
-      leave();
-    }));
-
     subscriptions.add(
-        viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-          invite(recipient.getSubId());
-        }));
+        viewLive.onLeave().observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> leave()));
+
+    subscriptions.add(viewLiveContainer.onDropped()
+        .map(TileView::getRecipient)
+        .subscribe(recipient -> invite(recipient.getSubId())));
 
     subscriptions.add(
         Observable.merge(viewInviteLive.onInviteLiveClick(), viewLive.onShare()).subscribe(view -> {
