@@ -8,6 +8,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
+import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -23,12 +24,13 @@ public class NotificationUtils {
   public static final String ACTION_ADD_AS_GUEST = "guest";
   public static final String ACTION_HANG_LIVE = "hang";
   public static final String ACTION_LEAVE = "leave";
-  public static final String ACTION_MISSED_CALL_DETAIL = "ACTION_MISSED_CALL_DETAIL";
-  public static final String ACTION_DECLINE = "Decline";
+  public static final String ACTION_MISSED_CALL_DETAIL = "missed";
+  public static final String ACTION_DECLINE = "decline";
 
   public static LiveNotificationView getNotificationViewFromPayload(Context context,
       NotificationPayload notificationPayload, MissedCallManager missedCallManager) {
-    boolean isGrid = context instanceof HomeActivity;
+    boolean isContextNotLive =
+        context instanceof HomeActivity || context instanceof ProfileActivity;
 
     if (notificationPayload == null) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
@@ -47,7 +49,7 @@ public class NotificationUtils {
     }
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
-        && !isGrid) {
+        && !isContextNotLive) {
       // A friend opened the app and is online
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder = addLiveActions(context, builder, notificationPayload);
@@ -59,7 +61,7 @@ public class NotificationUtils {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
 
       //if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      if (isGrid) {
+      if (isContextNotLive) {
         builder = addHangLiveAction(context, builder, notificationPayload);
       } else {
         builder = addLiveActions(context, builder, notificationPayload);
@@ -77,7 +79,7 @@ public class NotificationUtils {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
 
       if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-        if (isGrid) {
+        if (isContextNotLive) {
           builder = addHangLiveAction(context, builder, notificationPayload);
         } else {
           builder = addLiveActions(context, builder, notificationPayload);
@@ -92,7 +94,7 @@ public class NotificationUtils {
       // A friend added you
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
 
-      if (isGrid) {
+      if (isContextNotLive) {
         builder = addHangLiveAction(context, builder, notificationPayload);
       } else {
         builder = addLiveActions(context, builder, notificationPayload);
@@ -133,12 +135,12 @@ public class NotificationUtils {
     builder.addAction(ACTION_HANG_LIVE, title,
         getIntentForLive(context, notificationPayload, false));
 
-    addDeclinedCallActions(context, builder, notificationPayload);
+    if (notificationPayload.isLive()) addDeclineCallActions(context, builder, notificationPayload);
 
     return builder;
   }
 
-  private static LiveNotificationView.Builder addDeclinedCallActions(Context context,
+  private static LiveNotificationView.Builder addDeclineCallActions(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
 
     builder.addAction(ACTION_DECLINE, context.getString(R.string.live_notification_action_decline),
@@ -191,7 +193,9 @@ public class NotificationUtils {
     }
 
     builder = addLeaveAction(context, builder, notificationPayload);
-    builder = addDeclinedCallActions(context, builder, notificationPayload);
+    if (notificationPayload.isLive()) {
+      builder = addDeclineCallActions(context, builder, notificationPayload);
+    }
     return builder;
   }
 

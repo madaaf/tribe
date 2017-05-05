@@ -141,6 +141,8 @@
 	<string name="grid_menu_friendship_unmute">:bell: \'is online\' notification</string>
 	<string name="grid_menu_invite_decline">Decline the call</string>
 	<string name="grid_menu_call_placeholder">Video call</string>
+	<string name="grid_tutorial_invite">Invite your best friends to\nmake group video calls!</string>
+	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -262,6 +264,7 @@
 	<!-- Top Bar -->
 	<string name="topbar_new_live">New group</string>
 	<string name="topbar_new_call">New call</string>
+	<string name="topbar_invite">Invite</string>
 	<string name="topbar_search">Friends</string>
 	<string name="topbar_invite_friend_toast">Which friend would you like to invite to chat today? :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Find friends already on Tribe</string>
@@ -313,7 +316,7 @@
 	<string name="spring_cleaning_group_delete">Delete group</string>
 	
 	<!-- Live -->
-	<string name="live_drag_friends">Drag guests!</string>
+	<string name="live_drag_friends">Drag friends!</string>
 	<string name="live_invite_link">Invite\nlink</string>
 	<string name="live_drop_friend">Drop here to add your friend</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>

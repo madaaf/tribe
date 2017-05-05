@@ -141,6 +141,8 @@
 	<string name="grid_menu_friendship_unmute">:bell: notification \'est en ligne\'</string>
 	<string name="grid_menu_invite_decline">Rejeter l\'appel</string>
 	<string name="grid_menu_call_placeholder">Appel vidéo</string>
+	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
+	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
@@ -262,6 +264,7 @@
 	<!-- Top Bar -->
 	<string name="topbar_new_live">+ Groupe</string>
 	<string name="topbar_new_call">Appeler</string>
+	<string name="topbar_invite">Inviter</string>
 	<string name="topbar_search">Amis</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
@@ -313,7 +316,7 @@
 	<string name="spring_cleaning_group_delete">Supprimer ce groupe</string>
 	
 	<!-- Live -->
-	<string name="live_drag_friends">Glissez des invités !</string>
+	<string name="live_drag_friends">Glissez des amis !</string>
 	<string name="live_invite_link">Lien pour\ninviter</string>
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
