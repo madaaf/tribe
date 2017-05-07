@@ -391,10 +391,6 @@ public class TopBarContainer extends FrameLayout {
     return onRefresh;
   }
 
-  public Observable<Void> onClickNew() {
-    return topBarView.onClickNew();
-  }
-
   public Observable<String> onSearch() {
     return topBarView.onSearch();
   }

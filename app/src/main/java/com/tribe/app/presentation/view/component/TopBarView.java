@@ -60,7 +60,7 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
-  @BindView(R.id.btnNew) View btnNew;
+  @BindView(R.id.btnInvite) View btnNew;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
@@ -93,7 +93,6 @@ public class TopBarView extends FrameLayout {
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> clickNew = PublishSubject.create();
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
   private PublishSubject<Void> clickInvite = PublishSubject.create();
@@ -228,8 +227,8 @@ public class TopBarView extends FrameLayout {
     clickProfile.onNext(null);
   }
 
-  @OnClick(R.id.btnNew) void launchNew() {
-    clickNew.onNext(null);
+  @OnClick(R.id.btnInvite) void launchInvite() {
+    clickInvite.onNext(null);
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
@@ -389,10 +388,6 @@ public class TopBarView extends FrameLayout {
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
-
-  public Observable<Void> onClickNew() {
-    return clickNew;
-  }
 
   public Observable<String> onSearch() {
     return onSearch;

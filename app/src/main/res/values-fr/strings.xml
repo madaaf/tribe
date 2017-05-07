@@ -98,6 +98,7 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Rejoindre !</string>
 	<string name="live_notification_action_decline">Rejeter</string>
+	<string name="live_notification_action_add_as_friend">Ajouter en ami</string>
 	<string name="live_notification_action_hang_live_friend">Appeler %1$s</string>
 	<string name="live_notification_action_hang_live_group">Appeler %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
@@ -143,6 +144,7 @@
 	<string name="grid_menu_call_placeholder">Appel vidéo</string>
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
+	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
@@ -205,6 +207,7 @@
 	<string name="onboarding_code_error_status">Une erreur a eu lieu. Réessayez</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Mauvais code de vérification</string>
 	<string name="onboarding_connected">Connecté</string>
+	<string name="onboarding_get_started">C\'est parti !</string>
 	
 	<!-- Onboarding User -->
 	<string name="onboarding_user_title">Configurer votre profil</string>
@@ -357,10 +360,14 @@
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis bloqués</string>
+	<string name="profile_manage_friendships">Gestion des amis :busts_in_silhouette:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>
+	
+	<!-- Manage friendships -->
+	<string name="manage_friendships_title">Supprimer ou bloquer</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Donner accès à %1$s ?</string>

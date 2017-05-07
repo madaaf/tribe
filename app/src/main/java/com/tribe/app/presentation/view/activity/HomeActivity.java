@@ -498,10 +498,6 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initTopBar() {
-    subscriptions.add(topBarContainer.onClickNew().subscribe(aVoid -> {
-      navigateToNewCall();
-    }));
-
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
       navigateToProfile();
     }));

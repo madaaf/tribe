@@ -98,6 +98,7 @@
 	<!-- Live Notifications -->
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
+	<string name="live_notification_action_add_as_friend">Add as friend</string>
 	<string name="live_notification_action_hang_live_friend">Video call %1$s</string>
 	<string name="live_notification_action_hang_live_group">Video call %1$s</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
@@ -143,6 +144,7 @@
 	<string name="grid_menu_call_placeholder">Video call</string>
 	<string name="grid_tutorial_invite">Invite your best friends to\nmake group video calls!</string>
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
+	<string name="grid_tutorial_profile">Manage your account,\nfriendships and more!</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -205,6 +207,7 @@
 	<string name="onboarding_code_error_status">An error occured. Retry</string>
 	<string name="onboarding_error_wrong_pin">:closed_lock_with_key: Wrong verification code</string>
 	<string name="onboarding_connected">Connected</string>
+	<string name="onboarding_get_started">Get started!</string>
 	
 	<!-- Onboarding User -->
 	<string name="onboarding_user_title">Set your profile</string>
@@ -357,10 +360,14 @@
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you. If you want to add someone as friend, you\'ll need to do it yourself.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked friends</string>
+	<string name="profile_manage_friendships">Manage friendships :busts_in_silhouette:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
 	<string name="profile_logout">Logout :skull:</string>
+	
+	<!-- Manage friendships -->
+	<string name="manage_friendships_title">Mute, delete or block</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Give access to %1$s?</string>
