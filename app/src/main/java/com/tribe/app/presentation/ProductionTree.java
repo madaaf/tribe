@@ -4,7 +4,6 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -14,7 +13,7 @@ import timber.log.Timber;
 public class ProductionTree extends Timber.Tree {
 
   public ProductionTree(AndroidApplication app) {
-    Fabric.with(app, new Crashlytics(), new Answers());
+
   }
 
   @Override protected void log(int priority, String tag, String message, Throwable t) {

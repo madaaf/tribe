@@ -359,7 +359,7 @@
 	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you. If you want to add someone as friend, you\'ll need to do it yourself.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
-	<string name="profile_blocked_friends">Blocked friends</string>
+	<string name="profile_blocked_friends">Blocked and deleted friends</string>
 	<string name="profile_manage_friendships">Manage friendships :busts_in_silhouette:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
@@ -368,6 +368,10 @@
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>
+	<string name="manage_friendships_mute_alert_title">Mute is online notification</string>
+	<string name="manage_friendships_mute_alert_description">You won\'t receive any notification from this friend when he\'s on the app</string>
+	<string name="manage_friendships_mute_alert_mute">Mute it anyways</string>
+	<string name="manage_friendships_mute_alert_cancel">Oops! Don\'t mute</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Give access to %1$s?</string>
@@ -392,7 +396,7 @@
 	
 	<!-- Tips -->
 	<string name="tips_leavingroom_title">Want to leave? :skull:</string>
-	<string name="tips_leavingroom_message">By tapping the :x: button, your video call will be finished.</string>
+	<string name="tips_leavingroom_message">By tapping the red button, your video call will be finished.</string>
 	<string name="tips_leavingroom_action1">Leave</string>
 	<string name="tips_leavingroom_action2">No, I\'ll stay</string>
 	<string name="tips_draggingguest_title">Add friends to the call!</string>
@@ -508,8 +512,8 @@
 	<string name="popup_behavior_swipe_dismiss">Swipe to dismiss</string>
 	
 	<!-- Callback Notification -->
-	<string name="callback_notification_title_one">You recently missed a call!\nTap to see who to call back</string>
-	<string name="callback_notification_title_multiple">You recently missed %1$d calls!\nTap to see who to call back</string>
+	<string name="callback_notification_title_one">You recently missed a call!</string>
+	<string name="callback_notification_title_multiple">You recently missed %1$d calls!</string>
 	<string name="callback_notification_action">Call back %1$s (missed %2$s)</string>
 	<string name="callback_notification_default_action">Tap to see who to call back</string>
 	<string name="callback_notification_missed_call_title">Missed calls</string>

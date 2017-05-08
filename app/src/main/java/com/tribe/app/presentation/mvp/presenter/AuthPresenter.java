@@ -17,7 +17,6 @@ import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.IOException;
 import javax.inject.Inject;

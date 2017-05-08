@@ -340,7 +340,7 @@
 	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
 	<string name="live_new_call_title_alone">Appeler</string>
 	<string name="live_new_call_title_with_guests">%1$s et invités</string>
-	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vous amis vous rejoigne !</string>
+	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vos amis vous rejoignent !</string>
 	<string name="live_share_new_call_button">Partager le lien de l\'appel</string>
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
@@ -359,8 +359,8 @@
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
-	<string name="profile_blocked_friends">Amis bloqués</string>
-	<string name="profile_manage_friendships">Gestion des amis :busts_in_silhouette:</string>
+	<string name="profile_blocked_friends">Amis supprimés et bloqués</string>
+	<string name="profile_manage_friendships">Gérer vos amis :busts_in_silhouette:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
@@ -368,6 +368,10 @@
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Supprimer ou bloquer</string>
+	<string name="manage_friendships_mute_alert_title">Supprimer la notification \'est en ligne\'</string>
+	<string name="manage_friendships_mute_alert_description">Vous ne recevrez plus de notification \'est en ligne\' de la part de cet ami</string>
+	<string name="manage_friendships_mute_alert_mute">Supprimer la notification</string>
+	<string name="manage_friendships_mute_alert_cancel">Oops! Conserver la notification</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Donner accès à %1$s ?</string>
@@ -392,7 +396,7 @@
 	
 	<!-- Tips -->
 	<string name="tips_leavingroom_title">Quitter cet appel ? :skull:</string>
-	<string name="tips_leavingroom_message">En tapant le bouton :x:, vous allez quitter cet appel pour revenir sur votre grille.</string>
+	<string name="tips_leavingroom_message">En tapant le bouton rouge, vous allez quitter cet appel pour revenir sur votre grille.</string>
 	<string name="tips_leavingroom_action1">Quitter</string>
 	<string name="tips_leavingroom_action2">Continuer l\'appel</string>
 	<string name="tips_draggingguest_title">Inviter des amis à cet appel !</string>
@@ -508,8 +512,8 @@
 	<string name="popup_behavior_swipe_dismiss">Glisser vers le bas pour fermer</string>
 	
 	<!-- Callback Notification -->
-	<string name="callback_notification_title_one">Vous avez récement manqué un appel !\nTapez pour savoir qui rappeler.</string>
-	<string name="callback_notification_title_multiple">Vous avez récement manqué %1$d appels !\nTapez pour savoir qui rappeler.</string>
+	<string name="callback_notification_title_one">Vous avez récement manqué un appel !</string>
+	<string name="callback_notification_title_multiple">Vous avez récement manqué %1$d appels !</string>
 	<string name="callback_notification_action">Rappeler %1$s (missed %2$s)</string>
 	<string name="callback_notification_default_action">Tapez pour savoir qui rappeler.</string>
 	<string name="callback_notification_missed_call_title">Appels manqués</string>

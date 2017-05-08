@@ -179,6 +179,6 @@
       android:layout_gravity="center"
       android:background="@null"
       android:text="@string/onboarding_connected"
-      style="@style/Headline.Blue"
+      style="@style/Headline.Blue.2"
       />
 </merge>
