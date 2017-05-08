@@ -73,6 +73,7 @@ import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
+import com.tribe.app.presentation.view.component.home.NewCallView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -184,6 +185,8 @@ public interface ApplicationComponent {
   void inject(BaseListAdapterDelegate baseListAdapterDelegate);
 
   void inject(TooltipView tooltipView);
+
+  void inject(NewCallView newCallButton);
 
   // JOBS
   void inject(BaseJob baseJob);

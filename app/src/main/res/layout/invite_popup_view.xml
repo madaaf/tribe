@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_popup_top_right"
+    android:orientation="vertical"
+    >
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/nativeDialogsTxt"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_margin="@dimen/horizontal_margin"
+      android:gravity="center"
+      android:text="@string/grid_tutorial_invite"
+      style="@style/Title.2.Black"
+      />
+
+</FrameLayout>

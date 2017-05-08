@@ -276,7 +276,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     private String title;
     private List<LiveNotificationActionView.Action> actionList;
     private @LiveNotificationView.LiveNotificationType int type;
-    private int sound;
+    private int sound = -1;
 
     public Builder(Context context, @LiveNotificationView.LiveNotificationType int type) {
       this.context = context;
@@ -318,7 +318,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
       LiveNotificationView view = new LiveNotificationView(context, type);
       view.setImgUrl(imgUrl);
       view.setTitle(title);
-      view.setSound(sound);
+      if (sound != -1) view.setSound(sound);
 
       if (type != ERROR) {
         int count = 0;

@@ -121,6 +121,7 @@
 	<string name="live_notification_guest_declined_in_group">%1$s declined your call in %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">This user blocked you :broken_heart:</string>
 	<string name="live_reconnecting">Reconnecting in %1$ds...</string>
+	<string name="live_notification_initiator_has_been_notified">%1$s has been notified that you joined! :bell:</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Live call</string>
@@ -368,7 +369,7 @@
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>
-	<string name="manage_friendships_mute_alert_title">Mute is online notification</string>
+	<string name="manage_friendships_mute_alert_title">Mute \'is online\' notification</string>
 	<string name="manage_friendships_mute_alert_description">You won\'t receive any notification from this friend when he\'s on the app</string>
 	<string name="manage_friendships_mute_alert_mute">Mute it anyways</string>
 	<string name="manage_friendships_mute_alert_cancel">Oops! Don\'t mute</string>
@@ -420,6 +421,11 @@
 	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>
 	<string name="live_rating_dismiss">Dismiss</string>
 	<string name="live_rating_send">Send rating</string>
+	
+	<!-- Live Sharing -->
+	<string name="live_sharing_title">Call ended</string>
+	<string name="live_sharing_message">Todo</string>
+	<string name="live_sharing_share">Share it!</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oops</string>

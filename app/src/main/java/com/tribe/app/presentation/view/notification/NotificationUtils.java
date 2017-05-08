@@ -2,8 +2,10 @@ package com.tribe.app.presentation.view.notification;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -23,6 +25,7 @@ public class NotificationUtils {
 
   public static final String ACTION_ADD_AS_GUEST = "guest";
   public static final String ACTION_HANG_LIVE = "hang";
+  public static final String ACTION_JOIN = "join";
   public static final String ACTION_LEAVE = "leave";
   public static final String ACTION_MISSED_CALL_DETAIL = "missed";
   public static final String ACTION_DECLINE = "decline";
@@ -37,7 +40,14 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if (notificationPayload.getClickAction() == null) return null;
+    if (notificationPayload.getClickAction() == null && StringUtils.isEmpty(
+        notificationPayload.getBody())) {
+      return null;
+    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
+        notificationPayload.getBody())) {
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      return builder.build();
+    }
 
     LiveNotificationView liveNotificationView = null;
 
@@ -90,6 +100,13 @@ public class NotificationUtils {
       builder.sound(SoundManager.WIZZ);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
+      // A joined a call you initiated via a link shared
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder = addJoinAction(context, builder, notificationPayload);
+      builder.sound(SoundManager.JOIN_CALL);
+      liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       // A friend added you
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
@@ -136,6 +153,15 @@ public class NotificationUtils {
         getIntentForLive(context, notificationPayload, false));
 
     if (notificationPayload.isLive()) addDeclineCallActions(context, builder, notificationPayload);
+
+    return builder;
+  }
+
+  private static LiveNotificationView.Builder addJoinAction(Context context,
+      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
+
+    builder.addAction(ACTION_JOIN, context.getString(R.string.live_notification_action_hang_live),
+        getIntentForLiveFromJoined(context, notificationPayload));
 
     return builder;
   }
@@ -229,6 +255,13 @@ public class NotificationUtils {
     Intent intent =
         LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId,
             source);
+    intent.putExtra(Constants.NOTIFICATION_LIVE, payload.getClickAction());
+    return intent;
+  }
+
+  public static Intent getIntentForLiveFromJoined(Context context, NotificationPayload payload) {
+    Intent intent = IntentUtils.getLiveIntentFromURI(context, Uri.parse(payload.getRoomLink()),
+        LiveActivity.SOURCE_JOIN_LIVE);
     intent.putExtra(Constants.NOTIFICATION_LIVE, payload.getClickAction());
     return intent;
   }

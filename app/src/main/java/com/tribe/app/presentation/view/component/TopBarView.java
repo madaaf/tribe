@@ -22,15 +22,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -56,7 +55,7 @@ public class TopBarView extends FrameLayout {
 
   @Inject User user;
 
-  @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -124,7 +123,7 @@ public class TopBarView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
-    shouldForceRed = !newContactsTooltip.get();
+    shouldForceRed = stateManager.shouldDisplay(StateManager.FRIENDS_POPUP);
 
     initResources();
     initUI();

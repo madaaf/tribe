@@ -356,6 +356,7 @@ public class HomeGridPresenter implements Presenter {
   public void loadContactsOnApp() {
     if (contactsOnAppSubscriber != null) {
       contactsOnAppSubscriber.unsubscribe();
+      getDiskContactOnAppList.unsubscribe();
     }
 
     contactsOnAppSubscriber = new ContactsOnAppSubscriber();

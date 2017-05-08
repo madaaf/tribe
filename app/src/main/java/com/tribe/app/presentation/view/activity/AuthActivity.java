@@ -54,6 +54,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView {
 
@@ -257,11 +258,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void init() {
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
         loginEntity = authPresenter.login(phoneNumber, null, null);
       }
 
       @Override public void failure(DigitsException error) {
-        error.printStackTrace();
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
+        Timber.e(error);
       }
     };
 

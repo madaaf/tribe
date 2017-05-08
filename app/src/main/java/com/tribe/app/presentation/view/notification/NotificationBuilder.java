@@ -152,7 +152,11 @@ import javax.inject.Singleton;
     Class pendingClass = getClassFromPayload(payload);
     if (pendingClass != null) {
       if (pendingClass.equals(LiveActivity.class)) {
-        return getPendingIntentForLive(payload);
+        if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
+          return getPendingIntentFromJoined(payload);
+        } else {
+          return getPendingIntentForLive(payload);
+        }
       }
     }
 
@@ -164,7 +168,8 @@ import javax.inject.Singleton;
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       return HomeActivity.class;
     } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       return LiveActivity.class;
     }
 
@@ -180,11 +185,24 @@ import javax.inject.Singleton;
       NotificationPayload payload) {
     return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
         application.getString(R.string.live_notification_action_hang_live),
-        getPendingIntentForLive(payload)).build());
+        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)
+            ? getPendingIntentFromJoined(payload)
+            : getPendingIntentForLive(payload)).build());
   }
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {
     Intent notificationIntent = NotificationUtils.getIntentForLive(application, payload, false);
+    notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(application, (int) System.currentTimeMillis(), notificationIntent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+    return pendingIntent;
+  }
+
+  private PendingIntent getPendingIntentFromJoined(NotificationPayload payload) {
+    Intent notificationIntent = NotificationUtils.getIntentForLiveFromJoined(application, payload);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
     PendingIntent pendingIntent =

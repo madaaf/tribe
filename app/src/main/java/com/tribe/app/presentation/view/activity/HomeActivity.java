@@ -45,6 +45,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
@@ -61,6 +62,7 @@ import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
+import com.tribe.app.presentation.view.component.home.NewCallView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -74,6 +76,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
@@ -147,6 +150,12 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
 
+  @BindView(R.id.btnNewCall) NewCallView btnNewCall;
+
+  @BindView(R.id.btnInvite) View btnInvite;
+
+  @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
+
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -188,6 +197,7 @@ public class HomeActivity extends BaseActivity
     initSearch();
     initPullToRefresh();
     initPreviousCallTags();
+    initNewCall();
     manageLogin(getIntent());
     manageIntent(getIntent());
 
@@ -251,6 +261,8 @@ public class HomeActivity extends BaseActivity
 
     if (finish) return;
 
+    homeGridPresenter.loadContactsOnApp();
+
     startService(WSService.getCallingIntent(this));
 
     if (shouldOverridePendingTransactions) {
@@ -264,6 +276,12 @@ public class HomeActivity extends BaseActivity
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
+    }
+
+    if (stateManager.shouldDisplay(StateManager.NEW_CALL_POPUP)) {
+      stateManager.addTutorialKey(StateManager.NEW_CALL_POPUP);
+      popupContainerView.displayPopup(btnNewCall, PopupContainerView.DISPLAY_NEW_CALL,
+          getResources().getString(R.string.grid_tutorial_new_call));
     }
 
     initMissedCall();
@@ -484,6 +502,13 @@ public class HomeActivity extends BaseActivity
     }));
   }
 
+  private void initNewCall() {
+    subscriptions.add(btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall()));
+
+    subscriptions.add(
+        btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
+  }
+
   private void initDependencyInjector() {
     this.userComponent = DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
@@ -518,6 +543,11 @@ public class HomeActivity extends BaseActivity
             searchViewDisplayed = true;
             searchView.show();
           } else {
+            if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
+              stateManager.addTutorialKey(StateManager.INVITE_POPUP);
+              popupContainerView.displayPopup(btnInvite, PopupContainerView.DISPLAY_INVITE,
+                  getString(R.string.grid_tutorial_invite));
+            }
             recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
             layoutManager.setScrollEnabled(true);
             searchViewDisplayed = false;
@@ -646,27 +676,8 @@ public class HomeActivity extends BaseActivity
             intent.getStringExtra(Constants.NOTIFICATION_HOME));
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
       } else if (intent.getData() != null) {
-        String path = intent.getData().getPath();
-        String host = intent.getData().getHost();
-        String scheme = intent.getData().getScheme();
-        String roomId = intent.getData().getQueryParameter("roomId");
-        String linkId, url, deepLinkScheme = getString(R.string.deeplink_host);
-
-        if (!StringUtils.isEmpty(roomId)) {
-          linkId = roomId;
-          url = intent.getData().getScheme() + "://" + host + "/" + linkId;
-        } else {
-          linkId = path.substring(1, path.length());
-          if (deepLinkScheme.equals(scheme)) {
-            url = StringUtils.getUrlFromLinkId(this, linkId);
-          } else {
-            url = intent.getData().toString();
-          }
-        }
-
-        if (host.startsWith(getString(R.string.web_host)) || deepLinkScheme.equals(scheme)) {
-          navigator.navigateToLive(this, linkId, url, LiveActivity.SOURCE_DEEPLINK);
-        }
+        navigator.navigateToIntent(this,
+            IntentUtils.getLiveIntentFromURI(this, intent.getData(), LiveActivity.SOURCE_DEEPLINK));
       }
     }
   }
@@ -783,6 +794,8 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
 
     if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {

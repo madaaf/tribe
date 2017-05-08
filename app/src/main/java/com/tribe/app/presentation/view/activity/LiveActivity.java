@@ -107,7 +107,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
-      SOURCE_NEW_CALL
+      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE
   }) public @interface Source {
   }
 
@@ -121,6 +121,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
   public static final String SOURCE_FRIENDS = "Friends";
   public static final String SOURCE_NEW_CALL = "NewCall";
+  public static final String SOURCE_JOIN_LIVE = "JoinLive";
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
@@ -162,6 +163,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
       String picture, String name, String sessionId, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
+
+    if (StringUtils.isEmpty(recipientId)) recipientId = Live.WEB;
 
     Live live = new Live.Builder(recipientId, recipientId).displayName(name)
         .isGroup(isGroup)
@@ -867,6 +870,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
     }
     live.setSessionId(roomConfiguration.getRoomId());
+
+    if (!StringUtils.isEmpty(live.getLinkId()) && !StringUtils.isEmpty(
+        roomConfiguration.getInitiatorId()) && !roomConfiguration.getInitiatorId()
+        .equals(getCurrentUser().getId())) {
+      NotificationPayload notificationPayload = new NotificationPayload();
+      notificationPayload.setBody(EmojiParser.demojizedText(
+          getString(R.string.live_notification_initiator_has_been_notified,
+              roomConfiguration.getInitiatorName())));
+      LiveNotificationView liveNotificationView =
+          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
+              missedCallManager);
+
+      if (liveNotificationView != null) {
+        Alerter.create(LiveActivity.this, liveNotificationView).show();
+      }
+    }
   }
 
   @Override public void onJoinRoomFailed(String message) {

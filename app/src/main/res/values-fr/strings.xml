@@ -121,6 +121,7 @@
 	<string name="live_notification_guest_declined_in_group">%1$s a refusé votre appel dans %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
 	<string name="live_reconnecting">Reconnexion dans %1$ds...</string>
+	<string name="live_notification_initiator_has_been_notified">%1$s a été prévenu de votre arrivée ! :bell:</string>
 	
 	<!-- Grid -->
 	<string name="grid_status_live">Appel...</string>
@@ -420,6 +421,11 @@
 	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>
 	<string name="live_rating_dismiss">Fermer</string>
 	<string name="live_rating_send">Envoyer la note</string>
+	
+	<!-- Live Sharing -->
+	<string name="live_sharing_title">Appel terminé</string>
+	<string name="live_sharing_message">Todo</string>
+	<string name="live_sharing_share">Partager!</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
