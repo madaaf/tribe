@@ -122,6 +122,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
 
     Bundle extras = getIntent().getExtras();
     if (extras != null && immersiveCallState.get()) {
+      soundManager.setMute(false);
       payload = (NotificationPayload) getIntent().getExtras().getSerializable(PLAYLOAD_VALUE);
       updateFromPayload(payload);
     } else {
@@ -167,7 +168,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       shouldStartHome = false;
       navigator.navigateToHomeAndFinishAffinity(this);
     }
-
+    soundManager.setMute(true);
+    soundManager.cancelMediaPlayer();
     super.finish();
   }
 
