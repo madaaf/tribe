@@ -79,7 +79,6 @@ import rx.android.schedulers.AndroidSchedulers;
 
   public void playSound(int index, float volumeRate) {
     if (index == NO_SOUND) {
-      mediaPlayer.setVolume(0, 0);
       cancelMediaPlayer();
     } else if (index == WAITING_FRIEND || index == CALL_RING) {
       if (mediaPlayer != null) cancelMediaPlayer();
