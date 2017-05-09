@@ -108,6 +108,14 @@ import rx.android.schedulers.AndroidSchedulers;
     }
   }
 
+  public void setMute(boolean ismute) {
+    if (ismute) {
+      audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+    } else {
+      audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+    }
+  }
+
   public void cancelMediaPlayer() {
     if (mediaPlayer != null) {
       mediaPlayer.reset();

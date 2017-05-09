@@ -10,6 +10,7 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -97,6 +98,11 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,
       RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesUtils.IS_GROUPE_CREATED, false);
+  }
+
+  @Provides @Singleton @ImmersiveCallState Preference<Boolean> provideImmersiveCallState(
+      Context context, RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesUtils.IS_GROUPE_CREATED, false);
   }
 

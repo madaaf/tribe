@@ -22,6 +22,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -40,6 +41,7 @@ import javax.inject.Singleton;
   @Inject UserCache userCache;
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+  @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
   @Inject JobManager jobManager;
   @Inject MissedCallManager missedCallManager;
   private AndroidApplication application;
@@ -232,7 +234,7 @@ import javax.inject.Singleton;
     Intent incomingCallIntent = new Intent(application, LiveImmersiveNotificationActivity.class);
     incomingCallIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
     NotificationPayload notificationPayload = getPayload(remoteMessage);
-
+    immersiveCallState.set(true);
     incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
         notificationPayload);
     application.startActivity(incomingCallIntent);

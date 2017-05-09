@@ -41,6 +41,7 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -254,6 +255,8 @@ public interface ApplicationComponent {
   @Theme Preference<Integer> theme();
 
   @InvisibleMode Preference<Boolean> invisibleMode();
+
+  @ImmersiveCallState Preference<Boolean> immersiveCallState();
 
   @AddressBook Preference<Boolean> addressBook();
 

@@ -29,6 +29,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
+import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -80,6 +81,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
   @Inject Navigator navigator;
   @Inject SoundManager soundManager;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState;
+  @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
   @Inject LiveImmersiveNotificationPresenter presenter;
   @Inject MissedCallManager missedCallManager;
 
@@ -118,12 +120,15 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
     initDependencyInjector();
     initResources();
 
-    if (savedInstanceState == null) {
-      Bundle extras = getIntent().getExtras();
-      if (extras != null) {
-        payload = (NotificationPayload) getIntent().getExtras().getSerializable(PLAYLOAD_VALUE);
-        updateFromPayload(payload);
-      }
+    Bundle extras = getIntent().getExtras();
+    if (extras != null && immersiveCallState.get()) {
+      soundManager.setMute(false);
+      payload = (NotificationPayload) getIntent().getExtras().getSerializable(PLAYLOAD_VALUE);
+      updateFromPayload(payload);
+    } else {
+      shouldStartHome = true;
+      finish();
+      return;
     }
 
     audioManager = ((AudioManager) getSystemService(Context.AUDIO_SERVICE));
@@ -163,7 +168,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       shouldStartHome = false;
       navigator.navigateToHomeAndFinishAffinity(this);
     }
-
+    soundManager.setMute(true);
+    soundManager.cancelMediaPlayer();
     super.finish();
   }
 
@@ -315,6 +321,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
   private void endDismiss() {
     shouldStartHome = false;
     presenter.declineInvite(payload.getSessionId());
+    immersiveCallState.set(false);
     finish();
   }
 
