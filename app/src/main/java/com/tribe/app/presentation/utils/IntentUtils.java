@@ -13,6 +13,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 public class IntentUtils {
 
   public static final String FINISH = "finish";
+  public static final String USER_REGISTERED = "USER_REGISTERED";
 
   public static Intent getLiveIntentFromURI(Context context, Uri uri, String source) {
     String path = uri.getPath();

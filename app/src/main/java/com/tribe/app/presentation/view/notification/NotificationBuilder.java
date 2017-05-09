@@ -19,6 +19,7 @@ import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -159,6 +160,9 @@ import javax.inject.Singleton;
         } else {
           return getPendingIntentForLive(payload);
         }
+      } else if (pendingClass.equals(HomeActivity.class) && payload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+        return getPendingIntentForUserRegistered(payload);
       }
     }
 
@@ -167,7 +171,8 @@ import javax.inject.Singleton;
 
   private Class getClassFromPayload(NotificationPayload payload) {
     if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
-        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
       return HomeActivity.class;
     } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
@@ -188,8 +193,7 @@ import javax.inject.Singleton;
     return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_live,
         application.getString(R.string.live_notification_action_hang_live),
         payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)
-            ? getPendingIntentFromJoined(payload)
-            : getPendingIntentForLive(payload)).build());
+            ? getPendingIntentFromJoined(payload) : getPendingIntentForLive(payload)).build());
   }
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {
@@ -216,6 +220,18 @@ import javax.inject.Singleton;
 
   private PendingIntent getPendingIntentForHome(NotificationPayload payload) {
     Intent notificationIntent = NotificationUtils.getIntentForHome(application, payload);
+    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(application, (int) System.currentTimeMillis(), notificationIntent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+    return pendingIntent;
+  }
+
+  private PendingIntent getPendingIntentForUserRegistered(NotificationPayload payload) {
+    Intent notificationIntent = NotificationUtils.getIntentForHome(application, payload);
+    notificationIntent.putExtra(IntentUtils.USER_REGISTERED, payload.getUserId());
     notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
     PendingIntent pendingIntent =

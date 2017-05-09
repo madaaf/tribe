@@ -278,7 +278,7 @@
 	<string name="topbar_invite_whatsapp_action">:link: Invite friends on WhatsApp</string>
 	
 	<!-- Share -->
-	<string name="share_messenger_url">http://get.tribe.pm/start1</string>
+	<string name="share_messenger_url">http://get.tribe.pm/invite</string>
 	<string name="share_copied_redirecting">:paperclip: Copied to the clipboard. Prepare to paste.</string>
 	<string name="share_snapchat_story_explanation_title">Snapchat</string>
 	<string name="share_snapchat_story_explanation_msg">Please import the image from the Snapchat memories library.</string>

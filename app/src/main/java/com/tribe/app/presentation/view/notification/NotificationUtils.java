@@ -29,6 +29,7 @@ public class NotificationUtils {
   public static final String ACTION_LEAVE = "leave";
   public static final String ACTION_MISSED_CALL_DETAIL = "missed";
   public static final String ACTION_DECLINE = "decline";
+  public static final String ACTION_ADD_FRIEND = "add_friend";
 
   public static LiveNotificationView getNotificationViewFromPayload(Context context,
       NotificationPayload notificationPayload, MissedCallManager missedCallManager) {
@@ -124,6 +125,12 @@ public class NotificationUtils {
 
       liveNotificationView =
           buildDeclinedCallNotification(context, liveNotificationView, notificationPayload);
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder = addAddFriendsAction(context, builder, notificationPayload);
+      liveNotificationView = builder.build();
     }
 
     return liveNotificationView;
@@ -231,6 +238,18 @@ public class NotificationUtils {
     builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
         notificationPayload.getUserDisplayName()),
         getIntentForLive(context, notificationPayload, false));
+
+    return builder;
+  }
+
+  private static LiveNotificationView.Builder addAddFriendsAction(Context context,
+      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
+
+    Intent intent = getIntentForHome(context, notificationPayload);
+    intent.putExtra(IntentUtils.USER_REGISTERED, notificationPayload.getUserId());
+
+    builder.addAction(ACTION_ADD_FRIEND,
+        context.getString(R.string.live_notification_action_add_as_friend), intent);
 
     return builder;
   }

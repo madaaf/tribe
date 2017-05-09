@@ -25,6 +25,7 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_END_LIVE = "end_live";
   public static final String CLICK_ACTION_DECLINE = "decline_live";
   public static final String CLICK_ACTION_JOIN_CALL = "join_live";
+  public static final String CLICK_ACTION_USER_REGISTERED = "user_registered";
 
   private String user_id;
   private String body;
@@ -172,7 +173,8 @@ public class NotificationPayload implements Serializable {
   }
 
   public boolean isLive() {
-    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(CLICK_ACTION_LIVE);
+    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
+        CLICK_ACTION_LIVE);
   }
 
   public boolean isUserCall() {

@@ -89,14 +89,6 @@ public class SearchPresenter implements Presenter {
     searchResults.execute(new SearchResultSubscriber());
   }
 
-  public void createFriendship(String userId) {
-    if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
-
-    createFriendshipSubscriber = new CreateFriendshipSubscriber();
-    createFriendship.setUserId(userId);
-    createFriendship.execute(createFriendshipSubscriber);
-  }
-
   private final class SearchResultSubscriber extends DefaultSubscriber<SearchResult> {
 
     @Override public void onCompleted() {
@@ -109,6 +101,14 @@ public class SearchPresenter implements Presenter {
     @Override public void onNext(SearchResult searchResult) {
       searchView.renderSearchResult(searchResult);
     }
+  }
+
+  public void createFriendship(String userId) {
+    if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
+
+    createFriendshipSubscriber = new CreateFriendshipSubscriber();
+    createFriendship.setUserId(userId);
+    createFriendship.execute(createFriendshipSubscriber);
   }
 
   private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {

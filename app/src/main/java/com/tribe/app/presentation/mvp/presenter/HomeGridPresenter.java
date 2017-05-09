@@ -15,6 +15,7 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
@@ -58,6 +59,7 @@ public class HomeGridPresenter implements Presenter {
   private GetDiskContactOnAppList getDiskContactOnAppList;
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
+  private CreateFriendship createFriendship;
 
   // SUBSCRIBERS
   private FriendListSubscriber diskFriendListSubscriber;
@@ -73,7 +75,7 @@ public class HomeGridPresenter implements Presenter {
       UpdateUser updateUser, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
       GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
-      SendInvitations sendInvitations) {
+      SendInvitations sendInvitations, CreateFriendship createFriendship) {
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.leaveGroup = leaveGroup;
@@ -89,6 +91,7 @@ public class HomeGridPresenter implements Presenter {
     this.getDiskContactOnAppList = getDiskContactOnAppList;
     this.declineInvite = declineInvite;
     this.sendInvitations = sendInvitations;
+    this.createFriendship = createFriendship;
   }
 
   @Override public void onViewDetached() {
@@ -105,6 +108,7 @@ public class HomeGridPresenter implements Presenter {
     updateFriendship.unsubscribe();
     declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
+    createFriendship.unsubscribe();
     homeGridView = null;
   }
 
@@ -384,5 +388,10 @@ public class HomeGridPresenter implements Presenter {
 
   public void sendInvitations() {
     sendInvitations.execute(new DefaultSubscriber());
+  }
+
+  public void createFriendship(String userId) {
+    createFriendship.setUserId(userId);
+    createFriendship.execute(new DefaultSubscriber());
   }
 }

@@ -678,6 +678,8 @@ public class HomeActivity extends BaseActivity
       } else if (intent.getData() != null) {
         navigator.navigateToIntent(this,
             IntentUtils.getLiveIntentFromURI(this, intent.getData(), LiveActivity.SOURCE_DEEPLINK));
+      } else if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
+        homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
       }
     }
   }
