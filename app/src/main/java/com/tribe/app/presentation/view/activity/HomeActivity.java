@@ -675,11 +675,13 @@ public class HomeActivity extends BaseActivity
         bundle.putString(TagManagerUtils.CATEGORY,
             intent.getStringExtra(Constants.NOTIFICATION_HOME));
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+
+        if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
+          homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
+        }
       } else if (intent.getData() != null) {
         navigator.navigateToIntent(this,
             IntentUtils.getLiveIntentFromURI(this, intent.getData(), LiveActivity.SOURCE_DEEPLINK));
-      } else if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
-        homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
       }
     }
   }
@@ -914,6 +916,8 @@ public class HomeActivity extends BaseActivity
             .subscribe(action -> {
               if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
                 declineInvitation(action.getSessionId());
+              } else if (action.getId().equals(NotificationUtils.ACTION_ADD_FRIEND)) {
+                homeGridPresenter.createFriendship(action.getUserId());
               } else if (action.getIntent() != null) {
                 navigator.navigateToIntent(HomeActivity.this, action.getIntent());
               }

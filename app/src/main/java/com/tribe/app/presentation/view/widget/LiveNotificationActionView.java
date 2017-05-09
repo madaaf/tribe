@@ -130,6 +130,7 @@ public class LiveNotificationActionView extends LinearLayout {
     private String title;
     private Intent intent;
     private String sessionId;
+    private String userId;
 
     Action(String id, String title) {
       this.id = id;
@@ -162,6 +163,14 @@ public class LiveNotificationActionView extends LinearLayout {
 
     public String getTitle() {
       return title;
+    }
+
+    public String getUserId() {
+      return userId;
+    }
+
+    public void setUserId(String userId) {
+      this.userId = userId;
     }
   }
 }

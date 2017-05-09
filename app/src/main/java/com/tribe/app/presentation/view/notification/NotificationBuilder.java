@@ -185,7 +185,18 @@ import javax.inject.Singleton;
 
   private NotificationCompat.Builder addActionsForPayload(NotificationCompat.Builder builder,
       NotificationPayload payload) {
-    return addCommonActions(builder, payload);
+    if (!payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+      return addCommonActions(builder, payload);
+    } else {
+      return addAddFriendAction(builder, payload);
+    }
+  }
+
+  private NotificationCompat.Builder addAddFriendAction(NotificationCompat.Builder builder,
+      NotificationPayload payload) {
+    return builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_notification_grid,
+        application.getString(R.string.live_notification_action_add_as_friend),
+        getPendingIntentForUserRegistered(payload)).build());
   }
 
   private NotificationCompat.Builder addCommonActions(NotificationCompat.Builder builder,

@@ -245,11 +245,9 @@ public class NotificationUtils {
   private static LiveNotificationView.Builder addAddFriendsAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
 
-    Intent intent = getIntentForHome(context, notificationPayload);
-    intent.putExtra(IntentUtils.USER_REGISTERED, notificationPayload.getUserId());
-
-    builder.addAction(ACTION_ADD_FRIEND,
-        context.getString(R.string.live_notification_action_add_as_friend), intent);
+    builder.addActionAddUser(ACTION_ADD_FRIEND,
+        context.getString(R.string.live_notification_action_add_as_friend),
+        notificationPayload.getUserId());
 
     return builder;
   }
