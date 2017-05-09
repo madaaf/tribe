@@ -6,12 +6,12 @@
   <LinearLayout
       android:layout_width="0dp"
       android:layout_height="0dp"
-      android:focusableInTouchMode="true"
-      android:focusable="true"
       android:clickable="true"
+      android:focusable="true"
+      android:focusableInTouchMode="true"
       >
 
-    <requestFocus />
+    <requestFocus/>
   </LinearLayout>
 
   <ImageView
@@ -20,12 +20,12 @@
       android:layout_height="30dp"
       android:layout_gravity="start|center_vertical"
       android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:paddingStart="1dp"
       android:background="@drawable/bg_skip_transition"
       android:foreground="@drawable/selectable_button_oval_light"
+      android:paddingStart="1dp"
       android:scaleType="centerInside"
-      android:src="@drawable/picto_skip"
       android:scaleX="-1"
+      android:src="@drawable/picto_skip"
       />
 
   <FrameLayout
@@ -39,14 +39,14 @@
         android:id="@+id/editTxtCode"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@null"
-        android:textColor="@android:color/black"
-        android:maxLength="4"
-        android:layout_marginStart="-14dp"
         android:layout_marginEnd="-14dp"
-        style="@style/Text.Message.Input"
-        android:inputType="phone"
+        android:layout_marginStart="-14dp"
+        android:background="@null"
         android:cursorVisible="false"
+        android:inputType="phone"
+        android:maxLength="4"
+        android:textColor="@android:color/black"
+        style="@style/Text.Message.Input"
         />
 
     <ImageView
@@ -69,8 +69,8 @@
         android:id="@+id/pinCircle2"
         android:layout_width="14dp"
         android:layout_height="14dp"
-        android:layout_marginStart="34dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="34dp"
         android:src="@drawable/picto_pin_circle"
         />
 
@@ -78,8 +78,8 @@
         android:id="@+id/txtCode2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="34dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="34dp"
         style="@style/Title.1.Black.Input"
         />
 
@@ -87,8 +87,8 @@
         android:id="@+id/pinCircle3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="68dp"
         android:src="@drawable/picto_pin_circle"
         />
 
@@ -96,8 +96,8 @@
         android:id="@+id/txtCode3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="68dp"
         style="@style/Title.1.Black.Input"
         />
 
@@ -105,8 +105,8 @@
         android:id="@+id/pinCircle4"
         android:layout_width="14dp"
         android:layout_height="14dp"
-        android:layout_marginStart="102dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="102dp"
         android:src="@drawable/picto_pin_circle"
         />
 
@@ -114,8 +114,8 @@
         android:id="@+id/txtCode4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="102dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="102dp"
         style="@style/Title.1.Black.Input"
         />
 
@@ -129,8 +129,8 @@
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:visibility="invisible"
       app:cpv_animAutostart="true"
-      app:cpv_indeterminate="true"
       app:cpv_color="@android:color/black"
+      app:cpv_indeterminate="true"
       app:cpv_thickness="2dp"
       />
 
@@ -153,12 +153,12 @@
 
     <ProgressBar
         android:id="@+id/progressBarCountdown"
-        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="@dimen/code_progress_size"
         android:layout_height="@dimen/code_progress_size"
         android:layout_gravity="center"
-        android:max="@integer/time_code_countdown"
+        android:max="@integer/time_code_countdown_pin"
         android:progressDrawable="@drawable/progress_circular_countdown"
+        style="?android:attr/progressBarStyleHorizontal"
         />
   </FrameLayout>
 
@@ -177,8 +177,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="@string/onboarding_connected"
       android:background="@null"
-      style="@style/Headline.Blue"
+      android:text="@string/onboarding_connected"
+      style="@style/Headline.Blue.2"
       />
 </merge>

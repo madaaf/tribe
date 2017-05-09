@@ -39,12 +39,14 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -259,6 +261,11 @@ import timber.log.Timber;
   @Provides @Singleton StateManager provideStateManager(
       @TribeState Preference<Set<String>> tribeState) {
     return new StateManager(tribeState);
+  }
+
+  @Provides @Singleton MissedCallManager provideMissedCallManager(Context context,
+      @MissedPlayloadNotification Preference<String> missedPlayloadNotification) {
+    return new MissedCallManager(context, missedPlayloadNotification);
   }
 
   @Provides @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(

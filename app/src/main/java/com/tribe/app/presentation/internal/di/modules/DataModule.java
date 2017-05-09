@@ -10,12 +10,14 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -78,6 +80,11 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getInteger(PreferencesUtils.NUMBER_OF_CALLS, 0);
   }
 
+  @Provides @Singleton Preference<Integer> provideNumberOfMissedCalls(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.NUMBER_OF_MISSED_CALLS, 0);
+  }
+
   @Provides @Singleton @CounterOfCallsForGrpButton
   Preference<Integer> provideCounterOfCallsForGrpButton(Context context,
       RxSharedPreferences prefs) {
@@ -91,6 +98,11 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,
       RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesUtils.IS_GROUPE_CREATED, false);
+  }
+
+  @Provides @Singleton @ImmersiveCallState Preference<Boolean> provideImmersiveCallState(
+      Context context, RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesUtils.IS_GROUPE_CREATED, false);
   }
 
@@ -120,6 +132,12 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @FullscreenNotificationState
   Preference<Set<String>> provideFullscreenNotificationState(RxSharedPreferences prefs) {
     return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
+  }
+
+  @Provides @Singleton @MissedPlayloadNotification
+  Preference<String> providedMissedPlayloadNotification(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.MISSED_PLAYLOAD_NOTIF, "");
   }
 
   @Provides @Singleton @CallTagsMap Preference<String> provideCallTagsMap(

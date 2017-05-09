@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
@@ -29,22 +30,26 @@ public class ProfilePresenter extends UpdateUserPresenter {
   private final RemoveInstall removeInstall;
   private GetBlockedFriendshipList getBlockedFriendshipList;
   private UpdateFriendship updateFriendship;
+  private DeclineInvite declineInvite;
 
   private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
   @Inject ProfilePresenter(UpdateUser updateUser, LookupUsername lookupUsername,
       RxFacebook rxFacebook, RemoveInstall removeInstall,
-      GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship) {
+      GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
+      DeclineInvite declineInvite) {
     super(updateUser, lookupUsername, rxFacebook);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;
     this.updateFriendship = updateFriendship;
+    this.declineInvite = declineInvite;
   }
 
   @Override public void onViewDetached() {
     removeInstall.unsubscribe();
     getBlockedFriendshipList.unsubscribe();
     updateFriendship.unsubscribe();
+    declineInvite.unsubscribe();
     profileView = null;
     super.onViewDetached();
   }
@@ -112,5 +117,10 @@ public class ProfilePresenter extends UpdateUserPresenter {
       updateFriendship.prepare(friendshipId, values);
       updateFriendship.execute(new DefaultSubscriber());
     }
+  }
+
+  public void declineInvite(String roomId) {
+    declineInvite.prepare(roomId);
+    declineInvite.execute(new DefaultSubscriber());
   }
 }

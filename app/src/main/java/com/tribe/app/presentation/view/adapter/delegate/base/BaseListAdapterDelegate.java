@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.adapter.model.ButtonModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.view.notification.MissedCallAction;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -115,6 +116,8 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     } else if (item instanceof User) {
       User user = (User) item;
       vh.txtNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
+    } else if (item instanceof MissedCallAction) {
+      vh.btnAdd.setVisibility(View.VISIBLE);
     }
 
     if (animations.containsKey(holder)) {

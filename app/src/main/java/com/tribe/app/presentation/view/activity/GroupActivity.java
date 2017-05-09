@@ -206,6 +206,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
         prefilledGrpMembers.addAll((ArrayList<GroupMember>) extra.getSerializable(
             CreateGroupNotificationView.PREFILLED_GRP_MEMBERS));
         if (extra.getBoolean(CreateGroupNotificationView.CREATE_GRP_DIRECTLY)) {
+          //setupAddMembersView(null);
           createGroup();
           finish();
         }
@@ -273,7 +274,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
 
     groupEntity = new GroupEntity();
     groupEntity.setMembersId(membersId);
-    
+
     if (viewAddMembersGroup != null) {
       String avatarUri = viewAddMembersGroup.getAvatarUri();
       if (avatarUri != null) groupEntity.setImgPath(avatarUri);

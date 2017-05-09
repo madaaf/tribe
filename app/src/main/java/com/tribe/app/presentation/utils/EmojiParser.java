@@ -102,6 +102,7 @@ public class EmojiParser {
     IEmojiMap.put(":star:", "\u2B50");
     IEmojiMap.put(":clock3:", "\uD83D\uDD52");
     IEmojiMap.put(":warning:", "\u26A0");
+    IEmojiMap.put(":no_mobile_phones:", "\uD83D\uDCF5");
   }
 
   /**

@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_marginTop="0dp"
     android:layout_marginBottom="0dp"
+    android:layout_marginTop="0dp"
+    android:orientation="vertical"
     >
 
   <LinearLayout
@@ -26,17 +26,16 @@
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/textTitle"
-        style="@style/Headline.Black.1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/vertical_margin_mid"
         android:gravity="center"
+        style="@style/Headline.Black.2"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/textSummary"
-        style="@style/Title.1.Black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -44,6 +43,7 @@
         android:layout_marginStart="@dimen/horizontal_margin_xlarge"
         android:layout_marginTop="@dimen/vertical_margin_smaller"
         android:gravity="center"
+        style="@style/Title.1.Black"
         />
 
     <LinearLayout
@@ -56,22 +56,22 @@
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/textCancel"
-          style="@style/Title.2.White"
           android:layout_width="0dp"
           android:layout_height="match_parent"
           android:layout_weight="1"
           android:background="@drawable/shape_rect_grey_auth_rounded_bottom_left_corner"
           android:gravity="center"
+          style="@style/Title.2.White"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/textConfirm"
-          style="@style/Title.2.White"
           android:layout_width="0dp"
           android:layout_height="match_parent"
           android:layout_weight="1"
           android:background="@drawable/shape_rect_blue_opaue_rounded_bottom_right"
           android:gravity="center"
+          style="@style/Title.2.White"
           />
 
     </LinearLayout>
@@ -80,13 +80,13 @@
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/textTrans"
-      style="@style/Title.1.White"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/vertical_margin_mid"
       android:alpha="0"
       android:gravity="center"
       android:text="@string/onboarding_popup_error_team_notified"
+      style="@style/Title.1.White"
       />
 
 </LinearLayout>

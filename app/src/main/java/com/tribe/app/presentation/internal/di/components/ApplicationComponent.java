@@ -41,12 +41,14 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -72,6 +74,7 @@ import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
 import com.tribe.app.presentation.view.component.group.GroupDetailsView;
 import com.tribe.app.presentation.view.component.group.UpdateGroupView;
+import com.tribe.app.presentation.view.component.home.NewCallView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -80,6 +83,7 @@ import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -183,6 +187,8 @@ public interface ApplicationComponent {
 
   void inject(TooltipView tooltipView);
 
+  void inject(NewCallView newCallButton);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -250,6 +256,8 @@ public interface ApplicationComponent {
 
   @InvisibleMode Preference<Boolean> invisibleMode();
 
+  @ImmersiveCallState Preference<Boolean> immersiveCallState();
+
   @AddressBook Preference<Boolean> addressBook();
 
   RxFacebook rxFacebook();
@@ -294,6 +302,8 @@ public interface ApplicationComponent {
 
   @MinutesOfCalls Preference<Float> minutesOfCalls();
 
+  @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
+
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
 
   @CallTagsMap Preference<String> callTagsMap();
@@ -303,4 +313,6 @@ public interface ApplicationComponent {
   SoundManager soundManager();
 
   StateManager stateManager();
+
+  MissedCallManager missedCallManager();
 }

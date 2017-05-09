@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/shape_white_rect_grey_border"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="46.5dp"
     >
+
+  <include layout="@layout/view_separator_simple"/>
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
+      android:layout_marginBottom="5dp"
       android:layout_marginStart="@dimen/horizontal_margin_small"
       android:text="@string/onboarding_popup_error_sent_to"
-      style="@style/Body.Two.Blue"
+      style="@style/Body.Two.BlueNew"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -19,6 +21,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical|end"
+      android:layout_marginBottom="5dp"
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       style="@style/Body.Two.Black"
       />

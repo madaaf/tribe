@@ -2,7 +2,6 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -15,6 +14,8 @@ public class RoomConfiguration implements Serializable {
   private RTCPeerConfiguration rtcPeerConfiguration;
   private @TribeLiveOptions.RoutingMode String routingMode;
   private Exception exception;
+  private String initiator_id;
+  private String initiator_name;
 
   public String getRoomId() {
     return room_id;
@@ -58,6 +59,22 @@ public class RoomConfiguration implements Serializable {
 
   public Exception getException() {
     return exception;
+  }
+
+  public void setInitiatorId(String initiator_id) {
+    this.initiator_id = initiator_id;
+  }
+
+  public void setInitiatorName(String initiator_name) {
+    this.initiator_name = initiator_name;
+  }
+
+  public String getInitiatorId() {
+    return initiator_id;
+  }
+
+  public String getInitiatorName() {
+    return initiator_name;
   }
 
   @Override public String toString() {
