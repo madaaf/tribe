@@ -44,9 +44,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:layout_margin="@dimen/horizontal_margin"
       android:scaleType="centerInside"
       android:src="@drawable/picto_top"
-      android:visibility="gone"
       />
 </merge>

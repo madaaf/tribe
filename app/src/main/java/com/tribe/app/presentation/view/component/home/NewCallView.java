@@ -1,11 +1,9 @@
 package com.tribe.app.presentation.view.component.home;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
@@ -30,7 +28,7 @@ import rx.subscriptions.CompositeSubscription;
 public class NewCallView extends FrameLayout {
 
   private static final int DURATION = 150;
-  private static final float OVERSHOOT = 0.75f;
+  private static final float OVERSHOOT = 3f;
 
   @Inject ScreenUtils screenUtils;
 
@@ -108,41 +106,7 @@ public class NewCallView extends FrameLayout {
 
   private void initResources() {
     sizeHeight = getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
-    translationY = screenUtils.dpToPx(25);
-  }
-
-  private void showView(View view) {
-    view.animate()
-        .translationY(0)
-        .alpha(1)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationStart(Animator animation) {
-            view.setAlpha(0);
-            view.setVisibility(View.VISIBLE);
-          }
-
-          @Override public void onAnimationEnd(Animator animation) {
-            view.animate().setListener(null).start();
-          }
-        })
-        .start();
-  }
-
-  private void hideView(View view) {
-    view.animate()
-        .translationY(translationY)
-        .alpha(0)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-        .setDuration(DURATION)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            view.animate().setListener(null).start();
-            view.setVisibility(View.GONE);
-          }
-        })
-        .start();
+    translationY = screenUtils.dpToPx(10);
   }
 
   private void animateWidth(int widthStart, int widthEnd) {
@@ -160,8 +124,18 @@ public class NewCallView extends FrameLayout {
     if (isNewCall) return;
     isNewCall = true;
 
-    hideView(imgBackToTop);
-    showView(layoutNewCall);
+    imgBackToTop.animate()
+        .alpha(0f)
+        .translationY(translationY)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    layoutNewCall.animate()
+        .alpha(1f)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
 
     animateWidth(sizeHeight, sizeInit);
   }
@@ -170,8 +144,18 @@ public class NewCallView extends FrameLayout {
     if (!isNewCall) return;
     isNewCall = false;
 
-    showView(imgBackToTop);
-    hideView(layoutNewCall);
+    imgBackToTop.animate()
+        .alpha(1f)
+        .translationY(0)
+        .setDuration(DURATION * 2)
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
+        .start();
+
+    layoutNewCall.animate()
+        .alpha(0f)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
 
     animateWidth(sizeInit, sizeHeight);
   }
