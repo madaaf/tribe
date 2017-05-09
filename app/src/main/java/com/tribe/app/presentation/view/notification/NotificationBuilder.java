@@ -55,11 +55,6 @@ import javax.inject.Singleton;
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
-      if (application.getAppState() != null) {
-        missedCallManager.setMissedNotificationPlayload(notificationPayload);
-      }
-    }
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       // If the user calling is hidden by the current user, we unhide it
       // https://github.com/heytribe/roadmap/issues/530
@@ -72,6 +67,10 @@ import javax.inject.Singleton;
         }
       } else if (notificationPayload.getClickAction()
           .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+        if (application.getAppState() != null) {
+          missedCallManager.setMissedNotificationPlayload(notificationPayload);
+        }
+
         PreferencesUtils.removeFromSet(fullScreenNotificationState,
             notificationPayload.getThread());
       }
