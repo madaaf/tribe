@@ -93,6 +93,7 @@ import javax.inject.Singleton;
               && fullScreenNotifications.get()
               && !StringUtils.isEmpty(notificationPayload.getSound())
               && !fullScreenNotificationState.get().contains(notificationPayload.getThread())) {
+            notification.sound = null;
             sendFullScreenNotification(remoteMessage);
           }
 

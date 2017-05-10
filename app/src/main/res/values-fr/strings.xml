@@ -280,9 +280,10 @@
 	<!-- Share -->
 	<string name="share_messenger_url">http://get.tribe.pm/invite</string>
 	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez-vous à coller.</string>
-	<string name="share_snapchat_story_explanation_title">Snapchat</string>
-	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
-	<string name="share_snapchat_story_explanation_ok">OK</string>
+	<string name="share_snapchat_story_explanation_title">Image sauvegardée dans vos Memories!</string>
+	<string name="share_snapchat_story_explanation_msg">Nous venons de sauvegarder une image dans votre galerie de photos. Veuillez importer l\'image depuis la librarie photo des Memories.</string>
+	<string name="share_snapchat_story_explanation_ok">Ouvrir snapchat</string>
+	<string name="share_snapchat_story_explanation_cancel">Partager plus tard</string>
 	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
 	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! Rejoins-le ici depuis l\'app ou depuis le web : %1$s</string>
 	
@@ -434,6 +435,7 @@
 	<string name="live_sharing_infos_i_spent">Je viens de passer</string>
 	<string name="live_sharing_infos_on_a">dans un</string>
 	<string name="live_sharing_infos_live_call">appel live :fire:</string>
+	<string name="live_sharing_media_caption">Je viens de passer %1$s sur Tribe avec %2$s dans un vidéo call! &#128293; Merci @heytribe! &#129304; #tribegoals</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>

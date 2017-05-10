@@ -680,8 +680,9 @@ public class HomeActivity extends BaseActivity
           homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
         }
       } else if (intent.getData() != null) {
-        navigator.navigateToIntent(this,
-            IntentUtils.getLiveIntentFromURI(this, intent.getData(), LiveActivity.SOURCE_DEEPLINK));
+        Intent newIntent =
+            IntentUtils.getLiveIntentFromURI(this, intent.getData(), LiveActivity.SOURCE_DEEPLINK);
+        if (newIntent != null) navigator.navigateToIntent(this, newIntent);
       }
     }
   }
