@@ -106,6 +106,17 @@
     <include layout="@layout/view_separator_simple"/>
 
     <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionManageFriendships"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_manage_friendships"
+        app:actionType="hierarchy"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionBlocked"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

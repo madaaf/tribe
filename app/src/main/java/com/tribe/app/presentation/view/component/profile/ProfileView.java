@@ -53,6 +53,8 @@ public class ProfileView extends ScrollView {
 
   @BindView(R.id.viewActionProfile) ActionView viewActionProfile;
 
+  @BindView(R.id.viewActionManageFriendships) ActionView viewActionManageFriendships;
+
   @BindView(R.id.viewActionFollow) ActionView viewActionFollow;
 
   @BindView(R.id.viewActionRateUs) ActionView viewActionRateUs;

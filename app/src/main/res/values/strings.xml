@@ -23,6 +23,7 @@
 	<string name="action_group_member">Member</string>
 	<string name="action_nevermind">Nevermind</string>
 	<string name="action_unhide">Add Friend</string>
+	<string name="action_invite">Invite</string>
 	
 	<!-- Group -->
 	<string name="group_member">member</string>
@@ -338,12 +339,14 @@
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	<string name="live_unknown_user">Unknown guest</string>
 	<string name="live_external_user">Guest</string>
+	<string name="live_external_user_display_name">On the web</string>
+	<string name="live_external_user_username">Not connected</string>
 	<string name="live_tutorial_buzz">Get %1$s\'s attention\nwith a buzz!</string>
 	<string name="live_tutorial_drag_as_guest">Spice it up by dragging\nfriends in the call!</string>
 	<string name="live_new_call_title_alone">New call</string>
 	<string name="live_new_call_title_with_guests">%1$s and guests</string>
 	<string name="live_share_new_call_description">Share call link and wait for\nyour friends to join here!</string>
-	<string name="live_share_new_call_button">Share call link</string>
+	<string name="live_share_new_call_button">Invite friends in the call</string>
 	<string name="live_share_new_call_button_simple">Share</string>
 	<string name="live_share_new_call_button_title">Call link</string>
 	
@@ -435,7 +438,7 @@
 	<string name="live_sharing_infos_i_spent">I just spent</string>
 	<string name="live_sharing_infos_on_a">on a</string>
 	<string name="live_sharing_infos_live_call">live call :fire:</string>
-	<string name="live_sharing_media_caption">I just spent %1$s on Tribe with %2$s on a video call! &#128293; Thanks @heytribe! &#129304; #tribegoals</string>
+	<string name="live_sharing_media_caption">I just live chilled %1$s on Tribe with %2$s! &#128293; Thanks @heytribe! &#129304; #tribegoals</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oops</string>

@@ -35,6 +35,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -83,6 +84,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private ProfileView viewProfile;
   private SettingsProfileView viewSettingsProfile;
   private SettingsBlockedFriendsView viewSettingsBlockedFriends;
+  private SettingsManageFriendshipsView viewSettingsManageFriendships;
 
   // VARIABLES
   private boolean disableUI = false;
@@ -126,7 +128,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       unregisterReceiver(notificationReceiver);
       receiverRegistered = false;
     }
-    
+
     super.onPause();
   }
 
@@ -140,6 +142,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (viewSettingsProfile != null) viewSettingsProfile.onDestroy();
     if (viewSettingsBlockedFriends != null) viewSettingsBlockedFriends.onDestroy();
+    if (viewSettingsManageFriendships != null) viewSettingsManageFriendships.onDestroy();
     if (viewProfile != null) viewProfile.onDestroy();
     if (progressDialog != null) progressDialog.dismiss();
     super.onDestroy();
@@ -323,6 +326,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
             LiveActivity.SOURCE_FRIENDS)));
 
     profilePresenter.loadBlockedFriendshipList();
+  }
+
+  private void setupManageFriendshipsView() {
+    viewSettingsManageFriendships =
+        (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
   }
 
   private void computeTitle(boolean forward, View to) {

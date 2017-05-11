@@ -37,14 +37,17 @@ import javax.inject.Inject;
 
 public class PopupContainerView extends FrameLayout {
 
-  @StringDef({ DISPLAY_BUZZ_POPUP, DISPLAY_DRAGING_FRIEND_POPUP, DISPLAY_INVITE, DISPLAY_NEW_CALL })
-  public @interface PopupType {
+  @StringDef({
+      DISPLAY_BUZZ_POPUP, DISPLAY_DRAGING_FRIEND_POPUP, DISPLAY_INVITE_POPUP,
+      DISPLAY_NEW_CALL_POPUP, DISPLAY_PROFILE_POPUP
+  }) public @interface PopupType {
   }
 
   public static final String DISPLAY_BUZZ_POPUP = "DISPLAY_BUZZ_POPUP";
   public static final String DISPLAY_DRAGING_FRIEND_POPUP = "DISPLAY_DRAGING_FRIEND_POPUP";
-  public static final String DISPLAY_NEW_CALL = "DISPLAY_NEW_CALL";
-  public static final String DISPLAY_INVITE = "DISPLAY_INVITE";
+  public static final String DISPLAY_NEW_CALL_POPUP = "DISPLAY_NEW_CALL_POPUP";
+  public static final String DISPLAY_INVITE_POPUP = "DISPLAY_INVITE_POPUP";
+  public static final String DISPLAY_PROFILE_POPUP = "DISPLAY_PROFILE_POPUP";
 
   private static int DURATION_EXIT_POPUP = 300;
   private static double TENSION = 400;
@@ -107,11 +110,17 @@ public class PopupContainerView extends FrameLayout {
 
             MarginLayoutParams margins = ((MarginLayoutParams) v.getLayoutParams());
 
-            if (type.equals(DISPLAY_INVITE) || type.equals(DISPLAY_NEW_CALL)) {
-              if (type.equals(DISPLAY_INVITE)) {
+            if (type.equals(DISPLAY_INVITE_POPUP)
+                || type.equals(DISPLAY_NEW_CALL_POPUP)
+                || type.equals(DISPLAY_PROFILE_POPUP)) {
+              if (type.equals(DISPLAY_INVITE_POPUP)) {
                 isInRight = true;
                 marginTop = viewPositionInScreen[1] + v.getHeight();
                 marginRight = defaultMargin;
+              } else if (type.equals(DISPLAY_PROFILE_POPUP)) {
+                isInLeft = true;
+                marginTop = viewPositionInScreen[1] + v.getHeight();
+                marginLeft = margins.leftMargin - defaultMargin;
               } else {
                 marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin;
               }
@@ -161,10 +170,12 @@ public class PopupContainerView extends FrameLayout {
         return R.layout.buzz_popup_view;
       case DISPLAY_DRAGING_FRIEND_POPUP:
         return R.layout.drag_friend_popup_view;
-      case DISPLAY_INVITE:
+      case DISPLAY_INVITE_POPUP:
         return R.layout.invite_popup_view;
-      case DISPLAY_NEW_CALL:
+      case DISPLAY_NEW_CALL_POPUP:
         return R.layout.new_call_popup_view;
+      case DISPLAY_PROFILE_POPUP:
+        return R.layout.profile_popup_view;
     }
     return 0;
   }

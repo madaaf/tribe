@@ -77,6 +77,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
@@ -153,6 +154,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.btnNewCall) NewCallView btnNewCall;
 
   @BindView(R.id.btnInvite) View btnInvite;
+
+  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
@@ -280,8 +283,12 @@ public class HomeActivity extends BaseActivity
 
     if (stateManager.shouldDisplay(StateManager.NEW_CALL_POPUP)) {
       stateManager.addTutorialKey(StateManager.NEW_CALL_POPUP);
-      popupContainerView.displayPopup(btnNewCall, PopupContainerView.DISPLAY_NEW_CALL,
+      popupContainerView.displayPopup(btnNewCall, PopupContainerView.DISPLAY_NEW_CALL_POPUP,
           getResources().getString(R.string.grid_tutorial_new_call));
+    } else if (stateManager.shouldDisplay(StateManager.PROFILE_POPUP)) {
+      stateManager.addTutorialKey(StateManager.PROFILE_POPUP);
+      popupContainerView.displayPopup(viewAvatar, PopupContainerView.DISPLAY_PROFILE_POPUP,
+          getString(R.string.grid_tutorial_profile));
     }
 
     initMissedCall();
@@ -523,9 +530,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initTopBar() {
-    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
-      navigateToProfile();
-    }));
+    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
       Bundle bundle = new Bundle();
@@ -545,7 +550,7 @@ public class HomeActivity extends BaseActivity
           } else {
             if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
               stateManager.addTutorialKey(StateManager.INVITE_POPUP);
-              popupContainerView.displayPopup(btnInvite, PopupContainerView.DISPLAY_INVITE,
+              popupContainerView.displayPopup(btnInvite, PopupContainerView.DISPLAY_INVITE_POPUP,
                   getString(R.string.grid_tutorial_invite));
             }
             recyclerViewFriends.requestDisallowInterceptTouchEvent(false);

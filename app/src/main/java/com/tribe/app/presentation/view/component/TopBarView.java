@@ -108,11 +108,11 @@ public class TopBarView extends FrameLayout {
   }
 
   @Override protected void onDetachedFromWindow() {
-    unbinder.unbind();
-
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
     }
+
+    unbinder.unbind();
 
     super.onDetachedFromWindow();
   }
@@ -350,24 +350,25 @@ public class TopBarView extends FrameLayout {
   }
 
   public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
-    obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
-      nbContacts = integerBooleanPair.first;
-      hasNewContacts = integerBooleanPair.second;
+    subscriptions.add(
+        obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
+          nbContacts = integerBooleanPair.first;
+          hasNewContacts = integerBooleanPair.second;
 
-      if (nbContacts > 0) {
-        showNewContacts(true);
-        txtNewContacts.setText("" + nbContacts);
-        if (hasNewContacts || shouldForceRed) {
-          drawableBGNewContacts.setColor(
-              ContextCompat.getColor(getContext(), R.color.red_new_contacts));
-        } else {
-          drawableBGNewContacts.setColor(
-              ContextCompat.getColor(getContext(), R.color.grey_new_contacts));
-        }
-      } else {
-        showNewContacts(false);
-      }
-    });
+          if (nbContacts > 0) {
+            showNewContacts(true);
+            txtNewContacts.setText("" + nbContacts);
+            if (hasNewContacts || shouldForceRed) {
+              drawableBGNewContacts.setColor(
+                  ContextCompat.getColor(getContext(), R.color.red_new_contacts));
+            } else {
+              drawableBGNewContacts.setColor(
+                  ContextCompat.getColor(getContext(), R.color.grey_new_contacts));
+            }
+          } else {
+            showNewContacts(false);
+          }
+        }));
   }
 
   public boolean isSearchMode() {

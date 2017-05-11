@@ -23,6 +23,7 @@
 	<string name="action_group_member">Membre</string>
 	<string name="action_nevermind">Non</string>
 	<string name="action_unhide">Ajouter en ami</string>
+	<string name="action_invite">Inviter</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -338,12 +339,14 @@
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
 	<string name="live_unknown_user">Invité inconnu</string>
 	<string name="live_external_user">Invité(e)</string>
+	<string name="live_external_user_display_name">Sur le web</string>
+	<string name="live_external_user_username">Non identifié</string>
 	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
 	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
 	<string name="live_new_call_title_alone">Appeler</string>
 	<string name="live_new_call_title_with_guests">%1$s et invités</string>
 	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vos amis vous rejoignent !</string>
-	<string name="live_share_new_call_button">Partager le lien de l\'appel</string>
+	<string name="live_share_new_call_button">Inviter des amis dans l\'appel</string>
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	
