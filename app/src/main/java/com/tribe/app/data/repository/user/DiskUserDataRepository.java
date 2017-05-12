@@ -407,4 +407,27 @@ import rx.Observable;
   @Override public Observable<String> getRoomLink(String roomId) {
     return null;
   }
+
+  @Override public Observable<List<Friendship>> unblockedFriendships() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
+        (userRealm, onlineMap, liveMap, inviteMap) -> {
+          RealmList<FriendshipRealm> result = new RealmList<>();
+
+          for (FriendshipRealm fr : userRealm.getFriendships()) {
+            if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+                .equals(FriendshipRealm.DEFAULT)) {
+              result.add(fr);
+            }
+          }
+
+          userRealm.setFriendships(updateOnlineLiveFriendship(result, onlineMap, liveMap, false));
+
+          return userRealmDataMapper.transform(userRealm, true).getFriendships();
+        });
+  }
 }

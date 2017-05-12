@@ -178,4 +178,6 @@ public interface UserRepository {
   Observable<Void> sendInvitations();
 
   Observable<String> getRoomLink(String roomId);
+
+  Observable<List<Friendship>> unblockedFriendships();
 }

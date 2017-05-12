@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
   <style name="ColorSwitchStyle">
     <item name="colorControlActivated">@color/blue.text</item>
     <item name="colorControlNormal">@android:color/white</item>
     <item name="colorSwitchThumbNormal">@android:color/white</item>
     <item name="android:colorForeground">@color/grey.action.tint</item>
+  </style>
+
+  <style name="ColorSwitchFriendshipStyle">
+    <item name="android:thumb">@drawable/switch_friendship_thumb</item>
+    <item name="trackTint">@color/switch_friendship_color</item>
   </style>
 </resources>

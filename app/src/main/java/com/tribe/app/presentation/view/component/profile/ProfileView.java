@@ -237,4 +237,8 @@ public class ProfileView extends ScrollView {
   public Observable<Void> onBlockedFriends() {
     return viewActionBlocked.onClick();
   }
+
+  public Observable<Void> onManageFriends() {
+    return viewActionManageFriendships.onClick();
+  }
 }

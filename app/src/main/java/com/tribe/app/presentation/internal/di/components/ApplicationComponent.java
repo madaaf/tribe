@@ -61,6 +61,7 @@ import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.ManageFriendshipListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
@@ -188,6 +189,8 @@ public interface ApplicationComponent {
   void inject(TooltipView tooltipView);
 
   void inject(NewCallView newCallButton);
+
+  void inject(ManageFriendshipListAdapterDelegate manageFriendshipListAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

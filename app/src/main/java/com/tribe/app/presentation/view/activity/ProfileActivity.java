@@ -299,6 +299,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     subscriptions.add(viewProfile.onVideo().subscribe(aVoid -> navigator.navigateToVideo(this)));
 
     subscriptions.add(viewProfile.onBlockedFriends().subscribe(aVoid -> setupBlockedFriendsView()));
+
+    subscriptions.add(
+        viewProfile.onManageFriends().subscribe(aVoid -> setupManageFriendshipsView()));
   }
 
   private void setupProfileDetailView() {
@@ -331,6 +334,31 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private void setupManageFriendshipsView() {
     viewSettingsManageFriendships =
         (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
+
+    subscriptions.add(viewSettingsManageFriendships.onClickRemove()
+        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+            ((recipient, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                    .equals(LabelType.BLOCK_HIDE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+                          : FriendshipRealm.HIDDEN);
+                }
+              }
+
+              return recipient;
+            }))
+        .subscribe(recipient -> viewSettingsManageFriendships.remove((Friendship) recipient)));
+
+    subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(friendship -> {
+      friendship.setMute(!friendship.isMute());
+      profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+          friendship.getStatus());
+    }).subscribe());
+
+    profilePresenter.loadUnblockedFriendshipList();
   }
 
   private void computeTitle(boolean forward, View to) {
@@ -344,6 +372,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     } else if (to instanceof SettingsBlockedFriendsView) {
       setupTitle(getString(R.string.profile_blocked_friends), forward);
       txtAction.setVisibility(GONE);
+    } else if (to instanceof SettingsManageFriendshipsView) {
+      setupTitle(getString(R.string.manage_friendships_title), forward);
+      txtAction.setVisibility(View.GONE);
     }
   }
 
@@ -393,6 +424,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
     if (viewSettingsBlockedFriends != null) {
       viewSettingsBlockedFriends.renderBlockedFriendshipList(friendshipList);
+    }
+  }
+
+  @Override public void renderUnblockedFriendshipList(List<Friendship> friendshipList) {
+    if (viewSettingsManageFriendships != null) {
+      viewSettingsManageFriendships.renderUnblockedFriendshipList(friendshipList);
     }
   }
 

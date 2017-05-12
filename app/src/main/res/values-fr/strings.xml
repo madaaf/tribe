@@ -59,7 +59,7 @@
 	<string name="permission_location_disabled_alert_redirect">Aller dans Paramètres</string>
 	<string name="permission_location_disabled_alert_cancel">Non merci</string>
 	<string name="permission_push_fake_alert_title">Ne loupez rien de vos amis !</string>
-	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis vous appelle ou sont connectés.</string>
+	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis vous appellent ou sont connectés.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">En savoir plus</string>
 	<string name="permission_push_disabled_alert_title">Push désactivés</string>

@@ -96,6 +96,7 @@
             push_notif
             is_online
             last_seen_at
+            is_mute
         }
     </string>
 
