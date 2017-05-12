@@ -138,7 +138,7 @@ public class LiveView extends FrameLayout {
   private AvatarView avatarView;
   private ObjectAnimator animatorBuzzAvatar;
   private Map<String, Object> tagMap;
-  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0;
+  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0;
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
@@ -512,8 +512,9 @@ public class LiveView extends FrameLayout {
         tempSubscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
             .onBackpressureDrop()
             .subscribe(intervalCount -> {
+              interval++;
               totalSizeLive += nbLiveInRoom() + 1;
-              averageCountLive = (double) totalSizeLive / (intervalCount + 1);
+              averageCountLive = (double) totalSizeLive / interval;
               averageCountLive = DoubleUtils.round(averageCountLive, 2);
 
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);

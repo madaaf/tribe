@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.data.exception.JoinRoomException;
+import com.tribe.app.data.exception.RoomFullException;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
@@ -128,7 +129,7 @@ public class LivePresenter implements Presenter {
     @Override public void onError(Throwable e) {
       JoinRoomException joinRoomException = new JoinRoomException(e);
       String errorMessage = ErrorMessageFactory.create(liveMVPView.context(), joinRoomException);
-      if (liveMVPView != null) liveMVPView.onJoinRoomFailed(errorMessage);
+      if (liveMVPView != null) liveMVPView.onJoinRoomError(errorMessage);
     }
 
     @Override public void onNext(RoomConfiguration roomConfiguration) {
@@ -136,7 +137,11 @@ public class LivePresenter implements Presenter {
         if (roomConfiguration.getException() != null) {
           String errorMessage =
               ErrorMessageFactory.create(liveMVPView.context(), roomConfiguration.getException());
-          if (liveMVPView != null) liveMVPView.onJoinRoomFailed(errorMessage);
+          if (roomConfiguration.getException() instanceof RoomFullException) {
+            liveMVPView.onRoomFull(errorMessage);
+          } else {
+            liveMVPView.onJoinRoomError(errorMessage);
+          }
         } else {
           liveMVPView.onJoinedRoom(roomConfiguration);
         }

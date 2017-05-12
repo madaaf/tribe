@@ -888,8 +888,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
-  @Override public void onJoinRoomFailed(String message) {
+  @Override public void onRoomFull(String message) {
     roomFull();
+  }
+
+  @Override public void onJoinRoomError(String message) {
+    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    finish();
   }
 
   @Override public Context context() {
