@@ -47,7 +47,9 @@
         android:layout_gravity="center_horizontal|bottom"
         android:layout_margin="@dimen/horizontal_margin_large"
         android:background="@drawable/shape_oval_white"
+        android:clickable="true"
         android:elevation="10dp"
+        android:foreground="@drawable/selectable_button"
         />
 
   </com.tribe.app.presentation.view.component.TopBarContainer>

@@ -168,6 +168,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -949,6 +950,17 @@ public class LiveView extends FrameLayout {
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     }
+
+    if (liveRowView != null) {
+      tempSubscriptions.add(liveRowView.onClick().map(tribeGuest -> {
+        Object o = computeGuest(tribeGuest.getId());
+        if (o == null) {
+          return tribeGuest;
+        } else {
+          return o;
+        }
+      }).subscribe(onRemotePeerClick));
+    }
   }
 
   private void removeFromPeers(String id) {
@@ -1223,6 +1235,23 @@ public class LiveView extends FrameLayout {
     return tribeGuestName;
   }
 
+  private Object computeGuest(String id) {
+    for (Friendship friendship : user.getFriendships()) {
+      User friend = friendship.getFriend();
+      if (friend.getId().equals(id)) {
+        return friendship;
+      }
+    }
+
+    for (User anonymousUser : anonymousInLive) {
+      if (anonymousUser.getId().equals(id)) {
+        return anonymousUser;
+      }
+    }
+
+    return null;
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -1301,6 +1330,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onRoomFull() {
     return onRoomFull;
+  }
+
+  public Observable<Object> onRemotePeerClick() {
+    return onRemotePeerClick;
   }
 }
 

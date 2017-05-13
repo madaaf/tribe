@@ -78,7 +78,7 @@
         tag
         category
         status
-        is_mute
+        mute
         friend {
             ...UserInfos
         }

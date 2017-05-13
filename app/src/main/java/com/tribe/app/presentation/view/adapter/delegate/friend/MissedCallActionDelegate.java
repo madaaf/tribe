@@ -20,8 +20,11 @@ import java.util.List;
 
 public class MissedCallActionDelegate extends BaseListAdapterDelegate {
 
+  private SimpleDateFormat sdf;
+
   public MissedCallActionDelegate(Context context) {
     super(context);
+    sdf = new SimpleDateFormat("MMM dd, HH:mm");
   }
 
   @Override protected ButtonModel getButtonModelFrom(BaseListInterface baseListItem) {
@@ -45,15 +48,12 @@ public class MissedCallActionDelegate extends BaseListAdapterDelegate {
 
     String time = formatDate(missedCallAction.getNotificationPayload().getTime());
     vh.txtFriend.setText(time);
-    vh.btnAdd.setOnClickListener(v -> {
-      clickHangLive.onNext(vh.itemView);
-    });
+    vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
   }
 
-  private String formatDate(long yourmilliseconds) {
-    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm");
-    Date resultdate = new Date(yourmilliseconds);
-    return sdf.format(resultdate);
+  private String formatDate(long yourMilliSeconds) {
+    Date resultDate = new Date(yourMilliSeconds);
+    return sdf.format(resultDate);
   }
 
   @Override public boolean isForViewType(@NonNull List<Object> items, int position) {

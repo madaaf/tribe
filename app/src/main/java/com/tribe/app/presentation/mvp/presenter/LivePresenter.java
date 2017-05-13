@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
+import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
@@ -37,15 +38,17 @@ public class LivePresenter implements Presenter {
   private GetCloudUserInfosList cloudUserInfosList;
   private GetRoomLink getRoomLink;
   private DeclineInvite declineInvite;
+  private CreateFriendship createFriendship;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
+  private CreateFriendshipSubscriber createFriendshipSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite) {
+      DeclineInvite declineInvite, CreateFriendship createFriendship) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
@@ -54,6 +57,7 @@ public class LivePresenter implements Presenter {
     this.cloudUserInfosList = cloudUserInfosList;
     this.getRoomLink = getRoomLink;
     this.declineInvite = declineInvite;
+    this.createFriendship = createFriendship;
   }
 
   @Override public void onViewDetached() {
@@ -65,6 +69,7 @@ public class LivePresenter implements Presenter {
     declineInvite.unsubscribe();
     getRecipientInfos.unsubscribe();
     getRoomLink.unsubscribe();
+    createFriendship.unsubscribe();
     liveMVPView = null;
   }
 
@@ -201,6 +206,32 @@ public class LivePresenter implements Presenter {
 
     @Override public void onNext(String roomLink) {
       liveMVPView.onRoomLink(roomLink);
+    }
+  }
+
+  public void createFriendship(String userId) {
+    if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
+
+    createFriendshipSubscriber = new CreateFriendshipSubscriber();
+    createFriendship.setUserId(userId);
+    createFriendship.execute(createFriendshipSubscriber);
+  }
+
+  private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Friendship friendship) {
+      if (friendship == null) {
+        liveMVPView.onAddError();
+      } else {
+        liveMVPView.onAddSuccess(friendship);
+      }
     }
   }
 }

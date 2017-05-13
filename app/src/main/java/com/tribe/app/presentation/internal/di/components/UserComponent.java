@@ -54,6 +54,7 @@ import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import dagger.Component;
 
 /**
@@ -165,4 +166,6 @@ import dagger.Component;
   void inject(ErrorNotificationView errorNotificationView);
 
   void inject(SettingsManageFriendshipsView settingsManageFriendshipsView);
+
+  void inject(UserInfosNotificationView userInfosNotificationView);
 }
