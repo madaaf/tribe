@@ -64,7 +64,7 @@ import rx.Observable;
     this.membershipRealmDataMapper = membershipRealmDataMapper;
   }
 
-  @Override public Observable<Pin> requestCode(String phoneNumber) {
+  @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
     return null;
   }
 
@@ -383,8 +383,8 @@ import rx.Observable;
     });
   }
 
-  @Override
-  public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId) {
+  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
+      String linkId) {
     return null;
   }
 
@@ -400,9 +400,34 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Void> sendInvitations() { return null; }
+  @Override public Observable<Void> sendInvitations() {
+    return null;
+  }
 
   @Override public Observable<String> getRoomLink(String roomId) {
     return null;
+  }
+
+  @Override public Observable<List<Friendship>> unblockedFriendships() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
+        (userRealm, onlineMap, liveMap, inviteMap) -> {
+          RealmList<FriendshipRealm> result = new RealmList<>();
+
+          for (FriendshipRealm fr : userRealm.getFriendships()) {
+            if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+                .equals(FriendshipRealm.DEFAULT)) {
+              result.add(fr);
+            }
+          }
+
+          userRealm.setFriendships(updateOnlineLiveFriendship(result, onlineMap, liveMap, false));
+
+          return userRealmDataMapper.transform(userRealm, true).getFriendships();
+        });
   }
 }

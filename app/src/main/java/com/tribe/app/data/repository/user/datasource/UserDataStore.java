@@ -31,7 +31,7 @@ public interface UserDataStore {
    *
    * @param phoneNumber The phoneNumber used to login.
    */
-  Observable<PinRealm> requestCode(final String phoneNumber);
+  Observable<PinRealm> requestCode(final String phoneNumber, boolean shouldCall);
 
   /**
    * Get an {@link Observable} which will emit an Access Token.

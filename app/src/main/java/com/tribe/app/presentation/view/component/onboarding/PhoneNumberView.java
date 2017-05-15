@@ -7,6 +7,9 @@ import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -24,6 +27,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -39,10 +43,10 @@ import rx.subscriptions.CompositeSubscription;
 
 public class PhoneNumberView extends FrameLayout {
 
-  private final static int DURATION = 200;
-  private final static String COUNTRY_CODE_DEV = "KP";
-  private final static String COUNTRY_PREFIX_DEV = "850";
-  private final static String PHONE_PREFIX_DEV = "2121";
+  private static final int DELAY = 300;
+  private static final int DURATION = 300;
+  private static final int DURATION_MEDIUM = 500;
+  private static final int DURATION_FAST = 150;
 
   @Inject ScreenUtils screenUtils;
 
@@ -55,6 +59,12 @@ public class PhoneNumberView extends FrameLayout {
   @BindView(R.id.btnNext) ImageView btnNext;
 
   @BindView(R.id.progressView) CircularProgressView progressView;
+
+  @BindView(R.id.imgConnected) ImageView imgConnected;
+
+  @BindView(R.id.txtConnected) TextViewFont txtConnected;
+
+  @BindView(R.id.layoutPhone) ViewGroup layoutPhone;
 
   // VARIABLES
   private String countryCode = "US";
@@ -104,6 +114,11 @@ public class PhoneNumberView extends FrameLayout {
 
     initDependencyInjector();
 
+    imgConnected.setScaleX(0);
+    imgConnected.setScaleY(0);
+
+    txtConnected.setTranslationX(screenUtils.getWidthPx());
+
     btnNext.setEnabled(false);
 
     countryCode = context.getResources().getConfiguration().locale.getCountry();
@@ -116,10 +131,9 @@ public class PhoneNumberView extends FrameLayout {
         .map((charSequence) -> charSequence.toString())
         .filter(s -> s != null && s.length() > 2)
         .doOnNext(s -> {
-          if ((countryCode.equals(COUNTRY_CODE_DEV)
-              && s.startsWith(PHONE_PREFIX_DEV)
-              && s.length() == 8)) {
-            currentPhoneNumber = "+" + COUNTRY_PREFIX_DEV + s;
+          if ((countryCode.equals(PhoneUtils.COUNTRY_CODE_DEV) && s.startsWith(
+              PhoneUtils.PHONE_PREFIX_DEV) && s.length() == 8)) {
+            currentPhoneNumber = "+" + PhoneUtils.COUNTRY_PREFIX_DEV + s;
           } else {
             checkValidPhoneNumber();
           }
@@ -128,6 +142,22 @@ public class PhoneNumberView extends FrameLayout {
         .subscribe(phoneNumberValid));
 
     initWithCodeCountry(countryCode);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
+
+  private void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
   }
 
   public String getCountryCode() {
@@ -215,20 +245,57 @@ public class PhoneNumberView extends FrameLayout {
     editTxtPhoneNumber.requestFocus();
   }
 
-  protected ApplicationComponent getApplicationComponent() {
-    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  public void showConnected() {
+    btnNext.animate()
+        .scaleX(0)
+        .scaleY(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    progressView.animate()
+        .scaleX(0)
+        .scaleY(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    imgConnected.animate()
+        .scaleY(1)
+        .scaleX(1)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(1.20f))
+        .start();
   }
 
-  protected ActivityModule getActivityModule() {
-    return new ActivityModule(((Activity) getContext()));
+  public void showConnectedEnd() {
+    imgConnected.animate()
+        .translationX(-screenUtils.getWidthPx() + 2 * getContext().getResources()
+            .getDimensionPixelSize(R.dimen.horizontal_margin_small) + imgConnected.getWidth())
+        .setDuration(DURATION)
+        .setStartDelay(DELAY)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(null)
+        .start();
+
+    txtConnected.animate()
+        .translationX(0)
+        .setDuration(DURATION_MEDIUM)
+        .setStartDelay(DELAY)
+        .setInterpolator(new OvershootInterpolator(0.25f))
+        .start();
+
+    layoutPhone.animate()
+        .translationX(-screenUtils.getWidthPx())
+        .setDuration(DURATION)
+        .setStartDelay(DELAY)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(null)
+        .start();
   }
 
-  private void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
+  public boolean isDebug() {
+    return phoneUtils.isDebugPhone(countryCode, currentPhoneNumber);
   }
 
   // OBSERVABLES

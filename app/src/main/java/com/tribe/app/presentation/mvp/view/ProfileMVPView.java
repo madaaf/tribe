@@ -8,4 +8,6 @@ public interface ProfileMVPView extends UpdateUserMVPView {
   void goToLauncher();
 
   void renderBlockedFriendshipList(List<Friendship> friendshipList);
+
+  void renderUnblockedFriendshipList(List<Friendship> friendshipList);
 }

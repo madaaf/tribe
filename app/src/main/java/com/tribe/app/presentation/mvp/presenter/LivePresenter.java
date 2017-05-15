@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.data.exception.JoinRoomException;
+import com.tribe.app.data.exception.RoomFullException;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
@@ -8,6 +9,8 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
+import com.tribe.app.domain.interactor.user.CreateFriendship;
+import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
@@ -34,14 +37,18 @@ public class LivePresenter implements Presenter {
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
   private GetRoomLink getRoomLink;
+  private DeclineInvite declineInvite;
+  private CreateFriendship createFriendship;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
+  private CreateFriendshipSubscriber createFriendshipSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink) {
+      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
+      DeclineInvite declineInvite, CreateFriendship createFriendship) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
@@ -49,6 +56,8 @@ public class LivePresenter implements Presenter {
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
     this.getRoomLink = getRoomLink;
+    this.declineInvite = declineInvite;
+    this.createFriendship = createFriendship;
   }
 
   @Override public void onViewDetached() {
@@ -57,8 +66,10 @@ public class LivePresenter implements Presenter {
     buzzRoom.unsubscribe();
     cloudUserInfosList.unsubscribe();
     inviteUserToRoom.unsubscribe();
+    declineInvite.unsubscribe();
     getRecipientInfos.unsubscribe();
     getRoomLink.unsubscribe();
+    createFriendship.unsubscribe();
     liveMVPView = null;
   }
 
@@ -123,7 +134,7 @@ public class LivePresenter implements Presenter {
     @Override public void onError(Throwable e) {
       JoinRoomException joinRoomException = new JoinRoomException(e);
       String errorMessage = ErrorMessageFactory.create(liveMVPView.context(), joinRoomException);
-      if (liveMVPView != null) liveMVPView.onJoinRoomFailed(errorMessage);
+      if (liveMVPView != null) liveMVPView.onJoinRoomError(errorMessage);
     }
 
     @Override public void onNext(RoomConfiguration roomConfiguration) {
@@ -131,7 +142,11 @@ public class LivePresenter implements Presenter {
         if (roomConfiguration.getException() != null) {
           String errorMessage =
               ErrorMessageFactory.create(liveMVPView.context(), roomConfiguration.getException());
-          if (liveMVPView != null) liveMVPView.onJoinRoomFailed(errorMessage);
+          if (roomConfiguration.getException() instanceof RoomFullException) {
+            liveMVPView.onRoomFull(errorMessage);
+          } else {
+            liveMVPView.onJoinRoomError(errorMessage);
+          }
         } else {
           liveMVPView.onJoinedRoom(roomConfiguration);
         }
@@ -176,6 +191,11 @@ public class LivePresenter implements Presenter {
     getRoomLink.execute(new GetRoomLinkSubscriber());
   }
 
+  public void declineInvite(String roomId) {
+    declineInvite.prepare(roomId);
+    declineInvite.execute(new DefaultSubscriber());
+  }
+
   private final class GetRoomLinkSubscriber extends DefaultSubscriber<String> {
 
     @Override public void onCompleted() {
@@ -186,6 +206,32 @@ public class LivePresenter implements Presenter {
 
     @Override public void onNext(String roomLink) {
       liveMVPView.onRoomLink(roomLink);
+    }
+  }
+
+  public void createFriendship(String userId) {
+    if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
+
+    createFriendshipSubscriber = new CreateFriendshipSubscriber();
+    createFriendship.setUserId(userId);
+    createFriendship.execute(createFriendshipSubscriber);
+  }
+
+  private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Friendship friendship) {
+      if (friendship == null) {
+        liveMVPView.onAddError();
+      } else {
+        liveMVPView.onAddSuccess(friendship);
+      }
     }
   }
 }

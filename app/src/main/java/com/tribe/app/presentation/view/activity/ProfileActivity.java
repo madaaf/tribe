@@ -3,8 +3,10 @@ package com.tribe.app.presentation.view.activity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
@@ -29,14 +31,21 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
+import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
+import com.tribe.app.presentation.view.notification.Alerter;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +68,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   @Inject ProfilePresenter profilePresenter;
 
+  @Inject MissedCallManager missedCallManager;
+
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
   @BindView(R.id.txtTitleTwo) TextViewFont txtTitleTwo;
@@ -73,10 +84,13 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private ProfileView viewProfile;
   private SettingsProfileView viewSettingsProfile;
   private SettingsBlockedFriendsView viewSettingsBlockedFriends;
+  private SettingsManageFriendshipsView viewSettingsManageFriendships;
 
   // VARIABLES
   private boolean disableUI = false;
   private ProgressDialog progressDialog;
+  private NotificationReceiver notificationReceiver;
+  private boolean receiverRegistered;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -98,6 +112,26 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     profilePresenter.onViewAttached(this);
   }
 
+  @Override protected void onResume() {
+    super.onResume();
+    if (!receiverRegistered) {
+      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+
+      registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+      receiverRegistered = true;
+    }
+  }
+
+  @Override protected void onPause() {
+    if (receiverRegistered) {
+      unregisterReceiver(notificationReceiver);
+      receiverRegistered = false;
+    }
+
+    super.onPause();
+  }
+
   @Override protected void onStop() {
     profilePresenter.onViewDetached();
     super.onStop();
@@ -108,6 +142,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (viewSettingsProfile != null) viewSettingsProfile.onDestroy();
     if (viewSettingsBlockedFriends != null) viewSettingsBlockedFriends.onDestroy();
+    if (viewSettingsManageFriendships != null) viewSettingsManageFriendships.onDestroy();
     if (viewProfile != null) viewProfile.onDestroy();
     if (progressDialog != null) progressDialog.dismiss();
     super.onDestroy();
@@ -264,6 +299,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     subscriptions.add(viewProfile.onVideo().subscribe(aVoid -> navigator.navigateToVideo(this)));
 
     subscriptions.add(viewProfile.onBlockedFriends().subscribe(aVoid -> setupBlockedFriendsView()));
+
+    subscriptions.add(
+        viewProfile.onManageFriends().subscribe(aVoid -> setupManageFriendshipsView()));
   }
 
   private void setupProfileDetailView() {
@@ -293,6 +331,36 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     profilePresenter.loadBlockedFriendshipList();
   }
 
+  private void setupManageFriendshipsView() {
+    viewSettingsManageFriendships =
+        (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
+
+    subscriptions.add(viewSettingsManageFriendships.onClickRemove()
+        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+            ((recipient, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                    .equals(LabelType.BLOCK_HIDE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+                          : FriendshipRealm.HIDDEN);
+                }
+              }
+
+              return recipient;
+            }))
+        .subscribe(recipient -> viewSettingsManageFriendships.remove((Friendship) recipient)));
+
+    subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(friendship -> {
+      friendship.setMute(!friendship.isMute());
+      profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+          friendship.getStatus());
+    }).subscribe());
+
+    profilePresenter.loadUnblockedFriendshipList();
+  }
+
   private void computeTitle(boolean forward, View to) {
     if (to instanceof ProfileView) {
       setupTitle(getString(R.string.profile_title), forward);
@@ -304,6 +372,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     } else if (to instanceof SettingsBlockedFriendsView) {
       setupTitle(getString(R.string.profile_blocked_friends), forward);
       txtAction.setVisibility(GONE);
+    } else if (to instanceof SettingsManageFriendshipsView) {
+      setupTitle(getString(R.string.manage_friendships_title), forward);
+      txtAction.setVisibility(View.GONE);
     }
   }
 
@@ -343,12 +414,22 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     view.animate().translationX(0).alpha(1).setDuration(DURATION).start();
   }
 
+  private void declineInvitation(String sessionId) {
+    profilePresenter.declineInvite(sessionId);
+  }
+
   @Override public void goToLauncher() {
   }
 
   @Override public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
     if (viewSettingsBlockedFriends != null) {
       viewSettingsBlockedFriends.renderBlockedFriendshipList(friendshipList);
+    }
+  }
+
+  @Override public void renderUnblockedFriendshipList(List<Friendship> friendshipList) {
+    if (viewSettingsManageFriendships != null) {
+      viewSettingsManageFriendships.renderUnblockedFriendshipList(friendshipList);
     }
   }
 
@@ -388,5 +469,31 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   @Override public Context context() {
     return this;
+  }
+
+  class NotificationReceiver extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
+      LiveNotificationView liveNotificationView =
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload, null);
+
+      if (liveNotificationView != null) {
+        subscriptions.add(liveNotificationView.onClickAction()
+            .delay(500, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(action -> {
+              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
+                declineInvitation(action.getSessionId());
+              } else if (action.getIntent() != null) {
+                navigator.navigateToIntent(ProfileActivity.this, action.getIntent());
+              }
+            }));
+
+        Alerter.create(ProfileActivity.this, liveNotificationView).show();
+      }
+    }
   }
 }

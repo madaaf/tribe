@@ -3,6 +3,8 @@ package com.tribe.app.presentation.view.notification;
 import android.support.annotation.StringDef;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tiago on 29/01/2017.
@@ -12,7 +14,7 @@ public class NotificationPayload implements Serializable {
 
   @StringDef({
       CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP, CLICK_ACTION_BUZZ, CLICK_ACTION_LIVE,
-      CLICK_ACTION_END_LIVE, CLICK_ACTION_DECLINE
+      CLICK_ACTION_END_LIVE, CLICK_ACTION_DECLINE, CLICK_ACTION_JOIN_CALL
   }) public @interface ClickActionType {
   }
 
@@ -22,6 +24,8 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_BUZZ = "buzz";
   public static final String CLICK_ACTION_END_LIVE = "end_live";
   public static final String CLICK_ACTION_DECLINE = "decline_live";
+  public static final String CLICK_ACTION_JOIN_CALL = "join_live";
+  public static final String CLICK_ACTION_USER_REGISTERED = "user_registered";
 
   private String user_id;
   private String body;
@@ -33,9 +37,20 @@ public class NotificationPayload implements Serializable {
   private String group_name;
   private String user_picture;
   private String group_picture;
+  private String room_link;
   private boolean shouldDisplayDrag = true;
   private String thread;
   private int live_users_length;
+  private List<MissedCallAction> missedCallList = new ArrayList<>();
+  private long time;
+
+  public void setTime(long time) {
+    this.time = time;
+  }
+
+  public long getTime() {
+    return time;
+  }
 
   public void setUserId(String userId) {
     this.user_id = userId;
@@ -55,6 +70,14 @@ public class NotificationPayload implements Serializable {
 
   public void setClickAction(String clickAction) {
     this.click_action = clickAction;
+  }
+
+  public List<MissedCallAction> getMissedCallList() {
+    return missedCallList;
+  }
+
+  public void setMissedCallActionList(List<MissedCallAction> missedCallList) {
+    this.missedCallList = missedCallList;
   }
 
   public String getClickAction() {
@@ -141,8 +164,17 @@ public class NotificationPayload implements Serializable {
     this.live_users_length = live_users_length;
   }
 
+  public String getRoomLink() {
+    return room_link;
+  }
+
+  public void setRoomLink(String room_link) {
+    this.room_link = room_link;
+  }
+
   public boolean isLive() {
-    return click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(CLICK_ACTION_LIVE);
+    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
+        CLICK_ACTION_LIVE);
   }
 
   public boolean isUserCall() {

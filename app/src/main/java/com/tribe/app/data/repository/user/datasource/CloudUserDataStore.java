@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsOAuthSigning;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
@@ -47,12 +49,16 @@ import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterCore;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -115,12 +121,21 @@ public class CloudUserDataStore implements UserDataStore {
     this.lookupResult = lookupResult;
   }
 
-  @Override public Observable<PinRealm> requestCode(String phoneNumber) {
-    return this.loginApi.requestCode(new LoginEntity(phoneNumber));
+  @Override public Observable<PinRealm> requestCode(String phoneNumber, boolean shouldCall) {
+    return this.loginApi.requestCode(new LoginEntity(phoneNumber, shouldCall));
   }
 
   @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
-    return this.loginApi.loginWithUsername(loginEntity).doOnNext(saveToCacheAccessToken);
+    if (Digits.getActiveSession() != null) {
+      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
+      TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
+      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
+      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
+      return loginApi.loginWithUsername(authHeaders.get(LoginApi.X_VERIFY),
+          authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
+    } else {
+      return loginApi.loginWithUsername(loginEntity).doOnNext(saveToCacheAccessToken);
+    }
   }
 
   @Override public Observable<AccessToken> register(String displayName, String username,
@@ -134,7 +149,16 @@ public class CloudUserDataStore implements UserDataStore {
         loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), ""));
     registerEntity.setPinId(loginEntity.getPinId());
 
-    return this.loginApi.register(registerEntity).doOnNext(saveToCacheAccessToken);
+    if (Digits.getActiveSession() != null) {
+      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
+      TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
+      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
+      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
+      return loginApi.register(authHeaders.get(LoginApi.X_VERIFY), authHeaders.get(LoginApi.X_AUTH),
+          registerEntity).doOnNext(saveToCacheAccessToken);
+    } else {
+      return loginApi.register(registerEntity).doOnNext(saveToCacheAccessToken);
+    }
   }
 
   @Override public Observable<UserRealm> userInfos(String userId) {

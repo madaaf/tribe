@@ -13,6 +13,7 @@ import rx.Observable;
 public class GetRequestCode extends UseCase {
 
   private String phoneNumber;
+  private boolean shouldCall;
   private UserRepository userRepository;
 
   @Inject
@@ -22,11 +23,12 @@ public class GetRequestCode extends UseCase {
     this.userRepository = userRepository;
   }
 
-  public void prepare(String phoneNumber) {
+  public void prepare(String phoneNumber, boolean shouldCall) {
     this.phoneNumber = phoneNumber;
+    this.shouldCall = shouldCall;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.requestCode(phoneNumber);
+    return this.userRepository.requestCode(phoneNumber, shouldCall);
   }
 }

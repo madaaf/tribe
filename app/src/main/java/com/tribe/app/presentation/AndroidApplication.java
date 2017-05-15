@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.digits.sdk.android.Digits;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
@@ -15,6 +18,7 @@ import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
 import com.tribe.app.BuildConfig;
+import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
@@ -36,7 +40,10 @@ import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
 import io.branch.referral.Branch;
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
@@ -49,6 +56,10 @@ import timber.log.Timber;
  */
 public class AndroidApplication extends Application {
 
+  // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+  private static final String TWITTER_KEY = "DZYpDkxG4R2zf7Arrdyzg1rIE";
+  private static final String TWITTER_SECRET = "hwhu6tFkc1acna8gTWXJ504PjRB6QuPswWX37ASsRFThhMVxU8";
+
   private ApplicationComponent applicationComponent;
   private AppStateMonitor appStateMonitor;
   private AppState appState;
@@ -57,6 +68,7 @@ public class AndroidApplication extends Application {
     super.onCreate();
     initInjector();
     // initLeakDetection();
+    initFabric();
     initRealm();
     initStetho();
     initFacebook();
@@ -94,6 +106,18 @@ public class AndroidApplication extends Application {
     //
     //  LeakCanary.install(this);
     //}
+  }
+
+  private void initFabric() {
+    TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+
+    Digits digits = new Digits.Builder().withTheme(R.style.CustomDigitsTheme).build();
+
+    if (BuildConfig.DEBUG) {
+      Fabric.with(this, new TwitterCore(authConfig), digits);
+    } else {
+      Fabric.with(this, new TwitterCore(authConfig), digits, new Crashlytics(), new Answers());
+    }
   }
 
   private void initStetho() {
@@ -224,6 +248,7 @@ public class AndroidApplication extends Application {
     }
 
     FacebookUtils.logout();
+    Digits.logout();
 
     SharedPreferences preferences = applicationComponent.sharedPreferences();
     preferences.edit().clear().commit();

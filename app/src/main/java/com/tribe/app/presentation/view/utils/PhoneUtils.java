@@ -15,6 +15,10 @@ import javax.inject.Singleton;
  */
 @Singleton public class PhoneUtils {
 
+  public final static String COUNTRY_CODE_DEV = "KP";
+  public final static String COUNTRY_PREFIX_DEV = "850";
+  public final static String PHONE_PREFIX_DEV = "2121";
+
   private Context context;
   private PhoneNumberUtil phoneUtil;
 
@@ -174,5 +178,10 @@ import javax.inject.Singleton;
 
   public LinkedList<String> getSupportedRegions() {
     return new LinkedList<>(phoneUtil.getSupportedRegions());
+  }
+
+  public static boolean isDebugPhone(String countryCode, String phone) {
+    return countryCode.equals(COUNTRY_CODE_DEV) && phone != null && phone.contains(
+        PHONE_PREFIX_DEV);
   }
 }

@@ -45,6 +45,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
 import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
@@ -61,6 +62,7 @@ import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
+import com.tribe.app.presentation.view.component.home.NewCallView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -68,11 +70,14 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
+import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.PopupContainerView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
@@ -120,6 +125,8 @@ public class HomeActivity extends BaseActivity
 
   @Inject SoundManager soundManager;
 
+  @Inject MissedCallManager missedCallManager;
+
   @Inject @AddressBook Preference<Boolean> addressBook;
 
   @Inject @LastVersionCode Preference<Integer> lastVersion;
@@ -143,6 +150,14 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.ratingNotificationView) RatingNotificationView ratingNotificationView;
 
   @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
+
+  @BindView(R.id.btnNewCall) NewCallView btnNewCall;
+
+  @BindView(R.id.btnInvite) View btnInvite;
+
+  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+
+  @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -172,8 +187,6 @@ public class HomeActivity extends BaseActivity
     getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
 
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
-
     initDependencyInjector();
     init();
     initUi();
@@ -185,6 +198,7 @@ public class HomeActivity extends BaseActivity
     initSearch();
     initPullToRefresh();
     initPreviousCallTags();
+    initNewCall();
     manageLogin(getIntent());
     manageIntent(getIntent());
 
@@ -248,6 +262,8 @@ public class HomeActivity extends BaseActivity
 
     if (finish) return;
 
+    homeGridPresenter.loadContactsOnApp();
+
     startService(WSService.getCallingIntent(this));
 
     if (shouldOverridePendingTransactions) {
@@ -262,6 +278,18 @@ public class HomeActivity extends BaseActivity
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
     }
+
+    if (stateManager.shouldDisplay(StateManager.NEW_CALL_POPUP)) {
+      stateManager.addTutorialKey(StateManager.NEW_CALL_POPUP);
+      popupContainerView.displayPopup(btnNewCall, PopupContainerView.DISPLAY_NEW_CALL_POPUP,
+          getResources().getString(R.string.grid_tutorial_new_call));
+    } else if (stateManager.shouldDisplay(StateManager.PROFILE_POPUP)) {
+      stateManager.addTutorialKey(StateManager.PROFILE_POPUP);
+      popupContainerView.displayPopup(viewAvatar, PopupContainerView.DISPLAY_PROFILE_POPUP,
+          getString(R.string.grid_tutorial_profile));
+    }
+
+    initMissedCall();
   }
 
   @Override protected void onPause() {
@@ -341,6 +369,17 @@ public class HomeActivity extends BaseActivity
 
       return new Pair<>(nbContacts, hasNewContacts);
     }).subscribe(onNewContactsInfos));
+  }
+
+  private void initMissedCall() {
+    if (missedCallManager != null
+        && missedCallManager.getNotificationPayloadList() != null
+        && missedCallManager.getNbrOfMissedCall() > 0) {
+      Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
+      intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
+          missedCallManager.buildNotificationBuilderFromMissedCallList());
+      sendBroadcast(intentUnique);
+    }
   }
 
   private void initUi() {
@@ -468,6 +507,13 @@ public class HomeActivity extends BaseActivity
     }));
   }
 
+  private void initNewCall() {
+    subscriptions.add(btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall()));
+
+    subscriptions.add(
+        btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
+  }
+
   private void initDependencyInjector() {
     this.userComponent = DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
@@ -482,13 +528,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initTopBar() {
-    subscriptions.add(topBarContainer.onClickNew().subscribe(aVoid -> {
-      navigateToNewCall();
-    }));
-
-    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> {
-      navigateToProfile();
-    }));
+    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
       Bundle bundle = new Bundle();
@@ -506,6 +546,11 @@ public class HomeActivity extends BaseActivity
             searchViewDisplayed = true;
             searchView.show();
           } else {
+            if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
+              stateManager.addTutorialKey(StateManager.INVITE_POPUP);
+              popupContainerView.displayPopup(btnInvite, PopupContainerView.DISPLAY_INVITE_POPUP,
+                  getString(R.string.grid_tutorial_invite));
+            }
             recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
             layoutManager.setScrollEnabled(true);
             searchViewDisplayed = false;
@@ -564,6 +609,10 @@ public class HomeActivity extends BaseActivity
       TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
       callTagsMap.set("");
     }
+  }
+
+  private void declineInvitation(String sessionId) {
+    homeGridPresenter.declineInvite(sessionId);
   }
 
   @Override public void onDeepLink(String url) {
@@ -629,75 +678,65 @@ public class HomeActivity extends BaseActivity
         bundle.putString(TagManagerUtils.CATEGORY,
             intent.getStringExtra(Constants.NOTIFICATION_HOME));
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
+
+        if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
+          homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
+        }
       } else if (intent.getData() != null) {
-        String path = intent.getData().getPath();
-        String host = intent.getData().getHost();
-        String scheme = intent.getData().getScheme();
-        String roomId = intent.getData().getQueryParameter("roomId");
-        String linkId, url, deepLinkScheme = getString(R.string.deeplink_host);
-
-        if (!StringUtils.isEmpty(roomId)) {
-          linkId = roomId;
-          url = intent.getData().getScheme() + "://" + host + "/" + linkId;
-        } else {
-          linkId = path.substring(1, path.length());
-          if (deepLinkScheme.equals(scheme)) {
-            url = StringUtils.getUrlFromLinkId(this, linkId);
-          } else {
-            url = intent.getData().toString();
-          }
-        }
-
-        if (host.startsWith(getString(R.string.web_host)) || deepLinkScheme.equals(scheme)) {
-          navigator.navigateToLive(this, linkId, url, LiveActivity.SOURCE_DEEPLINK);
-        }
+        Intent newIntent =
+            IntentUtils.getLiveIntentFromURI(this, intent.getData(), LiveActivity.SOURCE_DEEPLINK);
+        if (newIntent != null) navigator.navigateToIntent(this, newIntent);
       }
     }
   }
 
   private void manageLogin(Intent intent) {
-    if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN) && addressBook.get()) {
-      String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
-      if (StringUtils.isEmpty(countryCode)) return;
+    if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 
-      firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-      firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
-      firebaseRemoteConfig.activateFetched();
+      if (addressBook.get()) {
+        String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
+        if (StringUtils.isEmpty(countryCode)) return;
 
-      firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          firebaseRemoteConfig.activateFetched();
+        firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+        firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
+        firebaseRemoteConfig.activateFetched();
 
-          boolean displayingPopup = false;
+        firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
+          if (task.isSuccessful()) {
+            firebaseRemoteConfig.activateFetched();
 
-          String countryCodesMaster =
-              firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
+            boolean displayingPopup = false;
 
-          if (!StringUtils.isEmpty(countryCodesMaster)) {
-            String[] countryCodes = countryCodesMaster.split(",");
+            String countryCodesMaster =
+                firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
 
-            for (String countryCodeInvite : countryCodes) {
-              if (countryCodeInvite.equals(countryCode)) {
-                displayingPopup = true;
+            if (!StringUtils.isEmpty(countryCodesMaster)) {
+              String[] countryCodes = countryCodesMaster.split(",");
 
-                subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(aLong -> {
-                      notificationContainerView.showNotification(null,
-                          NotificationContainerView.DISPLAY_INVITE_NOTIF);
+              for (String countryCodeInvite : countryCodes) {
+                if (countryCodeInvite.equals(countryCode)) {
+                  displayingPopup = true;
 
-                      subscriptions.add(notificationContainerView.onSendInvitations()
-                          .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
-                    }));
+                  subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(aLong -> {
+                        notificationContainerView.showNotification(null,
+                            NotificationContainerView.DISPLAY_INVITE_NOTIF);
 
-                return;
+                        subscriptions.add(notificationContainerView.onSendInvitations()
+                            .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
+                      }));
+
+                  return;
+                }
               }
             }
-          }
 
-          if (!displayingPopup) homeGridPresenter.sendInvitations();
-        }
-      });
+            if (!displayingPopup) homeGridPresenter.sendInvitations();
+          }
+        });
+      }
     }
   }
 
@@ -767,8 +806,17 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
+
     if (data != null) {
-      if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
+      if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
+        NotificationPayload notificationPayload = (NotificationPayload) data.getSerializableExtra(
+            NotificationPayload.CLICK_ACTION_DECLINE);
+        if (notificationPayload != null) {
+          displayDeclinedCallNotification(notificationPayload);
+        }
+      } else if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
         errorNotificationView.displayView();
       } else if (!notificationContainerView.showNotification(data, null)) {
         displayRatingNotifView(data);
@@ -852,23 +900,35 @@ public class HomeActivity extends BaseActivity
     homeGridAdapter.notifyDataSetChanged();
   }
 
+  private void displayDeclinedCallNotification(NotificationPayload notificationPayload) {
+    LiveNotificationView liveNotificationView =
+        NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
+            missedCallManager);
+    Alerter.create(HomeActivity.this, liveNotificationView).show();
+  }
+
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
+              missedCallManager);
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()
-            .filter(action -> action.getIntent() != null)
             .delay(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(action -> {
-              navigator.navigateToIntent(HomeActivity.this, action.getIntent());
+              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
+                declineInvitation(action.getSessionId());
+              } else if (action.getId().equals(NotificationUtils.ACTION_ADD_FRIEND)) {
+                homeGridPresenter.createFriendship(action.getUserId());
+              } else if (action.getIntent() != null) {
+                navigator.navigateToIntent(HomeActivity.this, action.getIntent());
+              }
             }));
 
         Alerter.create(HomeActivity.this, liveNotificationView).show();

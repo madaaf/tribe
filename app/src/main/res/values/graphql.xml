@@ -78,6 +78,7 @@
         tag
         category
         status
+        mute
         friend {
             ...UserInfos
         }
@@ -523,6 +524,8 @@
   <string name="roomFragment_infos" translatable="false">
     fragment RoomInfos on RoomPeerCredentials {
       room_id
+      initiator_id
+      initiator_name
       websocketUrl
       rtcPeerConfiguration {
         iceServers {

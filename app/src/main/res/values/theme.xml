@@ -71,4 +71,11 @@
     <item name="android:windowIsFloating">false</item>
   </style>
 
+  <style name="CustomDigitsTheme" parent="@style/Theme.AppCompat.Light">
+    <item name="android:textColorPrimary">@android:color/black</item>
+    <item name="android:textColorSecondary">@color/grey.light</item>
+    <item name="android:windowBackground">@android:color/white</item>
+    <item name="android:textColorLink">@color/blue.new</item>
+    <item name="dgts__accentColor">@color/blue.new</item>
+  </style>
 </resources>

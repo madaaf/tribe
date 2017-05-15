@@ -8,7 +8,6 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -321,7 +320,9 @@ public class LiveWaitingAvatarView extends FrameLayout {
   }
 
   public void load(String url) {
-    avatar.load(url);
+    //if (ViewCompat.isAttachedToWindow(this)) {
+      avatar.load(url);
+    //}
   }
 
   public AvatarView getAvatar() {

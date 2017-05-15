@@ -232,8 +232,13 @@ public class Navigator {
       @LiveActivity.Source String source) {
     if (activity != null) {
       Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
-      activity.startActivityForResult(intent, FROM_LIVE);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      if (activity instanceof LiveActivity) {
+        activity.startActivity(intent);
+      } else {
+        activity.startActivityForResult(intent, FROM_LIVE);
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      }
     }
   }
 

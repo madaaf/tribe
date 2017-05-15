@@ -13,10 +13,12 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
-import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import java.util.HashSet;
+import java.util.Set;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -37,7 +39,7 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
   @Inject @RoutingMode Preference<String> routingMode;
 
-  @Inject @NewContactsTooltip Preference<Boolean> tooltip;
+  @Inject @TribeState Preference<Set<String>> tutorialState;
 
   @BindView(R.id.viewActionRouted) ActionView viewActionRouted;
 
@@ -100,7 +102,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
       userCache.put(accessToken);
     }));
 
-    subscriptions.add(viewActionTooltip.onClick().subscribe(aVoid -> tooltip.set(false)));
+    subscriptions.add(
+        viewActionTooltip.onClick().subscribe(aVoid -> tutorialState.set(new HashSet<>())));
 
     subscriptions.add(viewActionSync.onClick().subscribe(aVoid -> {
       viewActionSync.setBody("Syncing...");

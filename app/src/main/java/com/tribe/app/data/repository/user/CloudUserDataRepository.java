@@ -65,9 +65,10 @@ import rx.Observable;
     this.membershipRealmDataMapper = membershipRealmDataMapper;
   }
 
-  @Override public Observable<Pin> requestCode(String phoneNumber) {
+  @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.requestCode(phoneNumber).map(pin -> pinRealmDataMapper.transform(pin));
+    return userDataStore.requestCode(phoneNumber, shouldCall)
+        .map(pin -> pinRealmDataMapper.transform(pin));
   }
 
   @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
@@ -309,10 +310,14 @@ import rx.Observable;
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.sendInvitations();
   }
-  
+
   @Override public Observable<String> getRoomLink(String roomId) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.getRoomLink(roomId);
+  }
+
+  @Override public Observable<List<Friendship>> unblockedFriendships() {
+    return null;
   }
 }

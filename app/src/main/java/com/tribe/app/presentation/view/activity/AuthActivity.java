@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.telephony.SmsMessage;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -17,6 +16,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.digits.sdk.android.AuthCallback;
+import com.digits.sdk.android.AuthConfig;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsException;
+import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
@@ -29,6 +33,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
 import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -51,13 +56,13 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListener.SmsCallback {
+public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private static int DURATION = 300;
   private static int DURATION_MEDIUM = 400;
   private static int DURATION_LONG = 600;
   private static int DURATION_FAST = 150;
-  private static int TIMER_SURPRISE_DIALOG = 1000;
+  private static int COUNT_PIN_ERROR_MAX = 3;
 
   private static final String COUNTRY_CODE = "COUNTRY_CODE";
   private static final String DEEP_LINK = "DEEP_LINK";
@@ -84,8 +89,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
-  //@Inject SmsListener smsListener;
-
   @BindView(R.id.viewVideoAuth) AuthVideoView authVideoView;
 
   @BindView(R.id.btnSkip) ImageView btnSkip;
@@ -110,6 +113,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   private Unbinder unbinder;
   private Uri deepLink;
   private AuthenticationDialogFragment authenticationDialogFragment;
+  private AuthCallback authCallback;
   private Pin pin;
   private ErrorLogin errorLogin;
   private LoginEntity loginEntity;
@@ -119,6 +123,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   private String code;
   private int currentCountdown;
   private boolean shouldPauseOnRestore = false;
+  private boolean isCall = false;
+  private int countPinError = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -127,6 +133,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
+
+    Digits.logout();
 
     if (savedInstanceState != null) {
       if (savedInstanceState.getParcelable(DEEP_LINK) != null) {
@@ -198,16 +206,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     authPresenter.onViewAttached(this);
   }
 
-  @Override protected void onStop() {
-    authPresenter.onViewDetached();
-    super.onStop();
-  }
-
   @Override protected void onDestroy() {
+    authPresenter.onViewDetached();
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (countdownSubscription != null) countdownSubscription.unsubscribe();
-    //smsListener.unregister();
     super.onDestroy();
   }
 
@@ -253,7 +256,18 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   private void init() {
-    //smsListener.register();
+    authCallback = new AuthCallback() {
+      @Override public void success(DigitsSession session, String phoneNumber) {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
+        loginEntity = authPresenter.login(phoneNumber, null, null);
+      }
+
+      @Override public void failure(DigitsException error) {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
+        Timber.e(error);
+      }
+    };
+
     viewBackground.setEnabled(false);
     btnPlay.setEnabled(false);
 
@@ -314,32 +328,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     if (shouldPauseOnRestore && pin == null) showPhoneInput(false);
   }
 
-  private void initSmsListener() {
-    //smsListener.setSmsCallback(AuthActivity.this);
-    //Dexter.withActivity(this)
-    //    .withPermission(Manifest.permission.RECEIVE_SMS)
-    //    .withListener(new PermissionListener() {
-    //      @Override public void onPermissionGranted(PermissionGrantedResponse response) {
-    //        smsListener.setSmsCallback(AuthActivity.this);
-    //      }
-    //
-    //      @Override public void onPermissionDenied(PermissionDeniedResponse response) {
-    //      }
-    //
-    //      @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission,
-    //          PermissionToken token) {
-    //        token.continuePermissionRequest();
-    //      }
-    //    })
-    //    .check();
-  }
-
   private void initViewCode() {
     if (!StringUtils.isEmpty(code)) {
       viewCode.setCode(code);
     }
 
     subscriptions.add(viewCode.backClicked().subscribe(aVoid -> {
+      countPinError = 0;
       backToPhoneNumber();
     }));
 
@@ -508,37 +503,52 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     viewStatus.showCodeSent(viewPhoneNumber.getPhoneNumberFormatted());
     showViewCode(animate);
     hideViewPhoneNumber(animate);
-    //smsListener.setSmsCallback(AuthActivity.this);
   }
 
   private void confirmPhoneNumber() {
-    authenticationDialogFragment = AuthenticationDialogFragment.newInstance(
-        getApplicationComponent().phoneUtils()
-            .formatPhoneNumberForView(viewPhoneNumber.getPhoneNumberFormatted(),
-                viewPhoneNumber.getCountryCode()), false);
-    authenticationDialogFragment.show(getSupportFragmentManager(),
-        AuthenticationDialogFragment.class.getName());
-    subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
-      authenticationDialogFragment.dismiss();
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-      requestCode();
-    }));
+    if (!viewPhoneNumber.isDebug()) {
+      viewPhoneNumber.showLoading();
+      AuthConfig.Builder builder = new AuthConfig.Builder();
+      builder.withAuthCallBack(authCallback);
+      AuthConfig authConfig =
+          builder.withPhoneNumber(viewPhoneNumber.getPhoneNumberFormatted()).build();
+      Digits.authenticate(authConfig);
+    } else {
+      authenticationDialogFragment = AuthenticationDialogFragment.newInstance(
+          getApplicationComponent().phoneUtils()
+              .formatPhoneNumberForView(viewPhoneNumber.getPhoneNumberFormatted(),
+                  viewPhoneNumber.getCountryCode()), false);
+      authenticationDialogFragment.show(getSupportFragmentManager(),
+          AuthenticationDialogFragment.class.getName());
+      subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
+        authenticationDialogFragment.dismiss();
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
+        requestCode();
+      }));
 
-    subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinModified);
-      authenticationDialogFragment.dismiss();
-    }));
+      subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinModified);
+        authenticationDialogFragment.dismiss();
+      }));
+    }
   }
 
   private void requestCode() {
+    isCall = false;
     viewStatus.showSendingCode();
-    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted());
+    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted(), false);
+  }
+
+  private void requestCall() {
+    isCall = true;
+    viewStatus.showSendingCode();
+    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted(), true);
   }
 
   private void initCountdown() {
     if (!countdownActive) {
       countdownActive = true;
-      viewCode.startCountdown();
+      viewCode.startCountdown(isCall);
       countdownSubscription = viewCode.countdownExpired().subscribe(aVoid -> {
         resend();
         cleanCountdown();
@@ -558,12 +568,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
         AuthenticationDialogFragment.class.getName());
     subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
       authenticationDialogFragment.dismiss();
-      requestCode();
+      requestCall();
     }));
 
     subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
       authenticationDialogFragment.dismiss();
-      viewStatus.showResend();
+      requestCode();
     }));
   }
 
@@ -589,14 +599,25 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
     subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(aLong -> viewCode.showConnected())
+        .doOnNext(aLong -> {
+          if (viewPhoneNumber.isDebug()) {
+            viewCode.showConnected();
+          } else {
+            viewPhoneNumber.showConnected();
+          }
+        })
         .delay(DURATION_LONG, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(aLong -> {
           txtMessage.setVisibility(View.GONE);
           viewStatus.setVisibility(View.GONE);
           screenUtils.hideKeyboard(this);
-          viewCode.showConnectedEnd();
+
+          if (viewPhoneNumber.isDebug()) {
+            viewCode.showConnectedEnd();
+          } else {
+            viewPhoneNumber.showConnectedEnd();
+          }
         })
         .delay(1400, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -618,22 +639,30 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {
-    Timber.d("Pin error");
+    countPinError++;
+
+    if (countPinError == COUNT_PIN_ERROR_MAX) {
+      resend();
+      cleanCountdown();
+    } else {
+      showError(EmojiParser.demojizedText(getString(R.string.onboarding_error_wrong_pin)));
+    }
+
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
   }
 
   @Override public void showLoading() {
-    if (pin == null) {
+    if (pin == null || !viewPhoneNumber.isDebug()) {
       viewPhoneNumber.showLoading();
-    } else {
+    } else if (pin != null) {
       viewCode.showLoading();
     }
   }
 
   @Override public void hideLoading() {
-    if (pin == null) {
+    if (pin == null || !viewPhoneNumber.isDebug()) {
       viewPhoneNumber.hideLoading();
-    } else {
+    } else if (pin != null) {
       viewCode.hideLoading();
     }
   }
@@ -647,10 +676,5 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, SmsListen
 
   @Override public Context context() {
     return this;
-  }
-
-  @Override public void onSmsReceived(SmsMessage message) {
-    String code = message.getDisplayMessageBody().substring(12, 16);
-    if (!StringUtils.isEmpty(code)) viewCode.setCode(code);
   }
 }

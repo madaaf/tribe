@@ -255,7 +255,11 @@ dependencies {
   compile project(':AdapterDelegates')
   compile project(':tribelivesdk')
   compile project(':ViewNavigator')
-  compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+  compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    transitive = true;
+  }
+
+  compile('com.digits.sdk.android:digits:2.0.6@aar') {
     transitive = true;
   }
 }

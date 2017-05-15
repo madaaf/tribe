@@ -36,12 +36,19 @@ import javax.inject.Inject;
  */
 
 public class PopupContainerView extends FrameLayout {
-  @StringDef({ DISPLAY_BUZZ_POPUP, DISPLAY_DRAGING_FRIEND_POPUP }) public @interface PopupType {
 
+  @StringDef({
+      DISPLAY_BUZZ_POPUP, DISPLAY_DRAGING_FRIEND_POPUP, DISPLAY_INVITE_POPUP,
+      DISPLAY_NEW_CALL_POPUP, DISPLAY_PROFILE_POPUP
+  }) public @interface PopupType {
   }
 
   public static final String DISPLAY_BUZZ_POPUP = "DISPLAY_BUZZ_POPUP";
   public static final String DISPLAY_DRAGING_FRIEND_POPUP = "DISPLAY_DRAGING_FRIEND_POPUP";
+  public static final String DISPLAY_NEW_CALL_POPUP = "DISPLAY_NEW_CALL_POPUP";
+  public static final String DISPLAY_INVITE_POPUP = "DISPLAY_INVITE_POPUP";
+  public static final String DISPLAY_PROFILE_POPUP = "DISPLAY_PROFILE_POPUP";
+
   private static int DURATION_EXIT_POPUP = 300;
   private static double TENSION = 400;
   private static double DAMPER = 20;
@@ -69,6 +76,7 @@ public class PopupContainerView extends FrameLayout {
   }
 
   public void displayPopup(View v, @PopupType String type, String txt) {
+    setVisibility(View.VISIBLE);
     resetContainer();
 
     v.getViewTreeObserver()
@@ -100,16 +108,34 @@ public class PopupContainerView extends FrameLayout {
               isCentred = true;
             }
 
-            if (isInBottom) {
-              marginBottom = v.getHeight() + defaultMargin;
-            } else if (isInTop) {
-              marginTop = v.getHeight() + defaultMargin;
-            }
+            MarginLayoutParams margins = ((MarginLayoutParams) v.getLayoutParams());
 
-            if (isInLeft) {
-              marginLeft = v.getWidth() + defaultMargin;
-            } else if (isInRight) {
-              marginRight = v.getWidth() + defaultMargin;
+            if (type.equals(DISPLAY_INVITE_POPUP)
+                || type.equals(DISPLAY_NEW_CALL_POPUP)
+                || type.equals(DISPLAY_PROFILE_POPUP)) {
+              if (type.equals(DISPLAY_INVITE_POPUP)) {
+                isInRight = true;
+                marginTop = viewPositionInScreen[1] + v.getHeight();
+                marginRight = defaultMargin;
+              } else if (type.equals(DISPLAY_PROFILE_POPUP)) {
+                isInLeft = true;
+                marginTop = viewPositionInScreen[1] + v.getHeight();
+                marginLeft = margins.leftMargin - defaultMargin;
+              } else {
+                marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin;
+              }
+            } else {
+              if (isInBottom) {
+                marginBottom = v.getHeight() + defaultMargin;
+              } else if (isInTop) {
+                marginTop = v.getHeight() + defaultMargin;
+              }
+
+              if (isInLeft) {
+                marginLeft = v.getWidth() + defaultMargin;
+              } else if (isInRight) {
+                marginRight = v.getWidth() + defaultMargin;
+              }
             }
 
             displayView(type);
@@ -144,6 +170,12 @@ public class PopupContainerView extends FrameLayout {
         return R.layout.buzz_popup_view;
       case DISPLAY_DRAGING_FRIEND_POPUP:
         return R.layout.drag_friend_popup_view;
+      case DISPLAY_INVITE_POPUP:
+        return R.layout.invite_popup_view;
+      case DISPLAY_NEW_CALL_POPUP:
+        return R.layout.new_call_popup_view;
+      case DISPLAY_PROFILE_POPUP:
+        return R.layout.profile_popup_view;
     }
     return 0;
   }
@@ -227,6 +259,7 @@ public class PopupContainerView extends FrameLayout {
           if (v != null && v.getParent() != null) {
             ((ViewGroup) v.getParent()).removeView(v);
           }
+          setVisibility(View.GONE);
         }
       });
       scaleDown.start();

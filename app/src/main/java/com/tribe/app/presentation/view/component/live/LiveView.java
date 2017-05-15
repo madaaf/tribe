@@ -138,11 +138,12 @@ public class LiveView extends FrameLayout {
   private AvatarView avatarView;
   private ObjectAnimator animatorBuzzAvatar;
   private Map<String, Object> tagMap;
-  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0;
+  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0;
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
-  private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true;
+  private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true,
+      hasShared = false;
   private View view;
   private int sizeAnimAvatarMax;
   private List<User> anonymousInLive = new ArrayList<>();
@@ -167,6 +168,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -193,6 +195,14 @@ public class LiveView extends FrameLayout {
     return live.getDisplayName();
   }
 
+  public int getRowsInLive() {
+    return viewRoom.getRowsInLive();
+  }
+
+  public void removeUserFromGrid(String userId) {
+    viewRoom.removeGuest(userId);
+  }
+
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
@@ -214,7 +224,9 @@ public class LiveView extends FrameLayout {
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
-      } else if (hasJoined && averageCountLive <= 1) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) || (
+          live.getId().equals(Live.NEW_CALL)
+              && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -379,7 +391,8 @@ public class LiveView extends FrameLayout {
       onHiddenControls.onNext(isParamExpended);
     }));
 
-    persistentSubscriptions.add(viewLocalLive.onShare().subscribe(onShare));
+    persistentSubscriptions.add(
+        viewLocalLive.onShare().doOnNext(aVoid -> hasShared = true).subscribe(onShare));
 
     persistentSubscriptions.add(viewControlsLive.onOpenInvite().subscribe(aVoid -> {
       if (!hiddenControls) onOpenInvite.onNext(null);
@@ -500,8 +513,9 @@ public class LiveView extends FrameLayout {
         tempSubscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
             .onBackpressureDrop()
             .subscribe(intervalCount -> {
+              interval++;
               totalSizeLive += nbLiveInRoom() + 1;
-              averageCountLive = (double) totalSizeLive / (intervalCount + 1);
+              averageCountLive = (double) totalSizeLive / interval;
               averageCountLive = DoubleUtils.round(averageCountLive, 2);
 
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
@@ -525,7 +539,7 @@ public class LiveView extends FrameLayout {
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
 
-          String username = getDisplayNameNotification(remotePeer.getSession().getUserId());
+          String username = getDisplayNameFromId(remotePeer.getSession().getUserId());
           if ((username == null || username.isEmpty()) && !remotePeer.getSession().isExternal()) {
             Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
@@ -730,6 +744,7 @@ public class LiveView extends FrameLayout {
         onShouldJoinRoom.onNext(null);
       }
     } else {
+      hasJoined = true;
       refactorNotifyButton();
       if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay();
       onShouldJoinRoom.onNext(null);
@@ -935,6 +950,17 @@ public class LiveView extends FrameLayout {
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     }
+
+    if (liveRowView != null) {
+      tempSubscriptions.add(liveRowView.onClick().map(tribeGuest -> {
+        Object o = computeGuest(tribeGuest.getId());
+        if (o == null) {
+          return tribeGuest;
+        } else {
+          return o;
+        }
+      }).subscribe(onRemotePeerClick));
+    }
   }
 
   private void removeFromPeers(String id) {
@@ -967,9 +993,9 @@ public class LiveView extends FrameLayout {
     }
 
     if (guest == null) {
-      guest =
-          new TribeGuest(remotePeer.getSession().getUserId(), "", null, false, false, null, false,
-              "");
+      guest = new TribeGuest(remotePeer.getSession().getUserId(),
+          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, null,
+          false, "");
       guest.setExternal(remotePeer.getSession().isExternal());
     }
 
@@ -1180,11 +1206,11 @@ public class LiveView extends FrameLayout {
 
   private String getDisplayNameFromSession(TribeSession tribeSession) {
     return tribeSession.isExternal() ? getContext().getString(R.string.live_external_user)
-        : getDisplayNameNotification(tribeSession.getUserId());
+        : getDisplayNameFromId(tribeSession.getUserId());
   }
 
-  private String getDisplayNameNotification(String id) {
-    String tribeGuestName = null;
+  private String getDisplayNameFromId(String id) {
+    String tribeGuestName = "";
     for (Membership membership : user.getMembershipList()) {
       for (User member : membership.getGroup().getMembers()) {
         if (member.getId().equals(id)) {
@@ -1207,6 +1233,23 @@ public class LiveView extends FrameLayout {
     }
 
     return tribeGuestName;
+  }
+
+  private Object computeGuest(String id) {
+    for (Friendship friendship : user.getFriendships()) {
+      User friend = friendship.getFriend();
+      if (friend.getId().equals(id)) {
+        return friendship;
+      }
+    }
+
+    for (User anonymousUser : anonymousInLive) {
+      if (anonymousUser.getId().equals(id)) {
+        return anonymousUser;
+      }
+    }
+
+    return null;
   }
 
   //////////////////////
@@ -1287,6 +1330,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onRoomFull() {
     return onRoomFull;
+  }
+
+  public Observable<Object> onRemotePeerClick() {
+    return onRemotePeerClick;
   }
 }
 

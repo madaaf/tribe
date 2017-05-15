@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.adapter.model.ButtonModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.view.notification.MissedCallAction;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -115,6 +116,8 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     } else if (item instanceof User) {
       User user = (User) item;
       vh.txtNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
+    } else if (item instanceof MissedCallAction) {
+      vh.btnAdd.setVisibility(View.VISIBLE);
     }
 
     if (animations.containsKey(holder)) {
@@ -192,7 +195,15 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
 
     animatorSet.setDuration(DURATION);
     animatorSet.setInterpolator(new DecelerateInterpolator());
-    animatorSet.play(animator);
+
+    if (vh.progressBarAdd.getAlpha() == 1f) {
+      ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 0f, 1f);
+      ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 1f, 0f);
+      animatorSet.play(animator).with(alphaAnimAdd).with(alphaAnimProgress);
+    } else {
+      animatorSet.play(animator);
+    }
+
     animatorSet.start();
 
     AnimationUtils.animateTextColor(vh.txtAction, textColorFrom, textColorTo, DURATION);

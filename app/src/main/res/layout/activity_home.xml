@@ -40,7 +40,26 @@
         android:scrollbars="none"
         />
 
+    <com.tribe.app.presentation.view.component.home.NewCallView
+        android:id="@+id/btnNewCall"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_margin="@dimen/horizontal_margin_large"
+        android:background="@drawable/shape_oval_white"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:foreground="@drawable/selectable_button"
+        />
+
   </com.tribe.app.presentation.view.component.TopBarContainer>
+
+  <com.tribe.app.presentation.view.widget.PopupContainerView
+      android:id="@+id/nativeDialogsView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="gone"
+      />
 
   <com.tribe.app.presentation.view.component.home.SearchView
       android:id="@+id/searchView"

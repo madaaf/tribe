@@ -22,15 +22,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -56,11 +55,11 @@ public class TopBarView extends FrameLayout {
 
   @Inject User user;
 
-  @Inject @NewContactsTooltip Preference<Boolean> newContactsTooltip;
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
-  @BindView(R.id.btnNew) View btnNew;
+  @BindView(R.id.btnInvite) View btnNew;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
@@ -93,7 +92,6 @@ public class TopBarView extends FrameLayout {
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> clickNew = PublishSubject.create();
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
   private PublishSubject<Void> clickInvite = PublishSubject.create();
@@ -110,11 +108,11 @@ public class TopBarView extends FrameLayout {
   }
 
   @Override protected void onDetachedFromWindow() {
-    unbinder.unbind();
-
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       subscriptions.unsubscribe();
     }
+
+    unbinder.unbind();
 
     super.onDetachedFromWindow();
   }
@@ -125,7 +123,7 @@ public class TopBarView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
-    shouldForceRed = !newContactsTooltip.get();
+    shouldForceRed = stateManager.shouldDisplay(StateManager.FRIENDS_POPUP);
 
     initResources();
     initUI();
@@ -228,8 +226,8 @@ public class TopBarView extends FrameLayout {
     clickProfile.onNext(null);
   }
 
-  @OnClick(R.id.btnNew) void launchNew() {
-    clickNew.onNext(null);
+  @OnClick(R.id.btnInvite) void launchInvite() {
+    clickInvite.onNext(null);
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
@@ -352,24 +350,25 @@ public class TopBarView extends FrameLayout {
   }
 
   public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
-    obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
-      nbContacts = integerBooleanPair.first;
-      hasNewContacts = integerBooleanPair.second;
+    subscriptions.add(
+        obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
+          nbContacts = integerBooleanPair.first;
+          hasNewContacts = integerBooleanPair.second;
 
-      if (nbContacts > 0) {
-        showNewContacts(true);
-        txtNewContacts.setText("" + nbContacts);
-        if (hasNewContacts || shouldForceRed) {
-          drawableBGNewContacts.setColor(
-              ContextCompat.getColor(getContext(), R.color.red_new_contacts));
-        } else {
-          drawableBGNewContacts.setColor(
-              ContextCompat.getColor(getContext(), R.color.grey_new_contacts));
-        }
-      } else {
-        showNewContacts(false);
-      }
-    });
+          if (nbContacts > 0) {
+            showNewContacts(true);
+            txtNewContacts.setText("" + nbContacts);
+            if (hasNewContacts || shouldForceRed) {
+              drawableBGNewContacts.setColor(
+                  ContextCompat.getColor(getContext(), R.color.red_new_contacts));
+            } else {
+              drawableBGNewContacts.setColor(
+                  ContextCompat.getColor(getContext(), R.color.grey_new_contacts));
+            }
+          } else {
+            showNewContacts(false);
+          }
+        }));
   }
 
   public boolean isSearchMode() {
@@ -389,10 +388,6 @@ public class TopBarView extends FrameLayout {
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
-
-  public Observable<Void> onClickNew() {
-    return clickNew;
-  }
 
   public Observable<String> onSearch() {
     return onSearch;

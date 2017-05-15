@@ -17,6 +17,7 @@ import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
+import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -41,6 +42,7 @@ import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
@@ -52,6 +54,7 @@ import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import dagger.Component;
 
 /**
@@ -65,6 +68,8 @@ import dagger.Component;
   void inject(DebugActivity debugActivity);
 
   void inject(LifeNotification lifeNotification);
+
+  void inject(MissedCallDetailActivity missedCallDetailActivity);
 
   void inject(PopupContainerView popupContainerView);
 
@@ -159,4 +164,8 @@ import dagger.Component;
   void inject(LiveShareOverlayView liveShareOverlayView);
 
   void inject(ErrorNotificationView errorNotificationView);
+
+  void inject(SettingsManageFriendshipsView settingsManageFriendshipsView);
+
+  void inject(UserInfosNotificationView userInfosNotificationView);
 }
