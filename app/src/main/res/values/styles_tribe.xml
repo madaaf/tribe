@@ -238,6 +238,10 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="Headline.Red" parent="@style/Headline">
+    <item name="android:textColor">@android:color/holo_red_dark</item>
+  </style>
+
   <style name="Headline.Black40" parent="@style/Headline">
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
@@ -248,6 +252,10 @@
   </style>
 
   <style name="Headline.Black.2" parent="@style/Headline.Black">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="Headline.Red.2" parent="@style/Headline.Red">
     <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
@@ -320,7 +328,7 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
-  <style name="Text"/>
+  <style name="Text" />
 
   <style name="Text.Input">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>

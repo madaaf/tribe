@@ -100,8 +100,8 @@
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
 	<string name="live_notification_action_add_as_friend">Add as friend</string>
-	<string name="live_notification_action_hang_live_friend">Video call %1$s</string>
-	<string name="live_notification_action_hang_live_group">Video call %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Join %1$s \'s video call</string>
+	<string name="live_notification_action_hang_live_group">Join %1$s \'s video call</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>
@@ -432,8 +432,8 @@
 	<string name="live_sharing_infos_you_mins">%1$d mins</string>
 	<string name="live_sharing_infos_you_min">%1$d min</string>
 	<string name="live_sharing_infos_you_with">with</string>
-	<string name="live_sharing_infos_you_friends">%1$d friends</string>
-	<string name="live_sharing_infos_you_friend">%1$d friend</string>
+	<string name="live_sharing_infos_you_friends">%1$d friends!</string>
+	<string name="live_sharing_infos_you_friend">%1$d friend!</string>
 	<string name="live_sharing_share">Share it!</string>
 	<string name="live_sharing_infos_i_spent">I just spent</string>
 	<string name="live_sharing_infos_on_a">on a</string>
