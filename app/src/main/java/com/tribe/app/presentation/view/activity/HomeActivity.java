@@ -187,8 +187,6 @@ public class HomeActivity extends BaseActivity
     getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
 
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
-
     initDependencyInjector();
     init();
     initUi();
@@ -693,48 +691,52 @@ public class HomeActivity extends BaseActivity
   }
 
   private void manageLogin(Intent intent) {
-    if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN) && addressBook.get()) {
-      String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
-      if (StringUtils.isEmpty(countryCode)) return;
+    if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 
-      firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-      firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
-      firebaseRemoteConfig.activateFetched();
+      if (addressBook.get()) {
+        String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
+        if (StringUtils.isEmpty(countryCode)) return;
 
-      firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          firebaseRemoteConfig.activateFetched();
+        firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+        firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
+        firebaseRemoteConfig.activateFetched();
 
-          boolean displayingPopup = false;
+        firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
+          if (task.isSuccessful()) {
+            firebaseRemoteConfig.activateFetched();
 
-          String countryCodesMaster =
-              firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
+            boolean displayingPopup = false;
 
-          if (!StringUtils.isEmpty(countryCodesMaster)) {
-            String[] countryCodes = countryCodesMaster.split(",");
+            String countryCodesMaster =
+                firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
 
-            for (String countryCodeInvite : countryCodes) {
-              if (countryCodeInvite.equals(countryCode)) {
-                displayingPopup = true;
+            if (!StringUtils.isEmpty(countryCodesMaster)) {
+              String[] countryCodes = countryCodesMaster.split(",");
 
-                subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(aLong -> {
-                      notificationContainerView.showNotification(null,
-                          NotificationContainerView.DISPLAY_INVITE_NOTIF);
+              for (String countryCodeInvite : countryCodes) {
+                if (countryCodeInvite.equals(countryCode)) {
+                  displayingPopup = true;
 
-                      subscriptions.add(notificationContainerView.onSendInvitations()
-                          .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
-                    }));
+                  subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(aLong -> {
+                        notificationContainerView.showNotification(null,
+                            NotificationContainerView.DISPLAY_INVITE_NOTIF);
 
-                return;
+                        subscriptions.add(notificationContainerView.onSendInvitations()
+                            .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
+                      }));
+
+                  return;
+                }
               }
             }
-          }
 
-          if (!displayingPopup) homeGridPresenter.sendInvitations();
-        }
-      });
+            if (!displayingPopup) homeGridPresenter.sendInvitations();
+          }
+        });
+      }
     }
   }
 
