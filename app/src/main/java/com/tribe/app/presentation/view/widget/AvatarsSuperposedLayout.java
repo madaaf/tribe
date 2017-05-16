@@ -34,6 +34,7 @@ public class AvatarsSuperposedLayout extends LinearLayout {
   @Inject ScreenUtils screenUtils;
   @Nullable @BindView(R.id.txtGrpMembersNames) TextViewFont txtGrpMembersNames;
   @Nullable @BindView(R.id.imgGrpMembersAvatar) LinearLayout avatarsContainer;
+
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;

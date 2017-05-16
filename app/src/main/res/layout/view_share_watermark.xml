@@ -80,7 +80,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_on_a"
-        style="@style/Title.2.Black"
+        style="@style/Title.2.Black40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtSharingCard"

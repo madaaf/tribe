@@ -2,11 +2,8 @@ package com.tribe.app.presentation.view.widget.notifications;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -21,7 +18,6 @@ import com.facebook.login.LoginManager;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.tarek360.instacapture.InstaCapture;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
@@ -29,7 +25,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
-import rx.Subscriber;
 import timber.log.Timber;
 
 /**
@@ -43,6 +38,7 @@ public class SharingCardNotificationView extends LifeNotification {
   private static final String PACKAGE_SNAPSHAT = "com.snapchat.android";
   private static final String PACKAGE_INSTA = "com.instagram.android";
   private static final String PACKAGE_TWITTER = "com.twitter.android";
+  public static final String MULTIPLE_CHOICE = "MULTIPLE_CHOICE";
   private static final String PACKAGE_FACEBOOK = "CALL_GRP_MEMBERS";
 
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
@@ -93,7 +89,7 @@ public class SharingCardNotificationView extends LifeNotification {
             : context.getString(R.string.live_sharing_infos_you_friend, nbrFriends);
 
     txtMinutes.setText(txtMin);
-    txtFriends.setText(txtFriend);
+    txtFriends.setText(txtFriend + "!");
   }
 
   private void setMembers(List<TribeGuest> members) {
@@ -122,35 +118,14 @@ public class SharingCardNotificationView extends LifeNotification {
 
   }
 
-  private void setImageIntent(String packageTxt) {
-    ShareWatermarkView view = new ShareWatermarkView(context);
-    view.setParam(txtMin, txtFriend, screenUtils.getWidthPx(), screenUtils.getHeightPx());
-    view.initView(packageTxt, members);
+  @OnClick(R.id.btnShare) void onClickShareBtn() {
+    setImageIntent(MULTIPLE_CHOICE);
   }
 
-  @OnClick(R.id.btnShare) void onClickShareBtn() {
-    subscriptions.add(InstaCapture.getInstance((Activity) context)
-        .captureRx()
-        .subscribe(new Subscriber<Bitmap>() {
-          @Override public void onCompleted() {
-          }
-
-          @Override public void onError(Throwable e) {
-          }
-
-          @Override public void onNext(Bitmap bitmap) {
-
-            String pathofBmp =
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "title",
-                    null);
-            Uri bmpUri = Uri.parse(pathofBmp);
-            final Intent emailIntent1 = new Intent(android.content.Intent.ACTION_SEND);
-            emailIntent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            emailIntent1.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            emailIntent1.setType("image/png");
-            context.startActivity(Intent.createChooser(emailIntent1, "ok"));
-          }
-        }));
+  private void setImageIntent(String packageTxt) {
+    ShareWatermarkView view = new ShareWatermarkView(context);
+    view.setParam(txtMin, txtFriend);
+    view.initView(packageTxt, members);
   }
 
   private void shareImage(Bitmap bmp) {

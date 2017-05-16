@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 import rx.subscriptions.CompositeSubscription;
 
+import static com.tribe.app.presentation.view.widget.notifications.SharingCardNotificationView.MULTIPLE_CHOICE;
+
 /**
  * Created by madaaflak on 15/05/2017.
  */
@@ -38,7 +40,6 @@ public class ShareWatermarkView extends FrameLayout {
   private View cluster;
   private Unbinder unbinder;
   private String txtFriend, txtMinute;
-  private int width, height;
 
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
@@ -60,11 +61,9 @@ public class ShareWatermarkView extends FrameLayout {
   //   PUBLIC  //
   ////////////////
 
-  public void setParam(String txtMin, String txtFriend, int widthPx, int heightPx) {
+  public void setParam(String txtMin, String txtFriend) {
     this.txtMinute = txtMin;
     this.txtFriend = txtFriend;
-    this.width = widthPx;
-    this.height = heightPx;
   }
 
   public void initView(String packageTitle, List<TribeGuest> members) {
@@ -98,20 +97,26 @@ public class ShareWatermarkView extends FrameLayout {
   private void setImageContent(String packageTitle) {
     Bitmap bitmap = createClusterBitmap();
     String pathofBmp =
-        MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "title", null);
+        MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null, null);
     Uri bmpUri = Uri.parse(pathofBmp);
     final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
     intent.setType("image/png");
-    intent.setPackage(packageTitle);
-    context.startActivity(intent);
+    intent.putExtra(android.content.Intent.EXTRA_TEXT,
+        EmojiParser.demojizedText(context.getString(R.string.live_sharing_media_caption)));
+    if (packageTitle.equals(MULTIPLE_CHOICE)) {
+      context.startActivity(Intent.createChooser(intent, null));
+    } else {
+      intent.setPackage(packageTitle);
+      context.startActivity(intent);
+    }
   }
 
   private void setTextLayout() {
     txtSharingCard.setText(
         " " + EmojiParser.demojizedText(context.getString(R.string.live_sharing_infos_live_call)));
-    txtFriends.setText(txtFriend);
+    txtFriends.setText(txtFriend + " ");
     txtMinutes.setText(txtMinute);
   }
 
