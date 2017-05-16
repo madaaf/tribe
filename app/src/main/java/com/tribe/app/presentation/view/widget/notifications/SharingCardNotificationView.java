@@ -1,7 +1,12 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -35,11 +40,11 @@ public class SharingCardNotificationView extends LifeNotification {
 
   public static final String CALL_GRP_MEMBERS = "CALL_GRP_MEMBERS";
 
-  private static final String PACKAGE_SNAPSHAT = "com.snapchat.android";
-  private static final String PACKAGE_INSTA = "com.instagram.android";
-  private static final String PACKAGE_TWITTER = "com.twitter.android";
+  public static final String PACKAGE_SNAPSHAT = "com.snapchat.android";
+  public static final String PACKAGE_INSTA = "com.instagram.android";
+  public static final String PACKAGE_TWITTER = "com.twitter.android";
   public static final String MULTIPLE_CHOICE = "MULTIPLE_CHOICE";
-  private static final String PACKAGE_FACEBOOK = "CALL_GRP_MEMBERS";
+  public static final String PACKAGE_FACEBOOK = "PACKAGE_FACEBOOK";
 
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
@@ -115,7 +120,7 @@ public class SharingCardNotificationView extends LifeNotification {
   }
 
   @OnClick(R.id.btnFacebook) void onClickFacebookBtn() {
-
+    setImageIntent(PACKAGE_FACEBOOK);
   }
 
   @OnClick(R.id.btnShare) void onClickShareBtn() {
@@ -139,34 +144,6 @@ public class SharingCardNotificationView extends LifeNotification {
     }
   }
 }
-  /*
-  private void initView(String packageTitle) {
-    subscriptions.add(InstaCapture.getInstance((Activity) context)
-        .captureRx()
-        .subscribe(new Subscriber<Bitmap>() {
-          @Override public void onCompleted() {
-          }
-
-          @Override public void onError(Throwable e) {
-          }
-
-          @Override public void onNext(Bitmap bitmap) {
-
-            String pathofBmp =
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "title",
-                    null);
-            Uri bmpUri = Uri.parse(pathofBmp);
-            final Intent emailIntent1 = new Intent(android.content.Intent.ACTION_SEND);
-            emailIntent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            emailIntent1.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            emailIntent1.setType("image/png");
-            emailIntent1.setPackage(packageTitle);
-            context.startActivity(emailIntent1);
-          }
-        }));
-  }
-  */
-
 
 
 

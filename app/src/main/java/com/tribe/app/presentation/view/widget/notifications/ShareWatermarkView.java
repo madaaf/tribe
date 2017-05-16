@@ -1,7 +1,11 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -27,6 +31,7 @@ import java.util.Random;
 import rx.subscriptions.CompositeSubscription;
 
 import static com.tribe.app.presentation.view.widget.notifications.SharingCardNotificationView.MULTIPLE_CHOICE;
+import static com.tribe.app.presentation.view.widget.notifications.SharingCardNotificationView.PACKAGE_FACEBOOK;
 
 /**
  * Created by madaaflak on 15/05/2017.
@@ -80,7 +85,7 @@ public class ShareWatermarkView extends FrameLayout {
     int color = getRandom(colors);
     bg.setBackgroundColor(color);
     avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members, color);
-    setImageContent(packageTitle);
+    setIntent(packageTitle);
   }
 
   ////////////////
@@ -94,15 +99,33 @@ public class ShareWatermarkView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
   }
 
-  private void setImageContent(String packageTitle) {
+  private void setIntent(String packageTitle) {
     Bitmap bitmap = createClusterBitmap();
     String pathofBmp =
         MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null, null);
     Uri bmpUri = Uri.parse(pathofBmp);
-    final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+
+    Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
     intent.setType("image/png");
+
+    if (packageTitle.equals(PACKAGE_FACEBOOK)) {
+      PackageManager pm = context.getPackageManager();
+      List<ResolveInfo> activityList = pm.queryIntentActivities(intent, 0);
+      for (final ResolveInfo app : activityList) {
+        if ((app.activityInfo.packageName).startsWith("com.facebook.katana")) {
+          final ActivityInfo activity = app.activityInfo;
+          final ComponentName name =
+              new ComponentName(activity.applicationInfo.packageName, activity.name);
+          intent.setComponent(name);
+          context.startActivity(intent);
+          break;
+        }
+      }
+      return;
+    }
+
     intent.putExtra(android.content.Intent.EXTRA_TEXT,
         EmojiParser.demojizedText(context.getString(R.string.live_sharing_media_caption)));
     if (packageTitle.equals(MULTIPLE_CHOICE)) {
