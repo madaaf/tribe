@@ -296,7 +296,7 @@ public class NotificationContainerView extends FrameLayout {
   private class TapGestureListener implements GestureDetector.OnGestureListener {
 
     @Override public boolean onDown(MotionEvent e) {
-      //hideView(); // SOEF
+      hideView();
       return true;
     }
 

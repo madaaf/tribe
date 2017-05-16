@@ -109,6 +109,8 @@ public class ShareWatermarkView extends FrameLayout {
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
     intent.setType("image/png");
+    intent.putExtra(android.content.Intent.EXTRA_TEXT, EmojiParser.demojizedText(
+        context.getString(R.string.live_sharing_media_caption, txtMinute, txtFriend)));
 
     if (packageTitle.equals(PACKAGE_FACEBOOK)) {
       PackageManager pm = context.getPackageManager();
@@ -123,12 +125,7 @@ public class ShareWatermarkView extends FrameLayout {
           break;
         }
       }
-      return;
-    }
-
-    intent.putExtra(android.content.Intent.EXTRA_TEXT,
-        EmojiParser.demojizedText(context.getString(R.string.live_sharing_media_caption)));
-    if (packageTitle.equals(MULTIPLE_CHOICE)) {
+    } else if (packageTitle.equals(MULTIPLE_CHOICE)) {
       context.startActivity(Intent.createChooser(intent, null));
     } else {
       intent.setPackage(packageTitle);

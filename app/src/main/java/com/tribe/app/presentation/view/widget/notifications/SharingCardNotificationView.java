@@ -1,13 +1,6 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
-import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,9 +13,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
-import com.facebook.share.model.SharePhoto;
-import com.facebook.share.model.SharePhotoContent;
-import com.facebook.share.widget.ShareDialog;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
@@ -30,7 +20,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 09/05/2017.
@@ -131,17 +120,6 @@ public class SharingCardNotificationView extends LifeNotification {
     ShareWatermarkView view = new ShareWatermarkView(context);
     view.setParam(txtMin, txtFriend);
     view.initView(packageTxt, members);
-  }
-
-  private void shareImage(Bitmap bmp) {
-    SharePhoto photo = new SharePhoto.Builder().setBitmap(bmp).build();
-    SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
-    ShareDialog shareDialog = new ShareDialog((Activity) context);
-    if (ShareDialog.canShow(SharePhotoContent.class)) {
-      shareDialog.show(content, ShareDialog.Mode.AUTOMATIC);
-    } else {
-      Timber.e("ok");
-    }
   }
 }
 
