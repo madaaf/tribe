@@ -13,6 +13,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class CreateGroupNotificationView extends LifeNotification {
   public static final String CREATE_GRP_DIRECTLY = "CREATE_GRP_DIRECTLY";
 
   @BindView(R.id.createGrpNotificationView) LinearLayout notificationView;
+  @BindView(R.id.avatarsSuperposedView) AvatarsSuperposedLayout avatarsSuperposedView;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -71,7 +73,7 @@ public class CreateGroupNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    drawAvatarsAndNamesMembers(members);
+    avatarsSuperposedView.drawAvatarsAndNamesMembers(members);
     prefilledGrpMembers = getUserList(members);
   }
 }

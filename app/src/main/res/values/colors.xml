@@ -202,4 +202,13 @@
   <color name="star_yellow">#FFBA00</color>
   <color name="star_yellow_strong">#FED800</color>
   <color name="star_green">#2ECC4C</color>
+
+  <!-- Watermark -->
+  <color name="watermark.1">#A2D4F9</color>
+  <color name="watermark.2">#FFB5A6</color>
+  <color name="watermark.3">#C9B1FF</color>
+  <color name="watermark.4">#A8EEE6</color>
+  <color name="watermark.5">#938FEA</color>
+  <color name="watermark.6">#F8C5D3</color>
+
 </resources>

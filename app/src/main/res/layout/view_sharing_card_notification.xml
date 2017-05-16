@@ -42,15 +42,11 @@
           />
       <include layout="@layout/view_separator_simple" />
 
-      <LinearLayout
-          android:id="@+id/imgGrpMembersAvatar"
+      <com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout
+          android:id="@+id/avatarsSuperposedView"
           android:layout_width="match_parent"
-          android:layout_height="70dp"
-          android:layout_marginBottom="10dp"
-          android:layout_marginTop="10dp"
-          android:orientation="horizontal"
+          android:layout_height="wrap_content"
           />
-
       <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"

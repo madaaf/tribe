@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shareWatermarkViewBg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue.2"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="30dp"
+    >
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="10dp"
+      android:src="@drawable/picto_watermark"
+      />
+
+
+  <com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout
+      android:id="@+id/avatarsSuperposedView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      />
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:orientation="horizontal"
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/live_sharing_infos_i_spent"
+        style="@style/Title.2.Black40"
+        />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtMinutesSharingCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/live_sharing_infos_you_mins"
+        style="@style/Title.2.Black"
+        />
+  </LinearLayout>
+
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/live_sharing_infos_you_with"
+        style="@style/Title.2.Black40"
+        />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtFriendsSharingCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/live_sharing_infos_you_friends"
+        style="@style/Title.2.Black"
+        />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/live_sharing_infos_on_a"
+        style="@style/Title.2.Black"
+        />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtSharingCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/live_sharing_infos_live_call"
+        style="@style/Title.2.Black"
+        />
+  </LinearLayout>
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="20dp"
+      android:src="@drawable/picto_os_cta"
+      />
+
+</LinearLayout>

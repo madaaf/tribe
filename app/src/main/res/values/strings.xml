@@ -432,8 +432,8 @@
 	<string name="live_sharing_infos_you_mins">%1$d mins</string>
 	<string name="live_sharing_infos_you_min">%1$d min</string>
 	<string name="live_sharing_infos_you_with">with</string>
-	<string name="live_sharing_infos_you_friends">%1$d friends!</string>
-	<string name="live_sharing_infos_you_friend">%1$d friend!</string>
+	<string name="live_sharing_infos_you_friends">%1$d friends</string>
+	<string name="live_sharing_infos_you_friend">%1$d friend</string>
 	<string name="live_sharing_share">Share it!</string>
 	<string name="live_sharing_infos_i_spent">I just spent</string>
 	<string name="live_sharing_infos_on_a">on a</string>

@@ -23,6 +23,7 @@ import com.facebook.share.widget.ShareDialog;
 import com.tarek360.instacapture.InstaCapture;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
@@ -38,18 +39,26 @@ public class SharingCardNotificationView extends LifeNotification {
 
   public static final String CALL_GRP_MEMBERS = "CALL_GRP_MEMBERS";
 
+  private static final String PACKAGE_SNAPSHAT = "com.snapchat.android";
+  private static final String PACKAGE_INSTA = "com.instagram.android";
+  private static final String PACKAGE_TWITTER = "com.twitter.android";
+  private static final String PACKAGE_FACEBOOK = "CALL_GRP_MEMBERS";
+
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
   @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
+  @BindView(R.id.avatarsSuperposedView) AvatarsSuperposedLayout avatarsSuperposedLayout;
 
   // VARIABLES
   private LayoutInflater inflater;
-
   private Unbinder unbinder;
   private Context context;
   private List<GroupMember> prefilledGrpMembers = new ArrayList<>();
   protected LoginManager loginManager;
   private CallbackManager callbackManager;
+  private String txtMin = " ";
+  private String txtFriend = " ";
+  private List<TribeGuest> members;
 
   public SharingCardNotificationView(@NonNull Context context, List<TribeGuest> members,
       double durationCall) {
@@ -65,7 +74,7 @@ public class SharingCardNotificationView extends LifeNotification {
 
   private void initView(Context context, List<TribeGuest> members, double durationCall) {
     this.context = context;
-
+    this.members = members;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_sharing_card_notification, this, true);
@@ -75,21 +84,20 @@ public class SharingCardNotificationView extends LifeNotification {
     int nbrFriends = members.size();
     int duration = (int) durationCall;
 
-    String txtMin =
-        (duration > 1) ? context.getString(R.string.live_sharing_infos_you_mins, duration)
-            : context.getString(R.string.live_sharing_infos_you_min, duration);
+    txtMin += (duration > 1) ? context.getString(R.string.live_sharing_infos_you_mins, duration)
+        : context.getString(R.string.live_sharing_infos_you_min, duration);
 
-    String txtFriend =
+    txtFriend +=
         (nbrFriends > 1) ? context.getString(R.string.live_sharing_infos_you_friends, nbrFriends)
             : context.getString(R.string.live_sharing_infos_you_friend, nbrFriends);
 
-    txtMinutes.setText(" " + txtMin);
-    txtFriends.setText(" " + txtFriend);
+    txtMinutes.setText(txtMin);
+    txtFriends.setText(txtFriend);
   }
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    drawAvatarsAndNamesMembers(members);
+    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members);
     prefilledGrpMembers = getUserList(members);
   }
 
@@ -97,46 +105,26 @@ public class SharingCardNotificationView extends LifeNotification {
   // ACTION CLICK  //
   ///////////////////
 
-  private void setImageIntent(String packageTitle) {
-    subscriptions.add(InstaCapture.getInstance((Activity) context)
-        .captureRx()
-        .subscribe(new Subscriber<Bitmap>() {
-          @Override public void onCompleted() {
-          }
-
-          @Override public void onError(Throwable e) {
-          }
-
-          @Override public void onNext(Bitmap bitmap) {
-
-            String pathofBmp =
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "title",
-                    null);
-            Uri bmpUri = Uri.parse(pathofBmp);
-            final Intent emailIntent1 = new Intent(android.content.Intent.ACTION_SEND);
-            emailIntent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            emailIntent1.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            emailIntent1.setType("image/png");
-            emailIntent1.setPackage(packageTitle);
-            context.startActivity(emailIntent1);
-          }
-        }));
-  }
-
   @OnClick(R.id.btnInsta) void onClickInstaBtn() {
-    setImageIntent("com.instagram.android");
+    setImageIntent(PACKAGE_INSTA);
   }
 
   @OnClick(R.id.btnSnap) void onClickSnapBtn() {
-    setImageIntent("com.snapchat.android");
+    setImageIntent(PACKAGE_SNAPSHAT);
   }
 
   @OnClick(R.id.btnTwitter) void onClickTwitterBtn() {
-    setImageIntent("com.twitter.android");
+    setImageIntent(PACKAGE_TWITTER);
   }
 
   @OnClick(R.id.btnFacebook) void onClickFacebookBtn() {
 
+  }
+
+  private void setImageIntent(String packageTxt) {
+    ShareWatermarkView view = new ShareWatermarkView(context);
+    view.setParam(txtMin, txtFriend, screenUtils.getWidthPx(), screenUtils.getHeightPx());
+    view.initView(packageTxt, members);
   }
 
   @OnClick(R.id.btnShare) void onClickShareBtn() {
@@ -175,4 +163,38 @@ public class SharingCardNotificationView extends LifeNotification {
     }
   }
 }
+  /*
+  private void initView(String packageTitle) {
+    subscriptions.add(InstaCapture.getInstance((Activity) context)
+        .captureRx()
+        .subscribe(new Subscriber<Bitmap>() {
+          @Override public void onCompleted() {
+          }
+
+          @Override public void onError(Throwable e) {
+          }
+
+          @Override public void onNext(Bitmap bitmap) {
+
+            String pathofBmp =
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "title",
+                    null);
+            Uri bmpUri = Uri.parse(pathofBmp);
+            final Intent emailIntent1 = new Intent(android.content.Intent.ACTION_SEND);
+            emailIntent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            emailIntent1.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            emailIntent1.setType("image/png");
+            emailIntent1.setPackage(packageTitle);
+            context.startActivity(emailIntent1);
+          }
+        }));
+  }
+  */
+
+
+
+
+
+
+
 
