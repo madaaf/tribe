@@ -219,6 +219,10 @@
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
+	<string name="onboarding_user_alert_call_link_title">Looks great. Your first call link is ready! :metal:</string>
+	<string name="onboarding_user_alert_call_link_msg">Small tips: Send this link to a bunch of friends you\'d like to video call at once.</string>
+	<string name="onboarding_user_alert_call_link_iMessage">Haha, just downloaded Tribe, it looks lit :fire: Can you try with me real quick ? It\'s now on %1$s</string>
+	<string name="onboarding_user_alert_call_link_content"></string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Find your friends</string>

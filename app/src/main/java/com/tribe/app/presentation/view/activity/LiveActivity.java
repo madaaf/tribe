@@ -814,7 +814,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       Bundle extra = new Bundle();
       extra.putSerializable(SharingCardNotificationView.CALL_GRP_MEMBERS,
           (Serializable) peopleInLive);
-      extra.putDouble("DURATION_CALL", viewLive.getDuration());
+      extra.putDouble(SharingCardNotificationView.DURATION_CALL, viewLive.getDuration());
       returnIntent.putExtras(extra);
     } else if ((liveIsInvite
         || !activeUersIdsInvitedInLiveRoom.isEmpty()

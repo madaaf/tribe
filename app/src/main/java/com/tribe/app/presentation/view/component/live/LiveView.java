@@ -1259,6 +1259,10 @@ public class LiveView extends FrameLayout {
     return null;
   }
 
+  public User getUser() {
+    return user;
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////

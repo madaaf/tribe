@@ -257,7 +257,7 @@ public class NotificationContainerView extends FrameLayout {
     } else if (data.getBooleanExtra(DISPLAY_SHARING_NOTIF, false) && extra != null) {
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           SharingCardNotificationView.CALL_GRP_MEMBERS);
-      double durationCall = (double) extra.getDouble("DURATION_CALL");
+      double durationCall = extra.getDouble(SharingCardNotificationView.DURATION_CALL);
       viewToDisplay = new SharingCardNotificationView(context, members, durationCall);
     } else if (displayEnjoyingTribeView) {
       viewToDisplay = new EnjoyingTribeNotificationView(context);

@@ -15,6 +15,7 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class CreateGroupNotificationView extends LifeNotification {
 
   @BindView(R.id.createGrpNotificationView) LinearLayout notificationView;
   @BindView(R.id.avatarsSuperposedView) AvatarsSuperposedLayout avatarsSuperposedView;
+  @BindView(R.id.txtGrpMembersNames) TextViewFont txtGrpMembersNames;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -74,7 +76,20 @@ public class CreateGroupNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    avatarsSuperposedView.drawAvatarsAndNamesMembers(members, Color.WHITE);
+    setNamesMembers(members);
+    avatarsSuperposedView.drawAvatarsMembersLayout(members, Color.WHITE);
     prefilledGrpMembers = getUserList(members);
+  }
+
+  private void setNamesMembers(List<TribeGuest> members) {
+    String txtNames = "";
+    for (int i = 0; i < members.size(); i++) {
+      TribeGuest tribeGuest = members.get(i);
+      txtNames += tribeGuest.getDisplayName();
+      if (!((members.size() - 1) == i)) {
+        txtNames += ", ";
+      }
+    }
+    txtGrpMembersNames.setText(txtNames);
   }
 }

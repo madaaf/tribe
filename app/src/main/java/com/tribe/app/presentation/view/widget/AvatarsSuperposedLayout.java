@@ -13,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -20,6 +21,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -31,8 +33,8 @@ public class AvatarsSuperposedLayout extends LinearLayout {
 
   protected final static int AVATARS_SIZE = 55;
 
+  @Inject User user;
   @Inject ScreenUtils screenUtils;
-  @Nullable @BindView(R.id.txtGrpMembersNames) TextViewFont txtGrpMembersNames;
   @Nullable @BindView(R.id.imgGrpMembersAvatar) LinearLayout avatarsContainer;
 
   // VARIABLES
@@ -78,21 +80,23 @@ public class AvatarsSuperposedLayout extends LinearLayout {
     return new ActivityModule(((Activity) getContext()));
   }
 
-  public void drawAvatarsAndNamesMembers(List<TribeGuest> members, int backgroundColor) {
+  public void drawAvatarsMembersLayout(List<TribeGuest> membersList, int backgroundColor) {
+    List<TribeGuest> members = new ArrayList<>();
+    members.addAll(membersList);
     LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     LinearLayout layout = new LinearLayout(getContext());
     layout.setOrientation(LinearLayout.HORIZONTAL);
     layout.setGravity(Gravity.CENTER);
     layout.setLayoutParams(params);
 
-    String txtNames = "";
+    // add myself
+    members.add(0,
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+            null, false, user.getUsername()));
+
     for (int i = 0; i < members.size(); i++) {
 
       TribeGuest tribeGuest = members.get(i);
-      txtNames += tribeGuest.getDisplayName();
-      if (!((members.size() - 1) == i)) {
-        txtNames += ", ";
-      }
       AvatarView avatarView = new AvatarView(getContext());
 
       avatarView.setBackgroundResource(R.drawable.shape_circle_white);
@@ -113,6 +117,5 @@ public class AvatarsSuperposedLayout extends LinearLayout {
       layout.addView(avatarView);
     }
     avatarsContainer.addView(layout);
-    if (txtGrpMembersNames != null) txtGrpMembersNames.setText(txtNames);
   }
 }

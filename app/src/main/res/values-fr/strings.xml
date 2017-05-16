@@ -219,6 +219,10 @@
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Aller plus vite avec facebook !</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
+	<string name="onboarding_user_alert_call_link_title">Votre premier lien d\'appel vidéo est prêt! :metal:</string>
+	<string name="onboarding_user_alert_call_link_msg">Petit conseil: Envoyez ce lien à vos amis que vous aimerize appeler ensembles.</string>
+	<string name="onboarding_user_alert_call_link_iMessage">Ouvrir iMessage</string>
+	<string name="onboarding_user_alert_call_link_content">Haha, je viens de télécharger Tribe, ça à l\'air cool! :fire: Tu peux essayer avec moi rapidement ? 9a se passe ici %1$s</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Retrouver vos amis</string>

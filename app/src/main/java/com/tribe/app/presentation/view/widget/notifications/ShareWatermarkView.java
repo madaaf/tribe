@@ -46,6 +46,7 @@ public class ShareWatermarkView extends FrameLayout {
   private Unbinder unbinder;
   private String txtFriend, txtMinute;
 
+
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
   @BindView(R.id.txtSharingCard) TextViewFont txtSharingCard;
@@ -84,7 +85,7 @@ public class ShareWatermarkView extends FrameLayout {
     };
     int color = getRandom(colors);
     bg.setBackgroundColor(color);
-    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members, color);
+    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, color);
     setIntent(packageTitle);
   }
 

@@ -25,6 +25,7 @@ import java.util.List;
 public class SharingCardNotificationView extends LifeNotification {
 
   public static final String CALL_GRP_MEMBERS = "CALL_GRP_MEMBERS";
+  public static final String DURATION_CALL = "DURATION_CALL";
 
   public static final String PACKAGE_SNAPSHAT = "com.snapchat.android";
   public static final String PACKAGE_INSTA = "com.instagram.android";
@@ -82,7 +83,7 @@ public class SharingCardNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members, Color.WHITE);
+    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, Color.WHITE);
     prefilledGrpMembers = getUserList(members);
   }
 
