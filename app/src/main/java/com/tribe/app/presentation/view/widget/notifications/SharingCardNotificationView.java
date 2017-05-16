@@ -6,13 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.facebook.CallbackManager;
-import com.facebook.login.LoginManager;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.GroupMember;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
@@ -37,7 +34,6 @@ public class SharingCardNotificationView extends LifeNotification {
 
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
-  @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
   @BindView(R.id.avatarsSuperposedView) AvatarsSuperposedLayout avatarsSuperposedLayout;
 
   // VARIABLES
@@ -45,8 +41,6 @@ public class SharingCardNotificationView extends LifeNotification {
   private Unbinder unbinder;
   private Context context;
   private List<GroupMember> prefilledGrpMembers = new ArrayList<>();
-  protected LoginManager loginManager;
-  private CallbackManager callbackManager;
   private String txtMin = " ";
   private String txtFriend = " ";
   private List<TribeGuest> members;

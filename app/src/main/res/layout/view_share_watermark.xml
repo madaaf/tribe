@@ -33,18 +33,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_i_spent"
-        style="@style/Title.2.Black40"
+        style="@style/Circular.2.White40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtMinutesSharingCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_you_mins"
-        style="@style/Title.2.Black"
+        style="@style/Circular.2"
         />
   </LinearLayout>
 
@@ -61,7 +59,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_you_with"
-        style="@style/Title.2.Black40"
+        style="@style/Circular.2.White40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtFriendsSharingCard"
@@ -71,7 +69,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_you_friends"
-        style="@style/Title.2.Black"
+        style="@style/Circular.2"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
@@ -80,7 +78,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_on_a"
-        style="@style/Title.2.Black40"
+        style="@style/Circular.2.White40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtSharingCard"
@@ -90,7 +88,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_live_call"
-        style="@style/Title.2.Black"
+        style="@style/Circular.2"
         />
   </LinearLayout>
 
