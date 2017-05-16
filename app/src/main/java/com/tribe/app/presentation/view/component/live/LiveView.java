@@ -603,8 +603,10 @@ public class LiveView extends FrameLayout {
             for (TribeGuest trg : tribeGuests) {
               if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
                   .containsKey(trg.getId())) {
-                addTribeGuest(trg);
-                onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+                if (!user.getId().equals(trg.getId())) {
+                  addTribeGuest(trg);
+                  onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+                }
               }
             }
           }
