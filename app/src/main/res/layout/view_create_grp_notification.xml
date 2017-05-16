@@ -14,7 +14,6 @@
       android:weightSum="3"
       >
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,6 +23,7 @@
         android:orientation="vertical"
         android:weightSum="1"
         >
+
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -36,13 +36,10 @@
           style="@style/Headline.Black.2"
           />
 
-      <LinearLayout
-          android:id="@+id/imgGrpMembersAvatar"
+      <com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout
+          android:id="@+id/avatarsSuperposedView"
           android:layout_width="match_parent"
-          android:layout_height="70dp"
-          android:layout_marginBottom="20dp"
-          android:layout_marginTop="20dp"
-          android:orientation="horizontal"
+          android:layout_height="wrap_content"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont

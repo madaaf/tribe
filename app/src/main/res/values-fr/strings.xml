@@ -100,8 +100,8 @@
 	<string name="live_notification_action_hang_live">Rejoindre !</string>
 	<string name="live_notification_action_decline">Rejeter</string>
 	<string name="live_notification_action_add_as_friend">Ajouter en ami</string>
-	<string name="live_notification_action_hang_live_friend">Appeler %1$s</string>
-	<string name="live_notification_action_hang_live_group">Appeler %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
+	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
