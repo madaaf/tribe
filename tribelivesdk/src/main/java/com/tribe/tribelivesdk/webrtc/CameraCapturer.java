@@ -10,16 +10,20 @@
 
 package com.tribe.tribelivesdk.webrtc;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
+import android.util.Log;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
-import java.io.FileNotFoundException;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import org.webrtc.CameraEnumerator;
@@ -49,6 +53,9 @@ import timber.log.Timber;
   private final Handler uiThreadHandler;
   private boolean processing = false;
   private int frameCount = 0;
+  private int[] argb;
+  private byte[] yuvOut;
+  private Bitmap bitmap;
 
   private Subscription subscription;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
@@ -63,19 +70,20 @@ import timber.log.Timber;
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
                 .doOnNext(frame -> {
-                  capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
-                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+                  long stepStart = System.nanoTime();
+                  libYuvConverter.yuvToRgb(frame.getData(), width, height, argb, yuvOut);
+                  long stepLibYuvConverter = System.nanoTime();
+                  Timber.d("LibYuvConverter : "
+                      + (stepLibYuvConverter - stepStart) / 1000000.0f
+                      + " ms");
 
-                  if (frameCount == 30) {
-                    Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                    byte[] rgb = new byte[frame.getWidth() * frame.getHeight() * 4];
-                    libYuvConverter.yuvToRgb(frame.getData(), width, height, rgb);
-                    Timber.d("libYuvConverter done");
-                    Timber.d("Bmp : " + bmp);
-                    bmp = BitmapFactory.decodeByteArray(rgb, 0, rgb.length);
-                    Timber.d("Heyyyaaaa");
-                    Timber.d("Bmp 2 : " + bmp);
-                  }
+                  //Bitmap bmp = bitmap;
+                  //bmp.setPixels(argb, 0, frame.getWidth(), 0, 0, frame.getWidth(),
+                  //    frame.getHeight());
+                  //savePNGImageToGallery(bmp, applicationContext, "opencvtest.png");
+
+                  capturerObserver.onByteBufferFrameCaptured(yuvOut, frame.getWidth(),
+                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
 
                   frameCount++;
                 })
@@ -195,6 +203,9 @@ import timber.log.Timber;
           return;
         }
         if (!firstFrameObserved) {
+          argb = new int[width * height];
+          yuvOut = new byte[data.length];
+          bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
           eventsHandler.onFirstFrameAvailable();
           firstFrameObserved = true;
         }
@@ -473,14 +484,37 @@ import timber.log.Timber;
       Context applicationContext, SurfaceTextureHelper surfaceTextureHelper, String cameraName,
       int width, int height, int framerate);
 
-  public void saveByteArrayToPNG(byte[] bytes) {
+  protected void savePNGImageToGallery(Bitmap bmp, Context context, String baseFilename) {
     try {
-      String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tiago.jpg";
-      FileOutputStream stream = new FileOutputStream(path);
-      stream.write(bytes);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+      // Get the file path to the SD card.
+      File dir = Environment.getExternalStoragePublicDirectory("tribeapp");
+      if (!dir.exists()) dir.mkdirs();
+
+      String baseFolder = dir.getAbsolutePath() + "/";
+      File file = new File(baseFolder + baseFilename);
+      if (file.exists()) file.delete();
+      Log.i(TAG, "Saving the processed image to file [" + file.getAbsolutePath() + "]");
+
+      // Open the file.
+      OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+      // Save the image file as PNG.
+      bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+      out.flush();    // Make sure it is saved to file soon, because we are about to add it to the Gallery.
+      out.close();
+
+      // Add the PNG file to the Android Gallery.
+      ContentValues image = new ContentValues();
+      image.put(MediaStore.Images.Media.TITLE, baseFilename);
+      image.put(MediaStore.Images.Media.DISPLAY_NAME, baseFilename);
+      image.put(MediaStore.Images.Media.DESCRIPTION, "Processed by the Cartoonifier App");
+      image.put(MediaStore.Images.Media.DATE_TAKEN,
+          System.currentTimeMillis()); // Milliseconds since 1970 UTC.
+      image.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+      image.put(MediaStore.Images.Media.ORIENTATION, 0);
+      image.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
+      Uri result =
+          context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

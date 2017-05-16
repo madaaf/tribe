@@ -100,8 +100,8 @@
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
 	<string name="live_notification_action_add_as_friend">Add as friend</string>
-	<string name="live_notification_action_hang_live_friend">Video call %1$s</string>
-	<string name="live_notification_action_hang_live_group">Video call %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Join %1$s \'s video call</string>
+	<string name="live_notification_action_hang_live_group">Join %1$s \'s video call</string>
 	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
 	<string name="live_notification_leave">Leave to video call %1$s</string>
 	<string name="live_notification_decline">Decline the call</string>

@@ -1,103 +1,57 @@
-#include <jni.h>
 #include <libyuv.h>
-#include <android/log.h>
 #include <stdio.h>
 
 #ifdef __ANDROID__
-
-#include "android.h"
-
-using namespace libyuv;
-
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "tribelibyuv::", __VA_ARGS__))
 
-bool CheckException(JNIEnv *jni) {
-    if (jni->ExceptionCheck()) {
-        jni->ExceptionDescribe();
-        jni->ExceptionClear();
-        return true;
-    }
-    return false;
-}
+#include <jni.h>
+#include <android/log.h>
+
+#endif
+
+using namespace libyuv;
 
 extern "C" {
-
-FILE *outfile;
-
-//JNIEXPORT void JNICALL Java_com_jerikc_android_demo_camera_LibyuvCore_init
-//        (JNIEnv *env, jobject jThis, jint src_w, jint src_h, jint dst_w, jint dst_h, jstring url) {
-//    const char *output_file_path = env->GetStringUTFChars(url, (jboolean) 0);
-//
-//    pYuvCoreContext = (YuvCoreContext *) malloc(sizeof(YuvCoreContext));
-//    pYuvCoreContext->src_width = src_w;
-//    pYuvCoreContext->src_height = src_h;
-//    pYuvCoreContext->dst_width = dst_w;
-//    pYuvCoreContext->dst_height = dst_h;
-//    pYuvCoreContext->src_frame = NULL;
-//    pYuvCoreContext->src_size = 0;
-//    pYuvCoreContext->i420 = NULL;
-//    pYuvCoreContext->i420_size = 0;
-//
-//    pYuvCoreContext->outfile = fopen(output_file_path, "wb");
-//    if (!pYuvCoreContext->outfile) {
-//        free(pYuvCoreContext);
-//        throwJavaException(env, "java/io/IOException",
-//                           "Could not open the output file");
-//        return;
-//    }
-//    (*env)->ReleaseStringUTFChars(env, url, output_file_path);
-//
-//}
 
 JNIEXPORT jint JNICALL
 Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_yuvToRgb(JNIEnv *env, jobject,
                                                             jbyteArray yuvArray,
                                                             jint width,
                                                             jint height,
-                                                            jbyteArray argbArray) {
+                                                            jintArray argbArray,
+                                                            jbyteArray yuvOutArray) {
 
-//    jbyte *yuv = env->GetByteArrayElements(yuvArray, NULL);
-//
-//    if (CheckException(env)) return -1;
-//
-//    jbyte *rgb = env->GetByteArrayElements(argbArray, NULL);
-//
-//    if (CheckException(env)) return -1;
-//
-//    const uint8_t *src_y = (uint8_t *) yuv;
-//    const uint8_t *src_vu = (uint8_t *) yuv + (width * height);
-//    int src_stride_y = width;
-//    int src_stride_vu = (width + 1) >> 1;
-//
-//    return libyuv::NV12ToARGB(src_y, src_stride_y,
-//                              src_vu, src_stride_vu,
-//                              (uint8_t *) rgb, width << 2,
-//                              width, height);
+    jbyte *yuv = (jbyte *) env->GetPrimitiveArrayCritical(yuvArray, 0);
+    uint8_t *rgbData = (uint8_t *) env->GetPrimitiveArrayCritical(argbArray, 0);
+    jbyte *yuvOut = (jbyte *) env->GetPrimitiveArrayCritical(yuvOutArray, 0);
 
-    ll2p
-    jbyte *yuv = env->GetByteArrayElements(yuvArray, NULL);
-    jbyte *rgb = env->GetByteArrayElements(argbArray, NULL);
-
-    LOGI("HEYAAAAA");
-
+    const uint8 *src_y = (uint8 *) yuv;
     int src_stride_y = width;
-    uint8 *src_vu = (uint8 *) yuv + width * height;
-    uint8 *src_y = (uint8 *) yuv;
-    uint8 *dst_rgb = (uint8 *) rgb;
+    const uint8 *src_vu = src_y + width * height;
     int src_stride_vu = width;
-    int dst_stride_argb = width * sizeof(int);
+    int dst_stride_argb = width << 2;
 
-    LOGI("OYEE SAPAPAYAAAA %s", rgb);
+    int r = NV21ToARGB(src_y, src_stride_y,
+                       src_vu, src_stride_vu,
+                       rgbData, dst_stride_argb,
+                       width, height);
 
-    int r = libyuv::NV21ToARGB(src_y, src_stride_y, src_vu, src_stride_vu, dst_rgb,
-                               dst_stride_argb, width, height);
-    LOGI("Return code : %d", +r);
 
-    LOGI("OYEE SAPAPAYAAAA 22222 %s", rgb);
+    int src_stride_argb = width << 2;
+    uint8 *dst_y = (uint8 *) yuvOut;
+    int dst_stride_y = width;
+    uint8 *dst_vu = dst_y + width * height;
+    int dst_stride_vu = width;
 
-    env->ReleaseByteArrayElements(yuvArray, yuv, 0);
-    env->ReleaseByteArrayElements(argbArray, rgb, 0);
+    r = ARGBToNV21(rgbData, src_stride_argb,
+                   dst_y, dst_stride_y,
+                   dst_vu, dst_stride_vu,
+                   width, height);
+
+    env->ReleasePrimitiveArrayCritical(yuvArray, yuv, 0);
+    env->ReleasePrimitiveArrayCritical(argbArray, rgbData, 0);
+    env->ReleasePrimitiveArrayCritical(yuvOutArray, yuvOut, 0);
 
     return r;
 }
