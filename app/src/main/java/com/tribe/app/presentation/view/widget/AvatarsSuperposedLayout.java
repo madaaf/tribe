@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -33,7 +34,6 @@ public class AvatarsSuperposedLayout extends LinearLayout {
   @Inject ScreenUtils screenUtils;
   @Nullable @BindView(R.id.txtGrpMembersNames) TextViewFont txtGrpMembersNames;
   @Nullable @BindView(R.id.imgGrpMembersAvatar) LinearLayout avatarsContainer;
-
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
@@ -77,7 +77,7 @@ public class AvatarsSuperposedLayout extends LinearLayout {
     return new ActivityModule(((Activity) getContext()));
   }
 
-  public void drawAvatarsAndNamesMembers(List<TribeGuest> members) {
+  public void drawAvatarsAndNamesMembers(List<TribeGuest> members, int backgroundColor) {
     LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     LinearLayout layout = new LinearLayout(getContext());
     layout.setOrientation(LinearLayout.HORIZONTAL);
@@ -93,7 +93,10 @@ public class AvatarsSuperposedLayout extends LinearLayout {
         txtNames += ", ";
       }
       AvatarView avatarView = new AvatarView(getContext());
-      avatarView.setBackgroundResource(R.drawable.shape_circle_transparent);
+
+      avatarView.setBackgroundResource(R.drawable.shape_circle_white);
+      ((GradientDrawable) avatarView.getBackground()).setColor(backgroundColor);
+
       int padding = getResources().getDimensionPixelSize(R.dimen.margin_horizonta_avatrs);
       avatarView.setPadding(padding, padding, padding, padding);
       avatarView.load(tribeGuest.getPicture());

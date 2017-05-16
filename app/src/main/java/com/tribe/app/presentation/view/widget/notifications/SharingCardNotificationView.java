@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -97,7 +98,7 @@ public class SharingCardNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members);
+    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members, Color.WHITE);
     prefilledGrpMembers = getUserList(members);
   }
 

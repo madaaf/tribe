@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.notifications;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -73,7 +74,7 @@ public class CreateGroupNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    avatarsSuperposedView.drawAvatarsAndNamesMembers(members);
+    avatarsSuperposedView.drawAvatarsAndNamesMembers(members, Color.WHITE);
     prefilledGrpMembers = getUserList(members);
   }
 }

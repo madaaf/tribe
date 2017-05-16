@@ -69,7 +69,7 @@ public class ShareWatermarkView extends FrameLayout {
 
   public void initView(String packageTitle, List<TribeGuest> members) {
     setTextLayout();
-    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members);
+
     int[] colors = new int[] {
         ContextCompat.getColor(context, R.color.watermark_1),
         ContextCompat.getColor(context, R.color.watermark_2),
@@ -78,7 +78,9 @@ public class ShareWatermarkView extends FrameLayout {
         ContextCompat.getColor(context, R.color.watermark_5),
         ContextCompat.getColor(context, R.color.watermark_6)
     };
-    bg.setBackgroundColor(getRandom(colors));
+    int color = getRandom(colors);
+    bg.setBackgroundColor(color);
+    avatarsSuperposedLayout.drawAvatarsAndNamesMembers(members, color);
     setImageContent(packageTitle);
   }
 
