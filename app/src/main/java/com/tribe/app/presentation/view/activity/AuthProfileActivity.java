@@ -27,6 +27,7 @@ import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.mvp.view.AccessMVPView;
 import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -37,6 +38,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
@@ -406,10 +408,22 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   }
 
-  @Override public void successUpdateUser(User user) {
+  @Override public void successUpdateUser(User user) {//MADA
     this.user.copy(user);
     Timber.e("SOEF successUpdateUser");
-    navigator.navigateToHomeFromLogin(this, deepLink, countryCode);
+
+    subscriptions.add(DialogFactory.dialog(this,
+        EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
+        getString(R.string.onboarding_user_alert_call_link_msg),
+        getString(R.string.onboarding_user_alert_call_link_sms), null)
+        .filter(x -> x == true)
+        .subscribe(a -> {
+          navigator.navigateToHomeFromLogin(this, deepLink, countryCode, false);
+          String linkId = StringUtils.generateLinkId();
+          String url = StringUtils.getUrlFromLinkId(this, linkId);
+          navigator.openSMSDefaultApp(this, EmojiParser.demojizedText(
+              getString(R.string.onboarding_user_alert_call_link_content, url)));
+        }));
   }
 
   @Override public void successFacebookLogin() {

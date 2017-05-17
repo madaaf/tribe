@@ -150,7 +150,7 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
           } else {
             tagManager.updateUser(user);
             tagManager.setUserId(user.getId());
-            navigator.navigateToHomeFromLogin(this, null, countryCode);
+            navigator.navigateToHomeFromLogin(this, null, countryCode, true);
          /*   navigator.navigateToAuthAccess(this, null,
                 "+" + phoneUtils.getCountryCode(loginEntity.getUsername()));*/
           }
