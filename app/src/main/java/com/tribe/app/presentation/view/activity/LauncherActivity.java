@@ -11,7 +11,6 @@ import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsException;
 import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.ErrorLogin;
@@ -58,8 +57,8 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // getWindow().setBackgroundDrawable(null);
-    setContentView(R.layout.activity_main);
+    getWindow().setBackgroundDrawable(null);
+    //setContentView(R.layout.activity_main);
     initDependencyInjector();
 
     Branch branch = Branch.getInstance();
@@ -143,14 +142,14 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(time -> {
+          String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
+
           if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
               user.getUsername())) {
-            navigator.navigateToAuthProfile(this, null, loginEntity);
+            navigator.navigateToAuthProfile(this, null, loginEntity, countryCode);
           } else {
             tagManager.updateUser(user);
             tagManager.setUserId(user.getId());
-            String countryCode =
-                String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
             navigator.navigateToHomeFromLogin(this, null, countryCode);
          /*   navigator.navigateToAuthAccess(this, null,
                 "+" + phoneUtils.getCountryCode(loginEntity.getUsername()));*/

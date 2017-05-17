@@ -11,44 +11,63 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.Group;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.AccessPresenter;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
+import com.tribe.app.presentation.mvp.view.AccessMVPView;
 import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
-public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPView {
+import static com.tribe.app.presentation.utils.Extras.COUNTRY_CODE;
+
+public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPView, AccessMVPView {
 
   private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
   private static final String FACEBOOK_ENTITY = "FACEBOOK_ENTITY";
   private static final String DEEPLINK = "DEEPLINK";
   private static final String URI_PICTURE = "URI_PICTURE";
 
-  public static Intent getCallingIntent(Context context, LoginEntity loginEntity) {
+  public static Intent getCallingIntent(Context context, LoginEntity loginEntity,
+      String countryCode) {
     Intent intent = new Intent(context, AuthProfileActivity.class);
     intent.putExtra(LOGIN_ENTITY, loginEntity);
+    intent.putExtra(COUNTRY_CODE, countryCode);
     return intent;
   }
 
@@ -62,7 +81,13 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Inject PhoneUtils phoneUtils;
 
+  @Inject @AddressBook Preference<Boolean> addressBook;
+
+  @Inject @LastSync Preference<Long> lastSync;
+
   @Inject ProfileInfoPresenter profileInfoPresenter;
+
+  @Inject AccessPresenter accessPresenter;
 
   @BindView(R.id.profileInfoView) ProfileInfoView profileInfoView;
 
@@ -79,15 +104,24 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private FacebookEntity facebookEntity;
   private Uri uriPicture;
   private AccessToken accessToken;
+  private int totalTimeSynchro;
+  private int nbFriends = 0;
+  private long timeSyncStart = 0;
+  private RxPermissions rxPermissions;
+  private String countryCode = null;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription lookupSubscription;
+  private Subscription startSubscription;
+  private Subscription endSubscription;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_auth_profile);
 
     unbinder = ButterKnife.bind(this);
+    initIntent(getIntent());
 
     if (savedInstanceState != null) {
       if (savedInstanceState.get(LOGIN_ENTITY) != null) {
@@ -105,8 +139,13 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     }
 
     initDependencyInjector();
+    initResources();
     initParams(getIntent());
     init();
+  }
+
+  private void initIntent(Intent intent) {
+    if (intent != null) countryCode = intent.getStringExtra(COUNTRY_CODE);
   }
 
   @Override protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -129,6 +168,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @Override protected void onStart() {
     super.onStart();
     profileInfoPresenter.onViewAttached(this);
+    accessPresenter.onViewAttached(this);
   }
 
   @Override public void onResume() {
@@ -148,12 +188,16 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override protected void onStop() {
     profileInfoPresenter.onViewDetached();
+    accessPresenter.onViewDetached();
     super.onStop();
   }
 
   @Override protected void onDestroy() {
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (lookupSubscription != null) lookupSubscription.unsubscribe();
+    if (startSubscription != null) startSubscription.unsubscribe();
+    if (endSubscription != null) endSubscription.unsubscribe();
     super.onDestroy();
   }
 
@@ -175,6 +219,15 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private void init() {
+
+    rxPermissions = new RxPermissions(this);
+
+    startSubscription = Observable.timer(0, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> start());
+
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_FindFriendsStart);
+
     subscriptions.add(profileInfoView.onInfoValid().subscribe(b -> {
       if (b) {
         TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_BlueNew);
@@ -213,7 +266,42 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private void manageDeepLink(Intent intent) {
     if (intent != null && intent.getData() != null) {
       deepLink = intent.getData();
+
+      if (deepLink != null && !StringUtils.isEmpty(deepLink.getPath())) {
+        if (deepLink.getPath().startsWith("/g/")) {
+          accessPresenter.lookupGroupInfos(StringUtils.getLastBitFromUrl(deepLink.toString()));
+        }
+      }
     }
+  }
+
+  private void initResources() {
+    totalTimeSynchro = getResources().getInteger(R.integer.time_synchro);
+  }
+
+  private void lookupContacts() {
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
+
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+
+      if (hasPermission) {
+        addressBook.set(true);
+        timeSyncStart = System.currentTimeMillis();
+        accessPresenter.lookupContacts();
+      } else {
+        renderFriendList(new ArrayList<>());
+      }
+    });
+  }
+
+  private void start() {
+    startSubscription.unsubscribe();
+    lookupContacts();
   }
 
   private void getInfoFromFacebook() {
@@ -271,9 +359,57 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
             ? facebookEntity.getId() : null);
   }
 
+  @Override public void renderFriendList(List<User> userList) {
+    lastSync.set(System.currentTimeMillis());
+
+    Map<String, Object> relationsInApp = new HashMap<>();
+
+    for (User user : userList) {
+      relationsInApp.put(user.getId(), user);
+    }
+
+    if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {
+
+      lookupSubscription = Observable.zip(Observable.from(relationsInApp.values()),
+          Observable.interval(0, totalTimeSynchro / relationsInApp.values().size(),
+              TimeUnit.MILLISECONDS).onBackpressureDrop(), (contact, aLong) -> contact)
+          .subscribeOn(Schedulers.newThread())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(relation -> {
+            nbFriends++;
+
+            if (nbFriends == relationsInApp.values().size()) {
+              subscriptions.add(Observable.timer(750, TimeUnit.MILLISECONDS)
+                  .onBackpressureDrop()
+                  .subscribeOn(Schedulers.newThread())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(time -> showCongrats()));
+            }
+          });
+    } else {
+      showCongrats();
+    }
+  }
+
+  private void showCongrats() {
+    endSubscription = Observable.timer(0, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+      //navigator.navigateToHomeFromLogin(this, deepLink, countryCode);
+      Timber.e("SOEF showCongrats");
+    });
+  }
+
+  @Override public void groupInfosFailed() {
+
+  }
+
+  @Override public void groupInfosSuccess(Group group) {
+
+  }
+
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
-    navigator.navigateToAuthAccess(this, deepLink, loginEntity.getCountryCode());
+    Timber.e("SOEF successUpdateUser");
+    navigator.navigateToHomeFromLogin(this, deepLink, countryCode);
   }
 
   @Override public void successFacebookLogin() {

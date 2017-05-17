@@ -18,10 +18,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.activity.AuthAccessActivity;
-import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
-import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -69,11 +66,26 @@ public class Navigator {
     context.startActivity(intent);
   }
 
+  /*  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
+    if (activity != null) {
+      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
+      intent.setData(deepLink);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      activity.finish();
+    }
+  }*/
+
+
+  /*
+
+    */
   /**
    * Goes to the login.
    *
    * @param context A Context needed to open the destiny activity.
-   */
+   */  /*
+
   public void navigateToLogin(Context context, Uri deepLink) {
     if (context != null) {
       Intent intent = AuthActivity.getCallingIntent(context);
@@ -82,11 +94,14 @@ public class Navigator {
     }
   }
 
+    */
+
   /**
    * Opens the country list.
    *
    * @param activity An activity needed to open the destiny activity.
-   */
+   */  /*
+
   public void navigateToCountries(Activity activity) {
     if (activity != null) {
       Intent intent = CountryActivity.getCallingIntent(activity);
@@ -94,10 +109,11 @@ public class Navigator {
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
-
-  public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
+  */
+  public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity,
+      String countryCode) {
     if (activity != null) {
-      Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
+      Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity, countryCode);
       intent.setData(deepLink);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -105,15 +121,7 @@ public class Navigator {
     }
   }
 
-  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
-    if (activity != null) {
-      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
-      intent.setData(deepLink);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-      activity.finish();
-    }
-  }
+
 
   /**
    * Goes to the main grid.

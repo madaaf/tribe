@@ -1,64 +1,8 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
-import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
-import com.digits.sdk.android.AuthCallback;
-import com.digits.sdk.android.AuthConfig;
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsException;
-import com.digits.sdk.android.DigitsSession;
-import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.BuildConfig;
-import com.tribe.app.R;
-import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.domain.entity.ErrorLogin;
-import com.tribe.app.domain.entity.Pin;
-import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
-import com.tribe.app.presentation.mvp.view.AuthMVPView;
-import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.utils.Extras;
-import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.utils.preferences.LastVersionCode;
-import com.tribe.app.presentation.view.component.onboarding.AuthVideoView;
-import com.tribe.app.presentation.view.component.onboarding.CodeView;
-import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
-import com.tribe.app.presentation.view.component.onboarding.StatusView;
-import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
-import com.tribe.app.presentation.view.utils.PhoneUtils;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
-
-public class AuthActivity extends BaseActivity implements AuthMVPView {
-
-  private static int DURATION = 300;
+//public class AuthActivity extends BaseActivity implements AuthMVPView {
+public class AuthActivity {
+  /*private static int DURATION = 300;
   private static int DURATION_MEDIUM = 400;
   private static int DURATION_LONG = 600;
   private static int DURATION_FAST = 150;
@@ -676,5 +620,5 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override public Context context() {
     return this;
-  }
+  }*/
 }
