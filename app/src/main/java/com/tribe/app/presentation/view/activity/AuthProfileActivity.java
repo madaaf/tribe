@@ -13,6 +13,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -30,6 +31,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -68,7 +70,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @BindView(R.id.progressView) CircularProgressView progressView;
 
-  //@BindView(R.id.facebookView) FacebookView facebookView;
+  @BindView(R.id.facebookView) FacebookView facebookView;
 
   // VARIABLES
   private Uri deepLink;
@@ -182,18 +184,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       txtAction.setCustomFont(this, FontUtils.PROXIMA_BOLD);
     }));
 
-    //subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
-    //  if (isReady()) {
-    //    nextStep();
-    //  } else {
-    //    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
-    //    if (FacebookUtils.isLoggedIn()) {
-    //      getInfoFromFacebook();
-    //    } else {
-    //      profileInfoPresenter.loginFacebook();
-    //    }
-    //  }
-    //}));
+    subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
+      if (isReady()) {
+        nextStep();
+      } else {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
+        if (FacebookUtils.isLoggedIn()) {
+          getInfoFromFacebook();
+        } else {
+          profileInfoPresenter.loginFacebook();
+        }
+      }
+    }));
 
     subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
       profileInfoPresenter.lookupUsername(s);

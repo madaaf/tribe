@@ -4,16 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.view.View;
-import android.widget.FrameLayout;
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
-import com.github.jinatonic.confetti.CommonConfetti;
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Group;
@@ -27,8 +20,6 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
-import com.tribe.app.presentation.view.component.onboarding.AccessView;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,14 +49,14 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   @Inject @AddressBook Preference<Boolean> addressBook;
 
   @Inject @LastSync Preference<Long> lastSync;
-
+/*
   @BindView(R.id.viewAccess) AccessView viewAccess;
 
   @BindView(R.id.txtAction) TextViewFont txtAction;
 
   @BindView(R.id.progressView) CircularProgressView progressView;
 
-  @BindView(R.id.layoutConfettis) FrameLayout layoutConfettis;
+  @BindView(R.id.layoutConfettis) FrameLayout layoutConfettis;*/
 
   // VARIABLES
   private Uri deepLink;
@@ -152,24 +143,6 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     }
   }
 
-  @OnClick(R.id.txtAction) void onClickAction() {
-    if (viewAccess.getStatus() == AccessView.NONE) {
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_FindFriendsNext);
-      start();
-    } else if (viewAccess.getStatus() == AccessView.LOADING) {
-      showCongrats();
-    } else if (viewAccess.getStatus() == AccessView.DONE) {
-      endSubscription.unsubscribe();
-      navigator.navigateToHomeFromLogin(this, deepLink, countryCode);
-    }
-  }
-
-  @OnClick(R.id.viewAccess) void onClickAccess() {
-    if (viewAccess.getStatus() == AccessView.NONE) {
-      start();
-    }
-  }
-
   @Override public void renderFriendList(List<User> userList) {
     lastSync.set(System.currentTimeMillis());
 
@@ -180,7 +153,6 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
     }
 
     if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {
-      viewAccess.animateProgress();
 
       lookupSubscription = Observable.zip(Observable.from(relationsInApp.values()),
           Observable.interval(0, totalTimeSynchro / relationsInApp.values().size(),
@@ -189,7 +161,6 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(relation -> {
             nbFriends++;
-            viewAccess.showLoading(nbFriends);
 
             if (nbFriends == relationsInApp.values().size()) {
               subscriptions.add(Observable.timer(750, TimeUnit.MILLISECONDS)
@@ -214,8 +185,6 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
 
   private void start() {
     startSubscription.unsubscribe();
-    viewAccess.showLoading(0);
-    txtAction.setVisibility(View.GONE);
     lookupContacts();
   }
 
@@ -240,21 +209,7 @@ public class AuthAccessActivity extends BaseActivity implements AccessMVPView {
   }
 
   private void showCongrats() {
-    txtAction.setText(R.string.action_next);
-    txtAction.setVisibility(View.VISIBLE);
-
     endSubscription = Observable.timer(TIMER_START, TimeUnit.MILLISECONDS)
         .subscribe(aLong -> navigator.navigateToHomeFromLogin(this, deepLink, countryCode));
-
-    CommonConfetti.rainingConfetti(layoutConfettis, new int[] {
-        ContextCompat.getColor(this, R.color.confetti_1),
-        ContextCompat.getColor(this, R.color.confetti_2),
-        ContextCompat.getColor(this, R.color.confetti_3),
-        ContextCompat.getColor(this, R.color.confetti_4),
-        ContextCompat.getColor(this, R.color.confetti_5),
-        ContextCompat.getColor(this, R.color.confetti_6)
-    }).infinite();
-
-    viewAccess.showCongrats();
   }
 }
