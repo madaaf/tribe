@@ -58,7 +58,6 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     getWindow().setBackgroundDrawable(null);
-    //setContentView(R.layout.activity_main);
     initDependencyInjector();
 
     Branch branch = Branch.getInstance();
@@ -70,16 +69,12 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
     }, this.getIntent().getData(), this);
 
     this.getApplicationComponent().inject(this);
-
-    // finish();
   }
 
   @Override protected void onResume() {
     super.onResume();
     Uri deepLink = getIntent().getData();
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
-      //navigator.navigateToLogin(this, deepLink); // SOEF
-
       AuthConfig.Builder builder = new AuthConfig.Builder();
       builder.withAuthCallBack(new AuthCallback() {
         @Override public void success(DigitsSession session, String phoneNumber) {
@@ -96,7 +91,6 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
       AuthConfig authConfig = builder.build();
       Digits.authenticate(authConfig);
     } else {
-      //navigator.navigateToAuthAccess(this, deepLink, "+850");
       navigator.navigateToHomeFromStart(this, deepLink);
     }
   }
@@ -135,26 +129,16 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
   @Override public void goToConnected(User user) {
     Timber.e("SOEF goToConnected");
     this.currentUser.copy(user);
-
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
-
-    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(time -> {
-          String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
-
-          if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
-              user.getUsername())) {
-            navigator.navigateToAuthProfile(this, null, loginEntity, countryCode);
-          } else {
-            tagManager.updateUser(user);
-            tagManager.setUserId(user.getId());
-            navigator.navigateToHomeFromLogin(this, null, countryCode, true);
-         /*   navigator.navigateToAuthAccess(this, null,
-                "+" + phoneUtils.getCountryCode(loginEntity.getUsername()));*/
-          }
-        }));
+    String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
+    if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
+        user.getUsername())) {
+      navigator.navigateToAuthProfile(this, null, loginEntity, countryCode);
+    } else {
+      tagManager.updateUser(user);
+      tagManager.setUserId(user.getId());
+      navigator.navigateToHomeFromLogin(this, null, countryCode, true);
+    }
   }
 
   @Override public void loginError(ErrorLogin errorLogin) {

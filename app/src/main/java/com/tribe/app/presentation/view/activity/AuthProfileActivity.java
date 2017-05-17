@@ -44,15 +44,12 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -362,7 +359,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   @Override public void renderFriendList(List<User> userList) {
-    lastSync.set(System.currentTimeMillis());
+/*    lastSync.set(System.currentTimeMillis());
 
     Map<String, Object> relationsInApp = new HashMap<>();
 
@@ -390,15 +387,15 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           });
     } else {
       showCongrats();
-    }
+    }*/
   }
 
-  private void showCongrats() {
+/*  private void showCongrats() {
     endSubscription = Observable.timer(0, TimeUnit.MILLISECONDS).subscribe(aLong -> {
       //navigator.navigateToHomeFromLogin(this, deepLink, countryCode);
       Timber.e("SOEF showCongrats");
     });
-  }
+  }*/
 
   @Override public void groupInfosFailed() {
 
