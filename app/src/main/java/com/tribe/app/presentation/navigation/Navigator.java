@@ -110,10 +110,9 @@ public class Navigator {
     }
   }
   */
-  public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity,
-      String countryCode) {
+  public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
     if (activity != null) {
-      Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity, countryCode);
+      Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
       intent.setData(deepLink);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);

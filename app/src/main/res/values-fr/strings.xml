@@ -147,6 +147,8 @@
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
+	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
+	<string name="grid_synced_contacts_banner">Contacts synchronisés!</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>

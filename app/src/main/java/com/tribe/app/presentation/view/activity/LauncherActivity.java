@@ -133,7 +133,7 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
     if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
         user.getUsername())) {
-      navigator.navigateToAuthProfile(this, null, loginEntity, countryCode);
+      navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
