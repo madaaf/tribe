@@ -36,7 +36,6 @@ import org.webrtc.ThreadUtils;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
     implements CameraVideoCapturer {
