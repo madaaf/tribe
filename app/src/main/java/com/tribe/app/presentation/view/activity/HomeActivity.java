@@ -240,9 +240,10 @@ public class HomeActivity extends BaseActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS ||  !PermissionUtils.hasPermissionsContact(rxPermissions) ) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
+    syncContacts();
   }
 
   @Override protected void onRestart() {
@@ -797,20 +798,22 @@ public class HomeActivity extends BaseActivity
   }
 
   private void lookupContacts() {
-    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
-      Bundle bundle = new Bundle();
-      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
-      tagManager.setProperty(bundle);
+    if (stateManager.shouldDisplay(StateManager.PERMISSION_CONTACT)) {
+      stateManager.addTutorialKey(StateManager.PERMISSION_CONTACT);
+      rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+        tagManager.setProperty(bundle);
 
-      Bundle bundleBis = new Bundle();
-      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
-
-      if (hasPermission) {
-        addressBook.set(true);
-        syncContacts();
-      }
-    });
+        Bundle bundleBis = new Bundle();
+        bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+        if (hasPermission) {
+          addressBook.set(true);
+          syncContacts();
+        }
+      });
+    }
   }
 
   @Override public void onAppDidEnterForeground() {
