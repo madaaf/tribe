@@ -240,12 +240,9 @@ public class HomeActivity extends BaseActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
- /*   if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-
-    }*/
-    //SOEF
-    lookupContacts();
-    //renderFriendList(new ArrayList<>());
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS ||  !PermissionUtils.hasPermissionsContact(rxPermissions) ) {
+      lookupContacts();
+    }
   }
 
   @Override protected void onRestart() {

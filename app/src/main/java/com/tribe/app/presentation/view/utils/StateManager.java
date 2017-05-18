@@ -19,7 +19,8 @@ import javax.inject.Singleton;
 
   @StringDef({
       LEAVING_ROOM_POPUP, DRAG_FRIEND_POPUP, BUZZ_FRIEND_POPUP, NEVER_ASK_AGAIN_MICRO_PERMISSION,
-      NEVER_ASK_AGAIN_CAMERA_PERMISSION, NEW_CALL_POPUP, INVITE_POPUP, FRIENDS_POPUP, PROFILE_POPUP
+      NEVER_ASK_AGAIN_CAMERA_PERMISSION, NEVER_ASK_AGAIN_CONTACT_PERMISSION, NEW_CALL_POPUP,
+      INVITE_POPUP, FRIENDS_POPUP, PROFILE_POPUP
   }) public @interface StateKey {
   }
 
@@ -33,6 +34,8 @@ import javax.inject.Singleton;
 
   public static final String NEVER_ASK_AGAIN_MICRO_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
   public static final String NEVER_ASK_AGAIN_CAMERA_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
+  public static final String NEVER_ASK_AGAIN_CONTACT_PERMISSION =
+      "NEVER_ASK_AGAIN_CONTACT_PERMISSION";
 
   @Inject public StateManager(@TribeState Preference<Set<String>> tutorialState) {
     this.tutorialState = tutorialState;

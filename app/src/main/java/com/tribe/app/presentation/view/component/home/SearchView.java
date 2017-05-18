@@ -36,6 +36,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -49,6 +50,7 @@ import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +60,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class SearchView extends FrameLayout implements SearchMVPView {
 
@@ -73,6 +76,10 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   @Inject ContactAdapter contactAdapter;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
+
+  @Inject StateManager stateManager;
+
+  @Inject Navigator navigator;
 
   @Inject TagManager tagManager;
 
@@ -426,7 +433,29 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   }
 
   private void lookupContacts() {
-    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+
+    rxPermissions.requestEach(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(permission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, permission.granted);
+      tagManager.setProperty(bundle);
+
+      if (permission.granted) {
+        addressBook.set(true);
+        sync();
+      } else if (permission.shouldShowRequestPermissionRationale) {
+        Timber.d("Denied contact permission without ask never again");
+        viewFriendsAddressBookLoad.hideLoading();
+      } else {
+        Timber.d("Denied contact permission and ask never again");
+        viewFriendsAddressBookLoad.hideLoading();
+        if (!stateManager.shouldDisplay(StateManager.NEVER_ASK_AGAIN_CONTACT_PERMISSION)) {
+          navigator.navigateToSettingApp(getContext());
+        }
+        stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_CONTACT_PERMISSION);
+      }
+    });
+
+/*    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
       Bundle bundle = new Bundle();
       bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
       tagManager.setProperty(bundle);
@@ -437,7 +466,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
       } else {
         viewFriendsAddressBookLoad.hideLoading();
       }
-    });
+    });*/
   }
 
   private void sync() {
