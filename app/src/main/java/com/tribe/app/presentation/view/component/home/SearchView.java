@@ -364,7 +364,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
     this.contactAdapter.updateSearch(searchResult, filteredContactList);
   }
 
-  private void refactorActions() {
+  public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
     boolean permissionsContact =
         PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();

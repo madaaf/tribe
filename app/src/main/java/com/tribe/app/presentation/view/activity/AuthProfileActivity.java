@@ -87,7 +87,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private RxPermissions rxPermissions;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -116,7 +115,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private void askPermissionAccessContact() {
-    rxPermissions = new RxPermissions(this);
+    RxPermissions rxPermissions = new RxPermissions(this);
     rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
       Bundle bundle = new Bundle();
       bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);

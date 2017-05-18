@@ -92,7 +92,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -244,8 +243,9 @@ public class HomeActivity extends BaseActivity
  /*   if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
 
     }*/
-    syncContacts(); // SOEF
-    renderFriendList(new ArrayList<>());
+    //SOEF
+    lookupContacts();
+    //renderFriendList(new ArrayList<>());
   }
 
   @Override protected void onRestart() {
@@ -310,7 +310,6 @@ public class HomeActivity extends BaseActivity
     if (homeGridPresenter != null) homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    if (lookupSubscription != null) lookupSubscription.unsubscribe();
     if (appStateMonitor != null) {
       appStateMonitor.removeListener(this);
       appStateMonitor.stop();
@@ -797,42 +796,24 @@ public class HomeActivity extends BaseActivity
 
   private void syncContacts() {
     homeGridPresenter.lookupContacts();
+    searchView.refactorActions();
   }
 
-  private int totalTimeSynchro;
-  private int nbFriends = 0;
-  private Subscription lookupSubscription;
+  private void lookupContacts() {
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
 
-  public void renderFriendList(List<User> userList) {
-    lastSync.set(System.currentTimeMillis());
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
 
-    Map<String, Object> relationsInApp = new HashMap<>();
-
-    for (User user : userList) {
-      relationsInApp.put(user.getId(), user);
-    }
-
-    if (relationsInApp.values() != null && relationsInApp.values().size() > 0) {
-
-      lookupSubscription = Observable.zip(Observable.from(relationsInApp.values()),
-          Observable.interval(0, totalTimeSynchro / relationsInApp.values().size(),
-              TimeUnit.MILLISECONDS).onBackpressureDrop(), (contact, aLong) -> contact)
-          .subscribeOn(Schedulers.newThread())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(relation -> {
-            nbFriends++;
-            Timber.e("SOEF 1" + " " + nbFriends);
-            if (nbFriends == relationsInApp.values().size()) {
-              subscriptions.add(Observable.timer(750, TimeUnit.MILLISECONDS)
-                  .onBackpressureDrop()
-                  .subscribeOn(Schedulers.newThread())
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(time -> {
-                    Timber.e("SOEF " + time + " " + nbFriends);
-                  }));
-            }
-          });
-    }
+      if (hasPermission) {
+        addressBook.set(true);
+        syncContacts();
+      }
+    });
   }
 
   @Override public void onAppDidEnterForeground() {
