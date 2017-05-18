@@ -2,17 +2,16 @@ package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
-import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.view.PeerView;
+import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
+import com.tribe.tribelivesdk.webrtc.CameraCapturer;
 import java.util.List;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.CameraEnumerationAndroid;
-import org.webrtc.CameraVideoCapturer;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
-import org.webrtc.VideoCapturer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
@@ -36,7 +35,7 @@ public class TribeLiveLocalStream {
   private VideoSource videoSource;
   private AudioSource audioSource;
   private VideoTrack videoTrack;
-  private VideoCapturer capturer;
+  private CameraCapturer capturer;
   private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
   private boolean capturing = false;
 
@@ -77,8 +76,7 @@ public class TribeLiveLocalStream {
   }
 
   private void generateVideoCapturer() {
-    com.tribe.tribelivesdk.webrtc.Camera1Enumerator enumerator =
-        new com.tribe.tribelivesdk.webrtc.Camera1Enumerator(false);
+    Camera1Enumerator enumerator = new Camera1Enumerator(false);
 
     Timber.d("Creating capturer");
 
@@ -89,12 +87,13 @@ public class TribeLiveLocalStream {
     for (String deviceName : deviceNames) {
       if (enumerator.isFrontFacing(deviceName)) {
         Timber.d("Creating front facing camera capturer.");
-        VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+        CameraCapturer cameraCapturer =
+            (CameraCapturer) enumerator.createCapturer(deviceName, null);
 
         captureFormatList = enumerator.getSupportedFormats(deviceName);
 
-        if (videoCapturer != null) {
-          capturer = videoCapturer;
+        if (cameraCapturer != null) {
+          capturer = cameraCapturer;
           return;
         }
       }
@@ -105,12 +104,11 @@ public class TribeLiveLocalStream {
     for (String deviceName : deviceNames) {
       if (!enumerator.isFrontFacing(deviceName)) {
         Timber.d("Creating other camera capturer.");
-        VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-
+        CameraCapturer cameraCapturer = enumerator.createCapturer(deviceName, null);
         captureFormatList = enumerator.getSupportedFormats(deviceName);
-
-        if (videoCapturer != null) {
-          capturer = videoCapturer;
+        if (cameraCapturer != null) {
+          capturer = cameraCapturer;
+          return;
         }
       }
     }
@@ -145,12 +143,8 @@ public class TribeLiveLocalStream {
   public void stopVideoCapture() {
     if (capturer != null) {
       Timber.d("Stop video source.");
-      try {
-        capturing = false;
-        capturer.stopCapture();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      capturing = false;
+      capturer.stopCapture();
     }
   }
 
@@ -228,12 +222,14 @@ public class TribeLiveLocalStream {
       return;
     }
 
-    if (capturer instanceof CameraVideoCapturer) {
-      Timber.d("Switch camera");
-      CameraVideoCapturer cameraVideoCapturer = (CameraVideoCapturer) capturer;
-      cameraVideoCapturer.switchCamera(null);
-    } else {
-      Timber.d("Will not switch camera, video caputurer is not a camera");
+    capturer.switchCamera(null);
+  }
+
+  public void switchFilter() {
+    if (capturer == null) {
+      return;
     }
+
+    capturer.switchFilter();
   }
 }

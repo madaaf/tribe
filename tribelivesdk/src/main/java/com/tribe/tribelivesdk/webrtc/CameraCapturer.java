@@ -18,16 +18,18 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.v8.renderscript.RenderScript;
 import android.util.Log;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
+import com.tribe.tribelivesdk.rs.RSCompute;
+import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
+import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilterWrapper;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
-import org.webrtc.CameraEnumerator;
-import org.webrtc.CameraVideoCapturer;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
@@ -36,7 +38,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
-@SuppressWarnings("deprecation") abstract class CameraCapturer implements CameraVideoCapturer {
+@SuppressWarnings("deprecation") public abstract class CameraCapturer
+    implements CameraVideoCapturer {
   enum SwitchState {
     IDLE, // No switch requested.
     PENDING, // Waiting for previous capture session to open.
@@ -53,7 +56,7 @@ import timber.log.Timber;
   private final Handler uiThreadHandler;
   private boolean processing = false;
   private int frameCount = 0;
-  private int[] argb;
+  private byte[] argb;
   private byte[] yuvOut;
   private Bitmap bitmap;
 
@@ -70,26 +73,33 @@ import timber.log.Timber;
             subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .doOnNext(frame -> processing = true)
                 .doOnNext(frame -> {
-                  long stepStart = System.nanoTime();
-                  libYuvConverter.yuvToRgb(frame.getData(), width, height, argb, yuvOut);
-                  long stepLibYuvConverter = System.nanoTime();
-                  Timber.d("LibYuvConverter : "
-                      + (stepLibYuvConverter - stepStart) / 1000000.0f
-                      + " ms");
+                  LUT3DFilter filter = lut3DFilterWrapper.getFilter();
+                  if (!filter.getId().equals(LUT3DFilter.LUT3D_NONE)) {
+                    long stepStart = System.nanoTime();
+                    libYuvConverter.YUVToARGB(frame.getData(), frame.getWidth(), frame.getHeight(),
+                        argb);
+                    long stepYuvToARGB = System.nanoTime();
+                    //Timber.d("stepYuvToARGB : " + (stepYuvToARGB - stepStart) / 1000000.0f + " ms");
+                    rsCompute.computeLUT3D(filter, argb, frame.getWidth(), frame.getHeight(), argb);
+                    long stepLUT3D = System.nanoTime();
+                    //Timber.d("stepLUT3D : " + (stepLUT3D - stepYuvToARGB) / 1000000.0f + " ms");
+                    libYuvConverter.ARGBToYUV(argb, frame.getWidth(), frame.getHeight(), yuvOut);
+                    long stepARGBToYUV = System.nanoTime();
+                    //Timber.d(
+                    //    "stepARGBToYUV : " + (stepARGBToYUV - stepLUT3D) / 1000000.0f + " ms");
+                    //Timber.d(
+                    //    "Total : " + (stepARGBToYUV - stepStart) / 1000000.0f + " ms");
 
-                  //Bitmap bmp = bitmap;
-                  //bmp.setPixels(argb, 0, frame.getWidth(), 0, 0, frame.getWidth(),
-                  //    frame.getHeight());
-                  //savePNGImageToGallery(bmp, applicationContext, "opencvtest.png");
-
-                  capturerObserver.onByteBufferFrameCaptured(yuvOut, frame.getWidth(),
-                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+                    capturerObserver.onByteBufferFrameCaptured(yuvOut, frame.getWidth(),
+                        frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+                  } else {
+                    capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
+                        frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+                  }
 
                   frameCount++;
                 })
-                .subscribe(frame -> {
-                  processing = false;
-                });
+                .subscribe(frame -> processing = false);
 
             capturerObserver.onCapturerStarted(true /* success */);
             sessionOpening = false;
@@ -202,8 +212,9 @@ import timber.log.Timber;
           Logging.w(TAG, "onByteBufferFrameCaptured from another session.");
           return;
         }
+
         if (!firstFrameObserved) {
-          argb = new int[width * height];
+          argb = new byte[width * height * 4];
           yuvOut = new byte[data.length];
           bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
           eventsHandler.onFirstFrameAvailable();
@@ -212,6 +223,13 @@ import timber.log.Timber;
         cameraStatistics.addFrame();
 
         if (libYuvConverter == null) libYuvConverter = new LibYuvConverter();
+        if (renderScript == null) renderScript = RenderScript.create(applicationContext);
+        if (rsCompute == null) {
+          rsCompute = new RSCompute(applicationContext, renderScript, width, height);
+        }
+        if (lut3DFilterWrapper == null) {
+          lut3DFilterWrapper = new LUT3DFilterWrapper(applicationContext, renderScript);
+        }
 
         onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
       }
@@ -250,6 +268,9 @@ import timber.log.Timber;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
   private LibYuvConverter libYuvConverter;
+  private RenderScript renderScript;
+  private RSCompute rsCompute;
+  private LUT3DFilterWrapper lut3DFilterWrapper;
 
   private final Object stateLock = new Object();
   private boolean sessionOpening; /* guarded by stateLock */
@@ -339,12 +360,9 @@ import timber.log.Timber;
 
   private void createSessionInternal(int delayMs) {
     uiThreadHandler.postDelayed(openCameraTimeoutRunnable, delayMs + OPEN_CAMERA_TIMEOUT);
-    cameraThreadHandler.postDelayed(new Runnable() {
-      @Override public void run() {
-        createCameraSession(createSessionCallback, cameraSessionEventsHandler, applicationContext,
-            surfaceHelper, cameraName, width, height, framerate);
-      }
-    }, delayMs);
+    cameraThreadHandler.postDelayed(
+        () -> createCameraSession(createSessionCallback, cameraSessionEventsHandler,
+            applicationContext, surfaceHelper, cameraName, width, height, framerate), delayMs);
   }
 
   @Override public void stopCapture() {
@@ -390,6 +408,10 @@ import timber.log.Timber;
   @Override public void switchCamera(final CameraSwitchHandler switchEventsHandler) {
     Logging.d(TAG, "switchCamera");
     cameraThreadHandler.post(() -> switchCameraInternal(switchEventsHandler));
+  }
+
+  @Override public void switchFilter() {
+    lut3DFilterWrapper.switchFilter();
   }
 
   @Override public boolean isScreencast() {

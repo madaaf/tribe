@@ -14,8 +14,6 @@ import android.os.SystemClock;
 import java.util.ArrayList;
 import java.util.List;
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat;
-import org.webrtc.CameraEnumerator;
-import org.webrtc.CameraVideoCapturer;
 import org.webrtc.Logging;
 import org.webrtc.Size;
 
@@ -66,7 +64,7 @@ import org.webrtc.Size;
     return getSupportedFormats(getCameraIndex(deviceName));
   }
 
-  @Override public CameraVideoCapturer createCapturer(String deviceName,
+  @Override public CameraCapturer createCapturer(String deviceName,
       CameraVideoCapturer.CameraEventsHandler eventsHandler) {
     return new Camera1Capturer(deviceName, eventsHandler, captureToTexture);
   }

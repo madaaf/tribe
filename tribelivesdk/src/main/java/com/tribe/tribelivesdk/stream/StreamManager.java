@@ -46,6 +46,8 @@ public class StreamManager {
 
     localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
 
+    localSubscriptions.add(this.localPeerView.onSwitchFilter().subscribe(aVoid -> switchFilter()));
+
     localSubscriptions.add(this.localPeerView.onEnableCamera()
         .doOnNext(mediaConfiguration -> setLocalCameraEnabled(mediaConfiguration.isVideoEnabled()))
         .subscribe(mediaConfiguration -> onMediaChanged.onNext(mediaConfiguration)));
@@ -160,6 +162,14 @@ public class StreamManager {
     }
 
     liveLocalStream.switchCamera();
+  }
+
+  public void switchFilter() {
+    if (liveLocalStream == null) {
+      Timber.d("Live Local Stream is null");
+    }
+
+    liveLocalStream.switchFilter();
   }
 
   private void setLocalCameraEnabled(boolean enabled) {

@@ -13,6 +13,7 @@ import rx.subscriptions.CompositeSubscription;
 public class LocalPeerView extends PeerView {
 
   private Observable<Void> onSwitchCamera;
+  private Observable<Void> onSwitchFilter;
   private Observable<TribePeerMediaConfiguration> onEnableCamera;
   private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private boolean frontFacing = true;
@@ -70,6 +71,10 @@ public class LocalPeerView extends PeerView {
         .subscribe(aVoid -> setMirror(frontFacing)));
   }
 
+  public void initSwitchFilterSubscription(Observable<Void> obs) {
+    onSwitchFilter = obs;
+  }
+
   public TribePeerMediaConfiguration getMediaConfiguration() {
     return mediaConfiguration;
   }
@@ -92,5 +97,9 @@ public class LocalPeerView extends PeerView {
 
   public Observable<Void> onSwitchCamera() {
     return onSwitchCamera;
+  }
+
+  public Observable<Void> onSwitchFilter() {
+    return onSwitchFilter;
   }
 }

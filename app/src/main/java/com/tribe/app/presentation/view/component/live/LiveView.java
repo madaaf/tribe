@@ -464,6 +464,8 @@ public class LiveView extends FrameLayout {
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> refactorNotifyButton()));
     }));
+
+    persistentSubscriptions.add(viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
   }
 
   ///////////////////

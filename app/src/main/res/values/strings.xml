@@ -147,6 +147,8 @@
 	<string name="grid_tutorial_invite">Invite your best friends to\nmake group video calls!</string>
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
 	<string name="grid_tutorial_profile">Manage your account,\nfriendships and more!</string>
+	<string name="grid_syncing_contacts_banner">Syncing contacts...</string>
+	<string name="grid_synced_contacts_banner">Contacts synced!</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -219,6 +221,11 @@
 	<string name="onboarding_user_username_restrictions">Usernames may include letters, numbers, underscores, and dashes.</string>
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
+	<string name="onboarding_user_alert_call_link_title">Looks great. Pick your best friends to try it out now! :metal:</string>
+	<string name="onboarding_user_alert_call_link_msg">Small tips: Send this link to a bunch of friends you\'d like to video call at once.</string>
+	<string name="onboarding_user_alert_call_link_sms">Open SMS</string>
+	<string name="onboarding_user_alert_call_link_iMessage">Open iMessage</string>
+	<string name="onboarding_user_alert_call_link_content">Haha guys, just downloaded Tribe, it looks lit :fire: Can you try with me real quick ? It\'s now on %1$s</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Find your friends</string>

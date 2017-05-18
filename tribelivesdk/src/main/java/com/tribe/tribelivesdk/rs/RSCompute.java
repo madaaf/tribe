@@ -24,97 +24,138 @@
 
 package com.tribe.tribelivesdk.rs;
 
-import android.graphics.ImageFormat;
+import android.content.Context;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
-import android.support.v8.renderscript.ScriptIntrinsicYuvToRGB;
+import android.support.v8.renderscript.ScriptIntrinsicColorMatrix;
+import android.support.v8.renderscript.ScriptIntrinsicLUT;
 import android.support.v8.renderscript.Type;
-import com.tribe.tribelivesdk.scripts.ScriptC_rgb2yuv;
-import timber.log.Timber;
+import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
 
 /**
  * Created by tiago on 03/08/2017.
  */
 public class RSCompute {
 
-  RenderScript renderScript;
+  private Context context;
+  private RenderScript renderScript;
+
+  private Type.Builder rgbaType;
 
   // Script vars
-  ScriptIntrinsicYuvToRGB scriptIntrinsicYuvToRGB;
-  ScriptC_rgb2yuv scriptRGB2Yuv;
+  private ScriptIntrinsicColorMatrix greyScaleMatrix;
+  private ScriptIntrinsicLUT scriptIntrinsicLUT;
 
   // Allocations
-  Allocation inAllocation; // Allocation for the frame in
-  Allocation midAllocation; // Allocation for the YUV to RGBA conv
-  Allocation outAllocation; // Allocation for the frame out
+  private Allocation inAllocation; // Allocation for the frame in
+  private Allocation outAllocation; // Allocation for the frame out
+
+  private int previousWidth, previousHeight;
 
   // Funcs
-  public byte[] compute(byte[] dataIn, int width, int height) {
-    long stepStart = System.nanoTime();
+  public byte[] compute(byte[] dataIn, int width, int height, byte[] dataOut) {
+    if (width != previousWidth) {
+      previousWidth = width;
+      previousHeight = height;
+      updateAllocations();
+    }
 
     inAllocation.copyFrom(dataIn);
-    // Run the scripts
-    //conversion to RGB
-    scriptIntrinsicYuvToRGB.forEach(midAllocation);
-
-    long stepYuvToRGB = System.nanoTime();
-    Timber.d("RS time: YuvToRGB : " + (stepYuvToRGB - stepStart) / 1000000.0f + " ms");
-
-    byte[] dataOut = new byte[dataIn.length];
-
-    Timber.d("Created dataOut");
-
-    //scriptRGB2Yuv.forEach_convert(midAllocation);
-
-    //Timber.d("Script rgb2yuv done");
-
-    //outAllocation.copyTo(dataOut);
-
-    //Timber.d("copy to out allocation done");
+    greyScaleMatrix.forEach(inAllocation, outAllocation);
+    outAllocation.copyTo(dataOut);
 
     renderScript.finish();
-
-    Timber.d("renderscript finish");
-
-    long stepEnd = System.nanoTime();
-    Timber.d("RS time total : " + (stepEnd - stepStart) / 1000000.0f + " ms");
 
     return dataOut;
   }
 
-  public RSCompute(RenderScript renderScript, int width, int height) {
+  public byte[] computeLUT(byte[] dataIn, int width, int height, byte[] dataOut) {
+    if (width != previousWidth) {
+      previousWidth = width;
+      previousHeight = height;
+      updateAllocations();
+    }
+
+    inAllocation.copyFrom(dataIn);
+
+    scriptIntrinsicLUT.forEach(inAllocation, outAllocation);
+
+    outAllocation.copyTo(dataOut);
+
+    renderScript.finish();
+    return dataOut;
+  }
+
+  public byte[] computeLUT3D(LUT3DFilter lut3DFilter, byte[] dataIn, int width, int height,
+      byte[] dataOut) {
+    if (width != previousWidth) {
+      previousWidth = width;
+      previousHeight = height;
+      updateAllocations();
+    }
+
+    inAllocation.copyFrom(dataIn);
+
+    lut3DFilter.getLutRenderScript().forEach(inAllocation, outAllocation);
+
+    outAllocation.copyTo(dataOut);
+
+    renderScript.finish();
+
+    return dataOut;
+  }
+
+  public RSCompute(Context context, RenderScript renderScript, int width, int height) {
+    this.context = context;
     this.renderScript = renderScript;
 
-    Type.Builder yuvTypeBuilder = new Type.Builder(renderScript,
-        Element.createPixel(renderScript, Element.DataType.UNSIGNED_8, Element.DataKind.PIXEL_YUV));
-    yuvTypeBuilder.setYuvFormat(ImageFormat.NV21);
+    previousWidth = width;
+    previousHeight = height;
 
-    // allocation for the YUV input from the camera
-    inAllocation =
-        Allocation.createTyped(renderScript, yuvTypeBuilder.setX(width).setY(height).create(),
-            Allocation.USAGE_SCRIPT);
+    rgbaType = new Type.Builder(renderScript, Element.U8_4(renderScript)).setX(previousWidth)
+        .setY(previousHeight);
 
-    // create the instance of the YUV2RGB (built-in) RS intrinsic
-    scriptIntrinsicYuvToRGB =
-        ScriptIntrinsicYuvToRGB.create(renderScript, Element.U8_4(renderScript));
+    // LUT
+    scriptIntrinsicLUT = ScriptIntrinsicLUT.create(renderScript, Element.U8_4(renderScript));
 
-    scriptIntrinsicYuvToRGB.setInput(inAllocation);
+    for (int ct = 0; ct < 256; ct++) {
+      float f = ((float) ct) / 255.f;
 
-    Type.Builder rgbaType =
-        new Type.Builder(renderScript, Element.RGBA_8888(renderScript)).setX(width).setY(height);
+      float r = f;
+      if (r < 0.5f) {
+        r = 4.0f * r * r * r;
+      } else {
+        r = 1.0f - r;
+        r = 1.0f - (4.0f * r * r * r);
+      }
+      scriptIntrinsicLUT.setRed(ct, (int) (r * 255.f + 0.5f));
 
-    midAllocation =
-        Allocation.createTyped(renderScript, rgbaType.create(), Allocation.USAGE_SCRIPT);
+      float g = f;
+      if (g < 0.5f) {
+        g = 2.0f * g * g;
+      } else {
+        g = 1.0f - g;
+        g = 1.0f - (2.0f * g * g);
+      }
+      scriptIntrinsicLUT.setGreen(ct, (int) (g * 255.f + 0.5f));
+
+      float b = f * 0.5f + 0.25f;
+      scriptIntrinsicLUT.setBlue(ct, (int) (b * 255.f + 0.5f));
+    }
+
+    updateAllocations();
+  }
+
+  private void updateAllocations() {
+    rgbaType.setX(previousWidth).setY(previousHeight);
+
+    inAllocation = Allocation.createTyped(renderScript, rgbaType.create(), Allocation.USAGE_SHARED);
 
     outAllocation =
-        Allocation.createTyped(renderScript, yuvTypeBuilder.setX(width).setY(height).create(),
-            Allocation.USAGE_SCRIPT);
+        Allocation.createTyped(renderScript, rgbaType.create(), Allocation.USAGE_SHARED);
 
-    scriptRGB2Yuv = new ScriptC_rgb2yuv(renderScript);
-    scriptRGB2Yuv.set_gOut(outAllocation);
-    scriptRGB2Yuv.set_width(width);
-    scriptRGB2Yuv.set_height(height);
-    scriptRGB2Yuv.set_frameSize(width * height);
+    greyScaleMatrix = ScriptIntrinsicColorMatrix.create(renderScript, outAllocation.getElement());
+    greyScaleMatrix.setGreyscale();
   }
 }

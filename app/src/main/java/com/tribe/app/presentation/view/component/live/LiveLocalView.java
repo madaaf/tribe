@@ -73,6 +73,7 @@ public class LiveLocalView extends FrameLayout {
   private PublishSubject<TribePeerMediaConfiguration> onEnableCamera = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
+  private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {
@@ -119,6 +120,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
+    viewPeerLocal.initSwitchFilterSubscription(onSwitchFilter);
 
     viewPeerOverlay.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
@@ -213,6 +215,12 @@ public class LiveLocalView extends FrameLayout {
   public void switchCamera() {
     if (!hiddenControls) {
       onSwitchCamera.onNext(null);
+    }
+  }
+
+  public void switchFilter() {
+    if (!hiddenControls) {
+      onSwitchFilter.onNext(null);
     }
   }
 

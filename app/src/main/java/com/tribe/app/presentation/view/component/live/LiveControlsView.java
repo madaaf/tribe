@@ -53,7 +53,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnCameraOff) View btnCameraOff;
 
-/*  @BindView(R.id.btnFilter) View btnFilter;*/
+  @BindView(R.id.btnFilter) View btnFilter;
 
   @BindView(R.id.btnExpand) ImageView btnExpand;
 
@@ -80,6 +80,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
   private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
+  private PublishSubject<Void> onClickFilter = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -182,7 +183,7 @@ public class LiveControlsView extends FrameLayout {
     if (cameraEnabled) {
       setXTranslateAnimation(btnExpand, widthExtended);
     } else {
-      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation);
+      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
     }
   }
 
@@ -247,7 +248,7 @@ public class LiveControlsView extends FrameLayout {
     Animation scaleAnimation =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
 
-    //btnFilter.setAnimation(scaleAnimation);
+    btnFilter.setAnimation(scaleAnimation);
     btnOrientationCamera.setAnimation(scaleAnimation);
 
     subscriptions.add(Observable.timer(scaleAnimation.getDuration() / 3, TimeUnit.MILLISECONDS)
@@ -255,7 +256,7 @@ public class LiveControlsView extends FrameLayout {
         .subscribe(aLong -> {
           setXTranslateAnimation(btnMicro, -xTranslation);
           setXTranslateAnimation(btnExpand,
-              layoutContainerParamExtendedLive.getWidth() - xTranslation);
+              layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
         }));
 
     onClickCameraEnable.onNext(null);
@@ -277,7 +278,7 @@ public class LiveControlsView extends FrameLayout {
     setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth());
 
     btnOrientationCamera.setAnimation(scaleAnimation);
-    // btnFilter.setAnimation(scaleAnimation);
+    btnFilter.setAnimation(scaleAnimation);
 
     onClickCameraDisable.onNext(null);
   }
@@ -300,6 +301,10 @@ public class LiveControlsView extends FrameLayout {
         .start();
 
     onClickNotify.onNext(null);
+  }
+
+  @OnClick(R.id.btnFilter) void clickFilter() {
+    onClickFilter.onNext(null);
   }
 
   //////////////
@@ -376,5 +381,9 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Void> onNotifyAnimationDone() {
     return onNotifyAnimationDone;
+  }
+
+  public Observable<Void> onClickFilter() {
+    return onClickFilter;
   }
 }
