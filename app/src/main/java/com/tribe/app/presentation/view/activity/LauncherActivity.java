@@ -25,10 +25,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import io.branch.referral.Branch;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -58,6 +55,7 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     getWindow().setBackgroundDrawable(null);
+    //setContentView(R.layout.activity_main);
     initDependencyInjector();
 
     Branch branch = Branch.getInstance();
@@ -69,6 +67,8 @@ public class LauncherActivity extends BaseActivity implements AuthMVPView {
     }, this.getIntent().getData(), this);
 
     this.getApplicationComponent().inject(this);
+
+    // finish();
   }
 
   @Override protected void onResume() {
