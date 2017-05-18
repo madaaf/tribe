@@ -148,6 +148,7 @@ public class LiveView extends FrameLayout {
   private int sizeAnimAvatarMax;
   private List<User> anonymousInLive = new ArrayList<>();
   private boolean isFirstToJoin = true;
+  private double duration;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -203,11 +204,15 @@ public class LiveView extends FrameLayout {
     viewRoom.removeGuest(userId);
   }
 
+  public double getDuration() {
+    return duration;
+  }
+
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
     if (live != null) {
-      double duration = 0.0D;
+      duration = 0.0D;
 
       if (timeStart > 0) {
         timeEnd = System.currentTimeMillis();
@@ -600,8 +605,10 @@ public class LiveView extends FrameLayout {
             for (TribeGuest trg : tribeGuests) {
               if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
                   .containsKey(trg.getId())) {
-                addTribeGuest(trg);
-                onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+                if (!user.getId().equals(trg.getId())) {
+                  addTribeGuest(trg);
+                  onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+                }
               }
             }
           }
@@ -1252,6 +1259,10 @@ public class LiveView extends FrameLayout {
     }
 
     return null;
+  }
+
+  public User getUser() {
+    return user;
   }
 
   //////////////////////

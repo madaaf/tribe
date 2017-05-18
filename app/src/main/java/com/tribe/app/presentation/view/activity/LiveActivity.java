@@ -81,6 +81,7 @@ import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificat
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.SharingCardNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
@@ -693,8 +694,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                   UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
                       CORNER_SCREENSHOT * 2, context());
 
-              boolean result =
-                  BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
+              BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
 
               viewScreenShot.setImageBitmap(roundedBitmap);
               viewScreenShot.setVisibility(View.VISIBLE);
@@ -809,8 +809,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }
 
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
-        && peopleInLive.size() > 1) {
+    if (peopleInLive.size() > 0) {
+      returnIntent.putExtra(NotificationContainerView.DISPLAY_SHARING_NOTIF, true);
+      Bundle extra = new Bundle();
+      extra.putSerializable(SharingCardNotificationView.CALL_GRP_MEMBERS,
+          (Serializable) peopleInLive);
+      extra.putDouble(SharingCardNotificationView.DURATION_CALL, viewLive.getDuration());
+      returnIntent.putExtras(extra);
+    } else if ((liveIsInvite
+        || !activeUersIdsInvitedInLiveRoom.isEmpty()
+        || !anonymousInLive.isEmpty()) && peopleInLive.size() > 1) {
       returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GRP_NOTIF, true);
       Bundle extra = new Bundle();
       extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,

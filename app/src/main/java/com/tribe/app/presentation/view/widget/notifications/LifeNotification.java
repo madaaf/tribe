@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+import com.tribe.app.domain.entity.GroupMember;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -14,6 +16,9 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -71,6 +76,29 @@ public class LifeNotification extends FrameLayout {
 
   protected void hideView() {
     onHideNotification.onNext(null);
+  }
+
+  protected List<GroupMember> getUserList(List<TribeGuest> tribeGuests) {
+    List<GroupMember> userList = new ArrayList<>();
+
+    if (tribeGuests == null) return userList;
+
+    for (TribeGuest guest : tribeGuests) {
+      User u = new User(guest.getId());
+      u.setProfilePicture(guest.getPicture());
+      u.setDisplayName(guest.getDisplayName());
+      u.setUsername(guest.getUserName());
+      GroupMember groupMember = new GroupMember(u);
+      groupMember.setMember(true);
+      if (guest.isAnonymous()) {
+        groupMember.setFriend(false);
+      } else {
+        groupMember.setFriend(true);
+      }
+      userList.add(groupMember);
+    }
+
+    return userList;
   }
 
   /////////////////
