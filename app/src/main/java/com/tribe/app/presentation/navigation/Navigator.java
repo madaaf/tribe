@@ -18,6 +18,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
@@ -80,11 +81,12 @@ public class Navigator {
   /*
 
     */
+
   /**
    * Goes to the login.
    *
    * @param context A Context needed to open the destiny activity.
-   */  /*
+   */
 
   public void navigateToLogin(Context context, Uri deepLink) {
     if (context != null) {
@@ -93,8 +95,6 @@ public class Navigator {
       context.startActivity(intent);
     }
   }
-
-    */
 
   /**
    * Opens the country list.

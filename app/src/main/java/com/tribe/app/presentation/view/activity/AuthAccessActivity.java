@@ -1,6 +1,26 @@
 package com.tribe.app.presentation.view.activity;
 
-public class AuthAccessActivity extends BaseActivity {
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import com.digits.sdk.android.AuthCallback;
+import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.domain.entity.ErrorLogin;
+import com.tribe.app.domain.entity.Pin;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
+import com.tribe.app.presentation.mvp.view.AuthMVPView;
+import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.view.utils.PhoneUtils;
+import javax.inject.Inject;
+import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
+
+public class AuthAccessActivity {
+
 /*
   private static final int TIMER_START = 4000;
 
