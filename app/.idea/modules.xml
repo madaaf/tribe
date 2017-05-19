@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../AdapterDelegates/AdapterDelegates.iml" filepath="$PROJECT_DIR$/../AdapterDelegates/AdapterDelegates.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ViewNavigator/ViewNavigator.iml" filepath="$PROJECT_DIR$/../ViewNavigator/ViewNavigator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app.iml" filepath="$PROJECT_DIR$/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../tribe-android.iml" filepath="$PROJECT_DIR$/../tribe-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../tribelivesdk/tribelivesdk.iml" filepath="$PROJECT_DIR$/../tribelivesdk/tribelivesdk.iml" />
+    </modules>
+  </component>
+</project>
