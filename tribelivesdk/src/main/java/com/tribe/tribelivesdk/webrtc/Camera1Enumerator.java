@@ -82,7 +82,7 @@ import org.webrtc.Size;
 
   static synchronized List<CaptureFormat> getSupportedFormats(int cameraId) {
     if (cachedSupportedFormats == null) {
-      cachedSupportedFormats = new ArrayList<List<CaptureFormat>>();
+      cachedSupportedFormats = new ArrayList<>();
       for (int i = 0; i < android.hardware.Camera.getNumberOfCameras(); ++i) {
         cachedSupportedFormats.add(enumerateFormats(i));
       }

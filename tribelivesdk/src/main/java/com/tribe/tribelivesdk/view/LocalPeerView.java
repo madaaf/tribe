@@ -12,6 +12,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class LocalPeerView extends PeerView {
 
+  // VARIABLES
   private Observable<Void> onSwitchCamera;
   private Observable<Void> onSwitchFilter;
   private Observable<TribePeerMediaConfiguration> onEnableCamera;
@@ -25,29 +26,32 @@ public class LocalPeerView extends PeerView {
 
   public LocalPeerView(Context context) {
     super(context);
-    initVideoRenderer();
+    initRemoteRenderer();
   }
 
   public LocalPeerView(Context context, TribePeerMediaConfiguration mediaConfiguration) {
     super(context);
     this.mediaConfiguration = mediaConfiguration;
-    initVideoRenderer();
+    initRemoteRenderer();
   }
 
   public LocalPeerView(Context context, AttributeSet attributeSet) {
     super(context, attributeSet);
-    initVideoRenderer();
+    initRemoteRenderer();
   }
 
   public void dispose() {
     super.dispose();
-    if (subscriptions != null) subscriptions.unsubscribe();
+    if (subscriptions != null) subscriptions.clear();
   }
 
-  private void initVideoRenderer() {
+  @Override public void onFirstFrameRendered() {
+  }
+
+  private void initRemoteRenderer() {
     TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
     textureViewRenderer.init(null, rendererEvents);
-    videoRenderer = new VideoRenderer(textureViewRenderer);
+    remoteRenderer = new VideoRenderer(textureViewRenderer);
     setMirror(true);
   }
 

@@ -470,7 +470,8 @@ public class LiveView extends FrameLayout {
           .subscribe(aLong -> refactorNotifyButton()));
     }));
 
-    persistentSubscriptions.add(viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
+    persistentSubscriptions.add(
+        viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
   }
 
   ///////////////////
@@ -567,7 +568,7 @@ public class LiveView extends FrameLayout {
           refactorNotifyButton();
 
           tempSubscriptions.add(remotePeer.getPeerView()
-              .onNotificatinRemoteJoined()
+              .onNotificationRemoteJoined()
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aVoid -> onNotificationRemoteJoined.onNext(
                   getDisplayNameFromSession(remotePeer.getSession()))));

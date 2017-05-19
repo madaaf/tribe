@@ -118,7 +118,7 @@ public class LiveRowView extends FrameLayout {
   public void setPeerView(PeerView peerView) {
     remotePeerView = (RemotePeerView) peerView;
 
-    subscriptions.add(this.remotePeerView.onNotificatinRemoteJoined()
+    subscriptions.add(this.remotePeerView.onNotificationRemoteJoined()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {

@@ -3,6 +3,10 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import java.util.List;
+import org.webrtc.MediaStream;
+import org.webrtc.VideoRenderer;
+import org.webrtc.VideoTrack;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
@@ -16,6 +20,8 @@ public class RemotePeerView extends PeerView {
   // OBSERVABLES
   private PublishSubject<TribePeerMediaConfiguration> onMediaConfiguration =
       PublishSubject.create();
+
+  private PublishSubject<String> onNotificationRemoteJoined = PublishSubject.create();
 
   public RemotePeerView(Context context) {
     super(context);
@@ -41,6 +47,69 @@ public class RemotePeerView extends PeerView {
     }
   }
 
+  /**
+   * Sets the {@code MediaStream} to be rendered by this {@code PeerView}.
+   * The implementation renders the first {@link VideoTrack}, if any, of the
+   * specified {@code mediaStream}.
+   *
+   * @param mediaStream The {@code MediaStream} to be rendered by this
+   * {@code PeerView} or {@code null}.
+   */
+  public void setStream(MediaStream mediaStream) {
+    VideoTrack videoTrack;
+
+    if (mediaStream == null) {
+      videoTrack = null;
+    } else {
+      List<VideoTrack> videoTracks = mediaStream.videoTracks;
+
+      videoTrack = videoTracks.isEmpty() ? null : videoTracks.get(0);
+    }
+
+    setVideoTrack(videoTrack);
+  }
+
+  /**
+   * Sets the {@code VideoTrack} to be rendered by this {@code PeerView}.
+   *
+   * @param videoTrack The {@code VideoTrack} to be rendered by this
+   * {@code PeerView} or {@code null}.
+   */
+  protected void setVideoTrack(VideoTrack videoTrack) {
+    VideoTrack oldValue = this.videoTrack;
+
+    if (oldValue != videoTrack) {
+      if (oldValue != null) {
+        removeRendererFromVideoTrack();
+      }
+
+      this.videoTrack = videoTrack;
+
+      if (videoTrack != null) {
+        tryAddRendererToVideoTrack();
+      }
+    }
+  }
+
+  /**
+   * Starts rendering {@link #videoTrack} if rendering is not in progress and
+   * all preconditions for the start of rendering are met.
+   */
+  protected void tryAddRendererToVideoTrack() {
+    if (videoRenderer == null && videoTrack != null) {
+      TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
+
+      textureViewRenderer.init(/* sharedContext */ null, rendererEvents);
+
+      videoRenderer = new VideoRenderer(textureViewRenderer);
+      videoTrack.addRenderer(videoRenderer);
+    }
+  }
+
+  @Override public void onFirstFrameRendered() {
+    onNotificationRemoteJoined.onNext(null);
+  }
+
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
     Timber.d("New media configuration for : "
         + mediaConfiguration.getSession().getUserId()
@@ -54,5 +123,15 @@ public class RemotePeerView extends PeerView {
   // OBSERVABLES
   public Observable<TribePeerMediaConfiguration> onMediaConfiguration() {
     return onMediaConfiguration;
+  }
+
+  public boolean isRenderingWell() {
+    if (textureViewRenderer == null) return true;
+
+    return textureViewRenderer.isRenderingWell();
+  }
+
+  public Observable<String> onNotificationRemoteJoined() {
+    return onNotificationRemoteJoined;
   }
 }

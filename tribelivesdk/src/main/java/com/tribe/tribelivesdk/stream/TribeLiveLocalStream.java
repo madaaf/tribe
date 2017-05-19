@@ -42,7 +42,7 @@ public class TribeLiveLocalStream {
   public TribeLiveLocalStream(Context context, PeerView peerView,
       PeerConnectionFactory peerConnectionFactory) {
     if (peerView == null || peerView.getVideoRenderer() == null) {
-      throw new IllegalArgumentException("VideoStreamsView can not be null");
+      throw new IllegalArgumentException("Peerview cannot be null");
     }
 
     if (peerConnectionFactory == null) {
@@ -87,8 +87,7 @@ public class TribeLiveLocalStream {
     for (String deviceName : deviceNames) {
       if (enumerator.isFrontFacing(deviceName)) {
         Timber.d("Creating front facing camera capturer.");
-        CameraCapturer cameraCapturer =
-            (CameraCapturer) enumerator.createCapturer(deviceName, null);
+        CameraCapturer cameraCapturer = enumerator.createCapturer(deviceName, null);
 
         captureFormatList = enumerator.getSupportedFormats(deviceName);
 

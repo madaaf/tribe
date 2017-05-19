@@ -18,23 +18,16 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.support.v8.renderscript.RenderScript;
 import android.util.Log;
-import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
-import com.tribe.tribelivesdk.rs.RSCompute;
-import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
-import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilterWrapper;
+import com.tribe.tribelivesdk.stream.FrameManager;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
@@ -53,13 +46,7 @@ import rx.subjects.PublishSubject;
   private final CameraEnumerator cameraEnumerator;
   private final CameraEventsHandler eventsHandler;
   private final Handler uiThreadHandler;
-  private boolean processing = false;
-  private int frameCount = 0;
-  private byte[] argb;
-  private byte[] yuvOut;
-  private Bitmap bitmap;
 
-  private Subscription subscription;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
 
   private final CameraSession.CreateSessionCallback createSessionCallback =
@@ -69,37 +56,6 @@ import rx.subjects.PublishSubject;
           Logging.d(TAG, "Create session done");
           uiThreadHandler.removeCallbacks(openCameraTimeoutRunnable);
           synchronized (stateLock) {
-            subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-                .doOnNext(frame -> processing = true)
-                .doOnNext(frame -> {
-                  LUT3DFilter filter = lut3DFilterWrapper.getFilter();
-                  if (!filter.getId().equals(LUT3DFilter.LUT3D_NONE)) {
-                    long stepStart = System.nanoTime();
-                    libYuvConverter.YUVToARGB(frame.getData(), frame.getWidth(), frame.getHeight(),
-                        argb);
-                    long stepYuvToARGB = System.nanoTime();
-                    //Timber.d("stepYuvToARGB : " + (stepYuvToARGB - stepStart) / 1000000.0f + " ms");
-                    rsCompute.computeLUT3D(filter, argb, frame.getWidth(), frame.getHeight(), argb);
-                    long stepLUT3D = System.nanoTime();
-                    //Timber.d("stepLUT3D : " + (stepLUT3D - stepYuvToARGB) / 1000000.0f + " ms");
-                    libYuvConverter.ARGBToYUV(argb, frame.getWidth(), frame.getHeight(), yuvOut);
-                    long stepARGBToYUV = System.nanoTime();
-                    //Timber.d(
-                    //    "stepARGBToYUV : " + (stepARGBToYUV - stepLUT3D) / 1000000.0f + " ms");
-                    //Timber.d(
-                    //    "Total : " + (stepARGBToYUV - stepStart) / 1000000.0f + " ms");
-
-                    capturerObserver.onByteBufferFrameCaptured(yuvOut, frame.getWidth(),
-                        frame.getHeight(), frame.getRotation(), frame.getTimestamp());
-                  } else {
-                    capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
-                        frame.getHeight(), frame.getRotation(), frame.getTimestamp());
-                  }
-
-                  frameCount++;
-                })
-                .subscribe(frame -> processing = false);
-
             capturerObserver.onCapturerStarted(true /* success */);
             sessionOpening = false;
             currentSession = session;
@@ -213,22 +169,11 @@ import rx.subjects.PublishSubject;
         }
 
         if (!firstFrameObserved) {
-          argb = new byte[width * height * 4];
-          yuvOut = new byte[data.length];
-          bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
           eventsHandler.onFirstFrameAvailable();
           firstFrameObserved = true;
         }
-        cameraStatistics.addFrame();
 
-        if (libYuvConverter == null) libYuvConverter = new LibYuvConverter();
-        if (renderScript == null) renderScript = RenderScript.create(applicationContext);
-        if (rsCompute == null) {
-          rsCompute = new RSCompute(applicationContext, renderScript, width, height);
-        }
-        if (lut3DFilterWrapper == null) {
-          lut3DFilterWrapper = new LUT3DFilterWrapper(applicationContext, renderScript);
-        }
+        cameraStatistics.addFrame();
 
         onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
       }
@@ -266,10 +211,7 @@ import rx.subjects.PublishSubject;
   private Context applicationContext;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
-  private LibYuvConverter libYuvConverter;
-  private RenderScript renderScript;
-  private RSCompute rsCompute;
-  private LUT3DFilterWrapper lut3DFilterWrapper;
+  private FrameManager frameManager;
 
   private final Object stateLock = new Object();
   private boolean sessionOpening; /* guarded by stateLock */
@@ -333,6 +275,7 @@ import rx.subjects.PublishSubject;
     this.surfaceHelper = surfaceTextureHelper;
     this.cameraThreadHandler =
         surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
+    this.frameManager = new FrameManager(applicationContext, capturerObserver);
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -354,6 +297,8 @@ import rx.subjects.PublishSubject;
       sessionOpening = true;
       openAttemptsRemaining = MAX_OPEN_CAMERA_ATTEMPTS;
       createSessionInternal(0);
+
+      frameManager.initFrameSubscription(onFrame);
     }
   }
 
@@ -381,8 +326,7 @@ import rx.subjects.PublishSubject;
         cameraThreadHandler.post(() -> oldSession.stop());
         currentSession = null;
         capturerObserver.onCapturerStopped();
-
-        if (subscription != null) subscription.unsubscribe();
+        frameManager.dispose();
       } else {
         Logging.d(TAG, "Stop capture: No session open");
       }
@@ -410,7 +354,7 @@ import rx.subjects.PublishSubject;
   }
 
   @Override public void switchFilter() {
-    lut3DFilterWrapper.switchFilter();
+    frameManager.switchFilter();
   }
 
   @Override public boolean isScreencast() {
