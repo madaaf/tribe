@@ -14,7 +14,6 @@ import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
-import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
@@ -65,8 +64,6 @@ import dagger.Component;
 @PerActivity @Component(dependencies = ApplicationComponent.class, modules = {
     ActivityModule.class, UserModule.class
 }) public interface UserComponent extends ActivityComponent {
-
-  void inject(LauncherActivity launcherActivity);
 
   void inject(DebugActivity debugActivity);
 

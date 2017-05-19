@@ -42,7 +42,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPView {
 
@@ -293,8 +292,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
-    Timber.e("SOEF successUpdateUser");
-
     subscriptions.add(DialogFactory.dialog(this,
         EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
         getString(R.string.onboarding_user_alert_call_link_msg),

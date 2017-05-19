@@ -5,12 +5,18 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsException;
 import com.digits.sdk.android.DigitsSession;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.ErrorLogin;
 import com.tribe.app.domain.entity.Pin;
@@ -38,6 +44,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Inject AuthPresenter authPresenter;
 
+  @BindView(R.id.progressView) CircularProgressView progressView;
+
+  // VARIABLES
+  private Unbinder unbinder;
   private LoginEntity loginEntity;
   private ShakeDetector mShakeDetector;
   private SensorManager mSensorManager;
@@ -46,8 +56,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    unbinder = ButterKnife.bind(this);
     initDependencyInjector();
     setSandboxBehavior();
+    initRessource();
   }
 
   ////////////////
@@ -60,7 +73,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
       @Override public void success(DigitsSession session, String phoneNumber) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-        loginEntity = authPresenter.login(phoneNumber, null, null);
+        if (!enableSandbox) {
+          loginEntity = authPresenter.login(phoneNumber, null, null);
+        } else if (phoneNumber.startsWith("+8502121")) {
+          loginEntity = authPresenter.login(phoneNumber, null, null);
+        } else {
+          Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
+          toast.show();
+        }
       }
 
       @Override public void failure(DigitsException error) {
@@ -90,7 +110,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     });
   }
 
+  private void initRessource() {
+    authPresenter.onViewAttached(this);
+    mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+  }
+
   private void finishActivity() {
+    if (unbinder != null) unbinder.unbind();
     authPresenter.onViewDetached();
     mSensorManager.unregisterListener(mShakeDetector);
   }
@@ -124,13 +150,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onResume() {
     super.onResume();
-    mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
     digitAuth();
   }
 
   @Override protected void onStart() {
     super.onStart();
-    authPresenter.onViewAttached(this);
+    initRessource();
   }
 
   @Override protected void onDestroy() {
@@ -159,14 +184,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override public void pinError(ErrorLogin errorLogin) {
     Timber.d("errorLogin");
-  /*  Intent i = new Intent(this, LauncherActivity.class);
-    startActivity(i);*/
   }
 
   @Override public void showLoading() {
+    progressView.setVisibility(View.VISIBLE);
   }
 
   @Override public void hideLoading() {
+    progressView.setVisibility(View.INVISIBLE);
   }
 
   @Override public void showError(String message) {

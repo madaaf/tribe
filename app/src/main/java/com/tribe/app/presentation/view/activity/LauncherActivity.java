@@ -43,8 +43,6 @@ public class LauncherActivity extends BaseActivity {
     finish();
   }
 
-
-
   @Override protected void onNewIntent(Intent intent) {
     setIntent(intent);
   }

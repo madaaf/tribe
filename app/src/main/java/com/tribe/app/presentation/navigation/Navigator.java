@@ -67,21 +67,6 @@ public class Navigator {
     context.startActivity(intent);
   }
 
-  /*  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
-    if (activity != null) {
-      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
-      intent.setData(deepLink);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-      activity.finish();
-    }
-  }*/
-
-
-  /*
-
-    */
-
   /**
    * Goes to the login.
    *
@@ -96,20 +81,6 @@ public class Navigator {
     }
   }
 
-  /**
-   * Opens the country list.
-   *
-   * @param activity An activity needed to open the destiny activity.
-   */  /*
-
-  public void navigateToCountries(Activity activity) {
-    if (activity != null) {
-      Intent intent = CountryActivity.getCallingIntent(activity);
-      activity.startActivityForResult(intent, REQUEST_COUNTRY);
-      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-    }
-  }
-  */
   public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
     if (activity != null) {
       Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
