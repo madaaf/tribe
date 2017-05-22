@@ -5,24 +5,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import io.branch.referral.Branch;
 import javax.inject.Inject;
 
 public class LauncherActivity extends BaseActivity {
 
-  @Inject AccessToken accessToken;
-
   @Inject User currentUser;
-
-  @Inject FileUtils fileUtils;
-
-  @Inject @LastVersionCode Preference<Integer> lastVersion;
 
   public static Intent getCallingIntent(Context context) {
     return new Intent(context, LauncherActivity.class);

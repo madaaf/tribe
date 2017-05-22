@@ -1,97 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.view.activity.AuthAccessActivity"
     android:background="@drawable/shape_rect_white_rounded_top"
+    tools:context=".presentation.view.activity.AuthAccessActivity"
     >
 
-  <LinearLayout
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:focusableInTouchMode="true"
-      android:focusable="true"
-      android:clickable="true"
-      >
-
-    <requestFocus />
-  </LinearLayout>
-
-  <FrameLayout
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/top_bar_height_small"
-      android:background="@null"
-      >
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtTitle"
-        style="@style/Title.2.Black"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/onboarding_queue_title"
-        android:gravity="center"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtAction"
-        style="@style/Title.2.BlueNew"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="@dimen/horizontal_margin"
-        android:gravity="right|center_vertical"
-        android:text="@string/action_start"
-        />
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressView"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:visibility="gone"
-        app:cpv_animAutostart="true"
-        app:cpv_indeterminate="true"
-        app:cpv_color="@color/blue.new"
-        app:cpv_thickness="2dp"
-        />
-
-  </FrameLayout>
-
-  <com.tribe.app.presentation.view.component.onboarding.AccessView
-      android:id="@+id/viewAccess"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_marginTop="@dimen/top_bar_height_small"
-      android:clickable="true"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      style="@style/Small.1.Black20"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal|bottom"
-      android:layout_margin="@dimen/horizontal_margin_small"
-      android:gravity="center"
-      android:lines="2"
-      android:text="@string/onboarding_queue_disclaimer"
-      />
-
-  <FrameLayout
-      android:id="@+id/layoutConfettis"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_marginTop="@dimen/top_bar_height_small"
-      android:background="@null"
-      />
-
-  <View
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/divider_size"
-      android:layout_marginTop="@dimen/top_bar_height_small"
-      android:background="@color/grey.light"
-      />
 </FrameLayout>

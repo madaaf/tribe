@@ -1,45 +1,11 @@
 package com.tribe.app.presentation.view.component.onboarding;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
-import android.support.annotation.IntDef;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextSwitcher;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-import com.tribe.app.R;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.CircularProgressBar;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
-
 /**
  * AccessView.java
  * Created by tiago on 12/14/16
  */
-public class AccessView extends FrameLayout {
-
+public class AccessView {
+/*
   private final static int DURATION = 300;
   private final static int DURATION_SHORT = 100;
   private final static int DURATION_MEDIUM = 400;
@@ -285,5 +251,5 @@ public class AccessView extends FrameLayout {
         .setStartDelay(0)
         .setInterpolator(new DecelerateInterpolator())
         .start();
-  }
+  }*/
 }

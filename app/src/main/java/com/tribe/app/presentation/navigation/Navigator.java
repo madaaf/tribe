@@ -18,10 +18,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
-import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -74,6 +72,7 @@ public class Navigator {
    *
    * @param context A Context needed to open the destiny activity.
    */
+
   public void navigateToLogin(Context context, Uri deepLink) {
     if (context != null) {
       Intent intent = AuthActivity.getCallingIntent(context);
@@ -82,32 +81,9 @@ public class Navigator {
     }
   }
 
-  /**
-   * Opens the country list.
-   *
-   * @param activity An activity needed to open the destiny activity.
-   */
-  public void navigateToCountries(Activity activity) {
-    if (activity != null) {
-      Intent intent = CountryActivity.getCallingIntent(activity);
-      activity.startActivityForResult(intent, REQUEST_COUNTRY);
-      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-    }
-  }
-
   public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
     if (activity != null) {
       Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
-      intent.setData(deepLink);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-      activity.finish();
-    }
-  }
-
-  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
-    if (activity != null) {
-      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
       intent.setData(deepLink);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -135,7 +111,8 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode) {
+  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode,
+      boolean withAnimation) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
@@ -144,7 +121,9 @@ public class Navigator {
           | Intent.FLAG_ACTIVITY_CLEAR_TASK
           | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      if (withAnimation) {
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      }
     }
   }
 
@@ -382,6 +361,15 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
+  }
+
+  public void openSMSDefaultApp(Activity activity, String message) {
+    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+    sendIntent.setData(Uri.parse("sms:"));
+    sendIntent.putExtra("sms_body", message);
+    sendIntent.setType("vnd.android-dir/mms-sms");
+    sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    activity.startActivity(sendIntent);
   }
 
   public void inviteToRoom(Activity activity, String roomLink) {

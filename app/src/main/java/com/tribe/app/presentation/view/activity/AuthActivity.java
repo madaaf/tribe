@@ -1,30 +1,24 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsException;
 import com.digits.sdk.android.DigitsSession;
-import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.BuildConfig;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
-import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.ErrorLogin;
 import com.tribe.app.domain.entity.Pin;
@@ -32,234 +26,65 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
 import com.tribe.app.presentation.mvp.view.AuthMVPView;
-import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.utils.preferences.LastVersionCode;
-import com.tribe.app.presentation.view.component.onboarding.AuthVideoView;
-import com.tribe.app.presentation.view.component.onboarding.CodeView;
-import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
-import com.tribe.app.presentation.view.component.onboarding.StatusView;
-import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-import java.util.concurrent.TimeUnit;
+import com.tribe.app.presentation.view.utils.ShakeDetector;
 import javax.inject.Inject;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView {
-
-  private static int DURATION = 300;
-  private static int DURATION_MEDIUM = 400;
-  private static int DURATION_LONG = 600;
-  private static int DURATION_FAST = 150;
-  private static int COUNT_PIN_ERROR_MAX = 3;
-
-  private static final String COUNTRY_CODE = "COUNTRY_CODE";
-  private static final String DEEP_LINK = "DEEP_LINK";
-  private static final String LOGIN_ENTITY = "LOGIN_ENTITY";
-  private static final String PIN = "PIN";
-  private static final String ERROR_LOGIN = "ERROR_LOGIN";
-  private static final String PHONE_NUMBER = "PHONE_NUMBER";
-  private static final String CODE = "CODE";
-  private static final String COUNTDOWN = "COUNTDOWN";
-  private static final String IS_PAUSED = "IS_PAUSED";
-
   public static Intent getCallingIntent(Context context) {
     Intent intent = new Intent(context, AuthActivity.class);
     return intent;
   }
 
-  @Inject User user;
-
-  @Inject ScreenUtils screenUtils;
-
-  @Inject AuthPresenter authPresenter;
+  @Inject User currentUser;
 
   @Inject PhoneUtils phoneUtils;
 
-  @Inject @LastVersionCode Preference<Integer> lastVersion;
+  @Inject AuthPresenter authPresenter;
 
-  @BindView(R.id.viewVideoAuth) AuthVideoView authVideoView;
-
-  @BindView(R.id.btnSkip) ImageView btnSkip;
-
-  @BindView(R.id.btnPlay) ImageView btnPlay;
-
-  @BindView(R.id.viewBackground) View viewBackground;
-
-  @BindView(R.id.viewRoot) ViewGroup viewRoot;
-
-  @BindView(R.id.layoutBottom) ViewGroup layoutBottom;
-
-  @BindView(R.id.viewPhoneNumber) PhoneNumberView viewPhoneNumber;
-
-  @BindView(R.id.viewCode) CodeView viewCode;
-
-  @BindView(R.id.txtMessage) TextViewFont txtMessage;
-
-  @BindView(R.id.viewStatus) StatusView viewStatus;
+  @BindView(R.id.progressView) CircularProgressView progressView;
 
   // VARIABLES
   private Unbinder unbinder;
-  private Uri deepLink;
-  private AuthenticationDialogFragment authenticationDialogFragment;
-  private AuthCallback authCallback;
-  private Pin pin;
-  private ErrorLogin errorLogin;
   private LoginEntity loginEntity;
-  private boolean countdownActive;
-  private String countryCode;
-  private String phoneNumber;
-  private String code;
-  private int currentCountdown;
-  private boolean shouldPauseOnRestore = false;
-  private boolean isCall = false;
-  private int countPinError = 0;
-
-  // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription countdownSubscription;
+  private ShakeDetector mShakeDetector;
+  private SensorManager mSensorManager;
+  private Sensor mAccelerometer;
+  private Boolean enableSandbox = false;
+  private AuthCallback authCallback;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
-
-    Digits.logout();
-
-    if (savedInstanceState != null) {
-      if (savedInstanceState.getParcelable(DEEP_LINK) != null) {
-        deepLink = savedInstanceState.getParcelable(DEEP_LINK);
-      }
-
-      if (savedInstanceState.getString(COUNTRY_CODE) != null) {
-        countryCode = savedInstanceState.getString(COUNTRY_CODE);
-      }
-
-      if (savedInstanceState.get(LOGIN_ENTITY) != null) {
-        loginEntity = (LoginEntity) savedInstanceState.getSerializable(LOGIN_ENTITY);
-      }
-
-      if (savedInstanceState.get(ERROR_LOGIN) != null) {
-        errorLogin = (ErrorLogin) savedInstanceState.getSerializable(ERROR_LOGIN);
-      }
-
-      if (savedInstanceState.get(PIN) != null) pin = (Pin) savedInstanceState.getSerializable(PIN);
-      if (savedInstanceState.get(CODE) != null) code = savedInstanceState.getString(CODE);
-
-      if (savedInstanceState.get(PHONE_NUMBER) != null) {
-        phoneNumber = savedInstanceState.getString(PHONE_NUMBER);
-      }
-
-      if (savedInstanceState.get(COUNTDOWN) != null) {
-        currentCountdown = savedInstanceState.getInt(COUNTDOWN);
-      }
-
-      if (savedInstanceState.get(IS_PAUSED) != null) {
-        shouldPauseOnRestore = savedInstanceState.getBoolean(IS_PAUSED);
-      }
-    }
-
-    setContentView(R.layout.activity_auth);
-
+    setContentView(R.layout.activity_main);
     unbinder = ButterKnife.bind(this);
-
     initDependencyInjector();
-
-    init();
-    //initSmsListener();
-    manageDeepLink(getIntent());
-
-    if (!lastVersion.get().equals(DeviceUtils.getVersionCode(this))) {
-      lastVersion.set(DeviceUtils.getVersionCode(this));
-    }
-
-    stopService();
+    setSandboxBehavior();
+    initRessource();
+    digitAuth();
   }
 
-  @Override protected void onResume() {
-    super.onResume();
-    showPhoneInput(false);
+  ////////////////
+  //  PRIVATE   //
+  ////////////////
 
-    if (pin != null) viewCode.openKeyboard(0);
-  }
-
-  @Override protected void onPause() {
-    cleanCountdown();
-    shouldPauseOnRestore = true;
-    screenUtils.hideKeyboard(this);
-    authVideoView.onPause(true);
-    super.onPause();
-  }
-
-  @Override protected void onStart() {
-    super.onStart();
-    authPresenter.onViewAttached(this);
-  }
-
-  @Override protected void onDestroy() {
-    authPresenter.onViewDetached();
-    if (unbinder != null) unbinder.unbind();
-    if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    if (countdownSubscription != null) countdownSubscription.unsubscribe();
-    super.onDestroy();
-  }
-
-  @Override protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    if (!StringUtils.isEmpty(countryCode)) outState.putString(COUNTRY_CODE, countryCode);
-    if (deepLink != null) outState.putParcelable(DEEP_LINK, deepLink);
-    if (loginEntity != null) outState.putSerializable(LOGIN_ENTITY, loginEntity);
-    if (errorLogin != null) outState.putSerializable(ERROR_LOGIN, errorLogin);
-    if (pin != null) outState.putSerializable(PIN, pin);
-
-    String phoneInput = viewPhoneNumber.getPhoneNumberInput();
-    if (!StringUtils.isEmpty(phoneInput)) {
-      outState.putString(PHONE_NUMBER, phoneInput.trim().replace(" ", ""));
-    }
-    if (!StringUtils.isEmpty(code)) outState.putString(CODE, code);
-    if (countdownActive) outState.putInt(COUNTDOWN, viewCode.getCurrentCountdown());
-    if (shouldPauseOnRestore) {
-      outState.putBoolean(IS_PAUSED, shouldPauseOnRestore);
-    } else {
-      outState.remove(IS_PAUSED);
-    }
-  }
-
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    if (requestCode == Navigator.REQUEST_COUNTRY
-        && resultCode == Activity.RESULT_OK
-        && data.getStringExtra(Extras.COUNTRY_CODE) != null) {
-      countryCode = data.getStringExtra(Extras.COUNTRY_CODE);
-      viewPhoneNumber.initWithCodeCountry(countryCode);
-    }
-  }
-
-  @Override public void onBackPressed() {
-    // We override this behavior so that users can't leave this screen.
-  }
-
-  private void stopService() {
-    Intent i = new Intent(this, WSService.class);
-    stopService(i);
-  }
-
-  private void init() {
+  private void digitAuth() {
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-        loginEntity = authPresenter.login(phoneNumber, null, null);
+        if (!enableSandbox) {
+          loginEntity = authPresenter.login(phoneNumber, null, null);
+        } else if (phoneNumber.startsWith("+8502121")) {
+          loginEntity = authPresenter.login(phoneNumber, null, null);
+        } else {
+          Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
+          toast.show();
+          logout();
+        }
       }
 
       @Override public void failure(DigitsException error) {
@@ -268,89 +93,73 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       }
     };
 
-    viewBackground.setEnabled(false);
-    btnPlay.setEnabled(false);
+    AuthConfig.Builder builder = new AuthConfig.Builder();
+    builder.withAuthCallBack(authCallback);
+    AuthConfig authConfig = builder.build();
+    Digits.authenticate(authConfig);
+  }
+  
+  private void logout() {
+    FacebookUtils.logout();
+    Digits.logout();
+    Intent intent = new Intent(this, HomeActivity.class);
+    intent.putExtra(IntentUtils.FINISH, true);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(intent);
 
-    layoutBottom.setTranslationY(screenUtils.getHeightPx());
-    viewCode.setTranslationX(screenUtils.getWidthPx());
-
-    viewPhoneNumber.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            viewPhoneNumber.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            showPhoneInput(true);
-          }
-        });
-
-    subscriptions.add(Observable.timer(BuildConfig.DEBUG ? 5000 : 5000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .filter(aLong -> viewBackground.getVisibility() == View.GONE)
-        .subscribe(aLong -> AnimationUtils.fadeIn(btnSkip, DURATION)));
-
-    subscriptions.add(authVideoView.videoCompleted()
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_VideoFinished);
-          showPhoneInput(true);
-        }));
-
-    subscriptions.add(authVideoView.videoStarted()
-        .delay(50, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          if (shouldPauseOnRestore) {
-            authVideoView.onPause(true);
-          }
-        }));
-
-    initViewPhoneNumber();
-    initViewCode();
+    Intent intentLauncher = new Intent(this, LauncherActivity.class);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    int pendingIntentId = 123456; // FAKE ID
+    PendingIntent mPendingIntent = PendingIntent.getActivity(this, pendingIntentId, intentLauncher,
+        PendingIntent.FLAG_CANCEL_CURRENT);
+    AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+    System.exit(0);
   }
 
-  private void initViewPhoneNumber() {
-    if (!StringUtils.isEmpty(countryCode)) viewPhoneNumber.initWithCodeCountry(countryCode);
-    if (!StringUtils.isEmpty(phoneNumber)) viewPhoneNumber.setPhoneNumber(phoneNumber);
-
-    subscriptions.add(viewPhoneNumber.phoneNumberValid().subscribe(isValid -> {
-      viewPhoneNumber.setNextEnabled(isValid);
-    }));
-
-    subscriptions.add(viewPhoneNumber.countryClick().subscribe(aVoid -> {
-      viewPhoneNumber.hideKeyboard();
-      navigator.navigateToCountries(this);
-    }));
-
-    subscriptions.add(viewPhoneNumber.nextClick().subscribe(aVoid -> {
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinRequested);
-      confirmPhoneNumber();
-    }));
-
-    if (shouldPauseOnRestore && pin == null) showPhoneInput(false);
-  }
-
-  private void initViewCode() {
-    if (!StringUtils.isEmpty(code)) {
-      viewCode.setCode(code);
-    }
-
-    subscriptions.add(viewCode.backClicked().subscribe(aVoid -> {
-      countPinError = 0;
-      backToPhoneNumber();
-    }));
-
-    subscriptions.add(viewCode.codeValid().subscribe(isValid -> {
-      if (isValid) {
-        cleanCountdown();
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSubmitted);
-        loginEntity =
-            authPresenter.login(viewPhoneNumber.getPhoneNumberFormatted(), viewCode.getCode(),
-                pin.getPinId());
+  private void setSandboxBehavior() {
+    mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    mShakeDetector = new ShakeDetector(() -> {
+      Toast toast;
+      if (!enableSandbox) {
+        toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
+        Digits.enableSandbox();
+      } else {
+        toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
+        Digits.disableSandbox();
       }
-    }));
+      enableSandbox = !enableSandbox;
+      toast.show();
+    });
+  }
 
-    if (pin != null) {
-      showPhoneInput(false);
-      goToCodeView(false);
+  private void initRessource() {
+    authPresenter.onViewAttached(this);
+    mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+  }
+
+  private void finishActivity() {
+    if (unbinder != null) unbinder.unbind();
+    authPresenter.onViewDetached();
+    mSensorManager.unregisterListener(mShakeDetector);
+  }
+
+  private void connectUser(User user) {
+    Timber.d("goToConnected");
+    this.currentUser.copy(user);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+    String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
+    if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
+        user.getUsername())) {
+      navigator.navigateToAuthProfile(this, null, loginEntity);
+    } else {
+      tagManager.updateUser(user);
+      tagManager.setUserId(user.getId());
+      navigator.navigateToHomeFromLogin(this, null, countryCode, true);
     }
   }
 
@@ -362,316 +171,57 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         .inject(this);
   }
 
-  private void manageDeepLink(Intent intent) {
-    if (intent != null && intent.getData() != null) {
-      deepLink = intent.getData();
-    }
+  ////////////////
+  //  OVERRIDE  //
+  ////////////////
+
+  @Override protected void onResume() {
+    super.onResume();
   }
 
-  @OnClick(R.id.btnSkip) void skip() {
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_VideoSkipped);
-    showPhoneInput(true);
+  @Override protected void onStart() {
+    super.onStart();
+    initRessource();
   }
 
-  @OnClick(R.id.viewBackground) void clickBackground() {
-    viewPhoneNumber.hideKeyboard();
+  @Override protected void onDestroy() {
+    super.onDestroy();
+    finishActivity();
   }
 
-  @OnClick(R.id.viewVideoAuth) void endVideo() {
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_VideoSkipped);
-    showPhoneInput(true);
+  @Override protected void onNewIntent(Intent intent) {
+    setIntent(intent);
   }
 
-  private void showPhoneInput(boolean animate) {
-    authVideoView.onPause(false);
-    AnimationUtils.fadeOut(btnSkip, animate ? DURATION : 0);
-    viewBackground.setAlpha(0);
-    viewBackground.setVisibility(View.VISIBLE);
-    showPlay();
-    AnimationUtils.fadeIn(viewBackground, animate ? DURATION : 0);
-    btnSkip.setEnabled(false);
-    showLayoutBottom(animate);
-  }
-
-  void showPlay() {
-    if (pin == null) {
-      btnPlay.postDelayed(() -> AnimationUtils.fadeIn(btnPlay, DURATION), DURATION_FAST);
-      btnPlay.setEnabled(true);
-    }
-  }
-
-  @OnClick(R.id.btnPlay) void play() {
-    shouldPauseOnRestore = false;
-    authVideoView.play();
-    viewPhoneNumber.hideKeyboard();
-    AnimationUtils.fadeIn(btnSkip, DURATION);
-    AnimationUtils.fadeOut(viewBackground, DURATION, new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        viewBackground.setVisibility(View.GONE);
-        viewBackground.animate().setListener(null).start();
-      }
-    });
-    AnimationUtils.fadeOut(btnPlay, DURATION);
-    btnPlay.setEnabled(false);
-    btnSkip.setEnabled(true);
-    viewBackground.setEnabled(false);
-    hideLayoutBottom();
-  }
-
-  @OnClick(R.id.viewStatus) void clickResendStatus() {
-    if (viewStatus.getStatus() == StatusView.RESEND) {
-      requestCode();
-    }
-  }
-
-  private void showLayoutBottom(boolean animate) {
-    layoutBottom.animate()
-        .translationY(0)
-        .setDuration(animate ? DURATION : 0)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            layoutBottom.animate().setListener(null).start();
-            if (pin == null) viewPhoneNumber.openKeyboard(animate ? DURATION : 0);
-            viewBackground.setEnabled(true);
-          }
-        })
-        .start();
-  }
-
-  private void hideLayoutBottom() {
-    layoutBottom.animate().translationY(screenUtils.getHeightPx()).setDuration(DURATION).start();
-  }
-
-  private void hideViewPhoneNumber(boolean animate) {
-    viewBackground.setEnabled(false);
-    btnPlay.setEnabled(false);
-
-    viewPhoneNumber.animate()
-        .translationX(-screenUtils.getWidthPx())
-        .setDuration(animate ? DURATION : 0)
-        .start();
-
-    viewPhoneNumber.clearFocus();
-  }
-
-  private void showViewPhoneNumber() {
-    pin = null;
-
-    viewPhoneNumber.enableFocus();
-
-    txtMessage.setText(R.string.onboarding_step_phone);
-    viewPhoneNumber.hideLoading();
-
-    viewBackground.setEnabled(true);
-    btnPlay.setEnabled(true);
-    viewPhoneNumber.animate().translationX(0).setDuration(DURATION).start();
-  }
-
-  private void hideViewCode() {
-    AnimationUtils.fadeIn(btnPlay, DURATION_FAST);
-    cleanCountdown();
-
-    viewCode.animate().translationX(screenUtils.getWidthPx()).setDuration(DURATION).start();
-  }
-
-  private void showViewCode(boolean animate) {
-    AnimationUtils.fadeOut(btnPlay, animate ? DURATION_FAST : 0);
-    txtMessage.setText(R.string.onboarding_step_code);
-    initCountdown();
-
-    viewCode.requestCodeFocus();
-
-    viewCode.animate()
-        .translationX(0)
-        .setDuration(animate ? DURATION : 0)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            viewCode.animate().setListener(null).start();
-            viewCode.openKeyboard(animate ? DURATION : 0);
-          }
-        })
-        .start();
-  }
-
-  private void backToPhoneNumber() {
-    hideViewCode();
-    showViewPhoneNumber();
-    viewStatus.showDisclaimer();
-  }
-
-  private void goToCodeView(boolean animate) {
-    viewStatus.showCodeSent(viewPhoneNumber.getPhoneNumberFormatted());
-    showViewCode(animate);
-    hideViewPhoneNumber(animate);
-  }
-
-  private void confirmPhoneNumber() {
-    if (!viewPhoneNumber.isDebug()) {
-      viewPhoneNumber.showLoading();
-      AuthConfig.Builder builder = new AuthConfig.Builder();
-      builder.withAuthCallBack(authCallback);
-      AuthConfig authConfig =
-          builder.withPhoneNumber(viewPhoneNumber.getPhoneNumberFormatted()).build();
-      Digits.authenticate(authConfig);
-    } else {
-      authenticationDialogFragment = AuthenticationDialogFragment.newInstance(
-          getApplicationComponent().phoneUtils()
-              .formatPhoneNumberForView(viewPhoneNumber.getPhoneNumberFormatted(),
-                  viewPhoneNumber.getCountryCode()), false);
-      authenticationDialogFragment.show(getSupportFragmentManager(),
-          AuthenticationDialogFragment.class.getName());
-      subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
-        authenticationDialogFragment.dismiss();
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-        requestCode();
-      }));
-
-      subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinModified);
-        authenticationDialogFragment.dismiss();
-      }));
-    }
-  }
-
-  private void requestCode() {
-    isCall = false;
-    viewStatus.showSendingCode();
-    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted(), false);
-  }
-
-  private void requestCall() {
-    isCall = true;
-    viewStatus.showSendingCode();
-    authPresenter.requestCode(viewPhoneNumber.getPhoneNumberFormatted(), true);
-  }
-
-  private void initCountdown() {
-    if (!countdownActive) {
-      countdownActive = true;
-      viewCode.startCountdown(isCall);
-      countdownSubscription = viewCode.countdownExpired().subscribe(aVoid -> {
-        resend();
-        cleanCountdown();
-      });
-    }
-  }
-
-  private void resend() {
-    viewStatus.showSendingCode();
-
-    authenticationDialogFragment = AuthenticationDialogFragment.newInstance(
-        getApplicationComponent().phoneUtils()
-            .formatPhoneNumberForView(viewPhoneNumber.getPhoneNumberFormatted(),
-                viewPhoneNumber.getCountryCode()), true);
-
-    authenticationDialogFragment.show(getSupportFragmentManager(),
-        AuthenticationDialogFragment.class.getName());
-    subscriptions.add(authenticationDialogFragment.confirmClicked().subscribe(aVoid -> {
-      authenticationDialogFragment.dismiss();
-      requestCall();
-    }));
-
-    subscriptions.add(authenticationDialogFragment.cancelClicked().subscribe(aVoid -> {
-      authenticationDialogFragment.dismiss();
-      requestCode();
-    }));
-  }
-
-  private void cleanCountdown() {
-    countdownActive = false;
-    if (countdownSubscription != null) countdownSubscription.unsubscribe();
-    viewCode.removeCountdown();
+  @Override public void finish() {
+    super.finish();
   }
 
   @Override public void goToCode(Pin pin) {
-    this.pin = pin;
-
-    goToCodeView(true);
   }
 
   @Override public void goToConnected(User user) {
-    this.user.copy(user);
-
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
-
-    viewCode.removeCountdown();
-
-    subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(aLong -> {
-          if (viewPhoneNumber.isDebug()) {
-            viewCode.showConnected();
-          } else {
-            viewPhoneNumber.showConnected();
-          }
-        })
-        .delay(DURATION_LONG, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(aLong -> {
-          txtMessage.setVisibility(View.GONE);
-          viewStatus.setVisibility(View.GONE);
-          screenUtils.hideKeyboard(this);
-
-          if (viewPhoneNumber.isDebug()) {
-            viewCode.showConnectedEnd();
-          } else {
-            viewPhoneNumber.showConnectedEnd();
-          }
-        })
-        .delay(1400, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(time -> {
-          if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
-              user.getUsername())) {
-            navigator.navigateToAuthProfile(this, deepLink, loginEntity);
-          } else {
-            tagManager.updateUser(user);
-            tagManager.setUserId(user.getId());
-            navigator.navigateToAuthAccess(this, deepLink,
-                "+" + phoneUtils.getCountryCode(loginEntity.getUsername()));
-          }
-        }));
+    connectUser(user);
   }
 
   @Override public void loginError(ErrorLogin errorLogin) {
-    this.errorLogin = errorLogin;
+    Timber.d("loginError");
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {
-    countPinError++;
-
-    if (countPinError == COUNT_PIN_ERROR_MAX) {
-      resend();
-      cleanCountdown();
-    } else {
-      showError(EmojiParser.demojizedText(getString(R.string.onboarding_error_wrong_pin)));
-    }
-
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
+    Timber.d("errorLogin");
   }
 
   @Override public void showLoading() {
-    if (pin == null || !viewPhoneNumber.isDebug()) {
-      viewPhoneNumber.showLoading();
-    } else if (pin != null) {
-      viewCode.showLoading();
-    }
+    progressView.setVisibility(View.VISIBLE);
   }
 
   @Override public void hideLoading() {
-    if (pin == null || !viewPhoneNumber.isDebug()) {
-      viewPhoneNumber.hideLoading();
-    } else if (pin != null) {
-      viewCode.hideLoading();
-    }
+    progressView.setVisibility(View.INVISIBLE);
   }
 
   @Override public void showError(String message) {
-    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    if (pin == null) {
-      viewStatus.showDisclaimer();
-    }
+    Timber.e("showError " + message);
   }
 
   @Override public Context context() {

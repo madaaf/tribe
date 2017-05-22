@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="digits-2.0.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/49d5e2ca9310b88a7282728ecc7e4c45df990abc/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/49d5e2ca9310b88a7282728ecc7e4c45df990abc/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.digits.sdk.android/digits/2.0.6/b8624486523af94b7958763168962af2f5b49069/digits-2.0.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

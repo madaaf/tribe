@@ -241,8 +241,9 @@ public class HomeActivity extends BaseActivity
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-      syncContacts();
+      lookupContacts();
     }
+    syncContacts();
   }
 
   @Override protected void onRestart() {
@@ -307,7 +308,6 @@ public class HomeActivity extends BaseActivity
     if (homeGridPresenter != null) homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-
     if (appStateMonitor != null) {
       appStateMonitor.removeListener(this);
       appStateMonitor.stop();
@@ -794,6 +794,26 @@ public class HomeActivity extends BaseActivity
 
   private void syncContacts() {
     homeGridPresenter.lookupContacts();
+    searchView.refactorActions();
+  }
+
+  private void lookupContacts() {
+    if (stateManager.shouldDisplay(StateManager.PERMISSION_CONTACT)) {
+      stateManager.addTutorialKey(StateManager.PERMISSION_CONTACT);
+      rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+        tagManager.setProperty(bundle);
+
+        Bundle bundleBis = new Bundle();
+        bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+        if (hasPermission) {
+          addressBook.set(true);
+          syncContacts();
+        }
+      });
+    }
   }
 
   @Override public void onAppDidEnterForeground() {
