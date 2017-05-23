@@ -545,4 +545,11 @@
 	<string name="callback_notification_missed_call_title">Missed calls</string>
 	<string name="callback_notification_many_missed_call">(%1$s missed calls)</string>
 	<string name="callback_notification_one_missed_call">(%1$s missed call)</string>
+	
+	<!-- Games -->
+	<string name="game_event_started">Game started!</string>
+	<string name="game_event_stopped">Game ended!</string>
+	<string name="game_post_it">Post-it</string>
+	<string name="game_post_it_menu_re_roll">Re-roll</string>
+	<string name="game_post_it_menu_stop">Stop the game</string>
 </resources>

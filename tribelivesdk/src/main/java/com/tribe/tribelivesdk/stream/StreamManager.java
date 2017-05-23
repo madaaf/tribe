@@ -10,6 +10,7 @@ import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
+import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import org.webrtc.MediaStream;
@@ -47,6 +48,9 @@ public class StreamManager {
     localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
 
     localSubscriptions.add(this.localPeerView.onSwitchFilter().subscribe(aVoid -> switchFilter()));
+
+    localSubscriptions.add(this.localPeerView.onStartGame()
+        .subscribe(tribeVideoRenderer -> startGame(tribeVideoRenderer)));
 
     localSubscriptions.add(this.localPeerView.onEnableCamera()
         .doOnNext(mediaConfiguration -> setLocalCameraEnabled(mediaConfiguration.isVideoEnabled()))
@@ -170,6 +174,14 @@ public class StreamManager {
     }
 
     liveLocalStream.switchFilter();
+  }
+
+  public void startGame(TribeVideoRenderer videoRenderer) {
+    if (liveLocalStream == null) {
+      Timber.d("Live Local Stream is null");
+    }
+
+    liveLocalStream.startGame(videoRenderer);
   }
 
   private void setLocalCameraEnabled(boolean enabled) {

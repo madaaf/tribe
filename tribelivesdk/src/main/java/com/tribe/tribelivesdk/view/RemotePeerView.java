@@ -80,7 +80,7 @@ public class RemotePeerView extends PeerView {
 
     if (oldValue != videoTrack) {
       if (oldValue != null) {
-        removeRendererFromVideoTrack();
+        dispose();
       }
 
       this.videoTrack = videoTrack;
@@ -96,13 +96,13 @@ public class RemotePeerView extends PeerView {
    * all preconditions for the start of rendering are met.
    */
   protected void tryAddRendererToVideoTrack() {
-    if (videoRenderer == null && videoTrack != null) {
+    if (remoteRenderer == null && videoTrack != null) {
       TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
 
       textureViewRenderer.init(/* sharedContext */ null, rendererEvents);
 
-      videoRenderer = new VideoRenderer(textureViewRenderer);
-      videoTrack.addRenderer(videoRenderer);
+      remoteRenderer = new VideoRenderer(textureViewRenderer);
+      videoTrack.addRenderer(remoteRenderer);
     }
   }
 

@@ -7,10 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.NinePatchDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import com.tribe.app.R;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -117,5 +119,27 @@ public class BitmapUtils {
     String mImageName = ts + ".jpg";
     mediaFile = new File(mediaStorageDirectory.getPath() + File.separator + mImageName);
     return mediaFile;
+  }
+
+  public Bitmap generateNewPostIt(Context context, String text, int textSize, int textColor,
+      int backgroundId) {
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    paint.setTextSize(textSize);
+    paint.setColor(textColor);
+    paint.setTextAlign(Paint.Align.CENTER);
+    float baseline = -paint.ascent();
+    int width = (int) (paint.measureText(text) + 0.5f);
+    int height = (int) (baseline + paint.descent() + 0.5f);
+    Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    NinePatchDrawable bg = (NinePatchDrawable) ContextCompat.getDrawable(context, backgroundId);
+
+    if (bg != null) {
+      bg.setBounds(0, 0, width, height);
+    }
+
+    Canvas canvas = new Canvas(image);
+    bg.draw(canvas);
+    canvas.drawText(text, 0, baseline, paint);
+    return image;
   }
 }

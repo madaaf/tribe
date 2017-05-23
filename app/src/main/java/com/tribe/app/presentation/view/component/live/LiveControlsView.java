@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -37,6 +34,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 01/22/17.
  */
 public class LiveControlsView extends FrameLayout {
+
   private final static int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION = 300;
   private static final int DURATION_PARAM = 450;
@@ -47,7 +45,9 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnInviteLive) View btnInviteLive;
 
-  @BindView(R.id.btnNotify) View btnNotify;
+  //@BindView(R.id.btnNotify) View btnNotify;
+
+  @BindView(R.id.btnNewGame) View btnNewGame;
 
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
@@ -81,6 +81,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
   private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
   private PublishSubject<Void> onClickFilter = PublishSubject.create();
+  private PublishSubject<Void> onNewGame = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -123,7 +124,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void initUI() {
     xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
-    btnNotify.setEnabled(false);
+    //btnNotify.setEnabled(false);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -147,14 +148,16 @@ public class LiveControlsView extends FrameLayout {
 
     timerSubscription = Observable.timer(MAX_DURATION_LAYOUT_CONTROLS, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {
-          reduceParam();
-        });
+        .subscribe(aVoid -> reduceParam());
   }
 
   private void resetTimer() {
     if (timerSubscription != null) timerSubscription.unsubscribe();
     setTimer();
+  }
+
+  private void clearTimer() {
+    if (timerSubscription != null) timerSubscription.unsubscribe();
   }
 
   private void clickOnParam() {
@@ -183,11 +186,13 @@ public class LiveControlsView extends FrameLayout {
     if (cameraEnabled) {
       setXTranslateAnimation(btnExpand, widthExtended);
     } else {
-      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+      setXTranslateAnimation(btnExpand,
+          layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
     }
   }
 
   public void reduceParam() {
+    clearTimer();
     isParamExpanded = false;
     onClickParamExpand.onNext(isParamExpanded);
     layoutContainerParamExtendedLive.setTranslationX(0);
@@ -283,25 +288,29 @@ public class LiveControlsView extends FrameLayout {
     onClickCameraDisable.onNext(null);
   }
 
-  @OnClick(R.id.btnNotify) void clickNotify() {
-    stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
-    resetTimer();
+  @OnClick(R.id.btnNewGame) void clickNewGame() {
 
-    btnNotify.setEnabled(false);
-    btnNotify.animate()
-        .alpha(0.2f)
-        .setDuration(DURATION)
-        .setInterpolator(new DecelerateInterpolator())
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            onNotifyAnimationDone.onNext(null);
-            btnNotify.animate().setListener(null);
-          }
-        })
-        .start();
-
-    onClickNotify.onNext(null);
   }
+
+  //@OnClick(R.id.btnNotify) void clickNotify() {
+  //  stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
+  //  resetTimer();
+  //
+  //  btnNotify.setEnabled(false);
+  //  btnNotify.animate()
+  //      .alpha(0.2f)
+  //      .setDuration(DURATION)
+  //      .setInterpolator(new DecelerateInterpolator())
+  //      .setListener(new AnimatorListenerAdapter() {
+  //        @Override public void onAnimationEnd(Animator animation) {
+  //          onNotifyAnimationDone.onNext(null);
+  //          btnNotify.animate().setListener(null);
+  //        }
+  //      })
+  //      .start();
+  //
+  //  onClickNotify.onNext(null);
+  //}
 
   @OnClick(R.id.btnFilter) void clickFilter() {
     onClickFilter.onNext(null);
@@ -312,20 +321,20 @@ public class LiveControlsView extends FrameLayout {
   //////////////
 
   public void dispose() {
-    btnNotify.clearAnimation();
-    btnNotify.animate().setListener(null);
+    //btnNotify.clearAnimation();
+    //btnNotify.animate().setListener(null);
   }
 
   public void setNotifyEnabled(boolean enable) {
-    btnNotify.setEnabled(enable);
+    //btnNotify.setEnabled(enable);
   }
 
   public void prepareForScreenshot() {
-    btnNotify.setAlpha(0f);
+    //btnNotify.setAlpha(0f);
   }
 
   public void screenshotDone() {
-    btnNotify.setAlpha(1f);
+    //btnNotify.setAlpha(1f);
   }
 
   public void setMicroEnabled(boolean enabled) {
@@ -334,17 +343,17 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void refactorNotifyButton(boolean enable) {
-    if (!enable) {
-      btnNotify.setVisibility(View.GONE);
-      return;
-    } else {
-      btnNotify.setVisibility(View.VISIBLE);
-    }
-
-    if (enable != btnNotify.isEnabled()) {
-      btnNotify.animate().alpha(1).setDuration(DURATION);
-      btnNotify.setEnabled(true);
-    }
+    //if (!enable) {
+    //  btnNotify.setVisibility(View.GONE);
+    //  return;
+    //} else {
+    //  btnNotify.setVisibility(View.VISIBLE);
+    //}
+    //
+    //if (enable != btnNotify.isEnabled()) {
+    //  btnNotify.animate().alpha(1).setDuration(DURATION);
+    //  btnNotify.setEnabled(true);
+    //}
   }
 
   /////////////////
@@ -385,5 +394,9 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Void> onClickFilter() {
     return onClickFilter;
+  }
+
+  public Observable<Void> onNewGame() {
+    return onNewGame;
   }
 }

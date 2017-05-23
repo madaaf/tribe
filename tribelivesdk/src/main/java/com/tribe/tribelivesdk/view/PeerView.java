@@ -110,22 +110,24 @@ public abstract class PeerView extends ViewGroup {
       Timber.d("videoRenderer dispose");
       remoteRenderer.dispose();
       remoteRenderer = null;
-
-      Timber.d("Releasing texture");
-      getTextureViewRenderer().release();
-
-      // Since this PeerView is no longer rendering anything, make sure
-      // surfaceViewRenderer displays nothing as well.
-      synchronized (layoutSyncRoot) {
-        frameHeight = 0;
-        frameRotation = 0;
-        frameWidth = 0;
-      }
-
-      Timber.d("Request renderer layout");
-      requestTextureViewRendererLayout();
-      Timber.d("End disposing renderer from video track");
     }
+  }
+
+  protected void releaseTexture() {
+    Timber.d("Releasing texture");
+    getTextureViewRenderer().release();
+
+    // Since this PeerView is no longer rendering anything, make sure
+    // surfaceViewRenderer displays nothing as well.
+    synchronized (layoutSyncRoot) {
+      frameHeight = 0;
+      frameRotation = 0;
+      frameWidth = 0;
+    }
+
+    Timber.d("Request renderer layout");
+    requestTextureViewRendererLayout();
+    Timber.d("End disposing renderer from video track");
   }
 
   /**
@@ -356,12 +358,13 @@ public abstract class PeerView extends ViewGroup {
     requestTextureViewRendererLayout();
   }
 
-  public VideoRenderer getVideoRenderer() {
+  public VideoRenderer getRemoteRenderer() {
     return remoteRenderer;
   }
 
   public void dispose() {
     removeRendererFromVideoTrack();
+    releaseTexture();
   }
 
   public abstract void onFirstFrameRendered();

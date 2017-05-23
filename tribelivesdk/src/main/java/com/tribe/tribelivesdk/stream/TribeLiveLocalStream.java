@@ -2,9 +2,10 @@ package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
-import com.tribe.tribelivesdk.view.PeerView;
+import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
 import com.tribe.tribelivesdk.webrtc.CameraCapturer;
+import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.List;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
@@ -32,6 +33,7 @@ public class TribeLiveLocalStream {
   private AudioTrack audioTrack;
   private com.tribe.tribelivesdk.core.MediaConstraints mediaConstraints;
   private final VideoRenderer videoRenderer;
+  //private final TribeVideoRenderer localVideoRenderer;
   private VideoSource videoSource;
   private AudioSource audioSource;
   private VideoTrack videoTrack;
@@ -39,9 +41,9 @@ public class TribeLiveLocalStream {
   private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
   private boolean capturing = false;
 
-  public TribeLiveLocalStream(Context context, PeerView peerView,
+  public TribeLiveLocalStream(Context context, LocalPeerView peerView,
       PeerConnectionFactory peerConnectionFactory) {
-    if (peerView == null || peerView.getVideoRenderer() == null) {
+    if (peerView == null) {
       throw new IllegalArgumentException("Peerview cannot be null");
     }
 
@@ -50,12 +52,14 @@ public class TribeLiveLocalStream {
     }
 
     this.context = context;
-    this.videoRenderer = peerView.getVideoRenderer();
+    this.videoRenderer = peerView.getRemoteRenderer();
+    //this.localVideoRenderer = peerView.getLocalRenderer();
     this.peerConnectionFactory = peerConnectionFactory;
     mediaConstraints =
         new com.tribe.tribelivesdk.core.MediaConstraints.MediaConstraintsBuilder().build();
 
     generateVideoCapturer();
+    //if (capturer != null) capturer.switchToLocalRenderer(localVideoRenderer);
   }
 
   private void addAudioTrackToMediaStream() {
@@ -230,5 +234,11 @@ public class TribeLiveLocalStream {
     }
 
     capturer.switchFilter();
+  }
+
+  public void startGame(TribeVideoRenderer tribeVideoRenderer) {
+    if (capturer == null) return;
+
+    capturer.switchToLocalRenderer(tribeVideoRenderer);
   }
 }

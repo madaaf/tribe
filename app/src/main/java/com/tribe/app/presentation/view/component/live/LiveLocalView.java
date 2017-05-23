@@ -31,6 +31,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.view.LocalPeerView;
+import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -74,6 +75,7 @@ public class LiveLocalView extends FrameLayout {
   private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
   private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
+  private PublishSubject<TribeVideoRenderer> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {
@@ -121,6 +123,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
     viewPeerLocal.initSwitchFilterSubscription(onSwitchFilter);
+    viewPeerLocal.initStartGameSubscription(onStartGame);
 
     viewPeerOverlay.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,

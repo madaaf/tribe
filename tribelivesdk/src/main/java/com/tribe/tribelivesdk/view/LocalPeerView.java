@@ -3,61 +3,82 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.concurrent.TimeUnit;
 import org.webrtc.VideoRenderer;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class LocalPeerView extends PeerView {
 
   // VARIABLES
-  private Observable<Void> onSwitchCamera;
-  private Observable<Void> onSwitchFilter;
-  private Observable<TribePeerMediaConfiguration> onEnableCamera;
-  private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private boolean frontFacing = true;
   private TribePeerMediaConfiguration mediaConfiguration;
+  private TribeVideoRenderer localRenderer;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Observable<Void> onSwitchCamera;
+  private Observable<Void> onSwitchFilter;
+  private Observable<TribeVideoRenderer> onStartGame;
+  private Observable<TribePeerMediaConfiguration> onEnableCamera;
+  private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private PublishSubject<TribePeerMediaConfiguration> shouldSwitchMode = PublishSubject.create();
 
   public LocalPeerView(Context context) {
     super(context);
-    initRemoteRenderer();
+    init();
   }
 
   public LocalPeerView(Context context, TribePeerMediaConfiguration mediaConfiguration) {
     super(context);
     this.mediaConfiguration = mediaConfiguration;
-    initRemoteRenderer();
+    init();
   }
 
   public LocalPeerView(Context context, AttributeSet attributeSet) {
     super(context, attributeSet);
+    init();
+  }
+
+  private void init() {
+    TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
+    textureViewRenderer.init(null, rendererEvents);
     initRemoteRenderer();
-  }
-
-  public void dispose() {
-    super.dispose();
-    if (subscriptions != null) subscriptions.clear();
-  }
-
-  @Override public void onFirstFrameRendered() {
+    setMirror(true);
   }
 
   private void initRemoteRenderer() {
-    TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
-    textureViewRenderer.init(null, rendererEvents);
     remoteRenderer = new VideoRenderer(textureViewRenderer);
-    setMirror(true);
+  }
+
+  private void initLocalRenderer() {
+    localRenderer = new TribeVideoRenderer(textureViewRenderer);
+  }
+
+  protected void removeLocalRenderer() {
+    if (localRenderer != null) {
+      Timber.d("localRenderer dispose");
+      localRenderer.dispose();
+      localRenderer = null;
+    }
   }
 
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void dispose() {
+    super.dispose();
+    removeLocalRenderer();
+    if (subscriptions != null) subscriptions.clear();
+  }
+
+  @Override public void onFirstFrameRendered() {
+  }
 
   public void initEnableCameraSubscription(Observable<TribePeerMediaConfiguration> obs) {
     onEnableCamera = obs;
@@ -79,12 +100,20 @@ public class LocalPeerView extends PeerView {
     onSwitchFilter = obs;
   }
 
+  public void initStartGameSubscription(Observable<TribeVideoRenderer> obs) {
+    onStartGame = obs;
+  }
+
   public TribePeerMediaConfiguration getMediaConfiguration() {
     return mediaConfiguration;
   }
 
   public boolean isFrontFacing() {
     return frontFacing;
+  }
+
+  public TribeVideoRenderer getLocalRenderer() {
+    return localRenderer;
   }
 
   /////////////////
@@ -105,5 +134,9 @@ public class LocalPeerView extends PeerView {
 
   public Observable<Void> onSwitchFilter() {
     return onSwitchFilter;
+  }
+
+  public Observable<TribeVideoRenderer> onStartGame() {
+    return onStartGame;
   }
 }
