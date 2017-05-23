@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -18,10 +16,7 @@ import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.StringUtils;
-import java.io.IOException;
 import javax.inject.Inject;
-import retrofit2.adapter.rxjava.HttpException;
-import timber.log.Timber;
 
 public class AuthPresenter implements Presenter {
 
@@ -61,7 +56,11 @@ public class AuthPresenter implements Presenter {
     showViewLoading();
 
     cloudLoginUseCase.prepare(loginEntity);
-    cloudLoginUseCase.execute(new LoginSubscriber());
+    if (phoneNumber == null) {
+      cloudLoginUseCase.execute(new UnknownSubscriber());
+    } else {
+      cloudLoginUseCase.execute(new LoginSubscriber());
+    }
 
     return loginEntity;
   }
@@ -125,36 +124,27 @@ public class AuthPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      if (e instanceof HttpException) {
-        HttpException httpException = (HttpException) e;
-        if (httpException.response() != null && httpException.response().errorBody() != null) {
-          String errorBody = null;
-          try {
-            errorBody = httpException.response().errorBody().string();
-            ErrorLogin errorLogin = new Gson().fromJson(errorBody, ErrorLogin.class);
-            if (errorLogin != null && errorLogin.isVerified()) {
-              loginError(errorLogin);
-              goToConnected(null);
-            } else if (errorLogin != null && !errorLogin.isVerified()) {
-              introView.pinError(errorLogin);
-            }
-          } catch (IOException io) {
-            hideViewLoading();
-            Timber.e(io);
-          } catch (JsonSyntaxException ex) {
-            hideViewLoading();
-            if (httpException.response() != null && httpException.response().errorBody() != null) {
-              Timber.e(ex, errorBody);
-            }
-          }
-        }
-      }
-
+      e.printStackTrace();
       hideViewLoading();
     }
 
     @Override public void onNext(AccessToken accessToken) {
       getUserInfo();
+    }
+  }
+
+  private final class UnknownSubscriber extends DefaultSubscriber<AccessToken> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+      hideViewLoading();
+    }
+
+    @Override public void onNext(AccessToken accessToken) {
+      goToConnected(new User(null));
     }
   }
 

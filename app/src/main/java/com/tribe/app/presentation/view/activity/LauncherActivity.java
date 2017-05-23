@@ -14,6 +14,8 @@ public class LauncherActivity extends BaseActivity {
 
   @Inject User currentUser;
 
+  Uri deepLink;
+
   public static Intent getCallingIntent(Context context) {
     return new Intent(context, LauncherActivity.class);
   }
@@ -32,15 +34,18 @@ public class LauncherActivity extends BaseActivity {
 
     this.getApplicationComponent().inject(this);
 
-    Uri deepLink = getIntent().getData();
+    deepLink = getIntent().getData();
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
       navigator.navigateToLogin(this, deepLink);
     } else {
-      //navigator.navigateToAuthAccess(this, deepLink, "+850");
       navigator.navigateToHomeFromStart(this, deepLink);
     }
 
     finish();
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
   }
 
   @Override protected void onNewIntent(Intent intent) {

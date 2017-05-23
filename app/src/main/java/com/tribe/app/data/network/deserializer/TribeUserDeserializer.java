@@ -40,9 +40,15 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     }.getType(), new UserRealmListDeserializer()).create();
 
     UserRealm userRealm = new UserRealm();
+    JsonObject result = null;
 
-    JsonObject result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
-    if (result == null) {
+    if (je.getAsJsonObject().getAsJsonObject("data").has("user")) {
+      if (!je.getAsJsonObject().getAsJsonObject("data").get("user").isJsonNull()) {
+        result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("user");
+      } else {
+        return userRealm; // anonymous user
+      }
+    } else if (je.getAsJsonObject().getAsJsonObject("data").has("updateUser")) {
       result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
     }
 

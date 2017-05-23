@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
+import com.digits.sdk.android.Digits;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.GroupMember;
@@ -17,7 +20,9 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
@@ -75,7 +80,7 @@ public class Navigator {
 
   public void navigateToLogin(Context context, Uri deepLink) {
     if (context != null) {
-      Intent intent = AuthActivity.getCallingIntent(context);
+      Intent intent = AuthActivity.getCallingIntent(context, deepLink);
       intent.setData(deepLink);
       context.startActivity(intent);
     }
@@ -147,7 +152,25 @@ public class Navigator {
    * Logout -> new login
    */
   public void navigateToLogout(Activity activity) {
+    FacebookUtils.logout();
+    Digits.logout();
+    Intent intent = new Intent(activity, HomeActivity.class);
+    intent.putExtra(IntentUtils.FINISH, true);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    activity.startActivity(intent);
 
+    Intent intentLauncher = new Intent(activity, LauncherActivity.class);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    int pendingIntentId = 123456; // FAKE ID
+    PendingIntent mPendingIntent =
+        PendingIntent.getActivity(activity, pendingIntentId, intentLauncher,
+            PendingIntent.FLAG_CANCEL_CURRENT);
+    AlarmManager mgr = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+    System.exit(0);
   }
 
   /**

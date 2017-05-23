@@ -1,11 +1,11 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -29,15 +29,18 @@ import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ShakeDetector;
 import javax.inject.Inject;
 import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView {
-  public static Intent getCallingIntent(Context context) {
+
+  private static String DEEP_LINK = "DEEP_LINK";
+
+  public static Intent getCallingIntent(Context context, Uri deepLink) {
     Intent intent = new Intent(context, AuthActivity.class);
+    intent.putExtra(DEEP_LINK, deepLink);
     return intent;
   }
 
@@ -56,18 +59,32 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private SensorManager mSensorManager;
   private Sensor mAccelerometer;
   private Boolean enableSandbox = false;
+  private Uri deepLink = null;
   private AuthCallback authCallback;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     unbinder = ButterKnife.bind(this);
+
     initDependencyInjector();
     setSandboxBehavior();
     initRessource();
-    digitAuth();
+    deepLink = getIntent().getData();
   }
 
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (data != null) {
+      if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          finishAndRemoveTask();
+        } else {
+          finish();
+        }
+      }
+    }
+  }
   ////////////////
   //  PRIVATE   //
   ////////////////
@@ -83,7 +100,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         } else {
           Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
           toast.show();
-          logout();
+          //logout();
+          finish();
         }
       }
 
@@ -95,29 +113,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
     AuthConfig.Builder builder = new AuthConfig.Builder();
     builder.withAuthCallBack(authCallback);
+
     AuthConfig authConfig = builder.build();
     Digits.authenticate(authConfig);
   }
-  
-  private void logout() {
-    FacebookUtils.logout();
-    Digits.logout();
-    Intent intent = new Intent(this, HomeActivity.class);
-    intent.putExtra(IntentUtils.FINISH, true);
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    startActivity(intent);
 
-    Intent intentLauncher = new Intent(this, LauncherActivity.class);
-    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    int pendingIntentId = 123456; // FAKE ID
-    PendingIntent mPendingIntent = PendingIntent.getActivity(this, pendingIntentId, intentLauncher,
-        PendingIntent.FLAG_CANCEL_CURRENT);
-    AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-    System.exit(0);
+  private void logout() {
+    navigator.navigateToLogout(this);
   }
 
   private void setSandboxBehavior() {
@@ -142,18 +144,19 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
   }
 
-  private void finishActivity() {
-    if (unbinder != null) unbinder.unbind();
-    authPresenter.onViewDetached();
-    mSensorManager.unregisterListener(mShakeDetector);
-  }
-
   private void connectUser(User user) {
     Timber.d("goToConnected");
     this.currentUser.copy(user);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
-    if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
+    if (deepLink != null) {
+      Intent newIntent =
+          IntentUtils.getLiveIntentFromURI(this, deepLink, LiveActivity.SOURCE_DEEPLINK);
+      if (newIntent != null) {
+        navigator.navigateToIntent(this, newIntent);
+        deepLink = null;
+      }
+    } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
         user.getUsername())) {
       navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
@@ -177,16 +180,22 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onResume() {
     super.onResume();
+    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
+      loginEntity = authPresenter.login(null, null, null);
+    } else {
+      digitAuth();
+    }
   }
 
   @Override protected void onStart() {
     super.onStart();
-    initRessource();
   }
 
   @Override protected void onDestroy() {
     super.onDestroy();
-    finishActivity();
+    if (unbinder != null) unbinder.unbind();
+    authPresenter.onViewDetached();
+    mSensorManager.unregisterListener(mShakeDetector);
   }
 
   @Override protected void onNewIntent(Intent intent) {
