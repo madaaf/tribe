@@ -191,11 +191,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.White" />
 
-    <!--
-         android:keepScreenOn="true"
-            android:launchMode="singleTop"
-    -->
-
     <activity
         android:name=".presentation.view.activity.LiveImmersiveNotificationActivity"
         android:keepScreenOn="true"

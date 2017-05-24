@@ -691,6 +691,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void manageLogin(Intent intent) {
+    if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
+      navigator.openSMSDefaultApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+    }
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 

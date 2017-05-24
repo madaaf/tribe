@@ -117,19 +117,28 @@ public class Navigator {
    * @param activity An activity needed to open the destiny activity.
    */
   public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode,
-      boolean withAnimation) {
+      String smsContent) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
+      intent.putExtra(Extras.OPEN_SMS, smsContent);
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
           | Intent.FLAG_ACTIVITY_CLEAR_TASK
           | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
-      if (withAnimation) {
+      if (smsContent != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
       }
     }
+  }
+
+  public void openSMSDefaultApp(Activity activity, String message) {
+    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+    sendIntent.setData(Uri.parse("sms:"));
+    sendIntent.putExtra("sms_body", message);
+    sendIntent.setType("vnd.android-dir/mms-sms");
+    activity.startActivity(sendIntent);
   }
 
   public void navigateToProfile(Activity activity) {
@@ -384,15 +393,6 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
-  }
-
-  public void openSMSDefaultApp(Activity activity, String message) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:"));
-    sendIntent.putExtra("sms_body", message);
-    sendIntent.setType("vnd.android-dir/mms-sms");
-    sendIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    activity.startActivity(sendIntent);
   }
 
   public void inviteToRoom(Activity activity, String roomLink) {

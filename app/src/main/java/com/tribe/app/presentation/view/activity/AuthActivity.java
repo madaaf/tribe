@@ -163,7 +163,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     } else {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
-      navigator.navigateToHomeFromLogin(this, null, countryCode, true);
+      navigator.navigateToHomeFromLogin(this, null, countryCode, null);
     }
   }
 

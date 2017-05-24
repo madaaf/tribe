@@ -298,11 +298,12 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
         getString(R.string.onboarding_user_alert_call_link_sms), null)
         .filter(x -> x == true)
         .subscribe(a -> {
-          navigator.navigateToHomeFromLogin(this, deepLink, loginEntity.getCountryCode(), false);
           String linkId = StringUtils.generateLinkId();
           String url = StringUtils.getUrlFromLinkId(this, linkId);
-          navigator.openSMSDefaultApp(this, EmojiParser.demojizedText(
-              getString(R.string.onboarding_user_alert_call_link_content, url)));
+          String smsContent = EmojiParser.demojizedText(
+              getString(R.string.onboarding_user_alert_call_link_content, url));
+          navigator.navigateToHomeFromLogin(this, deepLink, loginEntity.getCountryCode(),
+              smsContent);
         }));
   }
 
