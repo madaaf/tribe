@@ -25,6 +25,7 @@ import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
+import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
@@ -148,5 +149,10 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @LookupResult Preference<String> provideLookupResult(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.LOOKUP_RESULT, "");
+  }
+
+  @Provides @Singleton @UserPhoneNumber Preference<String> provideUserPhoneNumber(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.USER_PHONE_NUMBER, null);
   }
 }

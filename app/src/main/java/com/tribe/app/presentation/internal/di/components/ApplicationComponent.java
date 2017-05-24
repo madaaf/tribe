@@ -55,6 +55,7 @@ import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
+import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
@@ -312,6 +313,8 @@ public interface ApplicationComponent {
   @CallTagsMap Preference<String> callTagsMap();
 
   @LookupResult Preference<String> lookupResult();
+
+  @UserPhoneNumber Preference<String> userPhoneNumber();
 
   SoundManager soundManager();
 

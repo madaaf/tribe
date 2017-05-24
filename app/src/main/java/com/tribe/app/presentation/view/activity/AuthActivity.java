@@ -17,6 +17,7 @@ import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsException;
 import com.digits.sdk.android.DigitsSession;
+import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -29,6 +30,7 @@ import com.tribe.app.presentation.mvp.view.AuthMVPView;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ShakeDetector;
 import javax.inject.Inject;
@@ -49,6 +51,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Inject PhoneUtils phoneUtils;
 
   @Inject AuthPresenter authPresenter;
+
+  @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
 
   @BindView(R.id.progressView) CircularProgressView progressView;
 
@@ -89,20 +93,25 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   //  PRIVATE   //
   ////////////////
 
+  private void authentifyUser(String phoneNumber) {
+    if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) return;
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
+    if (!enableSandbox) {
+      loginEntity = authPresenter.login(phoneNumber, null, null);
+    } else if (phoneNumber.startsWith("+8502121")) {
+      loginEntity = authPresenter.login(phoneNumber, null, null);
+    } else {
+      Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
+      toast.show();
+      logout();
+    }
+  }
+
   private void digitAuth() {
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
-        if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) return;
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-        if (!enableSandbox) {
-          loginEntity = authPresenter.login(phoneNumber, null, null);
-        } else if (phoneNumber.startsWith("+8502121")) {
-          loginEntity = authPresenter.login(phoneNumber, null, null);
-        } else {
-          Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
-          toast.show();
-          logout();
-        }
+        userPhoneNumber.set(phoneNumber);
+        authentifyUser(phoneNumber);
       }
 
       @Override public void failure(DigitsException error) {
@@ -147,6 +156,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void connectUser(User user) {
     Timber.d("goToConnected");
+/*    String phoneNumber = (user != null) ? user.getPhone() : null;
+    userPhoneNumber.set(phoneNumber);*/
     this.currentUser.copy(user);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
@@ -184,7 +195,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
       loginEntity = authPresenter.login(null, null, null);
     } else {
-      digitAuth();
+      if (userPhoneNumber.get() != null) {
+        authentifyUser(userPhoneNumber.get());
+      } else {
+        digitAuth();
+      }
     }
   }
 
