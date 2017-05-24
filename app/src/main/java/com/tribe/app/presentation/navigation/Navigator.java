@@ -121,7 +121,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
-      intent.putExtra(Extras.OPEN_SMS, smsContent);
+      if (smsContent != null) intent.putExtra(Extras.OPEN_SMS, smsContent);
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
           | Intent.FLAG_ACTIVITY_CLEAR_TASK
