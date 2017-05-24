@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView {
-
+  private static String MOCKED_PHONE_NUMBER = "+15556787676";
   private static String DEEP_LINK = "DEEP_LINK";
 
   public static Intent getCallingIntent(Context context, Uri deepLink) {
@@ -92,6 +92,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void digitAuth() {
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
+        if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) return;
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
         if (!enableSandbox) {
           loginEntity = authPresenter.login(phoneNumber, null, null);
@@ -100,14 +101,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         } else {
           Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
           toast.show();
-          //logout();
-          finish();
+          logout();
         }
       }
 
       @Override public void failure(DigitsException error) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
         Timber.e(error);
+        logout();
       }
     };
 
