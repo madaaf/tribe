@@ -256,6 +256,11 @@ public class Room {
     tempSubscriptions.add(webRTCClient.onSendToPeers().subscribe(jsonObject -> {
       sendToPeers(jsonObject, false);
     }));
+
+    tempSubscriptions.add(webRTCClient.onIceGatheringChanged().subscribe(iceGatheringState -> {
+      JSONObject payload = getSendMessageIceGatheringComplete();
+      webSocketConnection.send(payload.toString());
+    }));
   }
 
   public void leaveRoom() {
@@ -402,6 +407,18 @@ public class Room {
       JsonUtils.jsonPut(d, "message", message);
     }
 
+    JsonUtils.jsonPut(a, "d", d);
+    return a;
+  }
+
+  private JSONObject getSendMessageIceGatheringComplete() {
+    JSONObject a = new JSONObject();
+    JsonUtils.jsonPut(a, "a", "exchangeCandidate");
+    JSONObject d = new JSONObject();
+    JsonUtils.jsonPut(d, "to", TribeSession.PUBLISHER_ID);
+    JSONObject candidate = new JSONObject();
+    JsonUtils.jsonPut(candidate, "completed", true);
+    JsonUtils.jsonPut(d, "candidate", candidate);
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }

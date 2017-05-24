@@ -44,46 +44,46 @@
 	<string name="contacts_search_new">NEW</string>
 	<string name="contacts_search_new_tooltip">Find your friends already on Tribe!</string>
 	<string name="contacts_section_facebook_no_os_facebook_title">Facebook friends</string>
-	<string name="contacts_section_facebook_no_os_facebook_description">Got to the Settings of your phone to connect your Facebook account!</string>
+	<string name="contacts_section_facebook_no_os_facebook_description">Got to the "Settings" of your phone to connect your Facebook account!</string>
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Cancel</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">Got it!</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
 	
 	<!-- Permissions -->
-	<string name="permission_contacts_disabled_alert_title">Address book permission denied</string>
-	<string name="permission_contacts_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_contacts_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_contacts_disabled_alert_title">"Address book" permission denied</string>
+	<string name="permission_contacts_disabled_alert_description">Don\'t worry! You can enable it right now in your "Settings".</string>
+	<string name="permission_contacts_disabled_alert_redirect">Go to "Settings"</string>
 	<string name="permission_contacts_disabled_alert_cancel">Stay blocked</string>
-	<string name="permission_location_disabled_alert_title">Location permission denied</string>
+	<string name="permission_location_disabled_alert_title">"Location" permission denied</string>
 	<string name="permission_location_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_location_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_location_disabled_alert_redirect">Go to "Settings"</string>
 	<string name="permission_location_disabled_alert_cancel">No, thanks</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
 	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or video calling you.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">Read more</string>
-	<string name="permission_push_disabled_alert_title">Push permission denied</string>
-	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_push_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_push_disabled_alert_title">"Push" permission denied</string>
+	<string name="permission_push_disabled_alert_description">Don\'t worry! You can enable it right now in your "Settings".</string>
+	<string name="permission_push_disabled_alert_redirect">Go to "Settings"</string>
 	<string name="permission_push_disabled_alert_cancel">Stay alone</string>
-	<string name="permission_camera_disabled_alert_title">Camera or Microphone permission denied</string>
-	<string name="permission_camera_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_camera_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_camera_disabled_alert_title">"Camera" or "Microphone" permission denied</string>
+	<string name="permission_camera_disabled_alert_description">Don\'t worry! You can enable it right now in your "Settings".</string>
+	<string name="permission_camera_disabled_alert_redirect">Go to "Settings"</string>
 	<string name="permission_camera_disabled_alert_cancel">Keep it blocked</string>
-	<string name="permission_photos_disabled_alert_title">Photo Album permission denied</string>
-	<string name="permission_photos_disabled_alert_description">Don\'t worry! You can enable it right now in your Settings.</string>
-	<string name="permission_photos_disabled_alert_redirect">Go to Settings</string>
+	<string name="permission_photos_disabled_alert_title">"Photo Album" permission denied</string>
+	<string name="permission_photos_disabled_alert_description">Don\'t worry! You can enable it right now in your "Settings".</string>
+	<string name="permission_photos_disabled_alert_redirect">Go to "Settings"</string>
 	<string name="permission_photos_disabled_alert_cancel">Keep it blocked</string>
 	<string name="permission_global_popup_title">Make sure everything works perfectly!</string>
 	<string name="permission_global_popup_message">Let’s take care of permissions so you don’t miss anything from the most incredible video messenger.</string>
 	<string name="permission_global_popup_cancel">Do it later</string>
 	<string name="permission_global_popup_confirm">LET\'S GO!</string>
-	<string name="permission_facebook_popup_title">Find friends from Facebook</string>
+	<string name="permission_facebook_popup_title">Find friends from "Facebook"</string>
 	<string name="permission_facebook_popup_message">Your Facebook friends will be countinuously synced so you can see who you already know on Tribe.</string>
 	<string name="permission_facebook_popup_ok">Perfect!</string>
 	<string name="permission_facebook_popup_ko">Read more</string>
-	<string name="permission_addressbook_popup_title">Find friends from your Address Book</string>
-	<string name="permission_addressbook_popup_message">Your friends from your Address Book will be countinuously synced so you can see who you already know on Tribe.</string>
+	<string name="permission_addressbook_popup_title">Find friends from your "Address Book"</string>
+	<string name="permission_addressbook_popup_message">Your friends from your "Address Book" will be countinuously synced so you can see who you already know on Tribe.</string>
 	<string name="permission_addressbook_popup_ok">Perfect!</string>
 	<string name="permission_addressbook_popup_ko">Read more</string>
 	
@@ -222,9 +222,9 @@
 	<string name="onboarding_user_facebook_button_title">Go faster with facebook!</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
 	<string name="onboarding_user_alert_call_link_title">Looks great. Pick your best friends to try it out now! :metal:</string>
-	<string name="onboarding_user_alert_call_link_msg">Small tips: Send this link to a bunch of friends you\'d like to video call at once.</string>
+	<string name="onboarding_user_alert_call_link_msg">Small tip: Text the friends you\'d like to video call at once.</string>
 	<string name="onboarding_user_alert_call_link_sms">Open SMS</string>
-	<string name="onboarding_user_alert_call_link_iMessage">Open iMessage</string>
+	<string name="onboarding_user_alert_call_link_iMessage">Enter &amp; open iMessage!</string>
 	<string name="onboarding_user_alert_call_link_content">Haha guys, just downloaded Tribe, it looks lit :fire: Can you try with me real quick ? It\'s now on %1$s</string>
 	
 	<!-- Onboarding Queue -->
@@ -318,11 +318,11 @@
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
 	
 	<!-- Spring Cleaning -->
-	<string name="spring_cleaning_friendship_title">%1$s</string>
+	<string name="spring_cleaning_friendship_title">"%1$s"</string>
 	<string name="spring_cleaning_friendship_description">You will be able to add back\n%1$s from the Settings.</string>
 	<string name="spring_cleaning_friendship_hide">Delete friend</string>
 	<string name="spring_cleaning_friendship_block">Block friend</string>
-	<string name="spring_cleaning_membership_title">%1$s</string>
+	<string name="spring_cleaning_membership_title">"%1$s"</string>
 	<string name="spring_cleaning_membership_description">You will need to be invited\nto joined the group.</string>
 	<string name="spring_cleaning_membership_hide">Hide group</string>
 	<string name="spring_cleaning_membership_leave">Leave group</string>
@@ -338,11 +338,11 @@
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>
 	<string name="live_dismiss_invitation_validate">Remove %1$s</string>
-	<string name="live_title_with_guests">%1$s and guests</string>
+	<string name="live_title_with_guests">%1$s with guests</string>
 	<string name="live_low_connectivity">Low connectivity, audio mode only :loud_sound:</string>
-	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with %1$s...</string>
-	<string name="live_waiting_state_notifying">:loud_sound: Ringing %1$s...</string>
-	<string name="live_waiting_state_waiting">:clock10: Waiting for %1$s to join</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiating call with "%1$s"...</string>
+	<string name="live_waiting_state_notifying">:loud_sound: Ringing "%1$s"...</string>
+	<string name="live_waiting_state_waiting">:clock10: Waiting for "%1$s" to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
 	<string name="live_unknown_user">Unknown guest</string>
 	<string name="live_external_user">Guest</string>
@@ -351,7 +351,7 @@
 	<string name="live_tutorial_buzz">Get %1$s\'s attention\nwith a buzz!</string>
 	<string name="live_tutorial_drag_as_guest">Spice it up by dragging\nfriends in the call!</string>
 	<string name="live_new_call_title_alone">New call</string>
-	<string name="live_new_call_title_with_guests">%1$s and guests</string>
+	<string name="live_new_call_title_with_guests">%1$s with guests</string>
 	<string name="live_share_new_call_description">Share call link and wait for\nyour friends to join here!</string>
 	<string name="live_share_new_call_button">Invite friends in the call</string>
 	<string name="live_share_new_call_button_simple">Share</string>
@@ -364,9 +364,9 @@
 	<string name="profile_video_demo_title">Video Demo :vhs:</string>
 	<string name="profile_video_demo_subtitle">Master Tribe in 30 seconds!</string>
 	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications">Phone integration :telephone_receiver:</string>
+	<string name="profile_fullscreen_notifications">"Phone" integration :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the Recent section of the native Phone app (easy to call friends!).</string>
+	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the "Recent" section of the native "Phone" app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
 	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you. If you want to add someone as friend, you\'ll need to do it yourself.</string>
@@ -547,9 +547,12 @@
 	<string name="callback_notification_one_missed_call">(%1$s missed call)</string>
 	
 	<!-- Games -->
-	<string name="game_event_started">Game started!</string>
-	<string name="game_event_stopped">Game ended!</string>
-	<string name="game_post_it">Post-it</string>
-	<string name="game_post_it_menu_re_roll">Re-roll</string>
-	<string name="game_post_it_menu_stop">Stop the game</string>
+	<string name="game_event_started">%1$s launched the "%2$s" game! :video_game:</string>
+	<string name="game_event_post_it_re_roll">%1$s re-rolled the Postit notes! :video_game:</string>
+	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
+	<string name="game_tutorial">Tap long on the game button to stop or change the game.</string>
+	<string name="game_post_it">Postit notes</string>
+	<string name="game_post_it_menu_re_roll">Re-roll the Postit notes</string>
+	<string name="game_post_it_menu_stop">Stop this game</string>
+	<string name="game_post_it_rule">Ask friends who you are!</string>
 </resources>

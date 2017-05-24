@@ -23,6 +23,8 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
   private PublishSubject<MediaStream> onReceivedMediaStream = PublishSubject.create();
   private PublishSubject<MediaStream> onRemovedMediaStream = PublishSubject.create();
   private PublishSubject<Void> onShouldCreateOffer = PublishSubject.create();
+  private PublishSubject<PeerConnection.IceGatheringState> onIceGatheringChange =
+      PublishSubject.create();
 
   public TribePeerConnectionObserver(boolean isOffer) {
     this.isOffer = isOffer;
@@ -86,6 +88,8 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
       return;
     }
 
+    onIceGatheringChange.onNext(iceGatheringState);
+
     //LinkedList<IceCandidate> iceCandidateLinkedList = new LinkedList(queuedLocalCandidates);
     //queuedLocalCandidates.clear();
     //onReceivedIceCandidates.onNext(iceCandidateLinkedList);
@@ -128,5 +132,9 @@ public class TribePeerConnectionObserver implements PeerConnection.Observer {
 
   public Observable<Void> onShouldCreateOffer() {
     return onShouldCreateOffer;
+  }
+
+  public Observable<PeerConnection.IceGatheringState> onIceGatheringChanged() {
+    return onIceGatheringChange;
   }
 }
