@@ -32,7 +32,6 @@ public class LUT3DFilter {
   public static final String LUT3D_BW = "LUT3D_BW";
   public static final String LUT3D_HIPSTER = "LUT3D_HIPSTER";
   public static final String LUT3D_DEFAULT = "LUT3D_DEFAULT";
-  public static final String GAME_POST_IT = "GAME_POST_IT";
   public static final String LUT3D_NONE = "LUT3D_NONE";
 
   private static final float MAX_MEMORY_PERCENTAGE = 0.15f;

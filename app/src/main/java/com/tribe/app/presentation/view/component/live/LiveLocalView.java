@@ -27,6 +27,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -75,7 +76,7 @@ public class LiveLocalView extends FrameLayout {
   private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
   private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
-  private PublishSubject<TribeVideoRenderer> onStartGame = PublishSubject.create();
+  private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
 
   public LiveLocalView(Context context) {

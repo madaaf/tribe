@@ -8,9 +8,9 @@ public class LibYuvConverter {
     System.loadLibrary("tribelibyuv");
   }
 
-  public native int YUVToARGB(byte[] yuv, int width, int height, byte[] argb);
+  public native int YUVToARGB(byte[] yuv, int width, int height, int[] argb);
 
-  public native void ARGBToYUV(byte[] argb, int width, int height, byte[] yuvOut);
+  public native void ARGBToYUV(int[] argb, int width, int height, byte[] yuvOut);
 
   public native void ARGBToI420(byte[] argb, int width, int height, byte[] yuvOut);
 

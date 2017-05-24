@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
@@ -33,7 +34,7 @@ public class TribeLiveLocalStream {
   private AudioTrack audioTrack;
   private com.tribe.tribelivesdk.core.MediaConstraints mediaConstraints;
   private final VideoRenderer videoRenderer;
-  //private final TribeVideoRenderer localVideoRenderer;
+  private final TribeVideoRenderer localVideoRenderer;
   private VideoSource videoSource;
   private AudioSource audioSource;
   private VideoTrack videoTrack;
@@ -53,13 +54,12 @@ public class TribeLiveLocalStream {
 
     this.context = context;
     this.videoRenderer = peerView.getRemoteRenderer();
-    //this.localVideoRenderer = peerView.getLocalRenderer();
+    this.localVideoRenderer = peerView.getLocalRenderer();
     this.peerConnectionFactory = peerConnectionFactory;
     mediaConstraints =
         new com.tribe.tribelivesdk.core.MediaConstraints.MediaConstraintsBuilder().build();
 
     generateVideoCapturer();
-    //if (capturer != null) capturer.switchToLocalRenderer(localVideoRenderer);
   }
 
   private void addAudioTrackToMediaStream() {
@@ -236,9 +236,11 @@ public class TribeLiveLocalStream {
     capturer.switchFilter();
   }
 
-  public void startGame(TribeVideoRenderer tribeVideoRenderer) {
-    if (capturer == null) return;
-
-    capturer.switchToLocalRenderer(tribeVideoRenderer);
+  public void startGame(Game game) {
+    if (game.isLocalFrameDifferent()) {
+      stopVideoCapture();
+      videoTrack.removeRenderer(videoRenderer);
+      startVideoCapture();
+    }
   }
 }

@@ -13,16 +13,13 @@ package com.tribe.tribelivesdk.webrtc;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
-import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.stream.FrameManager;
-import com.tribe.tribelivesdk.util.BitmapUtils;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -173,10 +170,6 @@ import rx.subjects.PublishSubject;
 
         if (!firstFrameObserved) {
           eventsHandler.onFirstFrameAvailable();
-          Bitmap bitmap = BitmapUtils.generateNewPostIt(applicationContext, "?",
-              applicationContext.getResources().getDimensionPixelSize(R.dimen.textsize_post_it),
-              Color.WHITE, R.drawable.bg_post_it);
-          savePNGImageToGallery(bitmap, applicationContext, "img_" + System.currentTimeMillis());
           firstFrameObserved = true;
         }
 
@@ -284,7 +277,6 @@ import rx.subjects.PublishSubject;
     this.cameraThreadHandler =
         surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
     this.frameManager = new FrameManager(applicationContext, capturerObserver);
-    if (localRenderer != null) this.frameManager.switchToLocalRenderer(localRenderer);
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -364,11 +356,6 @@ import rx.subjects.PublishSubject;
 
   @Override public void switchFilter() {
     frameManager.switchFilter();
-  }
-
-  public void switchToLocalRenderer(TribeVideoRenderer localRenderer) {
-    this.localRenderer = localRenderer;
-    if (frameManager != null) frameManager.switchToLocalRenderer(localRenderer);
   }
 
   @Override public boolean isScreencast() {

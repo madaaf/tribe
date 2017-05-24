@@ -14,6 +14,32 @@
       android:src="@drawable/picto_extend_right_live"
       />
 
+  <ImageView
+      android:id="@+id/btnNotify"
+      android:layout_width="68dp"
+      android:layout_height="68dp"
+      android:layout_gravity="left|top"
+      android:layout_marginStart="10dp"
+      android:layout_marginTop="5dp"
+      android:background="@drawable/selectable_button_oval_light"
+      android:clickable="true"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_notify_buzz"
+      />
+
+  <ImageView
+      android:id="@+id/btnLeave"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="right|top"
+      android:layout_marginStart="10dp"
+      android:layout_marginTop="5dp"
+      android:background="@drawable/selectable_button_oval"
+      android:clickable="true"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_leave_live"
+      />
+
   <FrameLayout
       android:id="@+id/layoutContainerParamLive"
       android:layout_width="match_parent"
@@ -22,18 +48,6 @@
       android:layout_marginBottom="5dp"
       android:visibility="visible"
       >
-
-    <!--<ImageView
-        android:id="@+id/btnNotify"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="-10dp"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_notify_buzz"
-        />-->
 
     <ImageView
         android:id="@+id/btnNewGame"
@@ -44,7 +58,7 @@
         android:clickable="true"
         android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_game_post_it"
+        android:src="@drawable/picto_new_game"
         />
 
     <ImageView
@@ -138,5 +152,4 @@
         />
 
   </LinearLayout>
-
 </merge>

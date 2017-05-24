@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,7 @@ public class LocalPeerView extends PeerView {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Observable<Void> onSwitchCamera;
   private Observable<Void> onSwitchFilter;
-  private Observable<TribeVideoRenderer> onStartGame;
+  private Observable<Game> onStartGame;
   private Observable<TribePeerMediaConfiguration> onEnableCamera;
   private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private PublishSubject<TribePeerMediaConfiguration> shouldSwitchMode = PublishSubject.create();
@@ -48,6 +49,7 @@ public class LocalPeerView extends PeerView {
     TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
     textureViewRenderer.init(null, rendererEvents);
     initRemoteRenderer();
+    initLocalRenderer();
     setMirror(true);
   }
 
@@ -100,7 +102,7 @@ public class LocalPeerView extends PeerView {
     onSwitchFilter = obs;
   }
 
-  public void initStartGameSubscription(Observable<TribeVideoRenderer> obs) {
+  public void initStartGameSubscription(Observable<Game> obs) {
     onStartGame = obs;
   }
 
@@ -136,7 +138,7 @@ public class LocalPeerView extends PeerView {
     return onSwitchFilter;
   }
 
-  public Observable<TribeVideoRenderer> onStartGame() {
+  public Observable<Game> onStartGame() {
     return onStartGame;
   }
 }

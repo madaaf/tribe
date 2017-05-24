@@ -25,6 +25,8 @@ public class BitmapUtils {
     int width = (int) ((paint.measureText(text) + 0.5f) * 1.3f);
     int height = (int) ((baseline + paint.descent() + 0.5f) * 2);
 
+    width = Math.max(width, height);
+
     Drawable bg = ContextCompat.getDrawable(context, backgroundId);
     Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
@@ -39,5 +41,12 @@ public class BitmapUtils {
     int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
     canvas.drawText(text, xPos, yPos, paint);
     return image;
+  }
+
+  public static void addPostItToFrame(Canvas canvas, Bitmap base, Bitmap watermark) {
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+    canvas.drawBitmap(base, 0, 0, paint);
+    canvas.drawBitmap(watermark, base.getWidth() >> 1, base.getHeight() >> 1, paint);
   }
 }

@@ -22,6 +22,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.tribelivesdk.game.Game;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -45,7 +46,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnInviteLive) View btnInviteLive;
 
-  //@BindView(R.id.btnNotify) View btnNotify;
+  @BindView(R.id.btnNotify) View btnNotify;
 
   @BindView(R.id.btnNewGame) View btnNewGame;
 
@@ -65,6 +66,8 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
 
+  @BindView(R.id.btnLeave) ImageView btnLeave;
+
   // VARIABLES
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false;
@@ -81,7 +84,8 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
   private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
   private PublishSubject<Void> onClickFilter = PublishSubject.create();
-  private PublishSubject<Void> onNewGame = PublishSubject.create();
+  private PublishSubject<Game> onStartGame = PublishSubject.create();
+  private PublishSubject<Void> onLeave = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -219,6 +223,10 @@ public class LiveControlsView extends FrameLayout {
   //  ONCLICK  //
   ///////////////
 
+  @OnClick(R.id.btnLeave) void clickLeave() {
+    onLeave.onNext(null);
+  }
+
   @OnClick(R.id.btnInviteLive) void openInvite() {
     onOpenInvite.onNext(null);
     resetTimer();
@@ -343,17 +351,17 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void refactorNotifyButton(boolean enable) {
-    //if (!enable) {
-    //  btnNotify.setVisibility(View.GONE);
-    //  return;
-    //} else {
-    //  btnNotify.setVisibility(View.VISIBLE);
-    //}
-    //
-    //if (enable != btnNotify.isEnabled()) {
-    //  btnNotify.animate().alpha(1).setDuration(DURATION);
-    //  btnNotify.setEnabled(true);
-    //}
+    if (!enable) {
+      btnNotify.setVisibility(View.GONE);
+      return;
+    } else {
+      btnNotify.setVisibility(View.VISIBLE);
+    }
+
+    if (enable != btnNotify.isEnabled()) {
+      btnNotify.animate().alpha(1).setDuration(DURATION);
+      btnNotify.setEnabled(true);
+    }
   }
 
   /////////////////
@@ -396,7 +404,11 @@ public class LiveControlsView extends FrameLayout {
     return onClickFilter;
   }
 
-  public Observable<Void> onNewGame() {
-    return onNewGame;
+  public Observable<Game> onStartGame() {
+    return onStartGame;
+  }
+
+  public Observable<Void> onLeave() {
+    return onLeave;
   }
 }

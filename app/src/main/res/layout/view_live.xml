@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
   <com.tribe.app.presentation.view.component.live.LiveRoomView
@@ -28,40 +27,6 @@
       android:layout_marginRight="50dp"
       android:layout_marginTop="19.5dp"
       android:background="@null"
-      />
-
-  <com.tribe.app.presentation.view.component.live.BuzzView
-      android:id="@+id/viewBuzz"
-      android:layout_width="60dp"
-      android:layout_height="60dp"
-      android:visibility="gone"
-      app:buzzType="small"
-      />
-
-  <ImageView
-      android:id="@+id/btnLeave"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="right|top"
-      android:layout_margin="7dp"
-      android:background="@drawable/selectable_button_oval"
-      android:clickable="true"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_leave_live"
-      />
-
-  <ImageView
-      android:id="@+id/btnScreenshot"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="left|top"
-      android:layout_margin="@dimen/horizontal_margin_smaller"
-      android:alpha="0"
-      android:background="@drawable/selectable_button_oval"
-      android:clickable="true"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_btn_screenshot"
-      android:visibility="invisible"
       />
 
 </merge>

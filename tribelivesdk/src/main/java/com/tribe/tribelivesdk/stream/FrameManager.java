@@ -1,20 +1,26 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.support.v8.renderscript.RenderScript;
+import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.rs.RSCompute;
 import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilterWrapper;
+import com.tribe.tribelivesdk.util.BitmapUtils;
 import com.tribe.tribelivesdk.util.ByteBuffers;
 import com.tribe.tribelivesdk.webrtc.Frame;
-import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executors;
 import org.webrtc.VideoCapturer;
 import rx.Observable;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -30,7 +36,9 @@ public class FrameManager {
   private RenderScript renderScript;
   private RSCompute rsCompute;
   private LUT3DFilterWrapper lut3DFilterWrapper;
-  private byte[] argb;
+  private Bitmap bitmapLocalPostIt, bitmapRemotePostIt, tempBitmap, canvasBitmap;
+  private Canvas canvas;
+  private int[] argb;
   private byte[] yuvOut;
   private byte[] yuvOutLocal;
   private ByteBuffer byteBufferYuv;
@@ -44,6 +52,8 @@ public class FrameManager {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Frame> onLocalFrame = PublishSubject.create();
+  private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
 
   public FrameManager(Context context, VideoCapturer.CapturerObserver capturerObserver) {
     this.capturerObserver = capturerObserver;
@@ -67,7 +77,9 @@ public class FrameManager {
                 + " / height : "
                 + frame.getHeight());
             rsCompute = new RSCompute(context, renderScript, frame.getWidth(), frame.getHeight());
-            argb = new byte[frame.getWidth() * frame.getHeight() * 4];
+            tempBitmap =
+                Bitmap.createBitmap(frame.getWidth(), frame.getHeight(), Bitmap.Config.ARGB_8888);
+            argb = new int[frame.getWidth() * frame.getHeight()];
             yuvOut = new byte[frame.getData().length];
             yuvOutLocal = new byte[frame.getData().length];
             yuvStrides = new int[3];
@@ -83,15 +95,40 @@ public class FrameManager {
             firstFrame = false;
             previousHeight = frame.getHeight();
             previousWidth = frame.getWidth();
+
+            Bitmap postIt = BitmapUtils.generateNewPostIt(context, "?",
+                context.getResources().getDimensionPixelSize(R.dimen.textsize_post_it), Color.WHITE,
+                R.drawable.bg_post_it);
+            Matrix localMatrix = new Matrix();
+            localMatrix.postScale(-1, 1);
+            localMatrix.postRotate(-frame.getRotation());
+            bitmapLocalPostIt =
+                Bitmap.createBitmap(postIt, 0, 0, postIt.getWidth(), postIt.getHeight(),
+                    localMatrix, true);
+
+            Matrix remoteMatrix = new Matrix();
+            remoteMatrix.postRotate(-frame.getRotation());
+            bitmapRemotePostIt =
+                Bitmap.createBitmap(postIt, 0, 0, postIt.getWidth(), postIt.getHeight(),
+                    localMatrix, true);
+
+            canvasBitmap =
+                Bitmap.createBitmap(frame.getWidth(), frame.getHeight(), Bitmap.Config.ARGB_8888);
+            canvas = new Canvas(canvasBitmap);
           }
 
           LUT3DFilter filter = lut3DFilterWrapper.getFilter();
           if (!filter.getId().equals(LUT3DFilter.LUT3D_NONE)) {
-            //long stepStart = System.nanoTime();
+            long stepStart = System.nanoTime();
             libYuvConverter.YUVToARGB(frame.getData(), frame.getWidth(), frame.getHeight(), argb);
-            //long stepYuvToARGB = System.nanoTime();
-            //Timber.d("stepYuvToARGB : " + (stepYuvToARGB - stepStart) / 1000000.0f + " ms");
-            rsCompute.computeLUT3D(filter, argb, frame.getWidth(), frame.getHeight(), argb);
+            long stepYuvToARGB = System.nanoTime();
+            Timber.d("stepYuvToARGB : " + (stepYuvToARGB - stepStart) / 1000000.0f + " ms");
+            //rsCompute.computeLUT3D(filter, argb, frame.getWidth(), frame.getHeight(), argb);
+            //Bitmap bmp = tempBitmap;
+            //bmp.setPixels(argb, 0, frame.getWidth(), 0, 0, frame.getWidth(), frame.getHeight());
+            //BitmapUtils.addPostItToFrame(canvas, bmp, bitmapPostIt);
+            //canvasBitmap.getPixels(argb, 0, frame.getWidth(), 0, 0, frame.getWidth(),
+            //    frame.getHeight());
             //long stepLUT3D = System.nanoTime();
             //Timber.d("stepLUT3D : " + (stepLUT3D - stepYuvToARGB) / 1000000.0f + " ms");
 
@@ -101,14 +138,14 @@ public class FrameManager {
             //Timber.d(
             //    "Total : " + (stepARGBToYUV - stepStart) / 1000000.0f + " ms");
 
-            if (localRenderer != null && argb != null && yuvOutLocal != null) {
-              libYuvConverter.ARGBToI420(argb, frame.getWidth(), frame.getHeight(), yuvOutLocal);
-              byteBufferYuv.put(yuvOutLocal);
-              byteBufferYuv.flip();
-              localRenderer.renderFrame(
-                  new TribeI420Frame(frame.getWidth(), frame.getHeight(), frame.getRotation(),
-                      yuvStrides, yuvPlanes));
-            }
+            //if (localRenderer != null && argb != null && yuvOutLocal != null) {
+            //  libYuvConverter.ARGBToI420(argb, frame.getWidth(), frame.getHeight(), yuvOutLocal);
+            //  byteBufferYuv.put(yuvOutLocal);
+            //  byteBufferYuv.flip();
+            //  localRenderer.renderFrame(
+            //      new TribeI420Frame(frame.getWidth(), frame.getHeight(), frame.getRotation(),
+            //          yuvStrides, yuvPlanes));
+            //}
 
             libYuvConverter.ARGBToYUV(argb, frame.getWidth(), frame.getHeight(), yuvOut);
             capturerObserver.onByteBufferFrameCaptured(yuvOut, frame.getWidth(), frame.getHeight(),
@@ -123,10 +160,6 @@ public class FrameManager {
 
   public void switchFilter() {
     lut3DFilterWrapper.switchFilter();
-  }
-
-  public void switchToLocalRenderer(TribeVideoRenderer tribeVideoRenderer) {
-    this.localRenderer = tribeVideoRenderer;
   }
 
   public void dispose() {
