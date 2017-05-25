@@ -337,6 +337,7 @@ public class HomeGridPresenter implements Presenter {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
     synchroContactList.execute(lookupContactsSubscriber);
+    if (homeGridView != null) homeGridView.onSyncStart();
   }
 
   private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {

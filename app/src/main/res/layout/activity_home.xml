@@ -94,4 +94,14 @@
       />
 
 
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtSyncedContacts"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/top_bar_notification_height_small"
+      android:background="@android:color/black"
+      android:gravity="center"
+      android:textColor="@android:color/white"
+      android:visibility="visible"
+      />
+
 </FrameLayout>

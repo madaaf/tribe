@@ -16,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +79,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
@@ -158,6 +161,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
+
+  @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -243,7 +248,7 @@ public class HomeActivity extends BaseActivity
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
-    syncContacts();
+    syncContacts();//SOEF TO DLETE
   }
 
   @Override protected void onRestart() {
@@ -318,6 +323,13 @@ public class HomeActivity extends BaseActivity
     stopService();
 
     super.onDestroy();
+  }
+
+  private void displaySyncBanner(String txt) {
+    txtSyncedContacts.setText(txt);
+    txtSyncedContacts.setVisibility(VISIBLE);
+    Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
+    txtSyncedContacts.startAnimation(anim);
   }
 
   private void stopService() {
@@ -775,6 +787,11 @@ public class HomeActivity extends BaseActivity
 
   @Override public void onSyncDone() {
     lastSync.set(System.currentTimeMillis());
+    displaySyncBanner(getString(R.string.grid_synced_contacts_banner));
+  }
+
+  @Override public void onSyncStart() {
+    displaySyncBanner(getString(R.string.grid_syncing_contacts_banner));
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {
