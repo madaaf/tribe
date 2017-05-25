@@ -79,6 +79,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     super.onActivityResult(requestCode, resultCode, data);
     if (data != null) {
       if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
+        deepLink = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           finishAndRemoveTask();
         } else {
