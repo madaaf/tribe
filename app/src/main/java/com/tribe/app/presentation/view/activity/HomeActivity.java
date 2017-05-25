@@ -248,7 +248,6 @@ public class HomeActivity extends BaseActivity
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
-    syncContacts();//SOEF TO DLETE
   }
 
   @Override protected void onRestart() {
@@ -704,7 +703,10 @@ public class HomeActivity extends BaseActivity
 
   private void manageLogin(Intent intent) {
     if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
-      navigator.openSMSDefaultApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+      if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
+        stateManager.addTutorialKey(StateManager.OPEN_SMS);
+        navigator.openSMSDefaultApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+      }
     }
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
@@ -813,26 +815,26 @@ public class HomeActivity extends BaseActivity
   }
 
   private void syncContacts() {
-    homeGridPresenter.lookupContacts();
-    searchView.refactorActions();
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
+
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+      if (hasPermission) {
+        addressBook.set(true);
+        homeGridPresenter.lookupContacts();
+        searchView.refactorActions();
+      }
+    });
   }
 
   private void lookupContacts() {
     if (stateManager.shouldDisplay(StateManager.PERMISSION_CONTACT)) {
       stateManager.addTutorialKey(StateManager.PERMISSION_CONTACT);
-      rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
-        tagManager.setProperty(bundle);
-
-        Bundle bundleBis = new Bundle();
-        bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
-        if (hasPermission) {
-          addressBook.set(true);
-          syncContacts();
-        }
-      });
+      syncContacts();
     }
   }
 

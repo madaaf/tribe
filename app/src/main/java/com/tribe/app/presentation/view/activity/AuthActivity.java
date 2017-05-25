@@ -70,10 +70,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     unbinder = ButterKnife.bind(this);
-
     initDependencyInjector();
     setSandboxBehavior();
-    initRessource();
     deepLink = getIntent().getData();
   }
 
@@ -94,7 +92,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   ////////////////
 
   private void authentifyUser(String phoneNumber) {
-    if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) return;
+    if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) {
+      digitAuth();
+      return;
+    }
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
     if (!enableSandbox) {
       loginEntity = authPresenter.login(phoneNumber, null, null);
@@ -108,6 +109,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void digitAuth() {
+    initRessource();
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
         userPhoneNumber.set(phoneNumber);
@@ -156,8 +158,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void connectUser(User user) {
     Timber.d("goToConnected");
-/*    String phoneNumber = (user != null) ? user.getPhone() : null;
-    userPhoneNumber.set(phoneNumber);*/
     this.currentUser.copy(user);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
@@ -192,6 +192,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onResume() {
     super.onResume();
+    initRessource();
     if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
       loginEntity = authPresenter.login(null, null, null);
     } else {
@@ -209,9 +210,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onDestroy() {
     super.onDestroy();
-    if (unbinder != null) unbinder.unbind();
-    authPresenter.onViewDetached();
-    mSensorManager.unregisterListener(mShakeDetector);
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -219,10 +217,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override public void finish() {
+    if (unbinder != null) unbinder.unbind();
+    authPresenter.onViewDetached();
+    mSensorManager.unregisterListener(mShakeDetector);
     super.finish();
   }
 
   @Override public void goToCode(Pin pin) {
+    Timber.d("goToCode");
   }
 
   @Override public void goToConnected(User user) {
