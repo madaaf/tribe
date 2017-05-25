@@ -53,7 +53,7 @@ public class LocalPeerView extends PeerView {
     setMirror(true);
   }
 
-  private void initRemoteRenderer() {
+  public void initRemoteRenderer() {
     remoteRenderer = new VideoRenderer(textureViewRenderer);
   }
 

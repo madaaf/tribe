@@ -32,7 +32,6 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.view.LocalPeerView;
-import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -226,6 +225,10 @@ public class LiveLocalView extends FrameLayout {
     if (!hiddenControls) {
       onSwitchFilter.onNext(null);
     }
+  }
+
+  public void startGame(Game game) {
+    onStartGame.onNext(game);
   }
 
   public void computeAlpha(float alpha) {

@@ -17,6 +17,7 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class TribeLiveLocalStream {
@@ -33,14 +34,18 @@ public class TribeLiveLocalStream {
   private final PeerConnectionFactory peerConnectionFactory;
   private AudioTrack audioTrack;
   private com.tribe.tribelivesdk.core.MediaConstraints mediaConstraints;
-  private final VideoRenderer videoRenderer;
-  private final TribeVideoRenderer localVideoRenderer;
+  private LocalPeerView peerView;
+  private VideoRenderer videoRenderer;
+  private TribeVideoRenderer localVideoRenderer;
   private VideoSource videoSource;
   private AudioSource audioSource;
   private VideoTrack videoTrack;
   private CameraCapturer capturer;
   private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
   private boolean capturing = false;
+
+  // OBSERVABLE
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   public TribeLiveLocalStream(Context context, LocalPeerView peerView,
       PeerConnectionFactory peerConnectionFactory) {
@@ -53,6 +58,7 @@ public class TribeLiveLocalStream {
     }
 
     this.context = context;
+    this.peerView = peerView;
     this.videoRenderer = peerView.getRemoteRenderer();
     this.localVideoRenderer = peerView.getLocalRenderer();
     this.peerConnectionFactory = peerConnectionFactory;
@@ -60,6 +66,11 @@ public class TribeLiveLocalStream {
         new com.tribe.tribelivesdk.core.MediaConstraints.MediaConstraintsBuilder().build();
 
     generateVideoCapturer();
+
+    if (capturer != null) {
+      subscriptions.add(
+          capturer.onLocalFrame().subscribe(frame -> localVideoRenderer.renderFrame(frame)));
+    }
   }
 
   private void addAudioTrackToMediaStream() {
@@ -237,10 +248,20 @@ public class TribeLiveLocalStream {
   }
 
   public void startGame(Game game) {
+    if (game == null) {
+      peerView.initRemoteRenderer();
+      videoRenderer = peerView.getRemoteRenderer();
+      stopVideoCapture();
+      videoTrack.addRenderer(videoRenderer);
+      startVideoCapture();
+      return;
+    }
+
     if (game.isLocalFrameDifferent()) {
       stopVideoCapture();
       videoTrack.removeRenderer(videoRenderer);
       startVideoCapture();
+      return;
     }
   }
 }

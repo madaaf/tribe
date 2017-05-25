@@ -28,7 +28,9 @@ import java.util.Arrays;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
+import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
     implements CameraVideoCapturer {
@@ -47,7 +49,10 @@ import rx.subjects.PublishSubject;
   private final CameraEventsHandler eventsHandler;
   private final Handler uiThreadHandler;
 
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Frame> onFrame = PublishSubject.create();
+  private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   private final CameraSession.CreateSessionCallback createSessionCallback =
       new CameraSession.CreateSessionCallback() {
@@ -212,7 +217,6 @@ import rx.subjects.PublishSubject;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
   private FrameManager frameManager;
-  private TribeVideoRenderer localRenderer;
 
   private final Object stateLock = new Object();
   private boolean sessionOpening; /* guarded by stateLock */
@@ -274,9 +278,13 @@ import rx.subjects.PublishSubject;
     this.applicationContext = applicationContext;
     this.capturerObserver = capturerObserver;
     this.surfaceHelper = surfaceTextureHelper;
-    this.cameraThreadHandler =
-        surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
-    this.frameManager = new FrameManager(applicationContext, capturerObserver);
+    cameraThreadHandler = surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
+
+    frameManager = new FrameManager(applicationContext);
+    subscriptions.add(frameManager.onRemoteFrame()
+        .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
+            frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
+    subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -346,6 +354,7 @@ import rx.subjects.PublishSubject;
 
   @Override public void dispose() {
     Logging.d(TAG, "dispose");
+    subscriptions.clear();
     stopCapture();
   }
 
@@ -449,6 +458,14 @@ import rx.subjects.PublishSubject;
       CameraSession.CreateSessionCallback createSessionCallback, CameraSession.Events events,
       Context applicationContext, SurfaceTextureHelper surfaceTextureHelper, String cameraName,
       int width, int height, int framerate);
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<TribeI420Frame> onLocalFrame() {
+    return onLocalFrame;
+  }
 
   protected void savePNGImageToGallery(Bitmap bmp, Context context, String baseFilename) {
     try {

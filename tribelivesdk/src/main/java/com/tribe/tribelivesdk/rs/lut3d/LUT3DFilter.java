@@ -13,6 +13,8 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsic3DLUT;
 import android.support.v8.renderscript.Type;
+import com.tribe.tribelivesdk.rs.RSCompute;
+import com.tribe.tribelivesdk.webrtc.Frame;
 
 /**
  * Created by tiago on 17/05/2017.
@@ -62,15 +64,17 @@ public class LUT3DFilter {
 
   private Context context;
   private RenderScript renderScript;
+  private RSCompute rsCompute;
   private @LUT3DFilterType String id;
   private int resourceId;
   private Bitmap bitmapLUT;
   private Allocation lutAllocation;
 
-  public LUT3DFilter(Context context, RenderScript renderScript, @LUT3DFilterType String id,
-      @DrawableRes @RawRes int resourceId) {
+  public LUT3DFilter(Context context, RenderScript renderScript, RSCompute rsCompute,
+      @LUT3DFilterType String id, @DrawableRes @RawRes int resourceId) {
     this.context = context;
     this.renderScript = renderScript;
+    this.rsCompute = rsCompute;
     this.id = id;
     this.resourceId = resourceId;
   }
@@ -88,7 +92,7 @@ public class LUT3DFilter {
     final Type.Builder tb = new Type.Builder(renderScript, Element.U8_4(renderScript));
     tb.setX(RED_DIM);
     tb.setY(GREEN_DIM);
-    tb.setZ(GREEN_DIM);
+    tb.setZ(BLUE_DIM);
 
     lutAllocation = Allocation.createTyped(renderScript, tb.create());
     int w = bitmapLUT.getWidth();
@@ -101,7 +105,7 @@ public class LUT3DFilter {
 
     for (int r = 0; r < RED_DIM; r++) {
       for (int g = 0; g < GREEN_DIM; g++) {
-        for (int b = 0; b < GREEN_DIM; b++) {
+        for (int b = 0; b < BLUE_DIM; b++) {
           int blockX = b % 8;
           int blockY = b / 8;
           lut[i++] = pixels[(blockY * 64 + g) * 512 + (blockX * 64 + r)];
@@ -111,6 +115,16 @@ public class LUT3DFilter {
 
     lutAllocation.copyFromUnchecked(lut);
     return lutAllocation;
+  }
+
+  private Scripts getScript() {
+    Scripts scripts = scriptsCache.get(this);
+    if (scripts == null) {
+      scripts = new Scripts();
+      scriptsCache.put(this, scripts);
+    }
+
+    return scripts;
   }
 
   public ScriptIntrinsic3DLUT getLutRenderScript() {
@@ -126,13 +140,11 @@ public class LUT3DFilter {
     return script;
   }
 
-  private Scripts getScript() {
-    Scripts scripts = scriptsCache.get(this);
-    if (scripts == null) {
-      scripts = new Scripts();
-      scriptsCache.put(this, scripts);
-    }
+  public void onFrameSizeChange(Frame frame) {
+    rsCompute.updateAllocations(frame.getWidth(), frame.getHeight());
+  }
 
-    return scripts;
+  public void apply(byte[] argb) {
+    rsCompute.computeLUT3D(this, argb, argb);
   }
 }

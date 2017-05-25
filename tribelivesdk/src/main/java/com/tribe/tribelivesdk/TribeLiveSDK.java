@@ -1,5 +1,6 @@
 package com.tribe.tribelivesdk;
 
+import android.content.Context;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
@@ -16,16 +17,12 @@ import javax.inject.Singleton;
   private WebRTCClient webRTCClient;
   private GameManager gameManager;
 
-  @Inject public TribeLiveSDK(WebRTCClient webRTCClient, GameManager gameManager) {
+  @Inject public TribeLiveSDK(Context context, WebRTCClient webRTCClient) {
     this.webRTCClient = webRTCClient;
-    this.gameManager = gameManager;
+    this.gameManager = GameManager.getInstance(context);
   }
 
   public Room newRoom() {
     return new Room(WebSocketConnection.newInstance(), webRTCClient);
-  }
-
-  public GameManager getGameManager() {
-    return gameManager;
   }
 }

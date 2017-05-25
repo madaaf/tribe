@@ -6,7 +6,7 @@ package com.tribe.tribelivesdk.webrtc;
 
 public class Frame {
 
-  private byte[] data;
+  private byte[] data, dataOut;
   private int width;
   private int height;
   private int rotation;
@@ -58,5 +58,13 @@ public class Frame {
 
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
+  }
+
+  public void setDataOut(byte[] dataOut) {
+    this.dataOut = dataOut;
+  }
+
+  public byte[] getDataOut() {
+    return dataOut;
   }
 }

@@ -548,11 +548,11 @@
 	
 	<!-- Games -->
 	<string name="game_event_started">%1$s launched the "%2$s" game! :video_game:</string>
-	<string name="game_event_post_it_re_roll">%1$s re-rolled the Postit notes! :video_game:</string>
+	<string name="game_event_post_it_re_roll">%1$s renewed the Postit notes! :video_game:</string>
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
-	<string name="game_tutorial">Tap long on the game button to stop or change the game.</string>
+	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
 	<string name="game_post_it">Postit notes</string>
-	<string name="game_post_it_menu_re_roll">Re-roll the Postit notes</string>
+	<string name="game_post_it_menu_re_roll">Renew the Postit notes</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
-	<string name="game_post_it_rule">Ask friends who you are!</string>
+	<string name="game_post_it_rule">Guess who you are\nby asking your friends!</string>
 </resources>

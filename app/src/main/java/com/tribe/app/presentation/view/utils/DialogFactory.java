@@ -19,6 +19,7 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
@@ -214,5 +215,20 @@ public final class DialogFactory {
     }
 
     return moreTypeList;
+  }
+
+  public static Observable<LabelType> showBottomSheetForGame(Context context, Game game) {
+    return createBottomSheet(context, generateLabelsForGame(context, game));
+  }
+
+  private static List<LabelType> generateLabelsForGame(Context context, Game game) {
+    List<LabelType> gameLabels = new ArrayList<>();
+
+    gameLabels.add(new LabelType(context.getString(R.string.game_post_it_menu_re_roll),
+        LabelType.GAME_RE_ROLL));
+    gameLabels.add(
+        new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
+
+    return gameLabels;
   }
 }

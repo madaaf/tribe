@@ -19,7 +19,7 @@ import javax.inject.Singleton;
   }
 
   @Provides @Singleton
-  public TribeLiveSDK provideTribeLiveSDK(WebRTCClient webRTCClient, GameManager gameManager) {
-    return new TribeLiveSDK(webRTCClient, gameManager);
+  public TribeLiveSDK provideTribeLiveSDK(Context context, WebRTCClient webRTCClient) {
+    return new TribeLiveSDK(context, webRTCClient);
   }
 }

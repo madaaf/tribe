@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,6 +17,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -23,6 +27,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -48,7 +53,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnNotify) View btnNotify;
 
-  @BindView(R.id.btnNewGame) View btnNewGame;
+  @BindView(R.id.btnNewGame) ImageView btnNewGame;
 
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
@@ -72,6 +77,7 @@ public class LiveControlsView extends FrameLayout {
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false;
   private float xTranslation;
+  private GameManager gameManager;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -86,6 +92,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onClickFilter = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Game> onGameOptions = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -122,13 +129,15 @@ public class LiveControlsView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_controls, this);
     unbinder = ButterKnife.bind(this);
 
+    gameManager = GameManager.getInstance(getContext());
+
     setBackground(null);
     initUI();
   }
 
   private void initUI() {
     xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
-    //btnNotify.setEnabled(false);
+    btnNotify.setEnabled(false);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -297,31 +306,42 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnNewGame) void clickNewGame() {
-
+    Game game = gameManager.getGames().get(0);
+    gameManager.setCurrentGame(game);
+    btnNewGame.setBackgroundResource(R.drawable.selectable_button_oval_light);
+    btnNewGame.setImageResource(game.getDrawableRes());
+    onStartGame.onNext(game);
   }
 
-  //@OnClick(R.id.btnNotify) void clickNotify() {
-  //  stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
-  //  resetTimer();
-  //
-  //  btnNotify.setEnabled(false);
-  //  btnNotify.animate()
-  //      .alpha(0.2f)
-  //      .setDuration(DURATION)
-  //      .setInterpolator(new DecelerateInterpolator())
-  //      .setListener(new AnimatorListenerAdapter() {
-  //        @Override public void onAnimationEnd(Animator animation) {
-  //          onNotifyAnimationDone.onNext(null);
-  //          btnNotify.animate().setListener(null);
-  //        }
-  //      })
-  //      .start();
-  //
-  //  onClickNotify.onNext(null);
-  //}
+  @OnLongClick(R.id.btnNewGame) boolean clickGameOptions() {
+    if (gameManager.getCurrentGame() != null) {
+      onGameOptions.onNext(gameManager.getCurrentGame());
+    }
+    return false;
+  }
+
+  @OnClick(R.id.btnNotify) void clickNotify() {
+    stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
+
+    btnNotify.setEnabled(false);
+    btnNotify.animate()
+        .alpha(0.2f)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            onNotifyAnimationDone.onNext(null);
+            btnNotify.animate().setListener(null);
+          }
+        })
+        .start();
+
+    onClickNotify.onNext(null);
+  }
 
   @OnClick(R.id.btnFilter) void clickFilter() {
     onClickFilter.onNext(null);
+    resetTimer();
   }
 
   //////////////
@@ -329,20 +349,12 @@ public class LiveControlsView extends FrameLayout {
   //////////////
 
   public void dispose() {
-    //btnNotify.clearAnimation();
-    //btnNotify.animate().setListener(null);
+    btnNotify.clearAnimation();
+    btnNotify.animate().setListener(null);
   }
 
   public void setNotifyEnabled(boolean enable) {
-    //btnNotify.setEnabled(enable);
-  }
-
-  public void prepareForScreenshot() {
-    //btnNotify.setAlpha(0f);
-  }
-
-  public void screenshotDone() {
-    //btnNotify.setAlpha(1f);
+    btnNotify.setEnabled(enable);
   }
 
   public void setMicroEnabled(boolean enabled) {
@@ -362,6 +374,11 @@ public class LiveControlsView extends FrameLayout {
       btnNotify.animate().alpha(1).setDuration(DURATION);
       btnNotify.setEnabled(true);
     }
+  }
+
+  public void stopGame() {
+    btnNewGame.setBackgroundResource(R.drawable.selectable_button_light);
+    btnNewGame.setImageResource(R.drawable.picto_new_game);
   }
 
   /////////////////
@@ -410,5 +427,9 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Void> onLeave() {
     return onLeave;
+  }
+
+  public Observable<Game> onGameOptions() {
+    return onGameOptions;
   }
 }

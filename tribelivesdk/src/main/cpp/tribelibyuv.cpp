@@ -17,10 +17,10 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_YUVToARGB(JNIEnv *env, jobjec
                                                              jbyteArray yuvArray,
                                                              jint width,
                                                              jint height,
-                                                             jintArray argbArray) {
+                                                             jbyteArray argbArray) {
 
     jbyte *yuv = (jbyte *) env->GetPrimitiveArrayCritical(yuvArray, 0);
-    jintArray *rgbData = (jintArray *) env->GetPrimitiveArrayCritical(argbArray, 0);
+    jbyte *rgbData = (jbyte *) env->GetPrimitiveArrayCritical(argbArray, 0);
 
     const uint8 *src_y = (uint8 *) yuv;
     int src_stride_y = width;
@@ -42,12 +42,12 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_YUVToARGB(JNIEnv *env, jobjec
 
 JNIEXPORT jint JNICALL
 Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ARGBToYUV(JNIEnv *env, jobject,
-                                                             jintArray argbArray,
+                                                             jbyteArray argbArray,
                                                              jint width,
                                                              jint height,
                                                              jbyteArray yuvOutArray) {
 
-    jintArray *rgbData = (jintArray *) env->GetPrimitiveArrayCritical(argbArray, 0);
+    jbyte *rgbData = (jbyte *) env->GetPrimitiveArrayCritical(argbArray, 0);
     jbyte *yuvOut = (jbyte *) env->GetPrimitiveArrayCritical(yuvOutArray, 0);
 
     const uint8 *srcData = (uint8 *) rgbData;

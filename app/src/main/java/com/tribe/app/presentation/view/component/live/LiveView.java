@@ -18,6 +18,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.RoomConfiguration;
@@ -34,6 +35,7 @@ import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.Degrees;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -43,6 +45,7 @@ import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -422,6 +425,25 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(
         viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
+
+    persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
+      viewLocalLive.startGame(game);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onGameOptions()
+        .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
+            ((game, labelType) -> {
+              if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
+                viewLocalLive.startGame(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
+                GameManager.getInstance(getContext()).setCurrentGame(null);
+                viewLocalLive.startGame(null);
+                viewControlsLive.stopGame();
+              }
+
+              return null;
+            }))
+        .subscribe());
   }
 
   ///////////////////
@@ -744,10 +766,6 @@ public class LiveView extends FrameLayout {
       room.sendToPeers(getRemovedPayload(tribeGuest), true);
       refactorShareOverlay();
     }).subscribe());
-  }
-
-  public void screenshotDone() {
-    viewControlsLive.screenshotDone();
   }
 
   public void setCameraEnabled(boolean enable,

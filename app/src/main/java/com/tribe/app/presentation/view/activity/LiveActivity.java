@@ -685,8 +685,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             }
 
             @Override public void onNext(Bitmap bitmap) {
-              viewLive.screenshotDone();
-
               Bitmap bitmapWatermarked =
                   BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
 

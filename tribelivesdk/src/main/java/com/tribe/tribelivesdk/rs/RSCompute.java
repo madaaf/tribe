@@ -54,13 +54,7 @@ public class RSCompute {
   private int previousWidth, previousHeight;
 
   // Funcs
-  public byte[] compute(byte[] dataIn, int width, int height, byte[] dataOut) {
-    if (width != previousWidth) {
-      previousWidth = width;
-      previousHeight = height;
-      updateAllocations();
-    }
-
+  public byte[] compute(byte[] dataIn, byte[] dataOut) {
     inAllocation.copyFrom(dataIn);
     greyScaleMatrix.forEach(inAllocation, outAllocation);
     outAllocation.copyTo(dataOut);
@@ -70,13 +64,7 @@ public class RSCompute {
     return dataOut;
   }
 
-  public byte[] computeLUT(byte[] dataIn, int width, int height, byte[] dataOut) {
-    if (width != previousWidth) {
-      previousWidth = width;
-      previousHeight = height;
-      updateAllocations();
-    }
-
+  public byte[] computeLUT(byte[] dataIn, byte[] dataOut) {
     inAllocation.copyFrom(dataIn);
 
     scriptIntrinsicLUT.forEach(inAllocation, outAllocation);
@@ -87,14 +75,7 @@ public class RSCompute {
     return dataOut;
   }
 
-  public byte[] computeLUT3D(LUT3DFilter lut3DFilter, byte[] dataIn, int width, int height,
-      byte[] dataOut) {
-    if (width != previousWidth) {
-      previousWidth = width;
-      previousHeight = height;
-      updateAllocations();
-    }
-
+  public byte[] computeLUT3D(LUT3DFilter lut3DFilter, byte[] dataIn, byte[] dataOut) {
     inAllocation.copyFrom(dataIn);
 
     lut3DFilter.getLutRenderScript().forEach(inAllocation, outAllocation);
@@ -106,15 +87,9 @@ public class RSCompute {
     return dataOut;
   }
 
-  public RSCompute(Context context, RenderScript renderScript, int width, int height) {
+  public RSCompute(Context context, RenderScript renderScript) {
     this.context = context;
     this.renderScript = renderScript;
-
-    previousWidth = width;
-    previousHeight = height;
-
-    rgbaType = new Type.Builder(renderScript, Element.U8_4(renderScript)).setX(previousWidth)
-        .setY(previousHeight);
 
     // LUT
     scriptIntrinsicLUT = ScriptIntrinsicLUT.create(renderScript, Element.U8_4(renderScript));
@@ -143,11 +118,15 @@ public class RSCompute {
       float b = f * 0.5f + 0.25f;
       scriptIntrinsicLUT.setBlue(ct, (int) (b * 255.f + 0.5f));
     }
-
-    updateAllocations();
   }
 
-  private void updateAllocations() {
+  public void updateAllocations(int width, int height) {
+    previousWidth = width;
+    previousHeight = height;
+
+    rgbaType = new Type.Builder(renderScript, Element.U8_4(renderScript)).setX(previousWidth)
+        .setY(previousHeight);
+
     rgbaType.setX(previousWidth).setY(previousHeight);
 
     inAllocation = Allocation.createTyped(renderScript, rgbaType.create(), Allocation.USAGE_SHARED);
