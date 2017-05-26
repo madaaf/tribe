@@ -15,7 +15,6 @@
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_gravity="bottom"
       />
 
   <com.tribe.app.presentation.view.component.live.LiveStatusNameView

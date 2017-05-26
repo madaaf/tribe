@@ -175,13 +175,7 @@
         }
 
         %2$s
-    </string>
-
-  <string name="lookup.phone" translatable="false">
-        lookupPhone%1$s : lookupByPhone (phones: [%2$s]) {
-            ...UserInfos
-        }
-    </string>
+  </string>
 
   <string name="lookup.facebook" translatable="false">
         lookupFB%1$s : lookupByFbid (fbids: [%2$s]) {
@@ -228,11 +222,7 @@
 
   <string name="removeFriendship.input" translatable="false">
         removeFriendship%1$s : removeFriendship(friendshipId : \"%2$s\")
-    </string>
-
-  <string name="howManyFriends.part" translatable="false">
-        howManyFriends%1$s : howManyFriends (phones: [%2$s])
-    </string>
+  </string>
 
   <string name="groupfragment.info" translatable="false">
         fragment GroupInfos on Group {
@@ -243,7 +233,7 @@
             last_seen_at
             is_live
         }
-    </string>
+  </string>
 
   <string name="groupfragment.info.members" translatable="false">
         fragment GroupInfos on Group {
@@ -347,14 +337,6 @@
         %3$s
     </string>
 
-  <string name="add.members.group" translatable="false">
-        mutation{
-            addMembersToGroup(id : \"%1$s\", members: [%2$s]) {
-                id
-            }
-        }
-    </string>
-
   <string name="remove.members.group" translatable="false">
         mutation {
             removeMembersFromGroup(id : \"%1$s\", members: [%2$s]) {
@@ -441,13 +423,6 @@
           }
       }
 
-    </string>
-
-
-  <string name="notify.facebook" translatable="false">
-        mutation {
-            runFacebookInvites(appId : \"%1$s\", accessToken : \"%2$s\")
-        }
     </string>
 
   <string name="subscription" translatable="false">

@@ -40,6 +40,7 @@ import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.tribelivesdk.ulsee.UlseeManager;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import io.branch.referral.Branch;
@@ -76,6 +77,7 @@ public class AndroidApplication extends Application {
     initTimber();
     initAppState();
     initTakt();
+    initUlsee();
   }
 
   @Override protected void attachBaseContext(Context base) {
@@ -207,6 +209,10 @@ public class AndroidApplication extends Application {
     //    .size(25f)
     //    .alpha(1f)
     //    .play();
+  }
+
+  private void initUlsee() {
+    UlseeManager.getInstance(this);
   }
 
   private class SampleAppStateListener implements AppStateListener {

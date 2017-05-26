@@ -13,6 +13,7 @@ package com.tribe.tribelivesdk.webrtc;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -52,6 +53,7 @@ import rx.subscriptions.CompositeSubscription;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Frame> onFrame = PublishSubject.create();
+  private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   private final CameraSession.CreateSessionCallback createSessionCallback =
@@ -202,6 +204,10 @@ import rx.subscriptions.CompositeSubscription;
             rotation, timestamp);
       }
     }
+
+    @Override public void onDetectedFaces(Camera.Face[] faces) {
+      onFaces.onNext(faces);
+    }
   };
 
   private final Runnable openCameraTimeoutRunnable = new Runnable() {
@@ -231,6 +237,7 @@ import rx.subscriptions.CompositeSubscription;
   // Valid from onDone call until stopCapture, otherwise null.
   private CameraStatistics cameraStatistics; /* guarded by stateLock */
   private boolean firstFrameObserved; /* guarded by stateLock */
+  private int frameRotation; /* guarded by stateLock */
 
   public CameraCapturer(String cameraName, CameraEventsHandler eventsHandler,
       CameraEnumerator cameraEnumerator) {
@@ -307,7 +314,9 @@ import rx.subscriptions.CompositeSubscription;
       openAttemptsRemaining = MAX_OPEN_CAMERA_ATTEMPTS;
       createSessionInternal(0);
 
+      frameManager.startCapture();
       frameManager.initFrameSubscription(onFrame);
+      frameManager.initNewFacesObs(onFaces);
     }
   }
 
@@ -335,7 +344,7 @@ import rx.subscriptions.CompositeSubscription;
         cameraThreadHandler.post(() -> oldSession.stop());
         currentSession = null;
         capturerObserver.onCapturerStopped();
-        frameManager.dispose();
+        frameManager.stopCapture();
       } else {
         Logging.d(TAG, "Stop capture: No session open");
       }
@@ -356,6 +365,7 @@ import rx.subscriptions.CompositeSubscription;
     Logging.d(TAG, "dispose");
     subscriptions.clear();
     stopCapture();
+    frameManager.dispose();
   }
 
   @Override public void switchCamera(final CameraSwitchHandler switchEventsHandler) {

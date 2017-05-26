@@ -11,7 +11,6 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
-import android.graphics.ImageFormat;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.Surface;
@@ -47,6 +46,7 @@ import org.webrtc.SurfaceTextureHelper;
 
   private SessionState state;
   private boolean firstFrameReported = false;
+  private static boolean faceDetectionRunning = false;
 
   public static void create(final CreateSessionCallback callback, final Events events,
       final boolean captureToTexture, final Context applicationContext,
@@ -117,6 +117,7 @@ import org.webrtc.SurfaceTextureHelper;
     if (focusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
       parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
     }
+
     camera.setParameters(parameters);
   }
 
@@ -203,6 +204,13 @@ import org.webrtc.SurfaceTextureHelper;
     }
     try {
       camera.startPreview();
+      if (camera.getParameters() != null && camera.getParameters().getMaxNumDetectedFaces() > 0) {
+        camera.setFaceDetectionListener((faces, camera1) -> {
+          events.onDetectedFaces(faces);
+        });
+        camera.startFaceDetection();
+        faceDetectionRunning = true;
+      }
     } catch (RuntimeException e) {
       stopInternal();
       events.onCameraError(this, e.getMessage());
@@ -219,6 +227,10 @@ import org.webrtc.SurfaceTextureHelper;
 
     state = SessionState.STOPPED;
     surfaceTextureHelper.stopListening();
+    if (faceDetectionRunning) {
+      camera.stopFaceDetection();
+      faceDetectionRunning = false;
+    }
     // Note: stopPreview or other driver code might deadlock. Deadlock in
     // android.hardware.Camera._stopPreview(Native Method) has been observed on
     // Nexus 5 (hammerhead), OS version LMY48I.

@@ -596,9 +596,7 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<Void> notifyFBFriends() {
-    return this.tribeApi.notifyFBFriends(
-        context.getString(R.string.notify_facebook, context.getString(R.string.facebook_app_id),
-            com.facebook.AccessToken.getCurrentAccessToken().getToken()));
+    return null;
   }
 
   private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {

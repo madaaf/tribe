@@ -5,6 +5,7 @@ import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.ulsee.UlseeManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -15,11 +16,9 @@ import javax.inject.Singleton;
 @Singleton public class TribeLiveSDK {
 
   private WebRTCClient webRTCClient;
-  private GameManager gameManager;
 
   @Inject public TribeLiveSDK(Context context, WebRTCClient webRTCClient) {
     this.webRTCClient = webRTCClient;
-    this.gameManager = GameManager.getInstance(context);
   }
 
   public Room newRoom() {

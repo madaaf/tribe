@@ -1,10 +1,8 @@
 package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -288,8 +286,7 @@ public class LiveView extends FrameLayout {
     super.onFinishInflate();
   }
 
-  @Override public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
+  public void changeConfiguration(int width, int height) {
     if (viewControlsLive == null) return;
 
     if (room != null) {
@@ -301,15 +298,8 @@ public class LiveView extends FrameLayout {
 
     ViewGroup.LayoutParams lp = view.getLayoutParams();
     lp.width = screenUtils.getWidthPx();
-    lp.height = screenUtils.getHeightPx();
+    lp.height = screenUtils.getHeightPx() - statusBarHeight;
     view.setLayoutParams(lp);
-
-    FrameLayout.LayoutParams params =
-        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
-    params.gravity = Gravity.BOTTOM;
-    params.bottomMargin = screenUtils.dpToPx(MARGIN_BOTTOM);
-    viewControlsLive.setLayoutParams(params);
   }
 
   //////////////////////

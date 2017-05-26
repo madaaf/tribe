@@ -49,9 +49,6 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<CreateFriendshipEntity> createFriendship(
       @Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<List<Integer>> howManyFriends(
-      @Field("query") String query);
-
   @FormUrlEncoded @POST("/graphql") Observable<SearchResultRealm> findByUsername(
       @Field("query") String query);
 
@@ -82,9 +79,6 @@ public interface TribeApi {
 
   @Multipart @POST("/graphql") Observable<GroupRealm> updateGroupMedia(
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
-
-  @FormUrlEncoded @POST("/graphql") Observable<Void> addMembersToGroup(
-      @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> removeMembersFromGroup(
       @Field("query") String query);

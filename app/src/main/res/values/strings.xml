@@ -59,7 +59,7 @@
 	<string name="permission_location_disabled_alert_redirect">Go to "Settings"</string>
 	<string name="permission_location_disabled_alert_cancel">No, thanks</string>
 	<string name="permission_push_fake_alert_title">Please Turn On Notifications</string>
-	<string name="permission_push_fake_alert_description">This way, you will know when your friends are online or video calling you.</string>
+	<string name="permission_push_fake_alert_description">This way, you will know when your friends click on a link you send, when they\'re video calling you or when they\'re online.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">Read more</string>
 	<string name="permission_push_disabled_alert_title">"Push" permission denied</string>

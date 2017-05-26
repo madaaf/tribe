@@ -247,8 +247,8 @@ public class JsonToModel {
     TribeMediaConstraints tribeUserConfiguration = new TribeMediaConstraints();
     JSONObject video = jo.getJSONObject("video");
     JSONObject fps = video.getJSONObject("frameRate");
-    int maxWidth = video.getJSONObject("width").getInt("max");
-    int maxHeight = video.getJSONObject("height").getInt("max");
+    int maxWidth = Math.min(MediaConstraints.MAX_WIDTH, video.getJSONObject("width").getInt("max"));
+    int maxHeight = Math.min(MediaConstraints.MAX_HEIGHT, video.getJSONObject("height").getInt("max"));
 
     int minFps = 0;
     if (fps.has("min")) {
