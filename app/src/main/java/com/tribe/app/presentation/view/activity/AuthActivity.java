@@ -69,9 +69,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    Timber.e("SOEF ON CREATE");
     unbinder = ButterKnife.bind(this);
     initDependencyInjector();
     setSandboxBehavior();
+    initRessource();
     deepLink = getIntent().getData();
   }
 
@@ -80,6 +82,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     if (data != null) {
       if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
         deepLink = null;
+        Timber.e("SOEF ON ACTIVITY RESULT FINISH");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           finishAndRemoveTask();
         } else {
@@ -95,14 +98,18 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void authentifyUser(String phoneNumber) {
     if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) {
       digitAuth();
+      Timber.e("SOEF 1 AUTHIFY_USER MOCKED_PHONE_NUMBER ");
       return;
     }
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
     if (!enableSandbox) {
+      Timber.d("SOEF 2 AUTHIFY_USER LOGIN NORMAL");
       loginEntity = authPresenter.login(phoneNumber, null, null);
     } else if (phoneNumber.startsWith("+8502121")) {
+      Timber.d("SOEF 3 AUTHIFY_USER LOGIN +8050");
       loginEntity = authPresenter.login(phoneNumber, null, null);
     } else {
+      Timber.e("SOEF 4 AUTHIFY_USER LOGIN PIN ERROR");
       Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
       toast.show();
       logout();
@@ -110,14 +117,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void digitAuth() {
-    initRessource();
+    Timber.e("SOEF DIGIT AUTH");
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
+        Timber.e("SOEF DIGIT AUTH SUCCESS");
         userPhoneNumber.set(phoneNumber);
         authentifyUser(phoneNumber);
       }
 
       @Override public void failure(DigitsException error) {
+        Timber.e("SOEF DIGIT FAILURE");
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
         Timber.e(error);
         logout();
@@ -132,6 +141,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void logout() {
+    Timber.i("SOEF NAVIGATE LOGOUT");
     navigator.navigateToLogout(this);
   }
 
@@ -143,9 +153,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       if (!enableSandbox) {
         toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
         Digits.enableSandbox();
+        Timber.e("SOEF ENABLE SENDBOX");
       } else {
         toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
         Digits.disableSandbox();
+        Timber.e("SOEF DISABLE SENDBOX");
       }
       enableSandbox = !enableSandbox;
       toast.show();
@@ -153,6 +165,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void initRessource() {
+    Timber.e("SOEF INIT RESSOURCE");
     authPresenter.onViewAttached(this);
     mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
   }
@@ -166,13 +179,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       Intent newIntent =
           IntentUtils.getLiveIntentFromURI(this, deepLink, LiveActivity.SOURCE_DEEPLINK);
       if (newIntent != null) {
+        Timber.i("SOEF 1 CONNECT_USER NAVIGATE DEEPLINK");
         navigator.navigateToIntent(this, newIntent);
         deepLink = null;
       }
     } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
         user.getUsername())) {
+      Timber.i("SOEF 2 CONNECT_USER NAVIGATE AUTH");
       navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
+      Timber.i("SOEF 3 CONNECT_USER NAVIGATE HOME");
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
       navigator.navigateToHomeFromLogin(this, null, countryCode, null);
@@ -193,13 +209,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onResume() {
     super.onResume();
-    initRessource();
     if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
+      Timber.d("SOEF 1 ON_RESUME LOGIN DEEPLINK");
       loginEntity = authPresenter.login(null, null, null);
     } else {
       if (userPhoneNumber.get() != null) {
+        Timber.e("SOEF 2 ON_RESUME AUTH USER");
         authentifyUser(userPhoneNumber.get());
       } else {
+        Timber.e("SOEF 3 ON_RESUME DIGIT AUTH");
         digitAuth();
       }
     }
@@ -207,10 +225,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onStart() {
     super.onStart();
+    Timber.e("SOEF ON_START");
   }
 
   @Override protected void onDestroy() {
+    if (unbinder != null) unbinder.unbind();
+    authPresenter.onViewDetached();
+    mSensorManager.unregisterListener(mShakeDetector);
     super.onDestroy();
+    Timber.e("SOEF ON_DESTROY");
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -218,14 +241,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override public void finish() {
-    if (unbinder != null) unbinder.unbind();
-    authPresenter.onViewDetached();
-    mSensorManager.unregisterListener(mShakeDetector);
+    Timber.e("SOEF ON_FINISH");
     super.finish();
   }
 
   @Override public void goToCode(Pin pin) {
     Timber.d("goToCode");
+    Timber.e("SOEF goToCode");
   }
 
   @Override public void goToConnected(User user) {

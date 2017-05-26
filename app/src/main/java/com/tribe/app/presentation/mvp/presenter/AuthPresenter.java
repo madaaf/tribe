@@ -43,10 +43,12 @@ public class AuthPresenter implements Presenter {
     cloudLoginUseCase.unsubscribe();
     cloudUserInfos.unsubscribe();
     introView = null;
+    Timber.w("SOEF PRESENTER onViewDetached");
   }
 
   @Override public void onViewAttached(MVPView v) {
     introView = (AuthMVPView) v;
+    Timber.w("SOEF PRESENTER onViewAttached");
   }
 
   public void requestCode(String phoneNumber, boolean shouldCall) {
@@ -62,8 +64,10 @@ public class AuthPresenter implements Presenter {
 
     cloudLoginUseCase.prepare(loginEntity);
     if (phoneNumber == null) {
+      Timber.w("SOEF 1 PRESENTER UnknownSubscriber");
       cloudLoginUseCase.execute(new UnknownSubscriber());
     } else {
+      Timber.w("SOEF 1 PRESENTER LoginSubscriber");
       cloudLoginUseCase.execute(new LoginSubscriber());
     }
 
@@ -124,11 +128,11 @@ public class AuthPresenter implements Presenter {
   }
 
   private final class LoginSubscriber extends DefaultSubscriber<AccessToken> {
-
     @Override public void onCompleted() {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.w("SOEF 3 PRESENTER LoginSubscriber onError");
       if (e instanceof HttpException) {
         HttpException httpException = (HttpException) e;
         if (httpException.response() != null && httpException.response().errorBody() != null) {
@@ -157,6 +161,7 @@ public class AuthPresenter implements Presenter {
     }
 
     @Override public void onNext(AccessToken accessToken) {
+      Timber.w("SOEF 4 PRESENTER LoginSubscriber onNext getUserInfo");
       getUserInfo();
     }
   }
@@ -167,11 +172,13 @@ public class AuthPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.w("SOEF 5 PRESENTER UnknownSubscriber onNext onError");
       e.printStackTrace();
       hideViewLoading();
     }
 
     @Override public void onNext(AccessToken accessToken) {
+      Timber.w("SOEF 6 PRESENTER UnknownSubscriber onNext goToConnected");
       goToConnected(new User(null));
     }
   }
@@ -182,11 +189,13 @@ public class AuthPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.w("SOEF 7 PRESENTER UserInfoSubscriber onNext onError");
       e.printStackTrace();
       hideViewLoading();
     }
 
     @Override public void onNext(User user) {
+      Timber.w("SOEF 8 PRESENTER UserInfoSubscriber onNext goToConnected");
       hideViewLoading();
       goToConnected(user);
     }
