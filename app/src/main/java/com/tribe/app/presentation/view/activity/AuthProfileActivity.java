@@ -66,6 +66,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Inject PhoneUtils phoneUtils;
 
+  @Inject User recipient;
+
   @Inject ProfileInfoPresenter profileInfoPresenter;
 
   @BindView(R.id.profileInfoView) ProfileInfoView profileInfoView;
@@ -302,7 +304,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           String url = StringUtils.getUrlFromLinkId(this, linkId);
           String smsContent = EmojiParser.demojizedText(
               getString(R.string.onboarding_user_alert_call_link_content, url));
-          navigator.navigateToHomeFromLogin(this, deepLink, loginEntity.getCountryCode(),
+          navigator.navigateToShadowCallActivity(this, Uri.parse(url), loginEntity.getCountryCode(),
               smsContent);
         }));
   }

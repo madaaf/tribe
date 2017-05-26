@@ -93,6 +93,8 @@
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustPan" />
 
+    <activity android:name=".presentation.view.activity.ShadowCallActivity" />
+
     <activity
         android:name=".presentation.view.activity.MissedCallDetailActivity"
         android:configChanges="orientation|screenSize"
