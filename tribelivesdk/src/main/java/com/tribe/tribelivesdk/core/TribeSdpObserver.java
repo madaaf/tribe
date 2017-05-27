@@ -27,6 +27,7 @@ public class TribeSdpObserver implements SdpObserver {
     constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
     constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"));
     constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
+    constraints.optional.add(new MediaConstraints.KeyValuePair("googCpuOveruseDetection", "true"));
   }
 
   public void createOffer() {
