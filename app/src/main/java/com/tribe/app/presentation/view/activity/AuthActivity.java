@@ -7,18 +7,13 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsException;
 import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.ErrorLogin;
@@ -42,6 +37,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   public static Intent getCallingIntent(Context context, Uri deepLink) {
     Intent intent = new Intent(context, AuthActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(DEEP_LINK, deepLink);
     return intent;
   }
@@ -54,10 +50,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
 
-  @BindView(R.id.progressView) CircularProgressView progressView;
-
   // VARIABLES
-  private Unbinder unbinder;
+
   private LoginEntity loginEntity;
   private ShakeDetector mShakeDetector;
   private SensorManager mSensorManager;
@@ -69,12 +63,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    Timber.e("SOEF ON CREATE");
-    unbinder = ButterKnife.bind(this);
     initDependencyInjector();
     setSandboxBehavior();
     initRessource();
     deepLink = getIntent().getData();
+    String phoneNumber = userPhoneNumber.get();
+    loginUser(phoneNumber);
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -82,7 +76,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     if (data != null) {
       if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
         deepLink = null;
-        Timber.e("SOEF ON ACTIVITY RESULT FINISH");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           finishAndRemoveTask();
         } else {
@@ -95,38 +88,34 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   //  PRIVATE   //
   ////////////////
 
-  private void authentifyUser(String phoneNumber) {
-    if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) {
-      digitAuth();
-      Timber.e("SOEF 1 AUTHIFY_USER MOCKED_PHONE_NUMBER ");
-      return;
-    }
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-    if (!enableSandbox) {
-      Timber.d("SOEF 2 AUTHIFY_USER LOGIN NORMAL");
+  private void loginUser(String phoneNumber) {
+    /** FROM DEEPLINK => REDIRECT TO LIVE  */
+    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
+      loginEntity = authPresenter.login(null, null, null);
+
+      /** ALREADY PUT HIS NBR => FINISH INSCRIPTION IN AUTH PROFILE */
+    } else if (phoneNumber != null) { // already an account => login and redirect to AuthProfile
+      if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) {
+        digitAuth();
+        return;
+      }
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
       loginEntity = authPresenter.login(phoneNumber, null, null);
-    } else if (phoneNumber.startsWith("+8502121")) {
-      Timber.d("SOEF 3 AUTHIFY_USER LOGIN +8050");
-      loginEntity = authPresenter.login(phoneNumber, null, null);
+
+      /** DISPLAY DIGIT*/
     } else {
-      Timber.e("SOEF 4 AUTHIFY_USER LOGIN PIN ERROR");
-      Toast toast = Toast.makeText(getApplicationContext(), "PIN ERROR", Toast.LENGTH_SHORT);
-      toast.show();
-      logout();
+      digitAuth();
     }
   }
 
   private void digitAuth() {
-    Timber.e("SOEF DIGIT AUTH");
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
-        Timber.e("SOEF DIGIT AUTH SUCCESS");
         userPhoneNumber.set(phoneNumber);
-        authentifyUser(phoneNumber);
+        loginUser(phoneNumber);
       }
 
       @Override public void failure(DigitsException error) {
-        Timber.e("SOEF DIGIT FAILURE");
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
         Timber.e(error);
         logout();
@@ -141,7 +130,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void logout() {
-    Timber.i("SOEF NAVIGATE LOGOUT");
     navigator.navigateToLogout(this);
   }
 
@@ -153,11 +141,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       if (!enableSandbox) {
         toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
         Digits.enableSandbox();
-        Timber.e("SOEF ENABLE SENDBOX");
       } else {
         toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
         Digits.disableSandbox();
-        Timber.e("SOEF DISABLE SENDBOX");
       }
       enableSandbox = !enableSandbox;
       toast.show();
@@ -165,7 +151,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void initRessource() {
-    Timber.e("SOEF INIT RESSOURCE");
     authPresenter.onViewAttached(this);
     mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
   }
@@ -179,16 +164,13 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       Intent newIntent =
           IntentUtils.getLiveIntentFromURI(this, deepLink, LiveActivity.SOURCE_DEEPLINK);
       if (newIntent != null) {
-        Timber.i("SOEF 1 CONNECT_USER NAVIGATE DEEPLINK");
         navigator.navigateToIntent(this, newIntent);
         deepLink = null;
       }
     } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
         user.getUsername())) {
-      Timber.i("SOEF 2 CONNECT_USER NAVIGATE AUTH");
       navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
-      Timber.i("SOEF 3 CONNECT_USER NAVIGATE HOME");
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
       navigator.navigateToHomeFromLogin(this, null, countryCode, null);
@@ -207,33 +189,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   //  OVERRIDE  //
   ////////////////
 
-  @Override protected void onResume() {
-    super.onResume();
-    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
-      Timber.d("SOEF 1 ON_RESUME LOGIN DEEPLINK");
-      loginEntity = authPresenter.login(null, null, null);
-    } else {
-      if (userPhoneNumber.get() != null) {
-        Timber.e("SOEF 2 ON_RESUME AUTH USER");
-        authentifyUser(userPhoneNumber.get());
-      } else {
-        Timber.e("SOEF 3 ON_RESUME DIGIT AUTH");
-        digitAuth();
-      }
-    }
-  }
-
   @Override protected void onStart() {
     super.onStart();
-    Timber.e("SOEF ON_START");
   }
 
   @Override protected void onDestroy() {
-    if (unbinder != null) unbinder.unbind();
     authPresenter.onViewDetached();
     mSensorManager.unregisterListener(mShakeDetector);
     super.onDestroy();
-    Timber.e("SOEF ON_DESTROY");
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -241,13 +204,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override public void finish() {
-    Timber.e("SOEF ON_FINISH");
     super.finish();
   }
 
   @Override public void goToCode(Pin pin) {
     Timber.d("goToCode");
-    Timber.e("SOEF goToCode");
   }
 
   @Override public void goToConnected(User user) {
@@ -263,11 +224,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   @Override public void showLoading() {
-    progressView.setVisibility(View.VISIBLE);
+    //progressView.setVisibility(View.VISIBLE);
   }
 
   @Override public void hideLoading() {
-    progressView.setVisibility(View.INVISIBLE);
+    //progressView.setVisibility(View.INVISIBLE);
   }
 
   @Override public void showError(String message) {
