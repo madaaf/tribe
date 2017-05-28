@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -55,6 +56,8 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
   private String countryCode = null;
   private String smsContent = null;
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     getWindow().setBackgroundDrawable(null);
@@ -65,7 +68,13 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
       countryCode = getIntent().getExtras().getString(CONTRY_CODE);
       smsContent = getIntent().getExtras().getString(SMS_CONTENT);
     }
+
     manageDeepLink(getIntent());
+  }
+
+  @Override protected void onDestroy() {
+    subscriptions.clear();
+    super.onDestroy();
   }
 
   public void joinRoom(RoomConfiguration roomConfiguration) {
@@ -80,10 +89,17 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
         .roomId(roomConfiguration.getRoomId())
         .routingMode(roomConfiguration.getRoutingMode())
         .headers(headers)
+        .shadowCall(true)
         .build();
 
     Timber.d("Initiating Room");
     room.connect(options);
+
+    subscriptions.add(room.onJoined().subscribe(tribeJoinRoom -> {
+      room.leaveRoom();
+      navigator.navigateToHomeFromLogin(this, null, countryCode, smsContent);
+      finish();
+    }));
   }
 
   /////////////////
@@ -153,7 +169,6 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     joinRoom(roomConfiguration);
-    navigator.navigateToHomeFromLogin(this, null, countryCode, smsContent);
   }
 
   @Override public void onJoinRoomError(String message) {

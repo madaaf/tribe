@@ -446,7 +446,7 @@ public class CloudUserDataStore implements UserDataStore {
           LookupObject lookupObject = listLookup.get(i);
           if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
             for (UserRealm user : lookupUsers) {
-              if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
+              if (user != null && lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
             }
           }
 

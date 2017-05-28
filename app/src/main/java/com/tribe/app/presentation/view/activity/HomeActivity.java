@@ -705,9 +705,10 @@ public class HomeActivity extends BaseActivity
     if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        navigator.openSMSDefaultApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+        navigator.shareGenericText(intent.getStringExtra(Extras.OPEN_SMS), this);
       }
     }
+
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
 

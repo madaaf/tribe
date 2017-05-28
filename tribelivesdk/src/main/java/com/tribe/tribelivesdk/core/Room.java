@@ -97,29 +97,30 @@ public class Room {
   private void initJsonToModel() {
     jsonToModel = new JsonToModel();
 
-    persistentSubscriptions.add(jsonToModel.onJoinRoom()
-        .doOnNext(joinedRoom -> {
-          onJoined.onNext(joinedRoom);
+    persistentSubscriptions.add(jsonToModel.onJoinRoom().doOnNext(joinedRoom -> {
+      onJoined.onNext(joinedRoom);
 
-          if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
-            for (TribeSession session : joinedRoom.getSessionList()) {
-              webRTCClient.addPeerConnection(session, true);
-            }
-          } else {
-            for (TribeSession session : joinedRoom.getSessionList()) {
-              webRTCClient.addPeerConnection(session, false);
-            }
-
-            webRTCClient.addPeerConnection(
-                new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
+      if (!options.isShadowCall()) {
+        if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
+          for (TribeSession session : joinedRoom.getSessionList()) {
+            webRTCClient.addPeerConnection(session, true);
+          }
+        } else {
+          for (TribeSession session : joinedRoom.getSessionList()) {
+            webRTCClient.addPeerConnection(session, false);
           }
 
-          hasJoined = true;
-        })
-        .delay(1000, TimeUnit.MILLISECONDS)
-        .doOnNext(tribeJoinRoom -> sendToPeers(
-            webRTCClient.getJSONMedia(webRTCClient.getMediaConfiguration()), false))
-        .subscribe());
+          webRTCClient.addPeerConnection(
+              new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
+        }
+      }
+
+      hasJoined = true;
+    }).delay(1000, TimeUnit.MILLISECONDS).doOnNext(tribeJoinRoom -> {
+      if (options.isShadowCall()) {
+        sendToPeers(webRTCClient.getJSONMedia(webRTCClient.getMediaConfiguration()), false);
+      }
+    }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),

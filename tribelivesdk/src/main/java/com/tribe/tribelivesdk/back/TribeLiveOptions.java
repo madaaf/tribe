@@ -29,6 +29,7 @@ public class TribeLiveOptions {
   private Map<String, String> headers;
   private int orientation;
   private boolean frontCamera;
+  private boolean shadowCall;
 
   private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
     this.wsUrl = builder.wsUrl;
@@ -39,6 +40,7 @@ public class TribeLiveOptions {
     this.headers = builder.headers;
     this.orientation = builder.orientation;
     this.frontCamera = builder.frontCamera;
+    this.shadowCall = builder.shadowCall;
   }
 
   public static class TribeLiveOptionsBuilder {
@@ -51,6 +53,7 @@ public class TribeLiveOptions {
     private Map<String, String> headers;
     private int orientation;
     private boolean frontCamera;
+    private boolean shadowCall;
 
     public TribeLiveOptionsBuilder(Context context) {
       this.context = context;
@@ -100,6 +103,11 @@ public class TribeLiveOptions {
 
     public TribeLiveOptionsBuilder frontCamera(boolean front) {
       this.frontCamera = front;
+      return this;
+    }
+
+    public TribeLiveOptionsBuilder shadowCall(boolean shadowCall) {
+      this.shadowCall = shadowCall;
       return this;
     }
 
@@ -170,5 +178,9 @@ public class TribeLiveOptions {
 
   public void setFrontCamera(boolean frontCamera) {
     this.frontCamera = frontCamera;
+  }
+
+  public boolean isShadowCall() {
+    return shadowCall;
   }
 }
