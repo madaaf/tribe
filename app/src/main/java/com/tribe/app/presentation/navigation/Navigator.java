@@ -147,7 +147,6 @@ public class Navigator {
     Intent sendIntent = new Intent(Intent.ACTION_VIEW);
     sendIntent.setData(Uri.parse("sms:"));
     sendIntent.putExtra("sms_body", message);
-    sendIntent.setType("vnd.android-dir/mms-sms");
     activity.startActivity(sendIntent);
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
