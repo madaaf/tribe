@@ -37,7 +37,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   public static Intent getCallingIntent(Context context, Uri deepLink) {
     Intent intent = new Intent(context, AuthActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(DEEP_LINK, deepLink);
     return intent;
   }
@@ -67,8 +66,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     setSandboxBehavior();
     initRessource();
     deepLink = getIntent().getData();
-    String phoneNumber = userPhoneNumber.get();
-    loginUser(phoneNumber);
+    loginUser(userPhoneNumber.get());
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -89,20 +87,17 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   ////////////////
 
   private void loginUser(String phoneNumber) {
-    /** FROM DEEPLINK => REDIRECT TO LIVE  */
     if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
+      Timber.d("login from deeplink " + deepLink + ", phoneNumber :" + phoneNumber);
       loginEntity = authPresenter.login(null, null, null);
-
-      /** ALREADY PUT HIS NBR => FINISH INSCRIPTION IN AUTH PROFILE */
-    } else if (phoneNumber != null) { // already an account => login and redirect to AuthProfile
+    } else if (phoneNumber != null) {
       if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) {
+        Timber.w("login with " + phoneNumber);
         digitAuth();
         return;
       }
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
+      Timber.d("login with " + phoneNumber);
       loginEntity = authPresenter.login(phoneNumber, null, null);
-
-      /** DISPLAY DIGIT*/
     } else {
       digitAuth();
     }
@@ -111,14 +106,17 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void digitAuth() {
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
         userPhoneNumber.set(phoneNumber);
+        Timber.d("digit login success " + phoneNumber);
         loginUser(phoneNumber);
       }
 
       @Override public void failure(DigitsException error) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
-        Timber.e(error);
-        logout();
+        userPhoneNumber.set(null);
+        Timber.e("digit login failure :" + error);
+        digitAuth();
       }
     };
 
@@ -131,6 +129,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void logout() {
     navigator.navigateToLogout(this);
+    Timber.d("logout");
   }
 
   private void setSandboxBehavior() {
@@ -139,9 +138,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     mShakeDetector = new ShakeDetector(() -> {
       Toast toast;
       if (!enableSandbox) {
+        Timber.d("enable sandbox");
         toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
         Digits.enableSandbox();
       } else {
+
+        Timber.d("disable sandbox");
         toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
         Digits.disableSandbox();
       }
@@ -156,7 +158,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void connectUser(User user) {
-    Timber.d("goToConnected");
     this.currentUser.copy(user);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
@@ -164,15 +165,18 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       Intent newIntent =
           IntentUtils.getLiveIntentFromURI(this, deepLink, LiveActivity.SOURCE_DEEPLINK);
       if (newIntent != null) {
+        Timber.d("goToConnected from " + deepLink);
         navigator.navigateToIntent(this, newIntent);
         deepLink = null;
       }
     } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
         user.getUsername())) {
+      Timber.d("goToConnected from new user");
       navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
+      Timber.d("goToConnected from " + user.getDisplayName());
       navigator.navigateToHomeFromLogin(this, null, countryCode, null);
     }
   }
@@ -221,14 +225,14 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override public void pinError(ErrorLogin errorLogin) {
     Timber.d("errorLogin");
+    userPhoneNumber.set(null);
+    logout();
   }
 
   @Override public void showLoading() {
-    //progressView.setVisibility(View.VISIBLE);
   }
 
   @Override public void hideLoading() {
-    //progressView.setVisibility(View.INVISIBLE);
   }
 
   @Override public void showError(String message) {

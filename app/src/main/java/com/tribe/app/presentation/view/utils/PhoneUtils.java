@@ -135,7 +135,9 @@ import javax.inject.Singleton;
     } catch (NumberParseException e) {
       System.err.println("NumberParseException was thrown: " + e.toString());
     }
-
+    if (numberProto == null) {
+      return loginEntity;
+    }
     loginEntity.setCountryCode("+" + numberProto.getCountryCode());
     loginEntity.setNationalNumber("" + numberProto.getNationalNumber());
 

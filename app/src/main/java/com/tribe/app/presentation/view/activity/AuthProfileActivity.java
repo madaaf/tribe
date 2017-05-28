@@ -85,6 +85,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private FacebookEntity facebookEntity;
   private Uri uriPicture;
   private AccessToken accessToken;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -116,7 +117,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private void askPermissionAccessContact() {
-    RxPermissions rxPermissions = new RxPermissions(this);
     rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
       Bundle bundle = new Bundle();
       bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
@@ -194,6 +194,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
     askPermissionAccessContact();
 
     subscriptions.add(profileInfoView.onInfoValid().subscribe(b -> {
@@ -294,19 +295,23 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
-    subscriptions.add(DialogFactory.dialog(this,
-        EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
-        getString(R.string.onboarding_user_alert_call_link_msg),
-        getString(R.string.onboarding_user_alert_call_link_sms), null)
-        .filter(x -> x == true)
-        .subscribe(a -> {
-          String linkId = StringUtils.generateLinkId();
-          String url = StringUtils.getUrlFromLinkId(this, linkId);
-          String smsContent = EmojiParser.demojizedText(
-              getString(R.string.onboarding_user_alert_call_link_content, url));
-          navigator.navigateToShadowCallActivity(this, Uri.parse(url), loginEntity.getCountryCode(),
-              smsContent);
-        }));
+    String linkId = StringUtils.generateLinkId();
+    String url = StringUtils.getUrlFromLinkId(this, linkId);
+    String smsContent =
+        EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_content, url));
+    if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
+      subscriptions.add(DialogFactory.dialog(this,
+          EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
+          getString(R.string.onboarding_user_alert_call_link_msg),
+          getString(R.string.onboarding_user_alert_call_link_sms), null)
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            navigator.navigateToShadowCallActivity(this, Uri.parse(url),
+                loginEntity.getCountryCode(), smsContent);
+          }));
+    } else {
+      navigator.navigateToHomeFromLogin(this, null, loginEntity.getCountryCode(), null);
+    }
   }
 
   @Override public void successFacebookLogin() {

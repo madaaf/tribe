@@ -701,11 +701,20 @@ public class HomeActivity extends BaseActivity
     }
   }
 
+  private void openSmsApp(Intent intent) {
+    if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
+      if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
+        stateManager.addTutorialKey(StateManager.OPEN_SMS);
+        navigator.openSMSDefaultApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+      }
+    }
+  }
+
   private void manageLogin(Intent intent) {
     if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        navigator.shareGenericText(intent.getStringExtra(Extras.OPEN_SMS), this);
+        navigator.openSMSDefaultApp(this, intent.getStringExtra(Extras.OPEN_SMS));
       }
     }
 

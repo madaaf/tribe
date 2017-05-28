@@ -87,7 +87,7 @@ public class Navigator {
     }
   }
 
-  public void navigateToShadowCallActivity(Context context, Uri uri, String countryCode,
+  public void navigateToShadowCallActivity(Activity context, Uri uri, String countryCode,
       String smsContent) {
     if (context != null) {
       Intent intent = ShadowCallActivity.getCallingIntent(context, countryCode, smsContent);
@@ -149,6 +149,7 @@ public class Navigator {
     sendIntent.putExtra("sms_body", message);
     sendIntent.setType("vnd.android-dir/mms-sms");
     activity.startActivity(sendIntent);
+    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
   public void navigateToProfile(Activity activity) {
