@@ -10,6 +10,7 @@ import com.uls.multifacetrackerlib.UlsMultiTracker;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 25/05/2017.
@@ -200,8 +201,8 @@ public class UlseeManager {
           //    + deviceRotationDetector.getRotationDegree());
           //Timber.d("Width : %d, Height : %d, Rotation : %d", frame.getWidth(), frame.getHeight(),
           //    detectDegree);
-          ulsTracker.findFacesAndAdd(frame.getData(), frame.getWidth(), frame.getHeight(),
-              detectDegree, UlsMultiTracker.ImageDataType.NV21);
+          //ulsTracker.findFacesAndAdd(frame.getData(), frame.getWidth(), frame.getHeight(),
+          //    detectDegree, UlsMultiTracker.ImageDataType.NV21);
           faceDetectionRunning = false;
           return null;
         }))

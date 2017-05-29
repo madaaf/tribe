@@ -4,11 +4,11 @@ import android.content.Context;
 import android.hardware.Camera;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
+import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.rs.lut3d.LUT3DManager;
 import com.tribe.tribelivesdk.ulsee.UlseeManager;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
-import java.util.concurrent.Executors;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -58,8 +58,8 @@ public class FrameManager {
   }
 
   private void initSubscriptions() {
-    subscriptions.add(gameManager.onRemoteFrame().subscribe(onRemoteFrame));
-    subscriptions.add(gameManager.onLocalFrame().subscribe(onLocalFrame));
+    subscriptions.add(gameManager.onRemoteFrame().onBackpressureDrop().subscribe(onRemoteFrame));
+    subscriptions.add(gameManager.onLocalFrame().onBackpressureDrop().subscribe(onLocalFrame));
   }
 
   private void initUlseeManager() {
@@ -67,47 +67,56 @@ public class FrameManager {
   }
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
-    ulseeManager.initFrameSubscription(onFrame);
-    subscriptions.add(onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+    //ulseeManager.initFrameSubscription(onFrame);
+    subscriptions.add(onFrame
+        .onBackpressureDrop()
         .filter(frame -> !processing)
-        .doOnNext(frame -> {
+        .observeOn(Schedulers.computation())
+        .map(frame1 -> {
+          //Timber.d("Processing filters : " + Thread.currentThread().getName());
           processing = true;
-
           if (firstFrame
-              || previousWidth != frame.getWidth()
-              || previousHeight != frame.getHeight()) {
-            argb = new byte[frame.getWidth() * frame.getHeight() * 4];
-            yuvOut = new byte[frame.getData().length];
+              || previousWidth != frame1.getWidth()
+              || previousHeight != frame1.getHeight()) {
+            argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
+            yuvOut = new byte[frame1.getData().length];
 
             firstFrame = false;
-            previousHeight = frame.getHeight();
-            previousWidth = frame.getWidth();
+            previousHeight = frame1.getHeight();
+            previousWidth = frame1.getWidth();
 
-            frame.setDataOut(yuvOut);
-            onFrameSizeChange.onNext(frame);
+            frame1.setDataOut(yuvOut);
+            onFrameSizeChange.onNext(frame1);
           }
 
           boolean shouldSendRemoteFrame = true;
 
-          //LUT3DFilter filter = lut3DManager.getFilter();
-          //if (!filter.getId().equals(LUT3DFilter.LUT3D_NONE)) {
-          //libYuvConverter.YUVToARGB(frame.getData(), frame.getWidth(), frame.getHeight(), argb);
-          //filter.apply(argb);
-          //
-          //  if (gameManager.getCurrentGame() != null && gameManager.getCurrentGame()
-          //      .isLocalFrameDifferent()) {
-          //    shouldSendRemoteFrame = false;
-          //    frame.setData(argb);
-          //    frame.setDataOut(yuvOut);
-          //    onNewFrame.onNext(frame);
-          //  } else {
-          //    libYuvConverter.ARGBToYUV(argb, frame.getWidth(), frame.getHeight(), yuvOut);
-          //    frame.setDataOut(yuvOut);
-          //  }
-          //} else {
-          frame.setDataOut(frame.getData());
+          LUT3DFilter filter = lut3DManager.getFilter();
 
-          if (shouldSendRemoteFrame) onRemoteFrame.onNext(frame);
+          if (!filter.getId().equals(LUT3DFilter.LUT3D_NONE)) {
+            libYuvConverter.YUVToARGB(frame1.getData(), frame1.getWidth(), frame1.getHeight(),
+                argb);
+            filter.apply(argb);
+
+            if (gameManager.getCurrentGame() != null && gameManager.getCurrentGame()
+                .isLocalFrameDifferent()) {
+              shouldSendRemoteFrame = false;
+              frame1.setData(argb);
+              frame1.setDataOut(yuvOut);
+              onNewFrame.onNext(frame1);
+            } else {
+              libYuvConverter.ARGBToYUV(argb, frame1.getWidth(), frame1.getHeight(), yuvOut);
+              frame1.setDataOut(yuvOut);
+            }
+          } else {
+            frame1.setDataOut(frame1.getData());
+          }
+
+          if (shouldSendRemoteFrame) onRemoteFrame.onNext(frame1);
+
+          //Timber.d("End processing filters");
+
+          return frame1;
         })
         .subscribe(frame -> processing = false));
   }

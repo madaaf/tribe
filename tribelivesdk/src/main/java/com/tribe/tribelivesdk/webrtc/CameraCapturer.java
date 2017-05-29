@@ -30,6 +30,7 @@ import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -289,6 +290,8 @@ import rx.subscriptions.CompositeSubscription;
 
     frameManager = new FrameManager(applicationContext);
     subscriptions.add(frameManager.onRemoteFrame()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
         .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
             frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
     subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));

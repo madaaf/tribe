@@ -225,7 +225,7 @@
 	<string name="onboarding_user_alert_call_link_msg">Petit conseil: Envoyez un SMS aux amis que vous souhaitez appeler en même temps.</string>
 	<string name="onboarding_user_alert_call_link_sms">Ouvrir SMS</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Entrez et ouvrez iMessage !</string>
-	<string name="onboarding_user_alert_call_link_content">Haha, je viens de télécharger Tribe, ça à l\'air cool! :fire: Vous pouvez essayer avec moi rapidement ? Ca se passe ici %1$s</string>
+	<string name="onboarding_user_alert_call_link_content">Hey ! Vous pouvez essayer avec moi rapidement ? Ca se passe ici %1$s</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Retrouver vos amis</string>
