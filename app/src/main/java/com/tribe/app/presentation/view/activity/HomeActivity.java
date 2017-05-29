@@ -27,7 +27,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -715,50 +714,6 @@ public class HomeActivity extends BaseActivity
 
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
-
-      if (addressBook.get()) {
-        String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
-        if (StringUtils.isEmpty(countryCode)) return;
-
-        firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-        firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
-        firebaseRemoteConfig.activateFetched();
-
-        firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
-          if (task.isSuccessful()) {
-            firebaseRemoteConfig.activateFetched();
-
-            boolean displayingPopup = false;
-
-            String countryCodesMaster =
-                firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
-
-            if (!StringUtils.isEmpty(countryCodesMaster)) {
-              String[] countryCodes = countryCodesMaster.split(",");
-
-              for (String countryCodeInvite : countryCodes) {
-                if (countryCodeInvite.equals(countryCode)) {
-                  displayingPopup = true;
-
-                  subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(aLong -> {
-                        notificationContainerView.showNotification(null,
-                            NotificationContainerView.DISPLAY_INVITE_NOTIF);
-
-                        subscriptions.add(notificationContainerView.onSendInvitations()
-                            .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
-                      }));
-
-                  return;
-                }
-              }
-            }
-
-            if (!displayingPopup) homeGridPresenter.sendInvitations();
-          }
-        });
-      }
     }
   }
 
@@ -795,6 +750,7 @@ public class HomeActivity extends BaseActivity
   @Override public void onSyncDone() {
     lastSync.set(System.currentTimeMillis());
     displaySyncBanner(getString(R.string.grid_synced_contacts_banner));
+    homeGridPresenter.sendInvitations();
   }
 
   @Override public void onSyncStart() {

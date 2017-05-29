@@ -557,4 +557,13 @@
 	<string name="game_post_it_menu_re_roll">Renew the Postit notes</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
 	<string name="game_post_it_rule">Guess who you are\nby asking your friends!</string>
+	
+	<!-- Call Level -->
+	<string name="call_level_0">Rookie call! :tiger:</string>
+	<string name="call_level_1">Baller call! :boom:</string>
+	<string name="call_level_2">Hustler call! :sports_medal:</string>
+	<string name="call_level_3">Lit call! :fire:</string>
+	<string name="call_level_4">Turn up call! :dizzy:</string>
+	<string name="call_level_5">Savage call! :smiling_imp:</string>
+	<string name="call_level_6">Legendary call! :crossed_swords:</string>
 </resources>
