@@ -55,12 +55,15 @@ import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
+import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.ShadowCallActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.friend.ManageFriendshipListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
@@ -167,6 +170,8 @@ public interface ApplicationComponent {
 
   void inject(LiveView liveView);
 
+  void inject(ShadowCallActivity shadowCallActivity);
+
   void inject(LiveContainer liveContainer);
 
   void inject(LiveInviteView liveInviteView);
@@ -188,6 +193,8 @@ public interface ApplicationComponent {
   void inject(TooltipView tooltipView);
 
   void inject(NewCallView newCallButton);
+
+  void inject(ManageFriendshipListAdapterDelegate manageFriendshipListAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);
@@ -309,6 +316,8 @@ public interface ApplicationComponent {
   @CallTagsMap Preference<String> callTagsMap();
 
   @LookupResult Preference<String> lookupResult();
+
+  @UserPhoneNumber Preference<String> userPhoneNumber();
 
   SoundManager soundManager();
 

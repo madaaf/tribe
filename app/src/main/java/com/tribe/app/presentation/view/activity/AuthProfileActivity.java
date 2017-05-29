@@ -13,6 +13,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.jakewharton.rxbinding.view.RxView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -21,15 +23,19 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfileInfoPresenter;
 import com.tribe.app.presentation.mvp.view.ProfileInfoMVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -60,6 +66,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Inject PhoneUtils phoneUtils;
 
+  @Inject User recipient;
+
   @Inject ProfileInfoPresenter profileInfoPresenter;
 
   @BindView(R.id.profileInfoView) ProfileInfoView profileInfoView;
@@ -68,7 +76,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @BindView(R.id.progressView) CircularProgressView progressView;
 
-  //@BindView(R.id.facebookView) FacebookView facebookView;
+  @BindView(R.id.facebookView) FacebookView facebookView;
 
   // VARIABLES
   private Uri deepLink;
@@ -77,6 +85,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private FacebookEntity facebookEntity;
   private Uri uriPicture;
   private AccessToken accessToken;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -105,6 +114,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     initDependencyInjector();
     initParams(getIntent());
     init();
+  }
+
+  private void askPermissionAccessContact() {
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
+
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+    });
   }
 
   @Override protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -173,6 +194,9 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private void init() {
+    rxPermissions = new RxPermissions(this);
+    askPermissionAccessContact();
+
     subscriptions.add(profileInfoView.onInfoValid().subscribe(b -> {
       if (b) {
         TextViewCompat.setTextAppearance(txtAction, R.style.Title_2_BlueNew);
@@ -182,18 +206,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       txtAction.setCustomFont(this, FontUtils.PROXIMA_BOLD);
     }));
 
-    //subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
-    //  if (isReady()) {
-    //    nextStep();
-    //  } else {
-    //    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
-    //    if (FacebookUtils.isLoggedIn()) {
-    //      getInfoFromFacebook();
-    //    } else {
-    //      profileInfoPresenter.loginFacebook();
-    //    }
-    //  }
-    //}));
+    subscriptions.add(RxView.clicks(facebookView).subscribe(aVoid -> {
+      if (isReady()) {
+        nextStep();
+      } else {
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_ProfileFilledWithFacebook);
+        if (FacebookUtils.isLoggedIn()) {
+          getInfoFromFacebook();
+        } else {
+          profileInfoPresenter.loginFacebook();
+        }
+      }
+    }));
 
     subscriptions.add(profileInfoView.onUsernameInput().subscribe(s -> {
       profileInfoPresenter.lookupUsername(s);
@@ -271,7 +295,24 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
-    navigator.navigateToAuthAccess(this, deepLink, loginEntity.getCountryCode());
+    String linkId = StringUtils.generateLinkId();
+    String url = StringUtils.getUrlFromLinkId(this, linkId);
+    String smsContent =
+        EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_content, url));
+    if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCalliMessage);
+      subscriptions.add(DialogFactory.dialog(this,
+          EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
+          getString(R.string.onboarding_user_alert_call_link_msg),
+          getString(R.string.onboarding_user_alert_call_link_sms), null)
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            navigator.navigateToShadowCallActivity(this, Uri.parse(url),
+                loginEntity.getCountryCode(), smsContent);
+          }));
+    } else {
+      navigator.navigateToHomeFromLogin(this, null, loginEntity.getCountryCode(), null);
+    }
   }
 
   @Override public void successFacebookLogin() {

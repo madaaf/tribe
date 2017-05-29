@@ -21,6 +21,8 @@ public interface LoginApi {
 
   @POST("/token") Observable<AccessToken> loginWithUsername(@Body LoginEntity loginEntity);
 
+  @POST("/anonToken") Observable<AccessToken> loginWithAnonymous();
+
   @POST("/token") Observable<AccessToken> loginWithUsername(@Header(X_VERIFY) String xVerify,
       @Header(X_AUTH) String xAuth, @Body LoginEntity loginEntity);
 

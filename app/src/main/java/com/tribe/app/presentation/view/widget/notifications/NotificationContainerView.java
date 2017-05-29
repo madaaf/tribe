@@ -53,7 +53,7 @@ public class NotificationContainerView extends FrameLayout {
 
   @StringDef({
       DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF,
-      DISPLAY_INVITE_NOTIF
+      DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF
   }) public @interface NotifType {
   }
 
@@ -61,6 +61,7 @@ public class NotificationContainerView extends FrameLayout {
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
   public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
   public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
+  public static final String DISPLAY_SHARING_NOTIF = "DISPLAY_SHARING_NOTIF";
 
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
   private final static int NOTIF_ANIM_DURATION_ENTER = 500;
@@ -122,9 +123,9 @@ public class NotificationContainerView extends FrameLayout {
     initSubscription();
     return notifIsDisplayed;
   }
+
   ///////////////////
   //     PRIVATE   //
-
   ///////////////////
 
   private boolean displayNotifFromIntent(Intent data) {
@@ -253,6 +254,11 @@ public class NotificationContainerView extends FrameLayout {
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);
       viewToDisplay = new CreateGroupNotificationView(context, members);
+    } else if (data.getBooleanExtra(DISPLAY_SHARING_NOTIF, false) && extra != null) {
+      ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
+          SharingCardNotificationView.CALL_GRP_MEMBERS);
+      double durationCall = extra.getDouble(SharingCardNotificationView.DURATION_CALL);
+      viewToDisplay = new SharingCardNotificationView(context, members, durationCall);
     } else if (displayEnjoyingTribeView) {
       viewToDisplay = new EnjoyingTribeNotificationView(context);
     }

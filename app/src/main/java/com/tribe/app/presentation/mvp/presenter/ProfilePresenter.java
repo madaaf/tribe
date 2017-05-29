@@ -7,6 +7,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
+import com.tribe.app.domain.interactor.user.GetDiskUnblockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
@@ -29,20 +30,23 @@ public class ProfilePresenter extends UpdateUserPresenter {
 
   private final RemoveInstall removeInstall;
   private GetBlockedFriendshipList getBlockedFriendshipList;
+  private GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList;
   private UpdateFriendship updateFriendship;
   private DeclineInvite declineInvite;
 
   private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
+  private GetUnblockedFriendshipListSubscriber getUnblockedFriendshipListSubscriber;
 
   @Inject ProfilePresenter(UpdateUser updateUser, LookupUsername lookupUsername,
       RxFacebook rxFacebook, RemoveInstall removeInstall,
       GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
-      DeclineInvite declineInvite) {
+      DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList) {
     super(updateUser, lookupUsername, rxFacebook);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;
     this.updateFriendship = updateFriendship;
     this.declineInvite = declineInvite;
+    this.getDiskUnblockedFriendshipList = getDiskUnblockedFriendshipList;
   }
 
   @Override public void onViewDetached() {
@@ -50,6 +54,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
     getBlockedFriendshipList.unsubscribe();
     updateFriendship.unsubscribe();
     declineInvite.unsubscribe();
+    getDiskUnblockedFriendshipList.unsubscribe();
     profileView = null;
     super.onViewDetached();
   }
@@ -122,5 +127,28 @@ public class ProfilePresenter extends UpdateUserPresenter {
   public void declineInvite(String roomId) {
     declineInvite.prepare(roomId);
     declineInvite.execute(new DefaultSubscriber());
+  }
+
+  public void loadUnblockedFriendshipList() {
+    if (getUnblockedFriendshipListSubscriber != null) {
+      getUnblockedFriendshipListSubscriber.unsubscribe();
+    }
+
+    getUnblockedFriendshipListSubscriber = new GetUnblockedFriendshipListSubscriber();
+    getDiskUnblockedFriendshipList.execute(getUnblockedFriendshipListSubscriber);
+  }
+
+  private class GetUnblockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+    }
+
+    @Override public void onNext(List<Friendship> friendshipList) {
+      profileView.renderUnblockedFriendshipList(friendshipList);
+      unsubscribe();
+    }
   }
 }

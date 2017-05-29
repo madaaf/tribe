@@ -316,4 +316,8 @@ import rx.Observable;
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.getRoomLink(roomId);
   }
+
+  @Override public Observable<List<Friendship>> unblockedFriendships() {
+    return null;
+  }
 }

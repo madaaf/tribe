@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,7 +19,6 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
@@ -103,23 +105,16 @@ public class ErrorNotificationView extends FrameLayout {
   private void hideView() {
     if (timerSubscription != null) timerSubscription.unsubscribe();
 
-    Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_out_to_top);
-    setAnimation(slideInAnimation);
-    slideInAnimation.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation);
-        setClickable(false);
-        setOnClickListener(null);
-      }
-
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        clearAnimation();
-        setVisibility(GONE);
-      }
-    });
-    startAnimation(slideInAnimation);
+    animate().setDuration(DURATION)
+        .translationY(-screenUtils.getHeightPx() >> 1)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            animation.removeAllListeners();
+            setVisibility(View.GONE);
+          }
+        })
+        .start();
   }
 
   private void setTimer() {
@@ -134,12 +129,16 @@ public class ErrorNotificationView extends FrameLayout {
 
   public void displayView() {
     setTimer();
-    setVisibility(VISIBLE);
-    Animation slideInAnimation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.alerter_slide_in_from_top);
-    slideInAnimation.setStartOffset(1000);
-    slideInAnimation.setDuration(800);
-    setAnimation(slideInAnimation);
-    startAnimation(slideInAnimation);
+
+    setTranslationY(-screenUtils.getHeightPx() >> 1);
+    animate().setDuration(DURATION)
+        .translationY(0)
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationStart(Animator animation) {
+            setVisibility(View.VISIBLE);
+          }
+        })
+        .start();
   }
 }

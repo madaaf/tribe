@@ -11,6 +11,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.TribeGuestAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
   private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
   private UserListAdapterDelegate userListAdapterDelegate;
   private RecipientListAdapterDelegate recipientListAdapterDelegate;
+  private TribeGuestAdapterDelegate tribeGuestAdapterDelegate;
 
   // VARIABLES
   private List<Object> items;
@@ -55,6 +57,9 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     recipientListAdapterDelegate = new RecipientListAdapterDelegate(context);
     delegatesManager.addDelegate(recipientListAdapterDelegate);
+
+    tribeGuestAdapterDelegate = new TribeGuestAdapterDelegate(context);
+    delegatesManager.addDelegate(tribeGuestAdapterDelegate);
 
     delegatesManager.addDelegate(HEADER_TYPE, new ContactsHeaderAdapterDelegate(context));
 
@@ -106,6 +111,16 @@ public class ContactAdapter extends RecyclerView.Adapter {
     this.notifyDataSetChanged();
   }
 
+  public void addItem(Object obj) {
+    this.items.add(obj);
+    this.notifyItemInserted(items.size() - 1);
+  }
+
+  public void clear() {
+    this.items.clear();
+    this.notifyDataSetChanged();
+  }
+
   public void updateSearch(SearchResult searchResult, List<Object> contactList) {
     this.items.clear();
     this.items.add(R.string.search_usernames);
@@ -131,6 +146,11 @@ public class ContactAdapter extends RecyclerView.Adapter {
             break;
           }
         }
+      } else if (obj instanceof User) {
+        User u = (User) obj;
+        u.setNewFriend(true);
+        u.setAnimateAdd(true);
+        notifyDataSetChanged();
       }
     }
   }
@@ -142,7 +162,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<View> onClickInvite() {
-    return contactsGridAdapterDelegate.onClickInvite();
+    return Observable.merge(tribeGuestAdapterDelegate.onClickInvite(),
+        contactsGridAdapterDelegate.onClickInvite());
   }
 
   public Observable<View> onHangLive() {

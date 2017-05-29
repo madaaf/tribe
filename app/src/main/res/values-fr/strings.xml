@@ -23,6 +23,7 @@
 	<string name="action_group_member">Membre</string>
 	<string name="action_nevermind">Non</string>
 	<string name="action_unhide">Ajouter en ami</string>
+	<string name="action_invite">Inviter</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -43,45 +44,45 @@
 	<string name="contacts_search_new">NEW</string>
 	<string name="contacts_search_new_tooltip">Retrouvez vos amis déjà sur Tribe !</string>
 	<string name="contacts_section_facebook_no_os_facebook_title">Amis Facebook</string>
-	<string name="contacts_section_facebook_no_os_facebook_description">Rendez-vous dans les Paramètres de votre téléphone pour connecter votre compte Facebook!</string>
+	<string name="contacts_section_facebook_no_os_facebook_description">Rendez-vous dans les "Paramètres" de votre téléphone pour connecter votre compte Facebook!</string>
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Annuler</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">C\'est noté !</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
 	
 	<!-- Permissions -->
-	<string name="permission_contacts_disabled_alert_title">Accès aux Contacts désactivé</string>
-	<string name="permission_contacts_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_contacts_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_contacts_disabled_alert_title">Accès aux "Contacts" désactivé</string>
+	<string name="permission_contacts_disabled_alert_description">Rendez-vous dès maintenant dans les "Paramètres" de l\'iPhone pour l\'activer !</string>
+	<string name="permission_contacts_disabled_alert_redirect">Aller dans "Paramètres"</string>
 	<string name="permission_contacts_disabled_alert_cancel">Laisser bloqué</string>
-	<string name="permission_location_disabled_alert_title">Accès à la Location désactivée</string>
-	<string name="permission_location_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_location_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_location_disabled_alert_title">Accès à la "Location" désactivée</string>
+	<string name="permission_location_disabled_alert_description">Rendez-vous dès maintenant dans les "Paramètres" de l\'iPhone pour l\'activer !</string>
+	<string name="permission_location_disabled_alert_redirect">Aller dans "Paramètres"</string>
 	<string name="permission_location_disabled_alert_cancel">Non merci</string>
-	<string name="permission_push_fake_alert_title">Ne loupez rien de vos amis !</string>
-	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis vous appelle ou sont connectés.</string>
+	<string name="permission_push_fake_alert_title">Soyez au courant de ce que font vos amis !</string>
+	<string name="permission_push_fake_alert_description">Soyez informé lorsque vos amis cliquent sur un lien que vous leur avez envoyé, lorsqu\'ils vous appellent ou bien lorsqu\'ils sont connectés.</string>
 	<string name="permission_push_fake_alert_allow">OK</string>
 	<string name="permission_push_fake_alert_cancel">En savoir plus</string>
-	<string name="permission_push_disabled_alert_title">Push désactivés</string>
-	<string name="permission_push_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_push_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_push_disabled_alert_title">"Push" désactivés</string>
+	<string name="permission_push_disabled_alert_description">Rendez-vous dès maintenant dans les "Paramètres" de l\'iPhone pour l\'activer !</string>
+	<string name="permission_push_disabled_alert_redirect">Aller dans "Paramètres"</string>
 	<string name="permission_push_disabled_alert_cancel">Rester seul</string>
-	<string name="permission_camera_disabled_alert_title">Caméra ou Micro désactivé</string>
-	<string name="permission_camera_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_camera_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_camera_disabled_alert_title">"Caméra" ou "Micro" désactivé</string>
+	<string name="permission_camera_disabled_alert_description">Rendez-vous dès maintenant dans les "Paramètres" de l\'iPhone pour l\'activer !</string>
+	<string name="permission_camera_disabled_alert_redirect">Aller dans "Paramètres"</string>
 	<string name="permission_camera_disabled_alert_cancel">Rester bloqué</string>
-	<string name="permission_photos_disabled_alert_title">Accès aux Photos désactivé</string>
-	<string name="permission_photos_disabled_alert_description">Rendez-vous dès maintenant dans les Paramètres de l\'iPhone pour l\'activer !</string>
-	<string name="permission_photos_disabled_alert_redirect">Aller dans Paramètres</string>
+	<string name="permission_photos_disabled_alert_title">Accès aux "Photos" désactivé</string>
+	<string name="permission_photos_disabled_alert_description">Rendez-vous dès maintenant dans les "Paramètres" de l\'iPhone pour l\'activer !</string>
+	<string name="permission_photos_disabled_alert_redirect">Aller dans "Paramètres"</string>
 	<string name="permission_photos_disabled_alert_cancel">Rester bloqué</string>
 	<string name="permission_global_popup_title">Assurez-vous que tout fonctionne parfaitement !</string>
 	<string name="permission_global_popup_message">Occupons-nous des permissions pour que vous ne manquiez rien de l\'expérience de messagerie vidéo la plus incroyable.</string>
 	<string name="permission_global_popup_cancel">Plus tard</string>
 	<string name="permission_global_popup_confirm">C\'est parti !</string>
-	<string name="permission_facebook_popup_title">Retrouver facilement vos amis Facebook</string>
+	<string name="permission_facebook_popup_title">Retrouver facilement vos amis "Facebook"</string>
 	<string name="permission_facebook_popup_message">Vos amis Facebook seront synchronisés avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_facebook_popup_ok">Parfait !</string>
 	<string name="permission_facebook_popup_ko">En savoir plus</string>
-	<string name="permission_addressbook_popup_title">Retrouver facilement les contacts de votre Carnet d\'Adresses</string>
+	<string name="permission_addressbook_popup_title">Retrouver facilement les contacts de votre "Carnet d\'Adresses"</string>
 	<string name="permission_addressbook_popup_message">Vos amis seront synchronisés avec Tribe pour que vous puissiez retrouver facilement les personnes que vous connaissez déjà.</string>
 	<string name="permission_addressbook_popup_ok">Parfait !</string>
 	<string name="permission_addressbook_popup_ko">En savoir plus</string>
@@ -91,7 +92,7 @@
 	
 	<!-- Invitations -->
 	<string name="invitation_sms_error_parse_number_title">Le format de ce numéro de téléphone ne semble pas parfait</string>
-	<string name="invitation_sms_error_parse_number_message">%1$s\n\nCe numéro de téléphone n\'inclue pas de Code pays. Nous avons essayé d\'ajouter %2$s mais ça n\'a pas fonctionné.</string>
+	<string name="invitation_sms_error_parse_number_message">%1$s\n\nCe numéro de téléphone n\'inclue pas de "Code pays". Nous avons essayé d\'ajouter %2$s mais ça n\'a pas fonctionné.</string>
 	<string name="invitation_sms_error_parse_number_action_edit">Corriger le numéro</string>
 	<string name="invitation_sms_error_parse_number_action_use">Utiliser sans corriger</string>
 	
@@ -99,8 +100,8 @@
 	<string name="live_notification_action_hang_live">Rejoindre !</string>
 	<string name="live_notification_action_decline">Rejeter</string>
 	<string name="live_notification_action_add_as_friend">Ajouter en ami</string>
-	<string name="live_notification_action_hang_live_friend">Appeler %1$s</string>
-	<string name="live_notification_action_hang_live_group">Appeler %1$s</string>
+	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
+	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
 	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
@@ -146,6 +147,8 @@
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
+	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
+	<string name="grid_synced_contacts_banner">Contacts synchronisés!</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
@@ -218,6 +221,11 @@
 	<string name="onboarding_user_username_restrictions">Le nom d\'utilisateur ne doit contenir que des caractères alphanumériques ou tirets</string>
 	<string name="onboarding_user_facebook_button_title">Aller plus vite avec facebook !</string>
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
+	<string name="onboarding_user_alert_call_link_title">Parfait. Sélectionnez vos meilleurs amis pour essayer ! :metal:</string>
+	<string name="onboarding_user_alert_call_link_msg">Petit conseil: Envoyez un SMS aux amis que vous souhaitez appeler en même temps.</string>
+	<string name="onboarding_user_alert_call_link_sms">Ouvrir SMS</string>
+	<string name="onboarding_user_alert_call_link_iMessage">Entrez et ouvrez iMessage !</string>
+	<string name="onboarding_user_alert_call_link_content">Hey ! Vous pouvez essayer avec moi rapidement ? Ca se passe ici %1$s</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Retrouver vos amis</string>
@@ -280,9 +288,10 @@
 	<!-- Share -->
 	<string name="share_messenger_url">http://get.tribe.pm/invite</string>
 	<string name="share_copied_redirecting">:paperclip: Ajouté au presse-papier. Préparez-vous à coller.</string>
-	<string name="share_snapchat_story_explanation_title">Snapchat</string>
-	<string name="share_snapchat_story_explanation_msg">Veuillez importer l\'image depuis la librarie photo des memories.</string>
-	<string name="share_snapchat_story_explanation_ok">OK</string>
+	<string name="share_snapchat_story_explanation_title">Image sauvegardée dans vos Memories!</string>
+	<string name="share_snapchat_story_explanation_msg">Nous venons de sauvegarder une image dans votre galerie de photos. Veuillez importer l\'image depuis la librarie photo des Memories.</string>
+	<string name="share_snapchat_story_explanation_ok">Ouvrir snapchat</string>
+	<string name="share_snapchat_story_explanation_cancel">Partager plus tard</string>
 	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
 	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! Rejoins-le ici depuis l\'app ou depuis le web : %1$s</string>
 	
@@ -309,11 +318,11 @@
 	<string name="search_unblock_alert_unblock">Unblock %1$s</string>
 	
 	<!-- Spring Cleaning -->
-	<string name="spring_cleaning_friendship_title">%1$s</string>
+	<string name="spring_cleaning_friendship_title">"%1$s"</string>
 	<string name="spring_cleaning_friendship_description">Vous pourrez ajouter à nouveau\n%1$s depuis les réglages.</string>
 	<string name="spring_cleaning_friendship_hide">Supprimer cet ami</string>
 	<string name="spring_cleaning_friendship_block">Bloquer cet ami</string>
-	<string name="spring_cleaning_membership_title">%1$s</string>
+	<string name="spring_cleaning_membership_title">"%1$s"</string>
 	<string name="spring_cleaning_membership_description">Vous devrez être à nouveau invité\npour rejoindre le groupe.</string>
 	<string name="spring_cleaning_membership_hide">Masquer ce groupe</string>
 	<string name="spring_cleaning_membership_leave">Quitter ce groupe</string>
@@ -329,22 +338,26 @@
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
 	<string name="live_dismiss_invitation_validate">Supprimer %1$s</string>
-	<string name="live_title_with_guests">%1$s et des invités</string>
+	<string name="live_title_with_guests">%1$s avec des invités</string>
 	<string name="live_low_connectivity">Réseau faible, audio mode activé :loud_sound:</string>
-	<string name="live_waiting_state_initiating">:electric_plug: Initiation de l\'appel avec %1$s...</string>
-	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de %1$s...</string>
-	<string name="live_waiting_state_waiting">:clock10: En attente que %1$s vous rejoigne...</string>
+	<string name="live_waiting_state_initiating">:electric_plug: Initiation de l\'appel avec "%1$s"...</string>
+	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de "%1$s"...</string>
+	<string name="live_waiting_state_waiting">:clock10: En attente que "%1$s" vous rejoigne...</string>
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
 	<string name="live_unknown_user">Invité inconnu</string>
 	<string name="live_external_user">Invité(e)</string>
+	<string name="live_external_user_display_name">Sur le web</string>
+	<string name="live_external_user_username">Non identifié</string>
 	<string name="live_tutorial_buzz">Attirez l\'attention de %1$s\navec un buzz !</string>
 	<string name="live_tutorial_drag_as_guest">Pimentez la discussion en invitant des amis dans l\'appel !</string>
 	<string name="live_new_call_title_alone">Appeler</string>
 	<string name="live_new_call_title_with_guests">%1$s et invités</string>
 	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vos amis vous rejoignent !</string>
-	<string name="live_share_new_call_button">Partager le lien de l\'appel</string>
+	<string name="live_share_new_call_button">Inviter des amis dans l\'appel</string>
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
+	<string name="live_share_screenshot_description">Partagez ce screenshot</string>
+	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -427,10 +440,14 @@
 	<string name="live_sharing_infos_you_spent">Vous venez de passer</string>
 	<string name="live_sharing_infos_you_mins">%1$d mins</string>
 	<string name="live_sharing_infos_you_min">%1$d min</string>
-	<string name="live_sharing_infos_you_with">\navec</string>
+	<string name="live_sharing_infos_you_with">avec</string>
 	<string name="live_sharing_infos_you_friends">%1$d amis</string>
 	<string name="live_sharing_infos_you_friend">%1$d ami</string>
 	<string name="live_sharing_share">Partager!</string>
+	<string name="live_sharing_infos_i_spent">Je viens de passer</string>
+	<string name="live_sharing_infos_on_a">dans un</string>
+	<string name="live_sharing_infos_live_call">appel live :fire:</string>
+	<string name="live_sharing_media_caption">Je viens de passer %1$s sur Tribe avec %2$s dans un vidéo call! &#128293; Merci @heytribe! &#129304; #tribegoals</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
@@ -530,4 +547,14 @@
 	<string name="callback_notification_missed_call_title">Appels manqués</string>
 	<string name="callback_notification_many_missed_call">(%1$s appels manqués)</string>
 	<string name="callback_notification_one_missed_call">(%1$s appels manqué)</string>
+	
+	<!-- Games -->
+	<string name="game_event_started">%1$s a lancé le jeu "%2$s" ! :video_game:</string>
+	<string name="game_event_post_it_re_roll">%1$s a renouvelé les Post-it ! :video_game:</string>
+	<string name="game_event_stopped">%1$s a arreté le jeu "%2$s". :video_game:</string>
+	<string name="game_tutorial">Appuie longtemps sur le bouton du jeu pour arreter.</string>
+	<string name="game_post_it">Post-it</string>
+	<string name="game_post_it_menu_re_roll">Renouveler les Post-its</string>
+	<string name="game_post_it_menu_stop">Arreter ce jeu</string>
+	<string name="game_post_it_rule">Devinez qui vous êtes\nà l\'aide de vos amis.</string>
 </resources>

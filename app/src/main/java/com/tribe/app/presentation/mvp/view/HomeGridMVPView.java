@@ -24,5 +24,7 @@ public interface HomeGridMVPView extends LoadDataMVPView {
 
   void onSyncDone();
 
+  void onSyncStart();
+
   void renderContactsOnApp(List<Contact> contactList);
 }

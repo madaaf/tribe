@@ -8,7 +8,6 @@ import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
-import com.tribe.app.presentation.view.activity.AuthAccessActivity;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
@@ -42,9 +41,11 @@ import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
+import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
@@ -53,6 +54,7 @@ import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.PermissionNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
+import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import dagger.Component;
 
 /**
@@ -119,8 +121,6 @@ import dagger.Component;
 
   void inject(AuthProfileActivity authProfileActivity);
 
-  void inject(AuthAccessActivity authAccessActivity);
-
   void inject(AccessView accessView);
 
   void inject(LoadFriendsView loadFriendsView);
@@ -138,6 +138,8 @@ import dagger.Component;
   void inject(LiveLocalView liveLocalView);
 
   void inject(LiveRoomView liveRoomView);
+
+  void inject(AvatarsSuperposedLayout avatarsSuperposedLayout);
 
   void inject(LiveWaitingView liveWaitingView);
 
@@ -162,4 +164,8 @@ import dagger.Component;
   void inject(LiveShareOverlayView liveShareOverlayView);
 
   void inject(ErrorNotificationView errorNotificationView);
+
+  void inject(SettingsManageFriendshipsView settingsManageFriendshipsView);
+
+  void inject(UserInfosNotificationView userInfosNotificationView);
 }

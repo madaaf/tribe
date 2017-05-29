@@ -47,7 +47,9 @@
         android:layout_gravity="center_horizontal|bottom"
         android:layout_margin="@dimen/horizontal_margin_large"
         android:background="@drawable/shape_oval_white"
+        android:clickable="true"
         android:elevation="10dp"
+        android:foreground="@drawable/selectable_button"
         />
 
   </com.tribe.app.presentation.view.component.TopBarContainer>
@@ -88,6 +90,17 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:clickable="true"
+      android:visibility="gone"
+      />
+
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtSyncedContacts"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/top_bar_notification_height_small"
+      android:background="@android:color/black"
+      android:gravity="center"
+      android:textColor="@android:color/white"
       android:visibility="gone"
       />
 

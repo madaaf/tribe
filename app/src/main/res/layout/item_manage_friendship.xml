@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutContent"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_base_list_height"
+    android:background="@null"
+    android:foreground="@drawable/selectable_button"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/horizontal_margin_small"
+    android:paddingRight="@dimen/horizontal_margin_small"
+    >
+
+  <FrameLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      >
+
+    <include layout="@layout/item_user_base"/>
+  </FrameLayout>
+
+  <android.support.v7.widget.SwitchCompat
+      android:id="@+id/switchMute"
+      android:layout_width="wrap_content"
+      android:layout_height="30dp"
+      android:layout_gravity="center_vertical|end"
+      android:layout_marginLeft="@dimen/horizontal_margin_small"
+      android:thumb="@drawable/switch_friendship_thumb"
+      style="@style/ColorSwitchFriendshipStyle"
+      />
+
+  <ImageView
+      android:id="@+id/btnRemove"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="@dimen/horizontal_margin_small"
+      android:clickable="true"
+      android:src="@drawable/picto_remove_friendship"
+      />
+
+</LinearLayout>

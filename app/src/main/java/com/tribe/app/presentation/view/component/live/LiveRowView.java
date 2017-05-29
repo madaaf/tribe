@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -24,6 +25,7 @@ import com.tribe.tribelivesdk.view.RemotePeerView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -52,6 +54,7 @@ public class LiveRowView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<TribeGuest> onClick = PublishSubject.create();
 
   public LiveRowView(Context context) {
     super(context);
@@ -210,6 +213,10 @@ public class LiveRowView extends FrameLayout {
     return viewWaiting.avatar();
   }
 
+  @OnClick(R.id.layoutStream) void onClickStream(View v) {
+    if (guest != null) onClick.onNext(guest);
+  }
+
   /////////////////
   // OBSERVABLES //
   /////////////////
@@ -224,5 +231,9 @@ public class LiveRowView extends FrameLayout {
 
   public Observable<TribeGuest> onShouldRemoveGuest() {
     return viewWaiting.onShouldRemoveGuest();
+  }
+
+  public Observable<TribeGuest> onClick() {
+    return onClick;
   }
 }

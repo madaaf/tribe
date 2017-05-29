@@ -126,7 +126,9 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
-    if (Digits.getActiveSession() != null) {
+    if (loginEntity.getPhoneNumber() == null) {
+      return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
+    } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
@@ -444,7 +446,7 @@ public class CloudUserDataStore implements UserDataStore {
           LookupObject lookupObject = listLookup.get(i);
           if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
             for (UserRealm user : lookupUsers) {
-              if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
+              if (user != null && lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
             }
           }
 

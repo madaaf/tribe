@@ -19,7 +19,8 @@ import javax.inject.Singleton;
 
   @StringDef({
       LEAVING_ROOM_POPUP, DRAG_FRIEND_POPUP, BUZZ_FRIEND_POPUP, NEVER_ASK_AGAIN_MICRO_PERMISSION,
-      NEVER_ASK_AGAIN_CAMERA_PERMISSION, NEW_CALL_POPUP, INVITE_POPUP, FRIENDS_POPUP
+      NEVER_ASK_AGAIN_CAMERA_PERMISSION, NEVER_ASK_AGAIN_CONTACT_PERMISSION, NEW_CALL_POPUP,
+      INVITE_POPUP, FRIENDS_POPUP, PROFILE_POPUP, PERMISSION_CONTACT, OPEN_SMS
   }) public @interface StateKey {
   }
 
@@ -29,9 +30,14 @@ import javax.inject.Singleton;
   public static final String NEW_CALL_POPUP = "NEW_CALL_POPUP";
   public static final String INVITE_POPUP = "INVITE_POPUP";
   public static final String FRIENDS_POPUP = "FRIENDS_POPUP";
+  public static final String PROFILE_POPUP = "PROFILE_POPUP";
+  public static final String PERMISSION_CONTACT = "PERMISSION_CONTACT";
+  public static final String OPEN_SMS = "OPEN_SMS";
 
   public static final String NEVER_ASK_AGAIN_MICRO_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
   public static final String NEVER_ASK_AGAIN_CAMERA_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
+  public static final String NEVER_ASK_AGAIN_CONTACT_PERMISSION =
+      "NEVER_ASK_AGAIN_CONTACT_PERMISSION";
 
   @Inject public StateManager(@TribeState Preference<Set<String>> tutorialState) {
     this.tutorialState = tutorialState;
@@ -56,6 +62,8 @@ import javax.inject.Singleton;
     if (key.equals(FRIENDS_POPUP) && !tutorialState.get().contains(NEW_CALL_POPUP)) {
       return false;
     } else if (key.equals(INVITE_POPUP) && !tutorialState.get().contains(FRIENDS_POPUP)) {
+      return false;
+    } else if (key.equals(PROFILE_POPUP) && !tutorialState.get().contains(INVITE_POPUP)) {
       return false;
     }
 

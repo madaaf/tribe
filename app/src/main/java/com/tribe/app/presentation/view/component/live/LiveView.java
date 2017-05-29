@@ -138,7 +138,7 @@ public class LiveView extends FrameLayout {
   private AvatarView avatarView;
   private ObjectAnimator animatorBuzzAvatar;
   private Map<String, Object> tagMap;
-  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0;
+  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0;
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
@@ -148,6 +148,7 @@ public class LiveView extends FrameLayout {
   private int sizeAnimAvatarMax;
   private List<User> anonymousInLive = new ArrayList<>();
   private boolean isFirstToJoin = true;
+  private double duration;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, margin;
@@ -168,6 +169,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -202,11 +204,15 @@ public class LiveView extends FrameLayout {
     viewRoom.removeGuest(userId);
   }
 
+  public double getDuration() {
+    return duration;
+  }
+
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
     if (live != null) {
-      double duration = 0.0D;
+      duration = 0.0D;
 
       if (timeStart > 0) {
         timeEnd = System.currentTimeMillis();
@@ -512,8 +518,9 @@ public class LiveView extends FrameLayout {
         tempSubscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
             .onBackpressureDrop()
             .subscribe(intervalCount -> {
+              interval++;
               totalSizeLive += nbLiveInRoom() + 1;
-              averageCountLive = (double) totalSizeLive / (intervalCount + 1);
+              averageCountLive = (double) totalSizeLive / interval;
               averageCountLive = DoubleUtils.round(averageCountLive, 2);
 
               tagMap.put(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountLive);
@@ -596,8 +603,10 @@ public class LiveView extends FrameLayout {
             for (TribeGuest trg : tribeGuests) {
               if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
                   .containsKey(trg.getId())) {
-                addTribeGuest(trg);
-                onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+                if (!user.getId().equals(trg.getId())) {
+                  addTribeGuest(trg);
+                  onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
+                }
               }
             }
           }
@@ -948,6 +957,17 @@ public class LiveView extends FrameLayout {
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     }
+
+    if (liveRowView != null) {
+      tempSubscriptions.add(liveRowView.onClick().map(tribeGuest -> {
+        Object o = computeGuest(tribeGuest.getId());
+        if (o == null) {
+          return tribeGuest;
+        } else {
+          return o;
+        }
+      }).subscribe(onRemotePeerClick));
+    }
   }
 
   private void removeFromPeers(String id) {
@@ -1222,6 +1242,27 @@ public class LiveView extends FrameLayout {
     return tribeGuestName;
   }
 
+  private Object computeGuest(String id) {
+    for (Friendship friendship : user.getFriendships()) {
+      User friend = friendship.getFriend();
+      if (friend.getId().equals(id)) {
+        return friendship;
+      }
+    }
+
+    for (User anonymousUser : anonymousInLive) {
+      if (anonymousUser.getId().equals(id)) {
+        return anonymousUser;
+      }
+    }
+
+    return null;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -1300,6 +1341,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onRoomFull() {
     return onRoomFull;
+  }
+
+  public Observable<Object> onRemotePeerClick() {
+    return onRemotePeerClick;
   }
 }
 

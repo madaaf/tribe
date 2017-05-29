@@ -33,6 +33,8 @@ public class TribePeerConnection {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
   private PublishSubject<TribeMediaStream> onReceivedMediaStream = PublishSubject.create();
+  private PublishSubject<PeerConnection.IceGatheringState> onIceGatheringChanged =
+      PublishSubject.create();
 
   public TribePeerConnection(TribeSession session, PeerConnectionFactory peerConnectionFactory,
       List<PeerConnection.IceServer> iceServerList, boolean isOffer) {
@@ -64,6 +66,9 @@ public class TribePeerConnection {
         peerConnectionObserver.onIceConnectionChanged().subscribe(iceConnectionState -> {
 
         }));
+
+    subscriptions.add(
+        peerConnectionObserver.onIceGatheringChanged().subscribe(onIceGatheringChanged));
 
     subscriptions.add(peerConnectionObserver.onReceivedMediaStream()
         .map(mediaStream -> new TribeMediaStream(session, mediaStream))
@@ -152,5 +157,9 @@ public class TribePeerConnection {
 
   public Observable<TribeMediaStream> onReceivedMediaStream() {
     return onReceivedMediaStream;
+  }
+
+  public Observable<PeerConnection.IceGatheringState> onIceGatheringChanged() {
+    return onIceGatheringChanged;
   }
 }

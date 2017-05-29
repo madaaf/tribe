@@ -195,7 +195,15 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
 
     animatorSet.setDuration(DURATION);
     animatorSet.setInterpolator(new DecelerateInterpolator());
-    animatorSet.play(animator);
+
+    if (vh.progressBarAdd.getAlpha() == 1f) {
+      ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 0f, 1f);
+      ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 1f, 0f);
+      animatorSet.play(animator).with(alphaAnimAdd).with(alphaAnimProgress);
+    } else {
+      animatorSet.play(animator);
+    }
+
     animatorSet.start();
 
     AnimationUtils.animateTextColor(vh.txtAction, textColorFrom, textColorTo, DURATION);
