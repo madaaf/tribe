@@ -357,6 +357,7 @@
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	<string name="live_share_screenshot_description">Partagez ce screenshot</string>
+	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

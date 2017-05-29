@@ -78,9 +78,9 @@
 
     <activity
         android:name=".presentation.view.activity.AuthActivity"
-        android:configChanges="orientation|screenSize|keyboardHidden"
         android:screenOrientation="portrait"
-        android:theme="@style/AppTheme.Transparent"
+        android:theme="@style/AppTheme"
+        android:launchMode="singleTop"
         android:windowSoftInputMode="adjustResize" />
 
     <activity
