@@ -225,7 +225,7 @@
 	<string name="onboarding_user_alert_call_link_msg">Small tip: Text the friends you\'d like to video call at once.</string>
 	<string name="onboarding_user_alert_call_link_sms">Open SMS</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Enter &amp; open iMessage!</string>
-	<string name="onboarding_user_alert_call_link_content">Haha guys, just downloaded Tribe, it looks lit :fire: Can you try with me real quick ? It\'s now on %1$s</string>
+	<string name="onboarding_user_alert_call_link_content">Guys, can you try with me real quick? It\'s now on %1$s</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Find your friends</string>

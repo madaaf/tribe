@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import io.branch.referral.Branch;
 import javax.inject.Inject;
 
@@ -38,6 +39,7 @@ public class LauncherActivity extends BaseActivity {
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
       navigator.navigateToLogin(this, deepLink);
     } else {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess);
       navigator.navigateToHomeFromStart(this, deepLink);
     }
 

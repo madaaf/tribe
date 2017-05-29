@@ -13,7 +13,14 @@ public class TagManagerUtils {
   /**
    * GENERAL
    */
+
   public static final String KPI_Onboarding_Start = "KPI_Onboarding_Start";
+  public static final String KPI_Onboarding_AuthenticationSuccess =
+      "KPI_Onboarding_AuthenticationSuccess";
+  public static final String KPI_Onboarding_AuthenticationError =
+      "KPI_Onboarding_AuthenticationError";
+  public static final String KPI_Onboarding_OpenNewCalliMessage =
+      "KPI_Onboarding_OpenNewCalliMessage";
   public static final String KPI_Onboarding_SystemNotifications =
       "KPI_Onboarding_SystemNotifications";
   public static final String KPI_Onboarding_VideoSkipped = "KPI_Onboarding_VideoSkipped";

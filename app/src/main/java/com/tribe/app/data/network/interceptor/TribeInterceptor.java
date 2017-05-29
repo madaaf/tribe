@@ -26,8 +26,7 @@ public class TribeInterceptor implements Interceptor {
   @Override public Response intercept(Chain chain) throws IOException {
     if (tribeAuthorizer == null || tribeAuthorizer.getAccessToken() == null || StringUtils.isEmpty(
         tribeAuthorizer.getAccessToken().getAccessToken())) {
-      return null;
-      // return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
+      return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
     }
 
     Request original = chain.request();

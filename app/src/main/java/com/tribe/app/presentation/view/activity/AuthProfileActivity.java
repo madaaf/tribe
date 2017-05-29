@@ -300,6 +300,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     String smsContent =
         EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_content, url));
     if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCalliMessage);
       subscriptions.add(DialogFactory.dialog(this,
           EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
           getString(R.string.onboarding_user_alert_call_link_msg),

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 import com.digits.sdk.android.AuthCallback;
@@ -67,11 +66,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     initRessource();
     deepLink = getIntent().getData();
     loginUser(userPhoneNumber.get());
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (data != null) {
+   /* if (data != null) {
       if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
         deepLink = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -80,7 +80,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
           finish();
         }
       }
-    }
+    }*/
+    userPhoneNumber.set(null);
+    digitAuth();
   }
   ////////////////
   //  PRIVATE   //
@@ -106,7 +108,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void digitAuth() {
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
         userPhoneNumber.set(phoneNumber);
         Timber.d("digit login success " + phoneNumber);
         loginUser(phoneNumber);
@@ -159,8 +161,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void connectUser(User user) {
     this.currentUser.copy(user);
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess);
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
+    //oginEntity.setCountryCode(countryCode);
     if (deepLink != null) {
       Intent newIntent =
           IntentUtils.getLiveIntentFromURI(this, deepLink, LiveActivity.SOURCE_DEEPLINK);
@@ -221,6 +224,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override public void loginError(ErrorLogin errorLogin) {
     Timber.d("loginError");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationError);
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {
