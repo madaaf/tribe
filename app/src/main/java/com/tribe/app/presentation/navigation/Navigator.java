@@ -143,14 +143,6 @@ public class Navigator {
     }
   }
 
-  public void openSMSDefaultApp(Activity activity, String message) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:"));
-    sendIntent.putExtra("sms_body", message);
-    activity.startActivity(sendIntent);
-    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-  }
-
   public void navigateToProfile(Activity activity) {
     if (activity != null) {
       Intent intent = ProfileActivity.getCallingIntent(activity);
@@ -403,6 +395,14 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
+  }
+
+  public void openDefaultMessagingApp(Activity activity, String message) { //SOEF
+    Uri uri = Uri.parse("smsto:");
+    Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+    it.putExtra("sms_body", message);
+    activity.startActivity(it);
+    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
   public void inviteToRoom(Activity activity, String roomLink) {
