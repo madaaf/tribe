@@ -704,6 +704,7 @@ public class HomeActivity extends BaseActivity
     if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
+        homeGridPresenter.bookRoomLink(intent.getStringExtra(Extras.ROOM_LINK_ID));
         navigator.openDefaultMessagingApp(this, intent.getStringExtra(Extras.OPEN_SMS));
       }
     }
@@ -759,6 +760,14 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {
     onNewContacts.onNext(contactList);
+  }
+
+  @Override public void onBookLink(Boolean isBookLink) {
+    if (isBookLink) {
+      Timber.d("shadow room is open");
+    } else {
+      Timber.e("sopen shadow room failed");
+    }
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

@@ -408,6 +408,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    return null;
+  }
+
   @Override public Observable<List<Friendship>> unblockedFriendships() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();

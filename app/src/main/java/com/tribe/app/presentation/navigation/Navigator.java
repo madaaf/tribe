@@ -126,12 +126,15 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode,
+  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId,
       String smsContent) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
-      if (smsContent != null) intent.putExtra(Extras.OPEN_SMS, smsContent);
+      if (smsContent != null) {
+        intent.putExtra(Extras.OPEN_SMS, smsContent);
+        intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
+      }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
           | Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -397,7 +400,7 @@ public class Navigator {
     }
   }
 
-  public void openDefaultMessagingApp(Activity activity, String message) { //SOEF
+  public void openDefaultMessagingApp(Activity activity, String message) {
     Uri uri = Uri.parse("smsto:");
     Intent it = new Intent(Intent.ACTION_SENDTO, uri);
     it.putExtra("sms_body", message);

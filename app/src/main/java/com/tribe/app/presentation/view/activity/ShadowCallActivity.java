@@ -97,7 +97,7 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
 
     subscriptions.add(room.onJoined().subscribe(tribeJoinRoom -> {
       room.leaveRoom();
-      navigator.navigateToHomeFromLogin(this, null, countryCode, smsContent);
+      navigator.navigateToHomeFromLogin(this, countryCode, null, smsContent);
       finish();
     }));
   }
@@ -172,7 +172,7 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
   }
 
   @Override public void onJoinRoomError(String message) {
-    navigator.navigateToHomeFromLogin(this, null, countryCode, null);
+    navigator.navigateToHomeFromLogin(this, countryCode, null, null);
   }
 
   @Override public void onRoomFull(String message) {

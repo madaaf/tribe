@@ -307,11 +307,13 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           getString(R.string.onboarding_user_alert_call_link_sms), null)
           .filter(x -> x == true)
           .subscribe(a -> {
-            navigator.navigateToShadowCallActivity(this, Uri.parse(url),
-                loginEntity.getCountryCode(), smsContent);
+            navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId,
+                smsContent);
+          /*  navigator.navigateToShadowCallActivity(this, Uri.parse(url),
+                loginEntity.getCountryCode(), smsContent);*/
           }));
     } else {
-      navigator.navigateToHomeFromLogin(this, null, loginEntity.getCountryCode(), null);
+      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, null);
     }
   }
 
