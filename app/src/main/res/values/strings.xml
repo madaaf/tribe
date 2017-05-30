@@ -379,6 +379,10 @@
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
 	<string name="profile_logout">Logout :skull:</string>
+	<string name="profile_calls_length_prefix">You spent</string>
+	<string name="profile_calls_length_suffix">\ncalling friends on tribe!</string>
+	<string name="profile_calls_length_mins">%1$d mins</string>
+	<string name="profile_calls_length_min">%1$d min</string>
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>
