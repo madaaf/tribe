@@ -605,6 +605,8 @@ public class HomeActivity extends BaseActivity
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
+
+    subscriptions.add(topBarContainer.onSyncContacts().subscribe(aVoid -> syncContacts()));
   }
 
   private void initAppState() {
@@ -752,10 +754,12 @@ public class HomeActivity extends BaseActivity
     lastSync.set(System.currentTimeMillis());
     displaySyncBanner(getString(R.string.grid_synced_contacts_banner));
     homeGridPresenter.sendInvitations();
+    topBarContainer.onSyncDone();
   }
 
   @Override public void onSyncStart() {
     displaySyncBanner(getString(R.string.grid_syncing_contacts_banner));
+    topBarContainer.onSyncStart();
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {

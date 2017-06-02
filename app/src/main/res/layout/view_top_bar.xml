@@ -105,6 +105,19 @@
           android:paddingRight="6dp"
           style="@style/Title.2.White"
           />
+
+
+      <ImageView
+          android:id="@+id/imgSyncContacts"
+          android:layout_width="@dimen/avatar_size_smaller"
+          android:layout_height="@dimen/avatar_size_smaller"
+          android:layout_gravity="right|center_vertical"
+          android:clickable="true"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_synch_contacts"
+          android:visibility="gone"
+          />
+
     </FrameLayout>
 
   </FrameLayout>

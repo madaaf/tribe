@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -14,9 +15,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,9 +27,11 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -75,6 +80,8 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.viewTopBarContainer) FrameLayout viewTopBarContainer;
 
+  @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
+
   // VARIABLES
   private float startX, startY = 0;
   private boolean searchMode = false;
@@ -88,6 +95,7 @@ public class TopBarView extends FrameLayout {
   private int avatarSize;
   private int clickActionThreshold;
   private int marginSmall;
+  private RxPermissions rxPermissions;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -96,6 +104,7 @@ public class TopBarView extends FrameLayout {
   private PublishSubject<Void> clickProfile = PublishSubject.create();
   private PublishSubject<Void> clickInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenCloseSearch = PublishSubject.create();
+  private PublishSubject<Void> onSyncContacts = PublishSubject.create();
 
   public TopBarView(Context context) {
     super(context);
@@ -132,7 +141,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private void init(Context context, AttributeSet attrs) {
-
+    rxPermissions = new RxPermissions((Activity) context);
   }
 
   private void initUI() {
@@ -168,6 +177,10 @@ public class TopBarView extends FrameLayout {
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
+
+    if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+      imgSyncContacts.setVisibility(VISIBLE);
+    }
   }
 
   private void initResources() {
@@ -188,6 +201,9 @@ public class TopBarView extends FrameLayout {
           } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
+          } else if (isAClickInView(imgSyncContacts, (int) startX, (int) startY)) {
+            imgSyncContacts.onTouchEvent(event);
+            imgSyncContacts.performClick();
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
             btnSearch.performClick();
@@ -210,6 +226,8 @@ public class TopBarView extends FrameLayout {
           viewAvatar.onTouchEvent(event);
         } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
           btnNew.onTouchEvent(event);
+        } else if (isAClickInView(imgSyncContacts, (int) event.getRawX(), (int) event.getRawY())) {
+          imgSyncContacts.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
           btnSearch.onTouchEvent(event);
         } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
@@ -228,6 +246,22 @@ public class TopBarView extends FrameLayout {
 
   @OnClick(R.id.btnInvite) void launchInvite() {
     clickInvite.onNext(null);
+  }
+
+  @OnClick(R.id.imgSyncContacts) void imgSyncContactsClick() {
+    onSyncContacts.onNext(null);
+  }
+
+  public void onSyncStart() {
+    imgSyncContacts.setImageResource(R.drawable.picto_synchronizing_contacts);
+    Animation anim =
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate);
+    imgSyncContacts.startAnimation(anim);
+  }
+
+  public void onSyncDone() {
+    imgSyncContacts.clearAnimation();
+    imgSyncContacts.setVisibility(GONE);
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
@@ -391,6 +425,10 @@ public class TopBarView extends FrameLayout {
 
   public Observable<String> onSearch() {
     return onSearch;
+  }
+
+  public Observable<Void> onSyncContacts() {
+    return onSyncContacts;
   }
 
   public Observable<Void> onClickProfile() {
