@@ -179,6 +179,7 @@ public class TopBarView extends FrameLayout {
         .subscribe(onSearch));
 
     if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+      imgSyncContacts.setClickable(true);
       imgSyncContacts.setVisibility(VISIBLE);
     }
   }
@@ -202,8 +203,10 @@ public class TopBarView extends FrameLayout {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
           } else if (isAClickInView(imgSyncContacts, (int) startX, (int) startY)) {
-            imgSyncContacts.onTouchEvent(event);
-            imgSyncContacts.performClick();
+            if (imgSyncContacts.isClickable()) {
+              imgSyncContacts.onTouchEvent(event);
+              imgSyncContacts.performClick();
+            }
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
             btnSearch.performClick();
@@ -262,6 +265,7 @@ public class TopBarView extends FrameLayout {
   public void onSyncDone() {
     imgSyncContacts.clearAnimation();
     imgSyncContacts.setVisibility(GONE);
+    imgSyncContacts.setClickable(false);
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
