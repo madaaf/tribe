@@ -62,7 +62,7 @@ android {
     resValue "string", "app_name", "Tribe"
     resValue "string", "no_profile_picture_url", "http://no"
   }
-  
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8

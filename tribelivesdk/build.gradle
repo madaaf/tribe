@@ -65,14 +65,13 @@ dependencies {
   compile presentationDependencies.webSocket
   compile presentationDependencies.timber
   compile presentationDependencies.guava
+  compile presentationDependencies.googleVision
 
   apt presentationDependencies.daggerCompiler
   compile presentationDependencies.dagger
 
   compile presentationDependencies.rxJava
   compile presentationDependencies.rxAndroid
-
-  compile project(':ulsee')
 
   testCompile 'junit:junit:4.12'
 }

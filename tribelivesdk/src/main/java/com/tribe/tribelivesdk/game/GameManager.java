@@ -39,7 +39,20 @@ import rx.subscriptions.CompositeSubscription;
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
-    gameList.add(new GamePostIt(context, Game.GAME_POST_IT, "Post-It", R.drawable.picto_game_post_it));
+
+    addGame(new GamePostIt(context, Game.GAME_POST_IT, "Post-It", R.drawable.picto_game_post_it));
+    currentGame = gameList.get(0);
+  }
+
+  private void addGame(Game game) {
+    gameList.add(game);
+  }
+
+  public void initSubscriptions() {
+    for (Game game : gameList) {
+      subscriptions.add(game.onLocalFrame().subscribe(onLocalFrame));
+      subscriptions.add(game.onRemoteFrame().subscribe(onRemoteFrame));
+    }
   }
 
   public void initFrameSizeChangeObs(Observable<Frame> obs) {

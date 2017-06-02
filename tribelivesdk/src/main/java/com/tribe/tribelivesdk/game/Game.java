@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.game;
 import android.content.Context;
 import android.support.annotation.StringDef;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -25,7 +26,7 @@ public abstract class Game {
 
   // OBSERVABLES
   protected PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
-  protected PublishSubject<Frame> onLocalFrame = PublishSubject.create();
+  protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   public Game(Context context, @GameType String id, String name, int drawableRes) {
     this.context = context;
@@ -55,7 +56,7 @@ public abstract class Game {
     return onRemoteFrame;
   }
 
-  public Observable<Frame> onLocalFrame() {
+  public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
   }
 }

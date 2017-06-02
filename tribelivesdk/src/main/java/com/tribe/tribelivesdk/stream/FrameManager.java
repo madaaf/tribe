@@ -2,17 +2,19 @@ package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
 import android.hardware.Camera;
+import com.tribe.tribelivesdk.facetracking.UlseeManager;
+import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.rs.lut3d.LUT3DManager;
-import com.tribe.tribelivesdk.ulsee.UlseeManager;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 18/05/2017.
@@ -24,6 +26,7 @@ public class FrameManager {
   private Context context;
   private GameManager gameManager;
   private UlseeManager ulseeManager;
+  private VisionAPIManager visionAPIManager;
   private LibYuvConverter libYuvConverter;
   private LUT3DManager lut3DManager;
   private byte[] argb, yuvOut;
@@ -43,7 +46,8 @@ public class FrameManager {
 
     initGameManager();
     initRenderscript();
-    initUlseeManager();
+    //initUlseeManager();
+    initVisionAPIManager();
   }
 
   private void initRenderscript() {
@@ -53,6 +57,7 @@ public class FrameManager {
 
   private void initGameManager() {
     gameManager = GameManager.getInstance(context);
+    gameManager.initSubscriptions();
     gameManager.initFrameSizeChangeObs(onFrameSizeChange);
     gameManager.initOnNewFrameObs(onNewFrame);
   }
@@ -62,14 +67,19 @@ public class FrameManager {
     subscriptions.add(gameManager.onLocalFrame().onBackpressureDrop().subscribe(onLocalFrame));
   }
 
-  private void initUlseeManager() {
-    ulseeManager = UlseeManager.getInstance(context);
+  //private void initUlseeManager() {
+  //  ulseeManager = UlseeManager.getInstance(context);
+  //}
+
+  private void initVisionAPIManager() {
+    visionAPIManager = VisionAPIManager.getInstance(context);
   }
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
     //ulseeManager.initFrameSubscription(onFrame);
-    subscriptions.add(onFrame
-        .onBackpressureDrop()
+    visionAPIManager.initFrameSubscription(onFrame);
+
+    subscriptions.add(onFrame.onBackpressureDrop()
         .filter(frame -> !processing)
         .observeOn(Schedulers.computation())
         .map(frame1 -> {
@@ -96,7 +106,7 @@ public class FrameManager {
           if (!filter.getId().equals(LUT3DFilter.LUT3D_NONE)) {
             libYuvConverter.YUVToARGB(frame1.getData(), frame1.getWidth(), frame1.getHeight(),
                 argb);
-            filter.apply(argb);
+            //filter.apply(argb);
 
             if (gameManager.getCurrentGame() != null && gameManager.getCurrentGame()
                 .isLocalFrameDifferent()) {
@@ -122,7 +132,7 @@ public class FrameManager {
   }
 
   public void initNewFacesObs(Observable<Camera.Face[]> obs) {
-    ulseeManager.initNewFacesObs(obs);
+    //ulseeManager.initNewFacesObs(obs);
   }
 
   public void switchFilter() {
@@ -132,6 +142,7 @@ public class FrameManager {
   public void dispose() {
     lut3DManager.dispose();
     gameManager.dispose();
+    visionAPIManager.dispose();
   }
 
   public void startCapture() {
@@ -141,7 +152,12 @@ public class FrameManager {
   public void stopCapture() {
     firstFrame = true;
     subscriptions.clear();
-    ulseeManager.stopCapture();
+    //ulseeManager.stopCapture();
+    visionAPIManager.stopCapture();
+  }
+
+  public void switchCamera() {
+    firstFrame = true;
   }
 
   /////////////////

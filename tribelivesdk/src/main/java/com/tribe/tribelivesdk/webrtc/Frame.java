@@ -11,13 +11,15 @@ public class Frame {
   private int height;
   private int rotation;
   private long timestamp;
+  private boolean frontCamera;
 
-  public Frame(byte[] data, int width, int height, int rotation, long timestamp) {
+  public Frame(byte[] data, int width, int height, int rotation, long timestamp, boolean frontCamera) {
     this.data = data;
     this.width = width;
     this.height = height;
     this.rotation = rotation;
     this.timestamp = timestamp;
+    this.frontCamera = frontCamera;
   }
 
   public byte[] getData() {
@@ -66,5 +68,13 @@ public class Frame {
 
   public byte[] getDataOut() {
     return dataOut;
+  }
+
+  public boolean isFrontCamera() {
+    return frontCamera;
+  }
+
+  public void setFrontCamera(boolean frontCamera) {
+    this.frontCamera = frontCamera;
   }
 }

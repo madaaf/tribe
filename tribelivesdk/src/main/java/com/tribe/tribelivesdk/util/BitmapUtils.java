@@ -2,11 +2,13 @@ package com.tribe.tribelivesdk.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by tiago on 05/22/2017.
@@ -48,5 +50,15 @@ public class BitmapUtils {
     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
     canvas.drawBitmap(base, 0, 0, paint);
     canvas.drawBitmap(watermark, base.getWidth() >> 1, base.getHeight() >> 1, paint);
+  }
+
+  public static byte[] toByteArray(Bitmap bitmap) {
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    return stream.toByteArray();
+  }
+
+  public static Bitmap fromByteArray(byte[] array) {
+    return BitmapFactory.decodeByteArray(array, 0, array.length);
   }
 }

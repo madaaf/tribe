@@ -10,21 +10,11 @@
 
 package com.tribe.tribelivesdk.webrtc;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
-import android.util.Log;
 import com.tribe.tribelivesdk.stream.FrameManager;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
@@ -50,6 +40,7 @@ import rx.subscriptions.CompositeSubscription;
   private final CameraEnumerator cameraEnumerator;
   private final CameraEventsHandler eventsHandler;
   private final Handler uiThreadHandler;
+  private boolean frontFacing = true;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -73,7 +64,8 @@ import rx.subscriptions.CompositeSubscription;
 
             if (switchState == SwitchState.IN_PROGRESS) {
               if (switchEventsHandler != null) {
-                switchEventsHandler.onCameraSwitchDone(cameraEnumerator.isFrontFacing(cameraName));
+                frontFacing = cameraEnumerator.isFrontFacing(cameraName);
+                switchEventsHandler.onCameraSwitchDone(frontFacing);
                 switchEventsHandler = null;
               }
               switchState = SwitchState.IDLE;
@@ -183,7 +175,7 @@ import rx.subscriptions.CompositeSubscription;
 
         cameraStatistics.addFrame();
 
-        onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
+        onFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
       }
     }
 
@@ -403,6 +395,8 @@ import rx.subscriptions.CompositeSubscription;
   private void switchCameraInternal(final CameraSwitchHandler switchEventsHandler) {
     Logging.d(TAG, "switchCamera internal");
 
+    frameManager.switchCamera();
+
     final String[] deviceNames = cameraEnumerator.getDeviceNames();
 
     if (deviceNames.length < 2) {
@@ -478,40 +472,5 @@ import rx.subscriptions.CompositeSubscription;
 
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
-  }
-
-  protected void savePNGImageToGallery(Bitmap bmp, Context context, String baseFilename) {
-    try {
-      // Get the file path to the SD card.
-      File dir = Environment.getExternalStoragePublicDirectory("tribeapp");
-      if (!dir.exists()) dir.mkdirs();
-
-      String baseFolder = dir.getAbsolutePath() + "/";
-      File file = new File(baseFolder + baseFilename);
-      if (file.exists()) file.delete();
-      Log.i(TAG, "Saving the processed image to file [" + file.getAbsolutePath() + "]");
-
-      // Open the file.
-      OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-      // Save the image file as PNG.
-      bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-      out.flush();    // Make sure it is saved to file soon, because we are about to add it to the Gallery.
-      out.close();
-
-      // Add the PNG file to the Android Gallery.
-      ContentValues image = new ContentValues();
-      image.put(MediaStore.Images.Media.TITLE, baseFilename);
-      image.put(MediaStore.Images.Media.DISPLAY_NAME, baseFilename);
-      image.put(MediaStore.Images.Media.DESCRIPTION, "Processed by the Cartoonifier App");
-      image.put(MediaStore.Images.Media.DATE_TAKEN,
-          System.currentTimeMillis()); // Milliseconds since 1970 UTC.
-      image.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-      image.put(MediaStore.Images.Media.ORIENTATION, 0);
-      image.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
-      Uri result =
-          context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 }

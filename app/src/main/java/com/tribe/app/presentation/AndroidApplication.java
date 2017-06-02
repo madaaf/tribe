@@ -40,7 +40,7 @@ import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.tribelivesdk.ulsee.UlseeManager;
+import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import io.branch.referral.Branch;

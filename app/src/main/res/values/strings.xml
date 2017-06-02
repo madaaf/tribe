@@ -190,7 +190,7 @@
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_confirm_message">Are you sure you want to log out?</string>
 	<string name="settings_logout_wait">Logging you out...</string>
-	<string name="settings_version">Version %1$s (%2$s) handcrafted in San Francisco, CA</string>
+	<string name="settings_version">Version %1$s (%2$s)</string>
 	
 	<!-- New Version Popup -->
 	<string name="onboarding_new_version_popup_title">SURPRISE!</string>
@@ -356,6 +356,8 @@
 	<string name="live_share_new_call_button">Invite friends in the call</string>
 	<string name="live_share_new_call_button_simple">Share</string>
 	<string name="live_share_new_call_button_title">Call link</string>
+	<string name="live_share_screenshot_description">Share this screenshot</string>
+	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
@@ -377,6 +379,10 @@
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
 	<string name="profile_logout">Logout :skull:</string>
+	<string name="profile_calls_length_prefix">You spent</string>
+	<string name="profile_calls_length_suffix">\ncalling friends on tribe!</string>
+	<string name="profile_calls_length_mins">%1$d mins</string>
+	<string name="profile_calls_length_min">%1$d min</string>
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>
@@ -436,11 +442,11 @@
 	<!-- Live Sharing -->
 	<string name="live_sharing_title">Call ended</string>
 	<string name="live_sharing_infos_you_spent">You just spent</string>
-	<string name="live_sharing_infos_you_mins">%1$d mins</string>
-	<string name="live_sharing_infos_you_min">%1$d min</string>
+	<string name="live_sharing_infos_you_mins">%1$d mins</string>
+	<string name="live_sharing_infos_you_min">%1$d min</string>
 	<string name="live_sharing_infos_you_with">with</string>
-	<string name="live_sharing_infos_you_friends">%1$d friends</string>
-	<string name="live_sharing_infos_you_friend">%1$d friend</string>
+	<string name="live_sharing_infos_you_friends">%1$d friends</string>
+	<string name="live_sharing_infos_you_friend">%1$d friend</string>
 	<string name="live_sharing_share">Share it!</string>
 	<string name="live_sharing_infos_i_spent">I just spent</string>
 	<string name="live_sharing_infos_on_a">on a</string>
@@ -555,4 +561,13 @@
 	<string name="game_post_it_menu_re_roll">Renew the Postit notes</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
 	<string name="game_post_it_rule">Guess who you are\nby asking your friends!</string>
+	
+	<!-- Call Level -->
+	<string name="call_level_0">Rookie call! :tiger:</string>
+	<string name="call_level_1">Baller call! :boom:</string>
+	<string name="call_level_2">Hustler call! :sports_medal:</string>
+	<string name="call_level_3">Lit call! :fire:</string>
+	<string name="call_level_4">Turn up call! :dizzy:</string>
+	<string name="call_level_5">Savage call! :smiling_imp:</string>
+	<string name="call_level_6">Legendary call! :crossed_swords:</string>
 </resources>

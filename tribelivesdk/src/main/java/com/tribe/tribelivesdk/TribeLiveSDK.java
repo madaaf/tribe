@@ -4,8 +4,6 @@ import android.content.Context;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
-import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.ulsee.UlseeManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
