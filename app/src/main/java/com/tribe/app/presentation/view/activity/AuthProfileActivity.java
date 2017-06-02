@@ -319,6 +319,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void successFacebookLogin() {
     getInfoFromFacebook();
+    facebookView.setVisibility(View.INVISIBLE);
   }
 
   @Override public void errorFacebookLogin() {

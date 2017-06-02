@@ -68,6 +68,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     deepLink = getIntent().getData();
     loginUser(userPhoneNumber.get());
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
+    Timber.e("KPI_Onboarding_Start");
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -108,9 +109,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void digitAuth() {
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
+    Timber.d("KPI_Onboarding_Start");
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+        Timber.d("KPI_Onboarding_PinSucceeded");
         userPhoneNumber.set(phoneNumber);
         Timber.d("digit login success " + phoneNumber);
         loginUser(phoneNumber);
@@ -118,6 +121,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
       @Override public void failure(DigitsException error) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
+        Timber.d("KPI_Onboarding_PinFailed");
         userPhoneNumber.set(null);
         Timber.e("digit login failure :" + error);
         digitAuth();
@@ -164,6 +168,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private void connectUser(User user) {
     this.currentUser.copy(user);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess);
+    Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
     if (deepLink != null) {
       Intent newIntent =
@@ -226,6 +231,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Override public void loginError(ErrorLogin errorLogin) {
     Timber.d("loginError");
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationError);
+    Timber.d("KPI_Onboarding_AuthenticationError");
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {
