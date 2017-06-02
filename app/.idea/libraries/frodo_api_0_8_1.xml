@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="frodo-api-0.8.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/f58e3edff23a9f04fddd17e36807c1d0fa395cdc/frodo-api-0.8.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fernandocejas.frodo/frodo-api/0.8.1/de2d21ec744120993d97c70ab9439b0df1c56d8d/frodo-api-0.8.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

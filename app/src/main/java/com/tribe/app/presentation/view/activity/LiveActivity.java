@@ -127,6 +127,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String SOURCE_NEW_CALL = "NewCall";
   public static final String SOURCE_JOIN_LIVE = "JoinLive";
   public static final String SOURCE_ADD_PEERS = "AddPeers";
+  public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
@@ -883,6 +884,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     finish();
   }
 
+  private void setExtraForCallFromUnknownUser() {
+    if (viewLive.getUser().getPhone() == null) {
+      returnIntent.putExtra(UNKNOWN_USER_FROM_DEEPLINK, true);
+      setResult(Activity.RESULT_OK, returnIntent);
+    }
+  }
+
   @Override public void finish() {
     if (finished) return;
 
@@ -895,6 +903,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     viewLive.endCall(false);
     putExtraHomeIntent();
+    setExtraForCallFromUnknownUser();
+
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
   }

@@ -16,6 +16,7 @@ import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
@@ -126,7 +127,9 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
-    if (Digits.getActiveSession() != null) {
+    if (loginEntity.getPhoneNumber() == null) {
+      return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
+    } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
@@ -444,7 +447,9 @@ public class CloudUserDataStore implements UserDataStore {
           LookupObject lookupObject = listLookup.get(i);
           if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
             for (UserRealm user : lookupUsers) {
-              if (lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
+              if (user != null && lookupObject.getUserId().equals(user.getId())) {
+                lookupObject.setUserRealm(user);
+              }
             }
           }
 
@@ -1054,5 +1059,12 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.getRoomLink(request)
         .map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
   }
-}
 
+  @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.bookRoomLink, linkId));
+
+    return this.tribeApi.bookRoomLink(request)
+        .map(BookRoomLinkEntity::isRoomBooked);
+  }
+}

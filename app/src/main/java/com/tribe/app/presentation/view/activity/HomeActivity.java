@@ -16,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +27,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -77,6 +78,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
@@ -158,6 +160,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
+
+  @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -241,7 +245,7 @@ public class HomeActivity extends BaseActivity
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
-      syncContacts();
+      lookupContacts();
     }
   }
 
@@ -307,7 +311,6 @@ public class HomeActivity extends BaseActivity
     if (homeGridPresenter != null) homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-
     if (appStateMonitor != null) {
       appStateMonitor.removeListener(this);
       appStateMonitor.stop();
@@ -318,6 +321,13 @@ public class HomeActivity extends BaseActivity
     stopService();
 
     super.onDestroy();
+  }
+
+  private void displaySyncBanner(String txt) {
+    txtSyncedContacts.setText(txt);
+    txtSyncedContacts.setVisibility(VISIBLE);
+    Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
+    txtSyncedContacts.startAnimation(anim);
   }
 
   private void stopService() {
@@ -690,53 +700,21 @@ public class HomeActivity extends BaseActivity
     }
   }
 
+  private void openSmsApp(Intent intent) {
+    if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
+      if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
+        stateManager.addTutorialKey(StateManager.OPEN_SMS);
+        homeGridPresenter.bookRoomLink(intent.getStringExtra(Extras.ROOM_LINK_ID));
+        navigator.openDefaultMessagingApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+      }
+    }
+  }
+
   private void manageLogin(Intent intent) {
+    openSmsApp(intent);
+
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
-
-      if (addressBook.get()) {
-        String countryCode = intent.getStringExtra(Extras.COUNTRY_CODE);
-        if (StringUtils.isEmpty(countryCode)) return;
-
-        firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-        firebaseRemoteConfig.setConfigSettings(new FirebaseRemoteConfigSettings.Builder().build());
-        firebaseRemoteConfig.activateFetched();
-
-        firebaseRemoteConfig.fetch(6 * 60 * 60).addOnCompleteListener(task -> {
-          if (task.isSuccessful()) {
-            firebaseRemoteConfig.activateFetched();
-
-            boolean displayingPopup = false;
-
-            String countryCodesMaster =
-                firebaseRemoteConfig.getString(Constants.FIREBASE_COUNTRY_CODES_INVITE);
-
-            if (!StringUtils.isEmpty(countryCodesMaster)) {
-              String[] countryCodes = countryCodesMaster.split(",");
-
-              for (String countryCodeInvite : countryCodes) {
-                if (countryCodeInvite.equals(countryCode)) {
-                  displayingPopup = true;
-
-                  subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(aLong -> {
-                        notificationContainerView.showNotification(null,
-                            NotificationContainerView.DISPLAY_INVITE_NOTIF);
-
-                        subscriptions.add(notificationContainerView.onSendInvitations()
-                            .subscribe(aVoid -> homeGridPresenter.sendInvitations()));
-                      }));
-
-                  return;
-                }
-              }
-            }
-
-            if (!displayingPopup) homeGridPresenter.sendInvitations();
-          }
-        });
-      }
     }
   }
 
@@ -772,10 +750,24 @@ public class HomeActivity extends BaseActivity
 
   @Override public void onSyncDone() {
     lastSync.set(System.currentTimeMillis());
+    displaySyncBanner(getString(R.string.grid_synced_contacts_banner));
+    homeGridPresenter.sendInvitations();
+  }
+
+  @Override public void onSyncStart() {
+    displaySyncBanner(getString(R.string.grid_syncing_contacts_banner));
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {
     onNewContacts.onNext(contactList);
+  }
+
+  @Override public void onBookLink(Boolean isBookLink) {
+    if (isBookLink) {
+      Timber.d("shadow room is open");
+    } else {
+      Timber.e("sopen shadow room failed");
+    }
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -793,7 +785,27 @@ public class HomeActivity extends BaseActivity
   }
 
   private void syncContacts() {
-    homeGridPresenter.lookupContacts();
+    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+      tagManager.setProperty(bundle);
+
+      Bundle bundleBis = new Bundle();
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+      if (hasPermission) {
+        addressBook.set(true);
+        homeGridPresenter.lookupContacts();
+        searchView.refactorActions();
+      }
+    });
+  }
+
+  private void lookupContacts() {
+    if (stateManager.shouldDisplay(StateManager.PERMISSION_CONTACT)) {
+      stateManager.addTutorialKey(StateManager.PERMISSION_CONTACT);
+      syncContacts();
+    }
   }
 
   @Override public void onAppDidEnterForeground() {

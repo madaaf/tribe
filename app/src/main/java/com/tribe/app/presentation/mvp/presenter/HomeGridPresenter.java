@@ -15,6 +15,7 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
@@ -60,6 +61,7 @@ public class HomeGridPresenter implements Presenter {
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
   private CreateFriendship createFriendship;
+  private BookRoomLink bookRoomLink;
 
   // SUBSCRIBERS
   private FriendListSubscriber diskFriendListSubscriber;
@@ -75,7 +77,8 @@ public class HomeGridPresenter implements Presenter {
       UpdateUser updateUser, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
       GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
-      SendInvitations sendInvitations, CreateFriendship createFriendship) {
+      SendInvitations sendInvitations, CreateFriendship createFriendship,
+      BookRoomLink bookRoomLink) {
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.leaveGroup = leaveGroup;
@@ -92,6 +95,7 @@ public class HomeGridPresenter implements Presenter {
     this.declineInvite = declineInvite;
     this.sendInvitations = sendInvitations;
     this.createFriendship = createFriendship;
+    this.bookRoomLink = bookRoomLink;
   }
 
   @Override public void onViewDetached() {
@@ -109,6 +113,7 @@ public class HomeGridPresenter implements Presenter {
     declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createFriendship.unsubscribe();
+    bookRoomLink.unsubscribe();
     homeGridView = null;
   }
 
@@ -181,6 +186,11 @@ public class HomeGridPresenter implements Presenter {
   public void sendToken(String token) {
     sendTokenUseCase.setToken(token);
     sendTokenUseCase.execute(new SendTokenSubscriber());
+  }
+
+  public void bookRoomLink(String linkId) {
+    bookRoomLink.setLinkId(linkId);
+    bookRoomLink.execute(new BookRoomLinkSubscriber());
   }
 
   protected void showViewLoading() {
@@ -337,6 +347,7 @@ public class HomeGridPresenter implements Presenter {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
     synchroContactList.execute(lookupContactsSubscriber);
+    if (homeGridView != null) homeGridView.onSyncStart();
   }
 
   private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
@@ -393,5 +404,19 @@ public class HomeGridPresenter implements Presenter {
   public void createFriendship(String userId) {
     createFriendship.setUserId(userId);
     createFriendship.execute(new DefaultSubscriber());
+  }
+
+  private class BookRoomLinkSubscriber extends DefaultSubscriber<Boolean> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Boolean isBookLink) {
+      homeGridView.onBookLink(isBookLink);
+    }
   }
 }

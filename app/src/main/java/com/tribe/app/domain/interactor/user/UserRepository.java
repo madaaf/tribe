@@ -179,5 +179,7 @@ public interface UserRepository {
 
   Observable<String> getRoomLink(String roomId);
 
+  Observable<Boolean> bookRoomLink(String linkId);
+
   Observable<List<Friendship>> unblockedFriendships();
 }

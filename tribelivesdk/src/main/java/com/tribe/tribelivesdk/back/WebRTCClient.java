@@ -52,6 +52,8 @@ import static android.R.attr.id;
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
   private PublishSubject<TribeMediaStream> onReceivedPeer = PublishSubject.create();
   private PublishSubject<JSONObject> onSendToPeers = PublishSubject.create();
+  private PublishSubject<PeerConnection.IceGatheringState> onIceGatheringChanged =
+      PublishSubject.create();
 
   @Inject public WebRTCClient(Context context) {
     this.context = context;
@@ -108,6 +110,10 @@ import static android.R.attr.id;
     subscriptions.add(remotePeer.onReadyToSendSdpOffer().subscribe(onReadyToSendSdpOffer));
     subscriptions.add(remotePeer.onReadyToSendSdpAnswer().subscribe(onReadyToSendSdpAnswer));
     subscriptions.add(remotePeer.onReceiveTribeCandidate().subscribe(onReceivedTribeCandidate));
+
+    if (session.getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+      subscriptions.add(remotePeer.onIceGatheringChanged().subscribe(onIceGatheringChanged));
+    }
 
     subscriptions.add(remotePeer.onReceivedMediaStream()
         .observeOn(AndroidSchedulers.mainThread())
@@ -263,5 +269,9 @@ import static android.R.attr.id;
 
   public Observable<JSONObject> onSendToPeers() {
     return onSendToPeers;
+  }
+
+  public Observable<PeerConnection.IceGatheringState> onIceGatheringChanged() {
+    return onIceGatheringChanged;
   }
 }

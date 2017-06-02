@@ -550,4 +550,8 @@
   <string name="getRoomLink" translatable="false">
     getRoomLink(roomId : \"%1$s\")
   </string>
+
+  <string name="bookRoomLink" translatable="false">
+    bookRoomLink(linkId : \"%1$s\")
+  </string>
 </resources>

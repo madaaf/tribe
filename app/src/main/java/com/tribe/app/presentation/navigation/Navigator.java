@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.navigation;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.widget.Toast;
+import com.digits.sdk.android.Digits;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.GroupMember;
@@ -17,17 +20,18 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.activity.AuthAccessActivity;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
-import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
+import com.tribe.app.presentation.view.activity.ShadowCallActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -74,40 +78,27 @@ public class Navigator {
    *
    * @param context A Context needed to open the destiny activity.
    */
+
   public void navigateToLogin(Context context, Uri deepLink) {
     if (context != null) {
-      Intent intent = AuthActivity.getCallingIntent(context);
+      Intent intent = AuthActivity.getCallingIntent(context, deepLink);
       intent.setData(deepLink);
       context.startActivity(intent);
     }
   }
 
-  /**
-   * Opens the country list.
-   *
-   * @param activity An activity needed to open the destiny activity.
-   */
-  public void navigateToCountries(Activity activity) {
-    if (activity != null) {
-      Intent intent = CountryActivity.getCallingIntent(activity);
-      activity.startActivityForResult(intent, REQUEST_COUNTRY);
-      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+  public void navigateToShadowCallActivity(Activity context, Uri uri, String countryCode,
+      String smsContent) {
+    if (context != null) {
+      Intent intent = ShadowCallActivity.getCallingIntent(context, countryCode, smsContent);
+      intent.setData(uri);
+      context.startActivity(intent);
     }
   }
 
   public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
     if (activity != null) {
       Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
-      intent.setData(deepLink);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-      activity.finish();
-    }
-  }
-
-  public void navigateToAuthAccess(Activity activity, Uri deepLink, String countryCode) {
-    if (activity != null) {
-      Intent intent = AuthAccessActivity.getCallingIntent(activity, countryCode);
       intent.setData(deepLink);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -135,16 +126,23 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode) {
+  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId,
+      String smsContent) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
+      if (smsContent != null) {
+        intent.putExtra(Extras.OPEN_SMS, smsContent);
+        intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
+      }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
           | Intent.FLAG_ACTIVITY_CLEAR_TASK
           | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      if (smsContent != null) {
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+      }
     }
   }
 
@@ -168,7 +166,25 @@ public class Navigator {
    * Logout -> new login
    */
   public void navigateToLogout(Activity activity) {
+    FacebookUtils.logout();
+    Digits.logout();
+    Intent intent = new Intent(activity, HomeActivity.class);
+    intent.putExtra(IntentUtils.FINISH, true);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    activity.startActivity(intent);
 
+    Intent intentLauncher = new Intent(activity, LauncherActivity.class);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intentLauncher.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    int pendingIntentId = 123456; // FAKE ID
+    PendingIntent mPendingIntent =
+        PendingIntent.getActivity(activity, pendingIntentId, intentLauncher,
+            PendingIntent.FLAG_CANCEL_CURRENT);
+    AlarmManager mgr = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+    System.exit(0);
   }
 
   /**
@@ -382,6 +398,14 @@ public class Navigator {
       activity.startActivity(sendIntent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
+  }
+
+  public void openDefaultMessagingApp(Activity activity, String message) {
+    Uri uri = Uri.parse("smsto:");
+    Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+    it.putExtra("sms_body", message);
+    activity.startActivity(it);
+    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
   public void inviteToRoom(Activity activity, String roomLink) {

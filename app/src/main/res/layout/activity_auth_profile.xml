@@ -16,7 +16,7 @@
       android:focusableInTouchMode="true"
       >
 
-    <requestFocus/>
+    <requestFocus />
   </LinearLayout>
 
   <FrameLayout
@@ -97,14 +97,14 @@
       android:background="@color/grey.light"
       />
 
-  <!--<com.tribe.app.presentation.view.widget.FacebookView
+  <com.tribe.app.presentation.view.widget.FacebookView
       android:id="@+id/facebookView"
       android:layout_width="match_parent"
       android:layout_height="80dp"
       android:layout_gravity="bottom"
       android:clickable="true"
       android:foreground="@drawable/selectable_button_light"
-      />-->
+      />
 
   <!--<View
       android:layout_width="match_parent"

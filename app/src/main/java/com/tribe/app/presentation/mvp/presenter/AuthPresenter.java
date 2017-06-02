@@ -61,7 +61,11 @@ public class AuthPresenter implements Presenter {
     showViewLoading();
 
     cloudLoginUseCase.prepare(loginEntity);
-    cloudLoginUseCase.execute(new LoginSubscriber());
+    if (phoneNumber == null) {
+      cloudLoginUseCase.execute(new UnknownSubscriber());
+    } else {
+      cloudLoginUseCase.execute(new LoginSubscriber());
+    }
 
     return loginEntity;
   }
@@ -120,7 +124,6 @@ public class AuthPresenter implements Presenter {
   }
 
   private final class LoginSubscriber extends DefaultSubscriber<AccessToken> {
-
     @Override public void onCompleted() {
     }
 
@@ -149,12 +152,26 @@ public class AuthPresenter implements Presenter {
           }
         }
       }
-
       hideViewLoading();
     }
 
     @Override public void onNext(AccessToken accessToken) {
       getUserInfo();
+    }
+  }
+
+  private final class UnknownSubscriber extends DefaultSubscriber<AccessToken> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+      hideViewLoading();
+    }
+
+    @Override public void onNext(AccessToken accessToken) {
+      goToConnected(new User(null));
     }
   }
 

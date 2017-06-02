@@ -223,6 +223,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
+  @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    return null;
+  }
+
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return liveCache.inviteMap();
   }

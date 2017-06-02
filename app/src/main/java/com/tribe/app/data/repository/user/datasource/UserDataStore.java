@@ -175,4 +175,6 @@ public interface UserDataStore {
   Observable<Void> sendInvitations();
 
   Observable<String> getRoomLink(String roomId);
+
+  Observable<Boolean> bookRoomLink(String linkId);
 }

@@ -7,4 +7,6 @@ public class Extras {
 
   public static String COUNTRY_CODE = "COUNTRY_CODE";
   public static String IS_FROM_LOGIN = "IS_FROM_LOGIN";
+  public static String OPEN_SMS = "OPEN_SMS";
+  public static String ROOM_LINK_ID = "ROOM_LINK_ID";
 }

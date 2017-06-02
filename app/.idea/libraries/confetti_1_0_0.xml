@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="confetti-1.0.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/5f602d01735b91072ce7c90f636ac79eae0c50ad/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/5f602d01735b91072ce7c90f636ac79eae0c50ad/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jinatonic.confetti/confetti/1.0.0/8386d69a1c2e8162041762cd6cd7ba6b75e5dc99/confetti-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
