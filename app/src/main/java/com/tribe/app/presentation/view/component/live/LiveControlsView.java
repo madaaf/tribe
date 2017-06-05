@@ -65,6 +65,8 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
 
+  @BindView(R.id.imgPlusAddIcon) ImageView imgPlusAddIcon;
+
   // VARIABLES
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false;
@@ -107,6 +109,7 @@ public class LiveControlsView extends FrameLayout {
       timerSubscription.unsubscribe();
       timerSubscription = null;
     }
+    imgPlusAddIcon.clearAnimation();
     super.onDetachedFromWindow();
   }
 
@@ -123,6 +126,9 @@ public class LiveControlsView extends FrameLayout {
   private void initUI() {
     xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
     btnNotify.setEnabled(false);
+    Animation anim =
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate90);
+    imgPlusAddIcon.startAnimation(anim);
   }
 
   protected ApplicationComponent getApplicationComponent() {

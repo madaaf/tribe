@@ -35,17 +35,37 @@
         android:src="@drawable/picto_notify_buzz"
         />
 
-    <ImageView
+    <RelativeLayout
         android:id="@+id/btnInviteLive"
-        android:layout_width="@dimen/nav_icon_size"
-        android:layout_height="@dimen/nav_icon_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="10dp"
         android:background="@drawable/selectable_button_oval_light"
         android:clickable="true"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_open_invite"
-        />
+        >
+
+      <ImageView
+          android:id="@+id/imgAddIcon"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:layout_marginEnd="-15dp"
+          android:src="@drawable/picto_addbtn"
+          />
+
+      <ImageView
+          android:id="@+id/imgPlusAddIcon"
+          android:layout_width="@dimen/nav_icon_little_size"
+          android:layout_height="@dimen/nav_icon_little_size"
+          android:layout_marginTop="5dp"
+          android:layout_toEndOf="@id/imgAddIcon"
+          android:src="@drawable/picto_plus_addbtn"
+          />
+
+    </RelativeLayout>
+
+
   </FrameLayout>
 
   <LinearLayout
