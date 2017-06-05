@@ -540,7 +540,6 @@ public class LiveView extends FrameLayout {
             isFirstToJoin = !isFirstToJoin;
             viewStatusName.refactorTitle();
           }
-
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
 
@@ -564,6 +563,8 @@ public class LiveView extends FrameLayout {
           refactorShareOverlay();
           refactorNotifyButton();
 
+          LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
+          if (row != null) row.guestAppear();
           tempSubscriptions.add(remotePeer.getPeerView()
               .onNotificatinRemoteJoined()
               .observeOn(AndroidSchedulers.mainThread())

@@ -17,6 +17,7 @@ import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
+import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -24,7 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import timber.log.Timber;
 
-public class LivePresenter implements Presenter {
+public class LivePresenter extends FriendshipPresenter implements Presenter {
 
   // VIEW ATTACHED
   private LiveMVPView liveMVPView;
@@ -48,7 +49,9 @@ public class LivePresenter implements Presenter {
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite, CreateFriendship createFriendship) {
+      DeclineInvite declineInvite, CreateFriendship createFriendship,
+      UpdateFriendship updateFriendship) {
+    this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
@@ -61,6 +64,7 @@ public class LivePresenter implements Presenter {
   }
 
   @Override public void onViewDetached() {
+    super.onViewDetached();
     diskFriendshipList.unsubscribe();
     joinRoom.unsubscribe();
     buzzRoom.unsubscribe();
