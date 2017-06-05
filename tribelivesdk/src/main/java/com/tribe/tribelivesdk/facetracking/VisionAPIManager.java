@@ -36,6 +36,7 @@ public class VisionAPIManager {
   private boolean firstFrame = true;
   private long t0, timeToDetect;
   private FaceDetector faceDetector;
+  private Face face;
   private com.google.android.gms.vision.Frame inputFrame;
 
   // OBSERVABLES
@@ -44,6 +45,8 @@ public class VisionAPIManager {
   public VisionAPIManager(Context context) {
     this.context = context;
     this.frameExecutor = new FrameExecutor();
+
+    initFaceTracker(true);
   }
 
   /////////////
@@ -54,6 +57,7 @@ public class VisionAPIManager {
     if (faceDetector != null) faceDetector.release();
 
     faceDetector = new FaceDetector.Builder(context).setTrackingEnabled(true)
+        .setLandmarkType(FaceDetector.ALL_LANDMARKS)
         .setMode(FaceDetector.FAST_MODE)
         .setProminentFaceOnly(isFrontFacing)
         .setMinFaceSize(isFrontFacing ? 0.35f : 0.15f)
@@ -95,10 +99,12 @@ public class VisionAPIManager {
 
     @Override public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
       Timber.d("onUpdate : " + face);
+      VisionAPIManager.this.face = face;
     }
 
     @Override public void onMissing(FaceDetector.Detections<Face> detectionResults) {
       Timber.d("onMissing : " + detectionResults);
+      VisionAPIManager.this.face = null;
     }
 
     @Override public void onDone() {
@@ -135,13 +141,21 @@ public class VisionAPIManager {
                   .setRotation(frame.getRotation() / 90)
                   .build();
 
-              faceDetector.receiveFrame(inputFrame);
+              try {
+                faceDetector.receiveFrame(inputFrame);
+              } catch (IllegalStateException ex) {
+                Timber.d("FaceDetector has no processor right now");
+              }
 
               timeToDetect = System.currentTimeMillis();
 
               return frame;
             }), 1)
         .subscribe());
+  }
+
+  public Face getFace() {
+    return face;
   }
 
   public void stopCapture() {

@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
 import android.support.annotation.StringDef;
+import com.tribe.tribelivesdk.entity.GameFilter;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import rx.Observable;
@@ -11,17 +12,13 @@ import rx.subjects.PublishSubject;
  * Created by tiago on 23/05/2017.
  */
 
-public abstract class Game {
+public abstract class Game extends GameFilter {
 
   @StringDef({ GAME_POST_IT }) public @interface GameType {
   }
 
   public static final String GAME_POST_IT = "GAME_POST_IT";
 
-  protected Context context;
-  protected String id;
-  protected String name;
-  protected int drawableRes;
   protected boolean localFrameDifferent = false;
 
   // OBSERVABLES
@@ -29,11 +26,12 @@ public abstract class Game {
   protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   public Game(Context context, @GameType String id, String name, int drawableRes) {
-    this.context = context;
-    this.id = id;
-    this.name = name;
-    this.drawableRes = drawableRes;
+    super(context, id, name, drawableRes);
     this.localFrameDifferent = id.equals(GAME_POST_IT);
+  }
+
+  @GameType public String getId() {
+    return id;
   }
 
   public boolean isLocalFrameDifferent() {

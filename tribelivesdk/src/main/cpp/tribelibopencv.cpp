@@ -28,6 +28,8 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
                                                            jintArray postIt,
                                                            jint postItWidth,
                                                            jint postItHeight,
+                                                           jfloat xPos,
+                                                           jfloat yPos,
                                                            jbyteArray argbOut) {
     jbyte *argbInData = env->GetByteArrayElements(argbIn, 0);
     jbyte *argbOutData = env->GetByteArrayElements(argbOut, 0);
@@ -37,37 +39,27 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
     cv::Mat _rgbaOut(frameHeight, frameWidth, CV_8UC4, (uchar *) argbOutData);
     cv::Mat _postIt(postItHeight, postItWidth, CV_8UC4, (uchar *) postItData);
 
-    //LOGD("Channels _rgbaIn: %d", _rgbaIn.channels());
-    //LOGD("Channels _rgbaOut: %d", _rgbaOut.channels());
-    //LOGD("Channels _postIt: %d", _postIt.channels());
-
-    //LOGD("Cols _rgbaIn: %d", _rgbaIn.cols);
-    //LOGD("Rows _rgbaIn: %d", _rgbaOut.rows);
-    //LOGD("Cols _postIt: %d", _postIt.cols);
-    //LOGD("Rows _postIt: %d", _postIt.rows);
-
-    cv::Point2i location(100, 100);
+    cv::Point2i location(xPos, yPos);
     _rgbaIn.copyTo(_rgbaOut);
 
-    // start at the row indicated by location, or at row 0 if location.y is negative.
+    // Start at the row indicated by location, or at row 0 if location.y is negative.
     for (int y = std::max(location.y, 0); y < _rgbaIn.rows; ++y) {
         int fY = y - location.y; // because of the translation
 
-        // we are done of we have processed all rows of the foreground image.
+        // We are done of we have processed all rows of the foreground image.
         if (fY >= _postIt.rows)
             break;
 
-        // start at the column indicated by location,
-
+        // Start at the column indicated by location,
         // or at column 0 if location.x is negative.
         for (int x = std::max(location.x, 0); x < _rgbaIn.cols; ++x) {
             int fX = x - location.x; // because of the translation.
 
-            // we are done with this row if the column is outside of the foreground image.
+            // We are done with this row if the column is outside of the foreground image.
             if (fX >= _postIt.cols)
                 break;
 
-            // determine the opacity of the foregrond pixel, using its fourth (alpha) channel.
+            // Determine the opacity of the foreground pixel, using its fourth (alpha) channel.
             double opacity =
                     ((double) _postIt.data[fY * _postIt.step + fX * _postIt.channels() +
                                            3])
@@ -75,9 +67,8 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
                     / 255.;
 
 
-            // and now combine the background and foreground pixel, using the opacity,
-
-            // but only if opacity > 0.
+            // And now combine the background and foreground pixel, using the opacity,
+            // But only if opacity > 0.
             for (int c = 0; opacity > 0 && c < _rgbaOut.channels(); ++c) {
                 unsigned char foregroundPx =
                         _postIt.data[fY * _postIt.step + fX * _postIt.channels() + c];
@@ -88,11 +79,6 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
             }
         }
     }
-
-    //cv::Mat roi = _rgbaIn(cv::Rect(0, 0, _postIt.cols, _postIt.rows));
-    //LOGD("Channels _rgbaIn(roi): %d", _rgbaIn(roi).channels());
-    //LOGD("Size _rgbaIn(roi): %s", _rgbaIn(roi).size);
-    //cv::addWeighted(_rgbaIn(roi), 0, _postIt, 1, 0, _rgbaOut);
 
     env->ReleaseByteArrayElements(argbIn, argbInData, 0);
     env->ReleaseIntArrayElements(postIt, postItData, 0);

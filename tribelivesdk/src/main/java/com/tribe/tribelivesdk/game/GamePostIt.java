@@ -1,26 +1,21 @@
 package com.tribe.tribelivesdk.game;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
+import android.graphics.PointF;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.Landmark;
 import com.tribe.tribelivesdk.R;
+import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.util.BitmapUtils;
 import com.tribe.tribelivesdk.util.ByteBuffers;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 /**
@@ -38,19 +33,26 @@ public class GamePostIt extends Game {
   private ByteBuffer[] yuvPlanes;
   private int[] yuvStrides;
   private Canvas canvas;
+  private VisionAPIManager visionAPIManager;
 
   public GamePostIt(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
+    visionAPIManager = VisionAPIManager.getInstance(context);
   }
 
   @Override public void apply(Frame frame) {
-    openCVWrapper.addPostIt(frame.getData(), frame.getWidth(), frame.getHeight(), localPostIt,
-        bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(), argbOut);
+    if (visionAPIManager.getFace() != null) {
+      PointF point = findXYForPostIt(visionAPIManager.getFace());
+      openCVWrapper.addPostIt(frame.getData(), frame.getWidth(), frame.getHeight(), localPostIt,
+          bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(), point.x, point.y, argbOut);
+    }
+
     libYuvConverter.ARGBToI420(argbOut, frame.getWidth(), frame.getHeight(), yuvOutLocal);
     byteBufferYuv.put(yuvOutLocal);
     byteBufferYuv.flip();
+
     onLocalFrame.onNext(
         new TribeI420Frame(frame.getWidth(), frame.getHeight(), frame.getRotation(), yuvStrides,
             yuvPlanes));
@@ -88,8 +90,6 @@ public class GamePostIt extends Game {
         Bitmap.createBitmap(postIt, 0, 0, postIt.getWidth(), postIt.getHeight(), localMatrix, true);
     bitmapLocalPostIt.getPixels(localPostIt, 0, postIt.getWidth(), 0, 0, postIt.getWidth(),
         postIt.getHeight());
-    //bitmapLocalPostIt = BitmapUtils.fromByteArray(localPostIt);
-    //savePNGImageToGallery(bitmapLocalPostIt, context, "lol.png");
 
     Matrix remoteMatrix = new Matrix();
     remoteMatrix.postRotate(-frame.getRotation());
@@ -104,38 +104,23 @@ public class GamePostIt extends Game {
     canvas = new Canvas(canvasBitmap);
   }
 
-  protected void savePNGImageToGallery(Bitmap bmp, Context context, String baseFilename) {
-    try {
-      // Get the file path to the SD card.
-      File dir = Environment.getExternalStoragePublicDirectory("tribeapp");
-      if (!dir.exists()) dir.mkdirs();
+  public PointF findXYForPostIt(Face face) {
+    Landmark leftEye = null, rightEye = null;
 
-      String baseFolder = dir.getAbsolutePath() + "/";
-      File file = new File(baseFolder + baseFilename);
-      if (file.exists()) file.delete();
-      Log.i("Save", "Saving the processed image to file [" + file.getAbsolutePath() + "]");
+    if (face.getLandmarks() != null) {
+      for (Landmark landmark : face.getLandmarks()) {
+        if (landmark.getType() == Landmark.LEFT_EYE) {
+          leftEye = landmark;
+        } else if (landmark.getType() == Landmark.RIGHT_EYE) rightEye = landmark;
+      }
 
-      // Open the file.
-      OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-      // Save the image file as PNG.
-      bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-      out.flush();    // Make sure it is saved to file soon, because we are about to add it to the Gallery.
-      out.close();
-
-      // Add the PNG file to the Android Gallery.
-      ContentValues image = new ContentValues();
-      image.put(MediaStore.Images.Media.TITLE, baseFilename);
-      image.put(MediaStore.Images.Media.DISPLAY_NAME, baseFilename);
-      image.put(MediaStore.Images.Media.DESCRIPTION, "Processed by the Cartoonifier App");
-      image.put(MediaStore.Images.Media.DATE_TAKEN,
-          System.currentTimeMillis()); // Milliseconds since 1970 UTC.
-      image.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-      image.put(MediaStore.Images.Media.ORIENTATION, 0);
-      image.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
-      Uri result =
-          context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
-    } catch (Exception e) {
-      e.printStackTrace();
+      if (leftEye != null && rightEye != null) {
+        PointF pLeftEye = leftEye.getPosition(), pRightEye = rightEye.getPosition();
+        return new PointF((pLeftEye.x + pRightEye.x) / 2, (pLeftEye.y + pRightEye.y) / 2);
+      }
     }
+
+    return new PointF(face.getPosition().x + face.getWidth() / 2,
+        face.getPosition().y + face.getHeight() / 2);
   }
 }

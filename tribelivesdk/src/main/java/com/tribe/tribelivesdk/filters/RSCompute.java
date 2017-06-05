@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.tribe.tribelivesdk.rs;
+package com.tribe.tribelivesdk.filters;
 
 import android.content.Context;
 import android.support.v8.renderscript.Allocation;
@@ -31,7 +31,7 @@ import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicColorMatrix;
 import android.support.v8.renderscript.ScriptIntrinsicLUT;
 import android.support.v8.renderscript.Type;
-import com.tribe.tribelivesdk.rs.lut3d.LUT3DFilter;
+import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
 
 /**
  * Created by tiago on 03/08/2017.

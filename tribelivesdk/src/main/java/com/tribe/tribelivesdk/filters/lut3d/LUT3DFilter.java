@@ -1,4 +1,4 @@
-package com.tribe.tribelivesdk.rs.lut3d;
+package com.tribe.tribelivesdk.filters.lut3d;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,20 +13,21 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsic3DLUT;
 import android.support.v8.renderscript.Type;
-import com.tribe.tribelivesdk.rs.RSCompute;
+import com.tribe.tribelivesdk.filters.Filter;
+import com.tribe.tribelivesdk.filters.RSCompute;
 import com.tribe.tribelivesdk.webrtc.Frame;
 
 /**
  * Created by tiago on 17/05/2017.
  */
 
-public class LUT3DFilter {
+public class LUT3DFilter extends Filter {
 
   private static final int RED_DIM = 64;
   private static final int GREEN_DIM = 64;
   private static final int BLUE_DIM = 64;
 
-  @StringDef({ LUT3D_TAN, LUT3D_BW, LUT3D_HIPSTER, LUT3D_DEFAULT, LUT3D_NONE })
+  @StringDef({ LUT3D_TAN, LUT3D_BW, LUT3D_HIPSTER, LUT3D_DEFAULT })
   public @interface LUT3DFilterType {
   }
 
@@ -34,7 +35,6 @@ public class LUT3DFilter {
   public static final String LUT3D_BW = "LUT3D_BW";
   public static final String LUT3D_HIPSTER = "LUT3D_HIPSTER";
   public static final String LUT3D_DEFAULT = "LUT3D_DEFAULT";
-  public static final String LUT3D_NONE = "LUT3D_NONE";
 
   private static final float MAX_MEMORY_PERCENTAGE = 0.15f;
 
@@ -62,21 +62,21 @@ public class LUT3DFilter {
     };
   }
 
-  private Context context;
   private RenderScript renderScript;
   private RSCompute rsCompute;
   private @LUT3DFilterType String id;
-  private int resourceId;
+  private int filterResourceId;
   private Bitmap bitmapLUT;
   private Allocation lutAllocation;
 
   public LUT3DFilter(Context context, RenderScript renderScript, RSCompute rsCompute,
-      @LUT3DFilterType String id, @DrawableRes @RawRes int resourceId) {
-    this.context = context;
+      @LUT3DFilterType String id, String name, @DrawableRes int drawableId,
+      @DrawableRes @RawRes int filterResourceId) {
+    super(context, id, name, drawableId);
     this.renderScript = renderScript;
     this.rsCompute = rsCompute;
     this.id = id;
-    this.resourceId = resourceId;
+    this.filterResourceId = filterResourceId;
   }
 
   public @LUT3DFilterType String getId() {
@@ -87,7 +87,7 @@ public class LUT3DFilter {
     // LUT3D
     final BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-    bitmapLUT = BitmapFactory.decodeResource(context.getResources(), resourceId, opts);
+    bitmapLUT = BitmapFactory.decodeResource(context.getResources(), filterResourceId, opts);
 
     final Type.Builder tb = new Type.Builder(renderScript, Element.U8_4(renderScript));
     tb.setX(RED_DIM);

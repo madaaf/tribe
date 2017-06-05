@@ -31,7 +31,7 @@
           app:hasShadow="false"
           />
 
-      <include layout="@layout/view_separator_vertical_simple" />
+      <include layout="@layout/view_separator_vertical_simple"/>
 
       <com.tribe.app.presentation.view.widget.EditTextFont
           android:id="@+id/editGroupName"
@@ -49,7 +49,9 @@
           style="@style/Title.2.Black40"
           />
     </LinearLayout>
-    <include layout="@layout/view_separator_simple" />
+
+    <include layout="@layout/view_separator_simple"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="10dp"
@@ -66,7 +68,7 @@
       android:orientation="vertical"
       >
 
-    <include layout="@layout/view_separator_simple" />
+    <include layout="@layout/view_separator_simple"/>
     <LinearLayout
         android:id="@+id/layoutMembers"
         android:layout_width="match_parent"
@@ -94,7 +96,7 @@
           android:layout_marginTop="5dp"
           />
 
-      <include layout="@layout/view_separator_simple" />
+      <include layout="@layout/view_separator_simple"/>
 
       <FrameLayout
           android:layout_width="match_parent"
@@ -142,10 +144,10 @@
 
         </FrameLayout>
       </FrameLayout>
-
     </LinearLayout>
 
-    <include layout="@layout/view_separator_simple" />
+    <include layout="@layout/view_separator_simple"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -163,7 +165,7 @@
         android:focusableInTouchMode="true"
         >
 
-      <requestFocus />
+      <requestFocus/>
     </LinearLayout>
   </LinearLayout>
 
