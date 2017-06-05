@@ -255,6 +255,7 @@ public class NotificationContainerView extends FrameLayout {
           CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);
       viewToDisplay = new CreateGroupNotificationView(context, members);
     } else if (data.getBooleanExtra(DISPLAY_SHARING_NOTIF, false) && extra != null) {
+      bgView.setVisibility(INVISIBLE);
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           SharingCardNotificationView.CALL_GRP_MEMBERS);
       double durationCall = extra.getDouble(SharingCardNotificationView.DURATION_CALL);

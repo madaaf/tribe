@@ -1,0 +1,75 @@
+
+{
+	"buildFiles" : 
+	[
+		"/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"/Users/madaaflak/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/release/armeabi-v7a --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"lib_libyuv-Release-armeabi-v7a" : 
+		{
+			"abi" : "armeabi-v7a",
+			"artifactName" : "lib_libyuv",
+			"buildType" : "release",
+			"output" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/../jniLibs/armeabi-v7a/libyuv.so",
+			"toolchain" : "5636755652350474880"
+		},
+		"lib_opencv-Release-armeabi-v7a" : 
+		{
+			"abi" : "armeabi-v7a",
+			"artifactName" : "lib_opencv",
+			"buildType" : "release",
+			"output" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/../jniLibs/armeabi-v7a/libopencv_java3.so",
+			"toolchain" : "5636755652350474880"
+		},
+		"tribelibopencv-Release-armeabi-v7a" : 
+		{
+			"abi" : "armeabi-v7a",
+			"artifactName" : "tribelibopencv",
+			"buildCommand" : "/Users/madaaflak/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/release/armeabi-v7a --target tribelibopencv",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi --gcc-toolchain=/Users/madaaflak/Library/Android/sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/madaaflak/Library/Android/sdk/ndk-bundle/platforms/android-18/arch-arm  -Dtribelibopencv_EXPORTS -I/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/../../../../opencvnative/jni/include -isystem /Users/madaaflak/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/madaaflak/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -isystem /Users/madaaflak/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fno-integrated-as -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fno-integrated-as -mthumb -Wa,--noexecstack -Wformat -Werror=format-security   -std=gnu++11 -Os -DNDEBUG -Os -DNDEBUG  -fPIC    -c ",
+					"src" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/tribelibopencv.cpp",
+					"workingDirectory" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/release/armeabi-v7a"
+				}
+			],
+			"output" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/build/intermediates/cmake/release/obj/armeabi-v7a/libtribelibopencv.so",
+			"toolchain" : "5636755652350474880"
+		},
+		"tribelibyuv-Release-armeabi-v7a" : 
+		{
+			"abi" : "armeabi-v7a",
+			"artifactName" : "tribelibyuv",
+			"buildCommand" : "/Users/madaaflak/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/release/armeabi-v7a --target tribelibyuv",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi --gcc-toolchain=/Users/madaaflak/Library/Android/sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/madaaflak/Library/Android/sdk/ndk-bundle/platforms/android-18/arch-arm  -Dtribelibyuv_EXPORTS -I/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/../../../../opencvnative/jni/include -I/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/./include -isystem /Users/madaaflak/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/madaaflak/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -isystem /Users/madaaflak/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fno-integrated-as -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fno-integrated-as -mthumb -Wa,--noexecstack -Wformat -Werror=format-security   -std=gnu++11 -Os -DNDEBUG -Os -DNDEBUG  -fPIC    -c ",
+					"src" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/src/main/cpp/tribelibyuv.cpp",
+					"workingDirectory" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/release/armeabi-v7a"
+				}
+			],
+			"output" : "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/build/intermediates/cmake/release/obj/armeabi-v7a/libtribelibyuv.so",
+			"toolchain" : "5636755652350474880"
+		}
+	},
+	"toolchains" : 
+	{
+		"5636755652350474880" : 
+		{
+			"cCompilerExecutable" : "/Users/madaaflak/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/madaaflak/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}

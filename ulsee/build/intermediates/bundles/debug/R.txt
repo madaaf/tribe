@@ -1,0 +1,1 @@
+int raw seeta_fd_frontal 0x7f020000

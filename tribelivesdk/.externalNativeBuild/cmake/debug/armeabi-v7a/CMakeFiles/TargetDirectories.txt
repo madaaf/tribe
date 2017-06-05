@@ -1,0 +1,4 @@
+/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/tribelibopencv.dir
+/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/tribelibyuv.dir

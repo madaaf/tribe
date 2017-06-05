@@ -309,8 +309,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           .subscribe(a -> {
             navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId,
                 smsContent);
-          /*  navigator.navigateToShadowCallActivity(this, Uri.parse(url),
-                loginEntity.getCountryCode(), smsContent);*/
           }));
     } else {
       navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, null);

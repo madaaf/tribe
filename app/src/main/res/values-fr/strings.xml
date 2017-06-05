@@ -356,7 +356,7 @@
 	<string name="live_share_new_call_button">Inviter des amis dans l\'appel</string>
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
-	<string name="live_share_screenshot_description">Partagez ce screenshot</string>
+	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
@@ -450,8 +450,8 @@
 	<string name="live_sharing_share">Partager!</string>
 	<string name="live_sharing_infos_i_spent">Je viens de passer</string>
 	<string name="live_sharing_infos_on_a">dans un</string>
-	<string name="live_sharing_infos_live_call">appel live :fire:</string>
-	<string name="live_sharing_media_caption">Je viens de passer %1$s sur Tribe avec %2$s dans un vidéo call! &#128293; Merci @heytribe! &#129304; #tribegoals</string>
+	<string name="live_sharing_infos_live_call">appel vidéo :fire:</string>
+	<string name="live_sharing_media_caption">Je viens de passer %1$s sur Tribe avec %2$s dans un appel vidéo ! &#128293; Merci @heytribe! &#129304; #tribegoals</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>

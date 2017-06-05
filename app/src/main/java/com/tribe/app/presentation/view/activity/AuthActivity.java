@@ -67,8 +67,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     initRessource();
     deepLink = getIntent().getData();
     loginUser(userPhoneNumber.get());
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
-    Timber.e("KPI_Onboarding_Start");
+    Timber.d("KPI_Onboarding_Start");
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {

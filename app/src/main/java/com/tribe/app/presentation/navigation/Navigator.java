@@ -31,7 +31,6 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.ShadowCallActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -83,15 +82,6 @@ public class Navigator {
     if (context != null) {
       Intent intent = AuthActivity.getCallingIntent(context, deepLink);
       intent.setData(deepLink);
-      context.startActivity(intent);
-    }
-  }
-
-  public void navigateToShadowCallActivity(Activity context, Uri uri, String countryCode,
-      String smsContent) {
-    if (context != null) {
-      Intent intent = ShadowCallActivity.getCallingIntent(context, countryCode, smsContent);
-      intent.setData(uri);
       context.startActivity(intent);
     }
   }
