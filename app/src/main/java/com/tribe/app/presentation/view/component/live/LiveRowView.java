@@ -9,11 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -37,6 +42,8 @@ public class LiveRowView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject User user;
+
   @BindView(R.id.viewWaiting) LiveWaitingView viewWaiting;
 
   @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
@@ -44,6 +51,9 @@ public class LiveRowView extends FrameLayout {
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
   @BindView(R.id.viewBackground) View backgroundView;
+
+  @BindView(R.id.addFriend) ImageView btnAddFriend;
+
 
   // VARIABLES
   private Unbinder unbinder;
@@ -90,6 +100,29 @@ public class LiveRowView extends FrameLayout {
     if (remotePeerView != null) viewWaiting.setVisibility(View.GONE);
   }
 
+  public void setAddBtn(TribeGuest guest) {
+    for (Friendship friendship : user.getFriendships()) {
+      User friend = friendship.getFriend();
+      if (guest.getId().endsWith(friend.getId())) {
+        if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) || friendship.getStatus()
+            .equals(FriendshipRealm.BLOCKED)) {
+          guest.setFriend(false);
+        } else {
+          guest.setFriend(true);
+        }
+        break;
+      } else {
+        guest.setFriend(false);
+      }
+    }
+
+    if (guest.isFriend()) {
+      btnAddFriend.setVisibility(GONE);
+    } else {
+      btnAddFriend.setVisibility(VISIBLE);
+    }
+  }
+
   public void dispose() {
     viewWaiting.dispose();
     subscriptions.clear();
@@ -108,6 +141,8 @@ public class LiveRowView extends FrameLayout {
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     viewWaiting.setGuest(guest);
+    setAddBtn(guest);
+
     viewPeerOverlay.setGuest(guest);
   }
 
@@ -214,7 +249,11 @@ public class LiveRowView extends FrameLayout {
   }
 
   @OnClick(R.id.layoutStream) void onClickStream(View v) {
-    if (guest != null) onClick.onNext(guest);
+    if (guest != null && !guest.isFriend()) onClick.onNext(guest);
+  }
+
+  @OnClick(R.id.addFriend) void addFriendClick() {
+    onClick.onNext(guest);
   }
 
   /////////////////

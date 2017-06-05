@@ -570,4 +570,12 @@
 	<string name="call_level_4">Turn up call! :dizzy:</string>
 	<string name="call_level_5">Savage call! :smiling_imp:</string>
 	<string name="call_level_6">Legendary call! :crossed_swords:</string>
+	
+	<!-- Roll the dice -->
+	<string name="roll_the_dice_live_tutorial">Re-roll the dice!</string>
+	<string name="roll_the_dice_live_status_searching">:game_die: Finding someone to join...</string>
+	<string name="roll_the_dice_live_description">Play games as soon as\nsomeone joins!</string>
+	<string name="roll_the_dice_invite_title">Roll the dice!</string>
+	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
+	<string name="roll_the_dice_grid_button">Roll the dice to make friends!</string>
 </resources>
