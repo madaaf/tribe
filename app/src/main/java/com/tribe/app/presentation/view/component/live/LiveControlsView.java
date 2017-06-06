@@ -129,6 +129,9 @@ public class LiveControlsView extends FrameLayout {
   private TransitionDrawable btnNewGameTD;
   private ImageView currentGameView;
 
+  // RESOURCES
+  private int sizeGameFilter;
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
@@ -183,9 +186,15 @@ public class LiveControlsView extends FrameLayout {
     btnFilterLocation = new int[2];
 
     setBackground(null);
+    initResources();
     initUI();
     initFilters();
     initGames();
+  }
+
+  private void initResources() {
+    sizeGameFilter =
+        getContext().getResources().getDimensionPixelSize(R.dimen.filter_game_size_with_border);
   }
 
   private void initUI() {
@@ -262,6 +271,7 @@ public class LiveControlsView extends FrameLayout {
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
           gameManager.setCurrentGame(pairViewGame.second);
+          onStartGame.onNext(pairViewGame.second);
         })
         .delay(200, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -274,27 +284,8 @@ public class LiveControlsView extends FrameLayout {
           Bitmap viewBmp = Bitmap.createBitmap(pairViewGame.first.getDrawingCache());
           pairViewGame.first.setDrawingCacheEnabled(false);
 
-          FrameLayout.LayoutParams params =
-              new FrameLayout.LayoutParams(pairViewGame.first.getWidth(),
-                  pairViewGame.first.getHeight());
-          params.leftMargin = locationViewGame[0];
-          params.topMargin = locationViewGame[1] - screenUtils.dpToPx(20);
-
-          currentGameView = new ImageView(getContext());
+          currentGameView = addGameToView(pairViewGame.first, locationViewGame);
           currentGameView.setImageBitmap(viewBmp);
-          currentGameView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-          currentGameView.setBackgroundResource(R.drawable.selectable_button_oval_light);
-          currentGameView.getViewTreeObserver()
-              .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override public void onGlobalLayout() {
-                  currentGameView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                  pairViewGame.first.setVisibility(View.GONE);
-                  showActiveGame();
-                }
-              });
-          currentGameView.setClickable(true);
-          currentGameView.setOnClickListener(v -> onGameOptions.onNext(null));
-          addView(currentGameView, params);
         }));
   }
 
@@ -327,15 +318,17 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void clickOnParam() {
+    if (gamesOn) hideGames();
+    if (filtersOn) hideFilters();
+
     if (!isParamExpanded) {
-      expendParam();
+      expandParam();
     } else {
-      hideFilters();
       reduceParam();
     }
   }
 
-  private void expendParam() {
+  private void expandParam() {
     setTimer();
     isParamExpanded = true;
 
@@ -433,6 +426,9 @@ public class LiveControlsView extends FrameLayout {
     gamesOn = true;
     clearTimer();
 
+    recyclerViewGames.getRecycledViewPool().clear();
+    gamesAdapter.notifyDataSetChanged();
+
     int toY = -screenUtils.dpToPx(65);
 
     layoutGame.animate()
@@ -511,6 +507,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void showGameControls() {
+    gamesOn = false;
     imgTriangleCloseGames.setVisibility(View.GONE);
     btnNewGameTD.resetTransition();
     showView(layoutGame);
@@ -530,6 +527,39 @@ public class LiveControlsView extends FrameLayout {
         .setDuration(DURATION_GAMES_FILTERS)
         .setInterpolator(new DecelerateInterpolator())
         .start();
+  }
+
+  private ImageView addGameToView(View viewFrom, int[] locationViewGame) {
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(sizeGameFilter, sizeGameFilter);
+
+    if (viewFrom != null) {
+      params.leftMargin = locationViewGame[0];
+      params.topMargin = locationViewGame[1] - screenUtils.dpToPx(20);
+    } else {
+      params.leftMargin = (screenUtils.getWidthPx() >> 1) - (sizeGameFilter >> 1);
+      params.topMargin = getHeight() - sizeGameFilter - screenUtils.dpToPx(10);
+    }
+
+    ImageView currentGameView = new ImageView(getContext());
+    currentGameView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+    currentGameView.setBackgroundResource(R.drawable.selectable_button_oval_light);
+    currentGameView.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            currentGameView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            if (viewFrom != null) {
+              viewFrom.setVisibility(View.GONE);
+            } else {
+              currentGameView.setTranslationY(screenUtils.getHeightPx() >> 1);
+              showView(currentGameView);
+            }
+            showActiveGame();
+          }
+        });
+    currentGameView.setClickable(true);
+    currentGameView.setOnClickListener(v -> onGameOptions.onNext(gameManager.getCurrentGame()));
+    addView(currentGameView, params);
+    return currentGameView;
   }
 
   private ViewPropertyAnimator setXTranslateAnimation(View view, float translation) {
@@ -586,16 +616,15 @@ public class LiveControlsView extends FrameLayout {
     Animation scaleAnimation =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.scale_disappear);
 
-    btnFilter.setAnimation(scaleAnimation);
     btnOrientationCamera.setAnimation(scaleAnimation);
+    layoutFilter.setAnimation(scaleAnimation);
 
     subscriptions.add(Observable.timer(scaleAnimation.getDuration() / 3, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           setXTranslateAnimation(btnMicro, -xTranslation);
-          setXTranslateAnimation(layoutFilter, -xTranslation);
           setXTranslateAnimation(btnExpand,
-              layoutContainerParamExtendedLive.getWidth() - xTranslation);
+              layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
         }));
 
     onClickCameraEnable.onNext(null);
@@ -614,11 +643,10 @@ public class LiveControlsView extends FrameLayout {
     layoutContainerParamLive.setVisibility(VISIBLE);
 
     setXTranslateAnimation(btnMicro, 0);
-    setXTranslateAnimation(layoutFilter, 0);
     setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth());
 
     btnOrientationCamera.setAnimation(scaleAnimation);
-    btnFilter.setAnimation(scaleAnimation);
+    layoutFilter.setAnimation(scaleAnimation);
 
     onClickCameraDisable.onNext(null);
   }
@@ -629,11 +657,6 @@ public class LiveControlsView extends FrameLayout {
     } else {
       hideGames();
     }
-    //Game game = gameManager.getGames().get(0);
-    //gameManager.setCurrentGame(game);
-    //btnNewGame.setBackgroundResource(R.drawable.selectable_button_oval_light);
-    //btnNewGame.setImageResource(game.getDrawableRes());
-    //onStartGame.onNext(game);
   }
 
   @OnLongClick(R.id.btnNewGame) boolean clickGameOptions() {
@@ -703,9 +726,20 @@ public class LiveControlsView extends FrameLayout {
     }
   }
 
+  public void startGame(Game game) {
+    gameManager.setCurrentGame(game);
+    hideGameControls();
+    currentGameView = addGameToView(null, null);
+    currentGameView.setImageResource(game.getDrawableRes());
+  }
+
   public void stopGame() {
-    removeView(currentGameView);
-    currentGameView = null;
+    if (currentGameView != null) {
+      removeView(currentGameView);
+      currentGameView = null;
+    }
+
+    gameManager.stop();
     showGameControls();
   }
 

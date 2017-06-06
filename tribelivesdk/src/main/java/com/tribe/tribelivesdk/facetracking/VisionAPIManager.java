@@ -160,6 +160,7 @@ public class VisionAPIManager {
 
   public void stopCapture() {
     firstFrame = true;
+    dispose();
   }
 
   public void dispose() {

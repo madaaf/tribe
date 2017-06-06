@@ -11,6 +11,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -57,12 +58,7 @@ import javax.inject.Singleton;
       mixpanel.setProperty(bundleMixpanel);
     }
 
-    Resources resources = context.getResources();
-    Locale locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? resources.getConfiguration()
-        .getLocales()
-        .getFirstMatch(resources.getAssets().getLocales()) : resources.getConfiguration().locale;
-
-    bundle.putString(TagManagerUtils.USER_LANGUAGE, locale.getLanguage().toUpperCase());
+    bundle.putString(TagManagerUtils.USER_LANGUAGE, DeviceUtils.getLanguage(context).toUpperCase());
 
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
         true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS

@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.core;
 
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -42,6 +43,8 @@ public class JsonToModel {
   private PublishSubject<TribeMediaConstraints> onTribeMediaConstraints = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode =
       PublishSubject.create();
+  private PublishSubject<String> onNewGame = PublishSubject.create();
+  private PublishSubject<String> onStopGame = PublishSubject.create();
 
   public void setOptions(TribeLiveOptions options) {
     this.options = options;
@@ -166,6 +169,7 @@ public class JsonToModel {
 
         if (message.has(Room.MESSAGE_APP)) {
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
+
           if (app.has(Room.MESSAGE_INVITE_ADDED)) {
 
             Timber.d("Receiving invite added");
@@ -189,16 +193,31 @@ public class JsonToModel {
             onRemovedTribeGuestList.onNext(guestRemovedList);
           }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
+
           Timber.d("Receiving media configuration");
           TribePeerMediaConfiguration peerMediaConfiguration =
               new TribePeerMediaConfiguration(tribeSession);
           peerMediaConfiguration.setAudioEnabled(message.getBoolean("isAudioEnabled"));
           peerMediaConfiguration.setVideoEnabled(message.getBoolean("isVideoEnabled"));
+
           if (message.has("videoChangeReason")) {
             peerMediaConfiguration.setMediaConfigurationType(
                 TribePeerMediaConfiguration.computeType(message.getString("videoChangeReason")));
           }
+
           onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
+
+          if (message.has(Game.CURRENT_GAME)) {
+            onNewGame.onNext(message.getString(Game.CURRENT_GAME));
+          }
+        } else if (message.has(Room.MESSAGE_GAME)) {
+          JSONObject gameMessage = message.getJSONObject(Room.MESSAGE_GAME);
+          String action = gameMessage.getString(Game.ACTION);
+          if (action.equals(Game.START)) {
+            onNewGame.onNext(gameMessage.getString(Game.ID));
+          } else if (action.equals(Game.STOP)) {
+            onStopGame.onNext(gameMessage.getString(Game.ID));
+          }
         }
       } else if (object != null && object.has(Room.MESSAGE_ERROR)) {
         boolean success = object.getBoolean("s");
@@ -248,7 +267,8 @@ public class JsonToModel {
     JSONObject video = jo.getJSONObject("video");
     JSONObject fps = video.getJSONObject("frameRate");
     int maxWidth = Math.min(MediaConstraints.MAX_WIDTH, video.getJSONObject("width").getInt("max"));
-    int maxHeight = Math.min(MediaConstraints.MAX_HEIGHT, video.getJSONObject("height").getInt("max"));
+    int maxHeight =
+        Math.min(MediaConstraints.MAX_HEIGHT, video.getJSONObject("height").getInt("max"));
 
     int minFps = 0;
     if (fps.has("min")) {
@@ -309,5 +329,13 @@ public class JsonToModel {
 
   public Observable<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode() {
     return onShouldSwitchRemoteMediaMode;
+  }
+
+  public Observable<String> onNewGame() {
+    return onNewGame;
+  }
+
+  public Observable<String> onStopGame() {
+    return onStopGame;
   }
 }

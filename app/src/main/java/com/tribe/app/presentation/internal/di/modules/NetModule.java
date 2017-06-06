@@ -31,6 +31,7 @@ import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
+import com.tribe.app.data.network.deserializer.NameListPostItGameDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
@@ -130,10 +131,13 @@ import timber.log.Timber;
     }).registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate, sdf)).create();
   }
 
-  @Provides @PerApplication Gson provideGson(@Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
+  @Provides @PerApplication Gson provideGson(Context context,
+      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
     GroupDeserializer groupDeserializer = new GroupDeserializer();
+    NameListPostItGameDeserializer nameListPostItGameDeserializer =
+        new NameListPostItGameDeserializer(context);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
@@ -168,6 +172,8 @@ import timber.log.Timber;
         .registerTypeAdapter(LookupFBResult.class, new LookupFBDeserializer())
         .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
+        .registerTypeAdapter(new TypeToken<List<String>>() {
+        }.getType(), nameListPostItGameDeserializer)
         .create();
   }
 
@@ -446,7 +452,7 @@ import timber.log.Timber;
     Timber.d("Retrying request");
   }
 
-  @Provides @PerApplication FileApi provideFileApi(
+  @Provides @PerApplication FileApi provideFileApi(Gson gson,
       @Named("tribeApiOKHttp") OkHttpClient okHttpClient) {
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
@@ -461,8 +467,9 @@ import timber.log.Timber;
     //  httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
     //}
 
-    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_API)
+    return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_STATIC)
         .callFactory(httpClientBuilder.build())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
         //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
         .build()

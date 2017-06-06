@@ -66,6 +66,7 @@ import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -83,6 +84,9 @@ import com.tribe.app.presentation.view.widget.notifications.NotificationContaine
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.SharingCardNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -127,12 +131,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String SOURCE_NEW_CALL = "NewCall";
   public static final String SOURCE_JOIN_LIVE = "JoinLive";
   public static final String SOURCE_ADD_PEERS = "AddPeers";
-  public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
   public static final int FLASH_DURATION = 500;
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
+  public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
   private final int MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST = 3;
@@ -249,6 +253,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   // VARIABLES
   private TribeAudioManager audioManager;
+  private GameManager gameManager;
   private Unbinder unbinder;
   private Live live;
   private RoomConfiguration roomConfiguration;
@@ -287,6 +292,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     initRemoteConfig();
     manageClickNotification(getIntent());
     initAppState();
+    initGameManager();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -352,6 +358,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLiveContainer.dispose();
     viewLive.dispose(false);
 
+    gameManager.setCurrentGame(null);
+
     if (audioManager != null) {
       audioManager.stop();
       audioManager = null;
@@ -385,7 +393,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     });
 
     viewLiveContainer.setOnTouchListener((v, event) -> {
-
       return false;
     });
   }
@@ -455,6 +462,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       appStateMonitor.addListener(this);
       appStateMonitor.start();
     }
+  }
+
+  private void initGameManager() {
+    this.gameManager = GameManager.getInstance(this);
   }
 
   private void ratingNotificationSubscribe() {
@@ -615,6 +626,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(
         viewLive.onRemotePeerClick().subscribe(o -> userInfosNotificationView.displayView(o)));
+
+    subscriptions.add(viewLive.onStartGame().subscribe(game -> {
+      if (game != null && game instanceof GamePostIt) {
+        GamePostIt gamePostIt = (GamePostIt) game;
+        if (!gamePostIt.hasNames()) livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
+      }
+    }));
 
     subscriptions.add(userInfosNotificationView.onInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
@@ -843,6 +861,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void onAddSuccess(Friendship friendship) {
     userInfosNotificationView.update(friendship);
+  }
+
+  @Override public void onNamesPostItGame(List<String> nameList) {
+    Game game = gameManager.getCurrentGame();
+
+    if (game != null && game instanceof GamePostIt) {
+      GamePostIt gamePostIt = (GamePostIt) game;
+      gamePostIt.setNameList(nameList);
+    }
   }
 
   private void displayNotification(String txt) {

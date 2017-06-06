@@ -77,6 +77,7 @@ public class LiveLocalView extends FrameLayout {
   private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
+  private PublishSubject<Void> onStopGame = PublishSubject.create();
 
   public LiveLocalView(Context context) {
     super(context);
@@ -115,7 +116,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
 
     // We add the view in between the background and overlay
-    cardViewStreamLayout.addView(viewPeerLocal,
+    cardViewStreamLayout.addView(viewPeerLocal, 0,
         new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -124,6 +125,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
     viewPeerLocal.initSwitchFilterSubscription(onSwitchFilter);
     viewPeerLocal.initStartGameSubscription(onStartGame);
+    viewPeerLocal.initStopGameSubscription(onStopGame);
 
     viewPeerOverlay.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
@@ -229,6 +231,10 @@ public class LiveLocalView extends FrameLayout {
 
   public void startGame(Game game) {
     onStartGame.onNext(game);
+  }
+
+  public void stopGame() {
+    onStopGame.onNext(null);
   }
 
   public void computeAlpha(float alpha) {

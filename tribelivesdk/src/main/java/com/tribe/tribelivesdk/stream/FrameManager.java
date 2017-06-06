@@ -77,7 +77,7 @@ public class FrameManager {
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
     //ulseeManager.initFrameSubscription(onFrame);
-    visionAPIManager.initFrameSubscription(onFrame);
+    if (gameManager.isFacialRecognitionNeeded()) visionAPIManager.initFrameSubscription(onFrame);
 
     subscriptions.add(onFrame.onBackpressureDrop()
         .filter(frame -> !processing)
@@ -102,17 +102,14 @@ public class FrameManager {
 
           Filter filter = filterManager.getFilter();
 
-          if (filter != null) {
+          if (filter != null || gameManager.getCurrentGame() != null) {
             libYuvConverter.YUVToARGB(frame1.getData(), frame1.getWidth(), frame1.getHeight(),
                 argb);
-            filter.apply(argb);
-            
-            if (gameManager.getCurrentGame() != null && gameManager.getCurrentGame()
-                .isLocalFrameDifferent() && (!gameManager.getCurrentGame()
-                .getId()
-                .equals(Game.GAME_POST_IT) || (gameManager.getCurrentGame()
-                .getId()
-                .equals(Game.GAME_POST_IT) && visionAPIManager.getFace() != null))) {
+            if (filter != null) filter.apply(argb);
+
+            Game game = gameManager.getCurrentGame();
+
+            if (game != null && game.isLocalFrameDifferent()) {
               shouldSendRemoteFrame = false;
               frame1.setData(argb);
               frame1.setDataOut(yuvOut);

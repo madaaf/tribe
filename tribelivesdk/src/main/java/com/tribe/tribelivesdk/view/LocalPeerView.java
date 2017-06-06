@@ -25,6 +25,7 @@ public class LocalPeerView extends PeerView {
   private Observable<Void> onSwitchCamera;
   private Observable<Void> onSwitchFilter;
   private Observable<Game> onStartGame;
+  private Observable<Void> onStopGame;
   private Observable<TribePeerMediaConfiguration> onEnableCamera;
   private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private PublishSubject<TribePeerMediaConfiguration> shouldSwitchMode = PublishSubject.create();
@@ -106,6 +107,10 @@ public class LocalPeerView extends PeerView {
     onStartGame = obs;
   }
 
+  public void initStopGameSubscription(Observable<Void> obs) {
+    onStopGame = obs;
+  }
+
   public TribePeerMediaConfiguration getMediaConfiguration() {
     return mediaConfiguration;
   }
@@ -140,5 +145,9 @@ public class LocalPeerView extends PeerView {
 
   public Observable<Game> onStartGame() {
     return onStartGame;
+  }
+
+  public Observable<Void> onStopGame() {
+    return onStopGame;
   }
 }

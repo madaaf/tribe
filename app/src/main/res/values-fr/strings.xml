@@ -24,6 +24,8 @@
 	<string name="action_nevermind">Non</string>
 	<string name="action_unhide">Ajouter en ami</string>
 	<string name="action_invite">Inviter</string>
+	<string name="action_sms">iMessage</string>
+	<string name="action_messenger">Messenger</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -356,7 +358,7 @@
 	<string name="live_share_new_call_button">Inviter des amis dans l\'appel</string>
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
-	<string name="live_share_screenshot_description">Partagez ce screenshot</string>
+	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
@@ -450,8 +452,8 @@
 	<string name="live_sharing_share">Partager!</string>
 	<string name="live_sharing_infos_i_spent">Je viens de passer</string>
 	<string name="live_sharing_infos_on_a">dans un</string>
-	<string name="live_sharing_infos_live_call">appel live :fire:</string>
-	<string name="live_sharing_media_caption">Je viens de passer %1$s sur Tribe avec %2$s dans un vidéo call! &#128293; Merci @heytribe! &#129304; #tribegoals</string>
+	<string name="live_sharing_infos_live_call">appel vidéo :fire:</string>
+	<string name="live_sharing_media_caption">Je viens de passer %1$s sur Tribe avec %2$s dans un appel vidéo ! &#128293; Merci @heytribe! &#129304; #tribegoals</string>
 	
 	<!-- Invite Popup -->
 	<string name="invite_popup_title">Oups</string>
@@ -554,11 +556,11 @@
 	
 	<!-- Games -->
 	<string name="game_event_started">%1$s a lancé le jeu "%2$s" ! :video_game:</string>
-	<string name="game_event_post_it_re_roll">%1$s a renouvelé les Post-it ! :video_game:</string>
+	<string name="game_event_post_it_re_roll">%1$s a renouvelé les noms ! :video_game:</string>
 	<string name="game_event_stopped">%1$s a arreté le jeu "%2$s". :video_game:</string>
 	<string name="game_tutorial">Appuie longtemps sur le bouton du jeu pour arreter.</string>
-	<string name="game_post_it">Post-it</string>
-	<string name="game_post_it_menu_re_roll">Renouveler les Post-its</string>
+	<string name="game_post_it">Heads Up</string>
+	<string name="game_post_it_menu_re_roll">Renouveler les noms</string>
 	<string name="game_post_it_menu_stop">Arreter ce jeu</string>
 	<string name="game_post_it_rule">Devinez qui vous êtes\nà l\'aide de vos amis.</string>
 	

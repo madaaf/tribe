@@ -43,6 +43,7 @@ import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -129,6 +130,7 @@ public class LiveView extends FrameLayout {
   private List<User> anonymousInLive = new ArrayList<>();
   private boolean isFirstToJoin = true;
   private double duration;
+  private GameManager gameManager;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight;
@@ -150,6 +152,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
+  private PublishSubject<Game> onStartGame = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -278,6 +281,8 @@ public class LiveView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    gameManager = GameManager.getInstance(getContext());
 
     initResources();
     initUI();
@@ -417,6 +422,8 @@ public class LiveView extends FrameLayout {
         viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
+      onStartGame.onNext(game);
+      room.sendToPeers(getNewGamePayload(game), false);
       viewLocalLive.startGame(game);
     }));
 
@@ -425,10 +432,11 @@ public class LiveView extends FrameLayout {
             ((game, labelType) -> {
               if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
                 viewLocalLive.startGame(game);
+                room.sendToPeers(getNewGamePayload(game), false);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
-                GameManager.getInstance(getContext()).setCurrentGame(null);
-                viewLocalLive.startGame(null);
                 viewControlsLive.stopGame();
+                viewLocalLive.stopGame();
+                room.sendToPeers(getStopGamePayload(game), false);
               }
 
               return null;
@@ -488,6 +496,17 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
 
     tempSubscriptions.add(room.onRoomFull().subscribe(onRoomFull));
+
+    tempSubscriptions.add(room.onNewGame().subscribe(gameId -> {
+      Game game = gameManager.getGameById(gameId);
+      viewControlsLive.startGame(game);
+      viewLocalLive.startGame(game);
+    }));
+
+    tempSubscriptions.add(room.onStopGame().subscribe(gameId -> {
+      viewLocalLive.stopGame();
+      viewControlsLive.stopGame();
+    }));
 
     tempSubscriptions.add(
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
@@ -948,6 +967,24 @@ public class LiveView extends FrameLayout {
     return guest;
   }
 
+  public JSONObject getNewGamePayload(Game game) {
+    JSONObject obj = new JSONObject();
+    JSONObject gameStart = new JSONObject();
+    jsonPut(gameStart, Game.ACTION, Game.START);
+    jsonPut(gameStart, Game.ID, game.getId());
+    jsonPut(obj, Room.MESSAGE_GAME, gameStart);
+    return obj;
+  }
+
+  public JSONObject getStopGamePayload(Game game) {
+    JSONObject obj = new JSONObject();
+    JSONObject gameStop = new JSONObject();
+    jsonPut(gameStop, Game.ACTION, Game.STOP);
+    jsonPut(gameStop, Game.ID, game.getId());
+    jsonPut(obj, Room.MESSAGE_GAME, gameStop);
+    return obj;
+  }
+
   private JSONObject getInvitedPayload() {
     JSONObject jsonObject = new JSONObject();
     JSONArray array = new JSONArray();
@@ -1212,6 +1249,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Object> onRemotePeerClick() {
     return onRemotePeerClick;
+  }
+
+  public Observable<Game> onStartGame() {
+    return onStartGame;
   }
 }
 

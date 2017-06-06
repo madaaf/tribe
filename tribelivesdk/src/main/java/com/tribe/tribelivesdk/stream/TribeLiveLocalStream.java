@@ -248,20 +248,18 @@ public class TribeLiveLocalStream {
   }
 
   public void startGame(Game game) {
-    if (game == null) {
-      peerView.initRemoteRenderer();
-      videoRenderer = peerView.getRemoteRenderer();
-      stopVideoCapture();
-      videoTrack.addRenderer(videoRenderer);
-      startVideoCapture();
-      return;
-    }
-
     if (game.isLocalFrameDifferent()) {
       stopVideoCapture();
       videoTrack.removeRenderer(videoRenderer);
       startVideoCapture();
-      return;
     }
+  }
+
+  public void stopGame() {
+    peerView.initRemoteRenderer();
+    videoRenderer = peerView.getRemoteRenderer();
+    stopVideoCapture();
+    videoTrack.addRenderer(videoRenderer);
+    startVideoCapture();
   }
 }

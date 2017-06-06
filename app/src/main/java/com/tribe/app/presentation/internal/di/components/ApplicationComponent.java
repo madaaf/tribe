@@ -18,6 +18,7 @@ import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
@@ -67,6 +68,7 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.ManageFriendshipL
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -196,6 +198,8 @@ public interface ApplicationComponent {
 
   void inject(ManageFriendshipListAdapterDelegate manageFriendshipListAdapterDelegate);
 
+  void inject(GamesFiltersAdapterDelegate gamesFiltersAdapterDelegate);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -226,6 +230,8 @@ public interface ApplicationComponent {
   CloudUserDataRepository cloudUserRepository();
 
   DiskUserDataRepository diskUserRepository();
+
+  CloudGameDataRepository cloudGameRepository();
 
   TribeAuthorizer tribeAuthorizer();
 

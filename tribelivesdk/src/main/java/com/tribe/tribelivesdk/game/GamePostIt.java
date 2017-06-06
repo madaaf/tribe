@@ -17,6 +17,8 @@ import com.tribe.tribelivesdk.util.ByteBuffers;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tiago on 23/05/2017.
@@ -24,11 +26,12 @@ import java.nio.ByteBuffer;
 
 public class GamePostIt extends Game {
 
+  private List<String> nameList;
   private OpenCVWrapper openCVWrapper;
   private LibYuvConverter libYuvConverter;
   private Bitmap bitmapLocalPostIt, bitmapRemotePostIt, tempBitmap, canvasBitmap;
   private int[] localPostIt, remotePostIt;
-  private byte[] yuvOutLocal, argbOut;
+  private byte[] yuvOutLocal, yuvOutRemote, argbOutLocal, argbOutRemote;
   private ByteBuffer byteBufferYuv;
   private ByteBuffer[] yuvPlanes;
   private int[] yuvStrides;
@@ -40,28 +43,43 @@ public class GamePostIt extends Game {
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
     visionAPIManager = VisionAPIManager.getInstance(context);
+    nameList = new ArrayList<>();
   }
 
-  @Override public void apply(Frame frame) {
+  @Override public void apply(Frame originalFrame) {
+    Frame localFrame = originalFrame;
+    Frame remoteFrame = originalFrame.copy();
+
     if (visionAPIManager.getFace() != null) {
       PointF point = findXYForPostIt(visionAPIManager.getFace());
-      openCVWrapper.addPostIt(frame.getData(), frame.getWidth(), frame.getHeight(), localPostIt,
-          bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(), point.x, point.y, argbOut);
+      openCVWrapper.addPostIt(localFrame.getData(), localFrame.getWidth(), localFrame.getHeight(),
+          localPostIt, bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(), point.x,
+          point.y, argbOutRemote);
+    } else {
+      System.arraycopy(localFrame.getData(), 0, argbOutRemote, 0, localFrame.getData().length);
     }
 
-    libYuvConverter.ARGBToI420(argbOut, frame.getWidth(), frame.getHeight(), yuvOutLocal);
+    libYuvConverter.ARGBToI420(argbOutRemote, localFrame.getWidth(), localFrame.getHeight(),
+        yuvOutLocal);
     byteBufferYuv.put(yuvOutLocal);
     byteBufferYuv.flip();
 
     onLocalFrame.onNext(
-        new TribeI420Frame(frame.getWidth(), frame.getHeight(), frame.getRotation(), yuvStrides,
-            yuvPlanes));
+        new TribeI420Frame(localFrame.getWidth(), localFrame.getHeight(), localFrame.getRotation(),
+            yuvStrides, yuvPlanes));
+
+    libYuvConverter.ARGBToYUV(remoteFrame.getData(), remoteFrame.getWidth(),
+        remoteFrame.getHeight(), yuvOutRemote);
+    remoteFrame.setDataOut(yuvOutRemote);
+    onRemoteFrame.onNext(remoteFrame);
   }
 
   @Override public void onFrameSizeChange(Frame frame) {
     tempBitmap = Bitmap.createBitmap(frame.getWidth(), frame.getHeight(), Bitmap.Config.ARGB_8888);
     yuvOutLocal = new byte[frame.getData().length];
-    argbOut = new byte[frame.getWidth() * frame.getHeight() * 4];
+    yuvOutRemote = new byte[frame.getData().length];
+    argbOutLocal = new byte[frame.getWidth() * frame.getHeight() * 4];
+    argbOutRemote = new byte[frame.getWidth() * frame.getHeight() * 4];
     yuvStrides = new int[3];
     yuvStrides[0] = frame.getWidth();
     yuvStrides[1] = (frame.getWidth() + 1) / 2;
@@ -122,5 +140,18 @@ public class GamePostIt extends Game {
 
     return new PointF(face.getPosition().x + face.getWidth() / 2,
         face.getPosition().y + face.getHeight() / 2);
+  }
+
+  public void setNameList(List<String> nameList) {
+    this.nameList.clear();
+    this.nameList.addAll(nameList);
+  }
+
+  public boolean hasNames() {
+    return nameList != null && nameList.size() > 0;
+  }
+
+  public List<String> getNameList() {
+    return nameList;
   }
 }

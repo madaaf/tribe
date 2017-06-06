@@ -10,11 +10,15 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.entity.GameFilter;
 import java.util.List;
+import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -24,6 +28,8 @@ import rx.subjects.PublishSubject;
 public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List<GameFilter>> {
 
   protected static final int DURATION = 100;
+
+  @Inject ScreenUtils screenUtils;
 
   // RX SUBSCRIPTIONS / SUBJECTS
   // VARIABLES
@@ -38,7 +44,11 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    sizeDisabled = context.getResources().getDimensionPixelSize(R.dimen.filter_game_size);
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+
+    sizeDisabled =
+        context.getResources().getDimensionPixelSize(R.dimen.filter_game_size) - screenUtils.dpToPx(
+            5);
     sizeEnabled =
         context.getResources().getDimensionPixelSize(R.dimen.filter_game_size_with_border);
   }
@@ -48,6 +58,7 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
         new GameFilterViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
 
     vh.image.setOnClickListener(v -> click.onNext(vh.itemView));
+    UIUtils.changeSizeOfView(vh.bgSelected, sizeDisabled);
 
     return vh;
   }
@@ -57,9 +68,11 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
     GameFilterViewHolder vh = (GameFilterViewHolder) holder;
     GameFilter gameFilter = items.get(position);
 
-    if (gameFilter.isActivated() && vh.bgSelected.getWidth() == sizeDisabled) {
+    vh.itemView.setVisibility(View.VISIBLE);
+
+    if (gameFilter.isActivated() && vh.bgSelected.getWidth() <= sizeDisabled) {
       scale(vh, true);
-    } else if (vh.bgSelected.getWidth() == sizeEnabled) {
+    } else if (vh.bgSelected.getWidth() >= sizeEnabled) {
       scale(vh, false);
     }
 

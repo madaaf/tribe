@@ -13,7 +13,8 @@ public class Frame {
   private long timestamp;
   private boolean frontCamera;
 
-  public Frame(byte[] data, int width, int height, int rotation, long timestamp, boolean frontCamera) {
+  public Frame(byte[] data, int width, int height, int rotation, long timestamp,
+      boolean frontCamera) {
     this.data = data;
     this.width = width;
     this.height = height;
@@ -76,5 +77,11 @@ public class Frame {
 
   public void setFrontCamera(boolean frontCamera) {
     this.frontCamera = frontCamera;
+  }
+
+  public Frame copy() {
+    byte[] newData = new byte[data.length];
+    System.arraycopy(data, 0, newData, 0, data.length);
+    return new Frame(newData, width, height, rotation, timestamp, frontCamera);
   }
 }

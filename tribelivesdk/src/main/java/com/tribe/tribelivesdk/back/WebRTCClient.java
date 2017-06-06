@@ -2,6 +2,8 @@ package com.tribe.tribelivesdk.back;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.core.TribePeerConnection;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
@@ -44,6 +46,7 @@ import static android.R.attr.id;
   private PeerConnectionFactory peerConnectionFactory;
   private List<PeerConnection.IceServer> iceServers;
   private StreamManager streamManager;
+  private GameManager gameManager;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -58,6 +61,7 @@ import static android.R.attr.id;
   @Inject public WebRTCClient(Context context) {
     this.context = context;
     this.streamManager = new StreamManager(context);
+    this.gameManager = GameManager.getInstance(context);
     this.peerConnections = new HashMap<>();
     initPeerConnectionFactory();
   }
@@ -217,6 +221,21 @@ import static android.R.attr.id;
 
   public Collection<TribePeerConnection> getPeers() {
     return peerConnections.values();
+  }
+
+  public JSONObject getJSONForNewPeer(TribePeerMediaConfiguration mediaConfiguration) {
+    JSONObject obj = new JSONObject();
+    jsonPut(obj, "isAudioEnabled", mediaConfiguration.isAudioEnabled());
+    jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
+    jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
+
+    Game currentGame = gameManager.getCurrentGame();
+
+    if (currentGame != null) {
+      jsonPut(obj, "currentGame", currentGame.getId());
+    }
+
+    return obj;
   }
 
   public JSONObject getJSONMedia(TribePeerMediaConfiguration mediaConfiguration) {

@@ -8,6 +8,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
@@ -39,6 +40,7 @@ public class LivePresenter implements Presenter {
   private GetRoomLink getRoomLink;
   private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
+  private GetNamesPostItGame getNamesPostItGame;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -48,7 +50,8 @@ public class LivePresenter implements Presenter {
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite, CreateFriendship createFriendship) {
+      DeclineInvite declineInvite, CreateFriendship createFriendship,
+      GetNamesPostItGame getNamesPostItGame) {
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
@@ -58,6 +61,7 @@ public class LivePresenter implements Presenter {
     this.getRoomLink = getRoomLink;
     this.declineInvite = declineInvite;
     this.createFriendship = createFriendship;
+    this.getNamesPostItGame = getNamesPostItGame;
   }
 
   @Override public void onViewDetached() {
@@ -70,6 +74,7 @@ public class LivePresenter implements Presenter {
     getRecipientInfos.unsubscribe();
     getRoomLink.unsubscribe();
     createFriendship.unsubscribe();
+    getNamesPostItGame.unsubscribe();
     liveMVPView = null;
   }
 
@@ -232,6 +237,25 @@ public class LivePresenter implements Presenter {
       } else {
         liveMVPView.onAddSuccess(friendship);
       }
+    }
+  }
+
+  public void getNamesPostItGame(String lang) {
+    getNamesPostItGame.setup(lang);
+    getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
+  }
+
+  private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(List<String> nameList) {
+      liveMVPView.onNamesPostItGame(nameList);
     }
   }
 }

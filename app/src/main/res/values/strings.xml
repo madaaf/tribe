@@ -24,6 +24,8 @@
 	<string name="action_nevermind">Nevermind</string>
 	<string name="action_unhide">Add Friend</string>
 	<string name="action_invite">Invite</string>
+	<string name="action_sms">iMessage</string>
+	<string name="action_messenger">Messenger</string>
 	
 	<!-- Group -->
 	<string name="group_member">member</string>
@@ -356,7 +358,7 @@
 	<string name="live_share_new_call_button">Invite friends in the call</string>
 	<string name="live_share_new_call_button_simple">Share</string>
 	<string name="live_share_new_call_button_title">Call link</string>
-	<string name="live_share_screenshot_description">Share this screenshot</string>
+	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
@@ -554,11 +556,11 @@
 	
 	<!-- Games -->
 	<string name="game_event_started">%1$s launched the "%2$s" game! :video_game:</string>
-	<string name="game_event_post_it_re_roll">%1$s renewed the Postit notes! :video_game:</string>
+	<string name="game_event_post_it_re_roll">%1$s renewed the names! :video_game:</string>
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
 	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
-	<string name="game_post_it">Postit notes</string>
-	<string name="game_post_it_menu_re_roll">Renew the Postit notes</string>
+	<string name="game_post_it">Heads Up</string>
+	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
 	<string name="game_post_it_rule">Guess who you are\nby asking your friends!</string>
 	

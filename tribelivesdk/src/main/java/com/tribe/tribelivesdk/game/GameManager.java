@@ -70,12 +70,28 @@ import rx.subscriptions.CompositeSubscription;
     return gameList;
   }
 
+  public Game getGameById(String id) {
+    for (Game game : gameList) {
+      if (game.getId().equals(id)) return game;
+    }
+
+    return null;
+  }
+
   public void setCurrentGame(Game game) {
     this.currentGame = game;
   }
 
+  public void stop() {
+    this.currentGame = null;
+  }
+
   public Game getCurrentGame() {
     return currentGame;
+  }
+
+  public boolean isFacialRecognitionNeeded() {
+    return currentGame != null && currentGame.getId().equals(Game.GAME_POST_IT);
   }
 
   public void dispose() {

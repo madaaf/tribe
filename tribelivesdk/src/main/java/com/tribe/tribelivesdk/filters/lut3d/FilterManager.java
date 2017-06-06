@@ -49,6 +49,7 @@ public class FilterManager {
         R.drawable.picto_filter_bw, R.drawable.lut_litho));
 
     current = filterList.get(0);
+    current.setActivated(true);
   }
 
   public void initFrameSizeChangeObs(Observable<Frame> obs) {
@@ -63,8 +64,11 @@ public class FilterManager {
   }
 
   public void setCurrentFilter(Filter filter) {
-    if (filter == current) this.current = null;
-    else this.current = filter;
+    if (filter == current) {
+      this.current = null;
+    } else {
+      this.current = filter;
+    }
   }
 
   public List<Filter> getFilterList() {

@@ -194,4 +194,8 @@ public class ShadowCallActivity extends BaseActivity implements LiveMVPView {
   @Override public void onAddSuccess(Friendship friendship) {
 
   }
+
+  @Override public void onNamesPostItGame(List<String> nameList) {
+
+  }
 }

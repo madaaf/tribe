@@ -21,10 +21,13 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A Utility class to help determine characteristics about the device
@@ -165,5 +168,14 @@ public class DeviceUtils {
     }
 
     return appInstalled;
+  }
+
+  public static String getLanguage(Context context) {
+    Resources resources = context.getResources();
+    Locale locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? resources.getConfiguration()
+        .getLocales()
+        .getFirstMatch(resources.getAssets().getLocales()) : resources.getConfiguration().locale;
+
+    return locale.getLanguage();
   }
 }
