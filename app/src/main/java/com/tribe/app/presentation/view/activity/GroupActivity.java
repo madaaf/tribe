@@ -240,7 +240,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.GROUP);
           bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
           tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-          navigator.openSmsForInvite(this, null);
+          navigator.openMessageAppForInvite(this, null);
         }
       }
     });
@@ -470,7 +470,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
             getString(R.string.add_friend_error_invisible_invite_ios),
             getString(R.string.add_friend_error_invisible_cancel))
             .filter(x -> x == true)
-            .subscribe(a -> navigator.openSmsForInvite(this, user.getPhone()));
+            .subscribe(a -> navigator.openMessageAppForInvite(this, user.getPhone()));
       } else {
         groupPresenter.createFriendship(user.getId());
       }

@@ -374,10 +374,10 @@ public class Navigator {
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
-  public void openSmsForInvite(Activity activity, String phoneNumber) {
-    String text = EmojiParser.demojizedText(
-        activity.getString(R.string.share_invite, user.getUsername(),
-            activity.getString(R.string.share_messenger_url)));
+  public void openMessageAppForInvite(Activity activity, String phoneNumber) {
+    String linkId = StringUtils.generateLinkId();
+    String url = StringUtils.getUrlFromLinkId(activity, linkId);
+    String text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
 
     if (StringUtils.isEmpty(phoneNumber)) {
       shareGenericText(text, activity);

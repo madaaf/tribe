@@ -418,7 +418,7 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      navigator.openSmsForInvite(this, null);
+      navigator.openMessageAppForInvite(this, null);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
@@ -545,7 +545,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this, null);
+      navigator.openMessageAppForInvite(this, null);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
@@ -578,7 +578,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites()
-        .subscribe(aVoid -> navigator.openSmsForInvite(this, null)));
+        .subscribe(aVoid -> navigator.openMessageAppForInvite(this, null)));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
 
@@ -594,7 +594,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openSmsForInvite(this, contact.getPhone());
+      navigator.openMessageAppForInvite(this, contact.getPhone());
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {

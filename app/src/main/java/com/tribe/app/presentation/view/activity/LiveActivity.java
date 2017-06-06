@@ -624,7 +624,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openSmsForInvite(this, null);
+      navigator.openMessageAppForInvite(this, null);
     }));
 
     subscriptions.add(
