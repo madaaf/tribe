@@ -52,7 +52,7 @@ public class TopBarView extends FrameLayout {
   private static final int MIN_NUMBER_CALL = 3;
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
-  private static final int DURATION = 1000;
+  private static final int DURATION = 300;
   private static final int DURATION_MEDIUM = 450;
   private static final int CLICK_ACTION_THRESHOLD = 5;
 
