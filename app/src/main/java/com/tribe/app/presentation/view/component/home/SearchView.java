@@ -424,6 +424,23 @@ public class SearchView extends FrameLayout implements SearchMVPView {
     }
   }
 
+  private void popupAccessFacebookContact() {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT)) {
+      subscriptions.add(DialogFactory.dialog(context(),
+          EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
+          EmojiParser.demojizedText(
+              context().getString(R.string.permission_facebook_popup_message)),
+          context().getString(R.string.permission_facebook_popup_ok),
+          context().getString(R.string.permission_facebook_popup_ko))
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            searchPresenter.loginFacebook();
+            viewFriendsFBLoad.showLoading();
+          }));
+      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT);
+    }
+  }
+
   private void initLoadView(View v) {
     viewFriendsFBLoad = ButterKnife.findById(v, R.id.viewFriendsFBLoad);
     viewFriendsAddressBookLoad = ButterKnife.findById(v, R.id.viewFriendsAddressBookLoad);
