@@ -52,7 +52,7 @@ public class TopBarView extends FrameLayout {
   private static final int MIN_NUMBER_CALL = 3;
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
-  private static final int DURATION = 300;
+  private static final int DURATION = 1000;
   private static final int DURATION_MEDIUM = 450;
   private static final int CLICK_ACTION_THRESHOLD = 5;
 
@@ -79,6 +79,8 @@ public class TopBarView extends FrameLayout {
   @BindView(R.id.progressRefreshBack) RelativeLayout progressRefreshBack;
 
   @BindView(R.id.viewTopBarContainer) FrameLayout viewTopBarContainer;
+
+  @BindView(R.id.btnSyncContacts) FrameLayout btnSyncContacts;
 
   @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
 
@@ -179,8 +181,9 @@ public class TopBarView extends FrameLayout {
         .subscribe(onSearch));
 
     if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
-      imgSyncContacts.setClickable(true);
-      imgSyncContacts.setVisibility(VISIBLE);
+      btnSyncContacts.setClickable(true);
+      btnSyncContacts.setVisibility(VISIBLE);
+      txtNewContacts.setVisibility(INVISIBLE);
     }
   }
 
@@ -202,10 +205,10 @@ public class TopBarView extends FrameLayout {
           } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
-          } else if (isAClickInView(imgSyncContacts, (int) startX, (int) startY)) {
-            if (imgSyncContacts.isClickable()) {
-              imgSyncContacts.onTouchEvent(event);
-              imgSyncContacts.performClick();
+          } else if (isAClickInView(btnSyncContacts, (int) startX, (int) startY)) {
+            if (btnSyncContacts.isClickable()) {
+              btnSyncContacts.onTouchEvent(event);
+              btnSyncContacts.performClick();
             }
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
@@ -229,8 +232,8 @@ public class TopBarView extends FrameLayout {
           viewAvatar.onTouchEvent(event);
         } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
           btnNew.onTouchEvent(event);
-        } else if (isAClickInView(imgSyncContacts, (int) event.getRawX(), (int) event.getRawY())) {
-          imgSyncContacts.onTouchEvent(event);
+        } else if (isAClickInView(btnSyncContacts, (int) event.getRawX(), (int) event.getRawY())) {
+          btnSyncContacts.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
           btnSearch.onTouchEvent(event);
         } else if (isAClickInView(imgClose, (int) event.getRawX(), (int) event.getRawY())) {
@@ -251,21 +254,24 @@ public class TopBarView extends FrameLayout {
     clickInvite.onNext(null);
   }
 
-  @OnClick(R.id.imgSyncContacts) void imgSyncContactsClick() {
+  @OnClick(R.id.btnSyncContacts) void btnSyncContactsClick() {
     onSyncContacts.onNext(null);
   }
 
   public void onSyncStart() {
+    txtNewContacts.setVisibility(INVISIBLE);
     imgSyncContacts.setImageResource(R.drawable.picto_synchronizing_contacts);
     Animation anim =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate);
     imgSyncContacts.startAnimation(anim);
+    btnSyncContacts.setBackground(null);
   }
 
   public void onSyncDone() {
-    imgSyncContacts.clearAnimation();
-    imgSyncContacts.setVisibility(GONE);
-    imgSyncContacts.setClickable(false);
+    btnSyncContacts.clearAnimation();
+    btnSyncContacts.setVisibility(GONE);
+    btnSyncContacts.setClickable(false);
+    txtNewContacts.setVisibility(VISIBLE);
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
