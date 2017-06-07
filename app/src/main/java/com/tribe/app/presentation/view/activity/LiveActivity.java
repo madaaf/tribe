@@ -827,7 +827,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }
 
-    if (true) {
+    if (peopleInLive.size() > 0) {
       returnIntent.putExtra(NotificationContainerView.DISPLAY_SHARING_NOTIF, true);
       Bundle extra = new Bundle();
       extra.putSerializable(SharingCardNotificationView.CALL_GRP_MEMBERS,
