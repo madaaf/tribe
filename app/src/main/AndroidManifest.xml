@@ -178,6 +178,11 @@
         android:theme="@style/AppTheme" />
 
     <activity
+        android:name=".presentation.view.activity.SandboxActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.AppCompat.Dialog" />
+
+    <activity
         android:name=".presentation.view.activity.GroupActivity"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.White" />

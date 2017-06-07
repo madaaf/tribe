@@ -31,6 +31,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
+import com.tribe.app.presentation.view.activity.SandboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -431,5 +432,10 @@ public class Navigator {
       // TODO externalize this string
       Toast.makeText(activity, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
     }
+  }
+
+  public void navigateToSandbox(AuthActivity authActivity) {
+    Intent i = new Intent(authActivity, SandboxActivity.class);
+    authActivity.startActivity(i);
   }
 }

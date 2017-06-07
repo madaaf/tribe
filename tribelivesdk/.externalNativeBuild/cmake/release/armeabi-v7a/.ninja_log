@@ -1,0 +1,5 @@
+# ninja log v5
+0	124	0	CMakeFiles/tribelibyuv.dir/tribelibyuv.cpp.o	6bfd2109ca7176f5
+124	171	0	/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/build/intermediates/cmake/release/obj/armeabi-v7a/libtribelibyuv.so	ce0b0826f618edfd
+0	716	0	CMakeFiles/tribelibopencv.dir/tribelibopencv.cpp.o	c8b0582fc9029822
+716	820	0	/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tribelivesdk/build/intermediates/cmake/release/obj/armeabi-v7a/libtribelibopencv.so	df9b70bfea7f1c7a

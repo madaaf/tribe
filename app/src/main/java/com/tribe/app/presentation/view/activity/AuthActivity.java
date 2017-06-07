@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
@@ -55,7 +54,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private ShakeDetector mShakeDetector;
   private SensorManager mSensorManager;
   private Sensor mAccelerometer;
-  private Boolean enableSandbox = false;
   private Uri deepLink = null;
   private AuthCallback authCallback;
 
@@ -143,19 +141,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     mShakeDetector = new ShakeDetector(() -> {
-      Toast toast;
-      if (!enableSandbox) {
-        Timber.d("enable sandbox");
-        toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
-        Digits.enableSandbox();
-      } else {
-
-        Timber.d("disable sandbox");
-        toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
-        Digits.disableSandbox();
-      }
-      enableSandbox = !enableSandbox;
-      toast.show();
+      navigator.navigateToSandbox(this);
     });
   }
 
