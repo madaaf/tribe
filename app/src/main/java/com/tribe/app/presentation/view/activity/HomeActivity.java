@@ -48,11 +48,13 @@ import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
@@ -233,6 +235,8 @@ public class HomeActivity extends BaseActivity
             tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone, bundleBis);
           }
         }));
+
+    popupAccessFacebookContact();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -803,6 +807,22 @@ public class HomeActivity extends BaseActivity
         searchView.refactorActions();
       }
     });
+  }
+
+  private void popupAccessFacebookContact() {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT) && !FacebookUtils.isLoggedIn()) {
+      subscriptions.add(DialogFactory.dialog(context(),
+          EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
+          EmojiParser.demojizedText(
+              context().getString(R.string.permission_facebook_popup_message)),
+          context().getString(R.string.permission_facebook_popup_ok),
+          context().getString(R.string.permission_facebook_popup_ko))
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            homeGridPresenter.loginFacebook();
+          }));
+      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT);
+    }
   }
 
   private void lookupContacts() {

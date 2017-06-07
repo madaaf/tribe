@@ -18,6 +18,8 @@ import timber.log.Timber;
 
 public class SandboxActivity extends Activity {
 
+  private static String PASS = "1987";
+
   @BindView(R.id.sandboxId) EditText sendboxEditText;
 
   // VARIABLES
@@ -32,13 +34,15 @@ public class SandboxActivity extends Activity {
   }
 
   @OnClick(R.id.btnEnable) void enableSendboxAction() {
-    if (sendboxEditText.getText().toString().equals("1987")) {
+    if (sendboxEditText.getText().toString().equals(PASS)) {
       Timber.w("enable sendbox");
       Digits.enableSandbox();
       Toast toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
       toast.show();
       finish();
-    } else {
+    } else
+
+    {
       Toast toast = Toast.makeText(getApplicationContext(), "wrong pass", Toast.LENGTH_SHORT);
       toast.show();
     }

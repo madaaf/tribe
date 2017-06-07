@@ -35,6 +35,7 @@ import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.FacebookView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +68,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @Inject PhoneUtils phoneUtils;
 
   @Inject User recipient;
+
+  @Inject StateManager stateManager;
 
   @Inject ProfileInfoPresenter profileInfoPresenter;
 
@@ -126,6 +129,22 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
     });
+  }
+
+  private void askAccessFacebookContact() {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT) && !FacebookUtils.isLoggedIn()) {
+      subscriptions.add(DialogFactory.dialog(context(),
+          EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
+          EmojiParser.demojizedText(
+              context().getString(R.string.permission_facebook_popup_message)),
+          context().getString(R.string.permission_facebook_popup_ok),
+          context().getString(R.string.permission_facebook_popup_ko))
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            profileInfoPresenter.loginFacebook();
+          }));
+      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT);
+    }
   }
 
   @Override protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -196,6 +215,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   private void init() {
     rxPermissions = new RxPermissions(this);
     askPermissionAccessContact();
+    askAccessFacebookContact();
 
     subscriptions.add(profileInfoView.onInfoValid().subscribe(b -> {
       if (b) {
