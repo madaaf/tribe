@@ -132,7 +132,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   }
 
   private void askAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT) && !FacebookUtils.isLoggedIn()) {
+    if (!FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -143,7 +143,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           .subscribe(a -> {
             profileInfoPresenter.loginFacebook();
           }));
-      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT);
     }
   }
 

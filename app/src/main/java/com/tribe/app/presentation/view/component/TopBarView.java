@@ -179,12 +179,15 @@ public class TopBarView extends FrameLayout {
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
-
     if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
-      btnSyncContacts.setClickable(true);
-      btnSyncContacts.setVisibility(VISIBLE);
-      txtNewContacts.setVisibility(INVISIBLE);
+      displaySyncBtn();
     }
+  }
+
+  private void displaySyncBtn() {
+    btnSyncContacts.setClickable(true);
+    btnSyncContacts.setVisibility(VISIBLE);
+    txtNewContacts.setVisibility(INVISIBLE);
   }
 
   private void initResources() {
@@ -260,11 +263,12 @@ public class TopBarView extends FrameLayout {
 
   public void onSyncStart() {
     txtNewContacts.setVisibility(INVISIBLE);
+    btnSyncContacts.setBackground(
+        ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white40_sync_corner));
     imgSyncContacts.setImageResource(R.drawable.picto_synchronizing_contacts);
     Animation anim =
         android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate);
     imgSyncContacts.startAnimation(anim);
-    btnSyncContacts.setBackground(null);
   }
 
   public void onSyncDone() {
@@ -272,6 +276,10 @@ public class TopBarView extends FrameLayout {
     btnSyncContacts.setVisibility(GONE);
     btnSyncContacts.setClickable(false);
     txtNewContacts.setVisibility(VISIBLE);
+  }
+
+  public void onSyncError() {
+    displaySyncBtn();
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {

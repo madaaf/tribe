@@ -54,6 +54,8 @@ import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
 import timber.log.Timber;
 
+import static com.tribe.app.presentation.view.utils.StateManager.FACEBOOK_CONTACT_PERMISSION;
+
 /**
  * Android Main Application
  */
@@ -275,6 +277,7 @@ public class AndroidApplication extends Application {
     applicationComponent.currentUser().clear();
     //applicationComponent.currentRoomMember().clear();
     applicationComponent.tagManager().clear();
+    applicationComponent.stateManager().deleteKey(FACEBOOK_CONTACT_PERMISSION);
 
     FileUtils.deleteDir(FileUtils.getCacheDir(getApplicationContext()));
 

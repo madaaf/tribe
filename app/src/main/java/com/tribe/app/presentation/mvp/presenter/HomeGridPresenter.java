@@ -341,6 +341,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      homeGridView.onSyncError();
     }
 
     @Override public void onNext(List<Contact> contactList) {

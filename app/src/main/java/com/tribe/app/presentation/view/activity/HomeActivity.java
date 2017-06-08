@@ -611,6 +611,7 @@ public class HomeActivity extends BaseActivity
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
 
     subscriptions.add(topBarContainer.onSyncContacts().subscribe(aVoid -> syncContacts()));
+    subscriptions.add(searchView.onSyncContacts().subscribe(aVoid -> syncContacts()));
   }
 
   private void initAppState() {
@@ -766,6 +767,11 @@ public class HomeActivity extends BaseActivity
     topBarContainer.onSyncStart();
   }
 
+  @Override public void onSyncError() {
+    displaySyncBanner(getString(R.string.grid_sync_failed_contacts_banner));
+    topBarContainer.onSyncError();
+  }
+
   @Override public void renderContactsOnApp(List<Contact> contactList) {
     onNewContacts.onNext(contactList);
   }
@@ -805,12 +811,14 @@ public class HomeActivity extends BaseActivity
         addressBook.set(true);
         homeGridPresenter.lookupContacts();
         searchView.refactorActions();
+      } else {
+        topBarContainer.onSyncError();
       }
     });
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT) && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -821,7 +829,7 @@ public class HomeActivity extends BaseActivity
           .subscribe(a -> {
             homeGridPresenter.loginFacebook();
           }));
-      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT);
+      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT_PERMISSION);
     }
   }
 

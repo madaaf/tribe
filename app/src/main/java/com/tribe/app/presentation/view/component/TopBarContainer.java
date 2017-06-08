@@ -298,6 +298,10 @@ public class TopBarContainer extends FrameLayout {
     topBarView.onSyncStart();
   }
 
+  public void onSyncError() {
+    topBarView.onSyncError();
+  }
+
   ///////////////////////
   //    ANIMATIONS     //
   ///////////////////////

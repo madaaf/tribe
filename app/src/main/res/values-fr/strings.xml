@@ -150,6 +150,7 @@
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
 	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
+	<string name="grid_sync_failed_contacts_banner">Synchronisation echouée.</string>
 	<string name="grid_synced_contacts_banner">Contacts synchronisés!</string>
 	
 	<!-- Group Identification -->
