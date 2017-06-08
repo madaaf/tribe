@@ -347,7 +347,7 @@ public class CloudUserDataStore implements UserDataStore {
             ContactABRealm contactABRealm = (ContactABRealm) contactI;
             boolean shouldAdd = true;
             for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
-              if (phoneRealm.getPhone().equals(currentUser.getPhone())) {
+              if (phoneRealm.getPhone().trim().replace(" ", "").equals(currentUser.getPhone())) {
                 shouldAdd = false;
               }
             }
@@ -1064,7 +1064,6 @@ public class CloudUserDataStore implements UserDataStore {
     final String request =
         context.getString(R.string.mutation, context.getString(R.string.bookRoomLink, linkId));
 
-    return this.tribeApi.bookRoomLink(request)
-        .map(BookRoomLinkEntity::isRoomBooked);
+    return this.tribeApi.bookRoomLink(request).map(BookRoomLinkEntity::isRoomBooked);
   }
 }
