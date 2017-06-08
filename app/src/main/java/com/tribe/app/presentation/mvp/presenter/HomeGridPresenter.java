@@ -3,7 +3,6 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
@@ -39,7 +38,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class HomeGridPresenter implements Presenter {
+public class HomeGridPresenter extends FriendshipPresenter implements Presenter {
 
   // VIEW ATTACHED
   private HomeGridMVPView homeGridView;
@@ -47,7 +46,6 @@ public class HomeGridPresenter implements Presenter {
   // USECASES
   private JobManager jobManager;
   private GetDiskUserInfos diskUserInfosUsecase;
-  private UpdateFriendship updateFriendship;
   private LeaveGroup leaveGroup;
   private RemoveGroup removeGroup;
   private SendToken sendTokenUseCase;
@@ -71,19 +69,18 @@ public class HomeGridPresenter implements Presenter {
 
   @Inject public HomeGridPresenter(JobManager jobManager,
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos, LeaveGroup leaveGroup,
-      RemoveGroup removeGroup, UpdateFriendship updateFriendship,
-      @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
-      CreateMembership createMembership, @Named("cloudUserInfos") UseCase cloudUserInfos,
-      UpdateUser updateUser, RxFacebook rxFacebook,
+      RemoveGroup removeGroup, @Named("sendToken") SendToken sendToken,
+      GetHeadDeepLink getHeadDeepLink, CreateMembership createMembership,
+      @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUser updateUser, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
       GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
-      SendInvitations sendInvitations, CreateFriendship createFriendship,
-      BookRoomLink bookRoomLink) {
+      SendInvitations sendInvitations, CreateFriendship createFriendship, BookRoomLink bookRoomLink,
+      UpdateFriendship updateFriendship) {
+    this.updateFriendship = updateFriendship;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.leaveGroup = leaveGroup;
     this.removeGroup = removeGroup;
-    this.updateFriendship = updateFriendship;
     this.sendTokenUseCase = sendToken;
     this.getHeadDeepLink = getHeadDeepLink;
     this.createMembership = createMembership;
@@ -99,7 +96,7 @@ public class HomeGridPresenter implements Presenter {
   }
 
   @Override public void onViewDetached() {
-    sendTokenUseCase.unsubscribe();
+    super.onViewDetached();
     leaveGroup.unsubscribe();
     removeGroup.unsubscribe();
     getHeadDeepLink.unsubscribe();
@@ -109,7 +106,6 @@ public class HomeGridPresenter implements Presenter {
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
-    updateFriendship.unsubscribe();
     declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createFriendship.unsubscribe();
@@ -149,18 +145,6 @@ public class HomeGridPresenter implements Presenter {
 
   private void showFriendCollectionInView(List<Recipient> recipientList) {
     this.homeGridView.renderRecipientList(recipientList);
-  }
-
-  public void updateFriendship(String friendshipId, boolean mute,
-      @FriendshipRealm.FriendshipStatus String status) {
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(FriendshipRealm.MUTE, String.valueOf(mute)));
-    values.add(new Pair<>(FriendshipRealm.STATUS, status));
-
-    if (values.size() > 0) {
-      updateFriendship.prepare(friendshipId, values);
-      updateFriendship.execute(new DefaultSubscriber());
-    }
   }
 
   public void leaveGroup(String membershipId) {
@@ -357,6 +341,7 @@ public class HomeGridPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      homeGridView.onSyncError();
     }
 
     @Override public void onNext(List<Contact> contactList) {

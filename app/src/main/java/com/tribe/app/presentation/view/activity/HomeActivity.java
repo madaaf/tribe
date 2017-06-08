@@ -48,11 +48,13 @@ import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
@@ -233,6 +235,8 @@ public class HomeActivity extends BaseActivity
             tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone, bundleBis);
           }
         }));
+
+    popupAccessFacebookContact();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -418,7 +422,7 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      navigator.openSmsForInvite(this, null);
+      navigator.openMessageAppForInvite(this, null);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
@@ -545,7 +549,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this, null);
+      navigator.openMessageAppForInvite(this, null);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
@@ -578,7 +582,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites()
-        .subscribe(aVoid -> navigator.openSmsForInvite(this, null)));
+        .subscribe(aVoid -> navigator.openMessageAppForInvite(this, null)));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
 
@@ -594,7 +598,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openSmsForInvite(this, contact.getPhone());
+      navigator.openMessageAppForInvite(this, contact.getPhone());
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
@@ -605,6 +609,9 @@ public class HomeActivity extends BaseActivity
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
+
+    subscriptions.add(topBarContainer.onSyncContacts().subscribe(aVoid -> syncContacts()));
+    subscriptions.add(searchView.onSyncContacts().subscribe(aVoid -> syncContacts()));
   }
 
   private void initAppState() {
@@ -752,10 +759,17 @@ public class HomeActivity extends BaseActivity
     lastSync.set(System.currentTimeMillis());
     displaySyncBanner(getString(R.string.grid_synced_contacts_banner));
     homeGridPresenter.sendInvitations();
+    topBarContainer.onSyncDone();
   }
 
   @Override public void onSyncStart() {
     displaySyncBanner(getString(R.string.grid_syncing_contacts_banner));
+    topBarContainer.onSyncStart();
+  }
+
+  @Override public void onSyncError() {
+    displaySyncBanner(getString(R.string.grid_sync_failed_contacts_banner));
+    topBarContainer.onSyncError();
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {
@@ -797,8 +811,26 @@ public class HomeActivity extends BaseActivity
         addressBook.set(true);
         homeGridPresenter.lookupContacts();
         searchView.refactorActions();
+      } else {
+        topBarContainer.onSyncError();
       }
     });
+  }
+
+  private void popupAccessFacebookContact() {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) && !FacebookUtils.isLoggedIn()) {
+      subscriptions.add(DialogFactory.dialog(context(),
+          EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
+          EmojiParser.demojizedText(
+              context().getString(R.string.permission_facebook_popup_message)),
+          context().getString(R.string.permission_facebook_popup_ok),
+          context().getString(R.string.permission_facebook_popup_ko))
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            homeGridPresenter.loginFacebook();
+          }));
+      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT_PERMISSION);
+    }
   }
 
   private void lookupContacts() {

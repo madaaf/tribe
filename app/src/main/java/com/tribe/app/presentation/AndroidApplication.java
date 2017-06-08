@@ -10,6 +10,8 @@ import android.support.multidex.MultiDex;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsEventLogger;
+import com.digits.sdk.android.events.DigitsEventDetails;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
@@ -37,6 +39,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerApplicationCompon
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -51,6 +54,8 @@ import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.view.utils.StateManager.FACEBOOK_CONTACT_PERMISSION;
 
 /**
  * Android Main Application
@@ -113,7 +118,22 @@ public class AndroidApplication extends Application {
   private void initFabric() {
     TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
 
-    Digits digits = new Digits.Builder().withTheme(R.style.CustomDigitsTheme).build();
+    Digits digits = new Digits.Builder().withTheme(R.style.CustomDigitsTheme)
+        .withDigitsEventLogger(new DigitsEventLogger() {
+          @Override public void phoneNumberSubmit(DigitsEventDetails details) {
+            super.phoneNumberSubmit(details);
+            Timber.d("phone number submit");
+            applicationComponent.tagManager()
+                .trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
+          }
+
+          @Override public void confirmationCodeSubmit(DigitsEventDetails details) {
+            Timber.d("pin submitted");
+            applicationComponent.tagManager()
+                .trackEvent(TagManagerUtils.KPI_Onboarding_PinSubmitted);
+          }
+        })
+        .build();
 
     if (BuildConfig.DEBUG) {
       Fabric.with(this, new TwitterCore(authConfig), digits);
@@ -261,7 +281,9 @@ public class AndroidApplication extends Application {
 
     applicationComponent.accessToken().clear();
     applicationComponent.currentUser().clear();
+    //applicationComponent.currentRoomMember().clear();
     applicationComponent.tagManager().clear();
+    applicationComponent.stateManager().deleteKey(FACEBOOK_CONTACT_PERMISSION);
 
     FileUtils.deleteDir(FileUtils.getCacheDir(getApplicationContext()));
 

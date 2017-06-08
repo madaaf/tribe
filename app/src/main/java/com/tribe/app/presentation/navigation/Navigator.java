@@ -31,7 +31,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.ShadowCallActivity;
+import com.tribe.app.presentation.view.activity.SandboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -83,15 +83,6 @@ public class Navigator {
     if (context != null) {
       Intent intent = AuthActivity.getCallingIntent(context, deepLink);
       intent.setData(deepLink);
-      context.startActivity(intent);
-    }
-  }
-
-  public void navigateToShadowCallActivity(Activity context, Uri uri, String countryCode,
-      String smsContent) {
-    if (context != null) {
-      Intent intent = ShadowCallActivity.getCallingIntent(context, countryCode, smsContent);
-      intent.setData(uri);
       context.startActivity(intent);
     }
   }
@@ -384,10 +375,10 @@ public class Navigator {
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
-  public void openSmsForInvite(Activity activity, String phoneNumber) {
-    String text = EmojiParser.demojizedText(
-        activity.getString(R.string.share_invite, user.getUsername(),
-            activity.getString(R.string.share_messenger_url)));
+  public void openMessageAppForInvite(Activity activity, String phoneNumber) {
+    String linkId = StringUtils.generateLinkId();
+    String url = StringUtils.getUrlFromLinkId(activity, linkId);
+    String text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
 
     if (StringUtils.isEmpty(phoneNumber)) {
       shareGenericText(text, activity);
@@ -441,5 +432,10 @@ public class Navigator {
       // TODO externalize this string
       Toast.makeText(activity, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
     }
+  }
+
+  public void navigateToSandbox(AuthActivity authActivity) {
+    Intent i = new Intent(authActivity, SandboxActivity.class);
+    authActivity.startActivity(i);
   }
 }

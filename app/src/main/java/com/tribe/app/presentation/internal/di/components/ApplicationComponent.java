@@ -59,7 +59,6 @@ import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.activity.ShadowCallActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
@@ -171,8 +170,6 @@ public interface ApplicationComponent {
   void inject(UserListAdapterDelegate userListAdapterDelegate);
 
   void inject(LiveView liveView);
-
-  void inject(ShadowCallActivity shadowCallActivity);
 
   void inject(LiveContainer liveContainer);
 

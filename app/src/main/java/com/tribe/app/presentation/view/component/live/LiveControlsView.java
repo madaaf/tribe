@@ -112,6 +112,8 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
 
+  @BindView(R.id.imgPlusAddIcon) ImageView imgPlusAddIcon;
+
   // VARIABLES
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false,
@@ -174,6 +176,7 @@ public class LiveControlsView extends FrameLayout {
       timerSubscription.unsubscribe();
       timerSubscription = null;
     }
+    imgPlusAddIcon.clearAnimation();
     super.onDetachedFromWindow();
   }
 
@@ -201,6 +204,10 @@ public class LiveControlsView extends FrameLayout {
   private void initUI() {
     xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
     btnNotify.setEnabled(false);
+
+    Animation anim =
+        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate90);
+    imgPlusAddIcon.startAnimation(anim);
 
     btnFilterOff.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -719,16 +726,18 @@ public class LiveControlsView extends FrameLayout {
     }
   }
 
-  public void startGame(Game game) {
+  public void startGameFromAnotherUser(Game game) {
     hideGameControls();
     setupCurrentGameView(game, null);
   }
 
   public void setupCurrentGameView(Game game, View viewFrom) {
-    currentGameView = addGameToView(viewFrom);
-    currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
-        BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
-        screenUtils.dpToPx(5)));
+    if (currentGameView == null) { // TODO will have to change with other games
+      currentGameView = addGameToView(viewFrom);
+      currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
+          BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
+          screenUtils.dpToPx(5)));
+    }
   }
 
   public void stopGame() {

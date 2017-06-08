@@ -536,7 +536,6 @@ public class LiveView extends FrameLayout {
             isFirstToJoin = !isFirstToJoin;
             viewStatusName.refactorTitle();
           }
-
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
 
@@ -558,6 +557,8 @@ public class LiveView extends FrameLayout {
           refactorShareOverlay();
           refactorNotifyButton();
 
+          LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
+          if (row != null) row.guestAppear();
           tempSubscriptions.add(remotePeer.getPeerView()
               .onNotificationRemoteJoined()
               .observeOn(AndroidSchedulers.mainThread())
@@ -1186,7 +1187,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void startGame(Game game, boolean isUserAction) {
-    if (!isUserAction) viewControlsLive.startGame(game);
+    if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     gameManager.setCurrentGame(game);
     viewLocalLive.startGame(game);
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {

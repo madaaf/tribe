@@ -29,4 +29,6 @@ public interface HomeGridMVPView extends LoadDataMVPView {
   void renderContactsOnApp(List<Contact> contactList);
 
   void onBookLink(Boolean isBookLink);
+
+  void onSyncError();
 }

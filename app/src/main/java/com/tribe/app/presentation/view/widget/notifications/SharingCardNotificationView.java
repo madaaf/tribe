@@ -1,11 +1,13 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,6 +38,12 @@ public class SharingCardNotificationView extends LifeNotification {
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
   @BindView(R.id.avatarsSuperposedView) AvatarsSuperposedLayout avatarsSuperposedLayout;
+
+  @BindView(R.id.btnSnap) ImageView btnSnap;
+  @BindView(R.id.btnTwitter) ImageView btnTwitter;
+  @BindView(R.id.btnInsta) ImageView btnInsta;
+  @BindView(R.id.btnFacebook) ImageView btnFacebook;
+  @BindView(R.id.btnShare) ImageView btnShare;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -79,6 +87,34 @@ public class SharingCardNotificationView extends LifeNotification {
 
     txtMinutes.setText(txtMin);
     txtFriends.setText(txtFriend + "!");
+
+    if (!appInstalledOrNot(PACKAGE_SNAPSHAT)) {
+      btnSnap.setAlpha(0.2f);
+      btnSnap.setClickable(false);
+    }
+    if (!appInstalledOrNot(PACKAGE_FACEBOOK)) {
+      btnFacebook.setAlpha(0.2f);
+      btnFacebook.setClickable(false);
+    }
+    if (!appInstalledOrNot(PACKAGE_TWITTER)) {
+      btnTwitter.setAlpha(0.2f);
+      btnTwitter.setClickable(false);
+    }
+    if (!appInstalledOrNot(PACKAGE_INSTA)) {
+      btnInsta.setAlpha(0.2f);
+      btnInsta.setClickable(false);
+    }
+  }
+
+  private boolean appInstalledOrNot(String uri) {
+    PackageManager pm = context.getPackageManager();
+    try {
+      pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+      return true;
+    } catch (PackageManager.NameNotFoundException e) {
+    }
+
+    return false;
   }
 
   private void setMembers(List<TribeGuest> members) {
