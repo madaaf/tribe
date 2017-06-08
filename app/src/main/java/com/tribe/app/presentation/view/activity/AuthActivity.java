@@ -152,7 +152,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void connectUser(User user) {
     this.currentUser.copy(user);
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess);
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.TYPE, "signup");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
     Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
     if (deepLink != null) {
