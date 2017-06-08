@@ -1,5 +1,6 @@
 package com.tribe.tribelivesdk.core;
 
+import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeCandidate;
@@ -43,8 +44,8 @@ public class JsonToModel {
   private PublishSubject<TribeMediaConstraints> onTribeMediaConstraints = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onShouldSwitchRemoteMediaMode =
       PublishSubject.create();
-  private PublishSubject<String> onNewGame = PublishSubject.create();
-  private PublishSubject<String> onStopGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
 
   public void setOptions(TribeLiveOptions options) {
     this.options = options;
@@ -208,15 +209,15 @@ public class JsonToModel {
           onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
 
           if (message.has(Game.CURRENT_GAME)) {
-            onNewGame.onNext(message.getString(Game.CURRENT_GAME));
+            onNewGame.onNext(new Pair<>(null, message.getString(Game.CURRENT_GAME)));
           }
         } else if (message.has(Room.MESSAGE_GAME)) {
           JSONObject gameMessage = message.getJSONObject(Room.MESSAGE_GAME);
           String action = gameMessage.getString(Game.ACTION);
           if (action.equals(Game.START)) {
-            onNewGame.onNext(gameMessage.getString(Game.ID));
+            onNewGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
           } else if (action.equals(Game.STOP)) {
-            onStopGame.onNext(gameMessage.getString(Game.ID));
+            onStopGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
           }
         }
       } else if (object != null && object.has(Room.MESSAGE_ERROR)) {
@@ -331,11 +332,11 @@ public class JsonToModel {
     return onShouldSwitchRemoteMediaMode;
   }
 
-  public Observable<String> onNewGame() {
+  public Observable<Pair<TribeSession, String>> onNewGame() {
     return onNewGame;
   }
 
-  public Observable<String> onStopGame() {
+  public Observable<Pair<TribeSession, String>> onStopGame() {
     return onStopGame;
   }
 }

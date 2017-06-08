@@ -225,6 +225,14 @@ public class LiveContainer extends FrameLayout {
       //}
     }));
 
+    subscriptions.add(viewLive.onGameUIActive().subscribe(viewGameUI -> {
+      if (stateManager.shouldDisplay(StateManager.GAME_POST_IT_POPUP)) {
+        stateManager.addTutorialKey(StateManager.GAME_POST_IT_POPUP);
+        nativeDialogsView.displayPopup(viewGameUI, PopupContainerView.DISPLAY_POST_IT_GAME,
+            getResources().getString(R.string.game_post_it_rule));
+      }
+    }));
+
     viewLive.initDropEnabledSubscription(onDropEnabled());
     viewLive.initInviteOpenSubscription(onEvent());
     viewLive.initOnStartDragSubscription(onStartDrag());
@@ -514,14 +522,16 @@ public class LiveContainer extends FrameLayout {
     dropEnabled = true;
     onDropEnabled.onNext(true);
     initialTileHeight = currentTileView.getHeight();
-    AnimationUtils.animateSize(currentTileView, initialTileHeight, 0, DURATION);
+    AnimationUtils.animateSize(currentTileView, initialTileHeight, 0, DURATION,
+        new DecelerateInterpolator());
     draggedTileView.startDrop();
   }
 
   private void endTileDrop() {
     dropEnabled = false;
     onDropEnabled.onNext(false);
-    AnimationUtils.animateSize(currentTileView, 0, initialTileHeight, DURATION);
+    AnimationUtils.animateSize(currentTileView, 0, initialTileHeight, DURATION,
+        new DecelerateInterpolator());
     draggedTileView.endDrop();
   }
 
@@ -602,7 +612,7 @@ public class LiveContainer extends FrameLayout {
       springRight.setEndValue(-viewInviteLive.getWidth());
     }
     resetTimer();
-    
+
     if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP) && (nbrCall % 2) == 0) {
       nativeDialogsView.displayPopup(viewInviteLive,
           PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);

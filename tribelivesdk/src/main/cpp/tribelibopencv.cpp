@@ -28,6 +28,7 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
                                                            jintArray postIt,
                                                            jint postItWidth,
                                                            jint postItHeight,
+                                                           jfloat postItScale,
                                                            jfloat xPos,
                                                            jfloat yPos,
                                                            jbyteArray argbOut) {
@@ -38,6 +39,10 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
     cv::Mat _rgbaIn(frameHeight, frameWidth, CV_8UC4, (uchar *) argbInData);
     cv::Mat _rgbaOut(frameHeight, frameWidth, CV_8UC4, (uchar *) argbOutData);
     cv::Mat _postIt(postItHeight, postItWidth, CV_8UC4, (uchar *) postItData);
+    cv::Mat _postItScaled;
+
+    Size size(postItWidth * postItScale, postItHeight * postItScale);
+    cv::resize(_postIt, _postItScaled, size);
 
     cv::Point2i location(xPos, yPos);
     _rgbaIn.copyTo(_rgbaOut);
@@ -47,7 +52,7 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
         int fY = y - location.y; // because of the translation
 
         // We are done of we have processed all rows of the foreground image.
-        if (fY >= _postIt.rows)
+        if (fY >= _postItScaled.rows)
             break;
 
         // Start at the column indicated by location,
@@ -56,22 +61,22 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
             int fX = x - location.x; // because of the translation.
 
             // We are done with this row if the column is outside of the foreground image.
-            if (fX >= _postIt.cols)
+            if (fX >= _postItScaled.cols)
                 break;
 
             // Determine the opacity of the foreground pixel, using its fourth (alpha) channel.
             double opacity =
-                    ((double) _postIt.data[fY * _postIt.step + fX * _postIt.channels() +
-                                           3])
-
-                    / 255.;
+                    ((double) _postItScaled.data[fY * _postItScaled.step +
+                                                 fX * _postItScaled.channels() +
+                                                 3]) / 255.;
 
 
             // And now combine the background and foreground pixel, using the opacity,
             // But only if opacity > 0.
             for (int c = 0; opacity > 0 && c < _rgbaOut.channels(); ++c) {
                 unsigned char foregroundPx =
-                        _postIt.data[fY * _postIt.step + fX * _postIt.channels() + c];
+                        _postItScaled.data[fY * _postItScaled.step + fX * _postItScaled.channels() +
+                                           c];
                 unsigned char backgroundPx =
                         _rgbaIn.data[y * _rgbaIn.step + x * _rgbaIn.channels() + c];
                 _rgbaOut.data[y * _rgbaOut.step + _rgbaOut.channels() * x + c] =
@@ -79,6 +84,11 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
             }
         }
     }
+
+    _rgbaIn.release();
+    _rgbaOut.release();
+    _postIt.release();
+    _postItScaled.release();
 
     env->ReleaseByteArrayElements(argbIn, argbInData, 0);
     env->ReleaseIntArrayElements(postIt, postItData, 0);

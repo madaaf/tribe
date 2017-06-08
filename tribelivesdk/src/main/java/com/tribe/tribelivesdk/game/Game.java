@@ -7,6 +7,7 @@ import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 23/05/2017.
@@ -27,7 +28,8 @@ public abstract class Game extends GameFilter {
 
   protected boolean localFrameDifferent = false;
 
-  // OBSERVABLES
+  // OBSERVABLE / SUBSCRIPTIONS
+  protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
   protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
@@ -50,6 +52,10 @@ public abstract class Game extends GameFilter {
 
   public int getDrawableRes() {
     return drawableRes;
+  }
+
+  public void dispose() {
+    subscriptions.clear();
   }
 
   /////////////////

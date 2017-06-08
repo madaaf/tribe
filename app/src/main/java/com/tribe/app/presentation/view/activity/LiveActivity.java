@@ -589,26 +589,34 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
-    subscriptions.add(viewLive.onNotificationRemotePeerInvited().subscribe(userName -> {
-      displayNotification(getString(R.string.live_notification_peer_added, userName));
-    }));
+    subscriptions.add(viewLive.onNotificationRemotePeerInvited()
+        .subscribe(userName -> displayNotification(
+            getString(R.string.live_notification_peer_added, userName))));
 
-    subscriptions.add(viewLive.onNotificationonRemotePeerRemoved().subscribe(userName -> {
-      displayNotification(getString(R.string.live_notification_peer_left, userName));
-    }));
+    subscriptions.add(viewLive.onNotificationonRemotePeerRemoved()
+        .subscribe(userName -> displayNotification(
+            getString(R.string.live_notification_peer_left, userName))));
 
-    subscriptions.add(viewLive.onNotificationRemoteWaiting().subscribe(userName -> {
-      displayNotification(getString(R.string.live_notification_peer_joining, userName));
-    }));
+    subscriptions.add(viewLive.onNotificationRemoteWaiting()
+        .subscribe(userName -> displayNotification(
+            getString(R.string.live_notification_peer_joining, userName))));
 
     subscriptions.add(viewLive.onNotificationRemoteJoined().subscribe(userName -> {
       ratingNotificationSubscribe();
       displayNotification(getString(R.string.live_notification_peer_joined, userName));
     }));
 
-    subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().subscribe(aVoid -> {
-      displayNotification(getString(R.string.live_notification_buzzed));
-    }));
+    subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed()
+        .subscribe(aVoid -> displayNotification(getString(R.string.live_notification_buzzed))));
+
+    subscriptions.add(viewLive.onNotificationOnGameStarted()
+        .subscribe(theString -> displayNotification(theString)));
+
+    subscriptions.add(viewLive.onNotificationOnGameStopped()
+        .subscribe(theString -> displayNotification(theString)));
+
+    subscriptions.add(viewLive.onNotificationOnGameRestart()
+        .subscribe(theString -> displayNotification(theString)));
 
     subscriptions.add(viewLive.onScreenshot().subscribe(aVoid -> {
       if (RuntimePermissionUtil.checkPermission(context(), this)) {

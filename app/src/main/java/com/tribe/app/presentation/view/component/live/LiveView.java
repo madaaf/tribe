@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -32,6 +34,7 @@ import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.component.TileView;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Degrees;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
@@ -159,6 +162,9 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationRemoteWaiting = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerBuzzed = PublishSubject.create();
   private PublishSubject<String> onNotificationRemoteJoined = PublishSubject.create();
+  private PublishSubject<String> onNotificationGameStarted = PublishSubject.create();
+  private PublishSubject<String> onNotificationGameStopped = PublishSubject.create();
+  private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
   private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
 
   public LiveView(Context context) {
@@ -291,7 +297,7 @@ public class LiveView extends FrameLayout {
     super.onFinishInflate();
   }
 
-  public void changeConfiguration(int width, int height) {
+  @Override protected void onConfigurationChanged(Configuration newConfig) {
     if (viewControlsLive == null) return;
 
     if (room != null) {
@@ -423,19 +429,24 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
       onStartGame.onNext(game);
-      room.sendToPeers(getNewGamePayload(game), false);
-      viewLocalLive.startGame(game);
+      displayStartGameNotification(game.getName(), user.getDisplayName());
+      restartGame(game);
+    }));
+
+    persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
+      displayReRollGameNotification(user.getDisplayName());
+      restartGame(game);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
         .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
             ((game, labelType) -> {
               if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
-                viewLocalLive.startGame(game);
-                room.sendToPeers(getNewGamePayload(game), false);
+                displayReRollGameNotification(user.getDisplayName());
+                restartGame(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
-                viewControlsLive.stopGame();
-                viewLocalLive.stopGame();
+                stopGame();
+                displayStopGameNotification(game.getName(), user.getDisplayName());
                 room.sendToPeers(getStopGamePayload(game), false);
               }
 
@@ -497,15 +508,26 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onRoomFull().subscribe(onRoomFull));
 
-    tempSubscriptions.add(room.onNewGame().subscribe(gameId -> {
-      Game game = gameManager.getGameById(gameId);
-      viewControlsLive.startGame(game);
-      viewLocalLive.startGame(game);
+    tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {
+      Game currentGame = gameManager.getCurrentGame();
+      Game game = gameManager.getGameById(pairSessionGame.second);
+
+      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+
+      if (currentGame == null) {
+        displayStartGameNotification(game.getName(), displayName);
+      } else {
+        displayReRollGameNotification(displayName);
+      }
+
+      startGame(game, false);
     }));
 
-    tempSubscriptions.add(room.onStopGame().subscribe(gameId -> {
-      viewLocalLive.stopGame();
-      viewControlsLive.stopGame();
+    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
+      Game game = gameManager.getGameById(pairSessionGame.second);
+      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+      displayStopGameNotification(game.getName(), displayName);
+      stopGame();
     }));
 
     tempSubscriptions.add(
@@ -1163,6 +1185,46 @@ public class LiveView extends FrameLayout {
     return null;
   }
 
+  private void startGame(Game game, boolean isUserAction) {
+    if (!isUserAction) viewControlsLive.startGame(game);
+    gameManager.setCurrentGame(game);
+    viewLocalLive.startGame(game);
+    if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
+      AnimationUtils.animateBottomMargin(viewRoom, screenUtils.dpToPx(40), DURATION);
+      AnimationUtils.animateBottomMargin(viewControlsLive, screenUtils.dpToPx(40), DURATION);
+    }
+  }
+
+  private void restartGame(Game game) {
+    startGame(game, true);
+    room.sendToPeers(getNewGamePayload(game), false);
+  }
+
+  private void stopGame() {
+    viewControlsLive.stopGame();
+    viewLocalLive.stopGame();
+    if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
+      stateManager.addTutorialKey(StateManager.NEW_GAME_START);
+      AnimationUtils.animateBottomMargin(viewRoom, 0, DURATION);
+      AnimationUtils.animateBottomMargin(viewControlsLive, 0, DURATION);
+    }
+  }
+
+  private void displayStartGameNotification(String gameName, String userDisplayName) {
+    onNotificationGameStarted.onNext(EmojiParser.demojizedText(
+        getResources().getString(R.string.game_event_started, userDisplayName, gameName)));
+  }
+
+  private void displayReRollGameNotification(String userDisplayName) {
+    onNotificationGameRestart.onNext(EmojiParser.demojizedText(
+        getResources().getString(R.string.game_event_post_it_re_roll, userDisplayName)));
+  }
+
+  private void displayStopGameNotification(String gameName, String userDisplayName) {
+    onNotificationGameStopped.onNext(EmojiParser.demojizedText(
+        getResources().getString(R.string.game_event_stopped, userDisplayName, gameName)));
+  }
+
   public User getUser() {
     return user;
   }
@@ -1231,6 +1293,18 @@ public class LiveView extends FrameLayout {
     return onNotificationRemotePeerBuzzed;
   }
 
+  public Observable<String> onNotificationOnGameStarted() {
+    return onNotificationGameStarted;
+  }
+
+  public Observable<String> onNotificationOnGameStopped() {
+    return onNotificationGameStopped;
+  }
+
+  public Observable<String> onNotificationOnGameRestart() {
+    return onNotificationGameRestart;
+  }
+
   public Observable<Map<String, LiveRowView>> onInvitesChanged() {
     return liveInviteMap.getMapObservable();
   }
@@ -1253,6 +1327,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Game> onStartGame() {
     return onStartGame;
+  }
+
+  public Observable<View> onGameUIActive() {
+    return viewControlsLive.onGameUIActive();
   }
 }
 

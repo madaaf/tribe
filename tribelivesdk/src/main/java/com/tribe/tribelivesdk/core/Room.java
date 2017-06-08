@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.core;
 
 import android.support.annotation.StringDef;
+import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
@@ -86,8 +87,8 @@ public class Room {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
-  private PublishSubject<String> onNewGame = PublishSubject.create();
-  private PublishSubject<String> onStopGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
 
   public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
     this.webSocketConnection = webSocketConnection;
@@ -476,11 +477,11 @@ public class Room {
     return onRoomFull;
   }
 
-  public Observable<String> onNewGame() {
+  public Observable<Pair<TribeSession, String>> onNewGame() {
     return onNewGame;
   }
 
-  public Observable<String> onStopGame() {
+  public Observable<Pair<TribeSession, String>> onStopGame() {
     return onStopGame;
   }
 }

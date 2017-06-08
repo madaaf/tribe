@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.NinePatchDrawable;
 import android.media.MediaScannerConnection;
@@ -141,5 +142,28 @@ public class BitmapUtils {
     bg.draw(canvas);
     canvas.drawText(text, 0, baseline, paint);
     return image;
+  }
+
+  public static Bitmap generateGameIconWithBorder(Bitmap icon, int marginBorder) {
+    Paint paintCircle = new Paint();
+    paintCircle.setAntiAlias(true);
+    paintCircle.setDither(true);
+    paintCircle.setColor(Color.WHITE);
+
+    Paint bitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    int size = icon.getWidth() + marginBorder;
+    Bitmap dest =
+        Bitmap.createBitmap(icon.getWidth() + marginBorder, icon.getHeight() + marginBorder,
+            icon.getConfig());
+    Canvas canvas = new Canvas(dest);
+    canvas.drawCircle(size >> 1, size >> 1, size >> 1, paintCircle);
+    canvas.drawBitmap(icon, (size - icon.getWidth()) >> 1, (size - icon.getHeight()) >> 1,
+        bitmapPaint);
+    return dest;
+  }
+
+  public static Bitmap bitmapFromResources(Resources resources, int resourceId) {
+    return BitmapFactory.decodeResource(resources, resourceId);
   }
 }

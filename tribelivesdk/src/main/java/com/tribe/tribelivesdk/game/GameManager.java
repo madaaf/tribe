@@ -80,6 +80,11 @@ import rx.subscriptions.CompositeSubscription;
 
   public void setCurrentGame(Game game) {
     this.currentGame = game;
+
+    if (currentGame != null && currentGame instanceof GamePostIt) {
+      GamePostIt gamePostIt = (GamePostIt) game;
+      gamePostIt.generateNewName();
+    }
   }
 
   public void stop() {
@@ -96,6 +101,9 @@ import rx.subscriptions.CompositeSubscription;
 
   public void dispose() {
     if (subscriptions != null) subscriptions.clear();
+    for (Game game : gameList) {
+      game.dispose();
+    }
   }
 
   /////////////////

@@ -332,10 +332,10 @@ public class AnimationUtils {
     animator.start();
   }
 
-  public static void animateSize(View view, int startSize, int endSize, int duration) {
+  public static void animateSize(View view, int startSize, int endSize, int duration, Interpolator interpolator) {
     ValueAnimator animator = ValueAnimator.ofInt(startSize, endSize);
     animator.setDuration(duration);
-    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setInterpolator(interpolator);
     animator.addUpdateListener(
         animation -> UIUtils.changeSizeOfView(view, (int) animation.getAnimatedValue()));
     animator.start();

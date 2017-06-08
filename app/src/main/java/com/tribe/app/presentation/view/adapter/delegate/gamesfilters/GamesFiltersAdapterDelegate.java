@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.view.adapter.delegate.gamesfilters;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +31,7 @@ import rx.subjects.PublishSubject;
 public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List<GameFilter>> {
 
   protected static final int DURATION = 100;
+  protected static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
 
@@ -92,7 +96,19 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
 
   private void scale(GameFilterViewHolder vh, boolean up) {
     AnimationUtils.animateSize(vh.bgSelected, up ? sizeDisabled : sizeEnabled,
-        up ? sizeEnabled : sizeDisabled, DURATION);
+        up ? sizeEnabled : sizeDisabled, DURATION, new DecelerateInterpolator());
+
+    if (up) {
+      ValueAnimator animator = ValueAnimator.ofFloat(1.0f, 1.15f, 1.0f);
+      animator.setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT));
+      animator.setDuration(DURATION * 3);
+      animator.addUpdateListener(animation -> {
+        Float scale = (float) animation.getAnimatedValue();
+        vh.itemView.setScaleX(scale);
+        vh.itemView.setScaleY(scale);
+      });
+      animator.start();
+    }
   }
 
   static class GameFilterViewHolder extends RecyclerView.ViewHolder {

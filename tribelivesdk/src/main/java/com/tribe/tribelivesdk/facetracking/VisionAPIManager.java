@@ -11,6 +11,7 @@ import com.tribe.tribelivesdk.webrtc.Frame;
 import java.nio.ByteBuffer;
 import rx.Observable;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -19,6 +20,8 @@ import timber.log.Timber;
  */
 
 public class VisionAPIManager {
+
+  private static final float THRESHOLD_FACE_WIDTH = 20;
 
   private static VisionAPIManager instance;
 
@@ -37,10 +40,12 @@ public class VisionAPIManager {
   private long t0, timeToDetect;
   private FaceDetector faceDetector;
   private Face face;
+  private float previousFaceWidth, newFaceWidth;
   private com.google.android.gms.vision.Frame inputFrame;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Float> onFaceWidthChange = PublishSubject.create();
 
   public VisionAPIManager(Context context) {
     this.context = context;
@@ -95,11 +100,13 @@ public class VisionAPIManager {
 
     @Override public void onNewItem(int faceId, Face face) {
       Timber.d("onNewItem : " + face);
+      computeFace(face);
     }
 
     @Override public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
       Timber.d("onUpdate : " + face);
       VisionAPIManager.this.face = face;
+      computeFace(face);
     }
 
     @Override public void onMissing(FaceDetector.Detections<Face> detectionResults) {
@@ -109,7 +116,21 @@ public class VisionAPIManager {
 
     @Override public void onDone() {
       Timber.d("onDone");
+      newFaceWidth = previousFaceWidth = 0;
     }
+  }
+
+  private void computeFace(Face face) {
+    if (face != null) {
+      previousFaceWidth = newFaceWidth;
+      newFaceWidth = face.getWidth();
+
+      if (faceWidthChanged()) onFaceWidthChange.onNext(newFaceWidth);
+    }
+  }
+
+  private boolean faceWidthChanged() {
+    return Math.abs(previousFaceWidth - newFaceWidth) > THRESHOLD_FACE_WIDTH;
   }
 
   ////////////////
@@ -129,7 +150,7 @@ public class VisionAPIManager {
 
           return frame;
         })
-        .filter(frame1 -> (t0 - timeToDetect >= 500))
+        .filter(frame1 -> (t0 - timeToDetect >= 5))
         .flatMap(frame -> Observable.just(frame)
             .observeOn(Schedulers.from(frameExecutor))
             .map(frame1 -> {
@@ -166,5 +187,13 @@ public class VisionAPIManager {
   public void dispose() {
     subscriptions.clear();
     if (faceDetector != null) faceDetector.release();
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Float> onFaceWidthChange() {
+    return onFaceWidthChange;
   }
 }

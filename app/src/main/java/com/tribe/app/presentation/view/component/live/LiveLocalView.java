@@ -119,6 +119,7 @@ public class LiveLocalView extends FrameLayout {
     cardViewStreamLayout.addView(viewPeerLocal, 0,
         new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT));
+    cardViewStreamLayout.setRadius(screenUtils.dpToPx(5));
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
