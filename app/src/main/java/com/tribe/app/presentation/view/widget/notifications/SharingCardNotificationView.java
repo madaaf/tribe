@@ -33,7 +33,7 @@ public class SharingCardNotificationView extends LifeNotification {
   public static final String PACKAGE_INSTA = "com.instagram.android";
   public static final String PACKAGE_TWITTER = "com.twitter.android";
   public static final String MULTIPLE_CHOICE = "MULTIPLE_CHOICE";
-  public static final String PACKAGE_FACEBOOK = "PACKAGE_FACEBOOK";
+  public static final String PACKAGE_FACEBOOK = "com.facebook.katana";
 
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
@@ -119,7 +119,7 @@ public class SharingCardNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, Color.WHITE);
+    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, Color.WHITE, AvatarsSuperposedLayout.AVATARS_SMALL_SIZE);
     prefilledGrpMembers = getUserList(members);
   }
 
