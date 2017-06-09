@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 
 public class SharingCardNotificationView extends LifeNotification {
+  public static final int CORNER_RADIUS = 7;
 
   public static final String CALL_GRP_MEMBERS = "CALL_GRP_MEMBERS";
   public static final String DURATION_CALL = "DURATION_CALL";
@@ -44,6 +46,7 @@ public class SharingCardNotificationView extends LifeNotification {
   @BindView(R.id.btnInsta) ImageView btnInsta;
   @BindView(R.id.btnFacebook) ImageView btnFacebook;
   @BindView(R.id.btnShare) ImageView btnShare;
+  @BindView(R.id.cardview) CardView cardView;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -70,10 +73,16 @@ public class SharingCardNotificationView extends LifeNotification {
     this.context = context;
     this.members = members;
     initDependencyInjector();
+
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_sharing_card_notification, this, true);
     unbinder = ButterKnife.bind(this);
     setMembers(members);
+
+    // retro-compatibiliy with lollipop
+    cardView.setPreventCornerOverlap(false);
+    cardView.setMaxCardElevation(20);
+    cardView.setRadius(screenUtils.dpToPx(CORNER_RADIUS));
 
     int nbrFriends = members.size();
     int duration = (int) durationCall;
@@ -119,7 +128,8 @@ public class SharingCardNotificationView extends LifeNotification {
 
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
-    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, Color.WHITE, AvatarsSuperposedLayout.AVATARS_SMALL_SIZE);
+    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, Color.WHITE,
+        AvatarsSuperposedLayout.AVATARS_SMALL_SIZE);
     prefilledGrpMembers = getUserList(members);
   }
 

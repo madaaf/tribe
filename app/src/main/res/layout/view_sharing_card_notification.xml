@@ -1,188 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    >
 
-  <ImageView
-      android:id="@+id/viewScreenShot"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:alpha="0"
-      android:gravity="center"
-      />
-
-  <LinearLayout
-      android:id="@+id/sharingCardNotificationView"
+  <android.support.v7.widget.CardView
+      android:id="@+id/cardview"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginLeft="30dp"
       android:layout_marginRight="30dp"
-      android:layout_marginTop="70dp"
-      android:background="@drawable/shape_rect_white_corner"
-      android:orientation="vertical"
-      android:weightSum="3"
+      android:layout_marginTop="3dp"
+      card_view:cardElevation="20dp"
+      card_view:cardMaxElevation="20dp"
+      card_view:cardPreventCornerOverlap="false"
+      card_view:cardUseCompatPadding="true"
       >
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/sharingCardNotificationView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
         android:background="@drawable/shape_rect_white_corner"
-        android:gravity="center"
         android:orientation="vertical"
-        android:weightSum="1"
+        android:weightSum="3"
         >
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:gravity="center"
-          android:padding="20dp"
-          android:text="@string/live_sharing_title"
-          style="@style/Headline.Red.2"
-          />
-      <include layout="@layout/view_separator_simple" />
 
-      <com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout
-          android:id="@+id/avatarsSuperposedView"
+      <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          />
-      <LinearLayout
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="5dp"
-          android:orientation="horizontal"
+          android:layout_weight="2"
+          android:background="@drawable/shape_rect_white_corner"
+          android:gravity="center"
+          android:orientation="vertical"
+          android:weightSum="1"
           >
         <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:paddingStart="30dp"
-            android:text="@string/live_sharing_infos_you_spent"
+            android:padding="20dp"
+            android:text="@string/live_sharing_title"
+            android:textColor="@color/star_red"
             style="@style/Title.2.Black40"
             />
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtMinutesSharingCard"
+        <include layout="@layout/view_separator_simple" />
+
+        <com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout
+            android:id="@+id/avatarsSuperposedView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:paddingEnd="30dp"
-            android:text="@string/live_sharing_infos_you_mins"
-            style="@style/Title.2.Black"
-            />
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"
+            >
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:lineSpacingExtra="4dp"
+              android:paddingStart="30dp"
+              android:text="@string/live_sharing_infos_you_spent"
+              style="@style/Title.2.Black40"
+              />
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:id="@+id/txtMinutesSharingCard"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:lineSpacingExtra="4dp"
+              android:paddingEnd="30dp"
+              android:text="@string/live_sharing_infos_you_mins"
+              style="@style/Title.2.Black"
+              />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dp"
+              android:gravity="center"
+              android:lineSpacingExtra="4dp"
+              android:paddingStart="30dp"
+              android:text="@string/live_sharing_infos_you_with"
+              style="@style/Title.2.Black40"
+              />
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:id="@+id/txtFriendsSharingCard"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dp"
+              android:gravity="center"
+              android:lineSpacingExtra="4dp"
+              android:paddingEnd="30dp"
+              android:text="@string/live_sharing_infos_you_friends"
+              style="@style/Title.2.Black"
+              />
+        </LinearLayout>
+
       </LinearLayout>
 
-
       <LinearLayout
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="horizontal"
+          android:orientation="vertical"
+          android:weightSum="2"
           >
+        <include layout="@layout/view_separator_simple" />
+
         <com.tribe.app.presentation.view.widget.TextViewFont
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:id="@+id/btnAction1"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:background="@color/grey.share"
             android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:paddingStart="30dp"
-            android:text="@string/live_sharing_infos_you_with"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:text="@string/live_sharing_share"
             style="@style/Title.2.Black40"
             />
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtFriendsSharingCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:paddingEnd="30dp"
-            android:text="@string/live_sharing_infos_you_friends"
-            style="@style/Title.2.Black"
-            />
+
+        <include layout="@layout/view_separator_simple" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@drawable/shape_rect_rounded_corner"
+            >
+
+          <ImageView
+              android:id="@+id/btnSnap"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_weight="1"
+              android:src="@drawable/picto_snapchat_color"
+              />
+          <include layout="@layout/view_separator_vertical_simple" />
+
+          <ImageView
+              android:id="@+id/btnInsta"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_weight="1"
+              android:src="@drawable/picto_instagram_color"
+              />
+          <include layout="@layout/view_separator_vertical_simple" />
+          <ImageView
+              android:id="@+id/btnTwitter"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_weight="1"
+              android:src="@drawable/picto_twitter_color"
+              />
+          <include layout="@layout/view_separator_vertical_simple" />
+          <ImageView
+              android:id="@+id/btnFacebook"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_weight="1"
+              android:src="@drawable/picto_facebook_color"
+              />
+          <include layout="@layout/view_separator_vertical_simple" />
+          <ImageView
+              android:id="@+id/btnShare"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_weight="1"
+              android:src="@drawable/picto_share_icon"
+              />
+        </LinearLayout>
+
       </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:weightSum="2"
-        >
-      <include layout="@layout/view_separator_simple" />
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/btnAction1"
-          android:layout_width="match_parent"
-          android:layout_height="45dp"
-          android:layout_weight="1"
-          android:background="@color/grey.share"
-          android:gravity="center"
-          android:paddingEnd="20dp"
-          android:paddingStart="20dp"
-          android:text="@string/live_sharing_share"
-          style="@style/Title.2.Black40"
-          />
-
-      <include layout="@layout/view_separator_simple" />
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="70dp"
-          android:background="@drawable/shape_rect_rounded_corner"
-          >
-
-        <ImageView
-            android:id="@+id/btnSnap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/picto_snapchat_color"
-            />
-        <include layout="@layout/view_separator_vertical_simple" />
-
-        <ImageView
-            android:id="@+id/btnInsta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/picto_instagram_color"
-            />
-        <include layout="@layout/view_separator_vertical_simple" />
-        <ImageView
-            android:id="@+id/btnTwitter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/picto_twitter_color"
-            />
-        <include layout="@layout/view_separator_vertical_simple" />
-        <ImageView
-            android:id="@+id/btnFacebook"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/picto_facebook_color"
-            />
-        <include layout="@layout/view_separator_vertical_simple" />
-        <ImageView
-            android:id="@+id/btnShare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@drawable/picto_share_icon"
-            />
-      </LinearLayout>
-
-    </LinearLayout>
-
-  </LinearLayout>
-
+  </android.support.v7.widget.CardView>
 </merge>
