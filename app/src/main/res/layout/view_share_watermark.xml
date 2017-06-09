@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/shareWatermarkViewBg"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
     android:background="@color/blue.2"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="30dp"
+    android:paddingBottom="310dp"
+    android:paddingEnd="125dp"
+    android:paddingStart="125dp"
+    android:paddingTop="310dp"
+    android:scaleType="centerCrop"
     >
-
   <ImageView
-      android:layout_width="wrap_content"
+      android:id="@+id/imageView3"
+      android:layout_width="500dip"
       android:layout_height="wrap_content"
-      android:padding="10dp"
+      android:layout_marginBottom="80dp"
+      android:layout_marginTop="100dp"
+      android:padding="20dp"
+      android:scaleType="centerInside"
       android:src="@drawable/picto_watermark"
       />
 
-
   <com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout
       android:id="@+id/avatarsSuperposedView"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_width="wrap_content"
+      android:layout_height="200dp"
+      android:layout_marginBottom="30dp"
       />
 
   <LinearLayout
@@ -34,6 +45,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/live_sharing_infos_i_spent"
+        android:textSize="50sp"
         style="@style/Circular.2.White40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -42,6 +54,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/live_sharing_infos_you_mins"
+        android:textSize="50sp"
         style="@style/Circular.2"
         />
   </LinearLayout>
@@ -59,6 +72,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_you_with"
+        android:textSize="50sp"
         style="@style/Circular.2.White40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -69,6 +83,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_you_friends"
+        android:textSize="50sp"
         style="@style/Circular.2"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -78,6 +93,7 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_on_a"
+        android:textSize="50sp"
         style="@style/Circular.2.White40"
         />
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -88,14 +104,18 @@
         android:gravity="center"
         android:lineSpacingExtra="4dp"
         android:text="@string/live_sharing_infos_live_call"
+        android:textSize="50sp"
         style="@style/Circular.2"
         />
   </LinearLayout>
 
   <ImageView
-      android:layout_width="wrap_content"
+      android:layout_width="400dip"
       android:layout_height="wrap_content"
-      android:padding="20dp"
+      android:layout_marginBottom="100dp"
+      android:layout_marginTop="80dp"
+      android:padding="40dp"
+      android:scaleType="centerInside"
       android:src="@drawable/picto_os_cta"
       />
 

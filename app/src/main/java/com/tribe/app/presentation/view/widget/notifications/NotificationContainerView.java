@@ -200,13 +200,14 @@ public class NotificationContainerView extends FrameLayout {
     setVisibility(VISIBLE);
     bgView.animate().setDuration(BACKGROUND_ANIM_DURATION_ENTER).alpha(1f).start();
     notificationView.animate()
+        .setStartDelay(NOTIF_ANIM_DURATION_ENTER)
         .translationY(0f)
         .setDuration(NOTIF_ANIM_DURATION_ENTER)
         .setInterpolator(new OvershootInterpolator(1.15f))
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
-            textDismiss.setVisibility(VISIBLE);
+            textDismiss.setVisibility(VISIBLE);//SOEF
           }
         })
         .start();
@@ -256,6 +257,7 @@ public class NotificationContainerView extends FrameLayout {
       viewToDisplay = new CreateGroupNotificationView(context, members);
     } else if (data.getBooleanExtra(DISPLAY_SHARING_NOTIF, false) && extra != null) {
       bgView.setVisibility(INVISIBLE);
+      textDismiss.setAlpha(0);
       ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
           SharingCardNotificationView.CALL_GRP_MEMBERS);
       double durationCall = extra.getDouble(SharingCardNotificationView.DURATION_CALL);

@@ -88,7 +88,8 @@ public class ShareWatermarkView extends FrameLayout {
     };
     int color = getRandom(colors);
     bg.setBackgroundColor(color);
-    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, color);
+    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, color,
+        AvatarsSuperposedLayout.AVATARS_BIG_SIZE);
     setIntent(packageTitle);
   }
 
@@ -125,7 +126,7 @@ public class ShareWatermarkView extends FrameLayout {
               PackageManager pm = context.getPackageManager();
               List<ResolveInfo> activityList = pm.queryIntentActivities(intent, 0);
               for (final ResolveInfo app : activityList) {
-                if ((app.activityInfo.packageName).startsWith("com.facebook.katana")) {
+                if ((app.activityInfo.packageName).startsWith(PACKAGE_FACEBOOK)) {
                   final ActivityInfo activity = app.activityInfo;
                   final ComponentName name =
                       new ComponentName(activity.applicationInfo.packageName, activity.name);
