@@ -125,7 +125,7 @@ public class LiveRowView extends FrameLayout {
       }
     }
 
-    if (guest.isFriend()) {
+    if (guest.isFriend() || guest.isExternal()) {
       btnAddFriend.setVisibility(GONE);
     } else {
       animateAddBtn();
@@ -256,7 +256,7 @@ public class LiveRowView extends FrameLayout {
   }
 
   @OnClick(R.id.layoutStream) void onClickStream(View v) {
-    if (guest != null && !guest.isFriend()) onClick.onNext(guest);
+    if (guest != null) onClick.onNext(guest);
   }
 
   @OnClick(R.id.addFriend) void addFriendClick() {

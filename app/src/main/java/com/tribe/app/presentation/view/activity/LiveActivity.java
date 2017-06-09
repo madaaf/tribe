@@ -634,8 +634,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onRoomFull().subscribe(aVoid -> roomFull()));
 
-    subscriptions.add(
-        viewLive.onRemotePeerClick().subscribe(o -> userInfosNotificationView.displayView(o)));
+    subscriptions.add(viewLive.onRemotePeerClick().subscribe(o -> {
+      if (o != null) userInfosNotificationView.displayView(o);
+    }));
 
     subscriptions.add(viewLive.onStartGame().subscribe(game -> {
       if (game != null && game instanceof GamePostIt) {
@@ -830,8 +831,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void putExtraDisplayGrpNotif() {
     RoomMember roomMember = viewLive.getUsersInLiveRoom();
-    List<TribeGuest> friendInLive = roomMember.getTribeGuestList();
-    List<TribeGuest> anonymousInLive = roomMember.getAnonymousGuestList();
+    List<TribeGuest> friendInLive = roomMember.getPeopleInRoom();
+    List<TribeGuest> anonymousInLive = roomMember.getAnonymousInRoom();
     List<String> guestsIdsInLive = new ArrayList<>();
 
     for (TribeGuest guest : friendInLive) {

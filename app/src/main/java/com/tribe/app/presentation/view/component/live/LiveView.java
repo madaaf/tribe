@@ -946,6 +946,9 @@ public class LiveView extends FrameLayout {
 
     if (liveRowView != null) {
       tempSubscriptions.add(liveRowView.onClick().map(tribeGuest -> {
+        if (tribeGuest.isFriend() && getUsersInLiveRoom().getPeopleInRoom().size() < 2) {
+          return null;
+        }
         Object o = computeGuest(tribeGuest.getId());
         if (o == null) {
           return tribeGuest;
@@ -1076,13 +1079,17 @@ public class LiveView extends FrameLayout {
     ArrayList<TribeGuest> usersInLive = new ArrayList<>();
     ArrayList<String> myFriendIds = new ArrayList<>();
     ArrayList<TribeGuest> anonymousGuestInLive = new ArrayList<>();
+    ArrayList<TribeGuest> externalInRoom = new ArrayList<>();
 
     for (String liveRowViewId : liveRowViewMap.getMap().keySet()) {
       LiveRowView liveRowView = liveRowViewMap.getMap().get(liveRowViewId);
       if (!liveRowView.isWaiting()) {
         TribeGuest guest = liveRowView.getGuest();
-        if (guest != null && !guest.isExternal()) {
+        if (guest != null) {
           usersInLive.add(guest);
+        }
+        if (guest != null && guest.isExternal()) {
+          externalInRoom.add(guest);
         }
       }
     }
@@ -1108,7 +1115,7 @@ public class LiveView extends FrameLayout {
       anonymousGuestInLive.add(guest);
     }
 
-    return new RoomMember(usersInLive, anonymousGuestInLive);
+    return new RoomMember(usersInLive, anonymousGuestInLive, externalInRoom);
   }
 
   private boolean isTherePeopleWaiting() {

@@ -229,6 +229,8 @@
 	<string name="onboarding_user_alert_call_link_sms">Enter &amp; open SMS</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Enter &amp; open iMessage!</string>
 	<string name="onboarding_user_alert_call_link_content">Guys, can you try with me real quick? It\'s now on %1$s</string>
+	<string name="onboarding_user_alert_call_link_metadata_title">Join %1$s now!</string>
+	<string name="onboarding_user_alert_call_link_metadata_description">%1$s invited you in a video call.</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Find your friends</string>
@@ -347,7 +349,7 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing "%1$s"...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for "%1$s" to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
-	<string name="live_unknown_user">Unknown guest</string>
+	<string name="live_unknown_user">Someone</string>
 	<string name="live_external_user">Guest</string>
 	<string name="live_external_user_display_name">On the web</string>
 	<string name="live_external_user_username">Not connected</string>
