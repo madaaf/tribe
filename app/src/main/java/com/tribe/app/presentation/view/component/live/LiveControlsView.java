@@ -58,7 +58,7 @@ public class LiveControlsView extends FrameLayout {
   private static final int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION_GAMES_FILTERS = 300;
   private static final int DURATION_PARAM = 450;
-  private static final float OVERSHOOT_LIGHT = 0.75f;
+  private static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
 
@@ -440,10 +440,10 @@ public class LiveControlsView extends FrameLayout {
     showRecyclerView(recyclerViewGames);
   }
 
-  private void showActiveGame() {
+  private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
 
-    onGameUIActive.onNext(currentGameView);
+    if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 
     hideRecyclerView(recyclerViewGames);
 
@@ -557,7 +557,7 @@ public class LiveControlsView extends FrameLayout {
               showView(currentGameView);
             }
 
-            showActiveGame();
+            showActiveGame(viewFrom != null);
           }
         });
     currentGameView.setClickable(true);
@@ -565,7 +565,11 @@ public class LiveControlsView extends FrameLayout {
       onGameOptions.onNext(gameManager.getCurrentGame());
       return false;
     });
-    currentGameView.setOnClickListener(v -> onRestartGame.onNext(gameManager.getCurrentGame()));
+    currentGameView.setOnClickListener(v -> {
+      AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
+          new OvershootInterpolator(OVERSHOOT_LIGHT));
+      onRestartGame.onNext(gameManager.getCurrentGame());
+    });
     layoutContainerParamLive.addView(currentGameView, params);
     return currentGameView;
   }

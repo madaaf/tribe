@@ -59,6 +59,7 @@
   <dimen name="authentication_dialog_width">300dp</dimen>
   <dimen name="filters_list_height">60dp</dimen>
   <dimen name="games_list_height">60dp</dimen>
+  <dimen name="game_tooltip_first_height">40dp</dimen>
 
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>

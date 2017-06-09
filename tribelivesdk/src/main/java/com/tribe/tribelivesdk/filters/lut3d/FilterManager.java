@@ -2,7 +2,6 @@ package com.tribe.tribelivesdk.filters.lut3d;
 
 import android.content.Context;
 import android.support.v8.renderscript.RenderScript;
-import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.RSCompute;
 import com.tribe.tribelivesdk.webrtc.Frame;
@@ -40,13 +39,18 @@ public class FilterManager {
     renderScript = RenderScript.create(context);
     rsCompute = new RSCompute(context, renderScript);
     filterList = new ArrayList<>();
-    filterList.add(new LUT3DFilter(context, renderScript, rsCompute, LUT3DFilter.LUT3D_TAN, "Tan",
-        R.drawable.picto_filter_tan, R.drawable.lut_settled));
-    filterList.add(
-        new LUT3DFilter(context, renderScript, rsCompute, LUT3DFilter.LUT3D_HIPSTER, "Hipster",
-            R.drawable.picto_filter_pixels, R.drawable.lut_pola669));
-    filterList.add(new LUT3DFilter(context, renderScript, rsCompute, LUT3DFilter.LUT3D_BW, "B&W",
-        R.drawable.picto_filter_bw, R.drawable.lut_litho));
+  }
+
+  public void initFilters(List<Filter> filters) {
+    filterList.clear();
+    filterList.addAll(filters);
+    
+    for (Filter filter : filterList) {
+      if (filter instanceof LUT3DFilter) {
+        LUT3DFilter lut3DFilter = (LUT3DFilter) filter;
+        lut3DFilter.initWithFrameworks(renderScript, rsCompute);
+      }
+    }
 
     current = filterList.get(0);
     current.setActivated(true);

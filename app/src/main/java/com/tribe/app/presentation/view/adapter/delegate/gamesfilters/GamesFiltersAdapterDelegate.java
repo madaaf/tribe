@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.adapter.delegate.gamesfilters;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -99,15 +98,8 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
         up ? sizeEnabled : sizeDisabled, DURATION, new DecelerateInterpolator());
 
     if (up) {
-      ValueAnimator animator = ValueAnimator.ofFloat(1.0f, 1.15f, 1.0f);
-      animator.setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT));
-      animator.setDuration(DURATION * 3);
-      animator.addUpdateListener(animation -> {
-        Float scale = (float) animation.getAnimatedValue();
-        vh.itemView.setScaleX(scale);
-        vh.itemView.setScaleY(scale);
-      });
-      animator.start();
+      AnimationUtils.makeItBounce(vh.itemView, DURATION * 3,
+          new OvershootInterpolator(OVERSHOOT_LIGHT));
     }
   }
 

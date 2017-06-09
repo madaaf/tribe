@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.Landmark;
 import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
@@ -30,7 +29,7 @@ public class GamePostIt extends Game {
   private int WIDTH_FACE_REFERENCE = 500;
 
   private List<String> nameList;
-  private String currentPostItName = "";
+  private String currentPostItName = "?";
   private OpenCVWrapper openCVWrapper;
   private LibYuvConverter libYuvConverter;
   private Frame localFrame, remoteFrame;
@@ -66,24 +65,36 @@ public class GamePostIt extends Game {
   }
 
   @Override public void apply(Frame originalFrame) {
-    Frame localFrame = originalFrame;
-    Frame remoteFrame = originalFrame.copy(argbInRemote);
+    localFrame = originalFrame;
+    remoteFrame = originalFrame.copy(argbInRemote);
 
     pointOG = null;
 
     if (visionAPIManager.getFace() != null) pointOG = findXYForPostIt(visionAPIManager.getFace());
 
     if (pointOG != null) {
-      pointLocal.x = pointOG.x + (bitmapOGLocalPostIt.getWidth() >> 1);
-      pointLocal.y = pointOG.y - (bitmapOGLocalPostIt.getHeight() >> 1) - 50;
+      if (originalFrame.getRotation() == 90 && originalFrame.isFrontCamera()) {
+        pointLocal.x = pointOG.x + ((bitmapOGLocalPostIt.getWidth() >> 1) / currentPostItScale);
+        pointLocal.y = pointOG.y - bitmapOGLocalPostIt.getHeight() - 50;
+      } else {
+        pointLocal.x = pointOG.x + (bitmapOGLocalPostIt.getWidth() >> 1);
+        pointLocal.y = pointOG.y - (bitmapOGLocalPostIt.getHeight() >> 1) - 50;
+      }
+
       pointLocal = rotate(pointLocal, -originalFrame.getRotation());
 
       openCVWrapper.addPostIt(localFrame.getData(), localFrame.getWidth(), localFrame.getHeight(),
           localPostIt, bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(),
           currentPostItScale, pointLocal.x, pointLocal.y, argbOutLocal);
 
-      pointRemote.x = pointOG.x;
-      pointRemote.y = pointOG.y - (bitmapOGRemotePostIt.getHeight() >> 1) - 75;
+      if (originalFrame.getRotation() == 90 && originalFrame.isFrontCamera()) {
+        pointRemote.x = pointOG.x + (bitmapOGRemotePostIt.getWidth() >> 1);
+        pointRemote.y = pointOG.y - bitmapOGRemotePostIt.getHeight() - 75;
+      } else {
+        pointRemote.x = pointOG.x;
+        pointRemote.y = pointOG.y - (bitmapOGRemotePostIt.getHeight() >> 1) - 75;
+      }
+
       pointRemote = rotate(pointRemote, -originalFrame.getRotation());
 
       openCVWrapper.addPostIt(remoteFrame.getData(), remoteFrame.getWidth(),
@@ -163,19 +174,11 @@ public class GamePostIt extends Game {
   }
 
   public PointF findXYForPostIt(Face face) {
-    Landmark leftEye = null, rightEye = null;
+    PointF leftEye = visionAPIManager.getLeftEye();
+    PointF rightEye = visionAPIManager.getRightEye();
 
-    if (face.getLandmarks() != null) {
-      for (Landmark landmark : face.getLandmarks()) {
-        if (landmark.getType() == Landmark.LEFT_EYE) {
-          leftEye = landmark;
-        } else if (landmark.getType() == Landmark.RIGHT_EYE) rightEye = landmark;
-      }
-
-      if (leftEye != null && rightEye != null) {
-        PointF pLeftEye = leftEye.getPosition(), pRightEye = rightEye.getPosition();
-        return new PointF((pLeftEye.x + pRightEye.x) / 2, (pLeftEye.y + pRightEye.y) / 2);
-      }
+    if (leftEye != null && rightEye != null) {
+      return new PointF((leftEye.x + rightEye.x) / 2, (leftEye.y + rightEye.y) / 2);
     }
 
     return new PointF(face.getPosition().x + face.getWidth() / 2,
@@ -231,6 +234,6 @@ public class GamePostIt extends Game {
   }
 
   private void refactorPostItScales() {
-    currentPostItScale = newFaceWidth / WIDTH_FACE_REFERENCE;
+    currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, 0.5f);
   }
 }

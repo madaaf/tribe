@@ -44,6 +44,12 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
+import com.tribe.tribelivesdk.filters.Filter;
+import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
+import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.game.GamePostIt;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import io.branch.referral.Branch;
@@ -53,6 +59,8 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
+import java.util.ArrayList;
+import java.util.List;
 import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.utils.StateManager.FACEBOOK_CONTACT_PERMISSION;
@@ -83,6 +91,8 @@ public class AndroidApplication extends Application {
     initAppState();
     initTakt();
     initUlsee();
+    initFilters();
+    initGameManager();
   }
 
   @Override protected void attachBaseContext(Context base) {
@@ -233,6 +243,25 @@ public class AndroidApplication extends Application {
 
   private void initUlsee() {
     UlseeManager.getInstance(this);
+  }
+
+  private void initFilters() {
+    FilterManager filterManager = FilterManager.getInstance(this);
+    List<Filter> filterList = new ArrayList<>();
+    filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_TAN, "Tan", R.drawable.picto_filter_tan,
+        R.drawable.lut_settled));
+    filterList.add(
+        new LUT3DFilter(this, LUT3DFilter.LUT3D_HIPSTER, "Hipster", R.drawable.picto_filter_hipster,
+            R.drawable.lut_pola669));
+    filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_BW, "B&W", R.drawable.picto_filter_bw,
+        R.drawable.lut_litho));
+    filterManager.initFilters(filterList);
+  }
+
+  private void initGameManager() {
+    GameManager gameManager = GameManager.getInstance(this);
+    gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
+        R.drawable.picto_game_post_it));
   }
 
   private class SampleAppStateListener implements AppStateListener {

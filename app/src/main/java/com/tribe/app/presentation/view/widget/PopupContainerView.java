@@ -60,7 +60,7 @@ public class PopupContainerView extends FrameLayout {
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private int defaultMargin;
+  private int defaultMargin, tooltipFirstGameHeight;
 
   private int marginBottom = 0, marginTop = 0, marginLeft = 0, marginRight = 0;
   private boolean isInBottom = false, isInTop = false, isInLeft = false, isInRight = false,
@@ -125,7 +125,7 @@ public class PopupContainerView extends FrameLayout {
                 marginLeft = margins.leftMargin - defaultMargin;
               } else if (type.equals(DISPLAY_POST_IT_GAME)) {
                 marginLeft = screenUtils.dpToPx(2.5f);
-                marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin;
+                marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin + tooltipFirstGameHeight;
               } else {
                 marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin;
               }
@@ -162,6 +162,7 @@ public class PopupContainerView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.native_dialogs_container, this, true);
     defaultMargin = screenUtils.dpToPx(5);
+    tooltipFirstGameHeight = context.getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height);
     unbinder = ButterKnife.bind(this);
     setOnTouchListener((v, event) -> {
       hideViews();

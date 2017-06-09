@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +43,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
@@ -114,6 +116,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
 
+  @BindView(R.id.txtTooltipFirstGame) TextViewFont txtTooltipFirstGame;
+
   // VARIABLES
   private Live live;
   private Room room;
@@ -136,7 +140,7 @@ public class LiveView extends FrameLayout {
   private GameManager gameManager;
 
   // RESOURCES
-  private int timeJoinRoom, statusBarHeight;
+  private int timeJoinRoom, statusBarHeight, tooltipFirstGameHeight;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -329,6 +333,8 @@ public class LiveView extends FrameLayout {
 
   private void initResources() {
     timeJoinRoom = getResources().getInteger(R.integer.time_join_room);
+    tooltipFirstGameHeight =
+        getContext().getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height);
 
     statusBarHeight = 0;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -428,7 +434,6 @@ public class LiveView extends FrameLayout {
         viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
-      onStartGame.onNext(game);
       displayStartGameNotification(game.getName(), user.getDisplayName());
       restartGame(game);
     }));
@@ -445,7 +450,7 @@ public class LiveView extends FrameLayout {
                 displayReRollGameNotification(user.getDisplayName());
                 restartGame(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
-                stopGame();
+                stopGame(true);
                 displayStopGameNotification(game.getName(), user.getDisplayName());
                 room.sendToPeers(getStopGamePayload(game), false);
               }
@@ -527,7 +532,7 @@ public class LiveView extends FrameLayout {
       Game game = gameManager.getGameById(pairSessionGame.second);
       String displayName = getDisplayNameFromSession(pairSessionGame.first);
       displayStopGameNotification(game.getName(), displayName);
-      stopGame();
+      stopGame(false);
     }));
 
     tempSubscriptions.add(
@@ -1188,11 +1193,16 @@ public class LiveView extends FrameLayout {
 
   private void startGame(Game game, boolean isUserAction) {
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
+    onStartGame.onNext(game);
     gameManager.setCurrentGame(game);
     viewLocalLive.startGame(game);
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
-      AnimationUtils.animateBottomMargin(viewRoom, screenUtils.dpToPx(40), DURATION);
-      AnimationUtils.animateBottomMargin(viewControlsLive, screenUtils.dpToPx(40), DURATION);
+      AnimationUtils.animateBottomMargin(viewControlsLive, tooltipFirstGameHeight, DURATION);
+      txtTooltipFirstGame.animate()
+          .translationY(0)
+          .setDuration(DURATION)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
     }
   }
 
@@ -1201,12 +1211,16 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getNewGamePayload(game), false);
   }
 
-  private void stopGame() {
+  private void stopGame(boolean isCurrentUserAction) {
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
-      stateManager.addTutorialKey(StateManager.NEW_GAME_START);
-      AnimationUtils.animateBottomMargin(viewRoom, 0, DURATION);
+      if (isCurrentUserAction) stateManager.addTutorialKey(StateManager.NEW_GAME_START);
+      txtTooltipFirstGame.animate()
+          .translationY(txtTooltipFirstGame.getHeight())
+          .setDuration(DURATION)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
       AnimationUtils.animateBottomMargin(viewControlsLive, 0, DURATION);
     }
   }

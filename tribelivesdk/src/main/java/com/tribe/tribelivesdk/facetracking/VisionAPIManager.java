@@ -2,13 +2,17 @@ package com.tribe.tribelivesdk.facetracking;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.PointF;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
 import com.tribe.tribelivesdk.back.FrameExecutor;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -40,8 +44,10 @@ public class VisionAPIManager {
   private long t0, timeToDetect;
   private FaceDetector faceDetector;
   private Face face;
+  private PointF leftEye, rightEye;
   private float previousFaceWidth, newFaceWidth;
   private com.google.android.gms.vision.Frame inputFrame;
+  private Map<Integer, PointF> previousProportions = new HashMap<>();
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -100,7 +106,6 @@ public class VisionAPIManager {
 
     @Override public void onNewItem(int faceId, Face face) {
       Timber.d("onNewItem : " + face);
-      computeFace(face);
     }
 
     @Override public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
@@ -112,6 +117,7 @@ public class VisionAPIManager {
     @Override public void onMissing(FaceDetector.Detections<Face> detectionResults) {
       Timber.d("onMissing : " + detectionResults);
       VisionAPIManager.this.face = null;
+      VisionAPIManager.this.rightEye = VisionAPIManager.this.leftEye = null;
     }
 
     @Override public void onDone() {
@@ -122,6 +128,11 @@ public class VisionAPIManager {
 
   private void computeFace(Face face) {
     if (face != null) {
+      updatePreviousProportions(face);
+
+      leftEye = getLandmarkPosition(face, Landmark.LEFT_EYE);
+      rightEye = getLandmarkPosition(face, Landmark.RIGHT_EYE);
+
       previousFaceWidth = newFaceWidth;
       newFaceWidth = face.getWidth();
 
@@ -131,6 +142,32 @@ public class VisionAPIManager {
 
   private boolean faceWidthChanged() {
     return Math.abs(previousFaceWidth - newFaceWidth) > THRESHOLD_FACE_WIDTH;
+  }
+
+  private void updatePreviousProportions(Face face) {
+    for (Landmark landmark : face.getLandmarks()) {
+      PointF position = landmark.getPosition();
+      float xProp = (position.x - face.getPosition().x) / face.getWidth();
+      float yProp = (position.y - face.getPosition().y) / face.getHeight();
+      previousProportions.put(landmark.getType(), new PointF(xProp, yProp));
+    }
+  }
+
+  private PointF getLandmarkPosition(Face face, int landmarkId) {
+    for (Landmark landmark : face.getLandmarks()) {
+      if (landmark.getType() == landmarkId) {
+        return landmark.getPosition();
+      }
+    }
+
+    PointF prop = previousProportions.get(landmarkId);
+    if (prop == null) {
+      return null;
+    }
+
+    float x = face.getPosition().x + (prop.x * face.getWidth());
+    float y = face.getPosition().y + (prop.y * face.getHeight());
+    return new PointF(x, y);
   }
 
   ////////////////
@@ -177,6 +214,14 @@ public class VisionAPIManager {
 
   public Face getFace() {
     return face;
+  }
+
+  public PointF getLeftEye() {
+    return leftEye;
+  }
+
+  public PointF getRightEye() {
+    return rightEye;
   }
 
   public void stopCapture() {

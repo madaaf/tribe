@@ -39,11 +39,9 @@ import rx.subscriptions.CompositeSubscription;
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
-
-    addGame(new GamePostIt(context, Game.GAME_POST_IT, "Post-It", R.drawable.picto_game_post_it));
   }
 
-  private void addGame(Game game) {
+  public void addGame(Game game) {
     gameList.add(game);
   }
 

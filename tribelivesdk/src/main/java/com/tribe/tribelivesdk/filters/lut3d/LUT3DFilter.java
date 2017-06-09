@@ -69,14 +69,16 @@ public class LUT3DFilter extends Filter {
   private Bitmap bitmapLUT;
   private Allocation lutAllocation;
 
-  public LUT3DFilter(Context context, RenderScript renderScript, RSCompute rsCompute,
-      @LUT3DFilterType String id, String name, @DrawableRes int drawableId,
-      @DrawableRes @RawRes int filterResourceId) {
+  public LUT3DFilter(Context context, @LUT3DFilterType String id, String name,
+      @DrawableRes int drawableId, @DrawableRes @RawRes int filterResourceId) {
     super(context, id, name, drawableId);
-    this.renderScript = renderScript;
-    this.rsCompute = rsCompute;
     this.id = id;
     this.filterResourceId = filterResourceId;
+  }
+
+  public void initWithFrameworks(RenderScript renderScript, RSCompute rsCompute) {
+    this.renderScript = renderScript;
+    this.rsCompute = rsCompute;
   }
 
   public @LUT3DFilterType String getId() {

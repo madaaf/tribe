@@ -2,20 +2,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="bottom|center_horizontal"
-      android:layout_marginBottom="@dimen/horizontal_margin_smaller"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:background="@null"
-      android:singleLine="true"
-      android:text="@string/game_tutorial"
-      style="@style/Caption.Two.White40"
-      />
-
   <com.tribe.app.presentation.view.component.live.LiveRoomView
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
@@ -40,5 +26,18 @@
       android:layout_marginRight="50dp"
       android:layout_marginTop="19.5dp"
       android:background="@null"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtTooltipFirstGame"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/game_tooltip_first_height"
+      android:layout_gravity="bottom|center_horizontal"
+      android:background="@android:color/black"
+      android:gravity="center"
+      android:maxLines="1"
+      android:text="@string/game_tutorial"
+      android:translationY="@dimen/game_tooltip_first_height"
+      style="@style/Caption.Two.White40"
       />
 </merge>

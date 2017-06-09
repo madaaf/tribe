@@ -255,6 +255,8 @@ public class Room {
 
     tempSubscriptions.add(webRTCClient.onRemotePeersChanged().doOnNext(rxRemotePeer -> {
       if (rxRemotePeer.changeType == ObservableRxHashMap.ADD) {
+        sendToPeer(rxRemotePeer.item,
+            webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
         onRemotePeerAdded.onNext(rxRemotePeer.item);
       } else if (rxRemotePeer.changeType == ObservableRxHashMap.REMOVE) {
         onRemotePeerRemoved.onNext(rxRemotePeer.item);

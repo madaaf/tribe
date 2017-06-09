@@ -209,7 +209,7 @@ public class JsonToModel {
           onTribeMediaPeerConfiguration.onNext(peerMediaConfiguration);
 
           if (message.has(Game.CURRENT_GAME)) {
-            onNewGame.onNext(new Pair<>(null, message.getString(Game.CURRENT_GAME)));
+            onNewGame.onNext(new Pair<>(tribeSession, message.getString(Game.CURRENT_GAME)));
           }
         } else if (message.has(Room.MESSAGE_GAME)) {
           JSONObject gameMessage = message.getJSONObject(Room.MESSAGE_GAME);

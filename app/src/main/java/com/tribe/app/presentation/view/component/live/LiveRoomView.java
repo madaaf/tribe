@@ -199,6 +199,7 @@ public class LiveRoomView extends FrameLayout {
     } else {
       landscapeMode = false;
     }
+
     setScreenSize(0);
     setViewsOrder();
     setConfigurationScreen();
