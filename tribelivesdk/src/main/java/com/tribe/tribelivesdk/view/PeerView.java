@@ -6,10 +6,9 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.webrtc.RendererCommon;
-import org.webrtc.RendererCommon.ScalingType;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoTrack;
 import timber.log.Timber;
@@ -31,7 +30,8 @@ public abstract class PeerView extends ViewGroup {
    * pillarboxed. Areas of the element's playback area that do not contain the
    * video represent nothing.
    */
-  protected static final ScalingType DEFAULT_SCALING_TYPE = ScalingType.SCALE_ASPECT_FILL;
+  protected static final RendererCommon.ScalingType DEFAULT_SCALING_TYPE =
+      RendererCommon.ScalingType.SCALE_ASPECT_FILL;
   /**
    * {@link View#isInLayout()} as a <tt>Method</tt> to be invoked via
    * reflection in order to accommodate its lack of availability before API
@@ -81,7 +81,7 @@ public abstract class PeerView extends ViewGroup {
 
   protected boolean mirror;
 
-  protected ScalingType scalingType;
+  protected RendererCommon.ScalingType scalingType;
 
   protected TextureViewRenderer textureViewRenderer;
 
@@ -152,6 +152,10 @@ public abstract class PeerView extends ViewGroup {
         @Override
         public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
           PeerView.this.onFrameResolutionChanged(videoWidth, videoHeight, rotation);
+        }
+
+        @Override public void onPreviewSizeChanged(int width, int height) {
+          PeerView.this.onPreviewSizeChanged(width, height);
         }
       };
 
@@ -247,7 +251,7 @@ public abstract class PeerView extends ViewGroup {
       int frameHeight;
       int frameRotation;
       int frameWidth;
-      ScalingType scalingType;
+      RendererCommon.ScalingType scalingType;
 
       synchronized (layoutSyncRoot) {
         frameHeight = this.frameHeight;
@@ -334,13 +338,14 @@ public abstract class PeerView extends ViewGroup {
    * {@code PeerView} i.e. {@code RTCView}.
    */
   public void setObjectFit(String objectFit) {
-    ScalingType scalingType =
-        "cover".equals(objectFit) ? ScalingType.SCALE_ASPECT_FILL : ScalingType.SCALE_ASPECT_FIT;
+    RendererCommon.ScalingType scalingType =
+        "cover".equals(objectFit) ? RendererCommon.ScalingType.SCALE_ASPECT_FILL
+            : RendererCommon.ScalingType.SCALE_ASPECT_FIT;
 
     setScalingType(scalingType);
   }
 
-  protected void setScalingType(ScalingType scalingType) {
+  protected void setScalingType(RendererCommon.ScalingType scalingType) {
     TextureViewRenderer textureViewRenderer;
 
     synchronized (layoutSyncRoot) {
@@ -368,4 +373,6 @@ public abstract class PeerView extends ViewGroup {
   }
 
   public abstract void onFirstFrameRendered();
+
+  public abstract void onPreviewSizeChanged(int width, int height);
 }

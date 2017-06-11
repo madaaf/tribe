@@ -8,6 +8,7 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.Landmark;
+import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import com.tribe.tribelivesdk.back.FrameExecutor;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import java.nio.ByteBuffer;
@@ -43,6 +44,7 @@ public class VisionAPIManager {
   private boolean firstFrame = true;
   private long t0, timeToDetect;
   private FaceDetector faceDetector;
+  private boolean isFaceTrackerEnabled = true;
   private Face face;
   private PointF leftEye, rightEye;
   private float previousFaceWidth, newFaceWidth;
@@ -67,7 +69,8 @@ public class VisionAPIManager {
   private void initFaceTracker(boolean isFrontFacing) {
     if (faceDetector != null) faceDetector.release();
 
-    faceDetector = new FaceDetector.Builder(context).setTrackingEnabled(true)
+    faceDetector = new FaceDetector.Builder(context)
+        .setTrackingEnabled(true)
         .setLandmarkType(FaceDetector.ALL_LANDMARKS)
         .setMode(FaceDetector.FAST_MODE)
         .setProminentFaceOnly(isFrontFacing)
@@ -83,12 +86,13 @@ public class VisionAPIManager {
     //  processor = new MultiProcessor.Builder<>(factory).build();
     //}
 
-    faceDetector.setProcessor(new MultiProcessor.Builder<>(new TribeFaceTrackerFactory()).build());
+    faceDetector.setProcessor(
+        new LargestFaceFocusingProcessor.Builder(faceDetector, new TribeFaceTracker()).build());
 
     //faceDetector.setProcessor(processor);
 
     if (!faceDetector.isOperational()) {
-      Timber.w("Face detector dependencies are not yet available.");
+      isFaceTrackerEnabled = false;
     }
   }
 
@@ -187,7 +191,7 @@ public class VisionAPIManager {
 
           return frame;
         })
-        .filter(frame1 -> (t0 - timeToDetect >= 5))
+        .filter(frame1 -> (t0 - timeToDetect >= 5) && isFaceTrackerEnabled)
         .flatMap(frame -> Observable.just(frame)
             .observeOn(Schedulers.from(frameExecutor))
             .map(frame1 -> {
@@ -210,6 +214,10 @@ public class VisionAPIManager {
               return frame;
             }), 1)
         .subscribe());
+  }
+
+  public boolean isFaceTrackerEnabled() {
+    return isFaceTrackerEnabled;
   }
 
   public Face getFace() {

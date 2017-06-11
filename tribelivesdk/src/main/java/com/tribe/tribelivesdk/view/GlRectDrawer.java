@@ -11,12 +11,12 @@ package com.tribe.tribelivesdk.view;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import java.nio.FloatBuffer;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import org.webrtc.GlShader;
 import org.webrtc.GlUtil;
-import org.webrtc.RendererCommon;
 
 /**
  * Helper class to draw an opaque quad on the target viewport location. Rotation, mirror, and

@@ -33,6 +33,8 @@ public class RendererCommon {
      * Callback fired when rendered frame resolution or rotation has changed.
      */
     public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation);
+
+    public void onPreviewSizeChanged(int videoWidth, int videoHeight);
   }
 
   /** Interface for rendering frames on an EGLSurface. */

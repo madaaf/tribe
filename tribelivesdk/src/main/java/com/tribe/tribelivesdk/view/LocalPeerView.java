@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.view;
 
 import android.content.Context;
+import android.support.v4.util.Pair;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
@@ -29,6 +30,7 @@ public class LocalPeerView extends PeerView {
   private Observable<TribePeerMediaConfiguration> onEnableCamera;
   private Observable<TribePeerMediaConfiguration> onEnableMicro;
   private PublishSubject<TribePeerMediaConfiguration> shouldSwitchMode = PublishSubject.create();
+  private PublishSubject<Pair<Integer, Integer>> onPreviewSizeChanged = PublishSubject.create();
 
   public LocalPeerView(Context context) {
     super(context);
@@ -81,6 +83,10 @@ public class LocalPeerView extends PeerView {
   }
 
   @Override public void onFirstFrameRendered() {
+  }
+
+  @Override public void onPreviewSizeChanged(int width, int height) {
+
   }
 
   public void initEnableCameraSubscription(Observable<TribePeerMediaConfiguration> obs) {
@@ -149,5 +155,9 @@ public class LocalPeerView extends PeerView {
 
   public Observable<Void> onStopGame() {
     return onStopGame;
+  }
+
+  public Observable<Pair<Integer, Integer>> onPreviewSizeChanged() {
+    return onPreviewSizeChanged;
   }
 }

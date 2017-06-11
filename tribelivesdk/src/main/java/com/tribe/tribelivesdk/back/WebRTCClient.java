@@ -232,7 +232,9 @@ import static android.R.attr.id;
     Game currentGame = gameManager.getCurrentGame();
 
     if (currentGame != null) {
-      jsonPut(obj, "currentGame", currentGame.getId());
+      JSONObject currentGameJSON = new JSONObject();
+      jsonPut(currentGameJSON, Game.ID, currentGame.getId());
+      jsonPut(obj, Game.CURRENT_GAME, currentGameJSON);
     }
 
     return obj;

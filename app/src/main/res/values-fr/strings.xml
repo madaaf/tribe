@@ -150,7 +150,7 @@
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
 	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
-	<string name="grid_sync_failed_contacts_banner">Synchronisation echouée.</string>
+	<string name="grid_sync_failed_contacts_banner">Synchronisation echouée</string>
 	<string name="grid_synced_contacts_banner">Contacts synchronisés!</string>
 	
 	<!-- Group Identification -->
@@ -226,9 +226,11 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
 	<string name="onboarding_user_alert_call_link_title">Parfait. Sélectionnez vos meilleurs amis pour essayer ! :metal:</string>
 	<string name="onboarding_user_alert_call_link_msg">Petit conseil: Envoyez un SMS aux amis que vous souhaitez appeler en même temps.</string>
-	<string name="onboarding_user_alert_call_link_sms">Ouvrir SMS</string>
+	<string name="onboarding_user_alert_call_link_sms">Entrez et ouvrez SMS !</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Entrez et ouvrez iMessage !</string>
 	<string name="onboarding_user_alert_call_link_content">Hey ! Vous pouvez essayer avec moi rapidement ? Ca se passe ici %1$s</string>
+	<string name="onboarding_user_alert_call_link_metadata_title">Rejoins %1$s maintenant!</string>
+	<string name="onboarding_user_alert_call_link_metadata_description">%1$s vous a invité dans un appel vidéo.</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Retrouver vos amis</string>
@@ -347,7 +349,7 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Appel en cours de "%1$s"...</string>
 	<string name="live_waiting_state_waiting">:clock10: En attente que "%1$s" vous rejoigne...</string>
 	<string name="live_screenshot_saved_toast">Sauvegardé dans la bibliothèque ! :camera:</string>
-	<string name="live_unknown_user">Invité inconnu</string>
+	<string name="live_unknown_user">Quelqu\'un</string>
 	<string name="live_external_user">Invité(e)</string>
 	<string name="live_external_user_display_name">Sur le web</string>
 	<string name="live_external_user_username">Non identifié</string>

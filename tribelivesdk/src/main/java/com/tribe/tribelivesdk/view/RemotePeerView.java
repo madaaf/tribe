@@ -110,6 +110,10 @@ public class RemotePeerView extends PeerView {
     onNotificationRemoteJoined.onNext(null);
   }
 
+  @Override public void onPreviewSizeChanged(int width, int height) {
+
+  }
+
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
     Timber.d("New media configuration for : "
         + mediaConfiguration.getSession().getUserId()

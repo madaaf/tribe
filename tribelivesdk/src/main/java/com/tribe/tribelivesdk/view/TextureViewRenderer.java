@@ -16,11 +16,11 @@ import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
 import android.view.TextureView;
 import com.tribe.tribelivesdk.webrtc.EglRenderer;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.concurrent.CountDownLatch;
 import org.webrtc.EglBase;
 import org.webrtc.Logging;
-import org.webrtc.RendererCommon;
 import org.webrtc.ThreadUtils;
 import org.webrtc.VideoRenderer;
 
@@ -335,6 +335,7 @@ public class TextureViewRenderer extends TextureView
 
   @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
     ThreadUtils.checkIsOnMainThread();
+    rendererEvents.onPreviewSizeChanged(width, height);
   }
 
   @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {

@@ -27,6 +27,7 @@ import java.util.Random;
 public class GamePostIt extends Game {
 
   private int WIDTH_FACE_REFERENCE = 500;
+  private float SCALE_POST_IT = 0.5f;
 
   private List<String> nameList;
   private String currentPostItName = "?";
@@ -43,7 +44,7 @@ public class GamePostIt extends Game {
   private ByteBuffer[] yuvPlanes;
   private int[] yuvStrides;
   private VisionAPIManager visionAPIManager;
-  private float newFaceWidth, currentPostItScale;
+  private float newFaceWidth, currentPostItScale = SCALE_POST_IT;
 
   public GamePostIt(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -70,32 +71,32 @@ public class GamePostIt extends Game {
 
     pointOG = null;
 
-    if (visionAPIManager.getFace() != null) pointOG = findXYForPostIt(visionAPIManager.getFace());
+    if (visionAPIManager.getFace() != null) {
+      pointOG = findXYForPostIt(visionAPIManager.getFace());
+    } else if (!visionAPIManager.isFaceTrackerEnabled()) {
+      pointOG = new PointF(originalFrame.getWidth() >> 1, originalFrame.getHeight() >> 1);
+    }
 
     if (pointOG != null) {
-      if (originalFrame.getRotation() == 90 && originalFrame.isFrontCamera()) {
-        pointLocal.x = pointOG.x + ((bitmapOGLocalPostIt.getWidth() >> 1) / currentPostItScale);
-        pointLocal.y = pointOG.y - bitmapOGLocalPostIt.getHeight() - 50;
+      if (visionAPIManager.isFaceTrackerEnabled()) {
+        pointLocal = pointOG;
+        pointLocal = computePointLocal(pointLocal, localFrame, bitmapOGLocalPostIt);
       } else {
-        pointLocal.x = pointOG.x + (bitmapOGLocalPostIt.getWidth() >> 1);
-        pointLocal.y = pointOG.y - (bitmapOGLocalPostIt.getHeight() >> 1) - 50;
+        pointLocal = rotate(pointLocal, localFrame, originalFrame.getRotation());
+        currentPostItScale = 0.5f;
       }
-
-      pointLocal = rotate(pointLocal, -originalFrame.getRotation());
 
       openCVWrapper.addPostIt(localFrame.getData(), localFrame.getWidth(), localFrame.getHeight(),
           localPostIt, bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(),
           currentPostItScale, pointLocal.x, pointLocal.y, argbOutLocal);
 
-      if (originalFrame.getRotation() == 90 && originalFrame.isFrontCamera()) {
-        pointRemote.x = pointOG.x + (bitmapOGRemotePostIt.getWidth() >> 1);
-        pointRemote.y = pointOG.y - bitmapOGRemotePostIt.getHeight() - 75;
+      if (visionAPIManager.isFaceTrackerEnabled()) {
+        pointRemote = pointOG;
+        pointRemote = computePointRemote(pointRemote, remoteFrame, bitmapOGRemotePostIt);
       } else {
-        pointRemote.x = pointOG.x;
-        pointRemote.y = pointOG.y - (bitmapOGRemotePostIt.getHeight() >> 1) - 75;
+        pointRemote = pointOG;
+        currentPostItScale = 0.5f;
       }
-
-      pointRemote = rotate(pointRemote, -originalFrame.getRotation());
 
       openCVWrapper.addPostIt(remoteFrame.getData(), remoteFrame.getWidth(),
           remoteFrame.getHeight(), remotePostIt, bitmapRemotePostIt.getWidth(),
@@ -185,32 +186,50 @@ public class GamePostIt extends Game {
         face.getPosition().y + face.getHeight() / 2);
   }
 
+  private PointF computePointLocal(PointF pointF, Frame frame, Bitmap bitmapOverlay) {
+    pointF = rotate(pointF, frame, frame.getRotation());
+
+    if (frame.getRotation() == 0 || frame.getRotation() == 180 || frame.getRotation() == 270) {
+      pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1) - 100) * currentPostItScale;
+      pointF.y = pointF.y - (bitmapOverlay.getHeight() >> 1) * currentPostItScale;
+    } else if (frame.getRotation() == 90) {
+      pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1) + 100) * currentPostItScale;
+      pointF.y = pointF.y - ((bitmapOverlay.getHeight() >> 1) * currentPostItScale);
+    }
+
+    return pointF;
+  }
+
+  private PointF computePointRemote(PointF pointF, Frame frame, Bitmap bitmapOverlay) {
+    pointF = rotate(pointF, frame, frame.getRotation());
+
+    if (frame.getRotation() == 0 || frame.getRotation() == 180 || frame.getRotation() == 270) {
+      pointF.x = pointF.x - ((bitmapOverlay.getHeight() >> 1) - 100) * currentPostItScale;
+      pointF.y = pointF.y - ((bitmapOverlay.getWidth() >> 1) * currentPostItScale);
+    } else if (frame.getRotation() == 90) {
+      pointF.x = pointF.x - ((bitmapOverlay.getHeight() >> 1) + 100) * currentPostItScale;
+      pointF.y = pointF.y - ((bitmapOverlay.getWidth() >> 1) * currentPostItScale);
+    }
+
+    return pointF;
+  }
+
   /**
    * Add the Rotation to our Transform matrix.
    *
    * A new point, with the rotated coordinates will be returned
    */
-  public PointF rotate(PointF pointF, float degrees) {
-    // This is to rotate about the Rectangles center
-    transform.setRotate(degrees, frameRect.exactCenterX(), frameRect.exactCenterY());
+  public PointF rotate(PointF pointF, Frame frame, int degrees) {
+    PointF newPoint = new PointF();
 
-    // Create new float[] to hold the rotated coordinates
-    float[] pts = new float[2];
+    if (degrees == 90) {
+      newPoint.x = pointF.y;
+      newPoint.y = frame.getHeight() - pointF.x;
+    } else if (degrees == 270) {
+      newPoint.x = frame.getWidth() - pointF.y;
+      newPoint.y = pointF.x;
+    }
 
-    // Initialize the array with our Coordinate
-    pts[0] = pointF.x;
-    pts[1] = pointF.y;
-
-    // Use the Matrix to map the points
-    transform.mapPoints(pts);
-
-    // NOTE: pts will be changed by transform.mapPoints call
-    // after the call, pts will hold the new cooridnates
-
-    // Now, create a new Point from our new coordinates
-    PointF newPoint = new PointF(pts[0], pts[1]);
-
-    // Return the new point
     return newPoint;
   }
 
@@ -234,6 +253,6 @@ public class GamePostIt extends Game {
   }
 
   private void refactorPostItScales() {
-    currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, 0.5f);
+    currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, SCALE_POST_IT);
   }
 }

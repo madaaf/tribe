@@ -121,7 +121,7 @@ public class Room {
 
       hasJoined = true;
     }).delay(1000, TimeUnit.MILLISECONDS).doOnNext(tribeJoinRoom -> {
-      if (!options.isShadowCall()) {
+      if (options != null && !options.isShadowCall()) {
         sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
       }
     }).subscribe());

@@ -448,7 +448,7 @@ public class LiveControlsView extends FrameLayout {
     hideRecyclerView(recyclerViewGames);
 
     for (View v : viewToHideGames) {
-      showView(v);
+      if (v != btnExpand || !filtersMenuOn) showView(v);
     }
 
     hideGameControls();

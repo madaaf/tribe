@@ -24,7 +24,6 @@ import org.webrtc.EglBase10;
 import org.webrtc.GlTextureFrameBuffer;
 import org.webrtc.GlUtil;
 import org.webrtc.Logging;
-import org.webrtc.RendererCommon.GlDrawer;
 import org.webrtc.ThreadUtils;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoRenderer.Callbacks;
@@ -43,7 +42,7 @@ public class EglRenderer implements Callbacks {
   private long minRenderPeriodNs;
   private EglBase eglBase;
   private final RendererCommon.YuvUploader yuvUploader = new RendererCommon.YuvUploader();
-  private GlDrawer drawer;
+  private RendererCommon.GlDrawer drawer;
   private int[] yuvTextures = null;
   private final Object frameLock = new Object();
   private I420Frame pendingFrame;
@@ -83,7 +82,8 @@ public class EglRenderer implements Callbacks {
     this.name = name;
   }
 
-  public void init(final Context sharedContext, final int[] configAttributes, GlDrawer drawer) {
+  public void init(final Context sharedContext, final int[] configAttributes,
+      RendererCommon.GlDrawer drawer) {
     Object var4 = this.handlerLock;
     synchronized (this.handlerLock) {
       if (this.renderThreadHandler != null) {
@@ -272,7 +272,7 @@ public class EglRenderer implements Callbacks {
   }
 
   public void addFrameListener(final EglRenderer.FrameListener listener, final float scale,
-      final GlDrawer drawer) {
+      final RendererCommon.GlDrawer drawer) {
     this.postToRenderThread(new Runnable() {
       public void run() {
         EglRenderer.this.frameListeners.add(
@@ -601,10 +601,10 @@ public class EglRenderer implements Callbacks {
   private static class FrameListenerAndParams {
     public final EglRenderer.FrameListener listener;
     public final float scale;
-    public final GlDrawer drawer;
+    public final RendererCommon.GlDrawer drawer;
 
     public FrameListenerAndParams(EglRenderer.FrameListener listener, float scale,
-        GlDrawer drawer) {
+        RendererCommon.GlDrawer drawer) {
       this.listener = listener;
       this.scale = scale;
       this.drawer = drawer;
