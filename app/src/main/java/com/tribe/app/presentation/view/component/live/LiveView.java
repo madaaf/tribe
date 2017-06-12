@@ -127,7 +127,8 @@ public class LiveView extends FrameLayout {
   private boolean hiddenControls = false;
   private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private Map<String, Object> tagMap;
-  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0;
+  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0,
+      postItGameCount = 0;
   private double averageCountLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
@@ -236,6 +237,7 @@ public class LiveView extends FrameLayout {
       tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
       tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
       tagMap.put(TagManagerUtils.SCREENSHOT_COUNT, screenshotCount);
+      tagMap.put(TagManagerUtils.POST_IT_GAME_COUNT, postItGameCount);
       tagMap.put(TagManagerUtils.TYPE,
           live.isGroup() ? TagManagerUtils.GROUP : TagManagerUtils.DIRECT);
       // We are entering another call, so we send the tags regarless
@@ -1200,6 +1202,7 @@ public class LiveView extends FrameLayout {
 
   private void startGame(Game game, boolean isUserAction) {
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
+    postItGameCount++;
     onStartGame.onNext(game);
     gameManager.setCurrentGame(game);
     viewLocalLive.startGame(game);
