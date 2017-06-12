@@ -422,7 +422,8 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      navigator.openMessageAppForInvite(this, null);
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      homeGridPresenter.bookRoomLink(linkId);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
@@ -549,7 +550,8 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openMessageAppForInvite(this, null);
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      homeGridPresenter.bookRoomLink(linkId);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
@@ -581,8 +583,10 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initSearch() {
-    subscriptions.add(searchView.onNavigateToSmsForInvites()
-        .subscribe(aVoid -> navigator.openMessageAppForInvite(this, null)));
+    subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      homeGridPresenter.bookRoomLink(linkId);
+    }));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
 
@@ -598,7 +602,9 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openMessageAppForInvite(this, contact.getPhone());
+      String linkId =
+          navigator.sendInviteToCall(this, TagManagerUtils.SEARCH, null, contact.getPhone(), false);
+      homeGridPresenter.bookRoomLink(linkId);
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
@@ -708,11 +714,12 @@ public class HomeActivity extends BaseActivity
   }
 
   private void openSmsApp(Intent intent) {
-    if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
+    if (intent != null && intent.hasExtra(Extras.ROOM_LINK_ID)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        homeGridPresenter.bookRoomLink(intent.getStringExtra(Extras.ROOM_LINK_ID));
-        navigator.openDefaultMessagingApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+        String linkId =
+            navigator.sendInviteToCall(this, TagManagerUtils.ONBOARDING, null, null, true);
+        homeGridPresenter.bookRoomLink(linkId);
       }
     }
   }
@@ -777,11 +784,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onBookLink(Boolean isBookLink) {
-    if (isBookLink) {
-      Timber.d("shadow room is open");
-    } else {
-      Timber.e("sopen shadow room failed");
-    }
+    
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -818,7 +821,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(

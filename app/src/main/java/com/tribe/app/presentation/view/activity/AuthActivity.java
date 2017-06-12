@@ -173,7 +173,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
       Timber.d("goToConnected from " + user.getDisplayName());
-      navigator.navigateToHomeFromLogin(this, countryCode, null, null);
+      navigator.navigateToHomeFromLogin(this, countryCode, null);
     }
   }
 

@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
+import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
@@ -42,6 +43,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
+  private BookRoomLink bookRoomLink;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -52,7 +54,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
       DeclineInvite declineInvite, CreateFriendship createFriendship,
-      GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship) {
+      GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
+      BookRoomLink bookRoomLink) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -64,6 +67,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.declineInvite = declineInvite;
     this.createFriendship = createFriendship;
     this.getNamesPostItGame = getNamesPostItGame;
+    this.bookRoomLink = bookRoomLink;
   }
 
   @Override public void onViewDetached() {
@@ -78,6 +82,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     getRoomLink.unsubscribe();
     createFriendship.unsubscribe();
     getNamesPostItGame.unsubscribe();
+    bookRoomLink.unsubscribe();
     liveMVPView = null;
   }
 
@@ -260,5 +265,10 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     @Override public void onNext(List<String> nameList) {
       liveMVPView.onNamesPostItGame(nameList);
     }
+  }
+
+  public void bookRoomLink(String linkId) {
+    bookRoomLink.setLinkId(linkId);
+    bookRoomLink.execute(new DefaultSubscriber());
   }
 }

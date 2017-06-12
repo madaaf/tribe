@@ -315,9 +315,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
     String linkId = StringUtils.generateLinkId();
-    String url = StringUtils.getUrlFromLinkId(this, linkId);
-    String smsContent =
-        EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_content, url));
     if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCalliMessage);
       subscriptions.add(DialogFactory.dialog(this,
@@ -325,12 +322,10 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           getString(R.string.onboarding_user_alert_call_link_msg),
           getString(R.string.onboarding_user_alert_call_link_sms), null)
           .filter(x -> x == true)
-          .subscribe(a -> {
-            navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId,
-                smsContent);
-          }));
+          .subscribe(
+              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId)));
     } else {
-      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, null);
+      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null);
     }
   }
 

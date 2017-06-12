@@ -583,4 +583,5 @@
 	<string name="roll_the_dice_invite_title">Roll the dice!</string>
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
 	<string name="roll_the_dice_grid_button">Roll the dice to make friends!</string>
+	<string name="roll_the_dice_next_button">Next!</string>
 </resources>

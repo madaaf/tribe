@@ -587,7 +587,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
                 .show();
           } else {
-            navigator.inviteToRoom(this, live.getUrl());
+            navigator.sendInviteToCall(this, TagManagerUtils.CALL, live.getLinkId(), null, false);
           }
         }));
 
@@ -651,7 +651,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openMessageAppForInvite(this, null);
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null,
+          roomConfiguration.getRoomId(), false);
+      livePresenter.bookRoomLink(linkId);
     }));
 
     subscriptions.add(
@@ -878,7 +880,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRoomLink(String roomLink) {
-    navigator.inviteToRoom(this, roomLink);
+    String linkId = StringUtils.getLinkIdFromUrl(roomLink);
+    navigator.sendInviteToCall(this, TagManagerUtils.CALL, linkId, null, false);
   }
 
   @Override public void onAddError() {

@@ -247,8 +247,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private void setupMainView() {
     viewProfile = (ProfileView) viewStack.push(R.layout.view_profile);
 
-    subscriptions.add(
-        viewProfile.onShare().subscribe(aVoid -> navigator.openMessageAppForInvite(this, null)));
+    subscriptions.add(viewProfile.onShare()
+        .subscribe(
+            aVoid -> {
+              String linkId = navigator.sendInviteToCall(this, TagManagerUtils.PROFILE, null, null, false);
+              profilePresenter.bookRoomLink(linkId);
+            }));
 
     subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> setupProfileDetailView()));
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.domain.entity.User;
+import io.branch.referral.Branch;
 import javax.inject.Singleton;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,6 +70,11 @@ import org.json.JSONObject;
 
   @Override public void increment(String properties, double value) {
     mixpanelAPI.getPeople().increment(properties, value);
+  }
+
+  @Override
+  public void generateBranchLink(Context context, String link, String title, String description,
+      String feature, String channel, Branch.BranchLinkCreateListener listener) {
   }
 
   @Override public void clear() {
