@@ -8,6 +8,8 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
+import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
@@ -17,6 +19,7 @@ import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
+import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -24,7 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import timber.log.Timber;
 
-public class LivePresenter implements Presenter {
+public class LivePresenter extends FriendshipPresenter implements Presenter {
 
   // VIEW ATTACHED
   private LiveMVPView liveMVPView;
@@ -39,6 +42,8 @@ public class LivePresenter implements Presenter {
   private GetRoomLink getRoomLink;
   private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
+  private GetNamesPostItGame getNamesPostItGame;
+  private BookRoomLink bookRoomLink;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -48,7 +53,10 @@ public class LivePresenter implements Presenter {
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite, CreateFriendship createFriendship) {
+      DeclineInvite declineInvite, CreateFriendship createFriendship,
+      GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
+      BookRoomLink bookRoomLink) {
+    this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
     this.buzzRoom = buzzRoom;
@@ -58,9 +66,12 @@ public class LivePresenter implements Presenter {
     this.getRoomLink = getRoomLink;
     this.declineInvite = declineInvite;
     this.createFriendship = createFriendship;
+    this.getNamesPostItGame = getNamesPostItGame;
+    this.bookRoomLink = bookRoomLink;
   }
 
   @Override public void onViewDetached() {
+    super.onViewDetached();
     diskFriendshipList.unsubscribe();
     joinRoom.unsubscribe();
     buzzRoom.unsubscribe();
@@ -70,6 +81,8 @@ public class LivePresenter implements Presenter {
     getRecipientInfos.unsubscribe();
     getRoomLink.unsubscribe();
     createFriendship.unsubscribe();
+    getNamesPostItGame.unsubscribe();
+    bookRoomLink.unsubscribe();
     liveMVPView = null;
   }
 
@@ -233,5 +246,29 @@ public class LivePresenter implements Presenter {
         liveMVPView.onAddSuccess(friendship);
       }
     }
+  }
+
+  public void getNamesPostItGame(String lang) {
+    getNamesPostItGame.setup(lang);
+    getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
+  }
+
+  private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(List<String> nameList) {
+      liveMVPView.onNamesPostItGame(nameList);
+    }
+  }
+
+  public void bookRoomLink(String linkId) {
+    bookRoomLink.setLinkId(linkId);
+    bookRoomLink.execute(new DefaultSubscriber());
   }
 }

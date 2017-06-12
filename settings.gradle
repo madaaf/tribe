@@ -1,1 +1,2 @@
-include ':app', ':AdapterDelegates', ':ViewNavigator', ':tribelivesdk'
+include ':app', ':AdapterDelegates', ':ViewNavigator', ':tribelivesdk', ':ulsee'
+

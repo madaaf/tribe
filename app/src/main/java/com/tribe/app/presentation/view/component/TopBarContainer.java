@@ -290,6 +290,18 @@ public class TopBarContainer extends FrameLayout {
     return ViewCompat.canScrollVertically(recyclerView, -1);
   }
 
+  public void onSyncDone() {
+    topBarView.onSyncDone();
+  }
+
+  public void onSyncStart() {
+    topBarView.onSyncStart();
+  }
+
+  public void onSyncError() {
+    topBarView.onSyncError();
+  }
+
   ///////////////////////
   //    ANIMATIONS     //
   ///////////////////////
@@ -407,6 +419,10 @@ public class TopBarContainer extends FrameLayout {
 
   public Observable<String> onSearch() {
     return topBarView.onSearch();
+  }
+
+  public Observable<Void> onSyncContacts() {
+    return topBarView.onSyncContacts();
   }
 
   public Observable<Void> onClickProfile() {

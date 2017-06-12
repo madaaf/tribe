@@ -54,15 +54,16 @@
   <dimen name="live_notification_item_height_small">40dp</dimen>
   <dimen name="action_button_height">35dp</dimen>
   <dimen name="item_base_list_height">65dp</dimen>
+  <dimen name="view_share_profile_height">82dp</dimen>
+  <dimen name="view_profile_info_height">146dp</dimen>
+  <dimen name="authentication_dialog_width">300dp</dimen>
+  <dimen name="filters_list_height">60dp</dimen>
+  <dimen name="games_list_height">60dp</dimen>
+  <dimen name="game_tooltip_first_height">40dp</dimen>
 
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>
   <dimen name="live_room_view_dropped_bar_height">30dp</dimen>
-
-  <!-- HEIGHT -->
-  <dimen name="view_share_profile_height">82dp</dimen>
-  <dimen name="view_profile_info_height">146dp</dimen>
-  <dimen name="authentication_dialog_width">300dp</dimen>
 
   <!-- SIZES -->
   <dimen name="avatar_size_big">80dp</dimen>
@@ -85,6 +86,7 @@
   <dimen name="setting_theme_vertical_padding">15dp</dimen>
   <dimen name="dialog_fragment_width">262dp</dimen>
   <dimen name="nav_icon_size">50dp</dimen>
+  <dimen name="nav_icon_little_size">33dp</dimen>
   <dimen name="nav_icon_size_with_shadow">60dp</dimen>
   <dimen name="nav_icon_size_with_margin_end">55dp</dimen>
   <dimen name="nav_icon_size_with_margin_start">80dp</dimen>
@@ -97,6 +99,9 @@
   <dimen name="waiting_view_progress_bar_size">95dp</dimen>
   <dimen name="waiting_view_avatar_size">100dp</dimen>
   <dimen name="waiting_view_dot_size">7dp</dimen>
+  <dimen name="filter_game_size">50dp</dimen>
+  <dimen name="filter_game_size_with_border">55dp</dimen>
+  <dimen name="filter_game_size_container">60dp</dimen>
 
   <!-- THRESHOLDS -->
   <dimen name="threshold_dismiss">100dp</dimen>

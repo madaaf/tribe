@@ -12,6 +12,7 @@ import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.AddMembersToGroup;
+import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.CreateGroup;
 import com.tribe.app.domain.interactor.user.DiskGetMembership;
@@ -44,6 +45,7 @@ public class GroupPresenter implements Presenter {
   private final GetGroupInfos getGroupInfos;
   private final CreateFriendship createFriendship;
   private final RemoveMembersFromGroup removeMembersFromGroup;
+  private final BookRoomLink bookRoomLink;
 
   private GroupMVPView groupView;
 
@@ -51,7 +53,8 @@ public class GroupPresenter implements Presenter {
       CreateGroup createGroup, UpdateGroup updateGroup, AddMembersToGroup addMembersToGroup,
       DiskGetMembership diskGetMembership, LeaveGroup leaveGroup, UpdateMembership updateMembership,
       GetGroupInfos getGroupInfos, CreateFriendship createFriendship,
-      RemoveMembersFromGroup removeMembersFromGroup) {
+      RemoveMembersFromGroup removeMembersFromGroup,
+      BookRoomLink bookRoomLink) {
     this.jobManager = jobManager;
     this.getGroupMembers = getGroupMembers;
     this.createGroup = createGroup;
@@ -63,6 +66,7 @@ public class GroupPresenter implements Presenter {
     this.getGroupInfos = getGroupInfos;
     this.createFriendship = createFriendship;
     this.removeMembersFromGroup = removeMembersFromGroup;
+    this.bookRoomLink = bookRoomLink;
   }
 
   @Override public void onViewDetached() {
@@ -76,6 +80,7 @@ public class GroupPresenter implements Presenter {
     createFriendship.unsubscribe();
     removeMembersFromGroup.unsubscribe();
     updateMembership.unsubscribe();
+    bookRoomLink.unsubscribe();
     groupView = null;
   }
 
@@ -294,5 +299,10 @@ public class GroupPresenter implements Presenter {
     @Override public void onNext(Void aVoid) {
       groupView.onMemberRemoveSuccess();
     }
+  }
+
+  public void bookRoomLink(String linkId) {
+    bookRoomLink.setLinkId(linkId);
+    bookRoomLink.execute(new DefaultSubscriber());
   }
 }

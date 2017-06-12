@@ -8,5 +8,4 @@ import com.tribe.tribelivesdk.view.PeerView;
 
 public abstract class Peer {
 
-    public abstract PeerView getPeerView();
 }

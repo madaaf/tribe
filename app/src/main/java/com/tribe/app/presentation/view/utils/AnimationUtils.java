@@ -332,12 +332,25 @@ public class AnimationUtils {
     animator.start();
   }
 
-  public static void animateSize(View view, int startSize, int endSize, int duration) {
+  public static void animateSize(View view, int startSize, int endSize, int duration,
+      Interpolator interpolator) {
     ValueAnimator animator = ValueAnimator.ofInt(startSize, endSize);
     animator.setDuration(duration);
-    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setInterpolator(interpolator);
     animator.addUpdateListener(
         animation -> UIUtils.changeSizeOfView(view, (int) animation.getAnimatedValue()));
+    animator.start();
+  }
+
+  public static void makeItBounce(View view, int duration, Interpolator interpolator) {
+    ValueAnimator animator = ValueAnimator.ofFloat(1.0f, 1.15f, 1.0f);
+    animator.setInterpolator(interpolator);
+    animator.setDuration(duration);
+    animator.addUpdateListener(animation -> {
+      Float scale = (float) animation.getAnimatedValue();
+      view.setScaleX(scale);
+      view.setScaleY(scale);
+    });
     animator.start();
   }
 

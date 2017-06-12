@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import com.tribe.app.domain.entity.User;
+import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
+import io.branch.referral.util.LinkProperties;
 import javax.inject.Singleton;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +67,23 @@ import org.json.JSONObject;
 
   @Override public void increment(String properties, double value) {
 
+  }
+
+  @Override
+  public void generateBranchLink(Context context, String link, String title, String description, String feature,
+      String channel, Branch.BranchLinkCreateListener listener) {
+    BranchUniversalObject universalObject = new BranchUniversalObject();
+    universalObject.setCanonicalIdentifier("07032017");
+    universalObject.setTitle(title);
+    universalObject.setContentDescription(description);
+
+    LinkProperties linkProperties = new LinkProperties().setChannel(channel)
+        .setFeature(feature)
+        .addControlParameter("$desktop_url", link)
+        .addControlParameter("$ios_url", link)
+        .addControlParameter("$android_url", link);
+
+    universalObject.generateShortUrl(context, linkProperties, listener);
   }
 
   @Override public void clear() {

@@ -6,18 +6,21 @@ package com.tribe.tribelivesdk.webrtc;
 
 public class Frame {
 
-  private byte[] data;
+  private byte[] data, dataOut;
   private int width;
   private int height;
   private int rotation;
   private long timestamp;
+  private boolean frontCamera;
 
-  public Frame(byte[] data, int width, int height, int rotation, long timestamp) {
+  public Frame(byte[] data, int width, int height, int rotation, long timestamp,
+      boolean frontCamera) {
     this.data = data;
     this.width = width;
     this.height = height;
     this.rotation = rotation;
     this.timestamp = timestamp;
+    this.frontCamera = frontCamera;
   }
 
   public byte[] getData() {
@@ -58,5 +61,26 @@ public class Frame {
 
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
+  }
+
+  public void setDataOut(byte[] dataOut) {
+    this.dataOut = dataOut;
+  }
+
+  public byte[] getDataOut() {
+    return dataOut;
+  }
+
+  public boolean isFrontCamera() {
+    return frontCamera;
+  }
+
+  public void setFrontCamera(boolean frontCamera) {
+    this.frontCamera = frontCamera;
+  }
+
+  public Frame copy(byte[] argbIn) {
+    System.arraycopy(data, 0, argbIn, 0, data.length);
+    return new Frame(argbIn, width, height, rotation, timestamp, frontCamera);
   }
 }

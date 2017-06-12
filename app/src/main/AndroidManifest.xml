@@ -78,9 +78,9 @@
 
     <activity
         android:name=".presentation.view.activity.AuthActivity"
+        android:launchMode="singleTop"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"
-        android:launchMode="singleTop"
         android:windowSoftInputMode="adjustResize" />
 
     <activity
@@ -89,11 +89,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustPan" />
-
-    <activity
-        android:name=".presentation.view.activity.ShadowCallActivity"
-        android:screenOrientation="portrait"
-        android:theme="@style/AppTheme.Transparent.Dummy" />
 
     <activity
         android:name=".presentation.view.activity.MissedCallDetailActivity"
@@ -181,6 +176,12 @@
         android:name=".presentation.view.activity.DebugActivity"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme" />
+
+    <activity
+        android:name=".presentation.view.activity.SandboxActivity"
+        android:launchMode="singleTask"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.AppCompat.Dialog" />
 
     <activity
         android:name=".presentation.view.activity.GroupActivity"

@@ -18,6 +18,7 @@ import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
@@ -58,7 +59,6 @@ import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.activity.ShadowCallActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
@@ -67,6 +67,7 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.ManageFriendshipL
 import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -170,8 +171,6 @@ public interface ApplicationComponent {
 
   void inject(LiveView liveView);
 
-  void inject(ShadowCallActivity shadowCallActivity);
-
   void inject(LiveContainer liveContainer);
 
   void inject(LiveInviteView liveInviteView);
@@ -195,6 +194,8 @@ public interface ApplicationComponent {
   void inject(NewCallView newCallButton);
 
   void inject(ManageFriendshipListAdapterDelegate manageFriendshipListAdapterDelegate);
+
+  void inject(GamesFiltersAdapterDelegate gamesFiltersAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);
@@ -226,6 +227,8 @@ public interface ApplicationComponent {
   CloudUserDataRepository cloudUserRepository();
 
   DiskUserDataRepository diskUserRepository();
+
+  CloudGameDataRepository cloudGameRepository();
 
   TribeAuthorizer tribeAuthorizer();
 

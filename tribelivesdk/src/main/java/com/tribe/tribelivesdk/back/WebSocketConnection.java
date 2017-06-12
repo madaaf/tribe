@@ -341,8 +341,6 @@ public class WebSocketConnection {
       state = STATE_DISCONNECTED;
       webSocketClient.setPongInterval(0);
       webSocketClient.setPingInterval(0);
-      webSocketClient.clearListeners();
-      webSocketClient.clearUserInfo();
       webSocketClient.disconnect();
 
       // Wait for WebSocket close event to prevent WS library from
@@ -360,6 +358,8 @@ public class WebSocketConnection {
         }
       }
 
+      webSocketClient.clearListeners();
+      webSocketClient.clearUserInfo();
       webSocketClient = null;
     }
   }

@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.stream;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
@@ -45,6 +46,12 @@ public class StreamManager {
     liveLocalStream.startVideoCapture();
 
     localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
+
+    localSubscriptions.add(this.localPeerView.onSwitchFilter().subscribe(aVoid -> switchFilter()));
+
+    localSubscriptions.add(this.localPeerView.onStartGame().subscribe(game -> startGame(game)));
+
+    localSubscriptions.add(this.localPeerView.onStopGame().subscribe(aVoid -> stopGame()));
 
     localSubscriptions.add(this.localPeerView.onEnableCamera()
         .doOnNext(mediaConfiguration -> setLocalCameraEnabled(mediaConfiguration.isVideoEnabled()))
@@ -160,6 +167,30 @@ public class StreamManager {
     }
 
     liveLocalStream.switchCamera();
+  }
+
+  public void switchFilter() {
+    if (liveLocalStream == null) {
+      Timber.d("Live Local Stream is null");
+    }
+
+    liveLocalStream.switchFilter();
+  }
+
+  public void startGame(Game game) {
+    if (liveLocalStream == null) {
+      Timber.d("Live Local Stream is null");
+    }
+
+    liveLocalStream.startGame(game);
+  }
+
+  public void stopGame() {
+    if (liveLocalStream == null) {
+      Timber.d("Live Local Stream is null");
+    }
+
+    liveLocalStream.stopGame();
   }
 
   private void setLocalCameraEnabled(boolean enabled) {

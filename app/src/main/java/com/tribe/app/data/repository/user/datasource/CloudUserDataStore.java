@@ -16,6 +16,7 @@ import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
@@ -346,7 +347,7 @@ public class CloudUserDataStore implements UserDataStore {
             ContactABRealm contactABRealm = (ContactABRealm) contactI;
             boolean shouldAdd = true;
             for (PhoneRealm phoneRealm : contactABRealm.getPhones()) {
-              if (phoneRealm.getPhone().equals(currentUser.getPhone())) {
+              if (phoneRealm.getPhone().trim().replace(" ", "").equals(currentUser.getPhone())) {
                 shouldAdd = false;
               }
             }
@@ -446,7 +447,9 @@ public class CloudUserDataStore implements UserDataStore {
           LookupObject lookupObject = listLookup.get(i);
           if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
             for (UserRealm user : lookupUsers) {
-              if (user != null && lookupObject.getUserId().equals(user.getId())) lookupObject.setUserRealm(user);
+              if (user != null && lookupObject.getUserId().equals(user.getId())) {
+                lookupObject.setUserRealm(user);
+              }
             }
           }
 
@@ -598,9 +601,7 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<Void> notifyFBFriends() {
-    return this.tribeApi.notifyFBFriends(
-        context.getString(R.string.notify_facebook, context.getString(R.string.facebook_app_id),
-            com.facebook.AccessToken.getCurrentAccessToken().getToken()));
+    return null;
   }
 
   private final Action1<AccessToken> saveToCacheAccessToken = accessToken -> {
@@ -1058,5 +1059,11 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.getRoomLink(request)
         .map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
   }
-}
 
+  @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.bookRoomLink, linkId));
+
+    return this.tribeApi.bookRoomLink(request).map(BookRoomLinkEntity::isRoomBooked);
+  }
+}

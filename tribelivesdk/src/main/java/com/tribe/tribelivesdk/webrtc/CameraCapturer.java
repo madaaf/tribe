@@ -11,22 +11,21 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v8.renderscript.RenderScript;
-import com.tribe.tribelivesdk.rs.RSCompute;
+import com.tribe.tribelivesdk.stream.FrameManager;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
-import org.webrtc.CameraEnumerator;
-import org.webrtc.CameraVideoCapturer;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
-@SuppressWarnings("deprecation") abstract class CameraCapturer implements CameraVideoCapturer {
+@SuppressWarnings("deprecation") public abstract class CameraCapturer
+    implements CameraVideoCapturer {
   enum SwitchState {
     IDLE, // No switch requested.
     PENDING, // Waiting for previous capture session to open.
@@ -41,10 +40,13 @@ import rx.subjects.PublishSubject;
   private final CameraEnumerator cameraEnumerator;
   private final CameraEventsHandler eventsHandler;
   private final Handler uiThreadHandler;
-  private boolean processing = false;
+  private boolean frontFacing = true;
 
-  private Subscription subscription;
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Frame> onFrame = PublishSubject.create();
+  private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
+  private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   private final CameraSession.CreateSessionCallback createSessionCallback =
       new CameraSession.CreateSessionCallback() {
@@ -53,26 +55,6 @@ import rx.subjects.PublishSubject;
           Logging.d(TAG, "Create session done");
           uiThreadHandler.removeCallbacks(openCameraTimeoutRunnable);
           synchronized (stateLock) {
-            subscription = onFrame.subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-                .doOnNext(frame -> processing = true)
-                .doOnNext(frame -> {
-                  //if (rsCompute != null) {
-                  //  capturerObserver.onByteBufferFrameCaptured(
-                  //      rsCompute.compute(frame.getData(), frame.getWidth(), frame.getHeight()),
-                  //      frame.getWidth(), frame.getHeight(), frame.getRotation(),
-                  //      frame.getTimestamp());
-                  //}
-                  capturerObserver.onByteBufferFrameCaptured(frame.getData(), frame.getWidth(),
-                      frame.getHeight(), frame.getRotation(), frame.getTimestamp());
-                })
-                //.doOnNext(frame -> capturerObserver.onByteBufferFrameCaptured(
-                //    ColorMatrix.convertToGrayScale(renderScript, frame.getData(), frame.getWidth(),
-                //        frame.getHeight()), frame.getWidth(), frame.getHeight(),
-                //    frame.getRotation(), frame.getTimestamp()))
-                .subscribe(frame -> {
-                  processing = false;
-                });
-
             capturerObserver.onCapturerStarted(true /* success */);
             sessionOpening = false;
             currentSession = session;
@@ -82,7 +64,8 @@ import rx.subjects.PublishSubject;
 
             if (switchState == SwitchState.IN_PROGRESS) {
               if (switchEventsHandler != null) {
-                switchEventsHandler.onCameraSwitchDone(cameraEnumerator.isFrontFacing(cameraName));
+                frontFacing = cameraEnumerator.isFrontFacing(cameraName);
+                switchEventsHandler.onCameraSwitchDone(frontFacing);
                 switchEventsHandler = null;
               }
               switchState = SwitchState.IDLE;
@@ -184,15 +167,15 @@ import rx.subjects.PublishSubject;
           Logging.w(TAG, "onByteBufferFrameCaptured from another session.");
           return;
         }
+
         if (!firstFrameObserved) {
           eventsHandler.onFirstFrameAvailable();
           firstFrameObserved = true;
         }
+
         cameraStatistics.addFrame();
 
-        if (rsCompute == null) rsCompute = new RSCompute(renderScript, width, height);
-
-        if (!processing) onFrame.onNext(new Frame(data, width, height, rotation, timestamp));
+        onFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
       }
     }
 
@@ -214,6 +197,10 @@ import rx.subjects.PublishSubject;
             rotation, timestamp);
       }
     }
+
+    @Override public void onDetectedFaces(Camera.Face[] faces) {
+      onFaces.onNext(faces);
+    }
   };
 
   private final Runnable openCameraTimeoutRunnable = new Runnable() {
@@ -228,8 +215,7 @@ import rx.subjects.PublishSubject;
   private Context applicationContext;
   private CapturerObserver capturerObserver;
   private SurfaceTextureHelper surfaceHelper;
-  private RenderScript renderScript;
-  private RSCompute rsCompute;
+  private FrameManager frameManager;
 
   private final Object stateLock = new Object();
   private boolean sessionOpening; /* guarded by stateLock */
@@ -244,6 +230,7 @@ import rx.subjects.PublishSubject;
   // Valid from onDone call until stopCapture, otherwise null.
   private CameraStatistics cameraStatistics; /* guarded by stateLock */
   private boolean firstFrameObserved; /* guarded by stateLock */
+  private int frameRotation; /* guarded by stateLock */
 
   public CameraCapturer(String cameraName, CameraEventsHandler eventsHandler,
       CameraEnumerator cameraEnumerator) {
@@ -291,9 +278,15 @@ import rx.subjects.PublishSubject;
     this.applicationContext = applicationContext;
     this.capturerObserver = capturerObserver;
     this.surfaceHelper = surfaceTextureHelper;
-    this.cameraThreadHandler =
-        surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
-    this.renderScript = RenderScript.create(applicationContext);
+    cameraThreadHandler = surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
+
+    frameManager = new FrameManager(applicationContext);
+    subscriptions.add(frameManager.onRemoteFrame()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
+        .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
+            frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
+    subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -315,17 +308,18 @@ import rx.subjects.PublishSubject;
       sessionOpening = true;
       openAttemptsRemaining = MAX_OPEN_CAMERA_ATTEMPTS;
       createSessionInternal(0);
+
+      frameManager.startCapture();
+      frameManager.initFrameSubscription(onFrame);
+      frameManager.initNewFacesObs(onFaces);
     }
   }
 
   private void createSessionInternal(int delayMs) {
     uiThreadHandler.postDelayed(openCameraTimeoutRunnable, delayMs + OPEN_CAMERA_TIMEOUT);
-    cameraThreadHandler.postDelayed(new Runnable() {
-      @Override public void run() {
-        createCameraSession(createSessionCallback, cameraSessionEventsHandler, applicationContext,
-            surfaceHelper, cameraName, width, height, framerate);
-      }
-    }, delayMs);
+    cameraThreadHandler.postDelayed(
+        () -> createCameraSession(createSessionCallback, cameraSessionEventsHandler,
+            applicationContext, surfaceHelper, cameraName, width, height, framerate), delayMs);
   }
 
   @Override public void stopCapture() {
@@ -345,8 +339,7 @@ import rx.subjects.PublishSubject;
         cameraThreadHandler.post(() -> oldSession.stop());
         currentSession = null;
         capturerObserver.onCapturerStopped();
-
-        if (subscription != null) subscription.unsubscribe();
+        frameManager.stopCapture();
       } else {
         Logging.d(TAG, "Stop capture: No session open");
       }
@@ -365,12 +358,18 @@ import rx.subjects.PublishSubject;
 
   @Override public void dispose() {
     Logging.d(TAG, "dispose");
+    subscriptions.clear();
     stopCapture();
+    frameManager.dispose();
   }
 
   @Override public void switchCamera(final CameraSwitchHandler switchEventsHandler) {
     Logging.d(TAG, "switchCamera");
     cameraThreadHandler.post(() -> switchCameraInternal(switchEventsHandler));
+  }
+
+  @Override public void switchFilter() {
+    frameManager.switchFilter();
   }
 
   @Override public boolean isScreencast() {
@@ -395,6 +394,8 @@ import rx.subjects.PublishSubject;
 
   private void switchCameraInternal(final CameraSwitchHandler switchEventsHandler) {
     Logging.d(TAG, "switchCamera internal");
+
+    frameManager.switchCamera();
 
     final String[] deviceNames = cameraEnumerator.getDeviceNames();
 
@@ -464,4 +465,12 @@ import rx.subjects.PublishSubject;
       CameraSession.CreateSessionCallback createSessionCallback, CameraSession.Events events,
       Context applicationContext, SurfaceTextureHelper surfaceTextureHelper, String cameraName,
       int width, int height, int framerate);
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<TribeI420Frame> onLocalFrame() {
+    return onLocalFrame;
+  }
 }

@@ -10,25 +10,35 @@
 
 package com.tribe.tribelivesdk.webrtc;
 
+import android.hardware.Camera;
+
 interface CameraSession {
-  enum FailureType { ERROR, DISCONNECTED }
+  enum FailureType {ERROR, DISCONNECTED}
 
   // Callbacks are fired on the camera thread.
   public interface CreateSessionCallback {
     void onDone(CameraSession session);
+
     void onFailure(FailureType failureType, String error);
   }
 
   // Events are fired on the camera thread.
   public interface Events {
     void onCameraOpening();
+
     void onCameraError(CameraSession session, String error);
+
     void onCameraDisconnected(CameraSession session);
+
     void onCameraClosed(CameraSession session);
-    void onByteBufferFrameCaptured(
-        CameraSession session, byte[] data, int width, int height, int rotation, long timestamp);
+
+    void onByteBufferFrameCaptured(CameraSession session, byte[] data, int width, int height,
+        int rotation, long timestamp);
+
     void onTextureFrameCaptured(CameraSession session, int width, int height, int oesTextureId,
         float[] transformMatrix, int rotation, long timestamp);
+
+    void onDetectedFaces(Camera.Face[] faces);
   }
 
   /**

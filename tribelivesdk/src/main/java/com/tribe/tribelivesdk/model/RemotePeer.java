@@ -1,7 +1,6 @@
 package com.tribe.tribelivesdk.model;
 
 import android.view.ViewGroup;
-import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
 import timber.log.Timber;
 
@@ -28,7 +27,7 @@ public class RemotePeer extends Peer {
     this.session = session;
   }
 
-  @Override public PeerView getPeerView() {
+  public RemotePeerView getPeerView() {
     return peerView;
   }
 

@@ -2,8 +2,6 @@ package com.tribe.app.presentation.utils.analytics;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
@@ -11,7 +9,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import java.util.Locale;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
+import io.branch.referral.Branch;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -57,12 +56,7 @@ import javax.inject.Singleton;
       mixpanel.setProperty(bundleMixpanel);
     }
 
-    Resources resources = context.getResources();
-    Locale locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? resources.getConfiguration()
-        .getLocales()
-        .getFirstMatch(resources.getAssets().getLocales()) : resources.getConfiguration().locale;
-
-    bundle.putString(TagManagerUtils.USER_LANGUAGE, locale.getLanguage().toUpperCase());
+    bundle.putString(TagManagerUtils.USER_LANGUAGE, DeviceUtils.getLanguage(context).toUpperCase());
 
     bundle.putBoolean(TagManagerUtils.USER_NOTIFICATIONS_ENABLED,
         true); // ALWAYS TRUE ON ANDROID FOR PERMISSIONS
@@ -123,6 +117,12 @@ import javax.inject.Singleton;
   @Override public void increment(String properties, double value) {
     mixpanel.increment(properties, value);
     branch.increment(properties, value);
+  }
+
+  @Override
+  public void generateBranchLink(Context context, String link, String title, String description,
+      String feature, String channel, Branch.BranchLinkCreateListener listener) {
+    branch.generateBranchLink(context, link, title, description, feature, channel, listener);
   }
 
   @Override public void clear() {

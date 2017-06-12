@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.widget;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -31,7 +32,13 @@ import javax.inject.Inject;
 
 public class AvatarsSuperposedLayout extends LinearLayout {
 
-  protected final static int AVATARS_SIZE = 55;
+  @IntDef({
+      AVATARS_SMALL_SIZE, AVATARS_BIG_SIZE
+  }) public @interface AvatarSize {
+  }
+
+  public final static int AVATARS_SMALL_SIZE = 55;
+  public final static int AVATARS_BIG_SIZE = 115;
 
   @Inject User user;
   @Inject ScreenUtils screenUtils;
@@ -80,7 +87,8 @@ public class AvatarsSuperposedLayout extends LinearLayout {
     return new ActivityModule(((Activity) getContext()));
   }
 
-  public void drawAvatarsMembersLayout(List<TribeGuest> membersList, int backgroundColor) {
+  public void drawAvatarsMembersLayout(List<TribeGuest> membersList, int backgroundColor,
+      @AvatarSize int avatarSize) {
     List<TribeGuest> members = new ArrayList<>();
     members.addAll(membersList);
     LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -108,10 +116,10 @@ public class AvatarsSuperposedLayout extends LinearLayout {
       LinearLayout.LayoutParams layoutParams =
           new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-      layoutParams.width = screenUtils.dpToPx(AVATARS_SIZE);
-      layoutParams.height = screenUtils.dpToPx(AVATARS_SIZE);
+      layoutParams.width = screenUtils.dpToPx(avatarSize);
+      layoutParams.height = screenUtils.dpToPx(avatarSize);
       if (i != 0) {
-        layoutParams.setMargins(screenUtils.dpToPx(-AVATARS_SIZE / 3), 0, 0, 0);
+        layoutParams.setMargins(screenUtils.dpToPx(-20), 0, 0, 0);
       }
       avatarView.setLayoutParams(layoutParams);
       layout.addView(avatarView);

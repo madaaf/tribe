@@ -30,6 +30,7 @@ public class GlideUtils {
     private ImageView target;
     private boolean hasHole = false;
     private boolean hasPlaceholder = true;
+    private boolean rounded = true;
 
     public Builder(Context context) {
       this.context = context;
@@ -75,6 +76,11 @@ public class GlideUtils {
       return this;
     }
 
+    public Builder rounded(boolean rounded) {
+      this.rounded = rounded;
+      return this;
+    }
+
     public void load() {
       DrawableRequestBuilder drawableRequestBuilder;
 
@@ -107,11 +113,13 @@ public class GlideUtils {
         drawableRequestBuilder.override(size, size);
       }
 
-      if (hasHole) {
-        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context),
-            new HoleTransformation(context));
-      } else {
-        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
+      if (rounded) {
+        if (hasHole) {
+          drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context),
+              new HoleTransformation(context));
+        } else {
+          drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
+        }
       }
 
       drawableRequestBuilder.crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutContent"
+    android:layout_width="@dimen/filter_game_size_container"
+    android:layout_height="@dimen/filter_game_size_container"
+    android:background="@null"
+    android:orientation="horizontal"
+    >
+
+  <View
+      android:id="@+id/bgSelected"
+      android:layout_width="@dimen/filter_game_size"
+      android:layout_height="@dimen/filter_game_size"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_oval_white"
+      android:elevation="5dp"
+      />
+
+  <ImageView
+      android:id="@+id/image"
+      android:layout_width="@dimen/filter_game_size"
+      android:layout_height="@dimen/filter_game_size"
+      android:layout_gravity="center"
+      android:clickable="true"
+      android:elevation="5dp"
+      android:foreground="@drawable/selectable_button_oval"
+      android:scaleType="centerCrop"
+      />
+
+</FrameLayout>

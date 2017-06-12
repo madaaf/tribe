@@ -1,15 +1,16 @@
 package com.tribe.app.presentation.utils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Patterns;
 import com.tribe.app.R;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,10 @@ import java.util.regex.Pattern;
  * Created by tiago on 09/08/2016.
  */
 public class StringUtils {
+
+  private static final String characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijiklmnopqrstuvxyz0123456789";
+  private static final int LENGHT_LINK_ID = 6;
 
   public static boolean isEmpty(String str) {
     return str == null || str.isEmpty();
@@ -89,29 +94,28 @@ public class StringUtils {
   }
 
   public static String generateLinkId() {
-    MessageDigest instance = null;
-    try {
-      instance = MessageDigest.getInstance("MD5");
-      byte[] messageDigest = instance.digest(String.valueOf(System.nanoTime()).getBytes());
-      StringBuilder hexString = new StringBuilder();
-      for (int i = 0; i < messageDigest.length; i++) {
-        String hex = Integer.toHexString(0xFF & messageDigest[i]);
-        if (hex.length() == 1) {
-          // could use a for loop, but we're only dealing with a single
-          // byte
-          hexString.append('0');
-        }
-        hexString.append(hex);
-      }
-      return hexString.toString();
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+    Random random = new SecureRandom();
+
+    if (LENGHT_LINK_ID <= 0) {
+      throw new IllegalArgumentException("String length must be a positive integer");
     }
 
-    return "" + String.valueOf(System.currentTimeMillis()).hashCode();
+    StringBuilder sb = new StringBuilder(LENGHT_LINK_ID);
+    for (int i = 0; i < LENGHT_LINK_ID; i++) {
+      sb.append(characters.charAt(random.nextInt(characters.length())));
+    }
+
+    return sb.toString();
   }
 
   public static String getUrlFromLinkId(Context context, String linkId) {
     return "https://" + context.getString(R.string.web_host) + "/" + linkId;
+  }
+
+  public static String getLinkIdFromUrl(String url) {
+    Uri uri = Uri.parse(url);
+    String path = uri.getPath();
+    String linkId = path.substring(path.lastIndexOf('/') + 1);
+    return linkId;
   }
 }

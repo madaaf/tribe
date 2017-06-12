@@ -48,11 +48,13 @@ import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
@@ -233,6 +235,8 @@ public class HomeActivity extends BaseActivity
             tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemMicrophone, bundleBis);
           }
         }));
+
+    popupAccessFacebookContact();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -418,7 +422,8 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      navigator.openSmsForInvite(this, null);
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      homeGridPresenter.bookRoomLink(linkId);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
@@ -545,7 +550,8 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      navigator.openSmsForInvite(this, null);
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      homeGridPresenter.bookRoomLink(linkId);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
@@ -577,8 +583,10 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initSearch() {
-    subscriptions.add(searchView.onNavigateToSmsForInvites()
-        .subscribe(aVoid -> navigator.openSmsForInvite(this, null)));
+    subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
+      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      homeGridPresenter.bookRoomLink(linkId);
+    }));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
 
@@ -594,7 +602,9 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      navigator.openSmsForInvite(this, contact.getPhone());
+      String linkId =
+          navigator.sendInviteToCall(this, TagManagerUtils.SEARCH, null, contact.getPhone(), false);
+      homeGridPresenter.bookRoomLink(linkId);
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
@@ -605,6 +615,9 @@ public class HomeActivity extends BaseActivity
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
+
+    subscriptions.add(topBarContainer.onSyncContacts().subscribe(aVoid -> syncContacts()));
+    subscriptions.add(searchView.onSyncContacts().subscribe(aVoid -> syncContacts()));
   }
 
   private void initAppState() {
@@ -701,10 +714,12 @@ public class HomeActivity extends BaseActivity
   }
 
   private void openSmsApp(Intent intent) {
-    if (intent != null && intent.hasExtra(Extras.OPEN_SMS)) {
+    if (intent != null && intent.hasExtra(Extras.ROOM_LINK_ID)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        navigator.openDefaultMessagingApp(this, intent.getStringExtra(Extras.OPEN_SMS));
+        String linkId =
+            navigator.sendInviteToCall(this, TagManagerUtils.ONBOARDING, null, null, true);
+        homeGridPresenter.bookRoomLink(linkId);
       }
     }
   }
@@ -751,14 +766,25 @@ public class HomeActivity extends BaseActivity
     lastSync.set(System.currentTimeMillis());
     displaySyncBanner(getString(R.string.grid_synced_contacts_banner));
     homeGridPresenter.sendInvitations();
+    topBarContainer.onSyncDone();
   }
 
   @Override public void onSyncStart() {
     displaySyncBanner(getString(R.string.grid_syncing_contacts_banner));
+    topBarContainer.onSyncStart();
+  }
+
+  @Override public void onSyncError() {
+    displaySyncBanner(getString(R.string.grid_sync_failed_contacts_banner));
+    topBarContainer.onSyncError();
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {
     onNewContacts.onNext(contactList);
+  }
+
+  @Override public void onBookLink(Boolean isBookLink) {
+    
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -788,8 +814,27 @@ public class HomeActivity extends BaseActivity
         addressBook.set(true);
         homeGridPresenter.lookupContacts();
         searchView.refactorActions();
+      } else {
+        topBarContainer.onSyncError();
       }
     });
+  }
+
+  private void popupAccessFacebookContact() {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
+      subscriptions.add(DialogFactory.dialog(context(),
+          EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
+          EmojiParser.demojizedText(
+              context().getString(R.string.permission_facebook_popup_message)),
+          context().getString(R.string.permission_facebook_popup_ok),
+          context().getString(R.string.permission_facebook_popup_ko))
+          .filter(x -> x == true)
+          .subscribe(a -> {
+            homeGridPresenter.loginFacebook();
+          }));
+      stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT_PERMISSION);
+    }
   }
 
   private void lookupContacts() {

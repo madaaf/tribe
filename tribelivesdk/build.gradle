@@ -19,13 +19,36 @@ android {
     versionName "1.0"
 
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    externalNativeBuild {
+      cmake {
+        arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+      }
+    }
+
+    ndk {
+      abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "src/main/cpp/CMakeLists.txt"
+    }
   }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
-  sourceSets { main { renderscript.srcDirs = ['src/main/rs/'] } }
+
+  sourceSets {
+    main {
+      renderscript.srcDirs = ['src/main/rs/']
+      jni.srcDirs = ['src/main/cpp/']
+      jniLibs.srcDir('src/main/jniLibs/')
+    }
+  }
 }
 
 dependencies {
@@ -42,6 +65,7 @@ dependencies {
   compile presentationDependencies.webSocket
   compile presentationDependencies.timber
   compile presentationDependencies.guava
+  compile presentationDependencies.googleVision
 
   apt presentationDependencies.daggerCompiler
   compile presentationDependencies.dagger

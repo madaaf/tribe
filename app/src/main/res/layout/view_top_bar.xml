@@ -2,6 +2,32 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
+
+  <RelativeLayout
+      android:id="@+id/progressRefreshBack"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_oval_white10"
+      android:visibility="invisible"
+      >
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progressRefresh"
+        android:layout_width="17.5dp"
+        android:layout_height="17.5dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="6dp"
+        android:alpha="0"
+        android:background="@null"
+        app:cpv_animAutostart="true"
+        app:cpv_animDuration="3000"
+        app:cpv_color="@android:color/white"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2sp"
+        />
+  </RelativeLayout>
   <FrameLayout
       android:id="@+id/viewTopBarContainer"
       android:layout_width="match_parent"
@@ -94,7 +120,7 @@
           android:id="@+id/txtNewContacts"
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
-          android:layout_gravity="right"
+          android:layout_gravity="end"
           android:layout_margin="4dp"
           android:alpha="0"
           android:background="@null"
@@ -105,33 +131,31 @@
           android:paddingRight="6dp"
           style="@style/Title.2.White"
           />
+
+
+      <FrameLayout
+          android:id="@+id/btnSyncContacts"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="end|center_vertical"
+          android:layout_margin="4dp"
+          android:background="@drawable/shape_rect_orange_sync_corner"
+          android:clickable="true"
+          android:visibility="gone"
+          >
+
+        <ImageView
+            android:id="@+id/imgSyncContacts"
+            android:layout_width="@dimen/avatar_size_smaller"
+            android:layout_height="@dimen/avatar_size_smaller"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_synch_contacts"
+            />
+      </FrameLayout>
+
+
     </FrameLayout>
 
   </FrameLayout>
-
-  <RelativeLayout
-      android:id="@+id/progressRefreshBack"
-      android:layout_width="30dp"
-      android:layout_height="30dp"
-      android:layout_gravity="center"
-      android:background="@drawable/shape_oval_white10"
-      android:visibility="invisible"
-      >
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressRefresh"
-        android:layout_width="17.5dp"
-        android:layout_height="17.5dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="6dp"
-        android:alpha="0"
-        android:background="@null"
-        app:cpv_animAutostart="true"
-        app:cpv_animDuration="3000"
-        app:cpv_color="@android:color/white"
-        app:cpv_indeterminate="true"
-        app:cpv_thickness="2sp"
-        />
-  </RelativeLayout>
 </merge>

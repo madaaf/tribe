@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/shape_rect_white_corner"
+    android:orientation="vertical"
+    >
+
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:padding="10dp"
+      android:text="Sendbox"
+      android:textColor="@android:color/black"
+      android:textSize="16dp"
+      android:textStyle="bold"
+      />
+
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:background="@color/grey.light"
+      />
+
+  <EditText
+      android:id="@+id/sandboxId"
+      android:layout_width="300dp"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:imeOptions="actionDone"
+      android:inputType="number"
+      android:maxLines="1"
+      android:padding="20dp"
+      android:textColor="@android:color/black"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:background="@color/grey.light"
+      />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:background="@drawable/shape_rect_grey_rounded_bottom_corner"
+      android:gravity="center"
+      android:padding="10dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnEnable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="ENABLE"
+        style="@style/Body.Two.Blue"
+
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnDisable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="DISABLE"
+        style="@style/Body.Two.Blue"
+        />
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="CANCEL"
+        style="@style/Body.Two.Blue"
+        />
+  </LinearLayout>
+
+
+</LinearLayout>

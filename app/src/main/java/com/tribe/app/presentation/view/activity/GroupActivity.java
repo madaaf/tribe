@@ -240,7 +240,9 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.GROUP);
           bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
           tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-          navigator.openSmsForInvite(this, null);
+          String linkId =
+              navigator.sendInviteToCall(this, TagManagerUtils.GROUP, null, null, false);
+          groupPresenter.bookRoomLink(linkId);
         }
       }
     });
@@ -468,10 +470,15 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
       if (user.isInvisible()) {
         DialogFactory.dialog(this, user.getDisplayName(),
             EmojiParser.demojizedText(getString(R.string.add_friend_error_invisible)),
-            getString(R.string.add_friend_error_invisible_invite_ios),
+            getString(R.string.add_friend_error_invisible_invite_android),
             getString(R.string.add_friend_error_invisible_cancel))
             .filter(x -> x == true)
-            .subscribe(a -> navigator.openSmsForInvite(this, user.getPhone()));
+            .subscribe(a -> {
+              String linkId =
+                  navigator.sendInviteToCall(this, TagManagerUtils.GROUP, null, user.getPhone(),
+                      false);
+              groupPresenter.bookRoomLink(linkId);
+            });
       } else {
         groupPresenter.createFriendship(user.getId());
       }

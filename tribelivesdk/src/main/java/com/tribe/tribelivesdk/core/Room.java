@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.core;
 
 import android.support.annotation.StringDef;
+import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
@@ -62,6 +63,7 @@ public class Room {
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
+  public static final String MESSAGE_GAME = "game";
 
   private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;
@@ -85,6 +87,8 @@ public class Room {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
 
   public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
     this.webSocketConnection = webSocketConnection;
@@ -117,8 +121,8 @@ public class Room {
 
       hasJoined = true;
     }).delay(1000, TimeUnit.MILLISECONDS).doOnNext(tribeJoinRoom -> {
-      if (options.isShadowCall()) {
-        sendToPeers(webRTCClient.getJSONMedia(webRTCClient.getMediaConfiguration()), false);
+      if (options != null && !options.isShadowCall()) {
+        sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
       }
     }).subscribe());
 
@@ -152,14 +156,19 @@ public class Room {
 
     persistentSubscriptions.add(jsonToModel.onTribeMediaConstraints()
         .filter(tribeMediaConstraints -> hasJoined)
-        .subscribe(tribeMediaConstraints -> {
-          webRTCClient.updateMediaConstraints(tribeMediaConstraints);
-        }));
+        .subscribe(
+            tribeMediaConstraints -> webRTCClient.updateMediaConstraints(tribeMediaConstraints)));
 
     persistentSubscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
+
+    persistentSubscriptions.add(
+        jsonToModel.onNewGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onNewGame));
+
+    persistentSubscriptions.add(
+        jsonToModel.onStopGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onStopGame));
   }
 
   public void initLocalStream(LocalPeerView localPeerView) {
@@ -246,6 +255,8 @@ public class Room {
 
     tempSubscriptions.add(webRTCClient.onRemotePeersChanged().doOnNext(rxRemotePeer -> {
       if (rxRemotePeer.changeType == ObservableRxHashMap.ADD) {
+        sendToPeer(rxRemotePeer.item,
+            webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
         onRemotePeerAdded.onNext(rxRemotePeer.item);
       } else if (rxRemotePeer.changeType == ObservableRxHashMap.REMOVE) {
         onRemotePeerRemoved.onNext(rxRemotePeer.item);
@@ -466,5 +477,13 @@ public class Room {
 
   public Observable<Void> onRoomFull() {
     return onRoomFull;
+  }
+
+  public Observable<Pair<TribeSession, String>> onNewGame() {
+    return onNewGame;
+  }
+
+  public Observable<Pair<TribeSession, String>> onStopGame() {
+    return onStopGame;
   }
 }

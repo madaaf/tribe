@@ -20,11 +20,12 @@ import javax.inject.Singleton;
   @StringDef({
       LEAVING_ROOM_POPUP, DRAG_FRIEND_POPUP, BUZZ_FRIEND_POPUP, NEVER_ASK_AGAIN_MICRO_PERMISSION,
       NEVER_ASK_AGAIN_CAMERA_PERMISSION, NEVER_ASK_AGAIN_CONTACT_PERMISSION, NEW_CALL_POPUP,
-      INVITE_POPUP, FRIENDS_POPUP, PROFILE_POPUP, PERMISSION_CONTACT, OPEN_SMS
-  }) public @interface StateKey {
-  }
+      INVITE_POPUP, FRIENDS_POPUP, PROFILE_POPUP, PERMISSION_CONTACT, OPEN_SMS, NEW_GAME_START,
+      GAME_POST_IT_POPUP, FACEBOOK_CONTACT_PERMISSION
+  }) public @interface StateKey {}
 
   public static final String LEAVING_ROOM_POPUP = "LEAVING_ROOM_POPUP";
+  public static final String FACEBOOK_CONTACT_PERMISSION = "FACEBOOK_CONTACT_PERMISSION";
   public static final String DRAG_FRIEND_POPUP = "DRAG_FRIEND_POPUP";
   public static final String BUZZ_FRIEND_POPUP = "BUZZ_FRIEND_POPUP";
   public static final String NEW_CALL_POPUP = "NEW_CALL_POPUP";
@@ -33,6 +34,8 @@ import javax.inject.Singleton;
   public static final String PROFILE_POPUP = "PROFILE_POPUP";
   public static final String PERMISSION_CONTACT = "PERMISSION_CONTACT";
   public static final String OPEN_SMS = "OPEN_SMS";
+  public static final String NEW_GAME_START = "NEW_GAME_START";
+  public static final String GAME_POST_IT_POPUP = "GAME_POST_IT_POPUP";
 
   public static final String NEVER_ASK_AGAIN_MICRO_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
   public static final String NEVER_ASK_AGAIN_CAMERA_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
@@ -48,6 +51,16 @@ import javax.inject.Singleton;
       //make a copy, update it and save it
       Set<String> newStrSet = new HashSet<String>();
       newStrSet.add(key);
+      newStrSet.addAll(tutorialState.get());
+      tutorialState.set(newStrSet);
+    }
+  }
+
+  public void deleteKey(@StateKey String key) {
+    if (!StringUtils.isEmpty(key)) {
+      //make a copy, update it and save it
+      Set<String> newStrSet = new HashSet<String>();
+      newStrSet.remove(key);
       newStrSet.addAll(tutorialState.get());
       tutorialState.set(newStrSet);
     }

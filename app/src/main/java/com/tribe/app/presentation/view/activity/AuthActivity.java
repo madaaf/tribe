@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
@@ -55,7 +54,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   private ShakeDetector mShakeDetector;
   private SensorManager mSensorManager;
   private Sensor mAccelerometer;
-  private Boolean enableSandbox = false;
   private Uri deepLink = null;
   private AuthCallback authCallback;
 
@@ -67,7 +65,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     initRessource();
     deepLink = getIntent().getData();
     loginUser(userPhoneNumber.get());
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
+    Timber.d("KPI_Onboarding_Start");
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -108,9 +106,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void digitAuth() {
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
+    Timber.d("KPI_Onboarding_Start");
     authCallback = new AuthCallback() {
       @Override public void success(DigitsSession session, String phoneNumber) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+        Timber.d("KPI_Onboarding_PinSucceeded");
         userPhoneNumber.set(phoneNumber);
         Timber.d("digit login success " + phoneNumber);
         loginUser(phoneNumber);
@@ -118,6 +118,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
       @Override public void failure(DigitsException error) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
+        Timber.d("KPI_Onboarding_PinFailed");
         userPhoneNumber.set(null);
         Timber.e("digit login failure :" + error);
         digitAuth();
@@ -140,19 +141,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
     mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     mShakeDetector = new ShakeDetector(() -> {
-      Toast toast;
-      if (!enableSandbox) {
-        Timber.d("enable sandbox");
-        toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
-        Digits.enableSandbox();
-      } else {
-
-        Timber.d("disable sandbox");
-        toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
-        Digits.disableSandbox();
-      }
-      enableSandbox = !enableSandbox;
-      toast.show();
+      navigator.navigateToSandbox(this);
     });
   }
 
@@ -163,7 +152,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   private void connectUser(User user) {
     this.currentUser.copy(user);
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess);
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.TYPE, "signup");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
+    Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
     if (deepLink != null) {
       Intent newIntent =
@@ -181,7 +173,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
       Timber.d("goToConnected from " + user.getDisplayName());
-      navigator.navigateToHomeFromLogin(this, null, countryCode, null);
+      navigator.navigateToHomeFromLogin(this, countryCode, null);
     }
   }
 
@@ -226,6 +218,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Override public void loginError(ErrorLogin errorLogin) {
     Timber.d("loginError");
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationError);
+    Timber.d("KPI_Onboarding_AuthenticationError");
   }
 
   @Override public void pinError(ErrorLogin errorLogin) {

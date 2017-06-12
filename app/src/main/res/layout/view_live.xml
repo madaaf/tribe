@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
   <com.tribe.app.presentation.view.component.live.LiveRoomView
@@ -12,11 +11,23 @@
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtTooltipFirstGame"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/game_tooltip_first_height"
+      android:layout_gravity="bottom|center_horizontal"
+      android:background="@android:color/black"
+      android:gravity="center"
+      android:maxLines="1"
+      android:text="@string/game_tutorial"
+      android:translationY="@dimen/game_tooltip_first_height"
+      style="@style/Caption.Two.White40"
+      />
+
   <com.tribe.app.presentation.view.component.live.LiveControlsView
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_gravity="bottom"
       />
 
   <com.tribe.app.presentation.view.component.live.LiveStatusNameView
@@ -29,39 +40,4 @@
       android:layout_marginTop="19.5dp"
       android:background="@null"
       />
-
-  <com.tribe.app.presentation.view.component.live.BuzzView
-      android:id="@+id/viewBuzz"
-      android:layout_width="60dp"
-      android:layout_height="60dp"
-      android:visibility="gone"
-      app:buzzType="small"
-      />
-
-  <ImageView
-      android:id="@+id/btnLeave"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="right|top"
-      android:layout_margin="7dp"
-      android:background="@drawable/selectable_button_oval"
-      android:clickable="true"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_leave_live"
-      />
-
-  <ImageView
-      android:id="@+id/btnScreenshot"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="left|top"
-      android:layout_margin="@dimen/horizontal_margin_smaller"
-      android:alpha="0"
-      android:background="@drawable/selectable_button_oval"
-      android:clickable="true"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_btn_screenshot"
-      android:visibility="invisible"
-      />
-
 </merge>

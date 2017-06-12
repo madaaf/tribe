@@ -216,12 +216,20 @@ public class LiveContainer extends FrameLayout {
     }));
 
     subscriptions.add(viewLive.onBuzzPopup().subscribe(displayName -> {
-      if (stateManager.shouldDisplay(StateManager.BUZZ_FRIEND_POPUP)) {
-        viewLive.reduceParam();
-        closeInviteView();
-        nativeDialogsView.displayPopup(viewLive.viewControlsLive.btnNotify,
-            PopupContainerView.DISPLAY_BUZZ_POPUP,
-            getResources().getString(R.string.live_tutorial_buzz, displayName));
+      //if (stateManager.shouldDisplay(StateManager.BUZZ_FRIEND_POPUP)) {
+      //  viewLive.reduceParam();
+      //  closeInviteView();
+      //  nativeDialogsView.displayPopup(viewLive.viewControlsLive.btnNotify,
+      //      PopupContainerView.DISPLAY_BUZZ_POPUP,
+      //      getResources().getString(R.string.live_tutorial_buzz, displayName));
+      //}
+    }));
+
+    subscriptions.add(viewLive.onGameUIActive().subscribe(viewGameUI -> {
+      if (stateManager.shouldDisplay(StateManager.GAME_POST_IT_POPUP)) {
+        stateManager.addTutorialKey(StateManager.GAME_POST_IT_POPUP);
+        nativeDialogsView.displayPopup(viewGameUI, PopupContainerView.DISPLAY_POST_IT_GAME,
+            getResources().getString(R.string.game_post_it_rule));
       }
     }));
 
@@ -514,14 +522,16 @@ public class LiveContainer extends FrameLayout {
     dropEnabled = true;
     onDropEnabled.onNext(true);
     initialTileHeight = currentTileView.getHeight();
-    AnimationUtils.animateSize(currentTileView, initialTileHeight, 0, DURATION);
+    AnimationUtils.animateSize(currentTileView, initialTileHeight, 0, DURATION,
+        new DecelerateInterpolator());
     draggedTileView.startDrop();
   }
 
   private void endTileDrop() {
     dropEnabled = false;
     onDropEnabled.onNext(false);
-    AnimationUtils.animateSize(currentTileView, 0, initialTileHeight, DURATION);
+    AnimationUtils.animateSize(currentTileView, 0, initialTileHeight, DURATION,
+        new DecelerateInterpolator());
     draggedTileView.endDrop();
   }
 
@@ -602,7 +612,7 @@ public class LiveContainer extends FrameLayout {
       springRight.setEndValue(-viewInviteLive.getWidth());
     }
     resetTimer();
-    
+
     if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP) && (nbrCall % 2) == 0) {
       nativeDialogsView.displayPopup(viewInviteLive,
           PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);

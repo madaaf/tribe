@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -67,7 +68,7 @@ public class LiveShareOverlayView extends LinearLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_share_overlay, this);
     unbinder = ButterKnife.bind(this);
 
-    setBackgroundResource(R.color.black_opacity_40);
+    setBackground(ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_black40_rounded_corners));
     setOrientation(VERTICAL);
     setGravity(Gravity.CENTER);
   }

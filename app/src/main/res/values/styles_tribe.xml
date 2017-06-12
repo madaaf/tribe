@@ -128,11 +128,11 @@
   </style>
 
   <style name="Circular.1" parent="@style/Circular">
-    <item name="customFont">CircularStd-Medium.ttf</item>
+    <item name="customFont">CircularStd-Medium.otf</item>
   </style>
 
   <style name="Circular.2" parent="@style/Circular">
-    <item name="customFont">CircularStd-Bold.ttf</item>
+    <item name="customFont">CircularStd-Bold.otf</item>
   </style>
 
 

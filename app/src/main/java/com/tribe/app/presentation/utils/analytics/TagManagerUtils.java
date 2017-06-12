@@ -70,8 +70,12 @@ public class TagManagerUtils {
   public static final String SCREEN = "screen";
   public static final String HOME = "home";
   public static final String LIVE = "live";
+  public static final String CALL = "call";
   public static final String SEARCH = "search";
   public static final String GROUP = "group";
+  public static final String INVITE = "invite";
+  public static final String ONBOARDING = "onboarding";
+  public static final String PROFILE = "profile";
   public static final String ACTION = "action";
   public static final String UNKNOWN = "unknown";
   public static final String CANCELLED = "cancelled";
@@ -92,6 +96,7 @@ public class TagManagerUtils {
   public static final String WIZZ_COUNT = "wizz_count";
   public static final String SCREENSHOT_COUNT = "screenshot_count";
   public static final String MEMBERS_INVITED = "members_invited";
+  public static final String POST_IT_GAME_COUNT = "post_it_game_count";
   public static final String CATEGORY = "category";
   public static final String SOURCE = "source";
 

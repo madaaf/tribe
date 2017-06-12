@@ -1,5 +1,6 @@
 package com.tribe.app.data.network;
 
+import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
@@ -11,6 +12,7 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.interactor.user.BookRoomLink;
 import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -49,9 +51,6 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<CreateFriendshipEntity> createFriendship(
       @Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<List<Integer>> howManyFriends(
-      @Field("query") String query);
-
   @FormUrlEncoded @POST("/graphql") Observable<SearchResultRealm> findByUsername(
       @Field("query") String query);
 
@@ -82,9 +81,6 @@ public interface TribeApi {
 
   @Multipart @POST("/graphql") Observable<GroupRealm> updateGroupMedia(
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
-
-  @FormUrlEncoded @POST("/graphql") Observable<Void> addMembersToGroup(
-      @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> removeMembersFromGroup(
       @Field("query") String query);
@@ -122,5 +118,8 @@ public interface TribeApi {
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<RoomLinkEntity> getRoomLink(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<BookRoomLinkEntity> bookRoomLink(
       @Field("query") String query);
 }

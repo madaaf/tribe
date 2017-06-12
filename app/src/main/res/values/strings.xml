@@ -24,6 +24,8 @@
 	<string name="action_nevermind">Nevermind</string>
 	<string name="action_unhide">Add Friend</string>
 	<string name="action_invite">Invite</string>
+	<string name="action_sms">iMessage</string>
+	<string name="action_messenger">Messenger</string>
 	
 	<!-- Group -->
 	<string name="group_member">member</string>
@@ -148,6 +150,7 @@
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
 	<string name="grid_tutorial_profile">Manage your account,\nfriendships and more!</string>
 	<string name="grid_syncing_contacts_banner">Syncing contacts...</string>
+	<string name="grid_sync_failed_contacts_banner">Syncronisation failed</string>
 	<string name="grid_synced_contacts_banner">Contacts synced!</string>
 	
 	<!-- Group Identification -->
@@ -190,7 +193,7 @@
 	<string name="settings_logout_title">Log out</string>
 	<string name="settings_logout_confirm_message">Are you sure you want to log out?</string>
 	<string name="settings_logout_wait">Logging you out...</string>
-	<string name="settings_version">Version %1$s (%2$s) handcrafted in San Francisco, CA</string>
+	<string name="settings_version">Version %1$s (%2$s)</string>
 	
 	<!-- New Version Popup -->
 	<string name="onboarding_new_version_popup_title">SURPRISE!</string>
@@ -223,9 +226,11 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
 	<string name="onboarding_user_alert_call_link_title">Looks great. Pick your best friends to try it out now! :metal:</string>
 	<string name="onboarding_user_alert_call_link_msg">Small tip: Text the friends you\'d like to video call at once.</string>
-	<string name="onboarding_user_alert_call_link_sms">Open SMS</string>
+	<string name="onboarding_user_alert_call_link_sms">Enter &amp; open SMS</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Enter &amp; open iMessage!</string>
 	<string name="onboarding_user_alert_call_link_content">Guys, can you try with me real quick? It\'s now on %1$s</string>
+	<string name="onboarding_user_alert_call_link_metadata_title">Join %1$s now!</string>
+	<string name="onboarding_user_alert_call_link_metadata_description">%1$s invited you in a video call.</string>
 	
 	<!-- Onboarding Queue -->
 	<string name="onboarding_queue_title">Find your friends</string>
@@ -344,7 +349,7 @@
 	<string name="live_waiting_state_notifying">:loud_sound: Ringing "%1$s"...</string>
 	<string name="live_waiting_state_waiting">:clock10: Waiting for "%1$s" to join</string>
 	<string name="live_screenshot_saved_toast">Saved in your camera roll! :camera:</string>
-	<string name="live_unknown_user">Unknown guest</string>
+	<string name="live_unknown_user">Someone</string>
 	<string name="live_external_user">Guest</string>
 	<string name="live_external_user_display_name">On the web</string>
 	<string name="live_external_user_username">Not connected</string>
@@ -356,7 +361,7 @@
 	<string name="live_share_new_call_button">Invite friends in the call</string>
 	<string name="live_share_new_call_button_simple">Share</string>
 	<string name="live_share_new_call_button_title">Call link</string>
-	<string name="live_share_screenshot_description">Share this screenshot</string>
+	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
 	
 	<!-- Profile -->
@@ -442,11 +447,11 @@
 	<!-- Live Sharing -->
 	<string name="live_sharing_title">Call ended</string>
 	<string name="live_sharing_infos_you_spent">You just spent</string>
-	<string name="live_sharing_infos_you_mins">%1$d mins</string>
-	<string name="live_sharing_infos_you_min">%1$d min</string>
+	<string name="live_sharing_infos_you_mins">%1$d mins</string>
+	<string name="live_sharing_infos_you_min">%1$d min</string>
 	<string name="live_sharing_infos_you_with">with</string>
-	<string name="live_sharing_infos_you_friends">%1$d friends</string>
-	<string name="live_sharing_infos_you_friend">%1$d friend</string>
+	<string name="live_sharing_infos_you_friends">%1$d friends</string>
+	<string name="live_sharing_infos_you_friend">%1$d friend</string>
 	<string name="live_sharing_share">Share it!</string>
 	<string name="live_sharing_infos_i_spent">I just spent</string>
 	<string name="live_sharing_infos_on_a">on a</string>
@@ -554,11 +559,11 @@
 	
 	<!-- Games -->
 	<string name="game_event_started">%1$s launched the "%2$s" game! :video_game:</string>
-	<string name="game_event_post_it_re_roll">%1$s renewed the Postit notes! :video_game:</string>
+	<string name="game_event_post_it_re_roll">%1$s renewed the names! :video_game:</string>
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
 	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
-	<string name="game_post_it">Postit notes</string>
-	<string name="game_post_it_menu_re_roll">Renew the Postit notes</string>
+	<string name="game_post_it">Heads Up</string>
+	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
 	<string name="game_post_it_rule">Guess who you are\nby asking your friends!</string>
 	
@@ -570,4 +575,13 @@
 	<string name="call_level_4">Turn up call! :dizzy:</string>
 	<string name="call_level_5">Savage call! :smiling_imp:</string>
 	<string name="call_level_6">Legendary call! :crossed_swords:</string>
+	
+	<!-- Roll the dice -->
+	<string name="roll_the_dice_live_tutorial">Re-roll the dice!</string>
+	<string name="roll_the_dice_live_status_searching">:game_die: Finding someone to join...</string>
+	<string name="roll_the_dice_live_description">Play games as soon as\nsomeone joins!</string>
+	<string name="roll_the_dice_invite_title">Roll the dice!</string>
+	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
+	<string name="roll_the_dice_grid_button">Roll it to meet random people!</string>
+	<string name="roll_the_dice_next_button">Next!</string>
 </resources>

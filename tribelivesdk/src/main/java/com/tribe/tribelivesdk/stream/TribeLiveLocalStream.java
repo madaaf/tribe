@@ -1,21 +1,24 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
-import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
-import com.tribe.tribelivesdk.view.PeerView;
+import com.tribe.tribelivesdk.view.LocalPeerView;
+import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
+import com.tribe.tribelivesdk.webrtc.CameraCapturer;
+import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.List;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.CameraEnumerationAndroid;
-import org.webrtc.CameraVideoCapturer;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
-import org.webrtc.VideoCapturer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class TribeLiveLocalStream {
@@ -32,18 +35,23 @@ public class TribeLiveLocalStream {
   private final PeerConnectionFactory peerConnectionFactory;
   private AudioTrack audioTrack;
   private com.tribe.tribelivesdk.core.MediaConstraints mediaConstraints;
-  private final VideoRenderer videoRenderer;
+  private LocalPeerView peerView;
+  private VideoRenderer videoRenderer;
+  private TribeVideoRenderer localVideoRenderer;
   private VideoSource videoSource;
   private AudioSource audioSource;
   private VideoTrack videoTrack;
-  private VideoCapturer capturer;
+  private CameraCapturer capturer;
   private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
   private boolean capturing = false;
 
-  public TribeLiveLocalStream(Context context, PeerView peerView,
+  // OBSERVABLE
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+
+  public TribeLiveLocalStream(Context context, LocalPeerView peerView,
       PeerConnectionFactory peerConnectionFactory) {
-    if (peerView == null || peerView.getVideoRenderer() == null) {
-      throw new IllegalArgumentException("VideoStreamsView can not be null");
+    if (peerView == null) {
+      throw new IllegalArgumentException("Peerview cannot be null");
     }
 
     if (peerConnectionFactory == null) {
@@ -51,12 +59,19 @@ public class TribeLiveLocalStream {
     }
 
     this.context = context;
-    this.videoRenderer = peerView.getVideoRenderer();
+    this.peerView = peerView;
+    this.videoRenderer = peerView.getRemoteRenderer();
+    this.localVideoRenderer = peerView.getLocalRenderer();
     this.peerConnectionFactory = peerConnectionFactory;
     mediaConstraints =
         new com.tribe.tribelivesdk.core.MediaConstraints.MediaConstraintsBuilder().build();
 
     generateVideoCapturer();
+
+    if (capturer != null) {
+      subscriptions.add(
+          capturer.onLocalFrame().subscribe(frame -> localVideoRenderer.renderFrame(frame)));
+    }
   }
 
   private void addAudioTrackToMediaStream() {
@@ -77,8 +92,7 @@ public class TribeLiveLocalStream {
   }
 
   private void generateVideoCapturer() {
-    com.tribe.tribelivesdk.webrtc.Camera1Enumerator enumerator =
-        new com.tribe.tribelivesdk.webrtc.Camera1Enumerator(false);
+    Camera1Enumerator enumerator = new Camera1Enumerator(false);
 
     Timber.d("Creating capturer");
 
@@ -89,12 +103,12 @@ public class TribeLiveLocalStream {
     for (String deviceName : deviceNames) {
       if (enumerator.isFrontFacing(deviceName)) {
         Timber.d("Creating front facing camera capturer.");
-        VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+        CameraCapturer cameraCapturer = enumerator.createCapturer(deviceName, null);
 
         captureFormatList = enumerator.getSupportedFormats(deviceName);
 
-        if (videoCapturer != null) {
-          capturer = videoCapturer;
+        if (cameraCapturer != null) {
+          capturer = cameraCapturer;
           return;
         }
       }
@@ -105,12 +119,11 @@ public class TribeLiveLocalStream {
     for (String deviceName : deviceNames) {
       if (!enumerator.isFrontFacing(deviceName)) {
         Timber.d("Creating other camera capturer.");
-        VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-
+        CameraCapturer cameraCapturer = enumerator.createCapturer(deviceName, null);
         captureFormatList = enumerator.getSupportedFormats(deviceName);
-
-        if (videoCapturer != null) {
-          capturer = videoCapturer;
+        if (cameraCapturer != null) {
+          capturer = cameraCapturer;
+          return;
         }
       }
     }
@@ -145,12 +158,8 @@ public class TribeLiveLocalStream {
   public void stopVideoCapture() {
     if (capturer != null) {
       Timber.d("Stop video source.");
-      try {
-        capturing = false;
-        capturer.stopCapture();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      capturing = false;
+      capturer.stopCapture();
     }
   }
 
@@ -228,12 +237,30 @@ public class TribeLiveLocalStream {
       return;
     }
 
-    if (capturer instanceof CameraVideoCapturer) {
-      Timber.d("Switch camera");
-      CameraVideoCapturer cameraVideoCapturer = (CameraVideoCapturer) capturer;
-      cameraVideoCapturer.switchCamera(null);
-    } else {
-      Timber.d("Will not switch camera, video caputurer is not a camera");
+    capturer.switchCamera(null);
+  }
+
+  public void switchFilter() {
+    if (capturer == null) {
+      return;
     }
+
+    capturer.switchFilter();
+  }
+
+  public void startGame(Game game) {
+    if (game.isLocalFrameDifferent()) {
+      stopVideoCapture();
+      videoTrack.removeRenderer(videoRenderer);
+      startVideoCapture();
+    }
+  }
+
+  public void stopGame() {
+    peerView.initRemoteRenderer();
+    videoRenderer = peerView.getRemoteRenderer();
+    stopVideoCapture();
+    videoTrack.addRenderer(videoRenderer);
+    startVideoCapture();
   }
 }

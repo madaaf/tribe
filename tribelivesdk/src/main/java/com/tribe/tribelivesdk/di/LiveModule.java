@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.di;
 import android.content.Context;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.WebRTCClient;
+import com.tribe.tribelivesdk.game.GameManager;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
@@ -17,7 +18,8 @@ import javax.inject.Singleton;
     return new WebRTCClient(context);
   }
 
-  @Provides @Singleton public TribeLiveSDK provideTribeLiveSDK(WebRTCClient webRTCClient) {
-    return new TribeLiveSDK(webRTCClient);
+  @Provides @Singleton
+  public TribeLiveSDK provideTribeLiveSDK(Context context, WebRTCClient webRTCClient) {
+    return new TribeLiveSDK(context, webRTCClient);
   }
 }

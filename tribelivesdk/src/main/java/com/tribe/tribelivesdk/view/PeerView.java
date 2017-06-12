@@ -6,23 +6,14 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import org.webrtc.MediaStream;
-import org.webrtc.RendererCommon;
-import org.webrtc.RendererCommon.RendererEvents;
-import org.webrtc.RendererCommon.ScalingType;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoTrack;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 public abstract class PeerView extends ViewGroup {
-
-  // OBSERVABLES
-  private PublishSubject<String> onNotificationRemoteJoined = PublishSubject.create();
 
   /**
    * The scaling type to be utilized by default.
@@ -39,7 +30,8 @@ public abstract class PeerView extends ViewGroup {
    * pillarboxed. Areas of the element's playback area that do not contain the
    * video represent nothing.
    */
-  protected static final ScalingType DEFAULT_SCALING_TYPE = ScalingType.SCALE_ASPECT_FILL;
+  protected static final RendererCommon.ScalingType DEFAULT_SCALING_TYPE =
+      RendererCommon.ScalingType.SCALE_ASPECT_FILL;
   /**
    * {@link View#isInLayout()} as a <tt>Method</tt> to be invoked via
    * reflection in order to accommodate its lack of availability before API
@@ -86,22 +78,58 @@ public abstract class PeerView extends ViewGroup {
    * {@link #textureViewRenderer}.
    */
   protected int frameWidth;
-  /**
-   * The indicator which determines whether this {@code PeerView} is to
-   * mirror the video represented by {@link #videoTrack} during its rendering.
-   */
+
   protected boolean mirror;
-  /**
-   * The scaling type this {@code PeerView} is to apply to the video
-   * represented by {@link #videoTrack} during its rendering. An expression of
-   * the CSS property {@code object-fit} in the terms of WebRTC.
-   */
-  protected ScalingType scalingType;
-  /**
-   * The {@link View} and {@link VideoRenderer} implementation which
-   * actually renders {@link #videoTrack} on behalf of this instance.
-   */
+
+  protected RendererCommon.ScalingType scalingType;
+
   protected TextureViewRenderer textureViewRenderer;
+
+  /**
+   * The {@code VideoRenderer}, if any, which renders {@link #videoTrack} on
+   * this {@code View}.
+   */
+  protected VideoRenderer remoteRenderer;
+
+  /**
+   * The {@code VideoTrack}, if any, rendered by this {@code PeerView}.
+   */
+  protected VideoTrack videoTrack;
+
+  /**
+   * Stops rendering {@link #videoTrack} and releases the associated acquired
+   * resources (if rendering is in progress).
+   */
+  protected void removeRendererFromVideoTrack() {
+    if (remoteRenderer != null) {
+      Timber.d("Disposing renderer from video track");
+      if (videoTrack != null) {
+        Timber.d("Removing videoRenderer from videoTrack");
+        videoTrack.removeRenderer(remoteRenderer);
+      }
+      Timber.d("videoRenderer dispose");
+      remoteRenderer.dispose();
+      remoteRenderer = null;
+    }
+  }
+
+  protected void releaseTexture() {
+    Timber.d("Releasing texture");
+    getTextureViewRenderer().release();
+
+    // Since this PeerView is no longer rendering anything, make sure
+    // surfaceViewRenderer displays nothing as well.
+    synchronized (layoutSyncRoot) {
+      frameHeight = 0;
+      frameRotation = 0;
+      frameWidth = 0;
+    }
+
+    Timber.d("Request renderer layout");
+    requestTextureViewRendererLayout();
+    Timber.d("End disposing renderer from video track");
+  }
+
   /**
    * The {@code Runnable} representation of
    * {@link #requestTextureViewRendererLayout()} ()}. Explicitly defined in order
@@ -110,29 +138,26 @@ public abstract class PeerView extends ViewGroup {
    */
   protected final Runnable requestSurfaceViewRendererLayoutRunnable =
       () -> requestTextureViewRendererLayout();
+
   /**
    * The {@code RendererEvents} which listens to rendering events reported by
    * {@link #textureViewRenderer}.
    */
-  protected final RendererEvents rendererEvents = new RendererEvents() {
-    @Override public void onFirstFrameRendered() {
-      onNotificationRemoteJoined.onNext(null);
-    }
+  protected final RendererCommon.RendererEvents rendererEvents =
+      new RendererCommon.RendererEvents() {
+        @Override public void onFirstFrameRendered() {
+          PeerView.this.onFirstFrameRendered();
+        }
 
-    @Override public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
-      PeerView.this.onFrameResolutionChanged(videoWidth, videoHeight, rotation);
-    }
-  };
-  /**
-   * The {@code VideoRenderer}, if any, which renders {@link #videoTrack} on
-   * this {@code View}.
-   */
-  protected VideoRenderer videoRenderer;
+        @Override
+        public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
+          PeerView.this.onFrameResolutionChanged(videoWidth, videoHeight, rotation);
+        }
 
-  /**
-   * The {@code VideoTrack}, if any, rendered by this {@code PeerView}.
-   */
-  protected VideoTrack videoTrack;
+        @Override public void onPreviewSizeChanged(int width, int height) {
+          PeerView.this.onPreviewSizeChanged(width, height);
+        }
+      };
 
   public PeerView(Context context) {
     super(context);
@@ -152,16 +177,6 @@ public abstract class PeerView extends ViewGroup {
     setScalingType(DEFAULT_SCALING_TYPE);
   }
 
-  /**
-   * Gets the {@code SurfaceViewRenderer} which renders {@link #videoTrack}.
-   * Explicitly defined and used in order to facilitate switching the instance
-   * at compile time. For example, reduces the number of modifications
-   * necessary to switch the implementation from a {@code SurfaceViewRenderer}
-   * that is a child of a {@code PeerView} to {@code PeerView} extending
-   * {@code SurfaceViewRenderer}.
-   *
-   * @return The {@code SurfaceViewRenderer} which renders {@code videoTrack}.
-   */
   protected final TextureViewRenderer getTextureViewRenderer() {
     return textureViewRenderer;
   }
@@ -236,7 +251,7 @@ public abstract class PeerView extends ViewGroup {
       int frameHeight;
       int frameRotation;
       int frameWidth;
-      ScalingType scalingType;
+      RendererCommon.ScalingType scalingType;
 
       synchronized (layoutSyncRoot) {
         frameHeight = this.frameHeight;
@@ -284,38 +299,6 @@ public abstract class PeerView extends ViewGroup {
   }
 
   /**
-   * Stops rendering {@link #videoTrack} and releases the associated acquired
-   * resources (if rendering is in progress).
-   */
-  protected void removeRendererFromVideoTrack() {
-    if (videoRenderer != null) {
-      Timber.d("Disposing renderer from video track");
-      if (videoTrack != null) {
-        Timber.d("Removing videoRenderer from videoTrack");
-        videoTrack.removeRenderer(videoRenderer);
-      }
-      Timber.d("videoRenderer dispose");
-      videoRenderer.dispose();
-      videoRenderer = null;
-
-      Timber.d("Releasing texture");
-      getTextureViewRenderer().release();
-
-      // Since this PeerView is no longer rendering anything, make sure
-      // surfaceViewRenderer displays nothing as well.
-      synchronized (layoutSyncRoot) {
-        frameHeight = 0;
-        frameRotation = 0;
-        frameWidth = 0;
-      }
-
-      Timber.d("Request renderer layout");
-      requestTextureViewRendererLayout();
-      Timber.d("End disposing renderer from video track");
-    }
-  }
-
-  /**
    * Request that {@link #textureViewRenderer} be laid out (as soon as
    * possible) because layout-related state either of this instance or of
    * {@code surfaceViewRenderer} has changed.
@@ -331,14 +314,6 @@ public abstract class PeerView extends ViewGroup {
     }
   }
 
-  /**
-   * Sets the indicator which determines whether this {@code PeerView} is to
-   * mirror the video represented by {@link #videoTrack} during its rendering.
-   *
-   * @param mirror If this {@code PeerView} is to mirror the video
-   * represented by {@code videoTrack} during its rendering, {@code true};
-   * otherwise, {@code false}.
-   */
   public void setMirror(boolean mirror) {
     if (this.mirror != mirror) {
       this.mirror = mirror;
@@ -363,13 +338,14 @@ public abstract class PeerView extends ViewGroup {
    * {@code PeerView} i.e. {@code RTCView}.
    */
   public void setObjectFit(String objectFit) {
-    ScalingType scalingType =
-        "cover".equals(objectFit) ? ScalingType.SCALE_ASPECT_FILL : ScalingType.SCALE_ASPECT_FIT;
+    RendererCommon.ScalingType scalingType =
+        "cover".equals(objectFit) ? RendererCommon.ScalingType.SCALE_ASPECT_FILL
+            : RendererCommon.ScalingType.SCALE_ASPECT_FIT;
 
     setScalingType(scalingType);
   }
 
-  protected void setScalingType(ScalingType scalingType) {
+  protected void setScalingType(RendererCommon.ScalingType scalingType) {
     TextureViewRenderer textureViewRenderer;
 
     synchronized (layoutSyncRoot) {
@@ -387,80 +363,16 @@ public abstract class PeerView extends ViewGroup {
     requestTextureViewRendererLayout();
   }
 
-  /**
-   * Sets the {@code MediaStream} to be rendered by this {@code PeerView}.
-   * The implementation renders the first {@link VideoTrack}, if any, of the
-   * specified {@code mediaStream}.
-   *
-   * @param mediaStream The {@code MediaStream} to be rendered by this
-   * {@code PeerView} or {@code null}.
-   */
-  public void setStream(MediaStream mediaStream) {
-    VideoTrack videoTrack;
-
-    if (mediaStream == null) {
-      videoTrack = null;
-    } else {
-      List<VideoTrack> videoTracks = mediaStream.videoTracks;
-
-      videoTrack = videoTracks.isEmpty() ? null : videoTracks.get(0);
-    }
-
-    setVideoTrack(videoTrack);
-  }
-
-  /**
-   * Sets the {@code VideoTrack} to be rendered by this {@code PeerView}.
-   *
-   * @param videoTrack The {@code VideoTrack} to be rendered by this
-   * {@code PeerView} or {@code null}.
-   */
-  protected void setVideoTrack(VideoTrack videoTrack) {
-    VideoTrack oldValue = this.videoTrack;
-
-    if (oldValue != videoTrack) {
-      if (oldValue != null) {
-        removeRendererFromVideoTrack();
-      }
-
-      this.videoTrack = videoTrack;
-
-      if (videoTrack != null) {
-        tryAddRendererToVideoTrack();
-      }
-    }
-  }
-
-  /**
-   * Starts rendering {@link #videoTrack} if rendering is not in progress and
-   * all preconditions for the start of rendering are met.
-   */
-  protected void tryAddRendererToVideoTrack() {
-    if (videoRenderer == null && videoTrack != null) {
-      TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
-
-      textureViewRenderer.init(/* sharedContext */ null, rendererEvents);
-
-      videoRenderer = new VideoRenderer(textureViewRenderer);
-      videoTrack.addRenderer(videoRenderer);
-    }
+  public VideoRenderer getRemoteRenderer() {
+    return remoteRenderer;
   }
 
   public void dispose() {
     removeRendererFromVideoTrack();
+    releaseTexture();
   }
 
-  public boolean isRenderingWell() {
-    if (textureViewRenderer == null) return true;
-    
-    return textureViewRenderer.isRenderingWell();
-  }
+  public abstract void onFirstFrameRendered();
 
-  public VideoRenderer getVideoRenderer() {
-    return videoRenderer;
-  }
-
-  public Observable<String> onNotificatinRemoteJoined() {
-    return onNotificationRemoteJoined;
-  }
+  public abstract void onPreviewSizeChanged(int width, int height);
 }

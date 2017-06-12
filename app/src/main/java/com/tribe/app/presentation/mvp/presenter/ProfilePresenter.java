@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetDiskUnblockedFriendshipList;
@@ -33,6 +34,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
   private GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList;
   private UpdateFriendship updateFriendship;
   private DeclineInvite declineInvite;
+  private BookRoomLink bookRoomLink;
 
   private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
   private GetUnblockedFriendshipListSubscriber getUnblockedFriendshipListSubscriber;
@@ -40,13 +42,15 @@ public class ProfilePresenter extends UpdateUserPresenter {
   @Inject ProfilePresenter(UpdateUser updateUser, LookupUsername lookupUsername,
       RxFacebook rxFacebook, RemoveInstall removeInstall,
       GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
-      DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList) {
+      DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList,
+      BookRoomLink bookRoomLink) {
     super(updateUser, lookupUsername, rxFacebook);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;
     this.updateFriendship = updateFriendship;
     this.declineInvite = declineInvite;
     this.getDiskUnblockedFriendshipList = getDiskUnblockedFriendshipList;
+    this.bookRoomLink = bookRoomLink;
   }
 
   @Override public void onViewDetached() {
@@ -55,6 +59,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
     updateFriendship.unsubscribe();
     declineInvite.unsubscribe();
     getDiskUnblockedFriendshipList.unsubscribe();
+    bookRoomLink.unsubscribe();
     profileView = null;
     super.onViewDetached();
   }
@@ -150,5 +155,10 @@ public class ProfilePresenter extends UpdateUserPresenter {
       profileView.renderUnblockedFriendshipList(friendshipList);
       unsubscribe();
     }
+  }
+
+  public void bookRoomLink(String linkId) {
+    bookRoomLink.setLinkId(linkId);
+    bookRoomLink.execute(new DefaultSubscriber());
   }
 }

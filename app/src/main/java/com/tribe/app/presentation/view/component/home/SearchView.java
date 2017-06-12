@@ -121,6 +121,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   private PublishSubject<Recipient> onHangLive = PublishSubject.create();
   private PublishSubject<ContactAB> onInvite = PublishSubject.create();
   private PublishSubject<Recipient> onUnblock = PublishSubject.create();
+  private PublishSubject<Void> onSyncContacts = PublishSubject.create();
 
   public SearchView(Context context) {
     super(context);
@@ -454,23 +455,11 @@ public class SearchView extends FrameLayout implements SearchMVPView {
         stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_CONTACT_PERMISSION);
       }
     });
-
-/*    rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
-      Bundle bundle = new Bundle();
-      bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
-      tagManager.setProperty(bundle);
-
-      if (hasPermission) {
-        addressBook.set(true);
-        sync();
-      } else {
-        viewFriendsAddressBookLoad.hideLoading();
-      }
-    });*/
   }
 
   private void sync() {
     searchPresenter.lookupContacts();
+    onSyncContacts.onNext(null);
   }
 
   ///////////////////
@@ -546,6 +535,10 @@ public class SearchView extends FrameLayout implements SearchMVPView {
 
   public Observable<Void> onShow() {
     return onShow;
+  }
+
+  public Observable<Void> onSyncContacts() {
+    return onSyncContacts;
   }
 
   public Observable<Void> onGone() {

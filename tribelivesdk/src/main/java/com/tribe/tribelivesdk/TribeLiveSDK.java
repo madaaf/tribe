@@ -1,5 +1,6 @@
 package com.tribe.tribelivesdk;
 
+import android.content.Context;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
@@ -14,7 +15,7 @@ import javax.inject.Singleton;
 
   private WebRTCClient webRTCClient;
 
-  @Inject public TribeLiveSDK(WebRTCClient webRTCClient) {
+  @Inject public TribeLiveSDK(Context context, WebRTCClient webRTCClient) {
     this.webRTCClient = webRTCClient;
   }
 

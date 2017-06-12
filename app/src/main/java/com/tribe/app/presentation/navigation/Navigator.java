@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
-import android.widget.Toast;
 import com.digits.sdk.android.Digits;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -25,13 +24,14 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
+import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.ShadowCallActivity;
+import com.tribe.app.presentation.view.activity.SandboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -87,15 +87,6 @@ public class Navigator {
     }
   }
 
-  public void navigateToShadowCallActivity(Activity context, Uri uri, String countryCode,
-      String smsContent) {
-    if (context != null) {
-      Intent intent = ShadowCallActivity.getCallingIntent(context, countryCode, smsContent);
-      intent.setData(uri);
-      context.startActivity(intent);
-    }
-  }
-
   public void navigateToAuthProfile(Activity activity, Uri deepLink, LoginEntity loginEntity) {
     if (activity != null) {
       Intent intent = AuthProfileActivity.getCallingIntent(activity, loginEntity);
@@ -126,18 +117,19 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, Uri uriDeepLink, String countryCode,
-      String smsContent) {
+  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
-      if (smsContent != null) intent.putExtra(Extras.OPEN_SMS, smsContent);
+      if (linkRoomId != null) {
+        intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
+      }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
           | Intent.FLAG_ACTIVITY_CLEAR_TASK
           | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
-      if (smsContent != null) {
+      if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
       }
     }
@@ -366,26 +358,24 @@ public class Navigator {
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
-  public void sendText(String body, Context context) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:"));
-    sendIntent.putExtra("sms_body", body);
-    context.startActivity(sendIntent);
+  public void openMessageAppForInvite(Activity activity, String phoneNumber) {
+    String linkId = StringUtils.generateLinkId();
+    String url = StringUtils.getUrlFromLinkId(activity, linkId);
+    String text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
+    shareText(activity, text, phoneNumber);
   }
 
-  public void openSms(String body, Activity activity) {
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-    sendIntent.setData(Uri.parse("sms:"));
-    sendIntent.putExtra("sms_body", body);
-    activity.startActivity(sendIntent);
-    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+  public void openMessageAppForInviteWithUrl(Activity activity, String url, String phoneNumber,
+      boolean shouldOpenDefaultSMSApp) {
+    String text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
+    if (!shouldOpenDefaultSMSApp) {
+      shareText(activity, text, phoneNumber);
+    } else {
+      openDefaultMessagingApp(activity, text);
+    }
   }
 
-  public void openSmsForInvite(Activity activity, String phoneNumber) {
-    String text = EmojiParser.demojizedText(
-        activity.getString(R.string.share_invite, user.getUsername(),
-            activity.getString(R.string.share_messenger_url)));
-
+  public void shareText(Activity activity, String text, String phoneNumber) {
     if (StringUtils.isEmpty(phoneNumber)) {
       shareGenericText(text, activity);
     } else {
@@ -397,7 +387,42 @@ public class Navigator {
     }
   }
 
-  public void openDefaultMessagingApp(Activity activity, String message) { //SOEF
+  public String sendInviteToCall(BaseActivity activity, String feature, String fromLinkId,
+      String phoneNumber, boolean shouldOpenDefaultSms) {
+    String url, linkId;
+
+    if (StringUtils.isEmpty(fromLinkId)) {
+      linkId = StringUtils.generateLinkId();
+    } else {
+      linkId = fromLinkId;
+    }
+
+    url = StringUtils.getUrlFromLinkId(activity, linkId);
+
+    String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
+        activity.getCurrentUser().getDisplayName());
+    String description =
+        activity.getString(R.string.onboarding_user_alert_call_link_metadata_description,
+            activity.getCurrentUser().getDisplayName());
+
+    activity.getTagManager()
+        .generateBranchLink(activity, url, title, description, feature, "SMS",
+            (generatedUrl, error) -> {
+              String finalUrl;
+
+              if (error == null && !StringUtils.isEmpty(generatedUrl)) {
+                finalUrl = generatedUrl;
+              } else {
+                finalUrl = url;
+              }
+
+              openMessageAppForInviteWithUrl(activity, finalUrl, phoneNumber, shouldOpenDefaultSms);
+            });
+
+    return linkId;
+  }
+
+  public void openDefaultMessagingApp(Activity activity, String message) {
     Uri uri = Uri.parse("smsto:");
     Intent it = new Intent(Intent.ACTION_SENDTO, uri);
     it.putExtra("sms_body", message);
@@ -410,33 +435,8 @@ public class Navigator {
     shareGenericText(text, activity);
   }
 
-  public void openFacebookMessenger(String body, Activity activity) {
-    Intent sendIntent = new Intent();
-    sendIntent.setAction(Intent.ACTION_SEND);
-    sendIntent.putExtra(Intent.EXTRA_TEXT, body);
-    sendIntent.setType("text/plain");
-    sendIntent.setPackage("com.facebook.orca");
-    try {
-      activity.startActivity(sendIntent);
-    } catch (android.content.ActivityNotFoundException ex) {
-      // TODO externalize this string
-      Toast.makeText(activity, "Facebook Messenger is not installed.", Toast.LENGTH_LONG).show();
-    }
-
-    activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-  }
-
-  public void openWhatsApp(String body, Activity activity) {
-    Intent sendIntent = new Intent();
-    sendIntent.setAction(Intent.ACTION_SEND);
-    sendIntent.putExtra(Intent.EXTRA_TEXT, body);
-    sendIntent.setType("text/plain");
-    sendIntent.setPackage("com.whatsapp");
-    try {
-      activity.startActivity(sendIntent);
-    } catch (android.content.ActivityNotFoundException ex) {
-      // TODO externalize this string
-      Toast.makeText(activity, "Whatsapp is not installed.", Toast.LENGTH_LONG).show();
-    }
+  public void navigateToSandbox(AuthActivity authActivity) {
+    Intent i = new Intent(authActivity, SandboxActivity.class);
+    authActivity.startActivity(i);
   }
 }

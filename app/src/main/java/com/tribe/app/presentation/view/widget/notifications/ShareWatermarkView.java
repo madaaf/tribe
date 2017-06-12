@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +22,10 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -45,7 +48,7 @@ public class ShareWatermarkView extends FrameLayout {
   private View cluster;
   private Unbinder unbinder;
   private String txtFriend, txtMinute;
-
+  private RxPermissions rxPermissions;
 
   @BindView(R.id.txtFriendsSharingCard) TextViewFont txtFriends;
   @BindView(R.id.txtMinutesSharingCard) TextViewFont txtMinutes;
@@ -85,7 +88,8 @@ public class ShareWatermarkView extends FrameLayout {
     };
     int color = getRandom(colors);
     bg.setBackgroundColor(color);
-    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, color);
+    avatarsSuperposedLayout.drawAvatarsMembersLayout(members, color,
+        AvatarsSuperposedLayout.AVATARS_BIG_SIZE);
     setIntent(packageTitle);
   }
 
@@ -95,43 +99,50 @@ public class ShareWatermarkView extends FrameLayout {
 
   private void init(Context context) {
     this.context = context;
+    rxPermissions = new RxPermissions((Activity) getContext());
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     cluster = inflater.inflate(R.layout.view_share_watermark, this, true);
     unbinder = ButterKnife.bind(this);
   }
 
   private void setIntent(String packageTitle) {
-    Bitmap bitmap = createClusterBitmap();
-    String pathofBmp =
-        MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null, null);
-    Uri bmpUri = Uri.parse(pathofBmp);
+    rxPermissions.request(PermissionUtils.PERMISSION_READ_WRITE_EXTERNAL)
+        .subscribe(hasPermission -> {
+          if (hasPermission) {
+            Bitmap bitmap = createClusterBitmap();
+            String pathofBmp =
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null,
+                    null);
+            Uri bmpUri = Uri.parse(pathofBmp);
 
-    Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-    intent.setType("image/png");
-    intent.putExtra(android.content.Intent.EXTRA_TEXT, EmojiParser.demojizedText(
-        context.getString(R.string.live_sharing_media_caption, txtMinute, txtFriend)));
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            intent.setType("image/png");
+            intent.putExtra(android.content.Intent.EXTRA_TEXT, EmojiParser.demojizedText(
+                context.getString(R.string.live_sharing_media_caption, txtMinute, txtFriend)));
 
-    if (packageTitle.equals(PACKAGE_FACEBOOK)) {
-      PackageManager pm = context.getPackageManager();
-      List<ResolveInfo> activityList = pm.queryIntentActivities(intent, 0);
-      for (final ResolveInfo app : activityList) {
-        if ((app.activityInfo.packageName).startsWith("com.facebook.katana")) {
-          final ActivityInfo activity = app.activityInfo;
-          final ComponentName name =
-              new ComponentName(activity.applicationInfo.packageName, activity.name);
-          intent.setComponent(name);
-          context.startActivity(intent);
-          break;
-        }
-      }
-    } else if (packageTitle.equals(MULTIPLE_CHOICE)) {
-      context.startActivity(Intent.createChooser(intent, null));
-    } else {
-      intent.setPackage(packageTitle);
-      context.startActivity(intent);
-    }
+            if (packageTitle.equals(PACKAGE_FACEBOOK)) {
+              PackageManager pm = context.getPackageManager();
+              List<ResolveInfo> activityList = pm.queryIntentActivities(intent, 0);
+              for (final ResolveInfo app : activityList) {
+                if ((app.activityInfo.packageName).startsWith(PACKAGE_FACEBOOK)) {
+                  final ActivityInfo activity = app.activityInfo;
+                  final ComponentName name =
+                      new ComponentName(activity.applicationInfo.packageName, activity.name);
+                  intent.setComponent(name);
+                  context.startActivity(intent);
+                  break;
+                }
+              }
+            } else if (packageTitle.equals(MULTIPLE_CHOICE)) {
+              context.startActivity(Intent.createChooser(intent, null));
+            } else {
+              intent.setPackage(packageTitle);
+              context.startActivity(intent);
+            }
+          }
+        });
   }
 
   private void setTextLayout() {

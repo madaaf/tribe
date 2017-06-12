@@ -10,19 +10,26 @@ import java.util.List;
 
 public class RoomMember implements Serializable {
 
-  private List<TribeGuest> tribeGuestList;
-  private List<TribeGuest> anonymousGuestList;
+  private List<TribeGuest> peopleInRoom;
+  private List<TribeGuest> anonymousInRoom;
+  private List<TribeGuest> externalInRoom;
 
-  public RoomMember(List<TribeGuest> tribeGuestList, List<TribeGuest> anonymousGuestList) {
-    this.tribeGuestList = tribeGuestList;
-    this.anonymousGuestList = anonymousGuestList;
+  public RoomMember(List<TribeGuest> peopleInRoom, List<TribeGuest> anonymousInRoom,
+      List<TribeGuest> externalInRoom) {
+    this.peopleInRoom = peopleInRoom;
+    this.anonymousInRoom = anonymousInRoom;
+    this.externalInRoom = externalInRoom;
   }
 
-  public List<TribeGuest> getTribeGuestList() {
-    return tribeGuestList;
+  public List<TribeGuest> getPeopleInRoom() {
+    return peopleInRoom;
   }
 
-  public List<TribeGuest> getAnonymousGuestList() {
-    return anonymousGuestList;
+  public List<TribeGuest> getExternalInRoom() {
+    return externalInRoom;
+  }
+
+  public List<TribeGuest> getAnonymousInRoom() {
+    return anonymousInRoom;
   }
 }

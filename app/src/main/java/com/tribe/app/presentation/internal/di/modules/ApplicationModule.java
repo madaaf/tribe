@@ -19,13 +19,16 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -348,5 +351,10 @@ import timber.log.Timber;
       Context context) {
     return DateFormat.getDateInstance(DateFormat.LONG,
         context.getResources().getConfiguration().locale);
+  }
+
+  @Provides @Singleton GameRepository provideCloudGameRepository(
+      CloudGameDataRepository gameDataRepository) {
+    return gameDataRepository;
   }
 }

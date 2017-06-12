@@ -39,7 +39,7 @@ public class PopupContainerView extends FrameLayout {
 
   @StringDef({
       DISPLAY_BUZZ_POPUP, DISPLAY_DRAGING_FRIEND_POPUP, DISPLAY_INVITE_POPUP,
-      DISPLAY_NEW_CALL_POPUP, DISPLAY_PROFILE_POPUP
+      DISPLAY_NEW_CALL_POPUP, DISPLAY_PROFILE_POPUP, DISPLAY_POST_IT_GAME
   }) public @interface PopupType {
   }
 
@@ -48,6 +48,7 @@ public class PopupContainerView extends FrameLayout {
   public static final String DISPLAY_NEW_CALL_POPUP = "DISPLAY_NEW_CALL_POPUP";
   public static final String DISPLAY_INVITE_POPUP = "DISPLAY_INVITE_POPUP";
   public static final String DISPLAY_PROFILE_POPUP = "DISPLAY_PROFILE_POPUP";
+  public static final String DISPLAY_POST_IT_GAME = "DISPLAY_POST_IT_GAME";
 
   private static int DURATION_EXIT_POPUP = 300;
   private static double TENSION = 400;
@@ -59,7 +60,7 @@ public class PopupContainerView extends FrameLayout {
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private int defaultMargin;
+  private int defaultMargin, tooltipFirstGameHeight;
 
   private int marginBottom = 0, marginTop = 0, marginLeft = 0, marginRight = 0;
   private boolean isInBottom = false, isInTop = false, isInLeft = false, isInRight = false,
@@ -112,7 +113,8 @@ public class PopupContainerView extends FrameLayout {
 
             if (type.equals(DISPLAY_INVITE_POPUP)
                 || type.equals(DISPLAY_NEW_CALL_POPUP)
-                || type.equals(DISPLAY_PROFILE_POPUP)) {
+                || type.equals(DISPLAY_PROFILE_POPUP)
+                || type.equals(DISPLAY_POST_IT_GAME)) {
               if (type.equals(DISPLAY_INVITE_POPUP)) {
                 isInRight = true;
                 marginTop = viewPositionInScreen[1] + v.getHeight();
@@ -121,6 +123,9 @@ public class PopupContainerView extends FrameLayout {
                 isInLeft = true;
                 marginTop = viewPositionInScreen[1] + v.getHeight();
                 marginLeft = margins.leftMargin - defaultMargin;
+              } else if (type.equals(DISPLAY_POST_IT_GAME)) {
+                marginLeft = screenUtils.dpToPx(2.5f);
+                marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin + tooltipFirstGameHeight;
               } else {
                 marginBottom = margins.bottomMargin + v.getHeight() + defaultMargin;
               }
@@ -157,6 +162,7 @@ public class PopupContainerView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.native_dialogs_container, this, true);
     defaultMargin = screenUtils.dpToPx(5);
+    tooltipFirstGameHeight = context.getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height);
     unbinder = ButterKnife.bind(this);
     setOnTouchListener((v, event) -> {
       hideViews();
@@ -176,6 +182,8 @@ public class PopupContainerView extends FrameLayout {
         return R.layout.new_call_popup_view;
       case DISPLAY_PROFILE_POPUP:
         return R.layout.profile_popup_view;
+      case DISPLAY_POST_IT_GAME:
+        return R.layout.post_it_popup;
     }
     return 0;
   }

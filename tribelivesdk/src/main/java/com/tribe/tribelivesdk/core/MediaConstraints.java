@@ -15,6 +15,8 @@ public class MediaConstraints {
 
   public static final String VIDEO_CODEC_H264 = "H264";
   public static final String VIDEO_CODEC_VP9 = "VP9";
+  public static final int MAX_WIDTH = 640;
+  public static final int MAX_HEIGHT = 480;
 
   private Boolean hasVideo;
   private Boolean hasAudio;
@@ -45,9 +47,9 @@ public class MediaConstraints {
 
     private Boolean hasVideo = true;
     private Boolean hasAudio = true;
-    private int maxWidth = 640;
+    private int maxWidth = MAX_WIDTH;
     private int minWidth = 0;
-    private int maxHeight = 480;
+    private int maxHeight = MAX_HEIGHT;
     private int minHeight = 0;
     private int maxFrameRate = 30;
     private int minFrameRate = 0;

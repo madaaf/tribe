@@ -39,7 +39,9 @@ public class LauncherActivity extends BaseActivity {
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
       navigator.navigateToLogin(this, deepLink);
     } else {
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess);
+      Bundle properties = new Bundle();
+      properties.putString(TagManagerUtils.TYPE, "login");
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
       navigator.navigateToHomeFromStart(this, deepLink);
     }
 

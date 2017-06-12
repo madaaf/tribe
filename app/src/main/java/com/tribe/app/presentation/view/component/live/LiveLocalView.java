@@ -27,6 +27,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -73,7 +74,10 @@ public class LiveLocalView extends FrameLayout {
   private PublishSubject<TribePeerMediaConfiguration> onEnableCamera = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
+  private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
+  private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
+  private PublishSubject<Void> onStopGame = PublishSubject.create();
 
   public LiveLocalView(Context context) {
     super(context);
@@ -112,13 +116,17 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
 
     // We add the view in between the background and overlay
-    cardViewStreamLayout.addView(viewPeerLocal,
+    cardViewStreamLayout.addView(viewPeerLocal, 0,
         new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT));
+    cardViewStreamLayout.setRadius(screenUtils.dpToPx(5));
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
+    viewPeerLocal.initSwitchFilterSubscription(onSwitchFilter);
+    viewPeerLocal.initStartGameSubscription(onStartGame);
+    viewPeerLocal.initStopGameSubscription(onStopGame);
 
     viewPeerOverlay.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
@@ -214,6 +222,20 @@ public class LiveLocalView extends FrameLayout {
     if (!hiddenControls) {
       onSwitchCamera.onNext(null);
     }
+  }
+
+  public void switchFilter() {
+    if (!hiddenControls) {
+      onSwitchFilter.onNext(null);
+    }
+  }
+
+  public void startGame(Game game) {
+    onStartGame.onNext(game);
+  }
+
+  public void stopGame() {
+    onStopGame.onNext(null);
   }
 
   public void computeAlpha(float alpha) {

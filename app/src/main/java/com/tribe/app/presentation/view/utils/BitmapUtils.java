@@ -6,11 +6,14 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.NinePatchDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import com.tribe.app.R;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -117,5 +120,50 @@ public class BitmapUtils {
     String mImageName = ts + ".jpg";
     mediaFile = new File(mediaStorageDirectory.getPath() + File.separator + mImageName);
     return mediaFile;
+  }
+
+  public Bitmap generateNewPostIt(Context context, String text, int textSize, int textColor,
+      int backgroundId) {
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    paint.setTextSize(textSize);
+    paint.setColor(textColor);
+    paint.setTextAlign(Paint.Align.CENTER);
+    float baseline = -paint.ascent();
+    int width = (int) (paint.measureText(text) + 0.5f);
+    int height = (int) (baseline + paint.descent() + 0.5f);
+    Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    NinePatchDrawable bg = (NinePatchDrawable) ContextCompat.getDrawable(context, backgroundId);
+
+    if (bg != null) {
+      bg.setBounds(0, 0, width, height);
+    }
+
+    Canvas canvas = new Canvas(image);
+    bg.draw(canvas);
+    canvas.drawText(text, 0, baseline, paint);
+    return image;
+  }
+
+  public static Bitmap generateGameIconWithBorder(Bitmap icon, int marginBorder) {
+    Paint paintCircle = new Paint();
+    paintCircle.setAntiAlias(true);
+    paintCircle.setDither(true);
+    paintCircle.setColor(Color.WHITE);
+
+    Paint bitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    int size = icon.getWidth() + marginBorder;
+    Bitmap dest =
+        Bitmap.createBitmap(icon.getWidth() + marginBorder, icon.getHeight() + marginBorder,
+            icon.getConfig());
+    Canvas canvas = new Canvas(dest);
+    canvas.drawCircle(size >> 1, size >> 1, size >> 1, paintCircle);
+    canvas.drawBitmap(icon, (size - icon.getWidth()) >> 1, (size - icon.getHeight()) >> 1,
+        bitmapPaint);
+    return dest;
+  }
+
+  public static Bitmap bitmapFromResources(Resources resources, int resourceId) {
+    return BitmapFactory.decodeResource(resources, resourceId);
   }
 }

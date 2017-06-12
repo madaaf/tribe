@@ -15,11 +15,12 @@ import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
 import android.view.TextureView;
+import com.tribe.tribelivesdk.webrtc.EglRenderer;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
+import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.concurrent.CountDownLatch;
 import org.webrtc.EglBase;
-import org.webrtc.EglRenderer;
 import org.webrtc.Logging;
-import org.webrtc.RendererCommon;
 import org.webrtc.ThreadUtils;
 import org.webrtc.VideoRenderer;
 
@@ -33,7 +34,8 @@ import org.webrtc.VideoRenderer;
  * Interaction with the layout framework in onMeasure and onSizeChanged.
  */
 public class TextureViewRenderer extends TextureView
-    implements TextureView.SurfaceTextureListener, VideoRenderer.Callbacks {
+    implements TextureView.SurfaceTextureListener, VideoRenderer.Callbacks,
+    com.tribe.tribelivesdk.webrtc.VideoRenderer {
   private static final String TAG = "SurfaceViewRenderer";
   // Cached resource name.
   private final String resourceName;
@@ -179,7 +181,8 @@ public class TextureViewRenderer extends TextureView
   /**
    * Limit render framerate.
    *
-   * @param fps Limit render framerate to this value, or use Float.POSITIVE_INFINITY to disable fps
+   * @param fps Limit render framerate to this value, or usex Float.POSITIVE_INFINITY to disable
+   * fps
    * reduction.
    */
   public void setFpsReduction(float fps) {
@@ -198,6 +201,14 @@ public class TextureViewRenderer extends TextureView
   @Override public void renderFrame(VideoRenderer.I420Frame frame) {
     updateFrameDimensionsAndReportEvents(frame);
     eglRenderer.renderFrame(frame);
+
+    framesRendered++;
+  }
+
+  @Override public void renderFrame(TribeI420Frame frame) {
+    VideoRenderer.I420Frame webRtcFrame = frame.getWebRtcI420Frame();
+    updateFrameDimensionsAndReportEvents(webRtcFrame);
+    eglRenderer.renderFrame(webRtcFrame);
 
     framesRendered++;
   }
@@ -324,6 +335,7 @@ public class TextureViewRenderer extends TextureView
 
   @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
     ThreadUtils.checkIsOnMainThread();
+    rendererEvents.onPreviewSizeChanged(width, height);
   }
 
   @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
