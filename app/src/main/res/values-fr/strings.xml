@@ -580,8 +580,8 @@
 	<string name="roll_the_dice_live_tutorial">Relancer le dé !</string>
 	<string name="roll_the_dice_live_status_searching">:game_die: Recherche d\'une personne...</string>
 	<string name="roll_the_dice_live_description">Jouez à un jeu dès que\nquelqu\'un vous rejoint !</string>
-	<string name="roll_the_dice_invite_title">Lancez le dé !</string>
-	<string name="roll_the_dice_invite_subtitle">Rencontrer !</string>
-	<string name="roll_the_dice_grid_button">Lancez le dé pour rencontrer !</string>
+	<string name="roll_the_dice_invite_title">Lance le dé !</string>
+	<string name="roll_the_dice_invite_subtitle">Nlles rencontres</string>
+	<string name="roll_the_dice_grid_button">Rencontre de nouvelles personnes</string>
 	<string name="roll_the_dice_next_button">Suivant !</string>
 </resources>
