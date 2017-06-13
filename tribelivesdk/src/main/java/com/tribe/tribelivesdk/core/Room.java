@@ -151,6 +151,7 @@ public class Room {
         jsonToModel.onRemovedTribeGuestList().subscribe(onRemovedTribeGuestList));
 
     persistentSubscriptions.add(jsonToModel.onTribePeerMediaConfiguration()
+        .onBackpressureDrop()
         .subscribe(tribePeerMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribePeerMediaConfiguration)));
 
