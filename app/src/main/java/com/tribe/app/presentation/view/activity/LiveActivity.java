@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
@@ -277,7 +275,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     manageClickNotification(getIntent());
     initAppState();
     initGameManager();
-    screenShotTakenManually(this);
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -699,27 +696,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getDisplayName())));
-  }
-
-  private void screenShotTakenManually(Activity activity) {
-    final Handler handler = new Handler();
-    final int delay = 3000;
-    final ActivityManager am =
-        (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-
-    handler.postDelayed(new Runnable() {
-      public void run() {
-
-        List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(200);
-
-        for (ActivityManager.RunningServiceInfo ar : services) {
-          if (ar.process.equals("com.android.systemui:screenshot")) {
-            Toast.makeText(activity, "Screenshot is taken!!", Toast.LENGTH_SHORT).show();
-          }
-        }
-        handler.postDelayed(this, delay);
-      }
-    }, delay);
   }
 
   private void leave() {

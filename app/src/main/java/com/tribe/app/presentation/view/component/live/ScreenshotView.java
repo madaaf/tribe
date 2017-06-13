@@ -3,9 +3,11 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -16,7 +18,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +36,7 @@ import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
@@ -47,7 +50,6 @@ public class ScreenshotView extends FrameLayout {
   public static final int FLASH_DURATION = 500;
   private final int CORNER_SCREENSHOT = 5;
   private final int SCREENSHOT_DURATION = 300;
-  private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
   @Inject ScreenUtils screenUtils;
 
@@ -63,7 +65,7 @@ public class ScreenshotView extends FrameLayout {
 
   @BindView(R.id.viewFlash) FrameLayout viewFlash;
 
-  @BindView(R.id.layoutScreenShotControls) RelativeLayout layoutScreenShotControls;
+  @BindView(R.id.layoutScreenShotControls) LinearLayout layoutScreenShotControls;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -131,6 +133,7 @@ public class ScreenshotView extends FrameLayout {
                       .alpha(0f)
                       .withEndAction(() -> viewFlash.animate().setListener(null).start()));
 
+              viewBGScreenshot.setAlpha(1f);
               viewBGScreenshot.setVisibility(View.VISIBLE);
             }
           }));
@@ -170,12 +173,33 @@ public class ScreenshotView extends FrameLayout {
   ///////////////////////
   //       PRIVATE     //
   ///////////////////////
+  private void screenShotTakenManually(Activity activity) {
+    final Handler handler = new Handler();
+    final int delay = 3000;
+    final ActivityManager am =
+        (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+
+    handler.postDelayed(new Runnable() {
+      public void run() {
+
+        List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(200);
+
+        for (ActivityManager.RunningServiceInfo ar : services) {
+          if (ar.process.equals("com.android.systemui:screenshot")) {
+            Toast.makeText(activity, "Screenshot is taken!!", Toast.LENGTH_SHORT).show();
+          }
+        }
+        handler.postDelayed(this, delay);
+      }
+    }, delay);
+  }
 
   private void initView(Context context) {
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_screenshot, this, true);
     unbinder = ButterKnife.bind(this);
+    screenShotTakenManually((Activity) getContext());
   }
 
   private void slideFromBottom(View v, float overshootTension, int startOffset) {

@@ -32,46 +32,54 @@
       />
 
 
-  <RelativeLayout
+  <LinearLayout
       android:id="@+id/layoutScreenShotControls"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom"
-      android:paddingTop="20dp"
+      android:orientation="vertical"
       android:visibility="invisible"
       >
-
-    <ImageView
-        android:id="@+id/btnShareScreenshot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:padding="30dp"
-        android:src="@drawable/share_btn_screenshot"
-
-        />
-    <ImageView
-        android:id="@+id/btnCloseScreenshot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_toStartOf="@+id/btnShareScreenshot"
-        android:padding="30dp"
-        android:paddingEnd="0dp"
-        android:src="@drawable/close_btn_screenshot"
-        />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtShareScreenshot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:padding="10dp"
         android:text="@string/live_share_screenshot_description"
         android:textSize="19sp"
         style="@style/Title.2.White"
         />
 
-  </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
 
+      <ImageView
+          android:id="@+id/btnShareScreenshot"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:paddingBottom="30dp"
+          android:paddingTop="10dp"
+          android:src="@drawable/share_btn_screenshot"
+
+          />
+      <ImageView
+          android:id="@+id/btnCloseScreenshot"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"
+          android:layout_toStartOf="@+id/btnShareScreenshot"
+          android:paddingBottom="30dp"
+          android:paddingEnd="20dp"
+          android:paddingTop="10dp"
+          android:src="@drawable/close_btn_screenshot"
+          />
+    </RelativeLayout>
+
+  </LinearLayout>
 
 </FrameLayout>
