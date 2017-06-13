@@ -16,7 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,7 +63,7 @@ public class ScreenshotView extends FrameLayout {
 
   @BindView(R.id.viewFlash) FrameLayout viewFlash;
 
-  @BindView(R.id.layoutScreenShotControls) LinearLayout layoutScreenShotControls;
+  @BindView(R.id.layoutScreenShotControls) RelativeLayout layoutScreenShotControls;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -118,7 +118,7 @@ public class ScreenshotView extends FrameLayout {
                   .setListener(new AnimatorListenerAdapter() {
                     @Override public void onAnimationEnd(Animator animation) {
                       viewScreenShot.animate().setListener(null).start();
-                      setScreenShotAnimation();
+                      setLayoutScreenshotControlsAnimation();
                     }
                   })
                   .start();
@@ -137,30 +137,26 @@ public class ScreenshotView extends FrameLayout {
     }
   }
 
-  @OnClick(R.id.btnCloseScreenshot) public void closeSreenShotView() {
+  @OnClick(R.id.btnCloseScreenshot) public void onCloseScrenshotControls() {
     Animation slideToBottomAnimaton =
-        AnimationUtils.loadAnimation(getContext(), R.anim.slide_to_bottom);//SOEFSOEF
+        AnimationUtils.loadAnimation(getContext(), R.anim.slide_to_bottom);
     slideToBottomAnimaton.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        //layoutScreenShotControls.setVisibility(View.GONE);
+        layoutScreenShotControls.setVisibility(View.GONE);
+        // layoutScreenShotControls.clearAnimation();
       }
     });
     layoutScreenShotControls.startAnimation(slideToBottomAnimaton);
 
-    Animation animation3 =
-        AnimationUtils.loadAnimation(getContext(), R.anim.screenshot_anim3);//SOEF
+    Animation animation3 = AnimationUtils.loadAnimation(getContext(), R.anim.screenshot_anim3);
     animation3.setStartOffset(200);
     animation3.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         viewBGScreenshot.animate().alpha(0f).setDuration(1000).withEndAction(() -> {
           takeScreenshotEnable = true;
-          // layoutScreenShotControls.setVisibility(GONE);
-          /*viewScreenShot.setAlpha(0f);
-          viewScreenShot.setVisibility(View.GONE);
-          viewBGScreenshot.setVisibility(View.GONE);*/
-          animation3.setAnimationListener(null);
+          // viewScreenShot.clearAnimation();
         });
       }
     });
@@ -182,37 +178,28 @@ public class ScreenshotView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
   }
 
-  private void setScreenShotAnimation() {
+  private void slideFromBottom(View v, float overshootTension, int startOffset) {
+    Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_from_bottom);
+    animation.setInterpolator(new OvershootInterpolator(overshootTension));
+    animation.setStartOffset(startOffset);
+    v.startAnimation(animation);
+  }
+
+  private void setLayoutScreenshotControlsAnimation() {
     layoutScreenShotControls.setVisibility(VISIBLE);
     viewBGScreenshot.setVisibility(VISIBLE);
-    //layoutScreenShotControls.animate().alpha(0f).setDuration(3000).start();
 
-    Animation animation =
-        AnimationUtils.loadAnimation(getContext(), R.anim.slide_from_bottom);//SOEF
-    animation.setInterpolator(new OvershootInterpolator(1.3f));
-    txtShareScreenshot.startAnimation(animation);
+    slideFromBottom(txtShareScreenshot, 1.2f, 200);
+    slideFromBottom(btnShareScreenshot, 1.1f, 500);
+    slideFromBottom(btnCloseScreenshot, 1.3f, 700);
 
-    Animation animation2 =
-        AnimationUtils.loadAnimation(getContext(), R.anim.slide_from_bottom);//SOEF
-    animation2.setInterpolator(new OvershootInterpolator(1.1f));
-    animation2.setStartOffset(400);
-    btnShareScreenshot.startAnimation(animation2);
-
-    Animation animation3 =
-        AnimationUtils.loadAnimation(getContext(), R.anim.slide_from_bottom);//SOEF
-    animation3.setInterpolator(new OvershootInterpolator(1.2f));
-    animation3.setStartOffset(600);
-    btnCloseScreenshot.startAnimation(animation3);
-
-/*    animation.setFillAfter(true);
-    animation.start();*/
-    Animation scaleAnim = AnimationUtils.loadAnimation(getContext(), R.anim.screenshot_anim2);//SOEF
+    Animation scaleAnim = AnimationUtils.loadAnimation(getContext(), R.anim.screenshot_anim2);
     scaleAnim.setFillAfter(true);
     scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        animation.setAnimationListener(null);
+        // viewScreenShot.clearAnimation();
       }
     });
 
