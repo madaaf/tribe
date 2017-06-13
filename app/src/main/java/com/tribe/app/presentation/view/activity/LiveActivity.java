@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
@@ -9,29 +7,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Pair;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.OvershootInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
@@ -40,7 +30,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
-import com.tarek360.instacapture.InstaCapture;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -68,11 +57,10 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -82,7 +70,6 @@ import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -110,7 +97,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -142,15 +128,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
-  public static final int FLASH_DURATION = 500;
+
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
   private final int MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST = 3;
-  private final int CORNER_SCREENSHOT = 5;
-  private final int SCREENSHOT_DURATION = 300;
-  private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color,
       @Source String source) {
@@ -251,21 +234,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
-  @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
-
-  @BindView(R.id.viewBGScreenshot) View viewBGScreenshot;
-
-  @BindView(R.id.viewFlash) FrameLayout viewFlash;
-
-  @BindView(R.id.txtShareScreenshot) TextViewFont txtShareScreenshot;
-
-  @BindView(R.id.btnShareScreenshot) ImageView btnShareScreenshot;
-
-  @BindView(R.id.btnCloseScreenshot) ImageView btnCloseScreenshot;
-
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
 
-  @BindView(R.id.layoutScreenShotControls) LinearLayout layoutScreenShotControls;
+  @BindView(R.id.screenShotView) ScreenshotView screenshotView;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -280,7 +251,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
-  private boolean takeScreenshotEnable = true;
   private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
   private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   private Intent returnIntent = new Intent();
@@ -288,8 +258,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
 
-  // RESOURCES
-  FileObserver observer;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
@@ -637,7 +605,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onScreenshot().subscribe(aVoid -> {
       if (RuntimePermissionUtil.checkPermission(context(), this)) {
-        takeScreenshot();
+        screenshotView.takeScreenshot();
       }
     }));
 
@@ -713,7 +681,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             new RuntimePermissionUtil.RPResultListener() {
               @Override public void onPermissionGranted() {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                  takeScreenshot();
+                  screenshotView.takeScreenshot();
                 }
               }
 
@@ -754,55 +722,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }, delay);
   }
 
-  private void takeScreenshot() {
-    if (takeScreenshotEnable) {
-      takeScreenshotEnable = false;
-      subscriptions.add(
-          InstaCapture.getInstance(this).captureRx().subscribe(new Subscriber<Bitmap>() {
-            @Override public void onCompleted() {
-            }
-
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Bitmap bitmap) {
-              Bitmap bitmapWatermarked =
-                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
-
-              Bitmap roundedBitmap =
-                  UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
-                      CORNER_SCREENSHOT * 2, context());
-
-              BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
-
-              viewScreenShot.setImageBitmap(roundedBitmap);
-              viewScreenShot.setVisibility(View.VISIBLE);
-              viewScreenShot.animate()
-                  .alpha(1f)
-                  .setDuration(SCREENSHOT_DURATION)
-                  .setStartDelay(FLASH_DURATION)
-                  .setListener(new AnimatorListenerAdapter() {
-                    @Override public void onAnimationEnd(Animator animation) {
-                      viewScreenShot.animate().setListener(null).start();
-                      setScreenShotAnimation();
-                    }
-                  })
-                  .start();
-
-              viewFlash.animate()
-                  .setDuration(FLASH_DURATION)
-                  .alpha(1f)
-                  .withEndAction(() -> viewFlash.animate()
-                      .setDuration(FLASH_DURATION)
-                      .alpha(0f)
-                      .withEndAction(() -> viewFlash.animate().setListener(null).start()));
-
-              viewBGScreenshot.setVisibility(View.VISIBLE);
-            }
-          }));
-    }
-  }
-
   private void leave() {
     if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
       subscriptions.add(DialogFactory.dialog(this,
@@ -816,73 +735,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     } else {
       finish();
     }
-  }
-
-  @OnClick(R.id.btnCloseScreenshot) public void closeSreenShotView() {
-    Animation slideToBottomAnimaton =
-        AnimationUtils.loadAnimation(this, R.anim.slide_to_bottom);//SOEFSOEF
-    slideToBottomAnimaton.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        layoutScreenShotControls.setVisibility(View.GONE);
-      }
-    });
-    layoutScreenShotControls.startAnimation(slideToBottomAnimaton);
-
-    Animation animation3 = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim3);//SOEF
-    animation3.setStartOffset(200);
-    animation3.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        viewBGScreenshot.animate().alpha(0f).setDuration(1000).withEndAction(() -> {
-          takeScreenshotEnable = true;
-          // layoutScreenShotControls.setVisibility(GONE);
-          /*viewScreenShot.setAlpha(0f);
-          viewScreenShot.setVisibility(View.GONE);
-          viewBGScreenshot.setVisibility(View.GONE);*/
-          animation3.setAnimationListener(null);
-        });
-      }
-    });
-    viewScreenShot.startAnimation(animation3);
-
-    Toast.makeText(LiveActivity.this,
-        EmojiParser.demojizedText(getString(R.string.live_screenshot_saved_toast)),
-        Toast.LENGTH_SHORT).show();
-  }
-
-  private void setScreenShotAnimation() {
-    layoutScreenShotControls.setVisibility(VISIBLE);
-    viewBGScreenshot.setVisibility(VISIBLE);
-    //layoutScreenShotControls.animate().alpha(0f).setDuration(3000).start();
-
-    Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);//SOEF
-    animation.setInterpolator(new OvershootInterpolator(1.3f));
-    txtShareScreenshot.startAnimation(animation);
-
-    Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);//SOEF
-    animation2.setInterpolator(new OvershootInterpolator(1.1f));
-    animation2.setStartOffset(400);
-    btnShareScreenshot.startAnimation(animation2);
-
-    Animation animation3 = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);//SOEF
-    animation3.setInterpolator(new OvershootInterpolator(1.2f));
-    animation3.setStartOffset(600);
-    btnCloseScreenshot.startAnimation(animation3);
-
-/*    animation.setFillAfter(true);
-    animation.start();*/
-    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim2);//SOEF
-    scaleAnim.setFillAfter(true);
-    scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
-
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        animation.setAnimationListener(null);
-      }
-    });
-
-    viewScreenShot.startAnimation(scaleAnim);
   }
 
   private void putExtraRatingNotif() {

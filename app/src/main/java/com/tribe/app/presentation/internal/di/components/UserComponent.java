@@ -35,6 +35,7 @@ import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
+import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -78,6 +79,8 @@ import dagger.Component;
   void inject(PermissionNotificationView permissionNotificationView);
 
   void inject(NotificationContainerView notificationContainerView);
+
+  void inject(ScreenshotView screenshotView);
 
   void inject(CreateGroupNotificationView createGroupNotificationView);
 
