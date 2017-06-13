@@ -219,7 +219,7 @@ import org.webrtc.SurfaceTextureHelper;
 
     state = SessionState.STOPPED;
     surfaceTextureHelper.stopListening();
-    
+
     // Note: stopPreview or other driver code might deadlock. Deadlock in
     // android.hardware.Camera._stopPreview(Native Method) has been observed on
     // Nexus 5 (hammerhead), OS version LMY48I.

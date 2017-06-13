@@ -31,7 +31,7 @@ public class FrameManager {
   private FilterManager filterManager;
   private byte[] argb, yuvOut;
   private boolean firstFrame, processing = false;
-  private int previousWidth, previousHeight = 0;
+  private int previousWidth = 0, previousHeight = 0, previousRotation = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -77,7 +77,10 @@ public class FrameManager {
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
     //ulseeManager.initFrameSubscription(onFrame);
-    if (gameManager.isFacialRecognitionNeeded()) visionAPIManager.initFrameSubscription(onFrame);
+    if (gameManager.isFacialRecognitionNeeded()) {
+      visionAPIManager.initFrameSubscription(onFrame);
+      visionAPIManager.initFrameSizeChangeObs(onFrameSizeChange);
+    }
 
     subscriptions.add(onFrame.onBackpressureDrop()
         .filter(frame -> !processing)
@@ -86,13 +89,15 @@ public class FrameManager {
           processing = true;
           if (firstFrame
               || previousWidth != frame1.getWidth()
-              || previousHeight != frame1.getHeight()) {
+              || previousHeight != frame1.getHeight()
+              || previousRotation != frame1.getRotation()) {
             argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
             yuvOut = new byte[frame1.getData().length];
 
             firstFrame = false;
             previousHeight = frame1.getHeight();
             previousWidth = frame1.getWidth();
+            previousRotation = frame1.getRotation();
 
             frame1.setDataOut(yuvOut);
             onFrameSizeChange.onNext(frame1);

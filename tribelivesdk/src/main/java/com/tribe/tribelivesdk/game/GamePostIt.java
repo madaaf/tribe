@@ -189,12 +189,18 @@ public class GamePostIt extends Game {
   private PointF computePointLocal(PointF pointF, Frame frame, Bitmap bitmapOverlay) {
     pointF = rotate(pointF, frame, frame.getRotation());
 
-    if (frame.getRotation() == 0 || frame.getRotation() == 180 || frame.getRotation() == 270) {
+    if (frame.getRotation() == 270) {
       pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1) - 100) * currentPostItScale;
       pointF.y = pointF.y - (bitmapOverlay.getHeight() >> 1) * currentPostItScale;
     } else if (frame.getRotation() == 90) {
       pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1) + 100) * currentPostItScale;
       pointF.y = pointF.y - ((bitmapOverlay.getHeight() >> 1) * currentPostItScale);
+    } else if (frame.getRotation() == 0) {
+      pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1)) * currentPostItScale;
+      pointF.y = pointF.y - ((bitmapOverlay.getHeight() >> 1) + 100) * currentPostItScale;
+    } else if (frame.getRotation() == 180) {
+      pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1)) * currentPostItScale;
+      pointF.y = pointF.y - ((bitmapOverlay.getHeight() >> 1) - 100) * currentPostItScale;
     }
 
     return pointF;
@@ -203,12 +209,18 @@ public class GamePostIt extends Game {
   private PointF computePointRemote(PointF pointF, Frame frame, Bitmap bitmapOverlay) {
     pointF = rotate(pointF, frame, frame.getRotation());
 
-    if (frame.getRotation() == 0 || frame.getRotation() == 180 || frame.getRotation() == 270) {
+    if (frame.getRotation() == 270) {
       pointF.x = pointF.x - ((bitmapOverlay.getHeight() >> 1) - 100) * currentPostItScale;
       pointF.y = pointF.y - ((bitmapOverlay.getWidth() >> 1) * currentPostItScale);
     } else if (frame.getRotation() == 90) {
       pointF.x = pointF.x - ((bitmapOverlay.getHeight() >> 1) + 100) * currentPostItScale;
       pointF.y = pointF.y - ((bitmapOverlay.getWidth() >> 1) * currentPostItScale);
+    } else if (frame.getRotation() == 0) {
+      pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1)) * currentPostItScale;
+      pointF.y = pointF.y - ((bitmapOverlay.getHeight() >> 1) + 100) * currentPostItScale;
+    } else if (frame.getRotation() == 180) {
+      pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1)) * currentPostItScale;
+      pointF.y = pointF.y + ((bitmapOverlay.getHeight() >> 1) * currentPostItScale);
     }
 
     return pointF;
@@ -228,6 +240,12 @@ public class GamePostIt extends Game {
     } else if (degrees == 270) {
       newPoint.x = frame.getWidth() - pointF.y;
       newPoint.y = pointF.x;
+    } else if (degrees == 0) {
+      newPoint.x = pointF.x;
+      newPoint.y = pointF.y;
+    } else if (degrees == 180) {
+      newPoint.x = frame.getWidth() - pointF.x;
+      newPoint.y = frame.getHeight() - pointF.y;
     }
 
     return newPoint;
