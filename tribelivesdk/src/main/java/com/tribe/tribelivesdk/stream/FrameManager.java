@@ -15,7 +15,6 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 18/05/2017.
@@ -92,7 +91,6 @@ public class FrameManager {
               || previousWidth != frame1.getWidth()
               || previousHeight != frame1.getHeight()
               || previousRotation != frame1.getRotation()) {
-            Timber.d("Frame changed");
             argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
             yuvOut = new byte[frame1.getData().length];
 
