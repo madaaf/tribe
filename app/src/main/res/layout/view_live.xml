@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
   <com.tribe.app.presentation.view.component.live.LiveRoomView
       android:id="@+id/viewRoom"
@@ -39,5 +38,12 @@
       android:text="@string/game_tutorial"
       android:translationY="@dimen/game_tooltip_first_height"
       style="@style/Caption.Two.White40"
+      />
+
+  <Button
+      android:id="@+id/ok"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:text="ok"
       />
 </merge>

@@ -21,4 +21,51 @@
       app:cpv_thickness="2dp"
       />
 
+  <LinearLayout
+      android:id="@+id/layoutScreenShotControls"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:background="@color/blue.2"
+      android:orientation="vertical"
+      android:padding="30dp"
+      android:visibility="visible"
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtShareScreenshot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:text="@string/live_share_screenshot_description"
+        android:textSize="19sp"
+        style="@style/Title.2.White"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black.1"
+        >
+
+      <ImageView
+          android:id="@+id/btnShareScreenshot"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:src="@drawable/share_btn_screenshot"
+          />
+      <ImageView
+          android:id="@+id/btnCloseScreenshot"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"
+          android:layout_toStartOf="@+id/btnShareScreenshot"
+          android:paddingRight="20dp"
+          android:src="@drawable/close_btn_screenshot"
+          />
+    </RelativeLayout>
+
+
+  </LinearLayout>
 </FrameLayout>

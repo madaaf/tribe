@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.FileObserver;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
@@ -21,11 +24,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
@@ -251,7 +257,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @BindView(R.id.viewFlash) FrameLayout viewFlash;
 
+  @BindView(R.id.txtShareScreenshot) TextViewFont txtShareScreenshot;
+
+  @BindView(R.id.btnShareScreenshot) ImageView btnShareScreenshot;
+
+  @BindView(R.id.btnCloseScreenshot) ImageView btnCloseScreenshot;
+
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
+
+  @BindView(R.id.layoutScreenShotControls) LinearLayout layoutScreenShotControls;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -275,7 +289,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean shouldOverridePendingTransactions = false;
 
   // RESOURCES
-
+  FileObserver observer;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
@@ -295,6 +309,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     manageClickNotification(getIntent());
     initAppState();
     initGameManager();
+    screenShotTakenManually(this);
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -718,6 +733,27 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getDisplayName())));
   }
 
+  private void screenShotTakenManually(Activity activity) {
+    final Handler handler = new Handler();
+    final int delay = 3000;
+    final ActivityManager am =
+        (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+
+    handler.postDelayed(new Runnable() {
+      public void run() {
+
+        List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(200);
+
+        for (ActivityManager.RunningServiceInfo ar : services) {
+          if (ar.process.equals("com.android.systemui:screenshot")) {
+            Toast.makeText(activity, "Screenshot is taken!!", Toast.LENGTH_SHORT).show();
+          }
+        }
+        handler.postDelayed(this, delay);
+      }
+    }, delay);
+  }
+
   private void takeScreenshot() {
     if (takeScreenshotEnable) {
       takeScreenshotEnable = false;
@@ -762,9 +798,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                       .withEndAction(() -> viewFlash.animate().setListener(null).start()));
 
               viewBGScreenshot.setVisibility(View.VISIBLE);
-              subscriptions.add(Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
             }
           }));
     }
@@ -785,20 +818,66 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
+  @OnClick(R.id.btnCloseScreenshot) public void closeSreenShotView() {
+    Animation slideToBottomAnimaton =
+        AnimationUtils.loadAnimation(this, R.anim.slide_to_bottom);//SOEFSOEF
+    slideToBottomAnimaton.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        layoutScreenShotControls.setVisibility(View.GONE);
+      }
+    });
+    layoutScreenShotControls.startAnimation(slideToBottomAnimaton);
+
+    Animation animation3 = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim3);//SOEF
+    animation3.setStartOffset(200);
+    animation3.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+        viewBGScreenshot.animate().alpha(0f).setDuration(1000).withEndAction(() -> {
+          takeScreenshotEnable = true;
+          // layoutScreenShotControls.setVisibility(GONE);
+          /*viewScreenShot.setAlpha(0f);
+          viewScreenShot.setVisibility(View.GONE);
+          viewBGScreenshot.setVisibility(View.GONE);*/
+          animation3.setAnimationListener(null);
+        });
+      }
+    });
+    viewScreenShot.startAnimation(animation3);
+
+    Toast.makeText(LiveActivity.this,
+        EmojiParser.demojizedText(getString(R.string.live_screenshot_saved_toast)),
+        Toast.LENGTH_SHORT).show();
+  }
+
   private void setScreenShotAnimation() {
-    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
+    layoutScreenShotControls.setVisibility(VISIBLE);
+    viewBGScreenshot.setVisibility(VISIBLE);
+    //layoutScreenShotControls.animate().alpha(0f).setDuration(3000).start();
+
+    Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);//SOEF
+    animation.setInterpolator(new OvershootInterpolator(1.3f));
+    txtShareScreenshot.startAnimation(animation);
+
+    Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);//SOEF
+    animation2.setInterpolator(new OvershootInterpolator(1.1f));
+    animation2.setStartOffset(400);
+    btnShareScreenshot.startAnimation(animation2);
+
+    Animation animation3 = AnimationUtils.loadAnimation(this, R.anim.slide_from_bottom);//SOEF
+    animation3.setInterpolator(new OvershootInterpolator(1.2f));
+    animation3.setStartOffset(600);
+    btnCloseScreenshot.startAnimation(animation3);
+
+/*    animation.setFillAfter(true);
+    animation.start();*/
+    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim2);//SOEF
+    scaleAnim.setFillAfter(true);
     scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        viewScreenShot.setAlpha(0f);
-        viewScreenShot.setVisibility(View.GONE);
-        takeScreenshotEnable = true;
-
-        Toast.makeText(LiveActivity.this,
-            EmojiParser.demojizedText(getString(R.string.live_screenshot_saved_toast)),
-            Toast.LENGTH_SHORT).show();
-
         animation.setAnimationListener(null);
       }
     });
