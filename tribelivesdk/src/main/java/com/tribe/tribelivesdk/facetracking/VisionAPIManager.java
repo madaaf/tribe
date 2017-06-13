@@ -69,8 +69,7 @@ public class VisionAPIManager {
   private void initFaceTracker(boolean isFrontFacing) {
     if (faceDetector != null) faceDetector.release();
 
-    faceDetector = new FaceDetector.Builder(context)
-        .setTrackingEnabled(true)
+    faceDetector = new FaceDetector.Builder(context).setTrackingEnabled(true)
         .setLandmarkType(FaceDetector.ALL_LANDMARKS)
         .setMode(FaceDetector.FAST_MODE)
         .setProminentFaceOnly(isFrontFacing)
@@ -177,6 +176,12 @@ public class VisionAPIManager {
   ////////////////
   ////  PUBLIC  //
   ////////////////
+
+  public void initFrameSizeChangeObs(Observable<Frame> obs) {
+    subscriptions.add(obs.onBackpressureDrop().subscribe(frame -> {
+      initFaceTracker(frame.isFrontCamera());
+    }));
+  }
 
   public void initFrameSubscription(Observable<Frame> obs) {
     subscriptions.add(obs.onBackpressureDrop()
