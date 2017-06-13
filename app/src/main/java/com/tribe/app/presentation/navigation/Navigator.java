@@ -391,6 +391,11 @@ public class Navigator {
     }
   }
 
+  public void openMessageAppAndshareImage() {
+
+    //context.startActivity(Intent.createChooser(intent, null));
+  }
+
   public void openDefaultMessagingApp(Activity activity, String message) {
     Uri uri = Uri.parse("smsto:");
     Intent it = new Intent(Intent.ACTION_SENDTO, uri);

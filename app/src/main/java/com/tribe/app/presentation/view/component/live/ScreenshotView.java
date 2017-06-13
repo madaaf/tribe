@@ -5,9 +5,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -30,6 +33,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.BitmapUtils;
@@ -53,6 +57,8 @@ public class ScreenshotView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject Navigator navigator;
+
   @BindView(R.id.txtShareScreenshot) TextViewFont txtShareScreenshot;
 
   @BindView(R.id.btnShareScreenshot) ImageView btnShareScreenshot;
@@ -71,6 +77,7 @@ public class ScreenshotView extends FrameLayout {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private boolean takeScreenshotEnable = true;
+  private Bitmap roundedBitmap;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -89,6 +96,10 @@ public class ScreenshotView extends FrameLayout {
   //       PUBLIC      //
   ///////////////////////
 
+  private void createBitmapFromScreenshot() {
+
+  }
+
   public void takeScreenshot() {
     if (takeScreenshotEnable) {
       takeScreenshotEnable = false;
@@ -105,7 +116,7 @@ public class ScreenshotView extends FrameLayout {
               Bitmap bitmapWatermarked =
                   BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
 
-              Bitmap roundedBitmap =
+              roundedBitmap =
                   UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
                       CORNER_SCREENSHOT * 2, getContext());
 
@@ -138,6 +149,51 @@ public class ScreenshotView extends FrameLayout {
             }
           }));
     }
+  }
+
+  private void setIntent(String packageTitle) {
+/*    rxPermissions.request(PermissionUtils.PERMISSION_READ_WRITE_EXTERNAL)
+        .subscribe(hasPermission -> {
+          if (hasPermission) {
+            Bitmap bitmap = createClusterBitmap();
+            String pathofBmp =
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null,
+                    null);
+            Uri bmpUri = Uri.parse(pathofBmp);
+
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            intent.setType("image/png");
+            intent.putExtra(android.content.Intent.EXTRA_TEXT, EmojiParser.demojizedText(
+                context.getString(R.string.live_sharing_media_caption, txtMinute, txtFriend)));
+
+            if (packageTitle.equals(PACKAGE_FACEBOOK)) {
+              PackageManager pm = context.getPackageManager();
+              List<ResolveInfo> activityList = pm.queryIntentActivities(intent, 0);
+              for (final ResolveInfo app : activityList) {
+                if ((app.activityInfo.packageName).startsWith(PACKAGE_FACEBOOK)) {
+                  final ActivityInfo activity = app.activityInfo;
+                  final ComponentName name =
+                      new ComponentName(activity.applicationInfo.packageName, activity.name);
+                  intent.setComponent(name);
+                  context.startActivity(intent);
+                  break;
+                }
+              }
+            } else if (packageTitle.equals(MULTIPLE_CHOICE)) {
+              context.startActivity(Intent.createChooser(intent, null));
+            } else {
+              intent.setPackage(packageTitle);
+              context.startActivity(intent);
+            }
+          }
+        });*/
+
+  }
+
+  @OnClick(R.id.btnShareScreenshot) public void onShareScreenshotClick() {
+    setIntent();
   }
 
   @OnClick(R.id.btnCloseScreenshot) public void onCloseScrenshotControls() {
@@ -173,6 +229,7 @@ public class ScreenshotView extends FrameLayout {
   ///////////////////////
   //       PRIVATE     //
   ///////////////////////
+
   private void screenShotTakenManually(Activity activity) {
     final Handler handler = new Handler();
     final int delay = 3000;
@@ -186,7 +243,7 @@ public class ScreenshotView extends FrameLayout {
 
         for (ActivityManager.RunningServiceInfo ar : services) {
           if (ar.process.equals("com.android.systemui:screenshot")) {
-            Toast.makeText(activity, "Screenshot is taken!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "SOEF", Toast.LENGTH_SHORT).show();
           }
         }
         handler.postDelayed(this, delay);
@@ -194,6 +251,20 @@ public class ScreenshotView extends FrameLayout {
     }, delay);
   }
 
+  private void setIntent() {
+    String pathofBmp =
+        MediaStore.Images.Media.insertImage(getContext().getContentResolver(), roundedBitmap, null,
+            null);
+    Uri bmpUri = Uri.parse(pathofBmp);
+    Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+    intent.setType("image/png");
+    intent.putExtra(android.content.Intent.EXTRA_TEXT,
+        EmojiParser.demojizedText(getContext().getString(R.string.live_share_screenshot_caption)));
+    getContext().startActivity(Intent.createChooser(intent, null));
+  }
+  
   private void initView(Context context) {
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
