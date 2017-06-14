@@ -602,7 +602,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onScreenshot().subscribe(aVoid -> {
       if (RuntimePermissionUtil.checkPermission(context(), this)) {
-        screenshotView.takeScreenshot();
+        takeScreenShot();
       }
     }));
 
@@ -668,6 +668,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return super.dispatchTouchEvent(ev);
   }
 
+  private void takeScreenShot() {
+    viewLive.hideGamesBtn();
+    screenshotView.takeScreenshot();
+    //viewLive.displayGamesBtn();
+  }
+
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions,
       @NonNull final int[] grantResults) {
@@ -678,7 +684,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             new RuntimePermissionUtil.RPResultListener() {
               @Override public void onPermissionGranted() {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                  screenshotView.takeScreenshot();
+                  takeScreenShot();
                 }
               }
 

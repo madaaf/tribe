@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -118,6 +119,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.txtTooltipFirstGame) TextViewFont txtTooltipFirstGame;
 
+  @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
+
   // VARIABLES
   private Live live;
   private Room room;
@@ -199,6 +202,14 @@ public class LiveView extends FrameLayout {
 
   public double getDuration() {
     return duration;
+  }
+
+  public void hideGamesBtn() {
+    viewControlsLive.hideGamesBtn();
+  }
+
+  public void displayGamesBtn() {
+    viewControlsLive.displayGamesBtn();
   }
 
   public void endCall(boolean isJump) {
@@ -471,6 +482,10 @@ public class LiveView extends FrameLayout {
     }
   }
 
+  @OnClick(R.id.btnScreenshot) public void onScreenshotClick() {
+    onScreenshot.onNext(null);
+  }
+
   ///////////////////
   //    PUBLIC     //
   ///////////////////
@@ -545,6 +560,7 @@ public class LiveView extends FrameLayout {
           joinLive = true;
 
           String username = getDisplayNameFromId(remotePeer.getSession().getUserId());
+
           if ((username == null || username.isEmpty()) && !remotePeer.getSession().isExternal()) {
             Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
@@ -1353,10 +1369,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
-  }
-
-  @OnClick(R.id.ok) public void ok() {
-    onScreenshot.onNext(null);
   }
 }
 

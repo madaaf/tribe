@@ -207,7 +207,7 @@ public class NotificationContainerView extends FrameLayout {
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
-            textDismiss.setVisibility(VISIBLE);//SOEF
+            textDismiss.setVisibility(VISIBLE);
           }
         })
         .start();

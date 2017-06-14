@@ -68,6 +68,8 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnNotify) View btnNotify;
 
+  @BindView(R.id.btnScreenshot) View btnScreenshot;
+
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
   @BindView(R.id.btnCameraOff) View btnCameraOff;
@@ -85,6 +87,8 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.btnNewGameOff) ImageView btnNewGameOff;
 
   @BindView(R.id.btnNewGameOn) ImageView btnNewGameOn;
+
+  @BindView(R.id.btnNewGame) FrameLayout btnNewGame;
 
   @BindView(R.id.imgTriangleCloseGames) ImageView imgTriangleCloseGames;
 
@@ -178,6 +182,14 @@ public class LiveControlsView extends FrameLayout {
     }
     imgPlusAddIcon.clearAnimation();
     super.onDetachedFromWindow();
+  }
+
+  public void hideGamesBtn() {
+    btnNewGame.setVisibility(INVISIBLE);
+  }
+
+  public void displayGamesBtn() {
+    btnNewGame.setVisibility(VISIBLE);
   }
 
   private void init() {
@@ -719,9 +731,11 @@ public class LiveControlsView extends FrameLayout {
   public void refactorNotifyButton(boolean enable) {
     if (!enable) {
       btnNotify.setVisibility(View.GONE);
+      btnScreenshot.setVisibility(VISIBLE);
       return;
     } else {
       btnNotify.setVisibility(View.VISIBLE);
+      btnScreenshot.setVisibility(INVISIBLE);
     }
 
     if (enable != btnNotify.isEnabled()) {

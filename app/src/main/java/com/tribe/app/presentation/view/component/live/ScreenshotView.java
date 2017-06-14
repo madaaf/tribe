@@ -3,13 +3,11 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,7 +38,6 @@ import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import java.util.List;
 import javax.inject.Inject;
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
@@ -77,7 +74,7 @@ public class ScreenshotView extends FrameLayout {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private boolean takeScreenshotEnable = true;
-  private Bitmap roundedBitmap;
+  private Bitmap bitmap;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -96,10 +93,6 @@ public class ScreenshotView extends FrameLayout {
   //       PUBLIC      //
   ///////////////////////
 
-  private void createBitmapFromScreenshot() {
-
-  }
-
   public void takeScreenshot() {
     if (takeScreenshotEnable) {
       takeScreenshotEnable = false;
@@ -114,9 +107,10 @@ public class ScreenshotView extends FrameLayout {
 
             @Override public void onNext(Bitmap bitmap) {
               Bitmap bitmapWatermarked =
-                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
+                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap, getContext());
+              bitmap = bitmapWatermarked;
 
-              roundedBitmap =
+              Bitmap roundedBitmap =
                   UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
                       CORNER_SCREENSHOT * 2, getContext());
 
@@ -149,47 +143,6 @@ public class ScreenshotView extends FrameLayout {
             }
           }));
     }
-  }
-
-  private void setIntent(String packageTitle) {
-/*    rxPermissions.request(PermissionUtils.PERMISSION_READ_WRITE_EXTERNAL)
-        .subscribe(hasPermission -> {
-          if (hasPermission) {
-            Bitmap bitmap = createClusterBitmap();
-            String pathofBmp =
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, null,
-                    null);
-            Uri bmpUri = Uri.parse(pathofBmp);
-
-            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            intent.setType("image/png");
-            intent.putExtra(android.content.Intent.EXTRA_TEXT, EmojiParser.demojizedText(
-                context.getString(R.string.live_sharing_media_caption, txtMinute, txtFriend)));
-
-            if (packageTitle.equals(PACKAGE_FACEBOOK)) {
-              PackageManager pm = context.getPackageManager();
-              List<ResolveInfo> activityList = pm.queryIntentActivities(intent, 0);
-              for (final ResolveInfo app : activityList) {
-                if ((app.activityInfo.packageName).startsWith(PACKAGE_FACEBOOK)) {
-                  final ActivityInfo activity = app.activityInfo;
-                  final ComponentName name =
-                      new ComponentName(activity.applicationInfo.packageName, activity.name);
-                  intent.setComponent(name);
-                  context.startActivity(intent);
-                  break;
-                }
-              }
-            } else if (packageTitle.equals(MULTIPLE_CHOICE)) {
-              context.startActivity(Intent.createChooser(intent, null));
-            } else {
-              intent.setPackage(packageTitle);
-              context.startActivity(intent);
-            }
-          }
-        });*/
-
   }
 
   @OnClick(R.id.btnShareScreenshot) public void onShareScreenshotClick() {
@@ -230,31 +183,9 @@ public class ScreenshotView extends FrameLayout {
   //       PRIVATE     //
   ///////////////////////
 
-  private void screenShotTakenManually(Activity activity) {
-    final Handler handler = new Handler();
-    final int delay = 3000;
-    final ActivityManager am =
-        (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-
-    handler.postDelayed(new Runnable() {
-      public void run() {
-
-        List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(200);
-
-        for (ActivityManager.RunningServiceInfo ar : services) {
-          if (ar.process.equals("com.android.systemui:screenshot")) {
-            Toast.makeText(activity, "SOEF", Toast.LENGTH_SHORT).show();
-          }
-        }
-        handler.postDelayed(this, delay);
-      }
-    }, delay);
-  }
-
   private void setIntent() {
     String pathofBmp =
-        MediaStore.Images.Media.insertImage(getContext().getContentResolver(), roundedBitmap, null,
-            null);
+        MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, null, null);
     Uri bmpUri = Uri.parse(pathofBmp);
     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -264,13 +195,12 @@ public class ScreenshotView extends FrameLayout {
         EmojiParser.demojizedText(getContext().getString(R.string.live_share_screenshot_caption)));
     getContext().startActivity(Intent.createChooser(intent, null));
   }
-  
+
   private void initView(Context context) {
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_screenshot, this, true);
     unbinder = ButterKnife.bind(this);
-    screenShotTakenManually((Activity) getContext());
   }
 
   private void slideFromBottom(View v, float overshootTension, int startOffset) {
@@ -285,8 +215,8 @@ public class ScreenshotView extends FrameLayout {
     viewBGScreenshot.setVisibility(VISIBLE);
 
     slideFromBottom(txtShareScreenshot, 1.2f, 200);
-    slideFromBottom(btnShareScreenshot, 1.1f, 500);
-    slideFromBottom(btnCloseScreenshot, 1.3f, 700);
+    slideFromBottom(btnShareScreenshot, 1.1f, 300);
+    slideFromBottom(btnCloseScreenshot, 1.3f, 400);
 
     Animation scaleAnim = AnimationUtils.loadAnimation(getContext(), R.anim.screenshot_anim2);
     scaleAnim.setFillAfter(true);
