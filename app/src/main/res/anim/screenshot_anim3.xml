@@ -7,12 +7,11 @@
     android:fillEnabled="true"
     android:shareInterpolator="false">
 
-
   <scale
       android:duration="300"
       android:fromXScale="0.70"
       android:fromYScale="0.70"
-      android:interpolator="@android:anim/decelerate_interpolator"
+      android:interpolator="@anim/interpolator_scaling_screenshot"
       android:pivotX="50%"
       android:pivotY="20%"
       android:toXScale="0.50"
@@ -22,6 +21,6 @@
       android:duration="200"
       android:fromYDelta="0%"
       android:interpolator="@android:anim/decelerate_interpolator"
-      android:startOffset="400"
-      android:toYDelta="200%" />
+      android:startOffset="500"
+      android:toYDelta="100%p" />
 </set>

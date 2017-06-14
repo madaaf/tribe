@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<set xmlns:android="http://schemas.android.com/apk/res/android"
+<scale xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="600"
     android:fillAfter="true"
-    android:shareInterpolator="false">
-
-  <scale xmlns:android="http://schemas.android.com/apk/res/android"
-      android:duration="600"
-      android:fromXScale="1"
-      android:fromYScale="1"
-      android:interpolator="@anim/interpolator_scaling_screenshot"
-      android:pivotX="50%"
-      android:pivotY="20%"
-      android:toXScale="0.70"
-      android:toYScale="0.70" />
-
-</set>
+    android:fromXScale="1"
+    android:fromYScale="1"
+    android:interpolator="@anim/interpolator_scaling_screenshot"
+    android:pivotX="50%"
+    android:pivotY="20%"
+    android:toXScale="0.70"
+    android:toYScale="0.70" />

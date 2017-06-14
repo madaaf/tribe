@@ -578,7 +578,7 @@
 	
 	<!-- Roll the dice -->
 	<string name="roll_the_dice_live_tutorial">Re-roll the dice!</string>
-	<string name="roll_the_dice_live_status_searching">Finding new people to join... :game_die:</string>
+	<string name="roll_the_dice_live_status_searching">Matching with new people...</string>
 	<string name="roll_the_dice_live_description">Play games as soon as\nsomeone joins!</string>
 	<string name="roll_the_dice_invite_title">Roll the dice!</string>
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
