@@ -74,7 +74,8 @@ public class ScreenshotView extends FrameLayout {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private boolean takeScreenshotEnable = true;
-  private Bitmap bitmap;
+  private Bitmap bitmapWatermarked;
+  private Bitmap roundedBitmap;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -106,11 +107,10 @@ public class ScreenshotView extends FrameLayout {
             }
 
             @Override public void onNext(Bitmap bitmap) {
-              Bitmap bitmapWatermarked =
+              bitmapWatermarked =
                   BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap, getContext());
-              bitmap = bitmapWatermarked;
 
-              Bitmap roundedBitmap =
+              roundedBitmap =
                   UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
                       CORNER_SCREENSHOT * 2, getContext());
 
@@ -185,7 +185,8 @@ public class ScreenshotView extends FrameLayout {
 
   private void setIntent() {
     String pathofBmp =
-        MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, null, null);
+        MediaStore.Images.Media.insertImage(getContext().getContentResolver(), roundedBitmap, null,
+            null);
     Uri bmpUri = Uri.parse(pathofBmp);
     Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
