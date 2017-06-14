@@ -12,9 +12,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/ScreenshotView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/ScreenshotView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/BitmapUtils.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/BitmapUtils.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/values-fr/strings.xml" afterPath="$PROJECT_DIR$/src/main/res/values-fr/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/src/main/res/values/strings.xml" />
     </list>
     <ignored path="app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -49,10 +48,22 @@
       <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="683" column="34" selection-start-line="683" selection-start-column="34" selection-end-line="683" selection-end-column="34" />
+            <state relative-caret-position="540">
+              <caret line="702" column="0" selection-start-line="702" selection-start-column="0" selection-end-line="702" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#21339#21397#0" expanded="true" />
+                <element signature="e#21534#21591#0" expanded="true" />
+                <element signature="e#21722#21782#0" expanded="true" />
+                <element signature="e#21935#21994#0" expanded="true" />
+                <element signature="e#22121#22165#0" expanded="true" />
+                <element signature="e#24373#24431#0" expanded="true" />
+                <element signature="e#24445#24531#0" expanded="true" />
+                <element signature="e#24545#24602#0" expanded="true" />
+                <element signature="e#26922#26964#0" expanded="true" />
+                <element signature="e#27003#27047#0" expanded="true" />
+                <element signature="e#27060#27104#0" expanded="true" />
+                <element signature="e#27116#27160#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -73,12 +84,9 @@
       <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="160">
-              <caret line="207" column="28" selection-start-line="207" selection-start-column="28" selection-end-line="207" selection-end-column="28" />
-              <folding>
-                <element signature="e#8046#8047#0" expanded="true" />
-                <element signature="e#8087#8088#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="340">
+              <caret line="209" column="3" selection-start-line="209" selection-start-column="3" selection-end-line="209" selection-end-column="3" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -99,7 +107,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="3791">
-              <caret line="731" column="18" selection-start-line="731" selection-start-column="18" selection-end-line="731" selection-end-column="18" />
+              <caret line="732" column="18" selection-start-line="732" selection-start-column="18" selection-end-line="732" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#6737#6738#0" expanded="true" />
@@ -6148,8 +6156,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="19" />
-    <option name="y" value="23" />
+    <option name="y" value="39" />
     <option name="width" value="1500" />
     <option name="height" value="990" />
   </component>
@@ -6837,7 +6844,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="19" y="23" width="1500" height="990" extended-state="0" />
+    <frame x="0" y="39" width="1500" height="990" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -6904,37 +6911,37 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>971</line>
+          <line>973</line>
           <properties />
           <option name="timeStamp" value="690" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>969</line>
+          <line>971</line>
           <properties />
           <option name="timeStamp" value="691" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>965</line>
+          <line>967</line>
           <properties />
           <option name="timeStamp" value="693" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>617</line>
+          <line>620</line>
           <properties />
           <option name="timeStamp" value="694" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>686</line>
+          <line>689</line>
           <properties />
           <option name="timeStamp" value="698" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>679</line>
+          <line>682</line>
           <properties />
           <option name="timeStamp" value="721" />
         </line-breakpoint>
@@ -7238,9 +7245,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="395" column="6" selection-start-line="395" selection-start-column="6" selection-end-line="395" selection-end-column="6" />
-          <folding>
-            <element signature="e#14032#14105#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7302,7 +7307,7 @@
         <state relative-caret-position="207">
           <caret line="320" column="1" selection-start-line="320" selection-start-column="1" selection-end-line="320" selection-end-column="83" />
           <folding>
-            <element signature="e#12144#12213#0" expanded="true" />
+            <element signature="e#12250#12319#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -7359,12 +7364,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="207" column="28" selection-start-line="207" selection-start-column="28" selection-end-line="207" selection-end-column="28" />
-          <folding>
-            <element signature="e#8046#8047#0" expanded="true" />
-            <element signature="e#8087#8088#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="340">
+          <caret line="209" column="3" selection-start-line="209" selection-start-column="3" selection-end-line="209" selection-end-column="3" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7405,7 +7407,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3791">
-          <caret line="731" column="18" selection-start-line="731" selection-start-column="18" selection-end-line="731" selection-end-column="18" />
+          <caret line="732" column="18" selection-start-line="732" selection-start-column="18" selection-end-line="732" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#6737#6738#0" expanded="true" />
@@ -7428,10 +7430,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="683" column="34" selection-start-line="683" selection-start-column="34" selection-end-line="683" selection-end-column="34" />
+        <state relative-caret-position="540">
+          <caret line="702" column="0" selection-start-line="702" selection-start-column="0" selection-end-line="702" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#21339#21397#0" expanded="true" />
+            <element signature="e#21534#21591#0" expanded="true" />
+            <element signature="e#21722#21782#0" expanded="true" />
+            <element signature="e#21935#21994#0" expanded="true" />
+            <element signature="e#22121#22165#0" expanded="true" />
+            <element signature="e#24373#24431#0" expanded="true" />
+            <element signature="e#24445#24531#0" expanded="true" />
+            <element signature="e#24545#24602#0" expanded="true" />
+            <element signature="e#26922#26964#0" expanded="true" />
+            <element signature="e#27003#27047#0" expanded="true" />
+            <element signature="e#27060#27104#0" expanded="true" />
+            <element signature="e#27116#27160#0" expanded="true" />
           </folding>
         </state>
       </provider>
