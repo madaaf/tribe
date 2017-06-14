@@ -578,10 +578,10 @@
 	
 	<!-- Roll the dice -->
 	<string name="roll_the_dice_live_tutorial">Relancer le dé !</string>
-	<string name="roll_the_dice_live_status_searching">:game_die: Recherche d\'une personne...</string>
+	<string name="roll_the_dice_live_status_searching">Recherche de personne... :game_die:</string>
 	<string name="roll_the_dice_live_description">Jouez à un jeu dès que\nquelqu\'un vous rejoint !</string>
 	<string name="roll_the_dice_invite_title">Lance le dé !</string>
 	<string name="roll_the_dice_invite_subtitle">Nlles rencontres</string>
-	<string name="roll_the_dice_grid_button">Rencontre de nouvelles personnes</string>
+<string name="roll_the_dice_grid_button">Jette le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant !</string>
 </resources>

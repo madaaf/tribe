@@ -578,10 +578,14 @@
 	
 	<!-- Roll the dice -->
 	<string name="roll_the_dice_live_tutorial">Re-roll the dice!</string>
-	<string name="roll_the_dice_live_status_searching">:game_die: Finding someone to join...</string>
+	<string name="roll_the_dice_live_status_searching">Finding new people to join... :game_die:</string>
 	<string name="roll_the_dice_live_description">Play games as soon as\nsomeone joins!</string>
 	<string name="roll_the_dice_invite_title">Roll the dice!</string>
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
+<<<<<<< HEAD
 	<string name="roll_the_dice_grid_button">Roll it to meet new people!</string>
+=======
+	<string name="roll_the_dice_grid_button">Roll the dice to meet new people!</string>
+>>>>>>> feature-screenshot
 	<string name="roll_the_dice_next_button">Next!</string>
 </resources>
