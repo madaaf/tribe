@@ -671,7 +671,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void takeScreenShot() {
     viewLive.hideGamesBtn();
     screenshotView.takeScreenshot();
-    //viewLive.displayGamesBtn();
+    viewLive.displayGamesBtn();
   }
 
   @Override

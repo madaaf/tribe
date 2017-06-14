@@ -76,6 +76,7 @@ public class ScreenshotView extends FrameLayout {
   private boolean takeScreenshotEnable = true;
   private Bitmap bitmapWatermarked;
   private Bitmap roundedBitmap;
+  private Context context;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -108,7 +109,7 @@ public class ScreenshotView extends FrameLayout {
 
             @Override public void onNext(Bitmap bitmap) {
               bitmapWatermarked =
-                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap, getContext());
+                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap, context);
 
               roundedBitmap =
                   UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
@@ -156,7 +157,6 @@ public class ScreenshotView extends FrameLayout {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         layoutScreenShotControls.setVisibility(View.GONE);
-        // layoutScreenShotControls.clearAnimation();
       }
     });
     layoutScreenShotControls.startAnimation(slideToBottomAnimaton);
@@ -168,7 +168,6 @@ public class ScreenshotView extends FrameLayout {
         super.onAnimationEnd(animation);
         viewBGScreenshot.animate().alpha(0f).setDuration(1000).withEndAction(() -> {
           takeScreenshotEnable = true;
-          // viewScreenShot.clearAnimation();
         });
       }
     });
@@ -198,6 +197,7 @@ public class ScreenshotView extends FrameLayout {
   }
 
   private void initView(Context context) {
+    this.context = context;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_screenshot, this, true);
@@ -225,7 +225,6 @@ public class ScreenshotView extends FrameLayout {
 
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        // viewScreenShot.clearAnimation();
       }
     });
 
@@ -235,6 +234,11 @@ public class ScreenshotView extends FrameLayout {
   ///////////////////////
   //     CYCLE LIFE    //
   ///////////////////////
+  @Override protected void onDetachedFromWindow() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
+    clearAnimation();
+    super.onDetachedFromWindow();
+  }
 
   protected void initDependencyInjector() {
     DaggerUserComponent.builder()

@@ -35,8 +35,7 @@ public class BitmapUtils {
   private final static String PATH_DEFAULT_DIRECTORY =
       EXTERNAL_STORAGE_DEFAULT_DIRECTORY + File.separator + TRIBE_DIRECTORY + File.separator;
 
-  public static Bitmap watermarkBitmap(ScreenUtils screenUtils, Resources res, Bitmap bitmap,
-      Context context) {
+  public static Bitmap watermarkBitmap(ScreenUtils screenUtils, Resources res, Bitmap bitmap, Context context) {
     Bitmap bmOverlay =
         Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
     Bitmap watermark = BitmapFactory.decodeResource(res, R.drawable.watermark_tribe);
@@ -47,7 +46,7 @@ public class BitmapUtils {
 
     float left = (bitmap.getWidth() - watermark.getWidth()) >> 1;
     float margin = context.getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-    //float top = (bitmap.getHeight() - watermark.getHeight());
+    //  float top = (bitmap.getHeight() - watermark.getHeight());
     float top = (bitmap.getHeight() - watermark.getHeight() - margin);
     Canvas canvas = new Canvas(bmOverlay);
     canvas.drawBitmap(bitmap, 0, 0, paint);
