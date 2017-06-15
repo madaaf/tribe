@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import com.digits.sdk.android.Digits;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.GroupMember;
@@ -365,9 +366,17 @@ public class Navigator {
     shareText(activity, text, phoneNumber);
   }
 
-  public void openMessageAppForInviteWithUrl(Activity activity, String url, String phoneNumber,
+  public void openMessageAppForInviteWithUrl(Activity activity,
+      FirebaseRemoteConfig firebaseRemoteConfig, String url, String phoneNumber,
       boolean shouldOpenDefaultSMSApp) {
-    String text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
+    String text = firebaseRemoteConfig.getString("invite_message");
+
+    if (StringUtils.isEmpty(text)) {
+      text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
+    } else {
+      text = text.replace("%LINK%", url);
+    }
+
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
     } else {
@@ -387,8 +396,8 @@ public class Navigator {
     }
   }
 
-  public String sendInviteToCall(BaseActivity activity, String feature, String fromLinkId,
-      String phoneNumber, boolean shouldOpenDefaultSms) {
+  public String sendInviteToCall(BaseActivity activity, FirebaseRemoteConfig firebaseRemoteConfig,
+      String feature, String fromLinkId, String phoneNumber, boolean shouldOpenDefaultSms) {
     String url, linkId;
 
     if (StringUtils.isEmpty(fromLinkId)) {
@@ -416,7 +425,7 @@ public class Navigator {
                 finalUrl = url;
               }
 
-              openMessageAppForInviteWithUrl(activity, finalUrl, phoneNumber, shouldOpenDefaultSms);
+              openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber, shouldOpenDefaultSms);
             });
 
     return linkId;

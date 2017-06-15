@@ -27,10 +27,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
@@ -205,6 +207,7 @@ public class HomeActivity extends BaseActivity
     initPullToRefresh();
     initPreviousCallTags();
     initNewCall();
+    initRemoteConfig();
     manageLogin(getIntent());
     manageIntent(getIntent());
 
@@ -422,7 +425,7 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
       homeGridPresenter.bookRoomLink(linkId);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
@@ -529,6 +532,20 @@ public class HomeActivity extends BaseActivity
         btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
   }
 
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+      }
+    });
+  }
+
   private void initDependencyInjector() {
     this.userComponent = DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
@@ -550,7 +567,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -584,7 +601,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null, null, false);
+      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -603,7 +620,7 @@ public class HomeActivity extends BaseActivity
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
       String linkId =
-          navigator.sendInviteToCall(this, TagManagerUtils.SEARCH, null, contact.getPhone(), false);
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null, contact.getPhone(), false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -718,7 +735,7 @@ public class HomeActivity extends BaseActivity
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
         String linkId =
-            navigator.sendInviteToCall(this, TagManagerUtils.ONBOARDING, null, null, true);
+            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null, null, true);
         homeGridPresenter.bookRoomLink(linkId);
       }
     }
@@ -784,7 +801,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onBookLink(Boolean isBookLink) {
-    
+
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

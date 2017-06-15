@@ -567,7 +567,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
                 .show();
           } else {
-            navigator.sendInviteToCall(this, TagManagerUtils.CALL, live.getLinkId(), null, false);
+            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
+                live.getLinkId(), null, false);
           }
         }));
 
@@ -631,8 +632,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null,
-          roomConfiguration.getRoomId(), false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null,
+              roomConfiguration.getRoomId(), false);
       livePresenter.bookRoomLink(linkId);
     }));
 
@@ -794,7 +796,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void onRoomLink(String roomLink) {
     String linkId = StringUtils.getLinkIdFromUrl(roomLink);
-    navigator.sendInviteToCall(this, TagManagerUtils.CALL, linkId, null, false);
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, linkId, null,
+        false);
   }
 
   @Override public void onAddError() {
