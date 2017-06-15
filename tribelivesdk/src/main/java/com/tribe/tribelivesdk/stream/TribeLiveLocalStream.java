@@ -2,7 +2,6 @@ package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
@@ -92,7 +91,7 @@ public class TribeLiveLocalStream {
   }
 
   private void generateVideoCapturer() {
-    Camera1Enumerator enumerator = new Camera1Enumerator(false);
+    Camera1Enumerator enumerator = new Camera1Enumerator(true);
 
     Timber.d("Creating capturer");
 
