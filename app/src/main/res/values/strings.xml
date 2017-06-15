@@ -376,7 +376,7 @@
 	<string name="profile_fullscreen_notifications_disable_alert_msg">You\'re about to disable both fullscreen notifications (these help you never miss a call!) and Tribe appearing in the "Recent" section of the native "Phone" app (easy to call friends!).</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Disable</string>
 	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
-	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you. If you want to add someone as friend, you\'ll need to do it yourself.</string>
+	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked and deleted friends</string>
 	<string name="profile_manage_friendships">Manage friendships :busts_in_silhouette:</string>
@@ -584,4 +584,5 @@
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
 	<string name="roll_the_dice_grid_button">Roll the dice to meet new people!</string>
 	<string name="roll_the_dice_next_button">Next!</string>
+	<string name="roll_the_dice_notification">%1$s just rolled the dice!</string>
 </resources>

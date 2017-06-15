@@ -15,6 +15,29 @@
       android:orientation="vertical"
       />
 
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="90dp"
+      android:layout_gravity="center"
+      android:layout_marginTop="0dp"
+      android:background="@color/blue.2"
+      android:gravity="center"
+      >
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:src="@drawable/shape_dice"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/roll_the_dice_grid_button"
+        style="@style/Title.2.White"
+        />
+  </LinearLayout>
+
   <com.tribe.app.presentation.view.component.TopBarContainer
       android:id="@+id/topBarContainer"
       android:layout_width="match_parent"
@@ -25,7 +48,7 @@
     <com.tribe.app.presentation.view.component.TopBarView
         android:id="@+id/topBarView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_bar_height"
+        android:layout_height="@dimen/top_bar_height_expend"
         android:background="@null"
         />
 
@@ -51,6 +74,7 @@
         android:elevation="10dp"
         android:foreground="@drawable/selectable_button"
         />
+
 
   </com.tribe.app.presentation.view.component.TopBarContainer>
 
