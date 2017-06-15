@@ -762,7 +762,7 @@ public class LiveView extends FrameLayout {
     } else {
       hasJoined = true;
       refactorNotifyButton();
-      if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay();
+      if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
       onShouldJoinRoom.onNext(null);
     }
   }
@@ -867,7 +867,7 @@ public class LiveView extends FrameLayout {
     if (nbPeople > 1) {
       viewLocalLive.hideShareOverlay();
     } else {
-      viewLocalLive.showShareOverlay();
+      viewLocalLive.showShareOverlay(live.getSource());
     }
   }
 

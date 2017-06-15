@@ -20,6 +20,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,6 +85,8 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
 
+  @BindView(R.id.callRoulette) LinearLayout callRouletteLayout;
+
   // VARIABLES
   private float startX, startY = 0;
   private boolean searchMode = false;
@@ -104,6 +107,7 @@ public class TopBarView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
+  private PublishSubject<Void> clickCallroulette = PublishSubject.create();
   private PublishSubject<Void> clickInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenCloseSearch = PublishSubject.create();
   private PublishSubject<Void> onSyncContacts = PublishSubject.create();
@@ -205,6 +209,9 @@ public class TopBarView extends FrameLayout {
           if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
             viewAvatar.onTouchEvent(event);
             viewAvatar.performClick();
+          } else if (isAClickInView(callRouletteLayout, (int) startX, (int) startY)) {
+            callRouletteLayout.onTouchEvent(event);
+            callRouletteLayout.performClick();
           } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
             btnNew.onTouchEvent(event);
             btnNew.performClick();
@@ -251,6 +258,10 @@ public class TopBarView extends FrameLayout {
 
   @OnClick(R.id.viewAvatar) void launchProfileSettings() {
     clickProfile.onNext(null);
+  }
+
+  @OnClick(R.id.callRoulette) void onClickCallRoulette() {
+    clickCallroulette.onNext(null);
   }
 
   @OnClick(R.id.btnInvite) void launchInvite() {
@@ -451,6 +462,10 @@ public class TopBarView extends FrameLayout {
 
   public Observable<Void> onClickProfile() {
     return clickProfile;
+  }
+
+  public Observable<Void> onClickCallroulette() {
+    return clickCallroulette;
   }
 
   public Observable<Void> onClickInvite() {

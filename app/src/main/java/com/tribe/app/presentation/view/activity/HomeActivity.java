@@ -523,7 +523,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initNewCall() {
-    subscriptions.add(btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall()));
+    subscriptions.add(
+        btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_NEW_CALL)));
 
     subscriptions.add(
         btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
@@ -544,6 +545,9 @@ public class HomeActivity extends BaseActivity
 
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
+
+    subscriptions.add(topBarContainer.onClickCallroulette()
+        .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE)));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
       Bundle bundle = new Bundle();
@@ -797,8 +801,8 @@ public class HomeActivity extends BaseActivity
     navigator.navigateToProfile(HomeActivity.this);
   }
 
-  private void navigateToNewCall() {
-    HomeActivity.this.navigator.navigateToNewCall(this);
+  private void navigateToNewCall(@LiveActivity.Source String source) {
+    HomeActivity.this.navigator.navigateToNewCall(this, source);
   }
 
   private void syncContacts() {

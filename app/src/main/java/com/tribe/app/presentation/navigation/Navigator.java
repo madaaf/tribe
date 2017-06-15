@@ -267,9 +267,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewCall(Activity activity) {
+  public void navigateToNewCall(Activity activity, @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, LiveActivity.SOURCE_NEW_CALL);
+      Intent intent = LiveActivity.getCallingIntent(activity, source);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }

@@ -24,6 +24,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -55,6 +56,8 @@ public class LiveLocalView extends FrameLayout {
   @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
 
   @BindView(R.id.viewShareOverlay) LiveShareOverlayView viewShareOverlay;
+
+  @BindView(R.id.viewCallRouletteOverlay) CallRouletteOverlayView viewCallRouletteOverlay;
 
   @BindView(R.id.cardViewStreamLayout) CardView cardViewStreamLayout;
 
@@ -246,8 +249,12 @@ public class LiveLocalView extends FrameLayout {
     viewShareOverlay.hide();
   }
 
-  public void showShareOverlay() {
-    viewShareOverlay.show();
+  public void showShareOverlay(@LiveActivity.Source String source) {
+    if (source.equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
+      viewCallRouletteOverlay.show();
+    } else {
+      viewShareOverlay.show();
+    }
   }
 
   public void dispose() {

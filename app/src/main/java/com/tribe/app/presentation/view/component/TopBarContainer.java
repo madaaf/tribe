@@ -429,6 +429,10 @@ public class TopBarContainer extends FrameLayout {
     return topBarView.onClickProfile();
   }
 
+  public Observable<Void> onClickCallroulette() {
+    return topBarView.onClickCallroulette();
+  }
+
   public Observable<Void> onClickInvite() {
     return topBarView.onClickInvite();
   }

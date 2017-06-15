@@ -18,7 +18,14 @@
       />
 
   <com.tribe.app.presentation.view.component.live.LiveShareOverlayView
-      android:id="@+id/viewShareOverlay"
+    android:id="@+id/viewShareOverlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    />
+
+  <com.tribe.app.presentation.view.component.live.CallRouletteOverlayView
+      android:id="@+id/viewCallRouletteOverlay"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:visibility="gone"
