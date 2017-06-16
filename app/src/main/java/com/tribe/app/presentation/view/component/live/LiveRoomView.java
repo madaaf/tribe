@@ -120,6 +120,7 @@ public class LiveRoomView extends FrameLayout {
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
     if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
       removeView(lastViewAdded);
+      setDiceAnimation();
     }
   }
 
@@ -290,7 +291,12 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void setDiceAnimation() {
-
+/*    LayoutInflater inflater =
+        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.native_dialogs_container, this, true);*/
+/*    LayoutInflater factory = LayoutInflater.from(getContext());
+    View myView = factory.inflate(R.layout.native_dialogs_container, null);
+    cardView.addView(myView);*/
   }
 
   private void setScreenSize(int openInviteWidth) {
