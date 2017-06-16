@@ -19,11 +19,13 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.google.android.flexbox.FlexboxLayout;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 
@@ -113,6 +115,14 @@ public class LiveRoomView extends FrameLayout {
         .inject(this);
   }
 
+  public void onDropItem(TileView tileView) {
+    LiveRowView lastViewAdded =
+        (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+    if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+      removeView(lastViewAdded);
+    }
+  }
+
   public void onDropEnabled(Boolean enabled) {
     LiveRowView lastViewAdded =
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
@@ -127,7 +137,6 @@ public class LiveRoomView extends FrameLayout {
       resizeAnimation =
           new ResizeAnimation(l, lastViewAdded, onDroppedBarHeight, flexboxLayout.getHeight());
     }
-
     resizeAnimation.setDuration(DURATION * 2);
     resizeAnimation.setInterpolator(new OvershootInterpolator(0.4f));
     lastViewAdded.startAnimation(resizeAnimation);
@@ -278,6 +287,10 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
+  }
+
+  private void setDiceAnimation() {
+
   }
 
   private void setScreenSize(int openInviteWidth) {

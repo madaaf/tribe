@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
@@ -40,11 +41,13 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   // VARIABLES
   private List<Recipient> items;
   private boolean allEnabled = true;
+  private Context context;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Inject public LiveInviteAdapter(Context context) {
+    this.context = context;
     screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
         .screenUtils();
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -99,16 +102,18 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     return items.size();
   }
 
+  private Friendship getDiceItem() {
+    User friend = new User(Recipient.ID_CALL_ROULETTE);
+    friend.setDisplayName(context.getResources().getString(R.string.roll_the_dice_invite_title));
+    Friendship friendship = new Friendship(Recipient.ID_CALL_ROULETTE);
+    friendship.setFriend(friend);
+    return friendship;
+  }
+
   public void setItems(List<Recipient> items) {
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
-
-    User friend = new User(Recipient.ID_CALL_ROULETTE);
-    friend.setDisplayName("Roll the dice!");
-    Friendship friendship = new Friendship(Recipient.ID_CALL_ROULETTE);
-    friendship.setFriend(friend);
-    this.items.add(friendship);//SOEF
-
+    this.items.add(getDiceItem());
     this.items.addAll(items);
     ListUtils.addEmptyItems(screenUtils, this.items);
     notifyDataSetChanged();
