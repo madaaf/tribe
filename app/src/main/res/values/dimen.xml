@@ -101,7 +101,8 @@
   <dimen name="waiting_view_progress_bar_size">95dp</dimen>
   <dimen name="waiting_view_avatar_size">100dp</dimen>
   <dimen name="waiting_view_dot_size">7dp</dimen>
-  <dimen name="view_dice_dot_size">12dp</dimen>
+  <dimen name="view_dice_dot_size">15dp</dimen>
+  <dimen name="view_dice_dot_margin">1.5dp</dimen>
   <dimen name="filter_game_size">50dp</dimen>
   <dimen name="filter_game_size_with_border">55dp</dimen>
   <dimen name="filter_game_size_container">60dp</dimen>

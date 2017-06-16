@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -9,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +28,9 @@ import timber.log.Timber;
 
 public class DiceView extends FrameLayout {
 
-  private final static int DURATON = 1000;
+  private final static int DURATON = 900;
+  private final static int DURATON_ROTATE = 1000;
+  private final static int STEP6_DURATION = 0;
   private final static int NB_VIEWS = 6;
 
   @BindView(R.id.diceView) FrameLayout dice;
@@ -35,6 +40,7 @@ public class DiceView extends FrameLayout {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private int sizeDot;
+  private int dotsMargin;
   private List<View> viewDots = new ArrayList<>();
   private int unit;
 
@@ -64,229 +70,353 @@ public class DiceView extends FrameLayout {
     inflater.inflate(R.layout.view_dice, this, true);
     unbinder = ButterKnife.bind(this);
     sizeDot = getResources().getDimensionPixelSize(R.dimen.view_dice_dot_size);
-    unit = (getResources().getDimensionPixelSize(R.dimen.dice_size) / 2) - 80;
+    dotsMargin = getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin);
+    unit = (getResources().getDimensionPixelSize(R.dimen.dice_size) / 2) - 85;
   }
 
   private void initAnimation() {
-    // finally i use this code to execute the animation
-/*    Animation anim1 = AnimationUtils.loadAnimation(getContext(), R.anim.dice_anim1);
-    anim1.setRepeatCount(ObjectAnimator.INFINITE);
-    anim1.setRepeatMode(ObjectAnimator.RESTART);
-    anim1.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        anim1.setAnimationListener(this);
-        dice.startAnimation(anim1);
-      }
-    });
-    dice.startAnimation(anim1);*/
     animateDots();
   }
 
-  private void resetDotsPlace() {
+   /*.withStartAction(() -> {
+          // dice.animate().rotation()
+          */
+
+  /** CENTER DOTS **//*
+          for (int i = 0; i < NB_VIEWS; i++) {
+            if (i == 0) {
+              viewDots.get(0)
+                  .animate()
+                  .scaleX(1)
+                  .scaleY(1)
+                  .translationY(0)
+                  .translationX(0)
+                  .setInterpolator(new BounceInterpolator())
+                  .setDuration(DURATON)
+                  .setListener(null)
+                  .start();
+            } else {
+              int finalI = i;
+              viewDots.get(i)
+                  .animate()
+                  .translationY(0)
+                  .translationX(0)
+                  .setInterpolator(new BounceInterpolator())
+                  .setStartDelay(DURATON)
+                  .withEndAction(() -> {
+                    if (finalI == NB_VIEWS - 1) {
+                      Timber.e("ok");
+                      dice.clearAnimation();
+                      for (int y = 0; y < NB_VIEWS; y++) {
+                        viewDots.get(y).clearAnimation();
+                      }
+                      setAnimation(null);
+                      // animateDots();
+                    }
+                  })
+                  .scaleX(0)
+                  .scaleY(0)
+                  .setListener(null)
+                  .start();
+            }
+          }
+        })*/
+  private void resetDotsStates() {
     for (int i = 0; i < NB_VIEWS; i++) {
-      int finalI = i;
       viewDots.get(i)
           .animate()
           .translationX(0)
           .translationY(0)
-          .setDuration(1000)
+          .setDuration(0)
           .setListener(null)
-          .withEndAction(() -> {
-            Timber.e("SOEF RESET");
-            if (finalI != 0) viewDots.get(finalI).setVisibility(INVISIBLE);
-          })
           .start();
+      if (i != 0) {
+        viewDots.get(i).setScaleX(0);
+        viewDots.get(i).setScaleY(0);
+      }
     }
   }
 
-  private void animateDots() {
-    viewDots.get(0).setVisibility(VISIBLE);
-    dice.animate().rotation(90).setDuration(DURATON).withStartAction(() -> {
-      viewDots.get(1).setVisibility(VISIBLE);
-      viewDots.get(1)
-          .animate()
-          .translationX(unit)
-          .translationY(unit)
-          .setDuration(DURATON)
-          .setListener(null);
+  private void step6Anim() {
+    viewDots.get(0)
+        .animate()
+        .translationX(-unit)
+        .translationY(-unit)
+        .setStartDelay(STEP6_DURATION)
+        .alpha(1)
+        .scaleX(1)
+        .scaleY(1)
+        .setInterpolator(new BounceInterpolator())
+        .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
 
-      viewDots.get(0)
-          .animate()
-          .translationX(-unit)
-          .translationY(-unit)
-          .setDuration(DURATON)
+    viewDots.get(1)
+        .animate()
+        .translationX(-unit)
+        .translationY(0)
+        .setStartDelay(STEP6_DURATION)
+        .alpha(1)
+        .scaleX(1)
+        .scaleY(1)
+        .setInterpolator(new BounceInterpolator())
+        .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
+
+    viewDots.get(2)
+        .animate()
+        .translationX(-unit)
+        .translationY(+unit)
+        .alpha(1)
+        .scaleX(1)
+        .scaleY(1)
+        .setInterpolator(new BounceInterpolator())
+        .setStartDelay(STEP6_DURATION)
+        .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
+
+    viewDots.get(3)
+        .animate()
+        .scaleX(1)
+        .scaleY(1)
+        .translationX(0)
+        .translationY(-(sizeDot / 2) - dotsMargin)
+        .alpha(1)
+        .setInterpolator(new BounceInterpolator())
+        .setStartDelay(STEP6_DURATION)
+        .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
+
+    viewDots.get(4)
+        .animate()
+        .scaleX(1)
+        .scaleY(1)
+        .translationX(0)
+        .translationY(+(sizeDot / 2) + dotsMargin)
+        .alpha(1)
+        .setInterpolator(new BounceInterpolator())
+        .setStartDelay(STEP6_DURATION)
+        .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
+
+    viewDots.get(5)
+        .animate()
+        .translationX(unit)
+        .translationY(0)
+        .alpha(1)
+        .scaleX(1)
+        .scaleY(1)
+        .setInterpolator(new BounceInterpolator())
+        .setStartDelay(STEP6_DURATION)
+        .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
+
+
+    new Handler().postDelayed(() -> {
+      dice.animate()
+          .rotation(dice.getRotation() + 90)
+          .setDuration(DURATON_ROTATE)
+          .setInterpolator(new OvershootInterpolator())
+          .withStartAction(() -> {
+            Timber.e("ok");
+            resetDotsStates();
+          })
+          .withEndAction(() -> animateDots())
           .setListener(null)
-          .withEndAction(() -> {
-            Timber.e("SOEF 1");
-          });
-    }).withEndAction(() -> {
+          .start();
+    }, 1000);
+  }
 
-      dice.animate().rotation(180).setDuration(DURATON).withStartAction(() -> {
-        viewDots.get(2).setX(viewDots.get(2).getX() - unit);
-        viewDots.get(2).setY(viewDots.get(2).getY() - unit);
-        viewDots.get(2).setAlpha(0);
-        viewDots.get(2).setVisibility(VISIBLE);
-
-        viewDots.get(2)
-            .animate()
-            .alpha(1f)
-            .scaleX(1f)
-            .scaleY(1f)
-            .setStartDelay(300)
-            .setDuration(DURATON - 300)
-            .setListener(null)
-            .start();
-
-        viewDots.get(0)
-            .animate()
-            .translationX(0)
-            .translationY(0)
-            .setDuration(DURATON)
-            .setListener(null);
-      }).withEndAction(() -> {
-
-        dice.animate().rotation(270).setDuration(DURATON).withStartAction(() -> {
-          viewDots.get(3).setX(viewDots.get(3).getX() + unit);
-          viewDots.get(3).setY(viewDots.get(3).getY() - unit);
-          viewDots.get(3).setAlpha(0);
-          viewDots.get(3).setVisibility(VISIBLE);
-
-          viewDots.get(3)
+  private void animateDots() {
+    /**  STEP 1 [0, 0] **/
+    dice.animate()
+        .rotation(dice.getRotation() + 90)
+        .setDuration(DURATON_ROTATE)
+        .setStartDelay(DURATON)
+        .setInterpolator(new OvershootInterpolator())
+        .withStartAction(() -> {
+          /**  STEP 2
+           /*  0 : [-1, -1]
+           *   1 : [+1, +1]
+           */
+          viewDots.get(1)
               .animate()
-              .alpha(1)
               .scaleX(1)
               .scaleY(1)
-              .setStartDelay(300)
-              .setDuration(DURATON - 300)
+              .setInterpolator(new BounceInterpolator())
+              .translationX(unit)
+              .translationY(unit)
+              .setDuration(DURATON)
               .setListener(null)
               .start();
 
           viewDots.get(0)
               .animate()
               .translationX(-unit)
-              .translationY(unit)
+              .translationY(-unit)
               .setDuration(DURATON)
+              .setInterpolator(new BounceInterpolator())
+              .setListener(null)
+              .start();
+        })
+        .withEndAction(() -> {
+          dice.animate()
+              .rotation(dice.getRotation() + 90)
+              .setDuration(DURATON_ROTATE)
+              .setInterpolator(new OvershootInterpolator())
               .withStartAction(() -> {
+                /**  STEP 3
+                 /*   0 : [+0, +0]
+                 *    1 : [+1, +1]
+                 *    2 : [-1, -1]
+                 */
+                viewDots.get(2).setX(viewDots.get(2).getX() - unit);
+                viewDots.get(2).setY(viewDots.get(2).getY() - unit);
+                viewDots.get(2).setAlpha(0);
 
-              })
-              .withEndAction(() -> {
-                dice.animate().rotation(360).setDuration(DURATON).withStartAction(() -> {
-                  Timber.e("SOEF 3");
-                  viewDots.get(4).setAlpha(0);
-                  viewDots.get(4).setVisibility(VISIBLE);
-                  viewDots.get(4)
-                      .animate()
-                      .alpha(1)
-                      .scaleX(1f)
-                      .scaleY(1f)
-                      .setDuration(DURATON)
-                      .setListener(null)
-                      .start();
-                }).setListener(null).start();
-              })
-              .setListener(null)
-              .start();
-        }).withEndAction(() -> {
-        }).setListener(null).start();
-      }).setListener(null).start();
-    }).setListener(null).start();
-  }
-
-  private void ok() {
-    viewDots.get(1).setVisibility(VISIBLE);
-    viewDots.get(1)
-        .animate()
-        .translationX(unit)
-        .translationY(unit)
-        .setDuration(DURATON)
-        .setListener(null)
-        .withEndAction(() -> {
-
-        });
-
-    viewDots.get(0).setVisibility(VISIBLE);
-    viewDots.get(0)
-        .animate()
-        .translationX(-unit)
-        .translationY(-unit)
-        .setDuration(DURATON)
-        .setListener(null)
-        .withEndAction(() -> {
-          Timber.e("SOEF 1");
-
-          viewDots.get(2).setX(viewDots.get(2).getX() - unit);
-          viewDots.get(2).setY(viewDots.get(2).getY() - unit);
-          viewDots.get(2).setAlpha(0);
-          viewDots.get(2).setVisibility(VISIBLE);
-
-          viewDots.get(2)
-              .animate()
-              .alpha(1f)
-              .scaleX(1f)
-              .scaleY(1f)
-              .setStartDelay(300)
-              .setDuration(DURATON - 300)
-              .setListener(null)
-              .start();
-
-          viewDots.get(0)
-              .animate()
-              .translationX(0)
-              .translationY(0)
-              .setDuration(DURATON)
-              .setListener(null)
-              .withEndAction(() -> {
-                Timber.e("SOEF 2");
-
-                viewDots.get(3).setX(viewDots.get(3).getX() + unit);
-                viewDots.get(3).setY(viewDots.get(3).getY() - unit);
-                viewDots.get(3).setAlpha(0);
-                viewDots.get(3).setVisibility(VISIBLE);
-
-                viewDots.get(3)
+                viewDots.get(2)
                     .animate()
-                    .alpha(1)
-                    .scaleX(1)
-                    .scaleY(1)
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
                     .setStartDelay(300)
+                    .setInterpolator(new BounceInterpolator())
                     .setDuration(DURATON - 300)
                     .setListener(null)
                     .start();
 
                 viewDots.get(0)
                     .animate()
-                    .translationX(-unit)
-                    .translationY(unit)
+                    .translationX(0)
+                    .translationY(0)
+                    .setInterpolator(new BounceInterpolator())
                     .setDuration(DURATON)
                     .setListener(null)
-                    .withEndAction(() -> {
+                    .start();
+              })
+              .withEndAction(() -> {
+                dice.animate()
+                    .rotation(dice.getRotation() + 90)
+                    .setInterpolator(new OvershootInterpolator())
+                    .setDuration(DURATON_ROTATE)
+                    .withStartAction(() -> {
 
-                      Timber.e("SOEF 3");
-                      viewDots.get(4).setAlpha(0);
-                      viewDots.get(4).setVisibility(VISIBLE);
-                      viewDots.get(4)
+                      /**  STEP 4
+                       /*   0 : [-1, +1]
+                       *    1 : [+1, +1]
+                       *    2 : [-1, -1]
+                       *    3 : [+1, -1]
+                       */
+
+                      viewDots.get(3).setX(viewDots.get(3).getX() + unit);
+                      viewDots.get(3).setY(viewDots.get(3).getY() - unit);
+                      viewDots.get(3).setAlpha(0);
+                      viewDots.get(3).setVisibility(VISIBLE);
+
+                      viewDots.get(3)
                           .animate()
                           .alpha(1)
-                          .scaleX(1f)
-                          .scaleY(1f)
+                          .scaleX(1)
+                          .scaleY(1)
+                          .setInterpolator(new BounceInterpolator())
+                          .setStartDelay(300)
+                          .setDuration(DURATON - 300)
+                          .setListener(null)
+                          .start();
+
+                      viewDots.get(0)
+                          .animate()
+                          .translationX(-unit)
+                          .translationY(unit)
                           .setDuration(DURATON)
+                          .setInterpolator(new BounceInterpolator())
+                          .withEndAction(() -> {
+                            dice.animate()
+                                .rotation(dice.getRotation() + 90)
+                                .setInterpolator(new OvershootInterpolator())
+                                .setDuration(DURATON_ROTATE)
+                                .withStartAction(() -> {
+
+                                  /**  STEP 5
+                                   /*   0 : [-1, +1]
+                                   *    1 : [+1, +1]
+                                   *    2 : [-1, -1]
+                                   *    3 : [+1, -1]
+                                   *    4 : [+0, +0]
+                                   */
+
+                                  Timber.e("SOEF 3");
+                                  viewDots.get(4).setAlpha(0);
+                                  viewDots.get(4)
+                                      .animate()
+                                      .alpha(1)
+                                      .scaleX(1f)
+                                      .scaleY(1f)
+                                      .setInterpolator(new BounceInterpolator())
+                                      .setStartDelay(300)
+                                      .setDuration(DURATON - 300)
+                                      .withEndAction(() -> {
+                                        /**  STEP 6
+                                         /*   0 : [+0, +0]
+                                         *    1 : [+0, +0]
+                                         *    2 : [+0, +0]
+                                         *    3 : [+0, +0]
+                                         *    4 : [+0, +0]
+                                         */
+
+                                        for (int i = 0; i < NB_VIEWS; i++) {
+                                          if (i != 0) {
+                                            viewDots.get(i)
+                                                .animate()
+                                                .setInterpolator(new BounceInterpolator())
+                                                .setDuration(DURATON / 3)
+                                                .translationX(0)
+                                                .translationY(0)
+                                                .scaleX(0)
+                                                .scaleY(0)
+                                                .setListener(null)
+                                                .start();
+                                          } else {
+                                            viewDots.get(i)
+                                                .animate()
+                                                .translationX(0)
+                                                .translationY(0)
+                                                .setInterpolator(new BounceInterpolator())
+                                                .setDuration(DURATON)
+                                                .withEndAction(this::step6Anim)
+                                                .setListener(null)
+                                                .start();
+                                          }
+                                        }
+                                      })
+                                      .setListener(null)
+                                      .start();
+                                })
+                                .setListener(null)
+                                .start();
+                          })
                           .setListener(null)
                           .start();
                     })
+                    .setListener(null)
                     .start();
               })
+              .setListener(null)
               .start();
-        })
-        .start();
+        });
   }
 
   @OnClick(R.id.ok) public void repeat() {
     animateDots();
   }
 
-  @OnClick(R.id.ok1) public void reset() {
-    resetDotsPlace();
+  @OnClick(R.id.ok1) public void resetokd() {
+    resetDotsStates();
     dice.setRotation(0);
     dice.clearAnimation();
   }
@@ -295,27 +425,18 @@ public class DiceView extends FrameLayout {
     for (int i = 0; i < NB_VIEWS; i++) {
       View v = new View(getContext());
       v.setBackground(drawablesDots[i]);
+      if (i != 0) {
+        v.setScaleX(0);
+        v.setScaleY(0);
+      }
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       viewDots.add(v);
-      if (i != 0) v.setVisibility(INVISIBLE);
-      dicebg.addView(v);
+    }
+
+    for (int i = 0; i < NB_VIEWS; i++) {
+      dicebg.addView(viewDots.get(NB_VIEWS - i - 1));
     }
   }
-
-
-  /*
-
-  <!--
-<?xml version="1.0" encoding="utf-8"?>
-<rotate xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="1000"
-    android:fillAfter="true"
-    android:fromDegrees="0"
-    android:pivotX="50%"
-    android:pivotY="50%"
-    android:toDegrees="90" />-->
-
-   */
 }

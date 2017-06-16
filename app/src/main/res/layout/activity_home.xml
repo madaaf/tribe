@@ -28,7 +28,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="20dp"
-        android:src="@drawable/shape_dice"
+        android:src="@drawable/shape_dice_with_border"
         />
     <TextView
         android:layout_width="wrap_content"
