@@ -58,6 +58,7 @@ public class TileView extends SquareCardView {
   public final static int TYPE_INVITE_LIVE_CO = 2;
   public final static int TYPE_NORMAL = 3;
   public final static int TYPE_INVITE = 4;
+  public final static int TYPE_CALL_ROULETTE = 5;
 
   private final int MINUTES_LIMIT = 120 * 60 * 1000;
   private final int HOURS_LIMIT = 48 * 24 * 60 * 1000;
@@ -96,7 +97,7 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.layoutName) public ViewGroup layoutName;
 
-  @BindView(R.id.avatar) public AvatarView avatar;
+  @Nullable @BindView(R.id.avatar) public AvatarView avatar;
 
   @Nullable @BindView(R.id.layoutPulse) public PulseLayout layoutPulse;
 
@@ -174,6 +175,10 @@ public class TileView extends SquareCardView {
 
       case TYPE_INVITE:
         resLayout = R.layout.view_tile_invite;
+        break;
+
+      case TYPE_CALL_ROULETTE:
+        resLayout = R.layout.view_tile_call_roulette;
         break;
     }
 
@@ -402,7 +407,7 @@ public class TileView extends SquareCardView {
   public void setInfo(Recipient recipient) {
     setRecipient(recipient);
     setAvatar();
-    setName();
+    if (txtName != null) setName();
 
     if (isGrid()) {
       setStatus();
@@ -414,7 +419,7 @@ public class TileView extends SquareCardView {
         imgIndInvite.setVisibility(View.VISIBLE);
         imgIndInvite.setImageResource(R.drawable.picto_online);
       } else {
-        imgIndInvite.setVisibility(View.GONE);
+        if (imgIndInvite != null) imgIndInvite.setVisibility(View.GONE);
       }
     }
   }
@@ -475,7 +480,7 @@ public class TileView extends SquareCardView {
     this.position = position;
 
     if (!isGrid()) {
-      UIUtils.setBackgroundInd(imgIndInvite, position);
+      UIUtils.setBackgroundInd(imgIndInvite, position); //SOEF
       UIUtils.setBackgroundCard(this, position);
     } else {
       UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());

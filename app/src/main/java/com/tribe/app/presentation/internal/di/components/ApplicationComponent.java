@@ -68,6 +68,7 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapter
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -176,6 +177,8 @@ public interface ApplicationComponent {
   void inject(LiveInviteView liveInviteView);
 
   void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
+
+  void inject(CallRouletteAdapterDelegate callRouletteAdapterDelegate);
 
   void inject(LiveWaitingView liveWaitingView);
 

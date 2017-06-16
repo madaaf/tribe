@@ -40,6 +40,7 @@
       <enum name="live_co_invite" value="2" />
       <enum name="normal" value="3" />
       <enum name="invite" value="4" />
+      <enum name="callRoulette" value="5" />
     </attr>
   </declare-styleable>
 
