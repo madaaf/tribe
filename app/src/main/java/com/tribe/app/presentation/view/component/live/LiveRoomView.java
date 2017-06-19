@@ -27,6 +27,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import javax.inject.Inject;
 
 public class LiveRoomView extends FrameLayout {
@@ -58,6 +59,8 @@ public class LiveRoomView extends FrameLayout {
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
   @BindView(R.id.cardview) CardView cardView;
+
+  @BindView(R.id.diceLayout) DiceView diceView;
 
   public LiveRoomView(Context context) {
     super(context);
@@ -291,6 +294,10 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void setDiceAnimation() {
+    diceView.setScaleX(0);
+    diceView.setScaleY(0);
+    diceView.setVisibility(VISIBLE);
+    diceView.animate().scaleX(1).scaleY(1).setDuration(1000).start();
 /*    LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.native_dialogs_container, this, true);*/
