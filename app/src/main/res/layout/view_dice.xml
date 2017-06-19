@@ -9,16 +9,17 @@
 
     <FrameLayout
         android:id="@+id/diceView"
-        android:layout_width="@dimen/dice_size"
-        android:layout_height="@dimen/dice_size"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:layout_margin="5dp"
         android:background="@drawable/shape_dice"
         />
 
     <FrameLayout
         android:id="@+id/dicebg"
-        android:layout_width="@dimen/dice_size"
-        android:layout_height="@dimen/dice_size"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="@null"
         />

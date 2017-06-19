@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -60,17 +61,24 @@ public class DiceView extends FrameLayout {
   public DiceView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     initView(context);
-    initDots();
-    initAnimation();
   }
 
   private void initView(Context context) {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_dice, this, true);
     unbinder = ButterKnife.bind(this);
-    sizeDot = getResources().getDimensionPixelSize(R.dimen.view_dice_dot_size);
-    dotsMargin = getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin);
-    unit = (getResources().getDimensionPixelSize(R.dimen.dice_size) / 2) - 85;
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        sizeDot = (int) (0.15 * dice.getWidth());
+        dotsMargin = (int) (0.115 * dice.getWidth());
+        unit = (int) (sizeDot * 1.315);
+
+        initDots();
+        initAnimation();
+      }
+    });
   }
 
   private void initAnimation() {
@@ -382,6 +390,10 @@ public class DiceView extends FrameLayout {
     dice.clearAnimation();
   }
   */
+
+  private void setBackgroundDiceView(Drawable bg){
+    dice.setBackground(bg);
+  }
 
   private void initDots() {
     for (int i = 0; i < NB_VIEWS; i++) {
