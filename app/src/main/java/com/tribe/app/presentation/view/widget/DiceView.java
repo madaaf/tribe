@@ -78,61 +78,26 @@ public class DiceView extends FrameLayout {
     animateDots();
   }
 
-   /*.withStartAction(() -> {
-          // dice.animate().rotation()
-          */
-
-  /** CENTER DOTS **//*
-          for (int i = 0; i < NB_VIEWS; i++) {
-            if (i == 0) {
-              viewDots.get(0)
-                  .animate()
-                  .scaleX(1)
-                  .scaleY(1)
-                  .translationY(0)
-                  .translationX(0)
-                  .setInterpolator(new BounceInterpolator())
-                  .setDuration(DURATON)
-                  .setListener(null)
-                  .start();
-            } else {
-              int finalI = i;
-              viewDots.get(i)
-                  .animate()
-                  .translationY(0)
-                  .translationX(0)
-                  .setInterpolator(new BounceInterpolator())
-                  .setStartDelay(DURATON)
-                  .withEndAction(() -> {
-                    if (finalI == NB_VIEWS - 1) {
-                      Timber.e("ok");
-                      dice.clearAnimation();
-                      for (int y = 0; y < NB_VIEWS; y++) {
-                        viewDots.get(y).clearAnimation();
-                      }
-                      setAnimation(null);
-                      // animateDots();
-                    }
-                  })
-                  .scaleX(0)
-                  .scaleY(0)
-                  .setListener(null)
-                  .start();
-            }
-          }
-        })*/
   private void resetDotsStates() {
     for (int i = 0; i < NB_VIEWS; i++) {
-      viewDots.get(i)
-          .animate()
-          .translationX(0)
-          .translationY(0)
-          .setDuration(0)
-          .setListener(null)
-          .start();
       if (i != 0) {
-        viewDots.get(i).setScaleX(0);
-        viewDots.get(i).setScaleY(0);
+        viewDots.get(i)
+            .animate()
+            .translationX(0)
+            .translationY(0)
+            .scaleX(0)
+            .scaleY(0)
+            .setDuration(200)
+            .setListener(null)
+            .start();
+      } else {
+        viewDots.get(i)
+            .animate()
+            .translationX(0)
+            .translationY(0)
+            .setDuration(300)
+            .setListener(null)
+            .start();
       }
     }
   }
@@ -216,10 +181,10 @@ public class DiceView extends FrameLayout {
         .setListener(null)
         .start();
 
-
     new Handler().postDelayed(() -> {
+      Timber.e("SOEF STEP 6 :" + getRotationValue());
       dice.animate()
-          .rotation(dice.getRotation() + 90)
+          .rotation(getRotationValue())
           .setDuration(DURATON_ROTATE)
           .setInterpolator(new OvershootInterpolator())
           .withStartAction(() -> {
@@ -232,10 +197,25 @@ public class DiceView extends FrameLayout {
     }, 1000);
   }
 
+  private int getRotationValue() {
+    int rotationDelay = ((int) dice.getRotation()) % 90;
+    int rotationFixed = (int) dice.getRotation() - rotationDelay + 90;
+    Timber.e("SOEF ROT : "
+        + (int) dice.getRotation()
+        + " ROT DELAY = "
+        + rotationDelay
+        + " fixed rotaion = "
+        + rotationFixed);
+
+    // int value = ((int) dice.getRotation() + 90) % 360;
+    return rotationFixed;
+  }
+
   private void animateDots() {
     /**  STEP 1 [0, 0] **/
+    Timber.e("SOEF STEP 1 : " + getRotationValue());
     dice.animate()
-        .rotation(dice.getRotation() + 90)
+        .rotation(getRotationValue())
         .setDuration(DURATON_ROTATE)
         .setStartDelay(DURATON)
         .setInterpolator(new OvershootInterpolator())
@@ -265,8 +245,9 @@ public class DiceView extends FrameLayout {
               .start();
         })
         .withEndAction(() -> {
+          Timber.e("SOEF STEP 3 : " + getRotationValue());
           dice.animate()
-              .rotation(dice.getRotation() + 90)
+              .rotation(getRotationValue())
               .setDuration(DURATON_ROTATE)
               .setInterpolator(new OvershootInterpolator())
               .withStartAction(() -> {
@@ -300,8 +281,9 @@ public class DiceView extends FrameLayout {
                     .start();
               })
               .withEndAction(() -> {
+                Timber.e("SOEF STEP 4 : " + getRotationValue());
                 dice.animate()
-                    .rotation(dice.getRotation() + 90)
+                    .rotation(getRotationValue())
                     .setInterpolator(new OvershootInterpolator())
                     .setDuration(DURATON_ROTATE)
                     .withStartAction(() -> {
@@ -336,8 +318,9 @@ public class DiceView extends FrameLayout {
                           .setDuration(DURATON)
                           .setInterpolator(new BounceInterpolator())
                           .withEndAction(() -> {
+                            Timber.e("SOEF STEP 5 :" + getRotationValue());
                             dice.animate()
-                                .rotation(dice.getRotation() + 90)
+                                .rotation(getRotationValue())
                                 .setInterpolator(new OvershootInterpolator())
                                 .setDuration(DURATON_ROTATE)
                                 .withStartAction(() -> {
@@ -350,7 +333,6 @@ public class DiceView extends FrameLayout {
                                    *    4 : [+0, +0]
                                    */
 
-                                  Timber.e("SOEF 3");
                                   viewDots.get(4).setAlpha(0);
                                   viewDots.get(4)
                                       .animate()
@@ -369,6 +351,9 @@ public class DiceView extends FrameLayout {
                                          *    4 : [+0, +0]
                                          */
 
+                                        resetDotsStates();
+                                        new Handler().postDelayed(this::step6Anim, 1000);
+/*
                                         for (int i = 0; i < NB_VIEWS; i++) {
                                           if (i != 0) {
                                             viewDots.get(i)
@@ -392,7 +377,7 @@ public class DiceView extends FrameLayout {
                                                 .setListener(null)
                                                 .start();
                                           }
-                                        }
+                                        }*/
                                       })
                                       .setListener(null)
                                       .start();
