@@ -36,6 +36,7 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -86,6 +87,8 @@ public class TopBarView extends FrameLayout {
   @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
 
   @BindView(R.id.callRoulette) LinearLayout callRouletteLayout;
+
+  @BindView(R.id.diceLayout) DiceView diceView;
 
   // VARIABLES
   private float startX, startY = 0;
@@ -161,7 +164,8 @@ public class TopBarView extends FrameLayout {
     imgClose.setAlpha(1);
 
     editTextSearch.setEnabled(false);
-
+    diceView.setBackgroundDiceView(
+        ContextCompat.getDrawable(getContext(), R.drawable.shape_dice_with_border));
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
       @Override public void onGlobalLayout() {

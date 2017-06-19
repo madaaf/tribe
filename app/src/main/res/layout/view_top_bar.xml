@@ -165,18 +165,12 @@
         android:clickable="true"
         android:gravity="center"
         >
-      <!--      <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginEnd="20dp"
-                android:src="@drawable/shape_dice_with_border"
-                />-->
 
       <com.tribe.app.presentation.view.widget.DiceView
-          android:layout_width="35dp"
-          android:layout_height="35dp"
+          android:id="@+id/diceLayout"
+          android:layout_width="45dp"
+          android:layout_height="45dp"
           android:layout_marginEnd="20dp"
-          android:background="@drawable/shape_dice_with_border"
           />
 
 

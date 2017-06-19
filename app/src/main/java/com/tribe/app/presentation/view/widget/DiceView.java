@@ -20,7 +20,6 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import java.util.ArrayList;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 16/06/2017.
@@ -71,18 +70,14 @@ public class DiceView extends FrameLayout {
 
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        sizeDot = (int) (0.15 * dice.getWidth());
-        dotsMargin = (int) (0.115 * dice.getWidth());
-        unit = (int) (sizeDot * 1.315);
+        sizeDot = (int) (0.15 * getWidth());
+        dotsMargin = (int) (sizeDot / 9.75);
+        unit = (int) (sizeDot * 1.18);
 
         initDots();
-        initAnimation();
+        animateDots();
       }
     });
-  }
-
-  private void initAnimation() {
-    animateDots();
   }
 
   private void resetDotsStates() {
@@ -190,7 +185,6 @@ public class DiceView extends FrameLayout {
         .start();
 
     new Handler().postDelayed(() -> {
-      Timber.e("SOEF STEP 6 :" + getRotationValue());
       dice.animate()
           .rotation(getRotationValue())
           .setDuration(DURATON_ROTATE)
@@ -204,21 +198,12 @@ public class DiceView extends FrameLayout {
 
   private int getRotationValue() {
     int rotationDelay = ((int) dice.getRotation()) % 90;
-    int rotationFixed = (int) dice.getRotation() - rotationDelay + 90;
-    Timber.e("SOEF ROT : "
-        + (int) dice.getRotation()
-        + " ROT DELAY = "
-        + rotationDelay
-        + " fixed rotaion = "
-        + rotationFixed);
-
-    // int value = ((int) dice.getRotation() + 90) % 360;
-    return rotationFixed;
+    int fixed = ((int) dice.getRotation() - rotationDelay + 90);
+    return fixed;
   }
 
   private void animateDots() {
     /**  STEP 1 [0, 0] **/
-    Timber.e("SOEF STEP 1 : " + getRotationValue());
     dice.animate()
         .rotation(getRotationValue())
         .setDuration(DURATON_ROTATE)
@@ -252,7 +237,6 @@ public class DiceView extends FrameLayout {
               .start();
         })
         .withEndAction(() -> {
-          Timber.e("SOEF STEP 3 : " + getRotationValue());
           dice.animate()
               .rotation(getRotationValue())
               .setDuration(DURATON_ROTATE)
@@ -289,7 +273,6 @@ public class DiceView extends FrameLayout {
                     .start();
               })
               .withEndAction(() -> {
-                Timber.e("SOEF STEP 4 : " + getRotationValue());
                 dice.animate()
                     .rotation(getRotationValue())
                     .setInterpolator(new OvershootInterpolator())
@@ -326,7 +309,6 @@ public class DiceView extends FrameLayout {
                           .setDuration(DURATON)
                           .setInterpolator(new BounceInterpolator())
                           .withEndAction(() -> {
-                            Timber.e("SOEF STEP 5 :" + getRotationValue());
                             dice.animate()
                                 .rotation(getRotationValue())
                                 .setInterpolator(new OvershootInterpolator())
@@ -379,20 +361,9 @@ public class DiceView extends FrameLayout {
         });
   }
 
-  /*
-  @OnClick(R.id.ok) public void repeat() {
-    animateDots();
-  }
-
-  @OnClick(R.id.ok1) public void resetokd() {
-    resetDotsStates();
-    dice.setRotation(0);
-    dice.clearAnimation();
-  }
-  */
-
-  private void setBackgroundDiceView(Drawable bg){
+  public void setBackgroundDiceView(Drawable bg) {
     dice.setBackground(bg);
+    animateDots();
   }
 
   private void initDots() {

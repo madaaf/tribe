@@ -1,48 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  <FrameLayout
+      android:id="@+id/diceView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="vertical"
-      >
+      android:layout_gravity="center"
+      android:layout_margin="5dp"
+      android:background="@drawable/shape_dice"
+      />
 
-    <FrameLayout
-        android:id="@+id/diceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:background="@drawable/shape_dice"
-        />
-
-    <FrameLayout
-        android:id="@+id/dicebg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@null"
-        />
-
-
-  </FrameLayout>
-  <!--
-
-    <Button
-        android:id="@+id/ok"
-        android:layout_width="@dimen/dice_size"
-        android:layout_height="@dimen/dice_size"
-        android:text="repeat"
-        />
-
-    <Button
-        android:id="@+id/ok1"
-        android:layout_width="@dimen/dice_size"
-        android:layout_height="@dimen/dice_size"
-        android:layout_gravity="right"
-        android:text="reset"
-        />
-  -->
+  <FrameLayout
+      android:id="@+id/dicebg"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:background="@null"
+      />
 
 
 </merge>

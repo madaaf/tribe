@@ -3,13 +3,13 @@
 
   <include layout="@layout/view_tile_background_invite" />
 
-  <ImageView
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
-      android:layout_gravity="center"
-      android:background="@drawable/shape_dice_with_border"
-      />
 
+  <com.tribe.app.presentation.view.widget.DiceView
+      android:id="@+id/diceLayout"
+      android:layout_width="@dimen/avatar_size_small_margin_start"
+      android:layout_height="@dimen/avatar_size_small_margin_start"
+      android:layout_gravity="center"
+      />
 
   <com.tribe.app.presentation.view.widget.avatar.AvatarView
       android:id="@+id/avatar"
