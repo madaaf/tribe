@@ -1,0 +1,193 @@
+package com.tribe.tribelivesdk.view.opengl.filter;
+
+import android.opengl.GLES11Ext;
+import android.opengl.GLES20;
+import android.util.Log;
+import com.tribe.tribelivesdk.view.opengl.utils.FrameBufferObject;
+import com.tribe.tribelivesdk.view.opengl.utils.ProgramObject;
+
+public class FrameRendererBlur extends FrameRendererDrawOrigin {
+
+  private static final String vectorShaderBlur = vectorShaderDrawDefault;
+
+  private static final String vectorShaderBlurCache = "" +
+      "attribute vec2 vPosition;\n" +
+      "varying vec2 texCoord;\n" +
+      "void main()\n" +
+      "{\n" +
+      "   gl_Position = vec4(vPosition, 0.0, 1.0);\n" +
+      "   texCoord = vPosition / 2.0 + 0.5;\n" +
+      "}";
+
+  private static final String fragementShaderBlur = "" +
+      "precision highp float;\n" +
+      "varying vec2 texCoord;\n" +
+      "uniform %s inputImageTexture;\n" +
+      "uniform vec2 samplerSteps;\n" +
+
+      "const int samplerRadius = 5;\n" +
+      "const float samplerRadiusFloat = 5.0;\n" +
+
+      "float random(vec2 seed)\n" +
+      "{\n" +
+      "  return fract(sin(dot(seed ,vec2(12.9898,78.233))) * 43758.5453);\n" +
+      "}\n" +
+
+      "void main()\n" +
+      "{\n" +
+      "  vec3 resultColor = vec3(0.0);\n" +
+      "  float blurPixels = 0.0;\n" +
+      "  float offset = random(texCoord) - 0.5;\n" +
+      "  \n" +
+      "  for(int i = -samplerRadius; i <= samplerRadius; ++i)\n" +
+      "  {\n" +
+      "    float percent = (float(i) + offset) / samplerRadiusFloat;\n" +
+      "    float weight = 1.0 - abs(percent);\n" +
+      "    vec2 coord = texCoord + samplerSteps * percent;\n" +
+      "    resultColor += texture2D(inputImageTexture, coord).rgb * weight;\n" +
+      "    blurPixels += weight;\n" +
+      "  }\n" +
+
+      "  gl_FragColor = vec4(resultColor / blurPixels, 1.0);\n" +
+      "}";
+
+  protected int texCache = 0;
+
+  protected FrameBufferObject fBO;
+
+  protected int cacheTexWidth, cacheTexHeight;
+
+  private static final String SAMPLER_STEPS = "samplerSteps";
+
+  private int stepsLoc = 0;
+  private int stepsLocCache = 0;
+  private float samplerScale = 1.0f;
+
+  private ProgramObject programDrawCache;
+
+  public static FrameRendererBlur create(boolean isExternalOES) {
+    FrameRendererBlur renderer = new FrameRendererBlur();
+    if (!renderer.init(isExternalOES)) {
+      renderer.release();
+      return null;
+    }
+    return renderer;
+  }
+
+  public void setSamplerRadius(float radius) {
+    samplerScale = radius / 4.0f;
+  }
+
+  @Override public boolean init(boolean isExternalOES) {
+    TEXTURE_2D_BINDABLE = isExternalOES ? GLES11Ext.GL_TEXTURE_EXTERNAL_OES : GLES20.GL_TEXTURE_2D;
+    final String fshBlurExtOES = (isExternalOES ? REQUIRE_STRING_EXTERNAL_OES : "") +
+        String.format(fragementShaderBlur,
+            isExternalOES ? SAMPLER2D_VAR_EXTERNAL_OES : SAMPLER2D_VAR);
+    final String fshBlurTex2D = String.format(fragementShaderBlur, SAMPLER2D_VAR);
+    fBO = new FrameBufferObject();
+
+    programDrawCache = new ProgramObject();
+    programDrawCache.bindAttribLocation(POSITION_NAME, 0);
+
+    if (!programDrawCache.init(vectorShaderBlurCache, fshBlurExtOES)) {
+      Log.e(LOG_TAG, "blur filter program init failed - 1...");
+      return false;
+    }
+
+    programDrawCache.bind();
+    stepsLocCache = programDrawCache.getUniformLoc(SAMPLER_STEPS);
+
+    program = new ProgramObject();
+    program.bindAttribLocation(POSITION_NAME, 0);
+
+    if (!program.init(vectorShaderBlur, fshBlurTex2D)) {
+      Log.e(LOG_TAG, "blur filter program init failed - 2...");
+      return false;
+    }
+
+    program.bind();
+    stepsLoc = program.getUniformLoc(SAMPLER_STEPS);
+    setRotation(0.0f);
+
+    return true;
+  }
+
+  @Override public void release() {
+    if (programDrawCache != program) programDrawCache.release();
+    super.release();
+    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    fBO.release();
+    fBO = null;
+    GLES20.glDeleteTextures(1, new int[] { texCache }, 0);
+    texCache = 0;
+    programDrawCache = null;
+  }
+
+  @Override public void renderTexture(int texID, Viewport viewport) {
+    if (texCache == 0 || cacheTexWidth != textureWidth || cacheTexHeight != textureHeight) {
+      resetCacheTexture();
+    }
+
+    fBO.bind();
+
+    GLES20.glViewport(0, 0, cacheTexWidth, cacheTexHeight);
+
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBuffer);
+    GLES20.glEnableVertexAttribArray(0);
+    GLES20.glVertexAttribPointer(0, 2, GLES20.GL_FLOAT, false, 0, 0);
+
+    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+    GLES20.glBindTexture(TEXTURE_2D_BINDABLE, texID);
+
+    programDrawCache.bind();
+    GLES20.glUniform2f(stepsLocCache, (1.0f / textureWidth) * samplerScale, 0.0f);
+
+    GLES20.glDrawArrays(DRAW_FUNCTION, 0, 4);
+
+    if (viewport != null) {
+      GLES20.glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    }
+
+    program.bind();
+    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texCache);
+    GLES20.glUniform2f(stepsLoc, 0.0f, (1.0f / cacheTexWidth) * samplerScale);
+    GLES20.glDrawArrays(DRAW_FUNCTION, 0, 4);
+  }
+
+  @Override public void setTextureSize(int w, int h) {
+    super.setTextureSize(w, h);
+  }
+
+  @Override public String getVertexShaderString() {
+    return vectorShaderBlur;
+  }
+
+  @Override public String getFragmentShaderString() {
+    return fragementShaderBlur;
+  }
+
+  protected void resetCacheTexture() {
+    Log.i(LOG_TAG, "resetCacheTexture...");
+    cacheTexWidth = textureWidth;
+    cacheTexHeight = textureHeight;
+
+    if (texCache == 0) {
+      int[] texCache = new int[1];
+      GLES20.glGenTextures(1, texCache, 0);
+      this.texCache = texCache[0];
+    }
+
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texCache);
+
+    GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, cacheTexWidth, cacheTexHeight, 0,
+        GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+
+    fBO.bindTexture(texCache);
+  }
+}
