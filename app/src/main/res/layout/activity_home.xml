@@ -128,12 +128,4 @@
       android:visibility="gone"
       />
 
-  <com.tribe.app.presentation.view.widget.DiceView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:background="@color/black.opacity.50"
-      />
-
-
 </FrameLayout>
