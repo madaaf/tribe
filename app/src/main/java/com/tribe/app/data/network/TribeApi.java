@@ -12,7 +12,6 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
-import com.tribe.app.domain.interactor.user.BookRoomLink;
 import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -122,4 +121,6 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<BookRoomLinkEntity> bookRoomLink(
       @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Void> roomAcceptRandom(@Field("query") String query);
 }

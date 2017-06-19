@@ -19,6 +19,7 @@ import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
+import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -44,6 +45,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
   private BookRoomLink bookRoomLink;
+  private RoomAcceptRandom roomAcceptRandom;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -55,7 +57,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
       DeclineInvite declineInvite, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
-      BookRoomLink bookRoomLink) {
+      BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -68,6 +70,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.createFriendship = createFriendship;
     this.getNamesPostItGame = getNamesPostItGame;
     this.bookRoomLink = bookRoomLink;
+    this.roomAcceptRandom = roomAcceptRandom;
   }
 
   @Override public void onViewDetached() {
@@ -83,6 +86,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     createFriendship.unsubscribe();
     getNamesPostItGame.unsubscribe();
     bookRoomLink.unsubscribe();
+    roomAcceptRandom.unsubscribe();
     liveMVPView = null;
   }
 
@@ -270,5 +274,10 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   public void bookRoomLink(String linkId) {
     bookRoomLink.setLinkId(linkId);
     bookRoomLink.execute(new DefaultSubscriber());
+  }
+
+  public void roomAcceptRandom(String roomId) {
+    roomAcceptRandom.setRoomId(roomId);
+    roomAcceptRandom.execute(new DefaultSubscriber());
   }
 }

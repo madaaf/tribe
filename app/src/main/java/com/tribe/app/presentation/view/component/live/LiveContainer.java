@@ -238,7 +238,7 @@ public class LiveContainer extends FrameLayout {
     viewLive.initOnStartDragSubscription(onStartDrag());
     viewLive.initOnEndDragSubscription(onEndDrag());
     viewLive.initOnAlphaSubscription(onAlpha());
-    viewLive.initDropSubscription(onDropped());
+    viewLive.initDropSubscription(onDropped());//SOEF
   }
 
   public void setStatusBarHeight(int height) {
@@ -474,7 +474,7 @@ public class LiveContainer extends FrameLayout {
   private void createTileForDrag() {//SOEF
     viewInviteLive.setDragging(true);
 
-    draggedTileView = new TileView(getContext(), currentTileView.getType());//SOEF
+    draggedTileView = new TileView(getContext(), currentTileView.getType());
     draggedTileView.setBackground(currentTileView.getPosition());
     draggedTileView.setInfo(currentTileView.getRecipient());
     currentTileView.getLocationOnScreen(tileLocationStart);

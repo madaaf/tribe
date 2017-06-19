@@ -554,4 +554,10 @@
   <string name="bookRoomLink" translatable="false">
     bookRoomLink(linkId : \"%1$s\")
   </string>
+
+
+  <string name="roomAcceptRandom" translatable="false">
+    roomAcceptRandom(roomId : \"%1$s\")
+  </string>
+
 </resources>

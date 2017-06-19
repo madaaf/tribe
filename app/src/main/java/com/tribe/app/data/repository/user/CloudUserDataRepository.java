@@ -323,6 +323,12 @@ import rx.Observable;
     return cloudDataStore.bookRoomLink(linkId);
   }
 
+  @Override public Observable<Void> roomAcceptRandom(String roomId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.roomAcceptRandom(roomId);
+  }
+
   @Override public Observable<List<Friendship>> unblockedFriendships() {
     return null;
   }

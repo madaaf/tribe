@@ -489,7 +489,7 @@ public class TileView extends SquareCardView {
     this.position = position;
 
     if (!isGrid()) {
-      UIUtils.setBackgroundInd(imgIndInvite, position); //SOEF
+      UIUtils.setBackgroundInd(imgIndInvite, position);
       UIUtils.setBackgroundCard(this, position);
     } else {
       UIUtils.setBackgroundGrid(screenUtils, viewBG, position, isGrid());

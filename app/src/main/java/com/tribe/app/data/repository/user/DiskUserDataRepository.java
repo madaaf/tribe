@@ -412,6 +412,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<Void> roomAcceptRandom(String roomId) {
+    return null;
+  }
+
   @Override public Observable<List<Friendship>> unblockedFriendships() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();

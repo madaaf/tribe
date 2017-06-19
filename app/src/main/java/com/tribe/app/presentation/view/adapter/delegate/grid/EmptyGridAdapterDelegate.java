@@ -41,7 +41,7 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    return items.get(position).getSubId().equals(Recipient.ID_EMPTY);//SOEF
+    return items.get(position).getSubId().equals(Recipient.ID_EMPTY);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {

@@ -17,15 +17,10 @@ public class CallRouletteAdapterDelegate extends RecipientGridAdapterDelegate {
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    Recipient recipient = items.get(position);
-    if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
-      Timber.e("SOEF OK ");
-    }
     return  items.get(position).getSubId().equals(Recipient.ID_CALL_ROULETTE);
   }
 
   @Override protected int getLayoutId() {
-    Timber.e("SOEF");
     return R.layout.item_user_call_roulette;
   }
 }

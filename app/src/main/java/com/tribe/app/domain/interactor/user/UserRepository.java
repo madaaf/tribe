@@ -181,5 +181,7 @@ public interface UserRepository {
 
   Observable<Boolean> bookRoomLink(String linkId);
 
+  Observable<Void> roomAcceptRandom(String roomId);
+
   Observable<List<Friendship>> unblockedFriendships();
 }

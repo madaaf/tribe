@@ -706,7 +706,7 @@ public class LiveView extends FrameLayout {
 
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
-      viewRoom.onDropItem(tileView);
+      viewRoom.onDropItem(tileView);//SOEF
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload(), true);
       refactorNotifyButton();

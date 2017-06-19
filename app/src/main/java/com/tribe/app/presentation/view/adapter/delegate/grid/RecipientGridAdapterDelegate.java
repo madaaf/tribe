@@ -53,7 +53,7 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
   @Override public void onBindViewHolder(@NonNull List<Recipient> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     RecipientGridViewHolder vh = (RecipientGridViewHolder) holder;
-    Recipient recipient = items.get(position);//SOEF
+    Recipient recipient = items.get(position);
     vh.viewTile.setInfo(recipient);
     vh.viewTile.setBackground(position);
   }
