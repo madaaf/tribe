@@ -41,17 +41,17 @@ public class CallRouletteOverlayView extends FrameLayout {
 
   public CallRouletteOverlayView(Context context) {
     super(context);
-    init();
+     //init();
   }
 
   public CallRouletteOverlayView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init();
+   // init();
   }
 
   public CallRouletteOverlayView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    init();
+    //init();
   }
 
   private void init() {

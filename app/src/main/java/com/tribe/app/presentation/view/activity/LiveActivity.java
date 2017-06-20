@@ -436,6 +436,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initCallRouletteService() {
     Timber.e("SOEF SOURCE CALL COURLETTE");
+    viewLive.setSourceLive(live.getSource());
     startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
     livePresenter.randomRoomAssigned();
   }

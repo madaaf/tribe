@@ -3,11 +3,23 @@
 
   <FrameLayout
       android:id="@+id/diceView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_width="80dp"
+      android:layout_height="80dp"
       android:layout_gravity="center"
       android:layout_margin="5dp"
+      android:clickable="false"
       android:background="@drawable/shape_dice"
+      android:gravity="center"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtNext"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:gravity="center"
+      android:text="Next!"
+      style="@style/Title.2.Black"
       />
 
   <FrameLayout

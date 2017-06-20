@@ -25,10 +25,13 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
 import javax.inject.Inject;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 public class LiveRoomView extends FrameLayout {
 
@@ -70,6 +73,12 @@ public class LiveRoomView extends FrameLayout {
   public LiveRoomView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init();
+  }
+
+  public void setSource(@LiveActivity.Source String source) {
+    if (source.equals(SOURCE_CALL_ROULETTE)) {
+      setDiceAnimation();
+    }
   }
 
   private void init() {
@@ -175,6 +184,7 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
+    setNextDiceAnimation();
     setScreenSize(0);
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
     setViewsOrder();
@@ -293,17 +303,15 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
+  private void setNextDiceAnimation() {
+    diceView.setNextAnimation();
+  }
+
   private void setDiceAnimation() {
     diceView.setScaleX(0);
     diceView.setScaleY(0);
     diceView.setVisibility(VISIBLE);
     diceView.animate().scaleX(1).scaleY(1).setDuration(1000).start();
-/*    LayoutInflater inflater =
-        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.native_dialogs_container, this, true);*/
-/*    LayoutInflater factory = LayoutInflater.from(getContext());
-    View myView = factory.inflate(R.layout.native_dialogs_container, null);
-    cardView.addView(myView);*/
   }
 
   private void setScreenSize(int openInviteWidth) {

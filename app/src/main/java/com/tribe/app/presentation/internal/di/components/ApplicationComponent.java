@@ -95,6 +95,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
@@ -149,6 +150,8 @@ public interface ApplicationComponent {
   void inject(TopBarContainer topBarContainer);
 
   void inject(TopBarView topBarView);
+
+  void inject(DiceView diceView);
 
   void inject(VisualizerView visualizerView);
 

@@ -36,6 +36,7 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Degrees;
@@ -205,6 +206,10 @@ public class LiveView extends FrameLayout {
 
   public double getDuration() {
     return duration;
+  }
+
+  public void setSourceLive(@LiveActivity.Source String source) {
+    viewRoom.setSource(source);
   }
 
   public void hideGamesBtn() {

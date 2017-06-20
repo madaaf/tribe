@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,10 +17,14 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * Created by madaaflak on 16/06/2017.
@@ -32,8 +37,11 @@ public class DiceView extends FrameLayout {
   private final static int STEP6_DURATION = 0;
   private final static int NB_VIEWS = 6;
 
+  @Inject ScreenUtils screenUtils;
+
   @BindView(R.id.diceView) FrameLayout dice;
   @BindView(R.id.dicebg) FrameLayout dicebg;
+  @BindView(R.id.txtNext) TextViewFont txtNext;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -42,6 +50,7 @@ public class DiceView extends FrameLayout {
   private int dotsMargin;
   private List<View> viewDots = new ArrayList<>();
   private int unit;
+  private int rotationUnit = 90;
 
   Drawable[] drawablesDots = new Drawable[] {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot1),
@@ -66,11 +75,14 @@ public class DiceView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_dice, this, true);
     unbinder = ButterKnife.bind(this);
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        sizeDot = (int) (0.15 * getWidth());
+        sizeDot = (int) (0.15 * dice.getWidth());
         dotsMargin = (int) (sizeDot / 9.75);
         unit = (int) (sizeDot * 1.18);
 
@@ -105,7 +117,7 @@ public class DiceView extends FrameLayout {
     }
   }
 
-  private void step6Anim() {
+  private void step6Anim(boolean isRecursive) {
     viewDots.get(0)
         .animate()
         .translationX(-unit)
@@ -184,6 +196,7 @@ public class DiceView extends FrameLayout {
         .setListener(null)
         .start();
 
+    if (!isRecursive) return;
     new Handler().postDelayed(() -> {
       dice.animate()
           .rotation(getRotationValue())
@@ -198,8 +211,15 @@ public class DiceView extends FrameLayout {
 
   private int getRotationValue() {
     int rotationDelay = ((int) dice.getRotation()) % 90;
-    int fixed = ((int) dice.getRotation() - rotationDelay + 90);
-    return fixed;
+    return ((int) dice.getRotation() - rotationDelay + rotationUnit);
+  }
+
+  private void stopRotation() {
+    rotationUnit = 0;
+  }
+
+  private void resetTotation() {
+    rotationUnit = 90;
   }
 
   private void animateDots() {
@@ -342,7 +362,7 @@ public class DiceView extends FrameLayout {
                                          */
 
                                         resetDotsStates();
-                                        new Handler().postDelayed(this::step6Anim, 1000);
+                                        new Handler().postDelayed(this::animateDots, 1000);
                                       })
                                       .setListener(null)
                                       .start();
@@ -359,6 +379,25 @@ public class DiceView extends FrameLayout {
               .setListener(null)
               .start();
         });
+  }
+
+  public void setNextAnimation() {
+    stopRotation();
+    resetDotsStates();
+    dice.animate().scaleX((float) 2).scaleY(1).setDuration(500).withStartAction(() -> {
+      dicebg.animate().translationX(-screenUtils.dpToPx(30)).start();
+      txtNext.animate().alpha(1).translationX(screenUtils.dpToPx(30)).start();
+      new Handler().postDelayed(() -> step6Anim(false), 500);
+      GradientDrawable drawable = (GradientDrawable) dice.getBackground();
+      drawable.setCornerRadius(screenUtils.dpToPx(10));
+/*      Drawable drawable = dice.getBackground();
+      drawable.setCornerRadius(10f);*/
+    }).start();
+  }
+
+  @OnClick(R.id.diceView) public void onNextClick() {
+    resetDotsStates();
+    new Handler().postDelayed(this::animateDots, 1000);
   }
 
   public void setBackgroundDiceView(Drawable bg) {
