@@ -24,6 +24,8 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static android.R.attr.orientation;
+
 /**
  * Created by tiago on 13/01/2017.
  */
@@ -45,7 +47,7 @@ public class Room {
       MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE,
       MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_LOCAL_SWITCH_MODE,
       MESSAGE_REMOTE_SWITCH_MODE, MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED,
-      MESSAGE_INVITE_REMOVED
+      MESSAGE_INVITE_REMOVED, MESSAGE_ROLL_THE_DICE
   }) public @interface WebSocketMessageType {
   }
 
@@ -63,6 +65,7 @@ public class Room {
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
+  public static final String MESSAGE_ROLL_THE_DICE = "rollTheDice";
   public static final String MESSAGE_GAME = "game";
 
   private WebSocketConnection webSocketConnection;
@@ -79,6 +82,7 @@ public class Room {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
+  private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerUpdated = PublishSubject.create();
@@ -125,6 +129,10 @@ public class Room {
         sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
       }
     }).subscribe());
+
+    persistentSubscriptions.add(jsonToModel.onRollTheDice().doOnNext(s -> {
+      onRollTheDice.onNext("ok soef");
+    }).subscribe());//SOEF
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -222,6 +230,13 @@ public class Room {
 
           jsonToModel.convert(message);
         }));
+  }
+
+  public void rollTheDice(String userId) {//SOEF
+    Timber.d("roll the dice");
+    if (webSocketConnection == null) return;
+    webRTCClient.initSubscriptions();
+    //webSocketConnection.send(getDicePayload(user).toString());
   }
 
   public void joinRoom() {
@@ -354,6 +369,7 @@ public class Room {
     }
   }
 
+
   private JSONObject getJoinPayload(String roomId, String tokenId, int orientation,
       boolean frontFacing) {
     JSONObject a = new JSONObject();
@@ -442,6 +458,10 @@ public class Room {
 
   public Observable<TribeJoinRoom> onJoined() {
     return onJoined;
+  }
+
+  public Observable<String> onRollTheDice() {
+    return onRollTheDice;
   }
 
   public Observable<String> onRoomStateChanged() {

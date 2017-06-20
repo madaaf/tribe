@@ -34,5 +34,5 @@ import rx.Observable;
 
   Observable<String> getRandomRoomAssignedValue();
 
-  void putRandomRoomAssigned(String s);
+  void putRandomRoomAssigned(String assignedRoomId);
 }

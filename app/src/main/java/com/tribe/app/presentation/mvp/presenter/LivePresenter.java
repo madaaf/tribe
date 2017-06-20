@@ -53,6 +53,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private FriendshipListSubscriber diskFriendListSubscriber;
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
   private CreateFriendshipSubscriber createFriendshipSubscriber;
+  private RandomRoomAssignedSubscriber randomRoomAssignedSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
@@ -145,6 +146,12 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     Timber.d("joinRoom");
     joinRoom.setup(!live.isGroup() ? live.getId() : live.getSubId(), live.isGroup(),
         live.getSessionId(), live.getLinkId());
+    joinRoom.execute(new JoinRoomSubscriber());
+  }
+
+  public void joinAssignedRoom(String roomId) {
+    Timber.d("joinRoom");
+    joinRoom.setup(null, false, roomId, null);
     joinRoom.execute(new JoinRoomSubscriber());
   }
 
@@ -262,6 +269,20 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
   }
 
+  private final class RandomRoomAssignedSubscriber extends DefaultSubscriber<String> {
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(String roomId) {
+      //homeGridView.renderContactsOnApp(contactList);
+      liveMVPView.randomRoomAssignedSubscriber(roomId);
+    }
+  }
+
   private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {
 
     @Override public void onCompleted() {
@@ -287,6 +308,10 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void randomRoomAssigned() {
-    randomRoomAssigned.execute(new DefaultSubscriber());
+    if (randomRoomAssignedSubscriber != null) {
+      randomRoomAssignedSubscriber.unsubscribe();
+    }
+    randomRoomAssignedSubscriber = new RandomRoomAssignedSubscriber();
+    randomRoomAssigned.execute(randomRoomAssignedSubscriber);
   }
 }

@@ -150,7 +150,8 @@ import timber.log.Timber;
                   entry.getValue().getAsJsonObject().get("id").getAsString());
             } else if (entry.getKey().contains(WSService.RANDOM_ROOM_ASSIGNED)) {
               Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
-              onRandomRoomAssigned.onNext(entry.getValue().getAsJsonObject().get("id").getAsString());
+              onRandomRoomAssigned.onNext(
+                  entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());
             }
           }
         }
@@ -177,7 +178,6 @@ import timber.log.Timber;
   public Observable<String> onAddedOnline() {
     return onAddedOnline;
   }
-
 
   public Observable<String> onRandomRoomAssigned() {
     return onRandomRoomAssigned;

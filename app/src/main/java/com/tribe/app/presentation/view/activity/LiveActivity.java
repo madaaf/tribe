@@ -30,6 +30,7 @@ import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
@@ -411,8 +412,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
           //SOEF
-          Timber.e("SOEF SOURCE CALL COURLETTE");
-          //livePresenter.randomRoomAssigned();
+          initCallRouletteService();
         }
 
         if (live.isGroup()) {
@@ -432,6 +432,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         finish();
       }
     }));
+  }
+
+  private void initCallRouletteService() {
+    Timber.e("SOEF SOURCE CALL COURLETTE");
+    startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
+    livePresenter.randomRoomAssigned();
+  }
+
+  private void stopCallRouletteService() {
+    Intent i = new Intent(this, WSService.class);
+    stopService(i);
   }
 
   private void initResources() {
@@ -497,6 +508,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initSubscriptions() {
+
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
         viewLive.onInvitesChanged().startWith(new HashMap<>()),
@@ -536,7 +548,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
-      joinRoom();
+      if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) joinRoom();
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
@@ -561,8 +573,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           invite(recipient.getSubId());//SOEF
           Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getId());
-          //livePresenter.roomAcceptRandom(live.getId());
-          livePresenter.randomRoomAssigned();
+          livePresenter.roomAcceptRandom(live.getId());
         }));
 
     subscriptions.add(
@@ -910,6 +921,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
     onUpdateFriendshipList.onNext(friendshipList);
+  }
+
+  @Override public void randomRoomAssignedSubscriber(String roomId) {
+    Timber.e("SOEF ASSIGNED " + roomId);
+    live.setSessionId(roomId);
+    joinRoom();
+    //livePresenter.joinAssignedRoom(roomId);
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

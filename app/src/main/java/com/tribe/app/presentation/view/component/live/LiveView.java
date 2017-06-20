@@ -22,6 +22,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
@@ -160,6 +161,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
+  private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
@@ -524,6 +526,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
+    tempSubscriptions.add(room.onRollTheDice().subscribe(onRollTheDice));
+
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
@@ -613,6 +617,12 @@ public class LiveView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> Timber.d(
             "Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
+
+    tempSubscriptions.add(
+        room.onRollTheDice().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+          Timber.e("SOEF LIVE VIEW ROLL THE DICE");
+          onRollTheDice.onNext("SOEF NEXT");
+        }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
@@ -707,6 +717,10 @@ public class LiveView extends FrameLayout {
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
       viewRoom.onDropItem(tileView);//SOEF
+      if (latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+        room.sendToPeers(getUserPlayload(user), true);
+      }
+
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload(), true);
       refactorNotifyButton();
@@ -1046,6 +1060,16 @@ public class LiveView extends FrameLayout {
       array.put(invitedGuest);
     }
     jsonPut(jsonObject, Room.MESSAGE_INVITE_ADDED, array);
+    return jsonObject;
+  }
+
+  private JSONObject getUserPlayload(User user) {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray array = new JSONArray();
+
+    array.put(user);
+
+    jsonPut(jsonObject, Room.MESSAGE_ROLL_THE_DICE, array);
     return jsonObject;
   }
 

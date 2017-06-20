@@ -74,7 +74,7 @@ public class LiveCacheImpl implements LiveCache {
     return roomCallRouletteMap;
   }
 
-  @Override public void putRandomRoomAssigned(String s) {
-    roomCallRouletteMap.onNext(s);
+  @Override public void putRandomRoomAssigned(String assignedRoomId) {
+    roomCallRouletteMap.onNext(assignedRoomId);
   }
 }
