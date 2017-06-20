@@ -77,7 +77,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<User> userInfos(String userId) {
+  @Override public Observable<User> userInfos(String userId) {//SOEF
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
@@ -100,11 +100,17 @@ import rx.Observable;
         });
   }
 
+  @Override public Observable<String> randomRoomAssigned() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.callRouletteMap();
+  }
+
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }
 
-  @Override public Observable<List<Friendship>> friendships() {
+  @Override public Observable<List<Friendship>> friendships() { //SOEF
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 

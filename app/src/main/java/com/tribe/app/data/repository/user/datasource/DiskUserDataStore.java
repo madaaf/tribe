@@ -198,6 +198,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.liveMap();
   }
 
+  @Override public Observable<String> callRouletteMap() {
+    return liveCache.getRandomRoomAssignedValue();
+  }
+
   @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
       String linkId) {
     return null;

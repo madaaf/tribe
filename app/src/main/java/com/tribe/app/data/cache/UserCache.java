@@ -73,4 +73,5 @@ import rx.Observable;
   void addMembership(MembershipRealm membershipRealm);
 
   void removeMembership(String id);
+
 }

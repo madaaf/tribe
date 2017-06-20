@@ -44,6 +44,7 @@ import timber.log.Timber;
   public static final String MEMBERSHIP_REMOVED_SUFFIX = "___mr";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
+  public static final String RANDOM_ROOM_ASSIGNED = "___ra";
 
   public static Intent getCallingIntent(Context context) {
     Intent intent = new Intent(context, WSService.class);
@@ -222,6 +223,11 @@ import timber.log.Timber;
       liveCache.removeOnline(s);
     }));
 
+    persistentSubscriptions.add(jsonToModel.onRandomRoomAssigned().subscribe(s -> {
+      Timber.e("SOEF " + s);
+      liveCache.putRandomRoomAssigned(s);
+    }));
+
     persistentSubscriptions.add(jsonToModel.onUserListUpdated().subscribe(userRealmList -> {
       userCache.updateUserRealmList(userRealmList);
     }));
@@ -297,6 +303,10 @@ import timber.log.Timber;
     append(subscriptionsBuffer,
         getApplicationContext().getString(R.string.subscription_inviteRemoved,
             hash + INVITE_REMOVED_SUFFIX));
+
+    append(subscriptionsBuffer,
+        getApplicationContext().getString(R.string.subscription_randomRoomAssigned,
+            hash + RANDOM_ROOM_ASSIGNED));
 
     tempSubscriptions.add(
         Observable.zip(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {

@@ -546,8 +546,9 @@ public class HomeActivity extends BaseActivity
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
-    subscriptions.add(topBarContainer.onClickCallroulette()
-        .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE)));
+    subscriptions.add(topBarContainer.onClickCallroulette().subscribe(aVoid -> {
+      navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);//SIOEF
+    }));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
       Bundle bundle = new Bundle();
@@ -788,7 +789,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onBookLink(Boolean isBookLink) {
-    
+
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

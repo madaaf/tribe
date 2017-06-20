@@ -329,6 +329,10 @@ import rx.Observable;
     return cloudDataStore.roomAcceptRandom(roomId);
   }
 
+  @Override public Observable<String> randomRoomAssigned() {
+    return null;
+  }
+
   @Override public Observable<List<Friendship>> unblockedFriendships() {
     return null;
   }

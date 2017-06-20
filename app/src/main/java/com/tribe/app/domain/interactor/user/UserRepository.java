@@ -183,5 +183,7 @@ public interface UserRepository {
 
   Observable<Void> roomAcceptRandom(String roomId);
 
+  Observable<String> randomRoomAssigned();
+
   Observable<List<Friendship>> unblockedFriendships();
 }

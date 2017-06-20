@@ -47,6 +47,7 @@ import timber.log.Timber;
   private PublishSubject<String> onRemovedFriendship = PublishSubject.create();
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
+  private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
 
   @Inject public JsonToModel(@Named("simpleGson") Gson gson) {
     this.gson = gson;
@@ -147,6 +148,9 @@ import timber.log.Timber;
               Timber.d("Membership removed : " + entry.getValue().toString());
               onRemovedMembership.onNext(
                   entry.getValue().getAsJsonObject().get("id").getAsString());
+            } else if (entry.getKey().contains(WSService.RANDOM_ROOM_ASSIGNED)) {
+              Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
+              onRandomRoomAssigned.onNext(entry.getValue().getAsJsonObject().get("id").getAsString());
             }
           }
         }
@@ -172,6 +176,11 @@ import timber.log.Timber;
 
   public Observable<String> onAddedOnline() {
     return onAddedOnline;
+  }
+
+
+  public Observable<String> onRandomRoomAssigned() {
+    return onRandomRoomAssigned;
   }
 
   public Observable<String> onRemovedOnline() {

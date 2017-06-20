@@ -472,6 +472,10 @@
     %1$s : inviteRemoved
   </string>
 
+  <string name="subscription.randomRoomAssigned" translatable="false">
+    %1$s : randomRoomAssigned
+  </string>
+
   <string name="joinRoomFriendship" translatable="false">
     getRoomParameters(friendshipId : \"%1$s\") {
       ...RoomInfos
@@ -559,5 +563,6 @@
   <string name="roomAcceptRandom" translatable="false">
     roomAcceptRandom(roomId : \"%1$s\")
   </string>
+
 
 </resources>

@@ -409,6 +409,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         livePresenter.loadFriendshipList();
 
+        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
+          //SOEF
+          Timber.e("SOEF SOURCE CALL COURLETTE");
+          //livePresenter.randomRoomAssigned();
+        }
+
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
@@ -555,7 +561,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           invite(recipient.getSubId());//SOEF
           Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getId());
-          livePresenter.roomAcceptRandom(live.getId());
+          //livePresenter.roomAcceptRandom(live.getId());
+          livePresenter.randomRoomAssigned();
         }));
 
     subscriptions.add(
