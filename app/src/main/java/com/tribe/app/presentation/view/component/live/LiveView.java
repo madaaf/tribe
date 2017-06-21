@@ -219,7 +219,7 @@ public class LiveView extends FrameLayout {
   public void displayGamesBtn() {
     viewControlsLive.displayGamesBtn();
   }
-
+  
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 

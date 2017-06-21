@@ -42,6 +42,7 @@ public class DiceView extends FrameLayout {
   @BindView(R.id.diceView) FrameLayout dice;
   @BindView(R.id.dicebg) FrameLayout dicebg;
   @BindView(R.id.txtNext) TextViewFont txtNext;
+  @BindView(R.id.txtLabel) TextViewFont label;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -71,6 +72,76 @@ public class DiceView extends FrameLayout {
     initView(context);
   }
 
+  //////////////
+  //  PUBLIC  //
+  //////////////
+
+  public void setNextAnimation() {
+    stopRotation();
+    resetDotsStates();
+
+    new Handler().postDelayed(() -> {
+      if ((dice.getRotation() % 180) == 0) {
+        dice.animate()
+            .scaleX((float) 2)
+            .scaleY(1)
+            .setDuration(500)
+            .withStartAction(this::animateStepNextLayout)
+            .setListener(null)
+            .start();
+      } else {
+        dice.animate()
+            .scaleY((float) 2)
+            .scaleX(1)
+            .setDuration(500)
+            .withStartAction(this::animateStepNextLayout)
+            .setListener(null)
+            .start();
+      }
+    }, 100);
+  }
+
+  @OnClick(R.id.diceView) public void onNextClick() {
+    dice.setEnabled(false);
+    dice.animate().scaleX((float) 1).scaleY(1).setDuration(300).withStartAction(() -> {
+      resetDotsStates();
+      restartRotation();
+      dicebg.animate().translationX(0).setListener(null).start();
+      txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+      new Handler().postDelayed(this::animateDots, 1000);
+    });
+  }
+
+  public void setBackgroundDiceView(Drawable bg) {
+    dice.setBackground(bg);
+    animateDots();
+  }
+
+  public void setSize(int size) {
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+    params.gravity = Gravity.CENTER;
+    dice.setLayoutParams(params);
+  }
+
+  public void showLabel(boolean showLabel) {
+    if (showLabel) {
+      label.setAlpha(0);
+      label.setVisibility(VISIBLE);
+      label.animate().alpha(1).setDuration(500).setListener(null).start();
+    } else {
+      label.animate()
+          .alpha(0)
+          .setDuration(500)
+          .setListener(null)
+          .withEndAction(() -> label.setVisibility(GONE))
+          .start();
+    }
+  }
+
+  //////////////
+  //  PRIVATE //
+  //////////////
+
   private void initView(Context context) {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_dice, this, true);
@@ -78,11 +149,12 @@ public class DiceView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
+    dice.setEnabled(false);
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        sizeDot = (int) (0.15 * dice.getWidth());
+        sizeDot = (int) (0.12 * dice.getWidth());
         dotsMargin = (int) (sizeDot / 9.75);
         unit = (int) (sizeDot * 1.18);
 
@@ -196,17 +268,18 @@ public class DiceView extends FrameLayout {
         .setListener(null)
         .start();
 
-    if (!isRecursive) return;
-    new Handler().postDelayed(() -> {
-      dice.animate()
-          .rotation(getRotationValue())
-          .setDuration(DURATON_ROTATE)
-          .setInterpolator(new OvershootInterpolator())
-          .withStartAction(this::resetDotsStates)
-          .withEndAction(this::animateDots)
-          .setListener(null)
-          .start();
-    }, 1000);
+    if (isRecursive) {
+      new Handler().postDelayed(() -> {
+        dice.animate()
+            .rotation(getRotationValue())
+            .setDuration(DURATON_ROTATE)
+            .setInterpolator(new OvershootInterpolator())
+            .withStartAction(this::resetDotsStates)
+            .withEndAction(this::animateDots)
+            .setListener(null)
+            .start();
+      }, 1000);
+    }
   }
 
   private int getRotationValue() {
@@ -218,7 +291,7 @@ public class DiceView extends FrameLayout {
     rotationUnit = 0;
   }
 
-  private void resetTotation() {
+  private void restartRotation() {
     rotationUnit = 90;
   }
 
@@ -230,6 +303,7 @@ public class DiceView extends FrameLayout {
         .setStartDelay(DURATON)
         .setInterpolator(new OvershootInterpolator())
         .withStartAction(() -> {
+          if (rotationUnit == 0) return;
           /**  STEP 2
            /*  0 : [-1, -1]
            *   1 : [+1, +1]
@@ -257,11 +331,13 @@ public class DiceView extends FrameLayout {
               .start();
         })
         .withEndAction(() -> {
+          if (rotationUnit == 0) return;
           dice.animate()
               .rotation(getRotationValue())
               .setDuration(DURATON_ROTATE)
               .setInterpolator(new OvershootInterpolator())
               .withStartAction(() -> {
+                if (rotationUnit == 0) return;
                 /**  STEP 3
                  /*   0 : [+0, +0]
                  *    1 : [+1, +1]
@@ -293,12 +369,13 @@ public class DiceView extends FrameLayout {
                     .start();
               })
               .withEndAction(() -> {
+                if (rotationUnit == 0) return;
                 dice.animate()
                     .rotation(getRotationValue())
                     .setInterpolator(new OvershootInterpolator())
                     .setDuration(DURATON_ROTATE)
                     .withStartAction(() -> {
-
+                      if (rotationUnit == 0) return;
                       /**  STEP 4
                        /*   0 : [-1, +1]
                        *    1 : [+1, +1]
@@ -329,12 +406,13 @@ public class DiceView extends FrameLayout {
                           .setDuration(DURATON)
                           .setInterpolator(new BounceInterpolator())
                           .withEndAction(() -> {
+                            if (rotationUnit == 0) return;
                             dice.animate()
                                 .rotation(getRotationValue())
                                 .setInterpolator(new OvershootInterpolator())
                                 .setDuration(DURATON_ROTATE)
                                 .withStartAction(() -> {
-
+                                  if (rotationUnit == 0) return;
                                   /**  STEP 5
                                    /*   0 : [-1, +1]
                                    *    1 : [+1, +1]
@@ -353,6 +431,7 @@ public class DiceView extends FrameLayout {
                                       .setInterpolator(new BounceInterpolator())
                                       .setDuration(DURATON)
                                       .withEndAction(() -> {
+                                        if (rotationUnit == 0) return;
                                         /**  STEP 6
                                          /*   0 : [+0, +0]
                                          *    1 : [+0, +0]
@@ -362,7 +441,13 @@ public class DiceView extends FrameLayout {
                                          */
 
                                         resetDotsStates();
+                                     /*   if (pauseAnim) {
+
+                                        } else {
+
+                                        }*/
                                         new Handler().postDelayed(this::animateDots, 1000);
+                                        //new Handler().postDelayed(() -> step6Anim(true), 1000);
                                       })
                                       .setListener(null)
                                       .start();
@@ -381,28 +466,16 @@ public class DiceView extends FrameLayout {
         });
   }
 
-  public void setNextAnimation() {
-    stopRotation();
-    resetDotsStates();
-    dice.animate().scaleX((float) 2).scaleY(1).setDuration(500).withStartAction(() -> {
-      dicebg.animate().translationX(-screenUtils.dpToPx(30)).start();
-      txtNext.animate().alpha(1).translationX(screenUtils.dpToPx(30)).start();
-      new Handler().postDelayed(() -> step6Anim(false), 500);
-      GradientDrawable drawable = (GradientDrawable) dice.getBackground();
-      drawable.setCornerRadius(screenUtils.dpToPx(10));
-/*      Drawable drawable = dice.getBackground();
-      drawable.setCornerRadius(10f);*/
-    }).start();
-  }
-
-  @OnClick(R.id.diceView) public void onNextClick() {
-    resetDotsStates();
-    new Handler().postDelayed(this::animateDots, 1000);
-  }
-
-  public void setBackgroundDiceView(Drawable bg) {
-    dice.setBackground(bg);
-    animateDots();
+  private void animateStepNextLayout() {
+    dicebg.animate().translationX(-screenUtils.dpToPx(30)).setListener(null).start();
+    txtNext.animate().alpha(1).translationX(screenUtils.dpToPx(50)).setListener(null).start();
+    new Handler().postDelayed(() -> {
+      step6Anim(false);
+      showLabel(false);
+    }, 500);
+    GradientDrawable drawable = (GradientDrawable) dice.getBackground();
+    drawable.setCornerRadius(screenUtils.dpToPx(15));
+    dice.setEnabled(true);
   }
 
   private void initDots() {

@@ -89,6 +89,8 @@ public class LiveRoomView extends FrameLayout {
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
+    diceView.setSize(screenUtils.dpToPx(70));
+    diceView.showLabel(true);
 
     LayoutTransition transition = new LayoutTransition();
     transition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
