@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -111,7 +110,7 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.imgIndInvite) ImageView imgIndInvite;
 
-  @Nullable @BindView(R.id.diceLayout) DiceView diceView;
+  //@Nullable @BindView(R.id.diceLayout) DiceView diceView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -197,11 +196,6 @@ public class TileView extends SquareCardView {
     setCardElevation(0);
     ViewCompat.setElevation(this, 0);
     setRadius(0);
-
-    if (diceView != null) {
-      diceView.setBackgroundDiceView(
-          ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white_corner));
-    }
 
     if (!isDragging) {
       if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {

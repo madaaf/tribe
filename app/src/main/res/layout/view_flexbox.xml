@@ -33,12 +33,13 @@
 
 
     <com.tribe.app.presentation.view.widget.DiceView
-        android:id="@+id/diceLayout"
+        android:id="@+id/diceLayoutRoomView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
         android:visibility="invisible"
+        app:diceType="roomView"
         />
 
 

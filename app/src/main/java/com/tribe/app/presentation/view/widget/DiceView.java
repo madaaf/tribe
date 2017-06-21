@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
@@ -25,12 +26,17 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 16/06/2017.
  */
 
 public class DiceView extends FrameLayout {
+
+  public final static int TYPE_FROM_GRID = 0;
+  public final static int TYPE_FROM_TILE = 1;
+  public final static int TYPE_FROM_ROOM = 2;
 
   private final static int DURATON = 900;
   private final static int DURATON_ROTATE = 300;
@@ -48,11 +54,8 @@ public class DiceView extends FrameLayout {
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private int sizeDot;
-  private int dotsMargin;
+  private int sizeDot, dotsMargin, type, unit, rotationUnit = 90;
   private List<View> viewDots = new ArrayList<>();
-  private int unit;
-  private int rotationUnit = 90;
 
   Drawable[] drawablesDots = new Drawable[] {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot1),
@@ -70,6 +73,11 @@ public class DiceView extends FrameLayout {
 
   public DiceView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DiceView);
+    type = a.getInt(R.styleable.DiceView_diceType, TYPE_FROM_GRID);
+    a.recycle();
+
     initView(context);
   }
 
@@ -126,32 +134,6 @@ public class DiceView extends FrameLayout {
     startDiceAnimation();
   }
 
-  public void setBackgroundDiceView(Drawable bg) {
-    dice.setBackground(bg);
-    animateDots();
-  }
-
-  public void setSize(int size) {
-    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
-    params.gravity = Gravity.CENTER;
-    dice.setLayoutParams(params);
-  }
-
-  public void showLabel(boolean showLabel) {
-    if (showLabel) {
-      label.setAlpha(0);
-      label.setVisibility(VISIBLE);
-      label.animate().alpha(1).setDuration(500).setListener(null).start();
-    } else {
-      label.animate()
-          .alpha(0)
-          .setDuration(500)
-          .setListener(null)
-          .withEndAction(() -> label.setVisibility(GONE))
-          .start();
-    }
-  }
-
   //////////////
   //  PRIVATE //
   //////////////
@@ -162,6 +144,27 @@ public class DiceView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    switch (type) {
+      case TYPE_FROM_GRID:
+        bgView.setVisibility(GONE);
+        dice.setBackground(
+            ContextCompat.getDrawable(getContext(), R.drawable.shape_dice_with_border));
+        Timber.d("dice from grid");
+        break;
+      case TYPE_FROM_TILE:
+        bgView.setVisibility(GONE);
+        dice.setBackground(
+            ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white_corner));
+        Timber.d("dice from tile view");
+        break;
+      case TYPE_FROM_ROOM:
+        bgView.setVisibility(VISIBLE);
+        setDiceSize(screenUtils.dpToPx(70));
+        showLabel(true);
+        Timber.d("dice from room");
+        break;
+    }
 
     dice.setEnabled(false);
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -176,6 +179,27 @@ public class DiceView extends FrameLayout {
         startDiceAnimation();
       }
     });
+  }
+
+  private void setDiceSize(int size) {
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+    params.gravity = Gravity.CENTER;
+    dice.setLayoutParams(params);
+  }
+
+  private void showLabel(boolean showLabel) {
+    if (showLabel) {
+      label.setAlpha(0);
+      label.setVisibility(VISIBLE);
+      label.animate().alpha(1).setDuration(500).setListener(null).start();
+    } else {
+      label.animate()
+          .alpha(0)
+          .setDuration(500)
+          .setListener(null)
+          .withEndAction(() -> label.setVisibility(GONE))
+          .start();
+    }
   }
 
   private void setAlphaBackground(float alpha) {

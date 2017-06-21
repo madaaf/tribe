@@ -18,6 +18,7 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="SOEF TYPE_" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No CAMERA JNI" />
     <option name="TOOL_WINDOW_REGEXP_FILTER" value="false" />
@@ -25,9 +26,16 @@
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_dice.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_dice.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_flexbox.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_flexbox.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_tile_call_roulette.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_tile_call_roulette.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_top_bar.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_top_bar.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/values/attrs.xml" afterPath="$PROJECT_DIR$/src/main/res/values/attrs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/values/colors.xml" afterPath="$PROJECT_DIR$/src/main/res/values/colors.xml" />
     </list>
     <ignored path="app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -62,76 +70,67 @@
       <file leaf-file-name="DiceView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="37">
-              <caret line="32" column="17" selection-start-line="32" selection-start-column="17" selection-end-line="32" selection-end-column="17" />
+            <state relative-caret-position="165">
+              <caret line="142" column="35" selection-start-line="142" selection-start-column="35" selection-end-line="142" selection-end-column="35" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#setNextAnimation#0;class#DiceView#0" expanded="false" />
-                <element signature="method#setBackgroundDiceView#0;class#DiceView#0" expanded="false" />
-                <element signature="method#setSize#0;class#DiceView#0" expanded="false" />
                 <element signature="method#animateDots#0;class#DiceView#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="view_live_call_roulette.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_live_call_roulette.xml">
-          <provider editor-type-id="android-designer2">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="44" selection-start-line="12" selection-start-column="44" selection-end-line="12" selection-end-column="44" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CallRouletteOverlayView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/CallRouletteOverlayView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1110">
-              <caret line="93" column="14" selection-start-line="93" selection-start-column="14" selection-end-line="93" selection-end-column="14" />
-              <folding>
-                <element signature="e#3246#3475#0" expanded="true" />
-                <element signature="e#3474#3475#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LiveLocalView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveLocalView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="259" column="33" selection-start-line="259" selection-start-column="33" selection-end-line="259" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="view_dice.xml" pinned="false" current-in-tab="false">
+      <file leaf-file-name="view_dice.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_dice.xml">
           <provider editor-type-id="android-designer2">
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="42" column="28" selection-start-line="42" selection-start-column="28" selection-end-line="42" selection-end-column="28" />
-              <folding>
-                <element signature="e#1086#1121#0" expanded="true" />
-                <element signature="e#1465#1510#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="45">
+              <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LiveRoomView.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java">
+      <file leaf-file-name="View.java" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-25/android/view/View.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="93" column="12" selection-start-line="93" selection-start-column="4" selection-end-line="93" selection-end-column="12" />
+            <state relative-caret-position="269">
+              <caret line="17856" column="14" selection-start-line="17856" selection-start-column="14" selection-end-line="17856" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TopBarView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="88" column="26" selection-start-line="88" selection-start-column="26" selection-end-line="88" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="view_top_bar.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_top_bar.xml">
+          <provider editor-type-id="android-designer2">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="590">
+              <caret line="175" column="0" selection-start-line="175" selection-start-column="0" selection-end-line="175" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TileView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="112" column="4" selection-start-line="112" selection-start-column="4" selection-end-line="112" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -143,8 +142,18 @@
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="403">
-              <caret line="35" column="35" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="35" />
+            <state relative-caret-position="319">
+              <caret line="35" column="43" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="43" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LiveRoomView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="301">
+              <caret line="137" column="4" selection-start-line="137" selection-start-column="4" selection-end-line="137" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -153,9 +162,11 @@
       <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6195">
-              <caret line="609" column="0" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
+            <state relative-caret-position="269">
+              <caret line="213" column="19" selection-start-line="213" selection-start-column="19" selection-end-line="213" selection-end-column="19" />
               <folding>
+                <element signature="e#8381#8382#0" expanded="true" />
+                <element signature="e#8417#8418#0" expanded="true" />
                 <element signature="method#initSubscriptions#0;class#LiveView#0" expanded="false" />
               </folding>
             </state>
@@ -6144,16 +6155,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/res/anim/dice_anim2.xml" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/activity_home.xml" />
         <option value="$PROJECT_DIR$/src/main/res/drawable/shape_rect_white_corner.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/view_tile_call_roulette.xml" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/view_top_bar.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/grid/CallRouletteAdapterDelegate.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/grid/EmptyGridAdapterDelegate.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/grid/RecipientGridAdapterDelegate.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/TribeApi.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/UserDataStore.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/CloudUserDataStore.java" />
@@ -6187,14 +6192,20 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/HomeActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarContainer.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/view_live_call_roulette.xml" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/view_flexbox.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java" />
         <option value="$PROJECT_DIR$/src/main/res/drawable/shape_dice.xml" />
         <option value="$PROJECT_DIR$/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/view_dice.xml" />
+        <option value="$PROJECT_DIR$/src/main/res/layout/view_top_bar.xml" />
+        <option value="$PROJECT_DIR$/src/main/res/layout/view_tile_call_roulette.xml" />
+        <option value="$PROJECT_DIR$/src/main/res/values/attrs.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java" />
+        <option value="$PROJECT_DIR$/src/main/res/layout/view_flexbox.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" />
+        <option value="$PROJECT_DIR$/src/main/res/layout/view_dice.xml" />
+        <option value="$PROJECT_DIR$/src/main/res/values/colors.xml" />
       </list>
     </option>
   </component>
@@ -6618,8 +6629,8 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27459955" sideWeight="0.502834" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25732216" sideWeight="0.49716598" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31485355" sideWeight="0.49716598" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27045178" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32837528" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45995423" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -6627,7 +6638,7 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27688786" sideWeight="0.502442" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11660562" sideWeight="0.43740794" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24267782" sideWeight="0.49554655" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24267782" sideWeight="0.49554655" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21672474" sideWeight="0.47420964" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
@@ -6814,13 +6825,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java</url>
-          <line>139</line>
-          <properties />
-          <option name="timeStamp" value="946" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java</url>
-          <line>135</line>
+          <line>126</line>
           <properties />
           <option name="timeStamp" value="950" />
         </line-breakpoint>
@@ -6832,13 +6837,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java</url>
-          <line>111</line>
+          <line>119</line>
           <properties />
           <option name="timeStamp" value="971" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java</url>
-          <line>173</line>
+          <line>178</line>
           <properties />
           <option name="timeStamp" value="977" />
         </line-breakpoint>
@@ -6864,7 +6869,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="983" />
+      <option name="time" value="984" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="app">
@@ -6964,35 +6969,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="282" column="53" selection-start-line="282" selection-start-column="53" selection-end-line="282" selection-end-column="53" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCache.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="473">
-          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/HomeGridPresenter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="113">
-          <caret line="351" column="40" selection-start-line="351" selection-start-column="40" selection-end-line="351" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="36" column="8" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/JoinRoom.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -7054,17 +7030,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_tile_call_roulette.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="42" selection-start-line="6" selection-start-column="42" selection-end-line="6" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/ResizeAnimation.java" />
     <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-25/android/view/animation/ScaleAnimation.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -7077,6 +7042,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="7" column="8" selection-start-line="7" selection-start-column="8" selection-end-line="7" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7136,6 +7102,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="207">
           <caret line="220" column="23" selection-start-line="220" selection-start-column="23" selection-end-line="220" selection-end-column="23" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7165,6 +7132,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="8" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7172,13 +7140,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
           <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="51" column="20" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
           <folding />
         </state>
       </provider>
@@ -7218,14 +7179,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="307" column="0" selection-start-line="307" selection-start-column="0" selection-end-line="307" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/drawable/shape_oval_white.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -7249,10 +7202,10 @@
         <state relative-caret-position="208">
           <caret line="814" column="32" selection-start-line="814" selection-start-column="32" selection-end-line="814" selection-end-column="32" />
           <folding>
-            <element signature="e#19603#19604#0" expanded="true" />
-            <element signature="e#19633#19634#0" expanded="true" />
-            <element signature="e#25167#25168#0" expanded="true" />
-            <element signature="e#25191#25192#0" expanded="true" />
+            <element signature="e#19603#19604#0" expanded="false" />
+            <element signature="e#19633#19634#0" expanded="false" />
+            <element signature="e#25167#25168#0" expanded="false" />
+            <element signature="e#25191#25192#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -7265,22 +7218,6 @@
             <element signature="e#18700#18701#0" expanded="false" />
             <element signature="e#18734#18735#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1755">
-          <caret line="201" column="25" selection-start-line="201" selection-start-column="25" selection-end-line="201" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/values/colors.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="43" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7319,30 +7256,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_dice.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="28" selection-start-line="42" selection-start-column="28" selection-end-line="42" selection-end-column="28" />
-          <folding>
-            <element signature="e#1086#1121#0" expanded="true" />
-            <element signature="e#1465#1510#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6195">
-          <caret line="609" column="0" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
-          <folding>
-            <element signature="method#initSubscriptions#0;class#LiveView#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_live_call_roulette.xml">
       <provider editor-type-id="android-designer2">
         <state />
@@ -7362,16 +7275,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/CallRouletteOverlayView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="37">
-          <caret line="32" column="17" selection-start-line="32" selection-start-column="17" selection-end-line="32" selection-end-column="17" />
+        <state relative-caret-position="1110">
+          <caret line="93" column="14" selection-start-line="93" selection-start-column="14" selection-end-line="93" selection-end-column="14" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#setNextAnimation#0;class#DiceView#0" expanded="false" />
-            <element signature="method#setBackgroundDiceView#0;class#DiceView#0" expanded="false" />
-            <element signature="method#setSize#0;class#DiceView#0" expanded="false" />
-            <element signature="method#animateDots#0;class#DiceView#0" expanded="false" />
+            <element signature="e#3246#3475#0" expanded="false" />
+            <element signature="e#3474#3475#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_tile_call_roulette.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="8" selection-start-line="14" selection-start-column="8" selection-end-line="14" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/layout/item_user_invite.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="14" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="476" column="31" selection-start-line="476" selection-start-column="31" selection-end-line="476" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/values/attrs.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-25/android/view/View.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="17856" column="14" selection-start-line="17856" selection-start-column="14" selection-end-line="17856" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TileView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="112" column="4" selection-start-line="112" selection-start-column="4" selection-end-line="112" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/TopBarView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="88" column="26" selection-start-line="88" selection-start-column="26" selection-end-line="88" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="213" column="19" selection-start-line="213" selection-start-column="19" selection-end-line="213" selection-end-column="19" />
+          <folding>
+            <element signature="e#8381#8382#0" expanded="true" />
+            <element signature="e#8417#8418#0" expanded="true" />
+            <element signature="method#initSubscriptions#0;class#LiveView#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -7381,27 +7365,57 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="35" column="35" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="35" />
+        <state relative-caret-position="319">
+          <caret line="35" column="43" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="43" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/CallRouletteOverlayView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1110">
-          <caret line="93" column="14" selection-start-line="93" selection-start-column="14" selection-end-line="93" selection-end-column="14" />
-          <folding>
-            <element signature="e#3246#3475#0" expanded="true" />
-            <element signature="e#3474#3475#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="93" column="12" selection-start-line="93" selection-start-column="4" selection-end-line="93" selection-end-column="12" />
+        <state relative-caret-position="301">
+          <caret line="137" column="4" selection-start-line="137" selection-start-column="4" selection-end-line="137" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_top_bar.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="590">
+          <caret line="175" column="0" selection-start-line="175" selection-start-column="0" selection-end-line="175" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="142" column="35" selection-start-line="142" selection-start-column="35" selection-end-line="142" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#animateDots#0;class#DiceView#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/values/colors.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_dice.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
           <folding />
         </state>
       </provider>

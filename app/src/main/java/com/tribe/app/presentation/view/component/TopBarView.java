@@ -88,7 +88,7 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.callRoulette) LinearLayout callRouletteLayout;
 
-  @BindView(R.id.diceLayout) DiceView diceView;
+  //@BindView(R.id.diceLayout) DiceView diceView;
 
   // VARIABLES
   private float startX, startY = 0;
@@ -164,8 +164,7 @@ public class TopBarView extends FrameLayout {
     imgClose.setAlpha(1);
 
     editTextSearch.setEnabled(false);
-    diceView.setBackgroundDiceView(
-        ContextCompat.getDrawable(getContext(), R.drawable.shape_dice_with_border));
+
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
       @Override public void onGlobalLayout() {

@@ -44,6 +44,16 @@
     </attr>
   </declare-styleable>
 
+
+  <declare-styleable name="DiceView">
+    <attr format="enum" name="diceType">
+      <enum name="homeGrid" value="0" />
+      <enum name="tileView" value="1" />
+      <enum name="roomView" value="2" />
+    </attr>
+  </declare-styleable>
+
+
   <declare-styleable name="PictoVisualizerView">
     <attr format="integer" name="picto" />
   </declare-styleable>

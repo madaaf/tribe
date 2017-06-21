@@ -64,7 +64,7 @@ public class LiveRoomView extends FrameLayout {
 
   @BindView(R.id.cardview) CardView cardView;
 
-  @BindView(R.id.diceLayout) DiceView diceView;
+  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   public LiveRoomView(Context context) {
     super(context);
@@ -76,13 +76,6 @@ public class LiveRoomView extends FrameLayout {
     init();
   }
 
-  public void setSource(@LiveActivity.Source String source) {
-    this.source = source;
-    if (source.equals(SOURCE_CALL_ROULETTE)) {
-      setDiceAnimation();
-    }
-  }
-
   private void init() {
     type = DEFAULT_TYPE;
     initDependencyInjector();
@@ -91,8 +84,6 @@ public class LiveRoomView extends FrameLayout {
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_flexbox, this);
     unbinder = ButterKnife.bind(this);
-    diceView.setSize(screenUtils.dpToPx(70));
-    diceView.showLabel(true);
 
     LayoutTransition transition = new LayoutTransition();
     transition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
@@ -138,6 +129,20 @@ public class LiveRoomView extends FrameLayout {
     if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
       removeView(lastViewAdded);
       setDiceAnimation();//SOEF
+    }
+  }
+
+  private void setDiceAnimation() {
+    diceView.setScaleX(0);
+    diceView.setScaleY(0);
+    diceView.setVisibility(VISIBLE);
+    diceView.animate().scaleX(1).scaleY(1).setDuration(1000).start();
+  }
+
+  public void setSource(@LiveActivity.Source String source) {
+    this.source = source;
+    if (source.equals(SOURCE_CALL_ROULETTE)) {
+      diceView.setVisibility(VISIBLE);//SOEF
     }
   }
 
@@ -194,8 +199,7 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
-      //setNextDiceAnimation();//SOEF
+    if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {//SOEF
       diceView.setNextAnimation();
     }
     setScreenSize(0);
@@ -314,13 +318,6 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
-  }
-
-  private void setDiceAnimation() {
-    diceView.setScaleX(0);
-    diceView.setScaleY(0);
-    diceView.setVisibility(VISIBLE);
-    diceView.animate().scaleX(1).scaleY(1).setDuration(1000).start();
   }
 
   private void setScreenSize(int openInviteWidth) {
