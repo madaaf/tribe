@@ -156,7 +156,6 @@
   <declare-styleable name="LiveShareOverlayView">
     <attr format="enum" name="newLiveType">
       <enum name="newCall" value="0" />
-      <enum name="callRoulette" value="1" />
     </attr>
   </declare-styleable>
 

@@ -57,8 +57,6 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewShareOverlay) LiveShareOverlayView viewShareOverlay;
 
-  @BindView(R.id.viewCallRouletteOverlay) CallRouletteOverlayView viewCallRouletteOverlay;
-
   @BindView(R.id.cardViewStreamLayout) CardView cardViewStreamLayout;
 
   private LocalPeerView viewPeerLocal;
@@ -246,21 +244,24 @@ public class LiveLocalView extends FrameLayout {
   }
 
   public void hideShareOverlay() {
-    viewCallRouletteOverlay.hide();
 
     /*if (source.equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
       viewCallRouletteOverlay.show();
     } else {
       viewShareOverlay.show();
     }*/
+
+    viewShareOverlay.hide();
   }
 
   public void showShareOverlay(@LiveActivity.Source String source) {
-    if (source.equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
+   /* if (source.equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
       viewCallRouletteOverlay.show();
     } else {
-      viewShareOverlay.show();
-    }
+
+    }*/
+
+    viewShareOverlay.show(source);
   }
 
   public void dispose() {

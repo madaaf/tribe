@@ -24,7 +24,6 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
-import com.tribe.app.presentation.view.component.live.CallRouletteOverlayView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
@@ -166,8 +165,6 @@ import dagger.Component;
   void inject(LiveWaveView liveWaveView);
 
   void inject(LiveShareOverlayView liveShareOverlayView);
-
-  void inject(CallRouletteOverlayView callRouletteOverlayView);
 
   void inject(ErrorNotificationView errorNotificationView);
 

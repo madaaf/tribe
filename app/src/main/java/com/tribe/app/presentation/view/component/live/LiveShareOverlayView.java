@@ -20,6 +20,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.Observable;
@@ -68,7 +69,8 @@ public class LiveShareOverlayView extends LinearLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_share_overlay, this);
     unbinder = ButterKnife.bind(this);
 
-    setBackground(ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_black40_rounded_corners));
+    setBackground(
+        ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_black40_rounded_corners));
     setOrientation(VERTICAL);
     setGravity(Gravity.CENTER);
   }
@@ -97,7 +99,7 @@ public class LiveShareOverlayView extends LinearLayout {
   // PUBLIC //
   ////////////
 
-  public void show() {
+  public void show(@LiveActivity.Source String source) {
     if (getVisibility() == View.VISIBLE) return;
 
     setAlpha(0f);
