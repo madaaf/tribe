@@ -58,6 +58,7 @@ public class LiveRoomView extends FrameLayout {
   private int heightScreen;
   private boolean isConfigurationChanged = false;
   private int heightOndropBar;
+  private @LiveActivity.Source String source;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -76,6 +77,7 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void setSource(@LiveActivity.Source String source) {
+    this.source = source;
     if (source.equals(SOURCE_CALL_ROULETTE)) {
       setDiceAnimation();
     }
@@ -130,11 +132,12 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void onDropItem(TileView tileView) {
+    // drag and drop dice item view
     LiveRowView lastViewAdded =
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
     if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
       removeView(lastViewAdded);
-      setDiceAnimation();
+      setDiceAnimation();//SOEF
     }
   }
 
@@ -186,7 +189,9 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    setNextDiceAnimation();
+    if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
+      setNextDiceAnimation();//SOEF
+    }
     setScreenSize(0);
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
     setViewsOrder();

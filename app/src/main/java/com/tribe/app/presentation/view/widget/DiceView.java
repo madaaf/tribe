@@ -98,7 +98,7 @@ public class DiceView extends FrameLayout {
             .setListener(null)
             .start();
       }
-    }, 100);
+    }, 1000);
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
@@ -165,7 +165,7 @@ public class DiceView extends FrameLayout {
   }
 
   private void resetDotsStates() {
-    for (int i = 0; i < NB_VIEWS; i++) {
+    for (int i = 0; i < viewDots.size(); i++) {
       if (i != 0) {
         viewDots.get(i)
             .animate()
@@ -268,6 +268,7 @@ public class DiceView extends FrameLayout {
         .setListener(null)
         .start();
 
+    if (rotationUnit == 0) return;
     if (isRecursive) {
       new Handler().postDelayed(() -> {
         dice.animate()
@@ -278,7 +279,7 @@ public class DiceView extends FrameLayout {
             .withEndAction(this::animateDots)
             .setListener(null)
             .start();
-      }, 1000);
+      }, 100);
     }
   }
 
@@ -297,6 +298,7 @@ public class DiceView extends FrameLayout {
 
   private void animateDots() {
     /**  STEP 1 [0, 0] **/
+    if (rotationUnit == 0) return;
     dice.animate()
         .rotation(getRotationValue())
         .setDuration(DURATON_ROTATE)
@@ -474,7 +476,7 @@ public class DiceView extends FrameLayout {
       showLabel(false);
     }, 500);
     GradientDrawable drawable = (GradientDrawable) dice.getBackground();
-    drawable.setCornerRadius(screenUtils.dpToPx(15));
+    drawable.setCornerRadius(screenUtils.dpToPx(10));
     dice.setEnabled(true);
   }
 
