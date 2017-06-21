@@ -168,6 +168,11 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.removeView(view);
     setViewsOrder();
     setConfigurationScreen();
+    if (source != null
+        && source.equals(SOURCE_CALL_ROULETTE)
+        && flexboxLayout.getChildCount() < 2) {
+      diceView.startDiceAnimation();
+    }
   }
 
   public int getRowsInLive() {
@@ -190,7 +195,8 @@ public class LiveRoomView extends FrameLayout {
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
     if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
-      setNextDiceAnimation();//SOEF
+      //setNextDiceAnimation();//SOEF
+      diceView.setNextAnimation();
     }
     setScreenSize(0);
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
@@ -308,10 +314,6 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
-  }
-
-  private void setNextDiceAnimation() {
-    diceView.setNextAnimation();
   }
 
   private void setDiceAnimation() {

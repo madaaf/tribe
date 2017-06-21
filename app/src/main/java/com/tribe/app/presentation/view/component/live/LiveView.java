@@ -75,6 +75,8 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
+
 /**
  * Created by tiago on 01/18/2017.
  */
@@ -219,7 +221,7 @@ public class LiveView extends FrameLayout {
   public void displayGamesBtn() {
     viewControlsLive.displayGamesBtn();
   }
-  
+
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 
@@ -607,7 +609,7 @@ public class LiveView extends FrameLayout {
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
 
-          if (shouldLeave()) {
+          if (shouldLeave()) {//SOEF 111
             onLeave.onNext(null);
           }
 
@@ -867,7 +869,10 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && live != null;
+    return liveRowViewMap.size() == 0
+        && liveInviteMap.size() == 0
+        && live != null
+        && !live.getSource().equals(SOURCE_CALL_ROULETTE);
   }
 
   ////////////////

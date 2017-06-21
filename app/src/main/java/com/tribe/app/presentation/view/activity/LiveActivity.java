@@ -573,8 +573,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           invite(recipient.getSubId());//SOEF
-          Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getId());
-          livePresenter.roomAcceptRandom(live.getId());
+          if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
+            Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getId());
+            livePresenter.roomAcceptRandom(live.getId());
+          }
         }));
 
     subscriptions.add(

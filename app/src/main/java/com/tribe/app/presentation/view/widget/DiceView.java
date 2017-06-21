@@ -40,9 +40,10 @@ public class DiceView extends FrameLayout {
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.diceView) FrameLayout dice;
-  @BindView(R.id.dicebg) FrameLayout dicebg;
+  @BindView(R.id.dotsContainer) FrameLayout dotsContainer;
   @BindView(R.id.txtNext) TextViewFont txtNext;
   @BindView(R.id.txtLabel) TextViewFont label;
+  @BindView(R.id.diceBgView) FrameLayout bgView;
 
   // VARIABLES
   private LayoutInflater inflater;
@@ -79,12 +80,13 @@ public class DiceView extends FrameLayout {
   public void setNextAnimation() {
     stopRotation();
     resetDotsStates();
-
+    setAlphaBackground(0f);
     new Handler().postDelayed(() -> {
       if ((dice.getRotation() % 180) == 0) {
         dice.animate()
             .scaleX((float) 2)
             .scaleY(1)
+
             .setDuration(500)
             .withStartAction(this::animateStepNextLayout)
             .setListener(null)
@@ -93,6 +95,7 @@ public class DiceView extends FrameLayout {
         dice.animate()
             .scaleY((float) 2)
             .scaleX(1)
+
             .setDuration(500)
             .withStartAction(this::animateStepNextLayout)
             .setListener(null)
@@ -101,15 +104,26 @@ public class DiceView extends FrameLayout {
     }, 1000);
   }
 
-  @OnClick(R.id.diceView) public void onNextClick() {
+  public void startDiceAnimation() {
     dice.setEnabled(false);
-    dice.animate().scaleX((float) 1).scaleY(1).setDuration(300).withStartAction(() -> {
-      resetDotsStates();
-      restartRotation();
-      dicebg.animate().translationX(0).setListener(null).start();
-      txtNext.animate().alpha(0).translationX(0).setListener(null).start();
-      new Handler().postDelayed(this::animateDots, 1000);
-    });
+    setAlphaBackground(1f);
+    dice.animate()
+        .scaleX((float) 1)
+        .scaleY(1)
+        .setDuration(300)
+        .setInterpolator(new OvershootInterpolator())
+        .withStartAction(() -> {
+          resetDotsStates();
+          restartRotation();
+          showLabel(true);
+          dotsContainer.animate().translationX(0).setListener(null).start();
+          txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+          new Handler().postDelayed(this::animateDots, 1000);
+        });
+  }
+
+  @OnClick(R.id.diceView) public void onNextClick() {
+    startDiceAnimation();
   }
 
   public void setBackgroundDiceView(Drawable bg) {
@@ -159,9 +173,14 @@ public class DiceView extends FrameLayout {
         unit = (int) (sizeDot * 1.18);
 
         initDots();
-        animateDots();
+        startDiceAnimation();
       }
     });
+  }
+
+  private void setAlphaBackground(float alpha) {
+    bgView.setAlpha(alpha - 1);
+    bgView.animate().alpha(alpha).setStartDelay(300).setDuration(500).setListener(null).start();
   }
 
   private void resetDotsStates() {
@@ -443,13 +462,7 @@ public class DiceView extends FrameLayout {
                                          */
 
                                         resetDotsStates();
-                                     /*   if (pauseAnim) {
-
-                                        } else {
-
-                                        }*/
                                         new Handler().postDelayed(this::animateDots, 1000);
-                                        //new Handler().postDelayed(() -> step6Anim(true), 1000);
                                       })
                                       .setListener(null)
                                       .start();
@@ -469,8 +482,8 @@ public class DiceView extends FrameLayout {
   }
 
   private void animateStepNextLayout() {
-    dicebg.animate().translationX(-screenUtils.dpToPx(30)).setListener(null).start();
-    txtNext.animate().alpha(1).translationX(screenUtils.dpToPx(50)).setListener(null).start();
+    dotsContainer.animate().translationX(-screenUtils.dpToPx(30)).setListener(null).start();
+    txtNext.animate().alpha(1).translationX(screenUtils.dpToPx(30)).setListener(null).start();
     new Handler().postDelayed(() -> {
       step6Anim(false);
       showLabel(false);
@@ -495,7 +508,7 @@ public class DiceView extends FrameLayout {
     }
 
     for (int i = 0; i < NB_VIEWS; i++) {
-      dicebg.addView(viewDots.get(NB_VIEWS - i - 1));
+      dotsContainer.addView(viewDots.get(NB_VIEWS - i - 1));
     }
   }
 }
