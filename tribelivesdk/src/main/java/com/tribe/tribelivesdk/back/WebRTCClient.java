@@ -295,4 +295,8 @@ import static android.R.attr.id;
   public Observable<PeerConnection.IceGatheringState> onIceGatheringChanged() {
     return onIceGatheringChanged;
   }
+
+  public Observable<Boolean> isLocalFreeze() {
+    return streamManager.isFreeze();
+  }
 }

@@ -582,7 +582,7 @@
 	<string name="roll_the_dice_live_description">Jouez à un jeu dès que\nquelqu\'un vous rejoint !</string>
 	<string name="roll_the_dice_invite_title">Lance le dé !</string>
 	<string name="roll_the_dice_invite_subtitle">Nlles rencontres</string>
-	<string name="roll_the_dice_grid_button">Jette le dé pour de nouvelles rencontres</string>
+	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant !</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
 </resources>
