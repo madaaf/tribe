@@ -1,18 +1,17 @@
 package com.tribe.tribelivesdk.view;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
-import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.view.opengl.filter.FrameRenderer;
 import com.tribe.tribelivesdk.view.opengl.filter.FrameRendererDrawOrigin;
 import com.tribe.tribelivesdk.view.opengl.render.GLTextureView;
@@ -22,32 +21,40 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import timber.log.Timber;
 
-public class GlLocalView extends View {
+public class GlLocalView extends FrameLayout {
 
-  @BindView(R.id.)
   private FrameLayout previewContainer;
   private FilterGLTextureView previewGLTexture;
 
-  private int previewWidth;
-  private int previewHeight;
-
+  private Unbinder unbinder;
+  private int previewWidth, previewHeight;
   private Object frameListenerLock = new Object();
   private FrameListener frameListener;
 
   public GlLocalView(Context context) {
     super(context);
+    init();
   }
 
   public GlLocalView(Context context, AttributeSet attrs) {
     super(context, attrs);
+    init();
   }
 
   public void init() {
     initResources();
     initDependencyInjector();
 
-    LayoutInflater.from(getContext()).inflate(R.layout.view_live_local, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_gl_local, null);
     unbinder = ButterKnife.bind(this);
+  }
+
+  private void initResources() {
+
+  }
+
+  private void initDependencyInjector() {
+
   }
 
   public interface FrameListener {
@@ -80,23 +87,21 @@ public class GlLocalView extends View {
     public ClearColor clearColor;
 
     public synchronized void setFrameRenderer(final RendererCreator rendererCreator) {
-      queueEvent(new Runnable() {
-        @Override public void run() {
-          FrameRenderer renderer = rendererCreator.createRenderer();
+      queueEvent(() -> {
+        FrameRenderer renderer1 = rendererCreator.createRenderer();
 
-          if (renderer == null) {
-            return;
-          }
-
-          myRenderer.release();
-          myRenderer = renderer;
-          myRenderer.setTextureSize(viewWidth, viewHeight);
-          myRenderer.setRotation((float) Math.PI / 2.0f);
-
-          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-
-          Common.checkGLError("setFrameRenderer...");
+        if (renderer1 == null) {
+          return;
         }
+
+        myRenderer.release();
+        myRenderer = renderer1;
+        myRenderer.setTextureSize(viewWidth, viewHeight);
+        myRenderer.setRotation((float) Math.PI / 2.0f);
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+
+        Common.checkGLError("setFrameRenderer...");
       });
     }
 
@@ -112,7 +117,7 @@ public class GlLocalView extends View {
     }
 
     @Override public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-      Log.i("stdzhu", "onSurfaceCreated...");
+      Timber.d("onSurfaceCreated...");
 
       GLES20.glDisable(GLES20.GL_DEPTH_TEST);
       GLES20.glDisable(GLES20.GL_STENCIL_TEST);
@@ -138,18 +143,18 @@ public class GlLocalView extends View {
     }
 
     public void startPreview() {
-      cameraInstance().startPreview(surfaceTexture);
-      final int rotationX;
-      if (cameraInstance().getCameraID() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-        rotationX = 180;
-      } else {
-        rotationX = 0;
-      }
-      post(new Runnable() {
-        @Override public void run() {
-          setRotationX(rotationX);
-        }
-      });
+      //cameraInstance().startPreview(surfaceTexture);
+      //final int rotationX;
+      //if (cameraInstance().getCameraID() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+      //  rotationX = 180;
+      //} else {
+      //  rotationX = 0;
+      //}
+      //post(new Runnable() {
+      //  @Override public void run() {
+      //    setRotationX(rotationX);
+      //  }
+      //});
     }
 
     private void calcViewport() {
