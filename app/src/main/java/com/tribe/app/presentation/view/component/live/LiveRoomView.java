@@ -62,6 +62,7 @@ public class LiveRoomView extends FrameLayout {
   private boolean isConfigurationChanged = false;
   private int heightOndropBar;
   private @LiveActivity.Source String source;
+  private boolean isCallRouletteMode = false;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
@@ -132,6 +133,7 @@ public class LiveRoomView extends FrameLayout {
     LiveRowView lastViewAdded =
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
     if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+      isCallRouletteMode = true;
       removeView(lastViewAdded);
       new Handler().postDelayed(() -> {
         onShouldCloseInvites.onNext(null);
@@ -201,7 +203,7 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {//SOEF
+    if ((source != null && source.equals(SOURCE_CALL_ROULETTE)) || isCallRouletteMode) {//SOEF
       diceView.setNextAnimation();
     }
     setScreenSize(0);

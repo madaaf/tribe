@@ -158,19 +158,21 @@
         android:id="@+id/callRoulette"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_marginEnd="13dp"
-        android:layout_marginStart="13dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/shape_rect_white_corner"
         android:clickable="true"
         android:gravity="center"
+        android:padding="15dp"
         >
 
       <com.tribe.app.presentation.view.widget.DiceView
           android:id="@+id/diceLayout"
           android:layout_width="45dp"
           android:layout_height="45dp"
-          android:layout_marginEnd="20dp"
+          android:layout_marginEnd="5dp"
           app:diceType="homeGrid"
           />
 
@@ -178,6 +180,8 @@
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_marginStart="5dp"
+          android:gravity="center"
           android:text="@string/roll_the_dice_grid_button"
           style="@style/Title.2.Black"
           />

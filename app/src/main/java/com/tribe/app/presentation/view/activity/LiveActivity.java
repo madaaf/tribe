@@ -70,6 +70,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
@@ -237,6 +238,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
 
   @BindView(R.id.screenShotView) ScreenshotView screenshotView;
+
+  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -683,6 +686,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             PaletteGrid.getRandomColorExcluding(Color.BLACK), SOURCE_ADD_PEERS)));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
+
+    subscriptions.add(diceView.onRollDice().subscribe(aVoid -> {
+      Timber.e("SOEF ON ROLL DICE");
+      initCallRouletteService();
+    }));
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {

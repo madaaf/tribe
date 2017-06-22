@@ -172,21 +172,24 @@ public class JsonToModel {
         if (message.has(Room.MESSAGE_APP)) {
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
 
-          if (app.has(Room.MESSAGE_INVITE_ADDED)) {
-
+          if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {//SOEF
+            Timber.d("Receiving roll the dice");
+            onRollTheDice.onNext("SOEF");
+          } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
+              if (guest.has("id") && guest.getString("id").equals("ID_CALL_ROULETTE")) {
+                Timber.d("dice guest");
+                return;
+              }
               String userName = guest.has("username") ? guest.getString("username") : null;
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
                   guest.getString("picture"), false, false, null, true, userName));
             }
             onInvitedTribeGuestList.onNext(guestList);
-          } else if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {//SOEF
-            Timber.d("Receiving roll the dice");
-            onRollTheDice.onNext("SOEF");
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
             Timber.d("Receiving invite removed");
             List<TribeGuest> guestRemovedList = new ArrayList<>();
@@ -316,7 +319,9 @@ public class JsonToModel {
     return onLeaveRoom;
   }
 
-  public Observable<String> onRollTheDice() {return onRollTheDice;}
+  public Observable<String> onRollTheDice() {
+    return onRollTheDice;
+  }
 
   public Observable<List<TribeGuest>> onInvitedTribeGuestList() {
     return onInvitedTribeGuestList;

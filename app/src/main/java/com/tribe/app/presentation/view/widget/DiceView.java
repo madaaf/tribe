@@ -26,6 +26,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -64,6 +66,8 @@ public class DiceView extends FrameLayout {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot5),
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot6)
   };
+
+  private PublishSubject<Void> onRollDice = PublishSubject.create();
 
   public DiceView(@NonNull Context context) {
     super(context);
@@ -130,7 +134,9 @@ public class DiceView extends FrameLayout {
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
+    Timber.e("SOEF CLICK DICE VIEW");
     startDiceAnimation();
+    onRollDice.onNext(null);
   }
 
   //////////////
@@ -167,7 +173,6 @@ public class DiceView extends FrameLayout {
         break;
     }
 
-    dice.setEnabled(false);
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
       @Override public void onGlobalLayout() {
@@ -534,5 +539,9 @@ public class DiceView extends FrameLayout {
     for (int i = 0; i < NB_VIEWS; i++) {
       dotsContainer.addView(viewDots.get(NB_VIEWS - i - 1));
     }
+  }
+
+  public Observable<Void> onRollDice() {
+    return onRollDice;
   }
 }
