@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -22,6 +23,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.utils.ResizeAnimation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +59,7 @@ public class DiceView extends FrameLayout {
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private int sizeDot, dotsMargin, type, unit, rotationUnit = 90;
+  private int sizeDot, dotsMargin, type, unit, rotationUnit = 90, sizeDice;
   private List<View> viewDots = new ArrayList<>();
   private Drawable[] drawablesDots = new Drawable[] {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot1),
@@ -93,44 +96,78 @@ public class DiceView extends FrameLayout {
     resetDotsStates();
     setAlphaBackground(0f);
     new Handler().postDelayed(() -> {
+      ResizeAnimation a = new ResizeAnimation(dice);
+      a.setDuration(500);
+      a.setInterpolator(new BounceInterpolator());
+      a.setAnimationListener(new AnimationListenerAdapter() {
+        @Override public void onAnimationStart(Animation animation) {
+          super.onAnimationStart(animation);
+          animateStepNextLayout();
+          GradientDrawable drawable = (GradientDrawable) dice.getBackground();
+          drawable.setCornerRadius(screenUtils.dpToPx(400));
+        }
+      });
+      int x = dice.getWidth();
+      int y = dice.getHeight();
+      Timber.e("SOEF " + ((dice.getRotation() % 180) == 0) + " : " + dice.getRotation() % 180);
       if ((dice.getRotation() % 180) == 0) {
-        dice.animate()
-            .scaleX((float) 2)
-            .scaleY(1)
-
-            .setDuration(500)
-            .withStartAction(this::animateStepNextLayout)
-            .setListener(null)
-            .start();
+        a.setParams(x, x * 2, y, y);
       } else {
-        dice.animate()
-            .scaleY((float) 2)
-            .scaleX(1)
-
-            .setDuration(500)
-            .withStartAction(this::animateStepNextLayout)
-            .setListener(null)
-            .start();
+        a.setParams(x, x, y, y * 2);
       }
+      dice.startAnimation(a);
     }, 1000);
   }
 
+
+  private void reduceDice() {
+    ResizeAnimation a = new ResizeAnimation(dice);
+    a.setDuration(500);
+    a.setInterpolator(new BounceInterpolator());
+    a.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationStart(Animation animation) {
+        super.onAnimationStart(animation);
+        resetDotsStates();
+        restartRotation();
+        showLabel(true);
+        dotsContainer.animate().translationX(0).setListener(null).start();
+        txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+        if (dice.getBackground() instanceof GradientDrawable) {
+          GradientDrawable drawable = (GradientDrawable) dice.getBackground();
+          drawable.setCornerRadius(screenUtils.dpToPx(10));
+        }
+        new Handler().postDelayed(() -> animateDots(), 1000);
+      }
+
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+      }
+    });
+    a.setParams(dice.getWidth(), sizeDice, dice.getHeight(), sizeDice);
+    dice.startAnimation(a);
+  }
+
   public void startDiceAnimation() {
-    dice.setEnabled(false);
-    setAlphaBackground(1f);
-    dice.animate()
-        .scaleX((float) 1)
-        .scaleY(1)
-        .setDuration(1000)
-        .setInterpolator(new OvershootInterpolator())
-        .withStartAction(() -> {
-          resetDotsStates();
-          restartRotation();
-          showLabel(true);
-          dotsContainer.animate().translationX(0).setListener(null).start();
-          txtNext.animate().alpha(0).translationX(0).setListener(null).start();
-          new Handler().postDelayed(this::animateDots, 1000);
-        });
+    if (type == TYPE_FROM_ROOM) {
+      Timber.e("SOEF ");
+      reduceDice();
+    } else {
+      dice.setEnabled(false);
+      setAlphaBackground(1f);
+      dice.animate()
+          .scaleX((float) 1)
+          .scaleY(1)
+          .setDuration(1000)
+          .setInterpolator(new OvershootInterpolator())
+          .withStartAction(() -> {
+            resetDotsStates();
+            restartRotation();
+            showLabel(true);
+            dotsContainer.animate().translationX(0).setListener(null).start();
+            txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+            new Handler().postDelayed(this::animateDots, 1000);
+          });
+    }
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
@@ -166,7 +203,8 @@ public class DiceView extends FrameLayout {
         break;
       case TYPE_FROM_ROOM:
         bgView.setVisibility(VISIBLE);
-        setDiceSize(screenUtils.dpToPx(70));
+        sizeDice = screenUtils.dpToPx(70);
+        setDiceSize(sizeDice);
         showLabel(true);
         Timber.d("dice from room");
         break;
