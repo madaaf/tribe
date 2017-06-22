@@ -189,6 +189,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void inviteUserToRoom(String roomId, String userId) {
+    if (userId.equals(Recipient.ID_CALL_ROULETTE)) return;
     inviteUserToRoom.setup(roomId, userId);
     inviteUserToRoom.execute(new DefaultSubscriber());
   }

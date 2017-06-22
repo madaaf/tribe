@@ -574,8 +574,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           invite(recipient.getSubId());//SOEF
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
-            Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getId());
-            livePresenter.roomAcceptRandom(live.getId());
+            Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getSessionId());
+            livePresenter.roomAcceptRandom(live.getSessionId());
           }
         }));
 
@@ -853,7 +853,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void invite(String userId) {
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
-    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
+    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId); // MADA
   }
 
   private void ready() {
@@ -938,7 +938,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(this.roomConfiguration);
     if (!live.isGroup() && !live.isSessionOrLink()) {
-      livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
+      livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId()); // MADA
     }
     live.setSessionId(roomConfiguration.getRoomId());
 

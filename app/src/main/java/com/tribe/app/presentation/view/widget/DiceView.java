@@ -56,8 +56,7 @@ public class DiceView extends FrameLayout {
   private Unbinder unbinder;
   private int sizeDot, dotsMargin, type, unit, rotationUnit = 90;
   private List<View> viewDots = new ArrayList<>();
-
-  Drawable[] drawablesDots = new Drawable[] {
+  private Drawable[] drawablesDots = new Drawable[] {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot1),
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot2),
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot3),
@@ -118,7 +117,7 @@ public class DiceView extends FrameLayout {
     dice.animate()
         .scaleX((float) 1)
         .scaleY(1)
-        .setDuration(300)
+        .setDuration(1000)
         .setInterpolator(new OvershootInterpolator())
         .withStartAction(() -> {
           resetDotsStates();
@@ -154,6 +153,8 @@ public class DiceView extends FrameLayout {
         break;
       case TYPE_FROM_TILE:
         bgView.setVisibility(GONE);
+        dice.setScaleY(0);
+        dice.setScaleX(0);
         dice.setBackground(
             ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white_corner));
         Timber.d("dice from tile view");
@@ -173,7 +174,7 @@ public class DiceView extends FrameLayout {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
         sizeDot = (int) (0.12 * dice.getWidth());
         dotsMargin = (int) (sizeDot / 9.75);
-        unit = (int) (sizeDot * 1.18);
+        unit = (int) (sizeDot * 1.20);
 
         initDots();
         startDiceAnimation();
@@ -203,8 +204,7 @@ public class DiceView extends FrameLayout {
   }
 
   private void setAlphaBackground(float alpha) {
-    bgView.setAlpha(alpha - 1);
-    bgView.animate().alpha(alpha).setStartDelay(300).setDuration(500).setListener(null).start();
+    bgView.animate().alpha(alpha).setDuration(1000).setListener(null).start();
   }
 
   private void resetDotsStates() {

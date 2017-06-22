@@ -4,6 +4,7 @@ import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -30,6 +31,8 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
@@ -65,6 +68,8 @@ public class LiveRoomView extends FrameLayout {
   @BindView(R.id.cardview) CardView cardView;
 
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+
+  private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
 
   public LiveRoomView(Context context) {
     super(context);
@@ -128,15 +133,11 @@ public class LiveRoomView extends FrameLayout {
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
     if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
       removeView(lastViewAdded);
-      setDiceAnimation();//SOEF
+      new Handler().postDelayed(() -> {
+        onShouldCloseInvites.onNext(null);
+        diceView.setVisibility(VISIBLE);
+      }, 800);
     }
-  }
-
-  private void setDiceAnimation() {
-    diceView.setScaleX(0);
-    diceView.setScaleY(0);
-    diceView.setVisibility(VISIBLE);
-    diceView.animate().scaleX(1).scaleY(1).setDuration(1000).start();
   }
 
   public void setSource(@LiveActivity.Source String source) {
@@ -173,6 +174,7 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.removeView(view);
     setViewsOrder();
     setConfigurationScreen();
+
     if (source != null
         && source.equals(SOURCE_CALL_ROULETTE)
         && flexboxLayout.getChildCount() < 2) {
@@ -210,6 +212,11 @@ public class LiveRoomView extends FrameLayout {
 
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
+    if (type == LINEAR) {
+      diceView.animate().alpha(0f).setDuration(300).setListener(null).start();
+    } else {
+      diceView.animate().alpha(1f).setDuration(300).setListener(null).start();
+    }
     this.type = type;
     setScreenSize(0);
     setConfigurationScreen();
@@ -438,5 +445,9 @@ public class LiveRoomView extends FrameLayout {
     @Override public boolean willChangeBounds() {
       return true;
     }
+  }
+
+  public Observable<Void> onShouldCloseInvites() {
+    return onShouldCloseInvites;
   }
 }

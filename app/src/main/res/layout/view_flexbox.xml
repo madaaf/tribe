@@ -41,7 +41,6 @@
         android:visibility="invisible"
         app:diceType="roomView"
         />
-
-
   </android.support.v7.widget.CardView>
+
 </merge>

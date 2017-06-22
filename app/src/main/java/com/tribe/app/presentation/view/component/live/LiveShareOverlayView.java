@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +28,8 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
+
 /**
  * Created by tiago on 04/29/17.
  */
@@ -37,6 +40,8 @@ public class LiveShareOverlayView extends LinearLayout {
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.btnShare) View btnShare;
+
+  @BindView(R.id.viewLiveShareOverlayContainer) FrameLayout container;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -100,6 +105,7 @@ public class LiveShareOverlayView extends LinearLayout {
   ////////////
 
   public void show(@LiveActivity.Source String source) {
+    if (source.equals(SOURCE_CALL_ROULETTE)) container.setVisibility(GONE);
     if (getVisibility() == View.VISIBLE) return;
 
     setAlpha(0f);

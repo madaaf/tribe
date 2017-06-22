@@ -8,6 +8,7 @@
       android:layout_height="match_parent"
       android:alpha="0"
       android:background="@color/black.opacity.30"
+      android:visibility="gone"
       />
 
   <FrameLayout

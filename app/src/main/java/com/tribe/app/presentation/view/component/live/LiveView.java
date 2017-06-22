@@ -480,6 +480,10 @@ public class LiveView extends FrameLayout {
               return null;
             }))
         .subscribe());
+
+    persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
+      onShouldCloseInvites.onNext(null);
+    }));
   }
 
   ///////////////////
@@ -723,9 +727,10 @@ public class LiveView extends FrameLayout {
 
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
+
       viewRoom.onDropItem(tileView);//SOEF
       if (latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
-        room.sendToPeers(getUserPlayload(user), true);
+        room.sendToPeers(getUserPlayload(user), true);//SOEF WHAT THE FUCK????
       }
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);

@@ -77,7 +77,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<User> userInfos(String userId) {//SOEF
+  @Override public Observable<User> userInfos(String userId) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
@@ -110,7 +110,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Friendship>> friendships() { //SOEF
+  @Override public Observable<List<Friendship>> friendships() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
