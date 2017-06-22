@@ -585,4 +585,8 @@
 	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant !</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
+	
+	<!-- Fallback call invitations -->
+	<string name="fallback_invitation_call_title">Si tu ne préviens pas tes amis\nils ne viendront pas!</string>
+	<string name="fallback_invitation_call_close">Plus tard</string>
 </resources>
