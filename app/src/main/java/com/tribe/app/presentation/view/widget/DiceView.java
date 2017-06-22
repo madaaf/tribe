@@ -511,8 +511,11 @@ public class DiceView extends FrameLayout {
   }
 
   private void animateStepNextLayout() {
-    dotsContainer.animate().translationX(-screenUtils.dpToPx(30)).setListener(null).start();
-    txtNext.animate().alpha(1).translationX(screenUtils.dpToPx(30)).setListener(null).start();
+    int layoutSize = (sizeDot * 5) + txtNext.getWidth();
+    int dotsContainerOffset = -(layoutSize / 2) + ((sizeDot * 5) / 2);
+    int txtNextOffset = -(layoutSize / 2) + (sizeDot * 5) + (txtNext.getWidth() / 2);
+    dotsContainer.animate().translationX(dotsContainerOffset).setListener(null).start();
+    txtNext.animate().alpha(1).translationX(txtNextOffset).setListener(null).start();
     new Handler().postDelayed(() -> {
       step6Anim(false);
       showLabel(false);

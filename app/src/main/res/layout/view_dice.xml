@@ -29,15 +29,22 @@
       android:layout_gravity="center"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtNext"
+  <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:alpha="0"
-      android:gravity="center"
-      android:text="@string/roll_the_dice_next_button"
-      style="@style/Headline.Black.2"
-      />
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:alpha="0"
+        android:gravity="center"
+        android:text="@string/roll_the_dice_next_button"
+        style="@style/Headline.Black.2"
+        />
+  </FrameLayout>
+
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtLabel"
