@@ -46,7 +46,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -126,7 +125,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
-  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  // @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   // VARIABLES
   private Live live;
@@ -540,7 +539,7 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(room.onRollTheDice().subscribe(onRollTheDice)); // SOEF //
+    // tempSubscriptions.add(room.onDiceAdded().subscribe(onDiceAdded)); // SOEF //
 
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
@@ -635,10 +634,8 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(
         room.onRollTheDice().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
           Timber.e("SOEF LIVE VIEW ROLL THE DICE");
-          onRollTheDice.onNext("SOEF NEXT");//SOEF
-          onShouldCloseInvites.onNext(null);
-          diceView.setVisibility(VISIBLE);
-          //diceView.startDiceAnimation();
+          onRollTheDice.onNext("SOEF NEXT");//SOEF .. SERT A RIEN
+          viewRoom.onDiceAdded();
         }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()

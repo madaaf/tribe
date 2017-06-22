@@ -142,6 +142,13 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
+  public void onDiceAdded() {
+    isCallRouletteMode = true;
+    onShouldCloseInvites.onNext(null);
+    diceView.setVisibility(VISIBLE);
+    diceView.setNextAnimation();
+  }
+
   public void setSource(@LiveActivity.Source String source) {
     this.source = source;
     if (source.equals(SOURCE_CALL_ROULETTE)) {
@@ -180,7 +187,7 @@ public class LiveRoomView extends FrameLayout {
     if (source != null
         && source.equals(SOURCE_CALL_ROULETTE)
         && flexboxLayout.getChildCount() < 2) {
-      diceView.startDiceAnimation();
+      diceView.startDiceAnimation();//SOEF ??? just put it VISIBLE
     }
   }
 
