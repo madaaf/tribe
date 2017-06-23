@@ -71,6 +71,7 @@ public class LiveRoomView extends FrameLayout {
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
+  private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
 
   public LiveRoomView(Context context) {
     super(context);
@@ -143,15 +144,18 @@ public class LiveRoomView extends FrameLayout {
   }
 
   /**
-   *  SOEF
-   *  DICE HAS BEEN DRAG AND DROP IT IN THE ROOM
-   *  IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTER
-   *  IF I AM IN CALL ROULETTE MODE => I AM NEXED, I LEAVE THE ROOM AND ENTER I ANOTHER ONE
+   * SOEF
+   * ON ROLL THE DICE MESSAGE HAS RECEIVED. SOMEONE NEXT THE DICE
+   * IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTER
+   * IF I AM IN CALL ROULETTE MODE => I AM NEXED, I LEAVE THE ROOM AND ENTER I ANOTHER ONE
    */
-  public void onDiceAdded() {
+  public void onRollTheDiceReceived() {
     isCallRouletteMode = true;
     onShouldCloseInvites.onNext(null);
     diceView.setVisibility(VISIBLE);
+    if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
+      onChangeCallRouletteRoom.onNext(null);
+    }
     //diceView.setNextAnimation();
   }
 
@@ -193,7 +197,7 @@ public class LiveRoomView extends FrameLayout {
     if (source != null
         && source.equals(SOURCE_CALL_ROULETTE)
         && flexboxLayout.getChildCount() < 2) {
-      diceView.startDiceAnimation();//SOEF ??? just put it VISIBLE
+      diceView.setVisibility(VISIBLE);
     }
   }
 
@@ -464,5 +468,9 @@ public class LiveRoomView extends FrameLayout {
 
   public Observable<Void> onShouldCloseInvites() {
     return onShouldCloseInvites;
+  }
+
+  public Observable<Void> onChangeCallRouletteRoom() {
+    return onChangeCallRouletteRoom;
   }
 }

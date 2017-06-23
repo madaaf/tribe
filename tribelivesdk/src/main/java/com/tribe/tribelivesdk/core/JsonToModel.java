@@ -38,7 +38,7 @@ public class JsonToModel {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<TribeSession> onLeaveRoom = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
-  private PublishSubject<String> onRollTheDice = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -174,17 +174,18 @@ public class JsonToModel {
 
           if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {//SOEF
             Timber.d("Receiving roll the dice");
-            onRollTheDice.onNext("SOEF ON RECEIVE rollTheDice MESSAGE FROM WEB SIGNALING");
+            onRollTheDiceReceived.onNext(null);
           } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
-            for (int i = 0; i < arrayInvited.length(); i++) {
+            for (int i = 0; i < arrayInvited.length(); i++) { // SOEF MADA
               JSONObject guest = arrayInvited.getJSONObject(i);
-              if (guest.has("id") && guest.getString("id").equals("ID_CALL_ROULETTE")) {
+            /*  if (guest.has("id") && guest.getString("id").equals("ID_CALL_ROULETTE")) {
                 Timber.d("dice guest");
+                onRollTheDiceReceived.onNext(null);
                 return;
-              }
+              }*/
               String userName = guest.has("username") ? guest.getString("username") : null;
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
                   guest.getString("picture"), false, false, null, true, userName));
@@ -319,8 +320,8 @@ public class JsonToModel {
     return onLeaveRoom;
   }
 
-  public Observable<String> onRollTheDice() {
-    return onRollTheDice;
+  public Observable<Void> onRollTheDiceReceived() {
+    return onRollTheDiceReceived;
   }
 
   public Observable<List<TribeGuest>> onInvitedTribeGuestList() {

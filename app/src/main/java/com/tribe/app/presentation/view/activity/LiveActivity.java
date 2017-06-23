@@ -575,11 +575,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-          invite(recipient.getSubId());
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
-            Timber.e("SOEF DRAG & DROP THE DICE IN LIVE ROOM : roomAcceptRandom = "
+            Timber.e("SOEF I DRAG & DROP THE DICE IN LIVE ROOM : roomAcceptRandom = "
                 + live.getSessionId());
             livePresenter.roomAcceptRandom(live.getSessionId());
+            reRollTheDiceFromLiveRoom();
+          } else {
+            invite(recipient.getSubId());
           }
         }));
 
@@ -701,6 +703,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         reRollTheDiceFromLiveRoom();
       }
       //initCallRouletteService();
+    }));
+
+    subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
+      reRollTheDiceFromCallRoulette();
     }));
   }
 

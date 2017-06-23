@@ -24,8 +24,6 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static android.R.attr.orientation;
-
 /**
  * Created by tiago on 13/01/2017.
  */
@@ -82,7 +80,7 @@ public class Room {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
-  private PublishSubject<String> onRollTheDice = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerUpdated = PublishSubject.create();
@@ -130,8 +128,8 @@ public class Room {
       }
     }).subscribe());
 
-    persistentSubscriptions.add(jsonToModel.onRollTheDice().doOnNext(s -> {
-      onRollTheDice.onNext("ok soef");
+    persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
+      onRollTheDiceReceived.onNext(null);
     }).subscribe());//SOEF
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
@@ -460,8 +458,8 @@ public class Room {
     return onJoined;
   }
 
-  public Observable<String> onRollTheDice() {
-    return onRollTheDice;
+  public Observable<Void> onRollTheDiceReceived() {
+    return onRollTheDiceReceived;
   }
 
   public Observable<String> onRoomStateChanged() {

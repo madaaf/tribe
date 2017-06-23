@@ -31,7 +31,6 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -71,7 +70,6 @@ public class DiceView extends FrameLayout {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot6)
   };
 
-  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onNextDiceClick = PublishSubject.create();
 
   public DiceView(@NonNull Context context) {
@@ -117,55 +115,6 @@ public class DiceView extends FrameLayout {
       }
       dice.startAnimation(a);
     }, 1000);
-  }
-
-  private void reduceDice() {
-    ResizeAnimation a = new ResizeAnimation(dice);
-    a.setDuration(500);
-    a.setInterpolator(new BounceInterpolator());
-    a.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation);
-        resetDotsStates();
-        restartRotation();
-        showLabel(true);
-        dotsContainer.animate().translationX(0).setListener(null).start();
-        txtNext.animate().alpha(0).translationX(0).setListener(null).start();
-        if (dice.getBackground() instanceof GradientDrawable) {
-          GradientDrawable drawable = (GradientDrawable) dice.getBackground();
-          drawable.setCornerRadius(screenUtils.dpToPx(10));
-        }
-        new Handler().postDelayed(() -> animateDots(), 1000);
-      }
-
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-      }
-    });
-    a.setParams(dice.getWidth(), sizeDice, dice.getHeight(), sizeDice);
-    dice.startAnimation(a);
-  }
-
-  public void startDiceAnimation() {
-    if (type == TYPE_FROM_ROOM) {
-      reduceDice();
-    } else {
-      dice.setEnabled(false);
-      setAlphaBackground(1f);
-      dice.animate()
-          .scaleX((float) 1)
-          .scaleY(1)
-          .setDuration(1000)
-          .setInterpolator(new OvershootInterpolator())
-          .withStartAction(() -> {
-            resetDotsStates();
-            restartRotation();
-            showLabel(true);
-            dotsContainer.animate().translationX(0).setListener(null).start();
-            txtNext.animate().alpha(0).translationX(0).setListener(null).start();
-            new Handler().postDelayed(this::animateDots, 1000);
-          });
-    }
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
@@ -220,6 +169,55 @@ public class DiceView extends FrameLayout {
         startDiceAnimation();
       }
     });
+  }
+
+  private void startDiceAnimation() {
+    if (type == TYPE_FROM_ROOM) {
+      reduceDice();
+    } else {
+      dice.setEnabled(false);
+      setAlphaBackground(1f);
+      dice.animate()
+          .scaleX((float) 1)
+          .scaleY(1)
+          .setDuration(1000)
+          .setInterpolator(new OvershootInterpolator())
+          .withStartAction(() -> {
+            resetDotsStates();
+            restartRotation();
+            showLabel(true);
+            dotsContainer.animate().translationX(0).setListener(null).start();
+            txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+            new Handler().postDelayed(this::animateDots, 1000);
+          });
+    }
+  }
+
+  private void reduceDice() {
+    ResizeAnimation a = new ResizeAnimation(dice);
+    a.setDuration(500);
+    a.setInterpolator(new BounceInterpolator());
+    a.setAnimationListener(new AnimationListenerAdapter() {
+      @Override public void onAnimationStart(Animation animation) {
+        super.onAnimationStart(animation);
+        resetDotsStates();
+        restartRotation();
+        showLabel(true);
+        dotsContainer.animate().translationX(0).setListener(null).start();
+        txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+        if (dice.getBackground() instanceof GradientDrawable) {
+          GradientDrawable drawable = (GradientDrawable) dice.getBackground();
+          drawable.setCornerRadius(screenUtils.dpToPx(10));
+        }
+        new Handler().postDelayed(() -> animateDots(), 1000);
+      }
+
+      @Override public void onAnimationEnd(Animation animation) {
+        super.onAnimationEnd(animation);
+      }
+    });
+    a.setParams(dice.getWidth(), sizeDice, dice.getHeight(), sizeDice);
+    dice.startAnimation(a);
   }
 
   private void setDiceSize(int size) {

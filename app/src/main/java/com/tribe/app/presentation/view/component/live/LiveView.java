@@ -22,6 +22,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
@@ -169,6 +170,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
 
@@ -541,7 +543,7 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    // tempSubscriptions.add(room.onDiceAdded().subscribe(onDiceAdded)); // SOEF
+    // tempSubscriptions.add(room.onRollTheDiceReceived().subscribe(onRollTheDiceReceived)); // SOEF
 
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
@@ -634,10 +636,9 @@ public class LiveView extends FrameLayout {
             "Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
 
     tempSubscriptions.add(
-        room.onRollTheDice().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-          Timber.e("SOEF LIVE VIEW ROLL THE DICE");
-          // onRollTheDice.onNext("SOEF NEXT");//SOEF .. SERT A RIEN
-          viewRoom.onDiceAdded();
+        room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+          Timber.e("SOEF rollTheDice received by WEB SIGNALING");
+          viewRoom.onRollTheDiceReceived();
         }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
@@ -668,6 +669,7 @@ public class LiveView extends FrameLayout {
           }
         }));
 
+    tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
     room.connect(options);
   }
@@ -736,7 +738,11 @@ public class LiveView extends FrameLayout {
       viewRoom.onDropItem(tileView);
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
-      room.sendToPeers(getInvitedPayload(), true);
+
+      if (!latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {//SOEF
+        room.sendToPeers(getInvitedPayload(), true);
+      }
+
       refactorNotifyButton();
 
       tempSubscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
@@ -883,7 +889,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void reRollTheDiceFromLiveRoom() {
-    room.sendToPeers(getUserPlayload(user), true);//SOEF WHAT THE FUCK????
+    room.sendToPeers(getUserPlayload(user), true);//SOEF
   }
 
   ////////////////
@@ -1410,6 +1416,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShare() {
     return onShare;
+  }
+
+  public Observable<Void> onChangeCallRouletteRoom() {
+    return onChangeCallRouletteRoom;
   }
 
   public Observable<Void> onRoomFull() {
