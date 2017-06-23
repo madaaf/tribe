@@ -530,11 +530,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      if (StringUtils.isEmpty(live.getLinkId()) &&
-          !live.isGroup() &&
-          tribeJoinRoom.getRoomSize() < 2) {
-        viewLiveContainer.openInviteView();
-      }
+      
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {

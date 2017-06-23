@@ -105,7 +105,7 @@
 	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
-	<string name="live_notification_leave">Quitter pour appeler %1$s</string>
+	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
 	<string name="live_notification_decline">Refuser l\'appel</string>
 	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
 	<string name="live_notification_call_after_decline">Appeler %1$s</string>
@@ -585,4 +585,15 @@
 	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant !</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
+	
+	<!-- Fallback call invitations -->
+	<string name="fallback_invitation_call_title">Si tu ne préviens pas tes amis\nils ne viendront pas!</string>
+	<string name="fallback_invitation_call_close">Plus tard</string>
+	<string name="fallback_invitation_more">Autre</string>
+	
+	<!-- Unlock Roll the dice -->
+	<string name="unlock_roll_the_dice_title">"Lancez le dé" pour de nouvelles rencontres en groupe!</string>
+	<string name="unlock_roll_the_dice_description">Facebook est nécessaire afin de conserver cet endroit sûr, accueillant et vous permettre de faire des rencontres basées sur vos intérêts et vos amis en commun.</string>
+	<string name="unlock_roll_the_dice_facebook_action">Débloquer avec Facebook</string>
+	<string name="unlock_roll_the_dice_locked">Vous devez avoir 13 ans\nou plus pour lancer le dé!</string>
 </resources>
