@@ -112,7 +112,7 @@ import timber.log.Timber;
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
-    if (intent.getStringExtra(TYPE) != null && intent.getStringExtra(TYPE)
+    if (intent != null && intent.getStringExtra(TYPE) != null && intent.getStringExtra(TYPE)
         .equals(CALL_ROULETTE_TYPE)) {
       Timber.e("SOEF START SERVICE");
       subscribeChatRoulette();

@@ -112,6 +112,7 @@ public class LiveContainer extends FrameLayout {
   private boolean hiddenControls = false;
   boolean enabledTimer = false;
   private int nbrCall = 0;
+  private boolean blockOpenInviteView;
   // DIMENS
   private int thresholdEnd;
 
@@ -239,7 +240,7 @@ public class LiveContainer extends FrameLayout {
     viewLive.initOnStartDragSubscription(onStartDrag());
     viewLive.initOnEndDragSubscription(onEndDrag());
     viewLive.initOnAlphaSubscription(onAlpha());
-    viewLive.initDropSubscription(onDropped());//SOEF
+    viewLive.initDropSubscription(onDropped());
   }
 
   public void setStatusBarHeight(int height) {
@@ -258,7 +259,13 @@ public class LiveContainer extends FrameLayout {
   //    TOUCH EVENTS   //
   ///////////////////////
 
+  public void blockOpenInviteView(boolean block) {
+    blockOpenInviteView = block;
+    viewLive.blockOpenInviteView(block);
+  }
+
   @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (blockOpenInviteView) return false;
     boolean isTouchInInviteView =
         ev.getRawX() >= screenUtils.getWidthPx() - screenUtils.dpToPx(LiveInviteView.WIDTH);
     if (!isEnabled() || hiddenControls) {
@@ -433,7 +440,7 @@ public class LiveContainer extends FrameLayout {
           onDropped.onNext(draggedTileView);
           enabledTimer = true;
           resetTimer();
-          if(draggedTileView.getRecipient().getId().equals(Recipient.ID_CALL_ROULETTE)){
+          if (draggedTileView.getRecipient().getId().equals(Recipient.ID_CALL_ROULETTE)) {
             viewInviteLive.diceDragued();
           }
           viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());

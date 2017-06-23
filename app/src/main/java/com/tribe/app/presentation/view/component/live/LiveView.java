@@ -1330,6 +1330,10 @@ public class LiveView extends FrameLayout {
     return user;
   }
 
+  public void blockOpenInviteView(boolean b) {
+    viewControlsLive.blockOpenInviteView(b);
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -1437,5 +1441,6 @@ public class LiveView extends FrameLayout {
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
   }
+
 }
 

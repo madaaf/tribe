@@ -607,7 +607,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnInviteLive) void openInvite() {
-    onOpenInvite.onNext(null);
+    onOpenInvite.onNext(null); //SOEF
   }
 
   @OnClick(R.id.btnOrientationCamera) void clickOrientationCamera() {
@@ -717,6 +717,15 @@ public class LiveControlsView extends FrameLayout {
   public void dispose() {
     btnNotify.clearAnimation();
     btnNotify.animate().setListener(null);
+  }
+
+  public void blockOpenInviteView(boolean block) {
+    btnInviteLive.setEnabled(!block);
+    if (block) {
+      btnInviteLive.setAlpha(0.4f);
+    } else {
+      btnInviteLive.setAlpha(1f);
+    }
   }
 
   public void setNotifyEnabled(boolean enable) {

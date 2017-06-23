@@ -415,6 +415,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
           //SOEF
+          viewLiveContainer.blockOpenInviteView(true);
           initCallRouletteService();
         }
 
@@ -968,6 +969,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
     Timber.e("SOEF JOIN ASSIGNED ROOM " + roomId);
+    viewLiveContainer.blockOpenInviteView(false);
     live.setSessionId(roomId);
     joinRoom();
   }
