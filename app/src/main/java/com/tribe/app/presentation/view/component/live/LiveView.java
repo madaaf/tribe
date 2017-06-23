@@ -637,7 +637,7 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(
         room.onRollTheDice().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
           Timber.e("SOEF LIVE VIEW ROLL THE DICE");
-          onRollTheDice.onNext("SOEF NEXT");//SOEF .. SERT A RIEN
+          // onRollTheDice.onNext("SOEF NEXT");//SOEF .. SERT A RIEN
           viewRoom.onDiceAdded();
         }));
 

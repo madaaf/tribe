@@ -142,11 +142,17 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
+  /**
+   *  SOEF
+   *  DICE HAS BEEN DRAG AND DROP IT IN THE ROOM
+   *  IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTER
+   *  IF I AM IN CALL ROULETTE MODE => I AM NEXED, I LEAVE THE ROOM AND ENTER I ANOTHER ONE
+   */
   public void onDiceAdded() {
     isCallRouletteMode = true;
     onShouldCloseInvites.onNext(null);
     diceView.setVisibility(VISIBLE);
-    diceView.setNextAnimation();
+    //diceView.setNextAnimation();
   }
 
   public void setSource(@LiveActivity.Source String source) {

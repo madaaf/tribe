@@ -72,7 +72,7 @@ public class DiceView extends FrameLayout {
   };
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onRollDice = PublishSubject.create();
+  private PublishSubject<Void> onNextDiceClick = PublishSubject.create();
 
   public DiceView(@NonNull Context context) {
     super(context);
@@ -109,18 +109,15 @@ public class DiceView extends FrameLayout {
           drawable.setCornerRadius(screenUtils.dpToPx(400));
         }
       });
-      int x = dice.getWidth();
-      int y = dice.getHeight();
       Timber.e("SOEF " + ((dice.getRotation() % 180) == 0) + " : " + dice.getRotation() % 180);
       if ((dice.getRotation() % 180) == 0) {
-        a.setParams(x, x * 2, y, y);
+        a.setParams(sizeDice, sizeDice * 2, sizeDice, sizeDice);
       } else {
-        a.setParams(x, x, y, y * 2);
+        a.setParams(sizeDice, sizeDice, sizeDice, sizeDice * 2);
       }
       dice.startAnimation(a);
     }, 1000);
   }
-
 
   private void reduceDice() {
     ResizeAnimation a = new ResizeAnimation(dice);
@@ -151,7 +148,6 @@ public class DiceView extends FrameLayout {
 
   public void startDiceAnimation() {
     if (type == TYPE_FROM_ROOM) {
-      Timber.e("SOEF ");
       reduceDice();
     } else {
       dice.setEnabled(false);
@@ -173,9 +169,9 @@ public class DiceView extends FrameLayout {
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
-    Timber.e("SOEF CLICK DICE VIEW");
+    Timber.e("SOEF CLICK NEXT DICE");
     startDiceAnimation();
-    onRollDice.onNext(null);
+    onNextDiceClick.onNext(null);
   }
 
   //////////////
@@ -583,7 +579,7 @@ public class DiceView extends FrameLayout {
     }
   }
 
-  public Observable<Void> onRollDice() {
-    return onRollDice;
+  public Observable<Void> onNextDiceClick() {
+    return onNextDiceClick;
   }
 }

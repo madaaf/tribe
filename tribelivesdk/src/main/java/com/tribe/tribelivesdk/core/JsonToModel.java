@@ -174,7 +174,7 @@ public class JsonToModel {
 
           if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {//SOEF
             Timber.d("Receiving roll the dice");
-            onRollTheDice.onNext("SOEF");
+            onRollTheDice.onNext("SOEF ON RECEIVE rollTheDice MESSAGE FROM WEB SIGNALING");
           } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();

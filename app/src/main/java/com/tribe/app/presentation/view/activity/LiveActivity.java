@@ -438,7 +438,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initCallRouletteService() {
-    Timber.e("SOEF SOURCE CALL COURLETTE");
+    Timber.e("SOEF INIT CALL ROULETTE");
     viewLive.setSourceLive(live.getSource());
     startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
     livePresenter.randomRoomAssigned();
@@ -575,9 +575,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-          invite(recipient.getSubId());//SOEF
+          invite(recipient.getSubId());
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
-            Timber.e("SOEF ROOM ACCEPT RANDOM " + live.getSessionId());
+            Timber.e("SOEF DRAG & DROP THE DICE IN LIVE ROOM : roomAcceptRandom = "
+                + live.getSessionId());
             livePresenter.roomAcceptRandom(live.getSessionId());
           }
         }));
@@ -687,16 +688,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
-    subscriptions.add(diceView.onRollDice().subscribe(aVoid -> {
-      Timber.e("SOEF ON ROLL DICE");
+    subscriptions.add(diceView.onNextDiceClick().subscribe(aVoid -> {
+
+      /**
+       *  SOEF
+       *  I CLICK ON NEXT
+       *  IF I AM IN LIVE ROOM NORMAL => SEND MESSAGE TO THE WEB SIGNALING
+       *  IF I AM IN CALL ROULETTE MODE => I DO ANOTHER SUBSCRIPTION
+       */
 
       if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+        Timber.e("SOEF NEXT DICE CLICKED : FROM CALL ROULETTE");
         if (subscriptions.hasSubscriptions()) subscriptions.clear();
         viewLive.endCall(true);
         viewLive.dispose(true);
         viewLive.jump();
         initRoom();
         return;
+      } else {
+        Timber.e("SOEF NEXT DICE CLICKED : FROM LIVE ROOM");
       }
       initCallRouletteService();
     }));
@@ -944,10 +954,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
-    Timber.e("SOEF ASSIGNED " + roomId);
+    Timber.e("SOEF JOIN ASSIGNED ROOM " + roomId);
     live.setSessionId(roomId);
     joinRoom();
-    //livePresenter.joinAssignedRoom(roomId);
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

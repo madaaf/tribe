@@ -149,12 +149,6 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     joinRoom.execute(new JoinRoomSubscriber());
   }
 
-  public void joinAssignedRoom(String roomId) {
-    Timber.d("joinRoom");
-    joinRoom.setup(null, false, roomId, null);
-    joinRoom.execute(new JoinRoomSubscriber());
-  }
-
   private final class JoinRoomSubscriber extends DefaultSubscriber<RoomConfiguration> {
 
     @Override public void onCompleted() {
