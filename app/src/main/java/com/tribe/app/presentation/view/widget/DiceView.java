@@ -31,6 +31,7 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -70,6 +71,7 @@ public class DiceView extends FrameLayout {
       ContextCompat.getDrawable(getContext(), R.drawable.dice_dot6)
   };
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onRollDice = PublishSubject.create();
 
   public DiceView(@NonNull Context context) {

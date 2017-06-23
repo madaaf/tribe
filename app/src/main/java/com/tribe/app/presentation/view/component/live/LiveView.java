@@ -161,6 +161,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Void> onLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
@@ -276,12 +277,14 @@ public class LiveView extends FrameLayout {
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
+    liveRowViewMap.clear();
 
     for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
       Timber.d("liveinviteview dispose");
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
+    liveInviteMap.clear();
 
     if (room != null && !isJump) {
       Timber.d("room leave");
@@ -539,7 +542,7 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    // tempSubscriptions.add(room.onDiceAdded().subscribe(onDiceAdded)); // SOEF //
+    // tempSubscriptions.add(room.onDiceAdded().subscribe(onDiceAdded)); // SOEF
 
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 

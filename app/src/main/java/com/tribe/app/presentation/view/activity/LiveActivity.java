@@ -689,6 +689,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(diceView.onRollDice().subscribe(aVoid -> {
       Timber.e("SOEF ON ROLL DICE");
+
+      if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+        if (subscriptions.hasSubscriptions()) subscriptions.clear();
+        viewLive.endCall(true);
+        viewLive.dispose(true);
+        viewLive.jump();
+        initRoom();
+        return;
+      }
       initCallRouletteService();
     }));
   }
