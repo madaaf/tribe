@@ -65,6 +65,8 @@ public class TribeLiveLocalStream {
       subscriptions.add(peerView.getGlLocalView()
           .onSurfaceTextureReady()
           .subscribe(surfaceTexture -> capturer.setPreviewTexture(surfaceTexture)));
+
+      peerView.initNewCaptureFormatSubscription(capturer.onNewCaptureFormat());
     }
   }
 

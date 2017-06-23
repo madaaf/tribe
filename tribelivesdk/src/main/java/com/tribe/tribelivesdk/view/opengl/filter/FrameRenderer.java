@@ -6,12 +6,17 @@ import com.tribe.tribelivesdk.view.opengl.utils.Common;
 import com.tribe.tribelivesdk.view.opengl.utils.ProgramObject;
 import java.nio.FloatBuffer;
 
+/**
+ * Created by wangyang on 15/7/23.
+ */
 public abstract class FrameRenderer {
 
   public static final String LOG_TAG = Common.LOG_TAG;
 
+  //初始化program 等
   public abstract boolean init(boolean isExternalOES);
 
+  //为了保证GLContext 的对应， 不能等待finalize
   public abstract void release();
 
   public abstract void renderTexture(int texID, Viewport viewport);
@@ -44,7 +49,7 @@ public abstract class FrameRenderer {
   protected static final String SAMPLER2D_VAR_EXTERNAL_OES = "samplerExternalOES";
   protected static final String SAMPLER2D_VAR = "sampler2D";
 
-  protected static final String vectorShaderDrawDefault = "" +
+  protected static final String vshDrawDefault = "" +
       "attribute vec2 vPosition;\n" +
       "varying vec2 texCoord;\n" +
       "uniform mat2 rotation;" +
@@ -62,34 +67,35 @@ public abstract class FrameRenderer {
 
   protected int TEXTURE_2D_BINDABLE;
 
-  protected int vertexBuffer;
-  protected ProgramObject program;
+  protected int mVertexBuffer;
+  protected ProgramObject mProgram;
 
-  protected float[] rotation;
+  protected float[] mRotation;
 
-  protected int textureWidth, textureHeight;
+  protected int mTextureWidth, mTextureHeight;
 
+  //设置界面旋转弧度,一般是 PI / 2 (也就是 90°) 的整数倍
   public void setRotation(float rad) {
     final float cosRad = (float) Math.cos(rad);
     final float sinRad = (float) Math.sin(rad);
 
-    rotation = new float[] {
+    mRotation = new float[] {
         cosRad, sinRad, -sinRad, cosRad
     };
 
-    assert program != null : "setRotation must not be called before init!";
+    assert mProgram != null : "setRotation must not be called before init!";
 
-    program.bind();
-    program.sendUniformMat2(ROTATION_NAME, 1, false, rotation);
+    mProgram.bind();
+    mProgram.sendUniformMat2(ROTATION_NAME, 1, false, mRotation);
   }
 
   protected boolean setProgramDefualt(String vsh, String fsh, boolean isExternalOES) {
     TEXTURE_2D_BINDABLE = isExternalOES ? GLES11Ext.GL_TEXTURE_EXTERNAL_OES : GLES20.GL_TEXTURE_2D;
-    program = new ProgramObject();
-    program.bindAttribLocation(POSITION_NAME, 0);
+    mProgram = new ProgramObject();
+    mProgram.bindAttribLocation(POSITION_NAME, 0);
     String fshResult = (isExternalOES ? REQUIRE_STRING_EXTERNAL_OES : "") +
         String.format(fsh, isExternalOES ? SAMPLER2D_VAR_EXTERNAL_OES : SAMPLER2D_VAR);
-    if (program.init(vsh, fshResult)) {
+    if (mProgram.init(vsh, fshResult)) {
       setRotation(0.0f);
       return true;
     }
@@ -99,11 +105,11 @@ public abstract class FrameRenderer {
   protected void defaultInitialize() {
     int[] vertexBuffer = new int[1];
     GLES20.glGenBuffers(1, vertexBuffer, 0);
-    this.vertexBuffer = vertexBuffer[0];
+    mVertexBuffer = vertexBuffer[0];
 
-    assert this.vertexBuffer != 0 : "Invalid VertexBuffer!";
+    assert mVertexBuffer != 0 : "Invalid VertexBuffer!";
 
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, this.vertexBuffer);
+    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mVertexBuffer);
     FloatBuffer buffer = FloatBuffer.allocate(vertices.length);
     buffer.put(vertices).position(0);
     GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, 32, buffer, GLES20.GL_STATIC_DRAW);

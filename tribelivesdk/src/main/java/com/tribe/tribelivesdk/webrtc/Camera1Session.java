@@ -327,4 +327,8 @@ import org.webrtc.SurfaceTextureHelper;
       return;
     }
   }
+
+  @Override public CaptureFormat getCaptureFormat() {
+    return captureFormat;
+  }
 }

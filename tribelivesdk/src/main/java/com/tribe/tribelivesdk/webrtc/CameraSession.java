@@ -12,6 +12,7 @@ package com.tribe.tribelivesdk.webrtc;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import org.webrtc.CameraEnumerationAndroid;
 
 interface CameraSession {
   enum FailureType {ERROR, DISCONNECTED}
@@ -49,4 +50,6 @@ interface CameraSession {
   void stop();
 
   void setPreviewTexture(CreateSessionCallback callback, SurfaceTexture surfaceTexture);
+
+  CameraEnumerationAndroid.CaptureFormat getCaptureFormat();
 }

@@ -4,6 +4,10 @@ import android.opengl.GLES20;
 import android.util.Log;
 import com.tribe.tribelivesdk.BuildConfig;
 
+/**
+ * Created by wangyang on 15/7/27.
+ */
+
 public class Common {
 
   public static final boolean DEBUG = BuildConfig.DEBUG;

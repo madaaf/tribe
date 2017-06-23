@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Looper;
 import com.tribe.tribelivesdk.stream.FrameManager;
 import java.util.Arrays;
+import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
@@ -48,6 +49,7 @@ import rx.subscriptions.CompositeSubscription;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
   private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
+  private PublishSubject<CameraEnumerationAndroid.CaptureFormat> onNewCaptureFormat = PublishSubject.create();
 
   private final CameraSession.CreateSessionCallback createSessionCallback =
       new CameraSession.CreateSessionCallback() {
@@ -59,6 +61,7 @@ import rx.subscriptions.CompositeSubscription;
             capturerObserver.onCapturerStarted(true /* success */);
             sessionOpening = false;
             currentSession = session;
+            onNewCaptureFormat.onNext(currentSession.getCaptureFormat());
             cameraStatistics = new CameraStatistics(surfaceHelper, eventsHandler);
             firstFrameObserved = false;
             stateLock.notifyAll();
@@ -493,4 +496,8 @@ import rx.subscriptions.CompositeSubscription;
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
   }
+
+  public Observable<CameraEnumerationAndroid.CaptureFormat> onNewCaptureFormat() {
+    return onNewCaptureFormat;
+  };
 }

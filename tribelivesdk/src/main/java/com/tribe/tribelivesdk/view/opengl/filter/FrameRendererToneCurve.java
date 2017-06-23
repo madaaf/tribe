@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * Created by jinchangzhu on 12/28/15.
+ */
 public class FrameRendererToneCurve extends FrameRendererDrawOrigin {
-
   public static final String TONE_CURVE_FRAGMENT_SHADER = "" +
       " precision mediump float;\n" +
       " varying vec2 texCoord;\n" +
@@ -29,27 +31,27 @@ public class FrameRendererToneCurve extends FrameRendererDrawOrigin {
       "     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);\n" +
       " }";
 
-  private int[] toneCurveTexture = new int[] { -1 };
-  private int toneCurveTextureUniformLocation;
+  private int[] mToneCurveTexture = new int[] { -1 };
+  private int mToneCurveTextureUniformLocation;
 
-  private PointF[] rgbCompositeControlPoints;
-  private PointF[] redControlPoints;
-  private PointF[] greenControlPoints;
-  private PointF[] blueControlPoints;
+  private PointF[] mRgbCompositeControlPoints;
+  private PointF[] mRedControlPoints;
+  private PointF[] mGreenControlPoints;
+  private PointF[] mBlueControlPoints;
 
-  private ArrayList<Float> rgbCompositeCurve;
-  private ArrayList<Float> redCurve;
-  private ArrayList<Float> greenCurve;
-  private ArrayList<Float> blueCurve;
+  private ArrayList<Float> mRgbCompositeCurve;
+  private ArrayList<Float> mRedCurve;
+  private ArrayList<Float> mGreenCurve;
+  private ArrayList<Float> mBlueCurve;
 
   public FrameRendererToneCurve() {
     PointF[] defaultCurvePoints = new PointF[] {
         new PointF(0.0f, 0.0f), new PointF(0.5f, 0.5f), new PointF(1.0f, 1.0f)
     };
-    rgbCompositeControlPoints = defaultCurvePoints;
-    redControlPoints = defaultCurvePoints;
-    greenControlPoints = defaultCurvePoints;
-    blueControlPoints = defaultCurvePoints;
+    mRgbCompositeControlPoints = defaultCurvePoints;
+    mRedControlPoints = defaultCurvePoints;
+    mGreenControlPoints = defaultCurvePoints;
+    mBlueControlPoints = defaultCurvePoints;
   }
 
   @Override public String getFragmentShaderString() {
@@ -57,24 +59,32 @@ public class FrameRendererToneCurve extends FrameRendererDrawOrigin {
   }
 
   @Override protected void onInitialized() {
-    toneCurveTextureUniformLocation = program.getUniformLoc("toneCurveTexture");
+    mToneCurveTextureUniformLocation = mProgram.getUniformLoc("toneCurveTexture");
     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
-    GLES20.glGenTextures(1, toneCurveTexture, 0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, toneCurveTexture[0]);
+    GLES20.glGenTextures(1, mToneCurveTexture, 0);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mToneCurveTexture[0]);
     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
-    setRgbCompositeControlPoints(rgbCompositeControlPoints);
-    setRedControlPoints(redControlPoints);
-    setGreenControlPoints(greenControlPoints);
-    setBlueControlPoints(blueControlPoints);
+    setRgbCompositeControlPoints(mRgbCompositeControlPoints);
+    setRedControlPoints(mRedControlPoints);
+    setGreenControlPoints(mGreenControlPoints);
+    setBlueControlPoints(mBlueControlPoints);
 
     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, toneCurveTexture[0]);
-    GLES20.glUniform1i(toneCurveTextureUniformLocation, 3);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mToneCurveTexture[0]);
+    GLES20.glUniform1i(mToneCurveTextureUniformLocation, 3);
   }
+
+  //    protected void onDrawArraysPre() {
+  //        if (mToneCurveTexture[0] != -1) {
+  //            GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+  //            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mToneCurveTexture[0]);
+  //            GLES20.glUniform1i(mToneCurveTextureUniformLocation, 3);
+  //        }
+  //    }
 
   public void setFromCurveFileInputStream(InputStream input) {
     try {
@@ -105,10 +115,10 @@ public class FrameRendererToneCurve extends FrameRendererDrawOrigin {
       }
       input.close();
 
-      rgbCompositeControlPoints = curves.get(0);
-      redControlPoints = curves.get(1);
-      greenControlPoints = curves.get(2);
-      blueControlPoints = curves.get(3);
+      mRgbCompositeControlPoints = curves.get(0);
+      mRedControlPoints = curves.get(1);
+      mGreenControlPoints = curves.get(2);
+      mBlueControlPoints = curves.get(3);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -119,58 +129,68 @@ public class FrameRendererToneCurve extends FrameRendererDrawOrigin {
   }
 
   public void setRgbCompositeControlPoints(PointF[] points) {
-    rgbCompositeControlPoints = points;
-    rgbCompositeCurve = createSplineCurve(rgbCompositeControlPoints);
+    mRgbCompositeControlPoints = points;
+    mRgbCompositeCurve = createSplineCurve(mRgbCompositeControlPoints);
     //updateToneCurveTexture();
   }
 
   public void setRedControlPoints(PointF[] points) {
-    redControlPoints = points;
-    redCurve = createSplineCurve(redControlPoints);
+    mRedControlPoints = points;
+    mRedCurve = createSplineCurve(mRedControlPoints);
     //updateToneCurveTexture();
   }
 
   public void setGreenControlPoints(PointF[] points) {
-    greenControlPoints = points;
-    greenCurve = createSplineCurve(greenControlPoints);
+    mGreenControlPoints = points;
+    mGreenCurve = createSplineCurve(mGreenControlPoints);
     //updateToneCurveTexture();
   }
 
   public void setBlueControlPoints(PointF[] points) {
-    blueControlPoints = points;
-    blueCurve = createSplineCurve(blueControlPoints);
+    mBlueControlPoints = points;
+    mBlueCurve = createSplineCurve(mBlueControlPoints);
     updateToneCurveTexture();
   }
 
   private void updateToneCurveTexture() {
     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, toneCurveTexture[0]);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mToneCurveTexture[0]);
 
-    if ((redCurve.size() >= 256) &&
-        (greenCurve.size() >= 256) &&
-        (blueCurve.size() >= 256) &&
-        (rgbCompositeCurve.size() >= 256)) {
+    if ((mRedCurve.size() >= 256) &&
+        (mGreenCurve.size() >= 256) &&
+        (mBlueCurve.size() >= 256) &&
+        (mRgbCompositeCurve.size() >= 256)) {
       byte[] toneCurveByteArray = new byte[256 * 4];
       for (int currentCurveIndex = 0; currentCurveIndex < 256; currentCurveIndex++) {
         // BGRA for upload to texture
         toneCurveByteArray[currentCurveIndex * 4 + 2] = (byte) ((int) Math.min(Math.max(
             currentCurveIndex +
-                blueCurve.get(currentCurveIndex) +
-                rgbCompositeCurve.get(currentCurveIndex), 0), 255) & 0xff);
+                mBlueCurve.get(currentCurveIndex) +
+                mRgbCompositeCurve.get(currentCurveIndex), 0), 255) & 0xff);
         toneCurveByteArray[currentCurveIndex * 4 + 1] = (byte) ((int) Math.min(Math.max(
             currentCurveIndex +
-                greenCurve.get(currentCurveIndex) +
-                rgbCompositeCurve.get(currentCurveIndex), 0), 255) & 0xff);
+                mGreenCurve.get(currentCurveIndex) +
+                mRgbCompositeCurve.get(currentCurveIndex), 0), 255) & 0xff);
         toneCurveByteArray[currentCurveIndex * 4] = (byte) ((int) Math.min(Math.max(
             currentCurveIndex +
-                redCurve.get(currentCurveIndex) +
-                rgbCompositeCurve.get(currentCurveIndex), 0), 255) & 0xff);
+                mRedCurve.get(currentCurveIndex) +
+                mRgbCompositeCurve.get(currentCurveIndex), 0), 255) & 0xff);
         toneCurveByteArray[currentCurveIndex * 4 + 3] = (byte) (255 & 0xff);
       }
 
       GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 256 /*width*/, 1 /*height*/, 0,
           GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ByteBuffer.wrap(toneCurveByteArray));
     }
+    //        Buffer pixels!
+    //        GLES20.glTexImage2D(int target,
+    //            int level,
+    //            int internalformat,
+    //            int width,
+    //            int height,
+    //            int border,
+    //            int format,
+    //            int type,
+    //            java.nio.Buffer pixels);
   }
 
   private ArrayList<Float> createSplineCurve(PointF[] points) {
@@ -357,6 +377,7 @@ public class FrameRendererToneCurve extends FrameRendererDrawOrigin {
   }
 
   public static final CurveFilter[] CURVE_FILTERS = new CurveFilter[] {
-      new CurveFilter("06", R.string.app_name, R.mipmap.filter_06)
+      new CurveFilter("06", R.string.app_name, R.mipmap.filter_06),
+      new CurveFilter("blend", R.string.app_name, R.mipmap.filter_blend)
   };
 }

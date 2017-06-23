@@ -6,7 +6,6 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -16,7 +15,6 @@ import butterknife.Unbinder;
 import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.R2;
 import com.tribe.tribelivesdk.view.opengl.filter.FrameRenderer;
-import com.tribe.tribelivesdk.view.opengl.filter.FrameRendererDrawOrigin;
 import com.tribe.tribelivesdk.view.opengl.filter.FrameRendererToneCurve;
 import com.tribe.tribelivesdk.view.opengl.render.GLTextureView;
 import com.tribe.tribelivesdk.view.opengl.utils.Common;
@@ -25,8 +23,11 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import org.webrtc.CameraEnumerationAndroid;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class GlLocalView extends FrameLayout {
@@ -39,6 +40,8 @@ public class GlLocalView extends FrameLayout {
   private Object frameListenerLock = new Object();
   private boolean frontFacing = true;
 
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Frame> onNewFrame = PublishSubject.create();
   private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
 
@@ -52,7 +55,7 @@ public class GlLocalView extends FrameLayout {
     init();
   }
 
-  public void init() {
+  private void init() {
     initResources();
     initDependencyInjector();
 
@@ -62,8 +65,6 @@ public class GlLocalView extends FrameLayout {
     previewGLTexture = new FilterGLTextureView(getContext(), null);
     previewContainer.addView(previewGLTexture, ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);
-    previewGLTexture.setFrameRenderer(
-        new CurveFilterCreator(FrameRendererToneCurve.CURVE_FILTERS[0]));
   }
 
   private void initResources() {
@@ -72,6 +73,20 @@ public class GlLocalView extends FrameLayout {
 
   private void initDependencyInjector() {
 
+  }
+
+  public void initOnNewCaptureFormat(Observable<CameraEnumerationAndroid.CaptureFormat> obs) {
+    subscriptions.add(obs.observeOn(AndroidSchedulers.mainThread()).subscribe(captureFormat -> onCameraCaptureFormatChange(captureFormat)));
+  }
+
+  private void onCameraCaptureFormatChange(CameraEnumerationAndroid.CaptureFormat captureFormat) {
+    //ViewGroup.LayoutParams plp = previewGLTexture.getLayoutParams();
+    //plp.width = getWidth();
+    //plp.height = getWidth() * (captureFormat.width / captureFormat.height);
+    //previewGLTexture.setLayoutParams(plp);
+    //
+    //previewWidth = plp.width;
+    //previewHeight = plp.height;
   }
 
   public interface RendererCreator {
@@ -139,7 +154,8 @@ public class GlLocalView extends FrameLayout {
       surfaceTexture = new SurfaceTexture(textureID);
       surfaceTexture.setOnFrameAvailableListener(this);
 
-      FrameRenderer renderer = FrameRendererDrawOrigin.create(false);
+      FrameRenderer renderer =
+          new CurveFilterCreator(FrameRendererToneCurve.CURVE_FILTERS[1]).createRenderer();
 
       if (!renderer.init(true)) {
         renderer.release();
@@ -148,7 +164,7 @@ public class GlLocalView extends FrameLayout {
 
       myRenderer = renderer;
 
-      renderer.setRotation((float) Math.PI / 2.0f);
+      myRenderer.setRotation((float) Math.PI / 2.0f);
 
       requestRender();
 
@@ -185,17 +201,15 @@ public class GlLocalView extends FrameLayout {
 
       calcViewport();
 
-      post(new Runnable() {
-        @Override public void run() {
-          previewGLTexture.setPivotX(width / 2);
-          previewGLTexture.setPivotY(height / 2);
-          float scale = 1.0f * previewContainer.getWidth() / width;
-          previewGLTexture.setScaleX(scale);
-          previewGLTexture.setScaleY(scale);
+      post(() -> {
+        previewGLTexture.setPivotX(width / 2);
+        previewGLTexture.setPivotY(height / 2);
+        float scale = 1.0f * previewContainer.getWidth() / width;
+        previewGLTexture.setScaleX(scale);
+        previewGLTexture.setScaleY(scale);
 
-          setX((previewContainer.getWidth() - width) / 2);
-          setY((previewContainer.getHeight() - height) / 2);
-        }
+        setX((previewContainer.getWidth() - width) / 2);
+        setY((previewContainer.getHeight() - height) / 2);
       });
     }
 

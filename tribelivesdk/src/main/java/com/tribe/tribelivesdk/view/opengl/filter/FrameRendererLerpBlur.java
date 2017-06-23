@@ -5,9 +5,12 @@ import android.util.Log;
 import com.tribe.tribelivesdk.view.opengl.utils.FrameBufferObject;
 import com.tribe.tribelivesdk.view.opengl.utils.ProgramObject;
 
+/**
+ * Created by wangyang on 15/7/24.
+ */
 public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
 
-  private static final String vectorShaderUpScale = "" +
+  private static final String vshUpScale = "" +
       "attribute vec2 vPosition;\n" +
       "varying vec2 texCoord;\n" +
       "void main()\n" +
@@ -16,7 +19,7 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
       "   texCoord = vPosition / 2.0 + 0.5;\n" +
       "}";
 
-  private static final String fragmentShaderUpScale = "" +
+  private static final String fshUpScale = "" +
       "precision mediump float;\n" +
       "varying vec2 texCoord;\n" +
       "uniform sampler2D inputImageTexture;\n" +
@@ -26,7 +29,7 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
       "   gl_FragColor = texture2D(inputImageTexture, texCoord);\n" +
       "}";
 
-  private static final String vectorShaderBlurUpScale = "" +
+  private static final String vshBlurUpScale = "" +
       "attribute vec2 vPosition;\n" +
       "varying vec2 texCoords[5];\n" +
       "uniform vec2 samplerSteps;\n" +
@@ -42,7 +45,7 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
       "  texCoords[4] = texCoord + 2.0 * samplerSteps;\n" +
       "}";
 
-  private static final String fragmentShaderBlurUpScale = "" +
+  private static final String fshBlurUpScale = "" +
       "precision mediump float;\n" +
       "varying vec2 texCoords[5];\n" +
       "uniform sampler2D inputImageTexture;\n" +
@@ -58,7 +61,7 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
       "  gl_FragColor = vec4(color, 1.0);\n" +
       "}";
 
-  private static final String vectorShaderBlurCache = "" +
+  private static final String vshBlurCache = "" +
       "attribute vec2 vPosition;\n" +
       "varying vec2 texCoord;\n" +
       "void main()\n" +
@@ -67,7 +70,7 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
       "   texCoord = vPosition / 2.0 + 0.5;\n" +
       "}";
 
-  private static final String fragmentShaderBlur = "" +
+  private static final String fshBlur = "" +
       "precision highp float;\n" +
       "varying vec2 texCoord;\n" +
       "uniform sampler2D inputImageTexture;\n" +
@@ -101,20 +104,20 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
 
   private static final String SAMPLER_STEPS = "samplerSteps";
 
-  private ProgramObject scaleProgram;
-  private int[] textureDownScale;
+  private ProgramObject mScaleProgram;
+  private int[] mTextureDownScale;
 
-  private FrameBufferObject frameBuffer;
-  private Viewport texViewport;
-  private int samplerStepLoc = 0;
+  private FrameBufferObject mFramebuffer;
+  private Viewport mTexViewport;
+  private int mSamplerStepLoc = 0;
 
-  private int intensity = 0;
-  private boolean shouldUpdateTexture = true;
+  private int mIntensity = 0;
+  private boolean mShouldUpdateTexture = true;
 
-  private float sampleScaling = 1.0f;
+  private float mSampleScaling = 1.0f;
 
-  private final int level = 16;
-  private final float base = 2.0f;
+  private final int mLevel = 16;
+  private final float mBase = 2.0f;
 
   public static FrameRendererLerpBlur create(boolean isExternalOES) {
     FrameRendererLerpBlur renderer = new FrameRendererLerpBlur();
@@ -125,12 +128,14 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
     return renderer;
   }
 
+  //intensity >= 0
   public void setIntensity(int intensity) {
-    if (this.intensity == intensity) return;
 
-    this.intensity = intensity;
-    if (intensity > level) this.intensity = level;
-    shouldUpdateTexture = true;
+    if (intensity == mIntensity) return;
+
+    mIntensity = intensity;
+    if (mIntensity > mLevel) mIntensity = mLevel;
+    mShouldUpdateTexture = true;
   }
 
   @Override public boolean init(boolean isExternalOES) {
@@ -138,31 +143,37 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
   }
 
   @Override public void renderTexture(int texID, Viewport viewport) {
-    if (intensity == 0) {
+
+    if (mIntensity == 0) {
       GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
       super.renderTexture(texID, viewport);
       return;
     }
 
+    //        if(mShouldUpdateTexture) {
+    //            updateTexture();
+    //        }
+
     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-    frameBuffer.bindTexture(textureDownScale[0]);
+    mFramebuffer.bindTexture(mTextureDownScale[0]);
+    //down scale
 
-    texViewport.width = calcMips(512, 1);
-    texViewport.height = calcMips(512, 1);
-    super.renderTexture(texID, texViewport);
+    mTexViewport.width = calcMips(512, 1);
+    mTexViewport.height = calcMips(512, 1);
+    super.renderTexture(texID, mTexViewport);
 
-    scaleProgram.bind();
-    for (int i = 1; i < intensity; ++i) {
-      frameBuffer.bindTexture(textureDownScale[i]);
-      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDownScale[i - 1]);
+    mScaleProgram.bind();
+    for (int i = 1; i < mIntensity; ++i) {
+      mFramebuffer.bindTexture(mTextureDownScale[i]);
+      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDownScale[i - 1]);
       GLES20.glViewport(0, 0, calcMips(512, i + 1), calcMips(512, i + 1));
       GLES20.glDrawArrays(DRAW_FUNCTION, 0, 4);
     }
 
-    for (int i = intensity - 1; i > 0; --i) {
-      frameBuffer.bindTexture(textureDownScale[i - 1]);
-      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDownScale[i]);
+    for (int i = mIntensity - 1; i > 0; --i) {
+      mFramebuffer.bindTexture(mTextureDownScale[i - 1]);
+      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDownScale[i]);
       GLES20.glViewport(0, 0, calcMips(512, i), calcMips(512, i));
       GLES20.glDrawArrays(DRAW_FUNCTION, 0, 4);
     }
@@ -170,36 +181,72 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
     GLES20.glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
 
     GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDownScale[0]);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDownScale[0]);
+    //        GLES20.glUniform2f(mSamplerStepLoc, 0.0f, (0.5f / mTexViewport.width) * mSampleScaling);
 
     GLES20.glDrawArrays(DRAW_FUNCTION, 0, 4);
   }
 
   @Override public void release() {
-    scaleProgram.release();
-    frameBuffer.release();
-    GLES20.glDeleteTextures(textureDownScale.length, textureDownScale, 0);
-    scaleProgram = null;
-    frameBuffer = null;
+    mScaleProgram.release();
+    mFramebuffer.release();
+    GLES20.glDeleteTextures(mTextureDownScale.length, mTextureDownScale, 0);
+    mScaleProgram = null;
+    mFramebuffer = null;
   }
 
   private boolean initLocal() {
-    genMipmaps(level, 512, 512);
-    frameBuffer = new FrameBufferObject();
 
-    scaleProgram = new ProgramObject();
-    scaleProgram.bindAttribLocation(POSITION_NAME, 0);
+    genMipmaps(mLevel, 512, 512);
+    mFramebuffer = new FrameBufferObject();
 
-    if (!scaleProgram.init(vectorShaderUpScale, fragmentShaderUpScale)) {
+    mScaleProgram = new ProgramObject();
+    mScaleProgram.bindAttribLocation(POSITION_NAME, 0);
+
+    //        if(!mScaleProgram.init(vshBlurUpScale, fshBlurUpScale)) {
+    if (!mScaleProgram.init(vshUpScale, fshUpScale)) {
       Log.e(LOG_TAG, "Lerp blur initLocal failed...");
       return false;
     }
+
+    //        mScaleProgram.bind();
+    //        mSamplerStepLoc = mScaleProgram.getUniformLoc(SAMPLER_STEPS);
 
     return true;
   }
 
   private void updateTexture() {
-
+    //        if(mIntensity == 0)
+    //            return;
+    //
+    //        int useIntensity = mIntensity;
+    //
+    //        if(useIntensity > 6) {
+    //            mSampleScaling = useIntensity / 6.0f;
+    //            useIntensity = 6;
+    //        }
+    //
+    //        int scalingWidth = mTextureHeight / useIntensity;
+    //        int scalingHeight = mTextureWidth / useIntensity;
+    //
+    //        if(scalingWidth == 0)
+    //            scalingWidth = 1;
+    //        if(scalingHeight == 0)
+    //            scalingHeight = 1;
+    //
+    //        mTexViewport = new Viewport(0, 0, scalingWidth, scalingHeight);
+    //
+    //        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDownScale[0]);
+    //        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, scalingWidth, scalingHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+    //
+    //        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDownScale[1]);
+    //        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, scalingWidth, scalingHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+    //
+    //        mShouldUpdateTexture = false;
+    //
+    //        Log.i(LOG_TAG, "Lerp blur - updateTexture");
+    //
+    //        Common.checkGLError("Lerp blur - updateTexture");
   }
 
   @Override public void setTextureSize(int w, int h) {
@@ -207,11 +254,11 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
   }
 
   private void genMipmaps(int level, int width, int height) {
-    textureDownScale = new int[level];
-    GLES20.glGenTextures(level, textureDownScale, 0);
+    mTextureDownScale = new int[level];
+    GLES20.glGenTextures(level, mTextureDownScale, 0);
 
     for (int i = 0; i < level; ++i) {
-      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDownScale[i]);
+      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDownScale[i]);
       GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, calcMips(width, i + 1),
           calcMips(height, i + 1), 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
       GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
@@ -222,10 +269,11 @@ public class FrameRendererLerpBlur extends FrameRendererDrawOrigin {
           GLES20.GL_CLAMP_TO_EDGE);
     }
 
-    texViewport = new Viewport(0, 0, 512, 512);
+    mTexViewport = new Viewport(0, 0, 512, 512);
   }
 
   private int calcMips(int len, int level) {
+    //        return (int)(len / Math.pow(mBase, (level + 1)));
     return len / (level + 1);
   }
 }
