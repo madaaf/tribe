@@ -25,6 +25,7 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
@@ -432,6 +433,9 @@ public class LiveContainer extends FrameLayout {
           onDropped.onNext(draggedTileView);
           enabledTimer = true;
           resetTimer();
+          if(draggedTileView.getRecipient().getId().equals(Recipient.ID_CALL_ROULETTE)){
+            viewInviteLive.diceDragued();
+          }
           viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         }

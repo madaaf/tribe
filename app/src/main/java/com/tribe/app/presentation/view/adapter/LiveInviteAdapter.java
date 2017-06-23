@@ -42,6 +42,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   private List<Recipient> items;
   private boolean allEnabled = true;
   private Context context;
+  private boolean diceDragued = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -113,10 +114,14 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   public void setItems(List<Recipient> items) {
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
-    this.items.add(getDiceItem());
+    if (!diceDragued) this.items.add(getDiceItem());
     this.items.addAll(items);
     ListUtils.addEmptyItems(screenUtils, this.items);
     notifyDataSetChanged();
+  }
+
+  public void diceDragued() {
+    diceDragued = true;
   }
 
   public Recipient getItemAtPosition(int position) {

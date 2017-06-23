@@ -12,7 +12,6 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -165,6 +164,10 @@ public class LiveInviteView extends FrameLayout {
 
   public void removeItemAtPosition(int position) {
     //adapter.removeItem(position);
+  }
+
+  public void diceDragued() {
+    adapter.diceDragued();
   }
 
   public void setDragging(boolean dragging) {
