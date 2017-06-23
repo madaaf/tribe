@@ -172,11 +172,11 @@ public class DiceView extends FrameLayout {
   }
 
   private void startDiceAnimation() {
+    dice.setEnabled(false);
+    setAlphaBackground(1f);
     if (type == TYPE_FROM_ROOM) {
       reduceDice();
     } else {
-      dice.setEnabled(false);
-      setAlphaBackground(1f);
       dice.animate()
           .scaleX((float) 1)
           .scaleY(1)
