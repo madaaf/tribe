@@ -8,28 +8,39 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.tribelivesdk.R;
+import com.tribe.tribelivesdk.R2;
 import com.tribe.tribelivesdk.view.opengl.filter.FrameRenderer;
 import com.tribe.tribelivesdk.view.opengl.filter.FrameRendererDrawOrigin;
+import com.tribe.tribelivesdk.view.opengl.filter.FrameRendererToneCurve;
 import com.tribe.tribelivesdk.view.opengl.render.GLTextureView;
 import com.tribe.tribelivesdk.view.opengl.utils.Common;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 public class GlLocalView extends FrameLayout {
 
-  private FrameLayout previewContainer;
+  @BindView(R2.id.viewContainer) FrameLayout previewContainer;
   private FilterGLTextureView previewGLTexture;
 
   private Unbinder unbinder;
   private int previewWidth, previewHeight;
   private Object frameListenerLock = new Object();
-  private FrameListener frameListener;
+  private boolean frontFacing = true;
+
+  private PublishSubject<Frame> onNewFrame = PublishSubject.create();
+  private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
 
   public GlLocalView(Context context) {
     super(context);
@@ -45,8 +56,14 @@ public class GlLocalView extends FrameLayout {
     initResources();
     initDependencyInjector();
 
-    LayoutInflater.from(getContext()).inflate(R.layout.view_gl_local, null);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_gl_local, this);
     unbinder = ButterKnife.bind(this);
+
+    previewGLTexture = new FilterGLTextureView(getContext(), null);
+    previewContainer.addView(previewGLTexture, ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT);
+    previewGLTexture.setFrameRenderer(
+        new CurveFilterCreator(FrameRendererToneCurve.CURVE_FILTERS[0]));
   }
 
   private void initResources() {
@@ -55,10 +72,6 @@ public class GlLocalView extends FrameLayout {
 
   private void initDependencyInjector() {
 
-  }
-
-  public interface FrameListener {
-    void onNewFrame(Frame frame, long timestamp);
   }
 
   public interface RendererCreator {
@@ -78,7 +91,7 @@ public class GlLocalView extends FrameLayout {
     private SurfaceTexture surfaceTexture;
     private int textureID;
 
-    public FrameRenderer.Viewport drawViewport;
+    private FrameRenderer.Viewport drawViewport;
 
     public class ClearColor {
       public float r, g, b, a;
@@ -139,22 +152,18 @@ public class GlLocalView extends FrameLayout {
 
       requestRender();
 
+      onSurfaceTextureReady.onNext(surfaceTexture);
       startPreview();
     }
 
     public void startPreview() {
-      //cameraInstance().startPreview(surfaceTexture);
-      //final int rotationX;
-      //if (cameraInstance().getCameraID() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-      //  rotationX = 180;
-      //} else {
-      //  rotationX = 0;
-      //}
-      //post(new Runnable() {
-      //  @Override public void run() {
-      //    setRotationX(rotationX);
-      //  }
-      //});
+      final int rotationX;
+      if (frontFacing) {
+        rotationX = 180;
+      } else {
+        rotationX = 0;
+      }
+      post(() -> setRotationX(rotationX));
     }
 
     private void calcViewport() {
@@ -167,7 +176,7 @@ public class GlLocalView extends FrameLayout {
     }
 
     @Override public void onSurfaceChanged(GL10 gl, final int width, final int height) {
-      Log.i("stdzhu", String.format("onSurfaceChanged: %d x %d", width, height));
+      Timber.d("onSurfaceChanged: %d x %d", width, height);
 
       GLES20.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
@@ -195,12 +204,11 @@ public class GlLocalView extends FrameLayout {
 
       myRenderer.renderTexture(textureID, drawViewport);
 
-      synchronized (frameListenerLock) {
-        if (frameListener != null) {
-          Timber.d("New Frame: " + System.currentTimeMillis());
-          //frameListener.onNewFrame(roiImage, System.nanoTime() / 1000);
-        }
-      }
+      //synchronized (frameListenerLock) {
+      //  Timber.d("New Frame: " + System.currentTimeMillis());
+      //  //onNewFrame.onNext(new Frame()); TODO SEND FRAME after glReadPixels
+      //
+      //}
 
       if (surfaceTexture != null) surfaceTexture.updateTexImage();
     }
@@ -223,5 +231,36 @@ public class GlLocalView extends FrameLayout {
           GL10.GL_CLAMP_TO_EDGE);
       return texID[0];
     }
+  }
+
+  class CurveFilterCreator implements RendererCreator {
+    private FrameRendererToneCurve.CurveFilter curveFilter;
+
+    public CurveFilterCreator(FrameRendererToneCurve.CurveFilter curveFilter) {
+      this.curveFilter = curveFilter;
+    }
+
+    @Override public FrameRenderer createRenderer() {
+      FrameRendererToneCurve renderer = new FrameRendererToneCurve();
+      try {
+        renderer.setFromCurveFileInputStream(new BufferedInputStream(
+            getResources().getAssets().open(curveFilter.getAssertFileName())));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      if (renderer.init(true)) {
+        return renderer;
+      } else {
+        return null;
+      }
+    }
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<SurfaceTexture> onSurfaceTextureReady() {
+    return onSurfaceTextureReady;
   }
 }

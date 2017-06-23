@@ -6,7 +6,6 @@ import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
 import com.tribe.tribelivesdk.webrtc.CameraCapturer;
-import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.List;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
@@ -14,7 +13,6 @@ import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
-import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 import rx.subscriptions.CompositeSubscription;
@@ -35,8 +33,6 @@ public class TribeLiveLocalStream {
   private AudioTrack audioTrack;
   private com.tribe.tribelivesdk.core.MediaConstraints mediaConstraints;
   private LocalPeerView peerView;
-  private VideoRenderer videoRenderer;
-  private TribeVideoRenderer localVideoRenderer;
   private VideoSource videoSource;
   private AudioSource audioSource;
   private VideoTrack videoTrack;
@@ -59,8 +55,6 @@ public class TribeLiveLocalStream {
 
     this.context = context;
     this.peerView = peerView;
-    this.videoRenderer = peerView.getRemoteRenderer();
-    this.localVideoRenderer = peerView.getLocalRenderer();
     this.peerConnectionFactory = peerConnectionFactory;
     mediaConstraints =
         new com.tribe.tribelivesdk.core.MediaConstraints.MediaConstraintsBuilder().build();
@@ -68,8 +62,9 @@ public class TribeLiveLocalStream {
     generateVideoCapturer();
 
     if (capturer != null) {
-      subscriptions.add(
-          capturer.onLocalFrame().subscribe(frame -> localVideoRenderer.renderFrame(frame)));
+      subscriptions.add(peerView.getGlLocalView()
+          .onSurfaceTextureReady()
+          .subscribe(surfaceTexture -> capturer.setPreviewTexture(surfaceTexture)));
     }
   }
 
@@ -86,12 +81,11 @@ public class TribeLiveLocalStream {
 
     videoSource = peerConnectionFactory.createVideoSource(capturer);
     videoTrack = peerConnectionFactory.createVideoTrack("APPEARv0", videoSource);
-    videoTrack.addRenderer(videoRenderer);
     mediaStream.addTrack(videoTrack);
   }
 
   private void generateVideoCapturer() {
-    Camera1Enumerator enumerator = new Camera1Enumerator(true);
+    Camera1Enumerator enumerator = new Camera1Enumerator(false);
 
     Timber.d("Creating capturer");
 
@@ -248,18 +242,18 @@ public class TribeLiveLocalStream {
   }
 
   public void startGame(Game game) {
-    if (game.isLocalFrameDifferent()) {
-      stopVideoCapture();
-      videoTrack.removeRenderer(videoRenderer);
-      startVideoCapture();
-    }
+    //if (game.isLocalFrameDifferent()) {
+    //  stopVideoCapture();
+    //  videoTrack.removeRenderer(videoRenderer);
+    //  startVideoCapture();
+    //}
   }
 
   public void stopGame() {
-    peerView.initRemoteRenderer();
-    videoRenderer = peerView.getRemoteRenderer();
-    stopVideoCapture();
-    videoTrack.addRenderer(videoRenderer);
-    startVideoCapture();
+    //peerView.initRemoteRenderer();
+    //videoRenderer = peerView.getRemoteRenderer();
+    //stopVideoCapture();
+    //videoTrack.addRenderer(videoRenderer);
+    //startVideoCapture();
   }
 }

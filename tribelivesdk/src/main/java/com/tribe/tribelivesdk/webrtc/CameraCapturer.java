@@ -11,6 +11,7 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Looper;
@@ -96,8 +97,8 @@ import rx.subscriptions.CompositeSubscription;
                 switchState = SwitchState.IDLE;
               }
 
-              if (failureType
-                  == com.tribe.tribelivesdk.webrtc.CameraSession.FailureType.DISCONNECTED) {
+              if (failureType ==
+                  com.tribe.tribelivesdk.webrtc.CameraSession.FailureType.DISCONNECTED) {
                 eventsHandler.onCameraDisconnected();
               } else {
                 eventsHandler.onCameraError(error);
@@ -374,6 +375,25 @@ import rx.subscriptions.CompositeSubscription;
 
   @Override public boolean isScreencast() {
     return false;
+  }
+
+  @Override public void setPreviewTexture(SurfaceTexture surfaceTexture) {
+    Logging.d(TAG, "Set preview texture");
+
+    synchronized (stateLock) {
+      while (sessionOpening) {
+        Logging.d(TAG, "Set preview texture : Waiting for session to open");
+        ThreadUtils.waitUninterruptibly(stateLock);
+      }
+
+      if (currentSession != null) {
+        currentSession.setPreviewTexture(createSessionCallback, surfaceTexture);
+      } else {
+        Logging.d(TAG, "Set preview texture : No session open");
+      }
+    }
+
+    Logging.d(TAG, "Set preview texture : done");
   }
 
   public void printStackTrace() {

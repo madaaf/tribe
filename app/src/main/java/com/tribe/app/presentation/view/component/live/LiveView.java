@@ -627,7 +627,7 @@ public class LiveView extends FrameLayout {
         }));
 
     Timber.d("Initiating Room");
-    room.connect(options);
+    //room.connect(options);
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {

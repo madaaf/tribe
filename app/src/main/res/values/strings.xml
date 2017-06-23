@@ -585,4 +585,9 @@
 	<string name="roll_the_dice_grid_button">Roll the dice to meet new people!</string>
 	<string name="roll_the_dice_next_button">Next!</string>
 	<string name="roll_the_dice_notification">%1$s just rolled the dice!</string>
+	
+	<!-- Fallback call invitations -->
+	<string name="fallback_invitation_call_title">If you don’t tell your\nfriends, they won’t join!</string>
+	<string name="fallback_invitation_call_close">Close anyway</string>
+	<string name="fallback_invitation_more">More</string>
 </resources>

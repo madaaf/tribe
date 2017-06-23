@@ -11,6 +11,7 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.Surface;
@@ -63,14 +64,6 @@ import org.webrtc.SurfaceTextureHelper;
       return;
     }
 
-    try {
-      camera.setPreviewTexture(surfaceTextureHelper.getSurfaceTexture());
-    } catch (IOException e) {
-      camera.release();
-      callback.onFailure(FailureType.ERROR, e.getMessage());
-      return;
-    }
-
     final android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
     android.hardware.Camera.getCameraInfo(cameraId, info);
 
@@ -106,15 +99,13 @@ import org.webrtc.SurfaceTextureHelper;
     parameters.setPreviewFpsRange(captureFormat.framerate.min, captureFormat.framerate.max);
     parameters.setPreviewSize(captureFormat.width, captureFormat.height);
     parameters.setPictureSize(pictureSize.width, pictureSize.height);
-    if (!captureToTexture) {
-      parameters.setPreviewFormat(captureFormat.imageFormat);
-    }
 
     if (parameters.isVideoStabilizationSupported()) {
       parameters.setVideoStabilization(true);
     }
     if (focusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
       parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+
     }
 
     camera.setParameters(parameters);
@@ -323,6 +314,17 @@ import org.webrtc.SurfaceTextureHelper;
   private void checkIsOnCameraThread() {
     if (Thread.currentThread() != cameraThreadHandler.getLooper().getThread()) {
       throw new IllegalStateException("Wrong thread");
+    }
+  }
+
+  @Override
+  public void setPreviewTexture(CreateSessionCallback callback, SurfaceTexture surfaceTexture) {
+    try {
+      camera.setPreviewTexture(surfaceTexture);
+    } catch (IOException e) {
+      camera.release();
+      callback.onFailure(FailureType.ERROR, e.getMessage());
+      return;
     }
   }
 }

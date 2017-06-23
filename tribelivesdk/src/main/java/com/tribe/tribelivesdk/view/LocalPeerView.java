@@ -3,23 +3,20 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.support.v4.util.Pair;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
-import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
-import java.util.concurrent.TimeUnit;
-import org.webrtc.VideoRenderer;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
-public class LocalPeerView extends PeerView {
+public class LocalPeerView extends FrameLayout {
 
   // VARIABLES
   private boolean frontFacing = true;
   private TribePeerMediaConfiguration mediaConfiguration;
-  private TribeVideoRenderer localRenderer;
+  private GlLocalView glLocalView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -49,27 +46,12 @@ public class LocalPeerView extends PeerView {
   }
 
   private void init() {
-    TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
-    textureViewRenderer.init(null, rendererEvents);
-    initRemoteRenderer();
-    initLocalRenderer();
-    setMirror(true);
+    initGlLocalView();
   }
 
-  public void initRemoteRenderer() {
-    remoteRenderer = new VideoRenderer(textureViewRenderer);
-  }
-
-  private void initLocalRenderer() {
-    localRenderer = new TribeVideoRenderer(textureViewRenderer);
-  }
-
-  protected void removeLocalRenderer() {
-    if (localRenderer != null) {
-      Timber.d("localRenderer dispose");
-      localRenderer.dispose();
-      localRenderer = null;
-    }
+  private void initGlLocalView() {
+    glLocalView = new GlLocalView(getContext());
+    addView(glLocalView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
   }
 
   //////////////
@@ -77,16 +59,7 @@ public class LocalPeerView extends PeerView {
   //////////////
 
   public void dispose() {
-    super.dispose();
-    removeLocalRenderer();
     if (subscriptions != null) subscriptions.clear();
-  }
-
-  @Override public void onFirstFrameRendered() {
-  }
-
-  @Override public void onPreviewSizeChanged(int width, int height) {
-
   }
 
   public void initEnableCameraSubscription(Observable<TribePeerMediaConfiguration> obs) {
@@ -99,10 +72,10 @@ public class LocalPeerView extends PeerView {
 
   public void initSwitchCameraSubscription(Observable<Void> obs) {
     onSwitchCamera = obs;
-    subscriptions.add(onSwitchCamera.doOnNext(aVoid -> frontFacing = !frontFacing)
-        .delay(200, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> setMirror(frontFacing)));
+    //subscriptions.add(onSwitchCamera.doOnNext(aVoid -> frontFacing = !frontFacing)
+    //    .delay(200, TimeUnit.MILLISECONDS)
+    //    .observeOn(AndroidSchedulers.mainThread())
+    //    .subscribe(aVoid -> setMirror(frontFacing)));
   }
 
   public void initSwitchFilterSubscription(Observable<Void> obs) {
@@ -125,8 +98,8 @@ public class LocalPeerView extends PeerView {
     return frontFacing;
   }
 
-  public TribeVideoRenderer getLocalRenderer() {
-    return localRenderer;
+  public GlLocalView getGlLocalView() {
+    return glLocalView;
   }
 
   /////////////////

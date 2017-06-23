@@ -10,6 +10,7 @@
 
 package com.tribe.tribelivesdk.webrtc;
 
+import android.graphics.SurfaceTexture;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.VideoCapturer;
@@ -84,8 +85,8 @@ public interface CameraVideoCapturer extends VideoCapturer {
         Logging.d(TAG, "Camera fps: " + cameraFps + ".");
         if (frameCount == 0) {
           ++freezePeriodCount;
-          if (CAMERA_OBSERVER_PERIOD_MS * freezePeriodCount >= CAMERA_FREEZE_REPORT_TIMOUT_MS
-              && eventsHandler != null) {
+          if (CAMERA_OBSERVER_PERIOD_MS * freezePeriodCount >= CAMERA_FREEZE_REPORT_TIMOUT_MS &&
+              eventsHandler != null) {
             Logging.e(TAG, "Camera freezed.");
             if (surfaceTextureHelper.isTextureInUse()) {
               // This can only happen if we are capturing to textures.
@@ -132,4 +133,6 @@ public interface CameraVideoCapturer extends VideoCapturer {
   }
 
   void switchFilter();
+
+  void setPreviewTexture(SurfaceTexture surfaceTexture);
 }

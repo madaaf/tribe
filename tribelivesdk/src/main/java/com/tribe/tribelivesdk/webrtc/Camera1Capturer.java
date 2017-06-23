@@ -14,6 +14,7 @@ import android.content.Context;
 import org.webrtc.SurfaceTextureHelper;
 
 public class Camera1Capturer extends CameraCapturer {
+
   private final boolean captureToTexture;
 
   public Camera1Capturer(String cameraName, CameraEventsHandler eventsHandler,

@@ -25,9 +25,11 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
+
 import java.io.Writer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGL11;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -41,7 +43,6 @@ import javax.microedition.khronos.opengles.GL10;
  * See http://stackoverflow.com/questions/12061419/converting-from-glsurfaceview-to-textureview-via-gltextureview
  */
 public class GLTextureView extends TextureView implements TextureView.SurfaceTextureListener {
-
   private final static String TAG = "GLTextureView";
   private final static boolean LOG_ATTACH_DETACH = false;
   private final static boolean LOG_THREADS = false;
@@ -104,12 +105,13 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     init();
   }
 
-  @Override protected void finalize() throws Throwable {
+  @Override
+  protected void finalize() throws Throwable {
     try {
-      if (glThread != null) {
+      if (mGLThread != null) {
         // GLThread may still be running if this view was never
         // attached to a window.
-        glThread.requestExitAndWait();
+        mGLThread.requestExitAndWait();
       }
     } finally {
       super.finalize();
@@ -131,11 +133,10 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * Wrapping is typically used for debugging purposes.
    * <p>
    * The default value is null.
-   *
    * @param glWrapper the new GLWrapper
    */
   public void setGLWrapper(GLWrapper glWrapper) {
-    this.glWrapper = glWrapper;
+    mGLWrapper = glWrapper;
   }
 
   /**
@@ -143,22 +144,20 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * constructed by OR-together zero or more
    * of the DEBUG_CHECK_* constants. The debug flags take effect
    * whenever a surface is created. The default value is zero.
-   *
    * @param debugFlags the new debug flags
    * @see #DEBUG_CHECK_GL_ERROR
    * @see #DEBUG_LOG_GL_CALLS
    */
   public void setDebugFlags(int debugFlags) {
-    debugFlags = debugFlags;
+    mDebugFlags = debugFlags;
   }
 
   /**
    * Get the current value of the debug flags.
-   *
    * @return the current value of the debug flags.
    */
   public int getDebugFlags() {
-    return debugFlags;
+    return mDebugFlags;
   }
 
   /**
@@ -180,14 +179,14 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * @param preserveOnPause preserve the EGL context when paused
    */
   public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
-    preserveEGLContextOnPause = preserveOnPause;
+    mPreserveEGLContextOnPause = preserveOnPause;
   }
 
   /**
    * @return true if the EGL context will be preserved when paused
    */
   public boolean getPreserveEGLContextOnPause() {
-    return preserveEGLContextOnPause;
+    return mPreserveEGLContextOnPause;
   }
 
   /**
@@ -218,18 +217,18 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    */
   public void setRenderer(Renderer renderer) {
     checkRenderThreadState();
-    if (eglConfigChooser == null) {
-      eglConfigChooser = new SimpleEGLConfigChooser(true);
+    if (mEGLConfigChooser == null) {
+      mEGLConfigChooser = new SimpleEGLConfigChooser(true);
     }
-    if (eglContextFactory == null) {
-      eglContextFactory = new DefaultContextFactory();
+    if (mEGLContextFactory == null) {
+      mEGLContextFactory = new DefaultContextFactory();
     }
-    if (eglWindowSurfaceFactory == null) {
-      eglWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
+    if (mEGLWindowSurfaceFactory == null) {
+      mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
     }
-    renderer = renderer;
-    glThread = new GLThread(thisWeakRef);
-    glThread.start();
+    mRenderer = renderer;
+    mGLThread = new GLThread(mThisWeakRef);
+    mGLThread.start();
   }
 
   /**
@@ -244,7 +243,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    */
   public void setEGLContextFactory(EGLContextFactory factory) {
     checkRenderThreadState();
-    eglContextFactory = factory;
+    mEGLContextFactory = factory;
   }
 
   /**
@@ -258,7 +257,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    */
   public void setEGLWindowSurfaceFactory(EGLWindowSurfaceFactory factory) {
     checkRenderThreadState();
-    eglWindowSurfaceFactory = factory;
+    mEGLWindowSurfaceFactory = factory;
   }
 
   /**
@@ -271,10 +270,11 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * view will choose an EGLConfig that is compatible with the current
    * android.view.Surface, with a depth buffer depth of
    * at least 16 bits.
+   * @param configChooser
    */
   public void setEGLConfigChooser(EGLConfigChooser configChooser) {
     checkRenderThreadState();
-    eglConfigChooser = configChooser;
+    mEGLConfigChooser = configChooser;
   }
 
   /**
@@ -288,6 +288,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * If no setEGLConfigChooser method is called, then by default the
    * view will choose an RGB_888 surface with a depth buffer depth of
    * at least 16 bits.
+   *
+   * @param needDepth
    */
   public void setEGLConfigChooser(boolean needDepth) {
     setEGLConfigChooser(new SimpleEGLConfigChooser(needDepth));
@@ -304,11 +306,12 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * If no setEGLConfigChooser method is called, then by default the
    * view will choose an RGB_888 surface with a depth buffer depth of
    * at least 16 bits.
+   *
    */
-  public void setEGLConfigChooser(int redSize, int greenSize, int blueSize, int alphaSize,
-      int depthSize, int stencilSize) {
-    setEGLConfigChooser(
-        new ComponentSizeChooser(redSize, greenSize, blueSize, alphaSize, depthSize, stencilSize));
+  public void setEGLConfigChooser(int redSize, int greenSize, int blueSize,
+      int alphaSize, int depthSize, int stencilSize) {
+    setEGLConfigChooser(new ComponentSizeChooser(redSize, greenSize,
+        blueSize, alphaSize, depthSize, stencilSize));
   }
 
   /**
@@ -317,11 +320,11 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * <p>Use this method to create an OpenGL ES 2.0-compatible context.
    * Example:
    * <pre class="prettyprint">
-   * public MyView(Context context) {
-   * super(context);
-   * setEGLContextClientVersion(2); // Pick an OpenGL ES 2.0 context.
-   * setRenderer(new MyRenderer());
-   * }
+   *     public MyView(Context context) {
+   *         super(context);
+   *         setEGLContextClientVersion(2); // Pick an OpenGL ES 2.0 context.
+   *         setRenderer(new MyRenderer());
+   *     }
    * </pre>
    * <p>Note: Activities which require OpenGL ES 2.0 should indicate this by
    * setting @lt;uses-feature android:glEsVersion="0x00020000" /> in the activity's
@@ -335,12 +338,11 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * If
    * {@link #setEGLConfigChooser(EGLConfigChooser)} has been called, then the supplied
    * EGLConfigChooser is responsible for choosing an OpenGL ES 2.0-compatible config.
-   *
    * @param version The EGLContext client version to choose. Use 2 for OpenGL ES 2.0
    */
   public void setEGLContextClientVersion(int version) {
     checkRenderThreadState();
-    eglContextClientVersion = version;
+    mEGLContextClientVersion = version;
   }
 
   /**
@@ -360,19 +362,18 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * @see #RENDERMODE_WHEN_DIRTY
    */
   public void setRenderMode(int renderMode) {
-    glThread.setRenderMode(renderMode);
+    mGLThread.setRenderMode(renderMode);
   }
 
   /**
    * Get the current rendering mode. May be called
    * from any thread. Must not be called before a renderer has been set.
-   *
    * @return the current rendering mode.
    * @see #RENDERMODE_CONTINUOUSLY
    * @see #RENDERMODE_WHEN_DIRTY
    */
   public int getRenderMode() {
-    return glThread.getRenderMode();
+    return mGLThread.getRenderMode();
   }
 
   /**
@@ -383,30 +384,33 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * from any thread. Must not be called before a renderer has been set.
    */
   public void requestRender() {
-    glThread.requestRender();
+    mGLThread.requestRender();
   }
 
   @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-    glThread.surfaceCreated();
+    mGLThread.surfaceCreated();
   }
 
   @Override
   public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
-    glThread.onWindowResize(width, height);
+    mGLThread.onWindowResize(width, height);
   }
 
-  @Override protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+  @Override
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
-    glThread.onWindowResize(w, h);
+    mGLThread.onWindowResize(w, h);
   }
 
-  @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-    glThread.surfaceDestroyed();
+  @Override
+  public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+    mGLThread.surfaceDestroyed();
     return true;
   }
 
-  @Override public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+  @Override
+  public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
     requestRender();
   }
 
@@ -415,7 +419,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * not normally called or subclassed by clients of GLSurfaceView.
    */
   public void on(SurfaceHolder holder) {
-    glThread.surfaceCreated();
+    mGLThread.surfaceCreated();
   }
 
   /**
@@ -425,7 +429,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * Must not be called before a renderer has been set.
    */
   public void onPause() {
-    glThread.onPause();
+    mGLThread.onPause();
   }
 
   /**
@@ -436,48 +440,41 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * Must not be called before a renderer has been set.
    */
   public void onResume() {
-    glThread.onResume();
+    mGLThread.onResume();
   }
 
   /**
    * Queue a runnable to be run on the GL rendering thread. This can be used
    * to communicate with the Renderer on the rendering thread.
    * Must not be called before a renderer has been set.
-   *
    * @param r the runnable to be run on the GL rendering thread.
    */
   public void queueEvent(Runnable r) {
-    glThread.queueEvent(r);
+    mGLThread.queueEvent(r);
   }
 
   /**
    * This method is used as part of the View class and is not normally
    * called or subclassed by clients of GLSurfaceView.
    */
-  @Override protected void onAttachedToWindow() {
+  @Override
+  protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-
     if (LOG_ATTACH_DETACH) {
-      Log.d(TAG, "onAttachedToWindow reattach =" + detached);
+      Log.d(TAG, "onAttachedToWindow reattach =" + mDetached);
     }
-
-    if (detached && (renderer != null)) {
+    if (mDetached && (mRenderer != null)) {
       int renderMode = RENDERMODE_CONTINUOUSLY;
-
-      if (glThread != null) {
-        renderMode = glThread.getRenderMode();
+      if (mGLThread != null) {
+        renderMode = mGLThread.getRenderMode();
       }
-
-      glThread = new GLThread(thisWeakRef);
-
+      mGLThread = new GLThread(mThisWeakRef);
       if (renderMode != RENDERMODE_CONTINUOUSLY) {
-        glThread.setRenderMode(renderMode);
+        mGLThread.setRenderMode(renderMode);
       }
-
-      glThread.start();
+      mGLThread.start();
     }
-
-    detached = false;
+    mDetached = false;
   }
 
   /**
@@ -485,14 +482,15 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * called or subclassed by clients of GLSurfaceView.
    * Must not be called before a renderer has been set.
    */
-  @Override protected void onDetachedFromWindow() {
+  @Override
+  protected void onDetachedFromWindow() {
     if (LOG_ATTACH_DETACH) {
       Log.d(TAG, "onDetachedFromWindow");
     }
-    if (glThread != null) {
-      glThread.requestExitAndWait();
+    if (mGLThread != null) {
+      mGLThread.requestExitAndWait();
     }
-    detached = true;
+    mDetached = true;
     super.onDetachedFromWindow();
   }
 
@@ -509,21 +507,19 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * wrapper GL instance:
    * <pre class="prettyprint">
    * class MyGLWrapper implements GLWrapper {
-   * GL wrap(GL gl) {
-   * return new MyGLImplementation(gl);
-   * }
-   * static class MyGLImplementation implements GL,GL10,GL11,... {
-   * ...
-   * }
+   *     GL wrap(GL gl) {
+   *         return new MyGLImplementation(gl);
+   *     }
+   *     static class MyGLImplementation implements GL,GL10,GL11,... {
+   *         ...
+   *     }
    * }
    * </pre>
-   *
    * @see #setGLWrapper(GLWrapper)
    */
   public interface GLWrapper {
     /**
      * Wraps a gl interface in another gl interface.
-     *
      * @param gl a GL interface that is to be wrapped.
      * @return either the input argument or another GL object that wraps the input argument.
      */
@@ -538,7 +534,6 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    */
   public interface EGLContextFactory {
     EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig);
-
     void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context);
   }
 
@@ -546,15 +541,15 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     private int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
 
     public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig config) {
-      int[] attrib_list = {
-          EGL_CONTEXT_CLIENT_VERSION, eglContextClientVersion, EGL10.EGL_NONE
-      };
+      int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, mEGLContextClientVersion,
+          EGL10.EGL_NONE };
 
       return egl.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT,
-          eglContextClientVersion != 0 ? attrib_list : null);
+          mEGLContextClientVersion != 0 ? attrib_list : null);
     }
 
-    public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
+    public void destroyContext(EGL10 egl, EGLDisplay display,
+        EGLContext context) {
       if (!egl.eglDestroyContext(display, context)) {
         Log.e("DefaultContextFactory", "display:" + display + " context: " + context);
         if (LOG_THREADS) {
@@ -573,18 +568,17 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    */
   public interface EGLWindowSurfaceFactory {
     /**
-     * @return null if the surface cannot be constructed.
+     *  @return null if the surface cannot be constructed.
      */
     EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
         Object nativeWindow);
-
     void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface);
   }
 
   private static class DefaultWindowSurfaceFactory implements EGLWindowSurfaceFactory {
 
-    public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
-        Object nativeWindow) {
+    public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display,
+        EGLConfig config, Object nativeWindow) {
       EGLSurface result = null;
       try {
         result = egl.eglCreateWindowSurface(display, config, nativeWindow, null);
@@ -600,7 +594,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       return result;
     }
 
-    public void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface) {
+    public void destroySurface(EGL10 egl, EGLDisplay display,
+        EGLSurface surface) {
       egl.eglDestroySurface(display, surface);
     }
   }
@@ -618,7 +613,6 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
      * implement this method by calling
      * {@link EGL10#eglChooseConfig} and iterating through the results. Please consult the
      * EGL specification available from The Khronos Group to learn how to call eglChooseConfig.
-     *
      * @param egl the EGL10 for the current display.
      * @param display the current display.
      * @return the chosen configuration.
@@ -626,25 +620,29 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     EGLConfig chooseConfig(EGL10 egl, EGLDisplay display);
   }
 
-  private abstract class BaseConfigChooser implements EGLConfigChooser {
+  private abstract class BaseConfigChooser
+      implements EGLConfigChooser {
     public BaseConfigChooser(int[] configSpec) {
-      configSpec = filterConfigSpec(configSpec);
+      mConfigSpec = filterConfigSpec(configSpec);
     }
 
     public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
       int[] num_config = new int[1];
-      if (!egl.eglChooseConfig(display, configSpec, null, 0, num_config)) {
+      if (!egl.eglChooseConfig(display, mConfigSpec, null, 0,
+          num_config)) {
         throw new IllegalArgumentException("eglChooseConfig failed");
       }
 
       int numConfigs = num_config[0];
 
       if (numConfigs <= 0) {
-        throw new IllegalArgumentException("No configs match configSpec");
+        throw new IllegalArgumentException(
+            "No configs match configSpec");
       }
 
       EGLConfig[] configs = new EGLConfig[numConfigs];
-      if (!egl.eglChooseConfig(display, configSpec, configs, numConfigs, num_config)) {
+      if (!egl.eglChooseConfig(display, mConfigSpec, configs, numConfigs,
+          num_config)) {
         throw new IllegalArgumentException("eglChooseConfig#2 failed");
       }
       EGLConfig config = chooseConfig(egl, display, configs);
@@ -654,12 +652,13 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       return config;
     }
 
-    abstract EGLConfig chooseConfig(EGL10 egl, EGLDisplay display, EGLConfig[] configs);
+    abstract EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
+        EGLConfig[] configs);
 
-    protected int[] configSpec;
+    protected int[] mConfigSpec;
 
     private int[] filterConfigSpec(int[] configSpec) {
-      if (eglContextClientVersion != 2) {
+      if (mEGLContextClientVersion != 2) {
         return configSpec;
       }
             /* We know none of the subclasses define EGL_RENDERABLE_TYPE.
@@ -667,10 +666,10 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
              */
       int len = configSpec.length;
       int[] newConfigSpec = new int[len + 2];
-      System.arraycopy(configSpec, 0, newConfigSpec, 0, len - 1);
-      newConfigSpec[len - 1] = EGL10.EGL_RENDERABLE_TYPE;
+      System.arraycopy(configSpec, 0, newConfigSpec, 0, len-1);
+      newConfigSpec[len-1] = EGL10.EGL_RENDERABLE_TYPE;
       newConfigSpec[len] = 4; /* EGL_OPENGL_ES2_BIT */
-      newConfigSpec[len + 1] = EGL10.EGL_NONE;
+      newConfigSpec[len+1] = EGL10.EGL_NONE;
       return newConfigSpec;
     }
   }
@@ -680,32 +679,44 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * and at least the specified depth and stencil sizes.
    */
   private class ComponentSizeChooser extends BaseConfigChooser {
-    public ComponentSizeChooser(int redSize, int greenSize, int blueSize, int alphaSize,
-        int depthSize, int stencilSize) {
+    public ComponentSizeChooser(int redSize, int greenSize, int blueSize,
+        int alphaSize, int depthSize, int stencilSize) {
       super(new int[] {
-          EGL10.EGL_RED_SIZE, redSize, EGL10.EGL_GREEN_SIZE, greenSize, EGL10.EGL_BLUE_SIZE,
-          blueSize, EGL10.EGL_ALPHA_SIZE, alphaSize, EGL10.EGL_DEPTH_SIZE, depthSize,
-          EGL10.EGL_STENCIL_SIZE, stencilSize, EGL10.EGL_NONE
-      });
-      value = new int[1];
-      redSize = redSize;
-      greenSize = greenSize;
-      blueSize = blueSize;
-      alphaSize = alphaSize;
-      depthSize = depthSize;
-      stencilSize = stencilSize;
+          EGL10.EGL_RED_SIZE, redSize,
+          EGL10.EGL_GREEN_SIZE, greenSize,
+          EGL10.EGL_BLUE_SIZE, blueSize,
+          EGL10.EGL_ALPHA_SIZE, alphaSize,
+          EGL10.EGL_DEPTH_SIZE, depthSize,
+          EGL10.EGL_STENCIL_SIZE, stencilSize,
+          EGL10.EGL_NONE});
+      mValue = new int[1];
+      mRedSize = redSize;
+      mGreenSize = greenSize;
+      mBlueSize = blueSize;
+      mAlphaSize = alphaSize;
+      mDepthSize = depthSize;
+      mStencilSize = stencilSize;
     }
 
-    @Override public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display, EGLConfig[] configs) {
+    @Override
+    public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
+        EGLConfig[] configs) {
       for (EGLConfig config : configs) {
-        int d = findConfigAttrib(egl, display, config, EGL10.EGL_DEPTH_SIZE, 0);
-        int s = findConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, 0);
-        if ((d >= depthSize) && (s >= stencilSize)) {
-          int r = findConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE, 0);
-          int g = findConfigAttrib(egl, display, config, EGL10.EGL_GREEN_SIZE, 0);
-          int b = findConfigAttrib(egl, display, config, EGL10.EGL_BLUE_SIZE, 0);
-          int a = findConfigAttrib(egl, display, config, EGL10.EGL_ALPHA_SIZE, 0);
-          if ((r == redSize) && (g == greenSize) && (b == blueSize) && (a == alphaSize)) {
+        int d = findConfigAttrib(egl, display, config,
+            EGL10.EGL_DEPTH_SIZE, 0);
+        int s = findConfigAttrib(egl, display, config,
+            EGL10.EGL_STENCIL_SIZE, 0);
+        if ((d >= mDepthSize) && (s >= mStencilSize)) {
+          int r = findConfigAttrib(egl, display, config,
+              EGL10.EGL_RED_SIZE, 0);
+          int g = findConfigAttrib(egl, display, config,
+              EGL10.EGL_GREEN_SIZE, 0);
+          int b = findConfigAttrib(egl, display, config,
+              EGL10.EGL_BLUE_SIZE, 0);
+          int a = findConfigAttrib(egl, display, config,
+              EGL10.EGL_ALPHA_SIZE, 0);
+          if ((r == mRedSize) && (g == mGreenSize)
+              && (b == mBlueSize) && (a == mAlphaSize)) {
             return config;
           }
         }
@@ -713,28 +724,29 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       return null;
     }
 
-    private int findConfigAttrib(EGL10 egl, EGLDisplay display, EGLConfig config, int attribute,
-        int defaultValue) {
+    private int findConfigAttrib(EGL10 egl, EGLDisplay display,
+        EGLConfig config, int attribute, int defaultValue) {
 
-      if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
-        return value[0];
+      if (egl.eglGetConfigAttrib(display, config, attribute, mValue)) {
+        return mValue[0];
       }
       return defaultValue;
     }
 
-    private int[] value;
+    private int[] mValue;
     // Subclasses can adjust these values:
-    protected int redSize;
-    protected int greenSize;
-    protected int blueSize;
-    protected int alphaSize;
-    protected int depthSize;
-    protected int stencilSize;
+    protected int mRedSize;
+    protected int mGreenSize;
+    protected int mBlueSize;
+    protected int mAlphaSize;
+    protected int mDepthSize;
+    protected int mStencilSize;
   }
 
   /**
    * This class will choose a RGB_888 surface with
    * or without a depth buffer.
+   *
    */
   private class SimpleEGLConfigChooser extends ComponentSizeChooser {
     public SimpleEGLConfigChooser(boolean withDepthBuffer) {
@@ -753,6 +765,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     /**
      * Initialize EGL for a given configuration spec.
+     * @param configSpec
      */
     public void start() {
       if (LOG_EGL) {
@@ -776,7 +789,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
              * We can now initialize EGL for that display
              */
       int[] version = new int[2];
-      if (!mEgl.eglInitialize(mEglDisplay, version)) {
+      if(!mEgl.eglInitialize(mEglDisplay, version)) {
         throw new RuntimeException("eglInitialize failed");
       }
       GLTextureView view = mGLTextureViewWeakRef.get();
@@ -784,21 +797,20 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
         mEglConfig = null;
         mEglContext = null;
       } else {
-        mEglConfig = view.eglConfigChooser.chooseConfig(mEgl, mEglDisplay);
+        mEglConfig = view.mEGLConfigChooser.chooseConfig(mEgl, mEglDisplay);
 
                 /*
                 * Create an EGL context. We want to do this as rarely as we can, because an
                 * EGL context is a somewhat heavy object.
                 */
-        mEglContext = view.eglContextFactory.createContext(mEgl, mEglDisplay, mEglConfig);
+        mEglContext = view.mEGLContextFactory.createContext(mEgl, mEglDisplay, mEglConfig);
       }
       if (mEglContext == null || mEglContext == EGL10.EGL_NO_CONTEXT) {
         mEglContext = null;
         throwEglException("createContext");
       }
       if (LOG_EGL) {
-        Log.w("EglHelper",
-            "createContext " + mEglContext + " tid=" + Thread.currentThread().getId());
+        Log.w("EglHelper", "createContext " + mEglContext + " tid=" + Thread.currentThread().getId());
       }
 
       mEglSurface = null;
@@ -838,9 +850,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
              */
       GLTextureView view = mGLTextureViewWeakRef.get();
       if (view != null) {
-        mEglSurface =
-            view.eglWindowSurfaceFactory.createWindowSurface(mEgl, mEglDisplay, mEglConfig,
-                view.getSurfaceTexture());
+        mEglSurface = view.mEGLWindowSurfaceFactory.createWindowSurface(mEgl,
+            mEglDisplay, mEglConfig, view.getSurfaceTexture());
       } else {
         mEglSurface = null;
       }
@@ -871,23 +882,24 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     /**
      * Create a GL object for the current EGL context.
+     * @return
      */
     GL createGL() {
 
       GL gl = mEglContext.getGL();
       GLTextureView view = mGLTextureViewWeakRef.get();
       if (view != null) {
-        if (view.glWrapper != null) {
-          gl = view.glWrapper.wrap(gl);
+        if (view.mGLWrapper != null) {
+          gl = view.mGLWrapper.wrap(gl);
         }
 
-        if ((view.debugFlags & (DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS)) != 0) {
+        if ((view.mDebugFlags & (DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS)) != 0) {
           int configFlags = 0;
           Writer log = null;
-          if ((view.debugFlags & DEBUG_CHECK_GL_ERROR) != 0) {
+          if ((view.mDebugFlags & DEBUG_CHECK_GL_ERROR) != 0) {
             configFlags |= GLDebugHelper.CONFIG_CHECK_GL_ERROR;
           }
-          if ((view.debugFlags & DEBUG_LOG_GL_CALLS) != 0) {
+          if ((view.mDebugFlags & DEBUG_LOG_GL_CALLS) != 0) {
             log = new LogWriter();
           }
           gl = GLDebugHelper.wrap(gl, configFlags, log);
@@ -898,11 +910,10 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     /**
      * Display the current render surface.
-     *
      * @return the EGL error code from eglSwapBuffers.
      */
     public int swap() {
-      if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
+      if (! mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
         return mEgl.eglGetError();
       }
       return EGL10.EGL_SUCCESS;
@@ -917,11 +928,12 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     private void destroySurfaceImp() {
       if (mEglSurface != null && mEglSurface != EGL10.EGL_NO_SURFACE) {
-        mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE,
+        mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
+            EGL10.EGL_NO_SURFACE,
             EGL10.EGL_NO_CONTEXT);
         GLTextureView view = mGLTextureViewWeakRef.get();
         if (view != null) {
-          view.eglWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
+          view.mEGLWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
         }
         mEglSurface = null;
       }
@@ -934,7 +946,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       if (mEglContext != null) {
         GLTextureView view = mGLTextureViewWeakRef.get();
         if (view != null) {
-          view.eglContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
+          view.mEGLContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
         }
         mEglContext = null;
       }
@@ -951,8 +963,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     public static void throwEglException(String function, int error) {
       String message = formatEglError(function, error);
       if (LOG_THREADS) {
-        Log.e("EglHelper",
-            "throwEglException tid=" + Thread.currentThread().getId() + " " + message);
+        Log.e("EglHelper", "throwEglException tid=" + Thread.currentThread().getId() + " "
+            + message);
       }
       throw new RuntimeException(message);
     }
@@ -971,6 +983,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     EGLSurface mEglSurface;
     EGLConfig mEglConfig;
     EGLContext mEglContext;
+
   }
 
   /**
@@ -979,7 +992,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
    * render continuously or on request.
    *
    * All potentially blocking synchronization is done through the
-   * glThreadManager object. This avoids multiple-lock ordering issues.
+   * sGLThreadManager object. This avoids multiple-lock ordering issues.
+   *
    */
   static class GLThread extends Thread {
     GLThread(WeakReference<GLTextureView> glTextureViewWeakRef) {
@@ -991,7 +1005,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       mGLTextureViewWeakRef = glTextureViewWeakRef;
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
       setName("GLThread " + getId());
       if (LOG_THREADS) {
         Log.i("GLThread", "starting tid=" + getId());
@@ -1002,13 +1017,13 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       } catch (InterruptedException e) {
         // fall thru and exit normally
       } finally {
-        glThreadManager.threadExiting(this);
+        sGLThreadManager.threadExiting(this);
       }
     }
 
     /*
      * This private method should only be called inside a
-     * synchronized(glThreadManager) block.
+     * synchronized(sGLThreadManager) block.
      */
     private void stopEglSurfaceLocked() {
       if (mHaveEglSurface) {
@@ -1019,16 +1034,15 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     /*
      * This private method should only be called inside a
-     * synchronized(glThreadManager) block.
+     * synchronized(sGLThreadManager) block.
      */
     private void stopEglContextLocked() {
       if (mHaveEglContext) {
         mEglHelper.finish();
         mHaveEglContext = false;
-        glThreadManager.releaseEglContextLocked(this);
+        sGLThreadManager.releaseEglContextLocked(this);
       }
     }
-
     private void guardedRun() throws InterruptedException {
       mEglHelper = new EglHelper(mGLTextureViewWeakRef);
       mHaveEglContext = false;
@@ -1048,13 +1062,13 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
         Runnable event = null;
 
         while (true) {
-          synchronized (glThreadManager) {
+          synchronized (sGLThreadManager) {
             while (true) {
               if (mShouldExit) {
                 return;
               }
 
-              if (!mEventQueue.isEmpty()) {
+              if (! mEventQueue.isEmpty()) {
                 event = mEventQueue.remove(0);
                 break;
               }
@@ -1064,7 +1078,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
               if (mPaused != mRequestPaused) {
                 pausing = mRequestPaused;
                 mPaused = mRequestPaused;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
                 if (LOG_PAUSE_RESUME) {
                   Log.i("GLThread", "mPaused is now " + mPaused + " tid=" + getId());
                 }
@@ -1099,10 +1113,9 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
               // When pausing, optionally release the EGL Context:
               if (pausing && mHaveEglContext) {
                 GLTextureView view = mGLTextureViewWeakRef.get();
-                boolean preserveEglContextOnPause =
-                    view == null ? false : view.preserveEGLContextOnPause;
-                if (!preserveEglContextOnPause ||
-                    glThreadManager.shouldReleaseEGLContextWhenPausing()) {
+                boolean preserveEglContextOnPause = view == null ?
+                    false : view.mPreserveEGLContextOnPause;
+                if (!preserveEglContextOnPause || sGLThreadManager.shouldReleaseEGLContextWhenPausing()) {
                   stopEglContextLocked();
                   if (LOG_SURFACE) {
                     Log.i("GLThread", "releasing EGL context because paused tid=" + getId());
@@ -1112,7 +1125,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
               // When pausing, optionally terminate EGL:
               if (pausing) {
-                if (glThreadManager.shouldTerminateEGLWhenPausing()) {
+                if (sGLThreadManager.shouldTerminateEGLWhenPausing()) {
                   mEglHelper.finish();
                   if (LOG_SURFACE) {
                     Log.i("GLThread", "terminating EGL because paused tid=" + getId());
@@ -1121,7 +1134,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
               }
 
               // Have we lost the SurfaceView surface?
-              if ((!mHasSurface) && (!mWaitingForSurface)) {
+              if ((! mHasSurface) && (! mWaitingForSurface)) {
                 if (LOG_SURFACE) {
                   Log.i("GLThread", "noticed surfaceView surface lost tid=" + getId());
                 }
@@ -1130,7 +1143,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
                 }
                 mWaitingForSurface = true;
                 mSurfaceIsBad = false;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
               }
 
               // Have we acquired the surface view surface?
@@ -1139,7 +1152,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
                   Log.i("GLThread", "noticed surfaceView surface acquired tid=" + getId());
                 }
                 mWaitingForSurface = false;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
               }
 
               if (doRenderNotification) {
@@ -1149,27 +1162,27 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
                 wantRenderNotification = false;
                 doRenderNotification = false;
                 mRenderComplete = true;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
               }
 
               // Ready to draw?
               if (readyToDraw()) {
 
                 // If we don't have an EGL context, try to acquire one.
-                if (!mHaveEglContext) {
+                if (! mHaveEglContext) {
                   if (askedToReleaseEglContext) {
                     askedToReleaseEglContext = false;
-                  } else if (glThreadManager.tryAcquireEglContextLocked(this)) {
+                  } else if (sGLThreadManager.tryAcquireEglContextLocked(this)) {
                     try {
                       mEglHelper.start();
                     } catch (RuntimeException t) {
-                      glThreadManager.releaseEglContextLocked(this);
+                      sGLThreadManager.releaseEglContextLocked(this);
                       throw t;
                     }
                     mHaveEglContext = true;
                     createEglContext = true;
 
-                    glThreadManager.notifyAll();
+                    sGLThreadManager.notifyAll();
                   }
                 }
 
@@ -1187,7 +1200,9 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
                     h = mHeight;
                     wantRenderNotification = true;
                     if (LOG_SURFACE) {
-                      Log.i("GLThread", "noticing that we want render notification tid=" + getId());
+                      Log.i("GLThread",
+                          "noticing that we want render notification tid="
+                              + getId());
                     }
 
                     // Destroy and recreate the EGL surface.
@@ -1196,41 +1211,29 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
                     mSizeChanged = false;
                   }
                   mRequestRender = false;
-                  glThreadManager.notifyAll();
+                  sGLThreadManager.notifyAll();
                   break;
                 }
               }
 
               // By design, this is the only place in a GLThread thread where we wait().
               if (LOG_THREADS) {
-                Log.i("GLThread", "waiting tid=" +
-                    getId() +
-                    " mHaveEglContext: " +
-                    mHaveEglContext +
-                    " mHaveEglSurface: " +
-                    mHaveEglSurface +
-                    " mFinishedCreatingEglSurface: " +
-                    mFinishedCreatingEglSurface +
-                    " mPaused: " +
-                    mPaused +
-                    " mHasSurface: " +
-                    mHasSurface +
-                    " mSurfaceIsBad: " +
-                    mSurfaceIsBad +
-                    " mWaitingForSurface: " +
-                    mWaitingForSurface +
-                    " mWidth: " +
-                    mWidth +
-                    " mHeight: " +
-                    mHeight +
-                    " mRequestRender: " +
-                    mRequestRender +
-                    " mRenderMode: " +
-                    mRenderMode);
+                Log.i("GLThread", "waiting tid=" + getId()
+                    + " mHaveEglContext: " + mHaveEglContext
+                    + " mHaveEglSurface: " + mHaveEglSurface
+                    + " mFinishedCreatingEglSurface: " + mFinishedCreatingEglSurface
+                    + " mPaused: " + mPaused
+                    + " mHasSurface: " + mHasSurface
+                    + " mSurfaceIsBad: " + mSurfaceIsBad
+                    + " mWaitingForSurface: " + mWaitingForSurface
+                    + " mWidth: " + mWidth
+                    + " mHeight: " + mHeight
+                    + " mRequestRender: " + mRequestRender
+                    + " mRenderMode: " + mRenderMode);
               }
-              glThreadManager.wait();
+              sGLThreadManager.wait();
             }
-          } // end of synchronized(glThreadManager)
+          } // end of synchronized(sGLThreadManager)
 
           if (event != null) {
             event.run();
@@ -1243,15 +1246,15 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
               Log.w("GLThread", "egl createSurface");
             }
             if (mEglHelper.createSurface()) {
-              synchronized (glThreadManager) {
+              synchronized(sGLThreadManager) {
                 mFinishedCreatingEglSurface = true;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
               }
             } else {
-              synchronized (glThreadManager) {
+              synchronized(sGLThreadManager) {
                 mFinishedCreatingEglSurface = true;
                 mSurfaceIsBad = true;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
               }
               continue;
             }
@@ -1261,7 +1264,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
           if (createGlInterface) {
             gl = (GL10) mEglHelper.createGL();
 
-            glThreadManager.checkGLDriver(gl);
+            sGLThreadManager.checkGLDriver(gl);
             createGlInterface = false;
           }
 
@@ -1271,7 +1274,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
             }
             GLTextureView view = mGLTextureViewWeakRef.get();
             if (view != null) {
-              view.renderer.onSurfaceCreated(gl, mEglHelper.mEglConfig);
+              view.mRenderer.onSurfaceCreated(gl, mEglHelper.mEglConfig);
             }
             createEglContext = false;
           }
@@ -1282,7 +1285,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
             }
             GLTextureView view = mGLTextureViewWeakRef.get();
             if (view != null) {
-              view.renderer.onSurfaceChanged(gl, w, h);
+              view.mRenderer.onSurfaceChanged(gl, w, h);
             }
             sizeChanged = false;
           }
@@ -1293,7 +1296,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
           {
             GLTextureView view = mGLTextureViewWeakRef.get();
             if (view != null) {
-              view.renderer.onDrawFrame(gl);
+              view.mRenderer.onDrawFrame(gl);
             }
           }
           int swapError = mEglHelper.swap();
@@ -1313,9 +1316,9 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
               // Log the error to help developers understand why rendering stopped.
               EglHelper.logEglErrorAsWarning("GLThread", "eglSwapBuffers", swapError);
 
-              synchronized (glThreadManager) {
+              synchronized(sGLThreadManager) {
                 mSurfaceIsBad = true;
-                glThreadManager.notifyAll();
+                sGLThreadManager.notifyAll();
               }
               break;
           }
@@ -1324,11 +1327,12 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
             doRenderNotification = true;
           }
         }
+
       } finally {
                 /*
                  * clean-up everything...
                  */
-        synchronized (glThreadManager) {
+        synchronized (sGLThreadManager) {
           stopEglSurfaceLocked();
           stopEglContextLocked();
         }
@@ -1340,48 +1344,47 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     private boolean readyToDraw() {
-      return (!mPaused) &&
-          mHasSurface &&
-          (!mSurfaceIsBad) &&
-          (mWidth > 0) &&
-          (mHeight > 0) &&
-          (mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY));
+      return (!mPaused) && mHasSurface && (!mSurfaceIsBad)
+          && (mWidth > 0) && (mHeight > 0)
+          && (mRequestRender || (mRenderMode == RENDERMODE_CONTINUOUSLY));
     }
 
     public void setRenderMode(int renderMode) {
-      if (!((RENDERMODE_WHEN_DIRTY <= renderMode) && (renderMode <= RENDERMODE_CONTINUOUSLY))) {
+      if ( !((RENDERMODE_WHEN_DIRTY <= renderMode) && (renderMode <= RENDERMODE_CONTINUOUSLY)) ) {
         throw new IllegalArgumentException("renderMode");
       }
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         mRenderMode = renderMode;
-        glThreadManager.notifyAll();
+        sGLThreadManager.notifyAll();
       }
     }
 
     public int getRenderMode() {
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         return mRenderMode;
       }
     }
 
     public void requestRender() {
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         mRequestRender = true;
-        glThreadManager.notifyAll();
+        sGLThreadManager.notifyAll();
       }
     }
 
     public void surfaceCreated() {
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         if (LOG_THREADS) {
           Log.i("GLThread", "surfaceCreated tid=" + getId());
         }
         mHasSurface = true;
         mFinishedCreatingEglSurface = false;
-        glThreadManager.notifyAll();
-        while (mWaitingForSurface && !mFinishedCreatingEglSurface && !mExited) {
+        sGLThreadManager.notifyAll();
+        while (mWaitingForSurface
+            && !mFinishedCreatingEglSurface
+            && !mExited) {
           try {
-            glThreadManager.wait();
+            sGLThreadManager.wait();
           } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
           }
@@ -1390,15 +1393,15 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     public void surfaceDestroyed() {
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         if (LOG_THREADS) {
           Log.i("GLThread", "surfaceDestroyed tid=" + getId());
         }
         mHasSurface = false;
-        glThreadManager.notifyAll();
-        while ((!mWaitingForSurface) && (!mExited)) {
+        sGLThreadManager.notifyAll();
+        while((!mWaitingForSurface) && (!mExited)) {
           try {
-            glThreadManager.wait();
+            sGLThreadManager.wait();
           } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
           }
@@ -1407,18 +1410,18 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     public void onPause() {
-      synchronized (glThreadManager) {
+      synchronized (sGLThreadManager) {
         if (LOG_PAUSE_RESUME) {
           Log.i("GLThread", "onPause tid=" + getId());
         }
         mRequestPaused = true;
-        glThreadManager.notifyAll();
-        while ((!mExited) && (!mPaused)) {
+        sGLThreadManager.notifyAll();
+        while ((! mExited) && (! mPaused)) {
           if (LOG_PAUSE_RESUME) {
             Log.i("Main thread", "onPause waiting for mPaused.");
           }
           try {
-            glThreadManager.wait();
+            sGLThreadManager.wait();
           } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
           }
@@ -1427,20 +1430,20 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     public void onResume() {
-      synchronized (glThreadManager) {
+      synchronized (sGLThreadManager) {
         if (LOG_PAUSE_RESUME) {
           Log.i("GLThread", "onResume tid=" + getId());
         }
         mRequestPaused = false;
         mRequestRender = true;
         mRenderComplete = false;
-        glThreadManager.notifyAll();
-        while ((!mExited) && mPaused && (!mRenderComplete)) {
+        sGLThreadManager.notifyAll();
+        while ((! mExited) && mPaused && (!mRenderComplete)) {
           if (LOG_PAUSE_RESUME) {
             Log.i("Main thread", "onResume waiting for !mPaused.");
           }
           try {
-            glThreadManager.wait();
+            sGLThreadManager.wait();
           } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
           }
@@ -1449,21 +1452,22 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     public void onWindowResize(int w, int h) {
-      synchronized (glThreadManager) {
+      synchronized (sGLThreadManager) {
         mWidth = w;
         mHeight = h;
         mSizeChanged = true;
         mRequestRender = true;
         mRenderComplete = false;
-        glThreadManager.notifyAll();
+        sGLThreadManager.notifyAll();
 
         // Wait for thread to react to resize and render a frame
-        while (!mExited && !mPaused && !mRenderComplete && ableToDraw()) {
+        while (! mExited && !mPaused && !mRenderComplete
+            && ableToDraw()) {
           if (LOG_SURFACE) {
             Log.i("Main thread", "onWindowResize waiting for render complete from tid=" + getId());
           }
           try {
-            glThreadManager.wait();
+            sGLThreadManager.wait();
           } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
           }
@@ -1474,12 +1478,12 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     public void requestExitAndWait() {
       // don't call this from GLThread thread or it is a guaranteed
       // deadlock!
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         mShouldExit = true;
-        glThreadManager.notifyAll();
-        while (!mExited) {
+        sGLThreadManager.notifyAll();
+        while (! mExited) {
           try {
-            glThreadManager.wait();
+            sGLThreadManager.wait();
           } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
           }
@@ -1489,26 +1493,25 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     public void requestReleaseEglContextLocked() {
       mShouldReleaseEglContext = true;
-      glThreadManager.notifyAll();
+      sGLThreadManager.notifyAll();
     }
 
     /**
      * Queue an "event" to be run on the GL rendering thread.
-     *
      * @param r the runnable to be run on the GL rendering thread.
      */
     public void queueEvent(Runnable r) {
       if (r == null) {
         throw new IllegalArgumentException("r must not be null");
       }
-      synchronized (glThreadManager) {
+      synchronized(sGLThreadManager) {
         mEventQueue.add(r);
-        glThreadManager.notifyAll();
+        sGLThreadManager.notifyAll();
       }
     }
 
     // Once the thread is started, all accesses to the following member
-    // variables are protected by the glThreadManager monitor
+    // variables are protected by the sGLThreadManager monitor
     private boolean mShouldExit;
     private boolean mExited;
     private boolean mRequestPaused;
@@ -1528,7 +1531,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     private ArrayList<Runnable> mEventQueue = new ArrayList<Runnable>();
     private boolean mSizeChanged = true;
 
-    // End of member variables protected by the glThreadManager monitor.
+    // End of member variables protected by the sGLThreadManager monitor.
 
     private EglHelper mEglHelper;
 
@@ -1538,6 +1541,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
      * the GLThread is still alive.
      */
     private WeakReference<GLTextureView> mGLTextureViewWeakRef;
+
   }
 
   static class LogWriter extends Writer {
@@ -1551,11 +1555,12 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     @Override public void write(char[] buf, int offset, int count) {
-      for (int i = 0; i < count; i++) {
+      for(int i = 0; i < count; i++) {
         char c = buf[offset + i];
-        if (c == '\n') {
+        if ( c == '\n') {
           flushBuilder();
-        } else {
+        }
+        else {
           mBuilder.append(c);
         }
       }
@@ -1571,9 +1576,11 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     private StringBuilder mBuilder = new StringBuilder();
   }
 
+
   private void checkRenderThreadState() {
-    if (glThread != null) {
-      throw new IllegalStateException("setRenderer has already been called for this instance.");
+    if (mGLThread != null) {
+      throw new IllegalStateException(
+          "setRenderer has already been called for this instance.");
     }
   }
 
@@ -1582,11 +1589,11 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     public synchronized void threadExiting(GLThread thread) {
       if (LOG_THREADS) {
-        Log.i("GLThread", "exiting tid=" + thread.getId());
+        Log.i("GLThread", "exiting tid=" +  thread.getId());
       }
       thread.mExited = true;
-      if (eglOwner == thread) {
-        eglOwner = null;
+      if (mEglOwner == thread) {
+        mEglOwner = null;
       }
       notifyAll();
     }
@@ -1594,37 +1601,37 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     /*
      * Tries once to acquire the right to use an EGL
      * context. Does not block. Requires that we are already
-     * in the glThreadManager monitor when this is called.
+     * in the sGLThreadManager monitor when this is called.
      *
      * @return true if the right to use an EGL context was acquired.
      */
     public boolean tryAcquireEglContextLocked(GLThread thread) {
-      if (eglOwner == thread || eglOwner == null) {
-        eglOwner = thread;
+      if (mEglOwner == thread || mEglOwner == null) {
+        mEglOwner = thread;
         notifyAll();
         return true;
       }
       checkGLESVersion();
-      if (multipleGLESContextsAllowed) {
+      if (mMultipleGLESContextsAllowed) {
         return true;
       }
       // Notify the owning thread that it should release the context.
       // TODO: implement a fairness policy. Currently
       // if the owning thread is drawing continuously it will just
       // reacquire the EGL context.
-      if (eglOwner != null) {
-        eglOwner.requestReleaseEglContextLocked();
+      if (mEglOwner != null) {
+        mEglOwner.requestReleaseEglContextLocked();
       }
       return false;
     }
 
     /*
      * Releases the EGL context. Requires that we are already in the
-     * glThreadManager monitor when this is called.
+     * sGLThreadManager monitor when this is called.
      */
     public void releaseEglContextLocked(GLThread thread) {
-      if (eglOwner == thread) {
-        eglOwner = null;
+      if (mEglOwner == thread) {
+        mEglOwner = null;
       }
       notifyAll();
     }
@@ -1633,52 +1640,46 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
       // Release the EGL context when pausing even if
       // the hardware supports multiple EGL contexts.
       // Otherwise the device could run out of EGL contexts.
-      return limitedGLESContexts;
+      return mLimitedGLESContexts;
     }
 
     public synchronized boolean shouldTerminateEGLWhenPausing() {
       checkGLESVersion();
-      return !multipleGLESContextsAllowed;
+      return !mMultipleGLESContextsAllowed;
     }
 
     public synchronized void checkGLDriver(GL10 gl) {
-      if (!glesDriverCheckComplete) {
+      if (! mGLESDriverCheckComplete) {
         checkGLESVersion();
         String renderer = gl.glGetString(GL10.GL_RENDERER);
-
-        if (glesVersion < kGLES_20) {
-          multipleGLESContextsAllowed = !renderer.startsWith(kMSM7K_RENDERER_PREFIX);
+        if (mGLESVersion < kGLES_20) {
+          mMultipleGLESContextsAllowed =
+              ! renderer.startsWith(kMSM7K_RENDERER_PREFIX);
           notifyAll();
         }
-
-        limitedGLESContexts = !multipleGLESContextsAllowed;
-
+        mLimitedGLESContexts = !mMultipleGLESContextsAllowed;
         if (LOG_SURFACE) {
-          Log.w(TAG, "checkGLDriver renderer = \"" +
-              renderer +
-              "\" multipleContextsAllowed = " +
-              multipleGLESContextsAllowed +
-              " limitedGLESContexts = " +
-              limitedGLESContexts);
+          Log.w(TAG, "checkGLDriver renderer = \"" + renderer + "\" multipleContextsAllowed = "
+              + mMultipleGLESContextsAllowed
+              + " mLimitedGLESContexts = " + mLimitedGLESContexts);
         }
-
-        glesDriverCheckComplete = true;
+        mGLESDriverCheckComplete = true;
       }
     }
 
     private void checkGLESVersion() {
-      if (!glesVersionCheckComplete) {
-        multipleGLESContextsAllowed = true;
-
+      if (! mGLESVersionCheckComplete) {
+        //                mGLESVersion = SystemProperties.getInt(
+        //                        "ro.opengles.version",
+        //                        ConfigurationInfo.GL_ES_VERSION_UNDEFINED);
+        //                if (mGLESVersion >= kGLES_20) {
+        mMultipleGLESContextsAllowed = true;
+        //                }
         if (LOG_SURFACE) {
-          Log.w(TAG, "checkGLESVersion glesVersion =" +
-              " " +
-              glesVersion +
-              " multipleGLESContextsAllowed = " +
-              multipleGLESContextsAllowed);
+          Log.w(TAG, "checkGLESVersion mGLESVersion =" +
+              " " + mGLESVersion + " mMultipleGLESContextsAllowed = " + mMultipleGLESContextsAllowed);
         }
-
-        glesVersionCheckComplete = true;
+        mGLESVersionCheckComplete = true;
       }
     }
 
@@ -1687,28 +1688,30 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
      * support for hardware-accelerated views, therefore multiple EGL contexts are
      * supported on all Android 3.0+ EGL drivers.
      */
-    private boolean glesVersionCheckComplete;
-    private int glesVersion;
-    private boolean glesDriverCheckComplete;
-    private boolean multipleGLESContextsAllowed;
-    private boolean limitedGLESContexts;
+    private boolean mGLESVersionCheckComplete;
+    private int mGLESVersion;
+    private boolean mGLESDriverCheckComplete;
+    private boolean mMultipleGLESContextsAllowed;
+    private boolean mLimitedGLESContexts;
     private static final int kGLES_20 = 0x20000;
-    private static final String kMSM7K_RENDERER_PREFIX = "Q3Dimension MSM7500 ";
-    private GLThread eglOwner;
+    private static final String kMSM7K_RENDERER_PREFIX =
+        "Q3Dimension MSM7500 ";
+    private GLThread mEglOwner;
   }
 
-  private static final GLThreadManager glThreadManager = new GLThreadManager();
+  private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
-  private final WeakReference<GLTextureView> thisWeakRef = new WeakReference<GLTextureView>(this);
-  private GLThread glThread;
-  private Renderer renderer;
-  private boolean detached;
-  private EGLConfigChooser eglConfigChooser;
-  private EGLContextFactory eglContextFactory;
-  private EGLWindowSurfaceFactory eglWindowSurfaceFactory;
-  private GLWrapper glWrapper;
-  private int debugFlags;
-  private int eglContextClientVersion;
-  private boolean preserveEGLContextOnPause;
+  private final WeakReference<GLTextureView> mThisWeakRef =
+      new WeakReference<GLTextureView>(this);
+  private GLThread mGLThread;
+  private Renderer mRenderer;
+  private boolean mDetached;
+  private EGLConfigChooser mEGLConfigChooser;
+  private EGLContextFactory mEGLContextFactory;
+  private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
+  private GLWrapper mGLWrapper;
+  private int mDebugFlags;
+  private int mEGLContextClientVersion;
+  private boolean mPreserveEGLContextOnPause;
 }
 

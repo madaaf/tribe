@@ -10,6 +10,7 @@
 
 package com.tribe.tribelivesdk.webrtc;
 
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 
 interface CameraSession {
@@ -46,4 +47,6 @@ interface CameraSession {
    * If waitCameraStop is true, also waits for the camera to stop.
    */
   void stop();
+
+  void setPreviewTexture(CreateSessionCallback callback, SurfaceTexture surfaceTexture);
 }

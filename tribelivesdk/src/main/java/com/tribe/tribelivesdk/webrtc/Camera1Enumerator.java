@@ -128,10 +128,12 @@ import org.webrtc.Size;
     }
 
     final long endTimeMs = SystemClock.elapsedRealtime();
-    Logging.d(TAG,
-        "Get supported formats for camera index " + cameraId + " done." + " Time spent: " + (
-            endTimeMs
-                - startTimeMs) + " ms.");
+    Logging.d(TAG, "Get supported formats for camera index " +
+        cameraId +
+        " done." +
+        " Time spent: " +
+        (endTimeMs - startTimeMs) +
+        " ms.");
     return formatList;
   }
 

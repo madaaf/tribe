@@ -13,7 +13,7 @@ ext {
 
   //Libraries
   daggerVersion = '2.8'
-  butterKnifeVersion = '8.4.0'
+  butterKnifeVersion = '8.6.0'
   recyclerViewVersion = '25.1.0'
   appCompatVersion = '25.1.0'
   designSupportVersion = '25.1.0'
