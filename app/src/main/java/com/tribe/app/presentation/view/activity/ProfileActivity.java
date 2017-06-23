@@ -319,8 +319,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     subscriptions.add(
         viewProfile.onDebugMode().subscribe(aVoid -> navigator.navigateToDebugMode(this)));
 
-    subscriptions.add(viewProfile.onVideo().subscribe(aVoid -> navigator.navigateToVideo(this)));
-
     subscriptions.add(viewProfile.onBlockedFriends().subscribe(aVoid -> setupBlockedFriendsView()));
 
     subscriptions.add(
@@ -362,8 +360,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
                   Friendship friendship = (Friendship) recipient;
                   profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -471,8 +469,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
-          .equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid ||
+          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
     }
   }
 
