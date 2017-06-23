@@ -22,7 +22,6 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
@@ -734,10 +733,7 @@ public class LiveView extends FrameLayout {
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
 
-      viewRoom.onDropItem(tileView);//SOEF
-      if (latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
-        room.sendToPeers(getUserPlayload(user), true);//SOEF WHAT THE FUCK????
-      }
+      viewRoom.onDropItem(tileView);
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
       room.sendToPeers(getInvitedPayload(), true);
@@ -884,6 +880,10 @@ public class LiveView extends FrameLayout {
         && liveInviteMap.size() == 0
         && live != null
         && !live.getSource().equals(SOURCE_CALL_ROULETTE);
+  }
+
+  public void reRollTheDiceFromLiveRoom() {
+    room.sendToPeers(getUserPlayload(user), true);//SOEF WHAT THE FUCK????
   }
 
   ////////////////
@@ -1069,7 +1069,7 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
-  private JSONObject getInvitedPayload() {
+  private JSONObject getInvitedPayload() { //SOEF OK
     JSONObject jsonObject = new JSONObject();
     JSONArray array = new JSONArray();
     for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
@@ -1086,11 +1086,20 @@ public class LiveView extends FrameLayout {
 
   private JSONObject getUserPlayload(User user) {
     JSONObject jsonObject = new JSONObject();
-    JSONArray array = new JSONArray();
 
-    array.put(user);
+    JSONObject userJson = new JSONObject();
+    jsonPut(userJson, User.ID, user.getId());
+    jsonPut(userJson, User.DISPLAY_NAME, user.getDisplayName());
+    jsonPut(userJson, User.PICTURE, user.getProfilePicture());
 
-    jsonPut(jsonObject, Room.MESSAGE_ROLL_THE_DICE, array);
+    JSONObject json = new JSONObject();
+    try {
+      json.put("by", userJson);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    jsonPut(jsonObject, Room.MESSAGE_ROLL_THE_DICE, json);
     return jsonObject;
   }
 

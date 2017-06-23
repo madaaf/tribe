@@ -689,27 +689,34 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
     subscriptions.add(diceView.onNextDiceClick().subscribe(aVoid -> {
-
       /**
        *  SOEF
        *  I CLICK ON NEXT
        *  IF I AM IN LIVE ROOM NORMAL => SEND MESSAGE TO THE WEB SIGNALING
        *  IF I AM IN CALL ROULETTE MODE => I DO ANOTHER SUBSCRIPTION
        */
-
       if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        Timber.e("SOEF NEXT DICE CLICKED : FROM CALL ROULETTE");
-        if (subscriptions.hasSubscriptions()) subscriptions.clear();
-        viewLive.endCall(true);
-        viewLive.dispose(true);
-        viewLive.jump();
-        initRoom();
-        return;
+        reRollTheDiceFromCallRoulette();
       } else {
-        Timber.e("SOEF NEXT DICE CLICKED : FROM LIVE ROOM");
+        reRollTheDiceFromLiveRoom();
       }
-      initCallRouletteService();
+      //initCallRouletteService();
     }));
+  }
+
+  private void reRollTheDiceFromCallRoulette() {
+    Timber.e("SOEF NEXT DICE CLICKED : FROM CALL ROULETTE");
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    viewLive.endCall(true);
+    viewLive.dispose(true);
+    viewLive.jump();
+    initRoom();
+    return;
+  }
+
+  private void reRollTheDiceFromLiveRoom() {
+    Timber.e("SOEF NEXT DICE CLICKED : FROM LIVE ROOM");
+    viewLive.reRollTheDiceFromLiveRoom();
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
