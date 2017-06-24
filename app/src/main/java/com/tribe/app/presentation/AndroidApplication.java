@@ -50,6 +50,7 @@ import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
+import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import io.branch.referral.Branch;
@@ -93,6 +94,7 @@ public class AndroidApplication extends Application {
     initUlsee();
     initFilters();
     initGameManager();
+    ImgSdk.init(this);
   }
 
   @Override protected void attachBaseContext(Context base) {
