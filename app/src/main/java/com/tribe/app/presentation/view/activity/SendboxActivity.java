@@ -16,7 +16,7 @@ import timber.log.Timber;
  * Created by madaaflak on 07/06/2017.
  */
 
-public class SandboxActivity extends Activity {
+public class SendboxActivity extends Activity {
 
   private static String PASS = "1987";
 

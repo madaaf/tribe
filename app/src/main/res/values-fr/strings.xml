@@ -15,6 +15,7 @@
 	<!-- User Actions -->
 	<string name="action_add_friend">Ajouter en ami</string>
 	<string name="action_adding_friend">Ajout en cours...</string>
+	<string name="action_friend_added">Ami ajouté !</string>
 	<string name="action_friend">Ajouté</string>
 	<string name="action_unblock">Débloquer</string>
 	<string name="action_hang_live">Appeler</string>
@@ -26,6 +27,8 @@
 	<string name="action_invite">Inviter</string>
 	<string name="action_sms">iMessage</string>
 	<string name="action_messenger">Messenger</string>
+	<string name="action_report">Signaler</string>
+	<string name="action_user_reported">Utilisateur signalé !</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -583,7 +586,7 @@
 	<string name="roll_the_dice_invite_title">Lance le dé !</string>
 	<string name="roll_the_dice_invite_subtitle">Nlles rencontres</string>
 	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
-	<string name="roll_the_dice_next_button">Suivant !</string>
+	<string name="roll_the_dice_next_button">Suivant</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
 	
 	<!-- Fallback call invitations -->
@@ -596,4 +599,7 @@
 	<string name="unlock_roll_the_dice_description">Facebook est nécessaire afin de conserver cet endroit sûr, accueillant et vous permettre de faire des rencontres basées sur vos intérêts et vos amis en commun.</string>
 	<string name="unlock_roll_the_dice_facebook_action">Débloquer avec Facebook</string>
 	<string name="unlock_roll_the_dice_locked">Vous devez avoir 13 ans\nou plus pour lancer le dé!</string>
+	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s a peut être moins de 13 ans</string>
+	<string name="unlock_roll_the_dice_impossible_popup_message">Vos amis doivent avoir au moins 13 ans pour participer à un call où le Dé est activé.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_action">Bon à savoir</string>
 </resources>

@@ -70,6 +70,34 @@
         android:visibility="gone"
         />
 
+    <FrameLayout
+        android:id="@+id/blockView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black.opacity.50"
+        android:clickable="true"
+        android:visibility="gone"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:gravity="center"
+          android:text="@string/unlock_roll_the_dice_locked"
+          android:textSize="15sp"
+          style="@style/Headline.White.2"
+          />
+
+    </FrameLayout>
+
+    <com.tribe.app.presentation.view.widget.notifications.NotificationContainerView
+        android:id="@+id/notificationContainerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
+
+
     <com.tribe.app.presentation.view.component.live.ScreenshotView
         android:id="@+id/screenShotView"
         android:layout_width="match_parent"
@@ -77,4 +105,5 @@
         />
 
   </FrameLayout>
+
 </merge>

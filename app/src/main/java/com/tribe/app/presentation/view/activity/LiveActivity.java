@@ -13,10 +13,12 @@ import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Pair;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +50,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -241,6 +244,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
+  @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
+
+  @BindView(R.id.blockView) FrameLayout blockView;
+
   // VARIABLES
   private TribeAudioManager audioManager;
   private GameManager gameManager;
@@ -414,9 +421,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         livePresenter.loadFriendshipList();
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
-          //SOEF
-          viewLiveContainer.blockOpenInviteView(true);
-          initCallRouletteService();
+
+          if (!FacebookUtils.isLoggedIn()) {
+            Timber.e("SOEF FACEBOOK NOT LOG ");
+            blockView.setVisibility(VISIBLE);
+            blockView.setOnTouchListener((v, event) -> true);
+            notificationContainerView.
+                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);//SOEF
+          } else {
+            Timber.e("SOEF FACEBOOK IS LOG ");
+            viewLiveContainer.blockOpenInviteView(true);
+            initCallRouletteService();
+          }
         }
 
         if (live.isGroup()) {
@@ -703,11 +719,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       } else {
         reRollTheDiceFromLiveRoom();
       }
-      //initCallRouletteService();
     }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
       reRollTheDiceFromCallRoulette();
+    }));
+
+    subscriptions.add(notificationContainerView.onFacebookSuccess().subscribe(aVoid -> {
+      Timber.e("SOEF successFacebookLogin ENTITY HOME");
+      blockView.setVisibility(View.INVISIBLE);
+      viewLiveContainer.blockOpenInviteView(true);
+      initCallRouletteService();
     }));
   }
 

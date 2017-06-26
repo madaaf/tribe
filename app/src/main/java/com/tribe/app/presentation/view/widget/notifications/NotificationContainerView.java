@@ -53,7 +53,7 @@ public class NotificationContainerView extends FrameLayout {
 
   @StringDef({
       DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF,
-      DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF
+      DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF, DISPLAY_FB_CALL_ROULETTE
   }) public @interface NotifType {
   }
 
@@ -62,6 +62,7 @@ public class NotificationContainerView extends FrameLayout {
   public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
   public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
   public static final String DISPLAY_SHARING_NOTIF = "DISPLAY_SHARING_NOTIF";
+  public static final String DISPLAY_FB_CALL_ROULETTE = "DISPLAY_FB_CALL_ROULETTE";
 
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
   private final static int NOTIF_ANIM_DURATION_ENTER = 500;
@@ -89,6 +90,7 @@ public class NotificationContainerView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   private PublishSubject<Void> onSendInvitations = PublishSubject.create();
+  private PublishSubject<Void> onFacebookSuccess = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -115,6 +117,9 @@ public class NotificationContainerView extends FrameLayout {
         case DISPLAY_INVITE_NOTIF:
           notifIsDisplayed = displayInviteNotification();
           break;
+        case DISPLAY_FB_CALL_ROULETTE:
+          textDismiss.setAlpha(0);
+          notifIsDisplayed = displayFbCallRouletteNotification();
       }
     } else if (data != null) {
       notifIsDisplayed = displayNotifFromIntent(data);
@@ -153,6 +158,13 @@ public class NotificationContainerView extends FrameLayout {
     return true;
   }
 
+  private boolean displayFbCallRouletteNotification() {
+    viewToDisplay = new FBCallRouletteNotificationView(context);
+    addViewInContainer(viewToDisplay);
+    animateView();
+    return true;
+  }
+
   private void initView(Context context) {
     this.context = context;
     initDependencyInjector();
@@ -167,6 +179,10 @@ public class NotificationContainerView extends FrameLayout {
     if (viewToDisplay == null) return;
     subscriptions.add(viewToDisplay.onHideNotification().subscribe(aVoid -> {
       hideView();
+    }));
+
+    subscriptions.add(viewToDisplay.onFacebookSuccess().subscribe(aVoid -> {
+      onFacebookSuccess.onNext(null);
     }));
 
     subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
@@ -290,6 +306,10 @@ public class NotificationContainerView extends FrameLayout {
 
   public Observable<Void> onSendInvitations() {
     return onSendInvitations;
+  }
+
+  public Observable<Void> onFacebookSuccess() {
+    return onFacebookSuccess;
   }
 
   ///////////////////

@@ -44,6 +44,7 @@ public class DiceView extends FrameLayout {
   public final static int TYPE_FROM_ROOM = 2;
 
   private final static int DURATON = 900;
+  private final static float SCALE_DOTS_STEP6 = 0.7f;
   private final static int DURATON_ROTATE = 300;
   private final static int STEP6_DURATION = 0;
   private final static int NB_VIEWS = 6;
@@ -92,13 +93,14 @@ public class DiceView extends FrameLayout {
   //////////////
 
   public void setNextAnimation() {
+    if (dice.getWidth() > (2 * sizeDice) || dice.getHeight() > (2 * sizeDice)) return;
     stopRotation();
     resetDotsStates();
     setAlphaBackground(0f);
     new Handler().postDelayed(() -> {
       ResizeAnimation a = new ResizeAnimation(dice);
       a.setDuration(500);
-      a.setInterpolator(new BounceInterpolator());
+      a.setInterpolator(new OvershootInterpolator());
       a.setAnimationListener(new AnimationListenerAdapter() {
         @Override public void onAnimationStart(Animation animation) {
           super.onAnimationStart(animation);
@@ -107,11 +109,11 @@ public class DiceView extends FrameLayout {
           drawable.setCornerRadius(screenUtils.dpToPx(400));
         }
       });
-      Timber.e("SOEF " + ((dice.getRotation() % 180) == 0) + " : " + dice.getRotation() % 180);
-      if ((dice.getRotation() % 180) == 0) {
-        a.setParams(sizeDice, sizeDice * 2, sizeDice, sizeDice);
+      Timber.e("SOEF " + (2 * sizeDice) + " " + dice.getWidth() + " : " + dice.getHeight());
+      if (dice.getWidth() >= (2 * sizeDice)) {
+        a.setParams(sizeDice, (int) (sizeDice * 2.3) + 1, sizeDice, sizeDice);
       } else {
-        a.setParams(sizeDice, sizeDice, sizeDice, sizeDice * 2);
+        a.setParams(sizeDice, sizeDice + 1, sizeDice, (int) (sizeDice * 2.3));
       }
       dice.startAnimation(a);
     }, 1000);
@@ -121,6 +123,23 @@ public class DiceView extends FrameLayout {
     Timber.e("SOEF CLICK NEXT DICE");
     startDiceAnimation();
     onNextDiceClick.onNext(null);
+  }
+
+  public void startDiceAnimation() {
+    dice.setEnabled(false);
+    setAlphaBackground(1f);
+    if (type == TYPE_FROM_ROOM) {
+      reduceDice();
+    } else {
+      dice.animate().scaleX(1).scaleY(1).setDuration(1000).withStartAction(() -> {
+        resetDotsStates();
+        restartRotation();
+        showLabel(true);
+        dotsContainer.animate().translationX(0).setListener(null).start();
+        txtNext.animate().alpha(0).translationX(0).setListener(null).start();
+        new Handler().postDelayed(this::animateDots, 1000);
+      });
+    }
   }
 
   //////////////
@@ -150,7 +169,7 @@ public class DiceView extends FrameLayout {
         break;
       case TYPE_FROM_ROOM:
         bgView.setVisibility(VISIBLE);
-        sizeDice = screenUtils.dpToPx(70);
+        sizeDice = screenUtils.dpToPx(60);
         setDiceSize(sizeDice);
         showLabel(true);
         Timber.d("dice from room");
@@ -161,7 +180,7 @@ public class DiceView extends FrameLayout {
 
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        sizeDot = (int) (0.12 * dice.getWidth());
+        sizeDot = (int) (0.15 * dice.getWidth());
         dotsMargin = (int) (sizeDot / 9.75);
         unit = (int) (sizeDot * 1.20);
 
@@ -171,32 +190,10 @@ public class DiceView extends FrameLayout {
     });
   }
 
-  private void startDiceAnimation() {
-    dice.setEnabled(false);
-    setAlphaBackground(1f);
-    if (type == TYPE_FROM_ROOM) {
-      reduceDice();
-    } else {
-      dice.animate()
-          .scaleX((float) 1)
-          .scaleY(1)
-          .setDuration(1000)
-          .setInterpolator(new OvershootInterpolator())
-          .withStartAction(() -> {
-            resetDotsStates();
-            restartRotation();
-            showLabel(true);
-            dotsContainer.animate().translationX(0).setListener(null).start();
-            txtNext.animate().alpha(0).translationX(0).setListener(null).start();
-            new Handler().postDelayed(this::animateDots, 1000);
-          });
-    }
-  }
-
   private void reduceDice() {
     ResizeAnimation a = new ResizeAnimation(dice);
     a.setDuration(500);
-    a.setInterpolator(new BounceInterpolator());
+    a.setInterpolator(new OvershootInterpolator());
     a.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationStart(Animation animation) {
         super.onAnimationStart(animation);
@@ -207,7 +204,7 @@ public class DiceView extends FrameLayout {
         txtNext.animate().alpha(0).translationX(0).setListener(null).start();
         if (dice.getBackground() instanceof GradientDrawable) {
           GradientDrawable drawable = (GradientDrawable) dice.getBackground();
-          drawable.setCornerRadius(screenUtils.dpToPx(10));
+          drawable.setCornerRadius(screenUtils.dpToPx(13));
         }
         new Handler().postDelayed(() -> animateDots(), 1000);
       }
@@ -216,12 +213,12 @@ public class DiceView extends FrameLayout {
         super.onAnimationEnd(animation);
       }
     });
-    a.setParams(dice.getWidth(), sizeDice, dice.getHeight(), sizeDice);
+    a.setParams(dice.getWidth(), sizeDice + 1, dice.getHeight(), sizeDice);
     dice.startAnimation(a);
   }
 
   private void setDiceSize(int size) {
-    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size + 1, size);
     params.gravity = Gravity.CENTER;
     dice.setLayoutParams(params);
   }
@@ -246,6 +243,8 @@ public class DiceView extends FrameLayout {
   }
 
   private void resetDotsStates() {
+    dotsContainer.animate().scaleX(1).scaleY(1).setListener(null).start();
+
     for (int i = 0; i < viewDots.size(); i++) {
       if (i != 0) {
         viewDots.get(i)
@@ -263,6 +262,8 @@ public class DiceView extends FrameLayout {
             .animate()
             .translationX(0)
             .translationY(0)
+            .scaleX(1)
+            .scaleY(1)
             .setDuration(300)
             .setListener(null)
             .start();
@@ -346,6 +347,12 @@ public class DiceView extends FrameLayout {
         .setInterpolator(new BounceInterpolator())
         .setStartDelay(STEP6_DURATION)
         .setDuration(DURATON / 2)
+        .setListener(null)
+        .start();
+
+    dotsContainer.animate()
+        .scaleX(SCALE_DOTS_STEP6)
+        .scaleY(SCALE_DOTS_STEP6)
         .setListener(null)
         .start();
 
@@ -547,8 +554,9 @@ public class DiceView extends FrameLayout {
     int layoutSize = (sizeDot * 5) + txtNext.getWidth();
     int dotsContainerOffset = -(layoutSize / 2) + ((sizeDot * 5) / 2);
     int txtNextOffset = -(layoutSize / 2) + (sizeDot * 5) + (txtNext.getWidth() / 2);
-    dotsContainer.animate().translationX(dotsContainerOffset).setListener(null).start();
-    txtNext.animate().alpha(1).translationX(txtNextOffset).setListener(null).start();
+    int margin = screenUtils.dpToPx(3);
+    dotsContainer.animate().translationX(dotsContainerOffset - margin).setListener(null).start();
+    txtNext.animate().alpha(1).translationX(txtNextOffset + margin).setListener(null).start();
     new Handler().postDelayed(() -> {
       step6Anim(false);
       showLabel(false);

@@ -15,6 +15,7 @@
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
 	<string name="action_adding_friend">Loading...</string>
+	<string name="action_friend_added">Friend added!</string>
 	<string name="action_friend">Added</string>
 	<string name="action_unblock">Unblock</string>
 	<string name="action_hang_live">Video call</string>
@@ -26,6 +27,8 @@
 	<string name="action_invite">Invite</string>
 	<string name="action_sms">iMessage</string>
 	<string name="action_messenger">Messenger</string>
+	<string name="action_report">Report</string>
+	<string name="action_user_reported">User reported!</string>
 	
 	<!-- Group -->
 	<string name="group_member">member</string>
@@ -583,7 +586,7 @@
 	<string name="roll_the_dice_invite_title">Roll the dice!</string>
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
 	<string name="roll_the_dice_grid_button">Roll the dice to meet new people!</string>
-	<string name="roll_the_dice_next_button">Next!</string>
+	<string name="roll_the_dice_next_button">Next</string>
 	<string name="roll_the_dice_notification">%1$s just rolled the dice!</string>
 	
 	<!-- Fallback call invitations -->
@@ -596,4 +599,7 @@
 	<string name="unlock_roll_the_dice_description">Facebook is required to keep this place safe, warm and get matches based on common interests and friends.</string>
 	<string name="unlock_roll_the_dice_facebook_action">Unlock with Facebook</string>
 	<string name="unlock_roll_the_dice_locked">You need to be 13 years old\nor over to roll the dice.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s may be under 13 years old</string>
+	<string name="unlock_roll_the_dice_impossible_popup_message">Your friends need to be 13 years old or older to join a call where the Dice is enabled.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_action">Good to know</string>
 </resources>

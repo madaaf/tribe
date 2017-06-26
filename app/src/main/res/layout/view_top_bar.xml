@@ -154,7 +154,7 @@
       </FrameLayout>
     </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/callRoulette"
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -172,21 +172,25 @@
           android:id="@+id/diceLayout"
           android:layout_width="45dp"
           android:layout_height="45dp"
-          android:layout_marginEnd="5dp"
+          android:layout_marginEnd="4dp"
           app:diceType="homeGrid"
           />
 
 
       <com.tribe.app.presentation.view.widget.TextViewFont
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_gravity="center"
           android:layout_marginStart="5dp"
           android:gravity="center"
+          android:paddingEnd="50dp"
+          android:paddingStart="50dp"
           android:text="@string/roll_the_dice_grid_button"
-          style="@style/Title.2.Black"
+          android:textSize="15sp"
+          style="@style/Body.Two.Black"
           />
 
-    </LinearLayout>
+    </FrameLayout>
   </FrameLayout>
 
 

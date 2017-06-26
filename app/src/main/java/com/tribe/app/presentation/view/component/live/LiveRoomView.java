@@ -139,6 +139,7 @@ public class LiveRoomView extends FrameLayout {
       new Handler().postDelayed(() -> {
         onShouldCloseInvites.onNext(null);
         diceView.setVisibility(VISIBLE);
+        diceView.startDiceAnimation();
       }, 800);
     }
   }
@@ -153,6 +154,7 @@ public class LiveRoomView extends FrameLayout {
     isCallRouletteMode = true;
     onShouldCloseInvites.onNext(null);
     diceView.setVisibility(VISIBLE);
+    diceView.startDiceAnimation();
     if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
       onChangeCallRouletteRoom.onNext(null);
     }
@@ -198,6 +200,7 @@ public class LiveRoomView extends FrameLayout {
         && source.equals(SOURCE_CALL_ROULETTE)
         && flexboxLayout.getChildCount() < 2) {
       diceView.setVisibility(VISIBLE);
+      diceView.startDiceAnimation();
     }
   }
 

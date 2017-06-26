@@ -20,7 +20,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +35,6 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -86,7 +84,7 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
 
-  @BindView(R.id.callRoulette) LinearLayout callRouletteLayout;
+  @BindView(R.id.callRoulette) FrameLayout callRouletteLayout;
 
   //@BindView(R.id.diceLayout) DiceView diceView;
 

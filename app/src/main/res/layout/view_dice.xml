@@ -55,7 +55,7 @@
       android:maxLines="1"
       android:text="@string/roll_the_dice_live_status_searching"
       android:visibility="gone"
-      style="@style/Title.2.White"
+      style="@style/Body.Two.White"
       />
 
 </merge>
