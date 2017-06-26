@@ -256,6 +256,7 @@ public class LiveView extends FrameLayout {
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
       tagMap.put(TagManagerUtils.SOURCE, live.getSource());
+      tagMap.put(TagManagerUtils.IS_CALL_ROULETTE, live.isDiceDragedInRoom());
       tagMap.put(TagManagerUtils.DURATION, duration);
       tagMap.put(TagManagerUtils.STATE, state);
       tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
@@ -638,7 +639,8 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(
         room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
           Timber.e("SOEF rollTheDice received by WEB SIGNALING");
-          viewRoom.onRollTheDiceReceived();
+          viewRoom.onRollTheDiceReceived();//SOEFFIHSHSK
+          live.setDiceDragedInRoom(true);
         }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
@@ -889,6 +891,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void reRollTheDiceFromLiveRoom() {
+    live.setDiceDragedInRoom(true);
     room.sendToPeers(getUserPlayload(user), true);//SOEF
   }
 
@@ -1075,7 +1078,7 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
-  private JSONObject getInvitedPayload() { //SOEF OK
+  private JSONObject getInvitedPayload() {
     JSONObject jsonObject = new JSONObject();
     JSONArray array = new JSONArray();
     for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
@@ -1441,6 +1444,5 @@ public class LiveView extends FrameLayout {
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
   }
-
 }
 

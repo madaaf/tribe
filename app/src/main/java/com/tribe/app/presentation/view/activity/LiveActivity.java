@@ -596,7 +596,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             Timber.e("SOEF I DRAG & DROP THE DICE IN LIVE ROOM : roomAcceptRandom = "
                 + live.getSessionId());
             livePresenter.roomAcceptRandom(live.getSessionId());
-            reRollTheDiceFromLiveRoom();
+            reRollTheDiceFromLiveRoom();//SOEF
           } else {
             invite(recipient.getSubId());
           }

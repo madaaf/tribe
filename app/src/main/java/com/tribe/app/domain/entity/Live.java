@@ -30,6 +30,7 @@ public class Live implements Serializable {
   private boolean countdown = true;
   private boolean intent = false;
   private @LiveActivity.Source String source;
+  private boolean isDiceDragedInRoom = false;
 
   private Live(Builder builder) {
     this.id = builder.id;
@@ -47,6 +48,7 @@ public class Live implements Serializable {
     this.linkId = builder.linkId;
     this.url = builder.url;
     this.source = builder.source;
+    this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
   }
 
   public String getId() {
@@ -79,6 +81,14 @@ public class Live implements Serializable {
 
   public void setPicture(String picture) {
     this.picture = picture;
+  }
+
+  public boolean isDiceDragedInRoom() {
+    return isDiceDragedInRoom;
+  }
+
+  public void setDiceDragedInRoom(boolean diceDragedInRoom) {
+    isDiceDragedInRoom = diceDragedInRoom;
   }
 
   public List<User> getMembers() {
@@ -214,6 +224,7 @@ public class Live implements Serializable {
     private int color;
     private boolean countdown = true;
     private boolean intent = false;
+    private boolean isDiceDragedInRoom = false;
     private String userName;
     private @LiveActivity.Source String source;
 
@@ -259,6 +270,11 @@ public class Live implements Serializable {
 
     public Builder linkId(String linkId) {
       this.linkId = linkId;
+      return this;
+    }
+
+    public Builder isDiceDragedInRoom(boolean isDiceDragedInRoom) {
+      this.isDiceDragedInRoom = isDiceDragedInRoom;
       return this;
     }
 

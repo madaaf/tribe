@@ -28,5 +28,18 @@
       android:visibility="gone"
       />
 
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal|bottom"
+      android:layout_marginBottom="8dp"
+      android:gravity="center"
+      android:lines="1"
+      android:text="@string/roll_the_dice_invite_subtitle"
+      android:textSize="11sp"
+      style="@style/Title.2.Black40"
+      />
+
 
 </merge>

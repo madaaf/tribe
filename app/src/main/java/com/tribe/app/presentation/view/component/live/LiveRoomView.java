@@ -158,7 +158,6 @@ public class LiveRoomView extends FrameLayout {
     if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
       onChangeCallRouletteRoom.onNext(null);
     }
-    //diceView.setNextAnimation();
   }
 
   public void setSource(@LiveActivity.Source String source) {

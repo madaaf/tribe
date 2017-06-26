@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -109,12 +108,37 @@ public class DiceView extends FrameLayout {
           drawable.setCornerRadius(screenUtils.dpToPx(400));
         }
       });
-      Timber.e("SOEF " + (2 * sizeDice) + " " + dice.getWidth() + " : " + dice.getHeight());
-      if (dice.getWidth() >= (2 * sizeDice)) {
-        a.setParams(sizeDice, (int) (sizeDice * 2.3) + 1, sizeDice, sizeDice);
+      Timber.e("SOEF "
+          + (dice.getWidth() > sizeDice)
+          + " "
+          + dice.getWidth()
+          + " : "
+          + dice.getHeight());
+      if ((dice.getRotation() % 180) == 0) {
+        //if (dice.getWidth() > sizeDice) {
+        a.setParams(sizeDice, (int) (sizeDice * 2.5) + 1, sizeDice, sizeDice);
       } else {
-        a.setParams(sizeDice, sizeDice + 1, sizeDice, (int) (sizeDice * 2.3));
+        a.setParams(sizeDice, sizeDice + 1, sizeDice, (int) (sizeDice * 2.5));
       }
+    /*  a.setAnimationListener(new AnimationListenerAdapter() {
+        @Override public void onAnimationEnd(Animation animation) {
+          super.onAnimationEnd(animation);
+          Timber.e("SOEF OK : "
+              + (dice.getWidth() > sizeDice)
+              + " "
+              + dice.getWidth()
+              + " : "
+              + dice.getHeight());
+          Timber.e("SOEF OK2 : "
+              + dice.getLeft()
+              + " "
+              + dice.getTop()
+              + " "
+              + dice.getBottom()
+              + " "
+              + dice.getRight());
+        }
+      });*/
       dice.startAnimation(a);
     }, 1000);
   }
@@ -161,8 +185,8 @@ public class DiceView extends FrameLayout {
         break;
       case TYPE_FROM_TILE:
         bgView.setVisibility(GONE);
-        dice.setScaleY(0);
-        dice.setScaleX(0);
+        dice.setScaleY(1);
+        dice.setScaleX(1);
         dice.setBackground(
             ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white_corner));
         Timber.d("dice from tile view");
@@ -280,7 +304,7 @@ public class DiceView extends FrameLayout {
         .alpha(1)
         .scaleX(1)
         .scaleY(1)
-        .setInterpolator(new BounceInterpolator())
+        .setInterpolator(new OvershootInterpolator())
         .setDuration(DURATON / 2)
         .setListener(null)
         .start();
@@ -293,7 +317,7 @@ public class DiceView extends FrameLayout {
         .alpha(1)
         .scaleX(1)
         .scaleY(1)
-        .setInterpolator(new BounceInterpolator())
+        .setInterpolator(new OvershootInterpolator())
         .setDuration(DURATON / 2)
         .setListener(null)
         .start();
@@ -305,7 +329,7 @@ public class DiceView extends FrameLayout {
         .alpha(1)
         .scaleX(1)
         .scaleY(1)
-        .setInterpolator(new BounceInterpolator())
+        .setInterpolator(new OvershootInterpolator())
         .setStartDelay(STEP6_DURATION)
         .setDuration(DURATON / 2)
         .setListener(null)
@@ -318,7 +342,7 @@ public class DiceView extends FrameLayout {
         .translationX(0)
         .translationY(-(sizeDot / 2) - dotsMargin)
         .alpha(1)
-        .setInterpolator(new BounceInterpolator())
+        .setInterpolator(new OvershootInterpolator())
         .setStartDelay(STEP6_DURATION)
         .setDuration(DURATON / 2)
         .setListener(null)
@@ -331,7 +355,7 @@ public class DiceView extends FrameLayout {
         .translationX(0)
         .translationY(+(sizeDot / 2) + dotsMargin)
         .alpha(1)
-        .setInterpolator(new BounceInterpolator())
+        .setInterpolator(new OvershootInterpolator())
         .setStartDelay(STEP6_DURATION)
         .setDuration(DURATON / 2)
         .setListener(null)
@@ -344,7 +368,7 @@ public class DiceView extends FrameLayout {
         .alpha(1)
         .scaleX(1)
         .scaleY(1)
-        .setInterpolator(new BounceInterpolator())
+        .setInterpolator(new OvershootInterpolator())
         .setStartDelay(STEP6_DURATION)
         .setDuration(DURATON / 2)
         .setListener(null)
@@ -403,7 +427,7 @@ public class DiceView extends FrameLayout {
               .scaleX(1)
               .scaleY(1)
               .alpha(1)
-              .setInterpolator(new BounceInterpolator())
+              .setInterpolator(new OvershootInterpolator())
               .translationX(unit)
               .translationY(unit)
               .setDuration(DURATON)
@@ -416,7 +440,7 @@ public class DiceView extends FrameLayout {
               .translationX(-unit)
               .translationY(-unit)
               .setDuration(DURATON)
-              .setInterpolator(new BounceInterpolator())
+              .setInterpolator(new OvershootInterpolator())
               .setListener(null)
               .start();
         })
@@ -444,7 +468,7 @@ public class DiceView extends FrameLayout {
                     .scaleX(1f)
                     .scaleY(1f)
                     .setStartDelay(300)
-                    .setInterpolator(new BounceInterpolator())
+                    .setInterpolator(new OvershootInterpolator())
                     .setDuration(DURATON - 300)
                     .setListener(null)
                     .start();
@@ -453,7 +477,7 @@ public class DiceView extends FrameLayout {
                     .animate()
                     .translationX(0)
                     .translationY(0)
-                    .setInterpolator(new BounceInterpolator())
+                    .setInterpolator(new OvershootInterpolator())
                     .setDuration(DURATON)
                     .setListener(null)
                     .start();
@@ -483,7 +507,7 @@ public class DiceView extends FrameLayout {
                           .alpha(1)
                           .scaleX(1)
                           .scaleY(1)
-                          .setInterpolator(new BounceInterpolator())
+                          .setInterpolator(new OvershootInterpolator())
                           .setStartDelay(300)
                           .setDuration(DURATON - 300)
                           .setListener(null)
@@ -494,7 +518,7 @@ public class DiceView extends FrameLayout {
                           .translationX(-unit)
                           .translationY(unit)
                           .setDuration(DURATON)
-                          .setInterpolator(new BounceInterpolator())
+                          .setInterpolator(new OvershootInterpolator())
                           .withEndAction(() -> {
                             if (rotationUnit == 0) return;
                             dice.animate()
@@ -518,7 +542,7 @@ public class DiceView extends FrameLayout {
                                       .alpha(1)
                                       .scaleX(1f)
                                       .scaleY(1f)
-                                      .setInterpolator(new BounceInterpolator())
+                                      .setInterpolator(new OvershootInterpolator())
                                       .setDuration(DURATON)
                                       .withEndAction(() -> {
                                         if (rotationUnit == 0) return;
@@ -554,9 +578,15 @@ public class DiceView extends FrameLayout {
     int layoutSize = (sizeDot * 5) + txtNext.getWidth();
     int dotsContainerOffset = -(layoutSize / 2) + ((sizeDot * 5) / 2);
     int txtNextOffset = -(layoutSize / 2) + (sizeDot * 5) + (txtNext.getWidth() / 2);
-    int margin = screenUtils.dpToPx(3);
-    dotsContainer.animate().translationX(dotsContainerOffset - margin).setListener(null).start();
-    txtNext.animate().alpha(1).translationX(txtNextOffset + margin).setListener(null).start();
+    dotsContainer.animate()
+        .translationX(dotsContainerOffset - screenUtils.dpToPx(5))
+        .setListener(null)
+        .start();
+    txtNext.animate()
+        .alpha(1)
+        .translationX(txtNextOffset + screenUtils.dpToPx(3))
+        .setListener(null)
+        .start();
     new Handler().postDelayed(() -> {
       step6Anim(false);
       showLabel(false);

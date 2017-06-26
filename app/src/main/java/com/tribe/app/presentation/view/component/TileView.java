@@ -37,7 +37,6 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareCardView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
