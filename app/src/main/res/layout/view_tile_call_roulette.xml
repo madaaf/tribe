@@ -8,8 +8,8 @@
 
   <com.tribe.app.presentation.view.widget.DiceView
       android:id="@+id/diceLayout"
-      android:layout_width="@dimen/avatar_size_small_margin_start"
-      android:layout_height="@dimen/avatar_size_small_margin_start"
+      android:layout_width="45dp"
+      android:layout_height="45dp"
       android:layout_gravity="center"
       app:diceType="tileView"
       />

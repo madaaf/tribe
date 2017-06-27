@@ -361,6 +361,11 @@
 	<string name="live_new_call_title_alone">Appeler</string>
 	<string name="live_new_call_title_with_guests">%1$s et invités</string>
 	<string name="live_share_new_call_description">Partagez le lien de l\'appel et\nattendez que vos amis vous rejoignent !</string>
+	<string name="live_share_new_call_or_dice_description_call">Partagez le lien de l\'appel</string>
+	<string name="live_share_new_call_or_dice_description_or">ou</string>
+	<string name="live_share_new_call_or_dice_description_dice">Lancez le dé</string>
+	<string name="live_share_new_call_or_dice_description_subtitle">pour voir des personnes rejoindre l\'appel !</string>
+	<string name="live_share_roll_the_dice_button">Rencontrer des amis</string>
 	<string name="live_share_new_call_button">Inviter des amis dans l\'appel</string>
 	<string name="live_share_new_call_button_simple">Lien</string>
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>

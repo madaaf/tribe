@@ -145,9 +145,8 @@ public class LiveRoomView extends FrameLayout {
   }
 
   /**
-   * SOEF
    * ON ROLL THE DICE MESSAGE HAS RECEIVED. SOMEONE NEXT THE DICE
-   * IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTER
+   * IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTEUR
    * IF I AM IN CALL ROULETTE MODE => I AM NEXED, I LEAVE THE ROOM AND ENTER I ANOTHER ONE
    */
   public void onRollTheDiceReceived() {
@@ -163,7 +162,7 @@ public class LiveRoomView extends FrameLayout {
   public void setSource(@LiveActivity.Source String source) {
     this.source = source;
     if (source.equals(SOURCE_CALL_ROULETTE)) {
-      diceView.setVisibility(VISIBLE);//SOEF
+      diceView.setVisibility(VISIBLE);
     }
   }
 
@@ -222,7 +221,7 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
-    if ((source != null && source.equals(SOURCE_CALL_ROULETTE)) || isCallRouletteMode) {//SOEF
+    if ((source != null && source.equals(SOURCE_CALL_ROULETTE)) || isCallRouletteMode) {
       diceView.setNextAnimation();
     }
     setScreenSize(0);

@@ -361,6 +361,11 @@
 	<string name="live_new_call_title_alone">New call</string>
 	<string name="live_new_call_title_with_guests">%1$s with guests</string>
 	<string name="live_share_new_call_description">Share call link and wait for\nyour friends to join here!</string>
+	<string name="live_share_new_call_or_dice_description_call">Share the call link</string>
+	<string name="live_share_new_call_or_dice_description_or">or</string>
+	<string name="live_share_new_call_or_dice_description_dice">Roll the dice</string>
+	<string name="live_share_new_call_or_dice_description_subtitle">to see people joining the call!</string>
+	<string name="live_share_roll_the_dice_button">Meet new people</string>
 	<string name="live_share_new_call_button">Invite friends in the call</string>
 	<string name="live_share_new_call_button_simple">Share</string>
 	<string name="live_share_new_call_button_title">Call link</string>

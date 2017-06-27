@@ -50,6 +50,7 @@
       <enum name="homeGrid" value="0" />
       <enum name="tileView" value="1" />
       <enum name="roomView" value="2" />
+      <enum name="fbNotif" value="3" />
     </attr>
   </declare-styleable>
 

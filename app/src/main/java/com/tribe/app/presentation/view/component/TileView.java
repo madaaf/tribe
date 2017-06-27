@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareCardView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -46,6 +47,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/06/2016.
@@ -109,7 +111,7 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.imgIndInvite) ImageView imgIndInvite;
 
-  //@Nullable @BindView(R.id.diceLayout) DiceView diceView;
+  @Nullable @BindView(R.id.diceLayout) DiceView diceView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -289,6 +291,13 @@ public class TileView extends SquareCardView {
 
         avatar.setScaleX(scale);
         avatar.setScaleY(scale);
+        if (diceView != null) {
+          diceView.setScaleX(scale);
+          diceView.setScaleY(scale);
+          Timber.e("SOEF OK VALUE " + value);
+          Timber.e("SOEF OK scale " + scale);
+          txtStatus.setAlpha(1 - value);
+        }
 
         int cardRadius = Math.max((int) (cardRadiusMin + (diffCardRadius * value)), cardRadiusMin);
         setRadius(cardRadius);

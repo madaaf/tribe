@@ -423,13 +423,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
 
           if (!FacebookUtils.isLoggedIn()) {
-            Timber.e("SOEF FACEBOOK NOT LOG ");
+            Timber.d("not logged on fb ");
             blockView.setVisibility(VISIBLE);
             blockView.setOnTouchListener((v, event) -> true);
             notificationContainerView.
                 showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);//SOEF
           } else {
-            Timber.e("SOEF FACEBOOK IS LOG ");
             viewLiveContainer.blockOpenInviteView(true);
             initCallRouletteService();
           }
@@ -455,7 +454,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initCallRouletteService() {
-    Timber.e("SOEF INIT CALL ROULETTE");
     viewLive.setSourceLive(live.getSource());
     startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
     livePresenter.randomRoomAssigned();
@@ -593,10 +591,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
-            Timber.e("SOEF I DRAG & DROP THE DICE IN LIVE ROOM : roomAcceptRandom = "
-                + live.getSessionId());
+            Timber.d("on dropped the dice :" + live.getSessionId());
             livePresenter.roomAcceptRandom(live.getSessionId());
-            reRollTheDiceFromLiveRoom();//SOEF
+            reRollTheDiceFromLiveRoom();
           } else {
             invite(recipient.getSubId());
           }
@@ -708,12 +705,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
     subscriptions.add(diceView.onNextDiceClick().subscribe(aVoid -> {
-      /**
-       *  SOEF
-       *  I CLICK ON NEXT
-       *  IF I AM IN LIVE ROOM NORMAL => SEND MESSAGE TO THE WEB SIGNALING
-       *  IF I AM IN CALL ROULETTE MODE => I DO ANOTHER SUBSCRIPTION
-       */
       if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
         reRollTheDiceFromCallRoulette();
       } else {
@@ -726,7 +717,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(notificationContainerView.onFacebookSuccess().subscribe(aVoid -> {
-      Timber.e("SOEF successFacebookLogin ENTITY HOME");
       blockView.setVisibility(View.INVISIBLE);
       viewLiveContainer.blockOpenInviteView(true);
       initCallRouletteService();
@@ -734,17 +724,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void reRollTheDiceFromCallRoulette() {
-    Timber.e("SOEF NEXT DICE CLICKED : FROM CALL ROULETTE");
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
     viewLive.endCall(true);
     viewLive.dispose(true);
     viewLive.jump();
     initRoom();
-    return;
   }
 
   private void reRollTheDiceFromLiveRoom() {
-    Timber.e("SOEF NEXT DICE CLICKED : FROM LIVE ROOM");
     viewLive.reRollTheDiceFromLiveRoom();
   }
 
@@ -990,7 +977,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
-    Timber.e("SOEF JOIN ASSIGNED ROOM " + roomId);
+    Timber.d("random room assigned " + roomId);
     viewLiveContainer.blockOpenInviteView(false);
     live.setSessionId(roomId);
     joinRoom();

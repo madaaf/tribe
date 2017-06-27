@@ -41,6 +41,7 @@ public class DiceView extends FrameLayout {
   public final static int TYPE_FROM_GRID = 0;
   public final static int TYPE_FROM_TILE = 1;
   public final static int TYPE_FROM_ROOM = 2;
+  public final static int TYPE_FROM_FB_NOTIF = 3;
 
   private final static int DURATON = 900;
   private final static float SCALE_DOTS_STEP6 = 0.7f;
@@ -108,43 +109,16 @@ public class DiceView extends FrameLayout {
           drawable.setCornerRadius(screenUtils.dpToPx(400));
         }
       });
-      Timber.e("SOEF "
-          + (dice.getWidth() > sizeDice)
-          + " "
-          + dice.getWidth()
-          + " : "
-          + dice.getHeight());
       if ((dice.getRotation() % 180) == 0) {
-        //if (dice.getWidth() > sizeDice) {
         a.setParams(sizeDice, (int) (sizeDice * 2.5) + 1, sizeDice, sizeDice);
       } else {
         a.setParams(sizeDice, sizeDice + 1, sizeDice, (int) (sizeDice * 2.5));
       }
-    /*  a.setAnimationListener(new AnimationListenerAdapter() {
-        @Override public void onAnimationEnd(Animation animation) {
-          super.onAnimationEnd(animation);
-          Timber.e("SOEF OK : "
-              + (dice.getWidth() > sizeDice)
-              + " "
-              + dice.getWidth()
-              + " : "
-              + dice.getHeight());
-          Timber.e("SOEF OK2 : "
-              + dice.getLeft()
-              + " "
-              + dice.getTop()
-              + " "
-              + dice.getBottom()
-              + " "
-              + dice.getRight());
-        }
-      });*/
       dice.startAnimation(a);
     }, 1000);
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
-    Timber.e("SOEF CLICK NEXT DICE");
     startDiceAnimation();
     onNextDiceClick.onNext(null);
   }
@@ -198,6 +172,13 @@ public class DiceView extends FrameLayout {
         showLabel(true);
         Timber.d("dice from room");
         break;
+      case TYPE_FROM_FB_NOTIF:
+        bgView.setVisibility(GONE);
+        sizeDice = screenUtils.dpToPx(60);
+        setDiceSize(sizeDice);
+        showLabel(false);
+        dice.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_dice_fb));
+        Timber.d("dice from fb notif");
     }
 
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

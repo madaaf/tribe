@@ -620,7 +620,7 @@ public class LiveView extends FrameLayout {
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
 
-          if (shouldLeave()) {//SOEF 111
+          if (shouldLeave()) {
             onLeave.onNext(null);
           }
 
@@ -891,8 +891,9 @@ public class LiveView extends FrameLayout {
   }
 
   public void reRollTheDiceFromLiveRoom() {
+    Timber.d("roll the dice");
     live.setDiceDragedInRoom(true);
-    room.sendToPeers(getUserPlayload(user), true);//SOEF
+    room.sendToPeers(getUserPlayload(user), true);
   }
 
   ////////////////

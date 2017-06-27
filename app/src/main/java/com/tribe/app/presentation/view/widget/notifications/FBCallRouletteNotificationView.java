@@ -23,13 +23,11 @@ import timber.log.Timber;
 public class FBCallRouletteNotificationView extends LifeNotification implements FBInfoMVPView {
 
   @BindView(R.id.fbCallRouletteView) LinearLayout fbCallRouletteView;
-  //  @BindView(R.id.blockView) FrameLayout blockView;
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   // VARIABLES
   private LayoutInflater inflater;
   private Unbinder unbinder;
-  private boolean blockUser = true;
 
   public FBCallRouletteNotificationView(@NonNull Context context) {
     super(context);
@@ -69,26 +67,18 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     inflater.inflate(R.layout.view_facebook_callroulette, this, true);
     unbinder = ButterKnife.bind(this);
     diceView.setVisibility(VISIBLE);
-
-/*    setOnTouchListener((v, event) -> {
-      blockView.setVisibility(VISIBLE);
-      blockView.animate().alpha(1).setDuration(1000).start();
-      return true;
-    });*/
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
-    Timber.e("SOEF FACEBOOK ENTITY " + facebookEntity.getName() + " " + facebookEntity.getId());
   }
 
   @Override public void successFacebookLogin() {
-    Timber.e("SOEF successFacebookLogin ENTITY ");
-    blockUser = false;
+    Timber.d("successFacebookLogin");
     onFacebookSuccess.onNext(null);
     super.hideView();
   }
 
   @Override public void errorFacebookLogin() {
-    Timber.e("SOEF errorFacebookLogin ENTITY ");
+    Timber.e("errorFacebookLogin");
   }
 }

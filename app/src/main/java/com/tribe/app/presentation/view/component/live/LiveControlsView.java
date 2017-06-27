@@ -607,7 +607,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick(R.id.btnInviteLive) void openInvite() {
-    onOpenInvite.onNext(null); //SOEF
+    onOpenInvite.onNext(null);
   }
 
   @OnClick(R.id.btnOrientationCamera) void clickOrientationCamera() {

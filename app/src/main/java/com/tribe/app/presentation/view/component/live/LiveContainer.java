@@ -482,7 +482,7 @@ public class LiveContainer extends FrameLayout {
     }
   }
 
-  private void createTileForDrag() {//SOEF
+  private void createTileForDrag() {
     viewInviteLive.setDragging(true);
 
     draggedTileView = new TileView(getContext(), currentTileView.getType());

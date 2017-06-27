@@ -482,7 +482,7 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
           boolean displayPermissionNotif = notificationContainerView.
-              showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);//SOEF
+              showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
           if (displayPermissionNotif) {
             notificationContainerView.onAcceptedPermission().subscribe(permissionGranted -> {
               if (permissionGranted) {
