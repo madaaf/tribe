@@ -32,7 +32,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.SandboxActivity;
+import com.tribe.app.presentation.view.activity.SendboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -268,9 +268,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewCall(Activity activity) {
+  public void navigateToNewCall(Activity activity, @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, LiveActivity.SOURCE_NEW_CALL);
+      Intent intent = LiveActivity.getCallingIntent(activity, source);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -445,7 +445,7 @@ public class Navigator {
   }
 
   public void navigateToSandbox(AuthActivity authActivity) {
-    Intent i = new Intent(authActivity, SandboxActivity.class);
+    Intent i = new Intent(authActivity, SendboxActivity.class);
     authActivity.startActivity(i);
   }
 }

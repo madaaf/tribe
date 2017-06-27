@@ -16,6 +16,13 @@ import java.util.List;
  */
 public class User implements Serializable, BaseListInterface {
 
+
+  public static final String ID = "id";
+  public static final String DISPLAY_NAME = "display_name";
+  public static final String PICTURE = "picture";
+
+
+
   private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
   public static final String ID_EMPTY = "EMPTY";
 

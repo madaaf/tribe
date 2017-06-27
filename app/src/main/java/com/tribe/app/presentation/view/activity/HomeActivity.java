@@ -275,7 +275,7 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.loadContactsOnApp();
 
-    startService(WSService.getCallingIntent(this));
+    startService(WSService.getCallingIntent(this, null));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -526,7 +526,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initNewCall() {
-    subscriptions.add(btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall()));
+    subscriptions.add(
+        btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_NEW_CALL)));
 
     subscriptions.add(
         btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
@@ -561,6 +562,10 @@ public class HomeActivity extends BaseActivity
 
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
+
+    subscriptions.add(topBarContainer.onClickCallroulette().subscribe(aVoid -> {
+      navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);//SIOEF
+    }));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
       Bundle bundle = new Bundle();
@@ -814,8 +819,8 @@ public class HomeActivity extends BaseActivity
     navigator.navigateToProfile(HomeActivity.this);
   }
 
-  private void navigateToNewCall() {
-    HomeActivity.this.navigator.navigateToNewCall(this);
+  private void navigateToNewCall(@LiveActivity.Source String source) {
+    HomeActivity.this.navigator.navigateToNewCall(this, source);
   }
 
   private void syncContacts() {

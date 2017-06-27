@@ -12,6 +12,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.FacebookPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -34,11 +35,13 @@ public class LifeNotification extends FrameLayout {
   @Inject ScreenUtils screenUtils;
   @Inject Navigator navigator;
   @Inject TagManager tagManager;
+  @Inject FacebookPresenter facebookPresenter;
 
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected PublishSubject<Void> onHideNotification = PublishSubject.create();
   protected PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   protected PublishSubject<Void> onSendInvitations = PublishSubject.create();
+  protected PublishSubject<Void> onFacebookSuccess = PublishSubject.create();
 
   public LifeNotification(@NonNull Context context) {
     super(context);
@@ -107,6 +110,10 @@ public class LifeNotification extends FrameLayout {
 
   public Observable<Void> onHideNotification() {
     return onHideNotification;
+  }
+
+  public Observable<Void> onFacebookSuccess() {
+    return onFacebookSuccess;
   }
 
   public Observable<Boolean> onAcceptedPermission() {

@@ -33,4 +33,6 @@ public interface LiveMVPView extends MVPView {
   void onAddSuccess(Friendship friendship);
 
   void onNamesPostItGame(List<String> nameList);
+
+  void randomRoomAssignedSubscriber(String roomId);
 }

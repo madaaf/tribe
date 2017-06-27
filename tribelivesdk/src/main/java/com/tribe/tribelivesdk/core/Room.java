@@ -50,7 +50,7 @@ public class Room {
       MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE,
       MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_LOCAL_SWITCH_MODE,
       MESSAGE_REMOTE_SWITCH_MODE, MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED,
-      MESSAGE_INVITE_REMOVED
+      MESSAGE_INVITE_REMOVED, MESSAGE_ROLL_THE_DICE
   }) public @interface WebSocketMessageType {
   }
 
@@ -68,6 +68,7 @@ public class Room {
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
+  public static final String MESSAGE_ROLL_THE_DICE = "rollTheDice";
   public static final String MESSAGE_GAME = "game";
 
   public static final int DURATION = 60; // SECS
@@ -87,6 +88,7 @@ public class Room {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerUpdated = PublishSubject.create();
@@ -135,6 +137,10 @@ public class Room {
       if (options != null && !options.isShadowCall()) {
         sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
       }
+    }).subscribe());
+
+    persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
+      onRollTheDiceReceived.onNext(null);
     }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
@@ -506,6 +512,10 @@ public class Room {
 
   public Observable<TribeJoinRoom> onJoined() {
     return onJoined;
+  }
+
+  public Observable<Void> onRollTheDiceReceived() {
+    return onRollTheDiceReceived;
   }
 
   public Observable<String> onRoomStateChanged() {

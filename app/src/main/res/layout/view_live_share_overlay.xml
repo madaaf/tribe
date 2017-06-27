@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+  <FrameLayout
+      android:id="@+id/viewLiveShareOverlayContainer"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_margin="@dimen/horizontal_margin"
-      android:gravity="center"
-      android:text="@string/live_share_new_call_description"
-      style="@style/Title.2.White40"
-      />
-
-  <FrameLayout
-      android:id="@+id/btnShare"
-      android:layout_width="wrap_content"
-      android:layout_height="@dimen/top_bar_height_small"
-      android:layout_marginTop="@dimen/horizontal_margin_small"
-      android:background="@drawable/selectable_button_all_rounded_5_white"
-      android:clickable="true"
       >
-
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginEnd="@dimen/horizontal_margin"
-        android:layout_marginStart="@dimen/horizontal_margin"
-        android:drawablePadding="10dp"
-        android:drawableStart="@drawable/picto_share_link"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/horizontal_margin"
         android:gravity="center"
-        android:maxLines="1"
-        android:text="@string/live_share_new_call_button"
-        style="@style/Body.Two.Black"
+        android:text="@string/live_share_new_call_description"
+        style="@style/Title.2.White40"
         />
 
+    <FrameLayout
+        android:id="@+id/btnShare"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/top_bar_height_small"
+        android:layout_marginTop="@dimen/horizontal_margin_small"
+        android:background="@drawable/selectable_button_all_rounded_5_white"
+        android:clickable="true"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:layout_marginEnd="@dimen/horizontal_margin"
+          android:layout_marginStart="@dimen/horizontal_margin"
+          android:drawablePadding="10dp"
+          android:drawableStart="@drawable/picto_share_link"
+          android:gravity="center"
+          android:maxLines="1"
+          android:text="@string/live_share_new_call_button"
+          style="@style/Body.Two.Black"
+          />
+
+    </FrameLayout>
+
   </FrameLayout>
+
+
 </merge>

@@ -198,6 +198,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.liveMap();
   }
 
+  @Override public Observable<String> callRouletteMap() {
+    return liveCache.getRandomRoomAssignedValue();
+  }
+
   @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
       String linkId) {
     return null;
@@ -224,6 +228,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    return null;
+  }
+
+  @Override public Observable<Void> roomAcceptRandom(String roomId) {
     return null;
   }
 

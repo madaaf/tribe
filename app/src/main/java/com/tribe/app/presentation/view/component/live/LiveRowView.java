@@ -22,6 +22,7 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -70,6 +71,7 @@ public class LiveRowView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<TribeGuest> onClick = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDice = PublishSubject.create();
 
   public LiveRowView(Context context) {
     super(context);
@@ -257,6 +259,9 @@ public class LiveRowView extends FrameLayout {
 
   @OnClick(R.id.layoutStream) void onClickStream(View v) {
     if (guest != null) onClick.onNext(guest);
+    if(guest.getId().equals(Recipient.ID_CALL_ROULETTE)){
+      onRollTheDice.onNext(null);
+    }
   }
 
   @OnClick(R.id.addFriend) void addFriendClick() {
@@ -309,5 +314,9 @@ public class LiveRowView extends FrameLayout {
 
   public Observable<TribeGuest> onClick() {
     return onClick;
+  }
+
+  public Observable<Void> onRollTheDice() {
+    return onRollTheDice;
   }
 }

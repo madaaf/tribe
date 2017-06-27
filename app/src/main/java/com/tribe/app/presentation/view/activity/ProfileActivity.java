@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.activity;
+ package com.tribe.app.presentation.view.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

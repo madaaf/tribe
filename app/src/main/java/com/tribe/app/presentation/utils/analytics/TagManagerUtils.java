@@ -87,6 +87,7 @@ public class TagManagerUtils {
   public static final String NOTIFICATIONS_ENABLED = "notifications_enabled";
   public static final String LEFT = "left";
   public static final String DURATION = "duration";
+  public static final String IS_CALL_ROULETTE = "is_call_roulette";
   public static final String TYPE = "type";
   public static final String DIRECT = "direct";
   public static final String AVERAGE_MEMBERS_COUNT = "average_members_count";

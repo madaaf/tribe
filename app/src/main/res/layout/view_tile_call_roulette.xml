@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+  <include layout="@layout/view_tile_background_invite" />
+
+
+  <com.tribe.app.presentation.view.widget.DiceView
+      android:id="@+id/diceLayout"
+      android:layout_width="45dp"
+      android:layout_height="45dp"
+      android:layout_gravity="center"
+      app:diceType="tileView"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size"
+      android:layout_height="@dimen/avatar_size"
+      android:layout_gravity="center"
+      android:background="@null"
+      android:visibility="gone"
+      />
+
+  <include
+      layout="@layout/view_tile_invite_base"
+      android:visibility="gone"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal|bottom"
+      android:layout_marginBottom="8dp"
+      android:gravity="center"
+      android:lines="1"
+      android:text="@string/roll_the_dice_invite_subtitle"
+      android:textSize="11sp"
+      style="@style/Title.2.Black40"
+      />
+
+
+</merge>

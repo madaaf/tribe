@@ -22,6 +22,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
@@ -35,6 +36,7 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Degrees;
@@ -72,6 +74,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -121,6 +125,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
+  // @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+
   // VARIABLES
   private Live live;
   private Room room;
@@ -155,13 +161,16 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Void> onLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
+  private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
 
@@ -205,6 +214,10 @@ public class LiveView extends FrameLayout {
     return duration;
   }
 
+  public void setSourceLive(@LiveActivity.Source String source) {
+    viewRoom.setSource(source);
+  }
+
   public void hideGamesBtn() {
     viewControlsLive.hideGamesBtn();
   }
@@ -242,6 +255,7 @@ public class LiveView extends FrameLayout {
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
       tagMap.put(TagManagerUtils.SOURCE, live.getSource());
+      tagMap.put(TagManagerUtils.IS_CALL_ROULETTE, live.isDiceDragedInRoom());
       tagMap.put(TagManagerUtils.DURATION, duration);
       tagMap.put(TagManagerUtils.STATE, state);
       tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
@@ -264,12 +278,14 @@ public class LiveView extends FrameLayout {
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
+    liveRowViewMap.clear();
 
     for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
       Timber.d("liveinviteview dispose");
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
+    liveInviteMap.clear();
 
     if (room != null && !isJump) {
       Timber.d("room leave");
@@ -470,6 +486,10 @@ public class LiveView extends FrameLayout {
               return null;
             }))
         .subscribe());
+
+    persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
+      onShouldCloseInvites.onNext(null);
+    }));
   }
 
   ///////////////////
@@ -613,6 +633,13 @@ public class LiveView extends FrameLayout {
         .subscribe(remotePeer -> Timber.d(
             "Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
 
+    tempSubscriptions.add(
+        room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+          Timber.e("rollTheDice received");
+          viewRoom.onRollTheDiceReceived();
+          live.setDiceDragedInRoom(true);
+        }));
+
     tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeGuests -> {
@@ -641,6 +668,7 @@ public class LiveView extends FrameLayout {
           }
         }));
 
+    tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
     room.connect(options);
   }
@@ -676,6 +704,7 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
           false, false, null, true, tileView.getRecipient().getUsername());
+
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
@@ -706,8 +735,18 @@ public class LiveView extends FrameLayout {
       tileView.onDrop(latestView);
       latestView.prepareForDrop();
 
-      liveInviteMap.put(latestView.getGuest().getId(), latestView);
-      room.sendToPeers(getInvitedPayload(), true);
+      viewRoom.onDropItem(tileView);
+
+      if (latestView.getGuest() != null) {
+        liveInviteMap.put(latestView.getGuest().getId(), latestView);
+      }
+
+      if (latestView.getGuest() != null && !latestView.getGuest()
+          .getId()
+          .equals(Recipient.ID_CALL_ROULETTE)) {
+        room.sendToPeers(getInvitedPayload(), true);
+      }
+
       refactorNotifyButton();
 
       tempSubscriptions.add(tileView.onEndDrop().subscribe(aVoid -> {
@@ -761,7 +800,7 @@ public class LiveView extends FrameLayout {
     } else {
       hasJoined = true;
       refactorNotifyButton();
-      if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay();
+      if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
       onShouldJoinRoom.onNext(null);
     }
   }
@@ -847,7 +886,25 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 && liveInviteMap.size() == 0 && live != null;
+    return liveRowViewMap.size() == 0
+        && liveInviteMap.size() == 0
+        && live != null
+        && !live.getSource().equals(SOURCE_CALL_ROULETTE);
+  }
+
+  public @LiveActivity.Source String getSource() {
+    return live.getSource();
+  }
+
+  public boolean isDiceDragedInRoom() {
+    return live.isDiceDragedInRoom();
+  }
+
+
+  public void reRollTheDiceFromLiveRoom() {
+    Timber.d("roll the dice");
+    live.setDiceDragedInRoom(true);
+    room.sendToPeers(getUserPlayload(user), true);
   }
 
   ////////////////
@@ -866,7 +923,7 @@ public class LiveView extends FrameLayout {
     if (nbPeople > 1) {
       viewLocalLive.hideShareOverlay();
     } else {
-      viewLocalLive.showShareOverlay();
+      viewLocalLive.showShareOverlay(live.getSource());
     }
   }
 
@@ -1045,6 +1102,25 @@ public class LiveView extends FrameLayout {
       array.put(invitedGuest);
     }
     jsonPut(jsonObject, Room.MESSAGE_INVITE_ADDED, array);
+    return jsonObject;
+  }
+
+  private JSONObject getUserPlayload(User user) {
+    JSONObject jsonObject = new JSONObject();
+
+    JSONObject userJson = new JSONObject();
+    jsonPut(userJson, User.ID, user.getId());
+    jsonPut(userJson, User.DISPLAY_NAME, user.getDisplayName());
+    jsonPut(userJson, User.PICTURE, user.getProfilePicture());
+
+    JSONObject json = new JSONObject();
+    try {
+      json.put("by", userJson);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    jsonPut(jsonObject, Room.MESSAGE_ROLL_THE_DICE, json);
     return jsonObject;
   }
 
@@ -1269,6 +1345,10 @@ public class LiveView extends FrameLayout {
     return user;
   }
 
+  public void blockOpenInviteView(boolean b) {
+    viewControlsLive.blockOpenInviteView(b);
+  }
+
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
@@ -1355,6 +1435,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShare() {
     return onShare;
+  }
+
+  public Observable<Void> onChangeCallRouletteRoom() {
+    return onChangeCallRouletteRoom;
   }
 
   public Observable<Void> onRoomFull() {

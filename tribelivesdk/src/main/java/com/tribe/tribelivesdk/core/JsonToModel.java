@@ -38,6 +38,7 @@ public class JsonToModel {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<TribeSession> onLeaveRoom = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -171,8 +172,10 @@ public class JsonToModel {
         if (message.has(Room.MESSAGE_APP)) {
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
 
-          if (app.has(Room.MESSAGE_INVITE_ADDED)) {
-
+          if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {
+            Timber.d("Receiving roll the dice");
+            onRollTheDiceReceived.onNext(null);
+          } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
             JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
@@ -184,7 +187,6 @@ public class JsonToModel {
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
-
             Timber.d("Receiving invite removed");
             List<TribeGuest> guestRemovedList = new ArrayList<>();
             JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
@@ -311,6 +313,10 @@ public class JsonToModel {
 
   public Observable<TribeSession> onLeaveRoom() {
     return onLeaveRoom;
+  }
+
+  public Observable<Void> onRollTheDiceReceived() {
+    return onRollTheDiceReceived;
   }
 
   public Observable<List<TribeGuest>> onInvitedTribeGuestList() {
