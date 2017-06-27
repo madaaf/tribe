@@ -9,9 +9,9 @@ import android.widget.FrameLayout;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.tribelivesdk.R;
+import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.view.opengl.GlCameraPreview;
-import com.tribe.tribelivesdk.webrtc.Frame;
-import org.webrtc.CameraEnumerationAndroid;
+import com.tribe.tribelivesdk.webrtc.FrameTexture;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
@@ -24,8 +24,8 @@ public class GlLocalView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Frame> onNewFrame = PublishSubject.create();
   private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
+  private PublishSubject<FrameTexture> onFrameAvailable = PublishSubject.create();
 
   public GlLocalView(Context context) {
     super(context);
@@ -48,6 +48,7 @@ public class GlLocalView extends FrameLayout {
     addView(glCameraPreview, ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);
     subscriptions.add(glCameraPreview.onSurfaceTextureReady().subscribe(onSurfaceTextureReady));
+    subscriptions.add(glCameraPreview.onFrameAvailable().subscribe(onFrameAvailable));
   }
 
   private void initResources() {
@@ -58,19 +59,13 @@ public class GlLocalView extends FrameLayout {
 
   }
 
-  public void initOnNewCaptureFormat(Observable<CameraEnumerationAndroid.CaptureFormat> obs) {
+  public void initOnNewCameraInfo(Observable<CameraInfo> obs) {
     subscriptions.add(obs.observeOn(AndroidSchedulers.mainThread())
-        .subscribe(captureFormat -> onCameraCaptureFormatChange(captureFormat)));
+        .subscribe(cameraInfo -> onNewCameraInfo(cameraInfo)));
   }
 
-  private void onCameraCaptureFormatChange(CameraEnumerationAndroid.CaptureFormat captureFormat) {
-    //ViewGroup.LayoutParams plp = previewGLTexture.getLayoutParams();
-    //plp.width = getWidth();
-    //plp.height = getWidth() * (captureFormat.width / captureFormat.height);
-    //previewGLTexture.setLayoutParams(plp);
-    //
-    //previewWidth = plp.width;
-    //previewHeight = plp.height;
+  private void onNewCameraInfo(CameraInfo cameraInfo) {
+    glCameraPreview.updateCameraInfo(cameraInfo);
   }
 
   /////////////////
@@ -79,5 +74,9 @@ public class GlLocalView extends FrameLayout {
 
   public Observable<SurfaceTexture> onSurfaceTextureReady() {
     return onSurfaceTextureReady;
+  }
+
+  public Observable<FrameTexture> onFrameAvailable() {
+    return onFrameAvailable;
   }
 }

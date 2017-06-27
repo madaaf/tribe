@@ -14,6 +14,7 @@ import android.graphics.SurfaceTexture;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.VideoCapturer;
+import rx.Observable;
 
 /**
  * Base interface for camera1 and camera2 implementations. Extends VideoCapturer with a
@@ -135,4 +136,6 @@ public interface CameraVideoCapturer extends VideoCapturer {
   void switchFilter();
 
   void setPreviewTexture(SurfaceTexture surfaceTexture);
+
+  void initFrameTextureAvailableObs(Observable<FrameTexture> frameTextureObs);
 }

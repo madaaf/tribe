@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.Surface;
 import android.view.WindowManager;
+import com.tribe.tribelivesdk.entity.CameraInfo;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -42,8 +43,8 @@ import org.webrtc.SurfaceTextureHelper;
   private final android.hardware.Camera camera;
   private final android.hardware.Camera.CameraInfo info;
   private final CaptureFormat captureFormat;
-  // Used only for stats. Only used on the camera thread.
-  private final long constructionTimeNs; // Construction time of this class.
+  private final long constructionTimeNs;
+  private CameraInfo cameraInfo;
 
   private SessionState state;
   private boolean firstFrameReported = false;
@@ -105,7 +106,6 @@ import org.webrtc.SurfaceTextureHelper;
     }
     if (focusModes.contains(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
       parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-
     }
 
     camera.setParameters(parameters);
@@ -328,7 +328,8 @@ import org.webrtc.SurfaceTextureHelper;
     }
   }
 
-  @Override public CaptureFormat getCaptureFormat() {
-    return captureFormat;
+  @Override public CameraInfo getCameraInfo() {
+    cameraInfo = new CameraInfo(captureFormat, getFrameOrientation(), info);
+    return cameraInfo;
   }
 }

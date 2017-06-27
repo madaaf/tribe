@@ -66,7 +66,7 @@ public class TribeLiveLocalStream {
           .onSurfaceTextureReady()
           .subscribe(surfaceTexture -> capturer.setPreviewTexture(surfaceTexture)));
 
-      peerView.initNewCaptureFormatSubscription(capturer.onNewCaptureFormat());
+      peerView.initOnNewCameraInfo(capturer.onNewCameraInfo());
     }
   }
 
@@ -136,6 +136,7 @@ public class TribeLiveLocalStream {
     if (capturer != null) {
       Timber.d("Start video source.");
       capturing = true;
+      capturer.initFrameTextureAvailableObs(peerView.getGlLocalView().onFrameAvailable());
       capturer.startCapture(mediaConstraints.getMaxWidth(), mediaConstraints.getMaxHeight(),
           mediaConstraints.getMaxFrameRate());
     }
@@ -147,6 +148,7 @@ public class TribeLiveLocalStream {
     if (capturer != null && capturing) {
       capturer.changeCaptureFormat(mediaConstraints.getMaxWidth(), mediaConstraints.getMaxHeight(),
           mediaConstraints.getMaxFrameRate());
+      capturer.initFrameTextureAvailableObs(peerView.getGlLocalView().onFrameAvailable());
     }
   }
 

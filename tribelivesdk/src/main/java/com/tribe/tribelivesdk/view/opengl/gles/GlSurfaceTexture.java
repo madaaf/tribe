@@ -20,9 +20,6 @@ import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glTexParameterf;
 import static android.opengl.GLES20.glTexParameteri;
 
-/**
- * Created by laputan on 16/11/1.
- */
 public final class GlSurfaceTexture
     implements PreviewTextureInterface, SurfaceTexture.OnFrameAvailableListener {
 
@@ -66,6 +63,10 @@ public final class GlSurfaceTexture
 
   @Override public int getTextureTarget() {
     return GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
+  }
+
+  @Override public long getTimestamp() {
+    return surfaceTexture.getTimestamp();
   }
 
   @Override public void setup() {

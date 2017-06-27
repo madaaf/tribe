@@ -5,9 +5,9 @@ import android.support.v4.util.Pair;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
-import org.webrtc.CameraEnumerationAndroid;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -91,8 +91,8 @@ public class LocalPeerView extends FrameLayout {
     onStopGame = obs;
   }
 
-  public void initNewCaptureFormatSubscription(Observable<CameraEnumerationAndroid.CaptureFormat> obs) {
-    glLocalView.initOnNewCaptureFormat(obs);
+  public void initOnNewCameraInfo(Observable<CameraInfo> obs) {
+    glLocalView.initOnNewCameraInfo(obs);
   }
 
   public TribePeerMediaConfiguration getMediaConfiguration() {

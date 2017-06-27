@@ -15,16 +15,18 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Looper;
+import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.stream.FrameManager;
 import java.util.Arrays;
-import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.Logging;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.ThreadUtils;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
     implements CameraVideoCapturer {
@@ -43,13 +45,15 @@ import rx.subscriptions.CompositeSubscription;
   private final CameraEventsHandler eventsHandler;
   private final Handler uiThreadHandler;
   private boolean frontFacing = true;
+  private SurfaceTexture surfaceTexture;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription subscriptionCaptureTexture;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
   private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
-  private PublishSubject<CameraEnumerationAndroid.CaptureFormat> onNewCaptureFormat = PublishSubject.create();
+  private PublishSubject<CameraInfo> onNewCameraInfo = PublishSubject.create();
 
   private final CameraSession.CreateSessionCallback createSessionCallback =
       new CameraSession.CreateSessionCallback() {
@@ -61,7 +65,7 @@ import rx.subscriptions.CompositeSubscription;
             capturerObserver.onCapturerStarted(true /* success */);
             sessionOpening = false;
             currentSession = session;
-            onNewCaptureFormat.onNext(currentSession.getCaptureFormat());
+            onNewCameraInfo.onNext(currentSession.getCameraInfo());
             cameraStatistics = new CameraStatistics(surfaceHelper, eventsHandler);
             firstFrameObserved = false;
             stateLock.notifyAll();
@@ -77,6 +81,8 @@ import rx.subscriptions.CompositeSubscription;
               switchState = SwitchState.IDLE;
               switchCameraInternal(switchEventsHandler);
             }
+
+            if (surfaceTexture != null) setPreviewTexture(surfaceTexture);
           }
         }
 
@@ -284,13 +290,13 @@ import rx.subscriptions.CompositeSubscription;
     this.surfaceHelper = surfaceTextureHelper;
     cameraThreadHandler = surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
 
-    frameManager = new FrameManager(applicationContext);
-    subscriptions.add(frameManager.onRemoteFrame()
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
-        .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
-            frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
-    subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
+    //frameManager = new FrameManager(applicationContext);
+    //subscriptions.add(frameManager.onRemoteFrame()
+    //    .onBackpressureDrop()
+    //    .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
+    //    .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
+    //        frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
+    //subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -313,9 +319,9 @@ import rx.subscriptions.CompositeSubscription;
       openAttemptsRemaining = MAX_OPEN_CAMERA_ATTEMPTS;
       createSessionInternal(0);
 
-      frameManager.startCapture();
-      frameManager.initFrameSubscription(onFrame);
-      frameManager.initNewFacesObs(onFaces);
+      //frameManager.startCapture();
+      //frameManager.initFrameSubscription(onFrame);
+      //frameManager.initNewFacesObs(onFaces);
     }
   }
 
@@ -343,7 +349,8 @@ import rx.subscriptions.CompositeSubscription;
         cameraThreadHandler.post(() -> oldSession.stop());
         currentSession = null;
         capturerObserver.onCapturerStopped();
-        frameManager.stopCapture();
+        //frameManager.stopCapture();
+        if (subscriptionCaptureTexture != null) subscriptionCaptureTexture.unsubscribe();
       } else {
         Logging.d(TAG, "Stop capture: No session open");
       }
@@ -362,9 +369,10 @@ import rx.subscriptions.CompositeSubscription;
 
   @Override public void dispose() {
     Logging.d(TAG, "dispose");
+    surfaceTexture = null;
     subscriptions.clear();
     stopCapture();
-    frameManager.dispose();
+    //frameManager.dispose();
   }
 
   @Override public void switchCamera(final CameraSwitchHandler switchEventsHandler) {
@@ -373,7 +381,7 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   @Override public void switchFilter() {
-    frameManager.switchFilter();
+    //frameManager.switchFilter();
   }
 
   @Override public boolean isScreencast() {
@@ -390,13 +398,34 @@ import rx.subscriptions.CompositeSubscription;
       }
 
       if (currentSession != null) {
-        currentSession.setPreviewTexture(createSessionCallback, surfaceTexture);
+        this.surfaceTexture = surfaceTexture;
+        currentSession.setPreviewTexture(createSessionCallback, this.surfaceTexture);
       } else {
         Logging.d(TAG, "Set preview texture : No session open");
       }
     }
 
     Logging.d(TAG, "Set preview texture : done");
+  }
+
+  @Override public void initFrameTextureAvailableObs(Observable<FrameTexture> obs) {
+    Timber.d("InitFrameTexture");
+    subscriptionCaptureTexture = obs.onBackpressureDrop()
+        .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
+        .subscribe(frameTexture -> {
+          checkIsOnCameraThread();
+          synchronized (stateLock) {
+            if (!firstFrameObserved) {
+              eventsHandler.onFirstFrameAvailable();
+              firstFrameObserved = true;
+            }
+
+            cameraStatistics.addFrame();
+            capturerObserver.onTextureFrameCaptured(frameTexture.getWidth(), frameTexture.getHeight(), frameTexture.getOesTextureId(),
+                frameTexture.getTransformMatrix(), frameTexture.getRotation(),
+                frameTexture.getTimestamp());
+          }
+        });
   }
 
   public void printStackTrace() {
@@ -418,7 +447,7 @@ import rx.subscriptions.CompositeSubscription;
   private void switchCameraInternal(final CameraSwitchHandler switchEventsHandler) {
     Logging.d(TAG, "switchCamera internal");
 
-    frameManager.switchCamera();
+    //frameManager.switchCamera();
 
     final String[] deviceNames = cameraEnumerator.getDeviceNames();
 
@@ -497,7 +526,7 @@ import rx.subscriptions.CompositeSubscription;
     return onLocalFrame;
   }
 
-  public Observable<CameraEnumerationAndroid.CaptureFormat> onNewCaptureFormat() {
-    return onNewCaptureFormat;
-  };
+  public Observable<CameraInfo> onNewCameraInfo() {
+    return onNewCameraInfo;
+  }
 }

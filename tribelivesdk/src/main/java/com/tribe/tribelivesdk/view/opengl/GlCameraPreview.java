@@ -5,10 +5,12 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultConfigChooser;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultContextFactory;
 import com.tribe.tribelivesdk.view.opengl.gles.GlTextureView;
 import com.tribe.tribelivesdk.view.opengl.renderer.PreviewRenderer;
+import com.tribe.tribelivesdk.webrtc.FrameTexture;
 import rx.Observable;
 
 import static android.opengl.GLES20.GL_MAX_RENDERBUFFER_SIZE;
@@ -46,22 +48,24 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
 
   }
 
+  public void updateCameraInfo(CameraInfo cameraInfo) {
+    renderer.updateCameraInfo(cameraInfo);
+  }
+
   public synchronized void startPreview() {
     if (!isInitialized) return;
-    queueEvent(new Runnable() {
-      @Override public void run() {
-        if (maxTextureSize == 0) {
+    queueEvent(() -> {
+      if (maxTextureSize == 0) {
 
-          final int[] args = new int[1];
-          glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
-          maxTextureSize = args[0];
+        final int[] args = new int[1];
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
+        maxTextureSize = args[0];
 
-          glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, args, 0);
-          maxRenderBufferSize = args[0];
-        }
-
-        startPreviewAfterTextureSizeAvailable();
+        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, args, 0);
+        maxRenderBufferSize = args[0];
       }
+
+      startPreviewAfterTextureSizeAvailable();
     });
   }
 
@@ -73,7 +77,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   private synchronized void startPreviewAfterTextureSizeAvailable() {
     post(() -> {
       requestLayout();
-      queueEvent(() -> renderer.onStartPreview(faceMirror));
+      queueEvent(() -> renderer.onStartPreview());
     });
   }
 
@@ -83,5 +87,9 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
 
   public Observable<SurfaceTexture> onSurfaceTextureReady() {
     return renderer.onSurfaceTextureReady();
+  }
+
+  public Observable<FrameTexture> onFrameAvailable() {
+    return renderer.onFrameAvailable();
   }
 }

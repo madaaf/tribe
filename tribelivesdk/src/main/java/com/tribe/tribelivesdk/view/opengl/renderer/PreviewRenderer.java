@@ -2,16 +2,21 @@ package com.tribe.tribelivesdk.view.opengl.renderer;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.opengl.Matrix;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.view.opengl.filter.ColorFilterBW;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
-import java.util.ArrayList;
+import com.tribe.tribelivesdk.webrtc.FrameTexture;
+import com.tribe.tribelivesdk.webrtc.YuvConverter;
+import java.nio.ByteBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
+import org.webrtc.CameraEnumerationAndroid;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -30,34 +35,47 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private PreviewTextureInterface previewTexture;
   private boolean updateSurface = false;
 
-  @NonNull private final ArrayList<Runnable> nextTextureImageReadyRunnables;
-  @NonNull private final ArrayList<Runnable> onTextureImageReadyRunnables;
-
-  private final float[] mvpMatrix = new float[16];
-  private final float[] projMatrix = new float[16];
-  private final float[] matrix = new float[16];
-  private final float[] vMatrix = new float[16];
-  private final float[] stMatrix = new float[16];
-  private float cameraRatio = 1.0f;
-
+  private final float[] mvpMatrix = new float[16], projMatrix = new float[16], matrix =
+      new float[16], vMatrix = new float[16], stMatrix = new float[16], stMatrixBis = new float[16];
+  private CameraInfo cameraInfo;
+  private float cameraRatio = 1, surfaceWidth = 1, surfaceHeight = 1;
   private final RendererCallback rendererCallback;
-
   @Nullable private ImageFilter filter;
-
-  public float surfaceWidth = 1;
-  public float surfaceHeight = 1;
+  private ByteBuffer byteBuffer;
+  private Object frameListenerLock = new Object();
+  private FrameTexture frameTexture;
+  private YuvConverter yuvConverter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
+  private PublishSubject<FrameTexture> onFrameAvailable = PublishSubject.create();
 
   public PreviewRenderer(@NonNull Context context, final RendererCallback callback) {
     super();
     resetMatrix();
     rendererCallback = callback;
     mainHandler = new Handler(context.getMainLooper());
-    onTextureImageReadyRunnables = new ArrayList<>();
-    nextTextureImageReadyRunnables = new ArrayList<>();
+  }
+
+  private void computeMatrices() {
+    final int orientation = (cameraInfo == null) ? 90 : cameraInfo.getFrameOrientation();
+
+    resetMatrix();
+
+    Matrix.setIdentityM(matrix, 0);
+    Matrix.rotateM(matrix, 0, orientation, 0.0f, 0.0f, 1f);
+
+    if (cameraInfo == null ||
+        cameraInfo.getCameraInfo().facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+      //Matrix.scaleM(matrix, 0, 1.0f, -1.0f, 1.0f);
+    }
+
+    final CameraEnumerationAndroid.CaptureFormat captureFormat = cameraInfo.getCaptureFormat();
+    cameraRatio = 1;
+    if (captureFormat != null) {
+      cameraRatio = captureFormat.width / (float) captureFormat.height;
+    }
   }
 
   public void resetMatrix() {
@@ -85,23 +103,13 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     rendererCallback.requestRender();
   }
 
-  public void onStartPreview(final boolean faceMirror) {
-    final int orientation = 90;
+  public void updateCameraInfo(CameraInfo cameraInfo) {
+    this.cameraInfo = cameraInfo;
+    computeMatrices();
+  }
 
-    resetMatrix();
-
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, -orientation, 0.0f, 0.0f, 1f);
-
-    if (!faceMirror) {
-      Matrix.scaleM(matrix, 0, 1.0f, -1.0f, 1.0f);
-    }
-
-    //final Cam.Size previewSize = camera.getPreviewSize();
-    //cameraRatio = 1;
-    //if (previewSize != null) {
-    //    cameraRatio = previewSize.width / (float) previewSize.height;
-    //}
+  public void onStartPreview() {
+    computeMatrices();
 
     if (previewTexture == null) {
       previewTexture = new GlSurfaceTexture();
@@ -130,8 +138,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   @Override public void onSurfaceChanged(final int width, final int height) {
 
-    this.surfaceWidth = width;
-    this.surfaceHeight = height;
+    surfaceWidth = width;
+    surfaceHeight = height;
+
+    byteBuffer = ByteBuffer.allocateDirect(width * height * 4);
 
     stageRatio = (stageRatio == Float.MIN_VALUE) ? width / (float) height : stageRatio;
     try {
@@ -146,13 +156,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   @Override public synchronized void onDrawFrame() {
-    if (onTextureImageReadyRunnables.size() > 0) {
-      for (Runnable runnable : onTextureImageReadyRunnables) {
-        mainHandler.post(runnable);
-      }
-      onTextureImageReadyRunnables.clear();
-    }
-
     if (updateSurface && previewTexture != null) {
       previewTexture.updateTexImage();
       previewTexture.getTransformMatrix(stMatrix);
@@ -167,13 +170,37 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
     }
 
-    if (nextTextureImageReadyRunnables.size() > 0) {
-      for (Runnable runnable : nextTextureImageReadyRunnables) {
-        onTextureImageReadyRunnables.add(runnable);
-      }
-      nextTextureImageReadyRunnables.clear();
-      rendererCallback.requestRender();
+    if (yuvConverter == null) {
+      yuvConverter = new YuvConverter();
     }
+
+    if (previewTexture != null) {
+      int width = cameraInfo.getCaptureFormat().width;
+      int height = cameraInfo.getCaptureFormat().height;
+      int uv_width = (width + 7) / 8;
+      int stride = 8 * uv_width;
+
+      previewTexture.getTransformMatrix(stMatrixBis);
+
+      byteBuffer.clear();
+      yuvConverter.convert(byteBuffer, width, height, stride, previewTexture.getTextureId(),
+          stMatrixBis);
+    }
+
+    //if (previewTexture != null) {
+    //  frameTexture = new FrameTexture(cameraInfo.getCaptureFormat().width,
+    //      cameraInfo.getCaptureFormat().height, previewTexture.getTextureId(), stMatrix,
+    //      cameraInfo.getFrameOrientation(), previewTexture.getTimestamp());
+    //  onFrameAvailable.onNext(frameTexture);
+    //}
+
+    //synchronized (frameListenerLock) {
+    //  long start = System.currentTimeMillis();
+    //  GLES20.glReadPixels(0, 0, (int) surfaceWidth, (int) surfaceHeight, GLES20.GL_RGBA,
+    //      GLES20.GL_UNSIGNED_BYTE, byteBuffer);
+    //  long end = System.currentTimeMillis();
+    //  Timber.d("glReadPixels: " + (end - start));
+    //}
   }
 
   @Override
@@ -196,5 +223,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   public Observable<SurfaceTexture> onSurfaceTextureReady() {
     return onSurfaceTextureReady;
+  }
+
+  public Observable<FrameTexture> onFrameAvailable() {
+    return onFrameAvailable;
   }
 }
