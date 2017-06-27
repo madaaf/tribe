@@ -25,12 +25,15 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
@@ -44,6 +47,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -482,8 +487,40 @@ public class LiveContainer extends FrameLayout {
     }
   }
 
+  private String userUnder13 = "";
+
+  private void displayDialogAgePerm(String displayName) {
+    DialogFactory.dialog(getContext(),
+        getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_title, displayName),
+        getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_message),
+        getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_action), null)
+        .filter(x -> x == true)
+        .subscribe();
+  }
+
+  private boolean isGuestUnder13(User guest) {
+    if (guest.getFbid() == null || guest.getFbid().isEmpty()) {
+      userUnder13 = guest.getDisplayName();
+    }
+    if (guest.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
+      displayDialogAgePerm(userUnder13);
+      return true;
+    } else if (viewLive.getSource().equals(SOURCE_CALL_ROULETTE) || viewLive.isDiceDragedInRoom()) {
+      if (guest.getFbid() == null || guest.getFbid().isEmpty()) {
+        displayDialogAgePerm(guest.getDisplayName());
+        return true;
+      }
+    }
+    return false;
+  }
+
   private void createTileForDrag() {
     viewInviteLive.setDragging(true);
+
+    Friendship friendshiip = (Friendship) currentTileView.getRecipient();
+    if (isGuestUnder13(friendshiip.getFriend())) {
+      return;
+    }
 
     draggedTileView = new TileView(getContext(), currentTileView.getType());
     draggedTileView.setBackground(currentTileView.getPosition());

@@ -422,7 +422,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
 
-          if (!FacebookUtils.isLoggedIn()) { //SOEF
+          if (!FacebookUtils.isLoggedIn()) {
             //if (true) {
             Timber.d("not logged on fb ");
             blockView.setVisibility(VISIBLE);

@@ -705,6 +705,7 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
           false, false, null, true, tileView.getRecipient().getUsername());
+
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
   }
@@ -737,9 +738,13 @@ public class LiveView extends FrameLayout {
 
       viewRoom.onDropItem(tileView);
 
-      liveInviteMap.put(latestView.getGuest().getId(), latestView);
+      if (latestView.getGuest() != null) {
+        liveInviteMap.put(latestView.getGuest().getId(), latestView);
+      }
 
-      if (!latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+      if (latestView.getGuest() != null && !latestView.getGuest()
+          .getId()
+          .equals(Recipient.ID_CALL_ROULETTE)) {
         room.sendToPeers(getInvitedPayload(), true);
       }
 
@@ -887,6 +892,15 @@ public class LiveView extends FrameLayout {
         && live != null
         && !live.getSource().equals(SOURCE_CALL_ROULETTE);
   }
+
+  public @LiveActivity.Source String getSource() {
+    return live.getSource();
+  }
+
+  public boolean isDiceDragedInRoom() {
+    return live.isDiceDragedInRoom();
+  }
+
 
   public void reRollTheDiceFromLiveRoom() {
     Timber.d("roll the dice");
