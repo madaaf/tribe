@@ -43,6 +43,7 @@
   <dimen name="top_bar_height_small">50dp</dimen>
   <dimen name="top_bar_notification_height_small">35dp</dimen>
   <dimen name="top_bar_height">65dp</dimen>
+  <dimen name="top_bar_height_expend">143dp</dimen>
   <dimen name="bottom_bar_height">60dp</dimen>
   <dimen name="onboarding_choose_name_height">64dp</dimen>
   <dimen name="group_members_height">70dp</dimen>
@@ -60,6 +61,7 @@
   <dimen name="filters_list_height">60dp</dimen>
   <dimen name="games_list_height">60dp</dimen>
   <dimen name="game_tooltip_first_height">40dp</dimen>
+  <dimen name="dice_size">100dp</dimen>
 
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>
@@ -99,6 +101,8 @@
   <dimen name="waiting_view_progress_bar_size">95dp</dimen>
   <dimen name="waiting_view_avatar_size">100dp</dimen>
   <dimen name="waiting_view_dot_size">7dp</dimen>
+  <dimen name="view_dice_dot_size">15dp</dimen>
+  <dimen name="view_dice_dot_margin">1.5dp</dimen>
   <dimen name="filter_game_size">50dp</dimen>
   <dimen name="filter_game_size_with_border">55dp</dimen>
   <dimen name="filter_game_size_container">60dp</dimen>

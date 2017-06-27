@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,11 +21,14 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 /**
  * Created by tiago on 04/29/17.
@@ -36,6 +40,8 @@ public class LiveShareOverlayView extends LinearLayout {
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.btnShare) View btnShare;
+
+  @BindView(R.id.viewLiveShareOverlayContainer) FrameLayout container;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -68,7 +74,8 @@ public class LiveShareOverlayView extends LinearLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_share_overlay, this);
     unbinder = ButterKnife.bind(this);
 
-    setBackground(ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_black40_rounded_corners));
+    setBackground(
+        ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_black40_rounded_corners));
     setOrientation(VERTICAL);
     setGravity(Gravity.CENTER);
   }
@@ -97,7 +104,8 @@ public class LiveShareOverlayView extends LinearLayout {
   // PUBLIC //
   ////////////
 
-  public void show() {
+  public void show(@LiveActivity.Source String source) {
+    if (source.equals(SOURCE_CALL_ROULETTE)) container.setVisibility(GONE);
     if (getVisibility() == View.VISIBLE) return;
 
     setAlpha(0f);

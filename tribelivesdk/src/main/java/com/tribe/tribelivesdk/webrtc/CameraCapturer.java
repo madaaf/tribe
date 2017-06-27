@@ -284,8 +284,10 @@ import rx.subscriptions.CompositeSubscription;
     subscriptions.add(frameManager.onRemoteFrame()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
-        .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
-            frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
+        .subscribe(frame -> {
+          capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
+              frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+        }));
     subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
   }
 

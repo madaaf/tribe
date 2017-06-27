@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.activity;
+ package com.tribe.app.presentation.view.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -17,11 +17,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
 import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
@@ -91,6 +94,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private ProgressDialog progressDialog;
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -105,6 +109,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     initDependencyInjector();
     init(savedInstanceState);
     initPresenter();
+    initRemoteConfig();
   }
 
   @Override protected void onStart() {
@@ -173,6 +178,20 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   private void initPresenter() {
     profilePresenter.onViewAttached(this);
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+      }
+    });
   }
 
   private void initDependencyInjector() {
@@ -247,12 +266,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private void setupMainView() {
     viewProfile = (ProfileView) viewStack.push(R.layout.view_profile);
 
-    subscriptions.add(viewProfile.onShare()
-        .subscribe(
-            aVoid -> {
-              String linkId = navigator.sendInviteToCall(this, TagManagerUtils.PROFILE, null, null, false);
-              profilePresenter.bookRoomLink(linkId);
-            }));
+    subscriptions.add(viewProfile.onShare().subscribe(aVoid -> {
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.PROFILE, null,
+              null, false);
+      profilePresenter.bookRoomLink(linkId);
+    }));
 
     subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> setupProfileDetailView()));
 
@@ -300,8 +319,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     subscriptions.add(
         viewProfile.onDebugMode().subscribe(aVoid -> navigator.navigateToDebugMode(this)));
 
-    subscriptions.add(viewProfile.onVideo().subscribe(aVoid -> navigator.navigateToVideo(this)));
-
     subscriptions.add(viewProfile.onBlockedFriends().subscribe(aVoid -> setupBlockedFriendsView()));
 
     subscriptions.add(
@@ -343,8 +360,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
                   Friendship friendship = (Friendship) recipient;
                   profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -452,8 +469,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
-          .equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid ||
+          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
     }
   }
 

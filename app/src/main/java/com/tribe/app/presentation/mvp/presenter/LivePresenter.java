@@ -19,6 +19,8 @@ import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
+import com.tribe.app.domain.interactor.user.RandomRoomAssigned;
+import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -44,18 +46,22 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
   private BookRoomLink bookRoomLink;
+  private RoomAcceptRandom roomAcceptRandom;
+  private RandomRoomAssigned randomRoomAssigned;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
   private CreateFriendshipSubscriber createFriendshipSubscriber;
+  private RandomRoomAssignedSubscriber randomRoomAssignedSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
       DeclineInvite declineInvite, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
-      BookRoomLink bookRoomLink) {
+      BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
+      RandomRoomAssigned randomRoomAssigned) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -68,6 +74,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.createFriendship = createFriendship;
     this.getNamesPostItGame = getNamesPostItGame;
     this.bookRoomLink = bookRoomLink;
+    this.roomAcceptRandom = roomAcceptRandom;
+    this.randomRoomAssigned = randomRoomAssigned;
   }
 
   @Override public void onViewDetached() {
@@ -83,6 +91,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     createFriendship.unsubscribe();
     getNamesPostItGame.unsubscribe();
     bookRoomLink.unsubscribe();
+    roomAcceptRandom.unsubscribe();
+    randomRoomAssigned.unsubscribe();
     liveMVPView = null;
   }
 
@@ -173,6 +183,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void inviteUserToRoom(String roomId, String userId) {
+    if (userId.equals(Recipient.ID_CALL_ROULETTE)) return;
     inviteUserToRoom.setup(roomId, userId);
     inviteUserToRoom.execute(new DefaultSubscriber());
   }
@@ -253,6 +264,20 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
   }
 
+  private final class RandomRoomAssignedSubscriber extends DefaultSubscriber<String> {
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(String roomId) {
+      //homeGridView.renderContactsOnApp(contactList);
+      liveMVPView.randomRoomAssignedSubscriber(roomId);
+    }
+  }
+
   private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {
 
     @Override public void onCompleted() {
@@ -270,5 +295,18 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   public void bookRoomLink(String linkId) {
     bookRoomLink.setLinkId(linkId);
     bookRoomLink.execute(new DefaultSubscriber());
+  }
+
+  public void roomAcceptRandom(String roomId) {
+    roomAcceptRandom.setRoomId(roomId);
+    roomAcceptRandom.execute(new DefaultSubscriber());
+  }
+
+  public void randomRoomAssigned() {
+    if (randomRoomAssignedSubscriber != null) {
+      randomRoomAssignedSubscriber.unsubscribe();
+    }
+    randomRoomAssignedSubscriber = new RandomRoomAssignedSubscriber();
+    randomRoomAssigned.execute(randomRoomAssignedSubscriber);
   }
 }

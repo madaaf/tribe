@@ -1,5 +1,7 @@
 package com.tribe.tribelivesdk.core;
 
+import android.content.Context;
+import android.os.Build;
 import android.support.annotation.StringDef;
 import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -10,6 +12,8 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
+import com.tribe.tribelivesdk.util.CpuUtils;
+import com.tribe.tribelivesdk.util.DeviceUtils;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
@@ -20,6 +24,7 @@ import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -45,7 +50,7 @@ public class Room {
       MESSAGE_ERROR, MESSAGE_JOIN, MESSAGE_OFFER, MESSAGE_CANDIDATE, MESSAGE_LEAVE,
       MESSAGE_MEDIA_CONSTRAINTS, MESSAGE_MESSAGE, MESSAGE_NONE, MESSAGE_LOCAL_SWITCH_MODE,
       MESSAGE_REMOTE_SWITCH_MODE, MESSAGE_APP, MESSAGE_MEDIA_CONFIGURATION, MESSAGE_INVITE_ADDED,
-      MESSAGE_INVITE_REMOVED
+      MESSAGE_INVITE_REMOVED, MESSAGE_ROLL_THE_DICE
   }) public @interface WebSocketMessageType {
   }
 
@@ -63,8 +68,12 @@ public class Room {
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
+  public static final String MESSAGE_ROLL_THE_DICE = "rollTheDice";
   public static final String MESSAGE_GAME = "game";
 
+  public static final int DURATION = 60; // SECS
+
+  private Context context;
   private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;
   private TribeLiveOptions options;
@@ -79,6 +88,7 @@ public class Room {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerAdded = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerRemoved = PublishSubject.create();
   private PublishSubject<RemotePeer> onRemotePeerUpdated = PublishSubject.create();
@@ -90,7 +100,8 @@ public class Room {
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
 
-  public Room(WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
+  public Room(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
+    this.context = context;
     this.webSocketConnection = webSocketConnection;
     this.webRTCClient = webRTCClient;
     this.state = STATE_NEW;
@@ -103,6 +114,8 @@ public class Room {
 
     persistentSubscriptions.add(jsonToModel.onJoinRoom().doOnNext(joinedRoom -> {
       onJoined.onNext(joinedRoom);
+
+      initCPUInfo();
 
       if (!options.isShadowCall()) {
         if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
@@ -124,6 +137,10 @@ public class Room {
       if (options != null && !options.isShadowCall()) {
         sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
       }
+    }).subscribe());
+
+    persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
+      onRollTheDiceReceived.onNext(null);
     }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
@@ -274,6 +291,10 @@ public class Room {
       JSONObject payload = getSendMessageIceGatheringComplete();
       webSocketConnection.send(payload.toString());
     }));
+
+    tempSubscriptions.add(webRTCClient.isLocalFreeze().subscribe(freeze -> {
+      sendFreeze();
+    }));
   }
 
   public void leaveRoom() {
@@ -313,12 +334,23 @@ public class Room {
     webSocketConnection.send(getSendOrientation(orientation, frontFacing).toString());
   }
 
+  private void sendCpu(int cpu) {
+    if (webSocketConnection == null) return;
+
+    webSocketConnection.send(getSendCPU(cpu).toString());
+  }
+
+  private void sendFreeze() {
+    if (webSocketConnection == null) return;
+
+    webSocketConnection.send(getSendFreeze().toString());
+  }
+
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null && !remotePeer.getSession()
-        .getPeerId()
-        .equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null &&
+        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }
@@ -364,6 +396,17 @@ public class Room {
     JsonUtils.jsonPut(d, "platform", "Android");
     JsonUtils.jsonPut(d, "orientation", orientation);
     JsonUtils.jsonPut(d, "camera", frontFacing ? "front" : "back");
+
+    String deviceName = DeviceUtils.getDeviceName();
+    String appVersion = Integer.toString(DeviceUtils.getVersionCode(context));
+    String releaseOS = Build.VERSION.RELEASE;
+    String networkType = DeviceUtils.getNetworkType(context);
+
+    JsonUtils.jsonPut(d, "deviceName", deviceName);
+    JsonUtils.jsonPut(d, "networkType", networkType);
+    JsonUtils.jsonPut(d, "version", releaseOS);
+    JsonUtils.jsonPut(d, "appVersion", appVersion);
+
     JsonUtils.jsonPut(a, "d", d);
     return a;
   }
@@ -436,12 +479,43 @@ public class Room {
     return a;
   }
 
+  private JSONObject getSendCPU(int cpu) {
+    JSONObject a = new JSONObject();
+    JsonUtils.jsonPut(a, "a", "eventCpu");
+    JSONObject d = new JSONObject();
+    JsonUtils.jsonPut(d, "cpuUsed", cpu);
+    JsonUtils.jsonPut(a, "d", d);
+    return a;
+  }
+
+  private JSONObject getSendFreeze() {
+    JSONObject a = new JSONObject();
+    JsonUtils.jsonPut(a, "a", "eventFreeze");
+    return a;
+  }
+
+  private void initCPUInfo() {
+    tempSubscriptions.add(Observable.interval(0, DURATION, TimeUnit.SECONDS)
+        .onBackpressureDrop()
+        .observeOn(Schedulers.io())
+        .map(aLong -> {
+          int[] cpuUsage = CpuUtils.getCpuUsageStatistic();
+          return cpuUsage[0];
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aInt -> sendCpu(aInt)));
+  }
+
   /////////////////
   // OBSERVABLES //
   /////////////////
 
   public Observable<TribeJoinRoom> onJoined() {
     return onJoined;
+  }
+
+  public Observable<Void> onRollTheDiceReceived() {
+    return onRollTheDiceReceived;
   }
 
   public Observable<String> onRoomStateChanged() {

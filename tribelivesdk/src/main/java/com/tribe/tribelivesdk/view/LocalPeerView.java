@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.util.Pair;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.webrtc.TribeVideoRenderer;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +21,7 @@ public class LocalPeerView extends PeerView {
   private boolean frontFacing = true;
   private TribePeerMediaConfiguration mediaConfiguration;
   private TribeVideoRenderer localRenderer;
+  private GameManager gameManager;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -49,6 +51,7 @@ public class LocalPeerView extends PeerView {
   }
 
   private void init() {
+    gameManager = GameManager.getInstance(getContext());
     TextureViewRenderer textureViewRenderer = getTextureViewRenderer();
     textureViewRenderer.init(null, rendererEvents);
     initRemoteRenderer();
@@ -127,6 +130,11 @@ public class LocalPeerView extends PeerView {
 
   public TribeVideoRenderer getLocalRenderer() {
     return localRenderer;
+  }
+
+  public boolean isFreeze() {
+    if (textureViewRenderer == null) return false;
+    return textureViewRenderer.isFreeze();
   }
 
   /////////////////

@@ -1,14 +1,11 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,7 +19,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,9 +30,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
-import com.tarek360.instacapture.InstaCapture;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
@@ -54,6 +50,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -62,11 +59,10 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -76,8 +72,8 @@ import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
@@ -104,7 +100,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -117,7 +112,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
-      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS
+      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE
   }) public @interface Source {
   }
 
@@ -131,20 +126,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
   public static final String SOURCE_FRIENDS = "Friends";
   public static final String SOURCE_NEW_CALL = "NewCall";
+  public static final String SOURCE_CALL_ROULETTE = "CallRoulette";
   public static final String SOURCE_JOIN_LIVE = "JoinLive";
   public static final String SOURCE_ADD_PEERS = "AddPeers";
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static final String ROOM_ID = "ROOM_ID";
-  public static final int FLASH_DURATION = 500;
+
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
   private final int MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST = 3;
-  private final int CORNER_SCREENSHOT = 5;
-  private final int SCREENSHOT_DURATION = 300;
-  private final int SCALE_DOWN_SCREENSHOT_DURATION = 600;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, int color,
       @Source String source) {
@@ -245,13 +238,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
 
-  @BindView(R.id.viewScreenShot) ImageView viewScreenShot;
-
-  @BindView(R.id.viewBGScreenshot) View viewBGScreenshot;
-
-  @BindView(R.id.viewFlash) FrameLayout viewFlash;
-
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
+
+  @BindView(R.id.screenShotView) ScreenshotView screenshotView;
+
+  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+
+  @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
+
+  @BindView(R.id.blockView) FrameLayout blockView;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -266,15 +261,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
-  private boolean takeScreenshotEnable = true;
   private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
   private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   private Intent returnIntent = new Intent();
   private List anonymousIdList = new ArrayList();
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
-
-  // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -317,7 +309,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override protected void onStop() {
-    Timber.d("onStop");
     livePresenter.onViewDetached();
     super.onStop();
   }
@@ -394,9 +385,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     });
 
-    viewLiveContainer.setOnTouchListener((v, event) -> {
-      return false;
-    });
+    viewLiveContainer.setOnTouchListener((v, event) -> false);
   }
 
   private void initDependencyInjector() {
@@ -428,6 +417,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         livePresenter.loadFriendshipList();
 
+        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
+
+          if (!FacebookUtils.isLoggedIn()) {
+            //if (true) {
+            Timber.d("not logged on fb ");
+            blockView.setVisibility(VISIBLE);
+            blockView.setOnTouchListener((v, event) -> true);
+            notificationContainerView.
+                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+          } else {
+            viewLiveContainer.blockOpenInviteView(true);
+            initCallRouletteService();
+          }
+        }
+
         if (live.isGroup()) {
           viewLive.start(live);
           livePresenter.loadRecipient(live);
@@ -445,6 +449,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         finish();
       }
     }));
+  }
+
+  private void initCallRouletteService() {
+    viewLive.setSourceLive(live.getSource());
+    startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
+    livePresenter.randomRoomAssigned();
+  }
+
+  private void stopCallRouletteService() {
+    Intent i = new Intent(this, WSService.class);
+    stopService(i);
   }
 
   private void initResources() {
@@ -510,6 +525,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initSubscriptions() {
+
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
         viewLive.onInvitesChanged().startWith(new HashMap<>()),
@@ -525,16 +541,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           liveIsInvite = live.isInvite();
           if (live.getMembers() != null) {
             for (Friendship fr : friendshipList) {
-              if (!live.isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
-                  .getId()
-                  .equals(live.getSubId()) && !idsToFilter.contains(fr.getFriend().getId())) {
+              if (!live.isGroupMember(fr.getFriend().getId()) &&
+                  !fr.getFriend().getId().equals(live.getSubId()) &&
+                  !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
           } else {
             for (Friendship fr : friendshipList) {
-              if (!live.getSubId().equals(fr.getFriend().getId()) && !idsToFilter.contains(
-                  fr.getFriend().getId())) {
+              if (!live.getSubId().equals(fr.getFriend().getId()) &&
+                  !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
@@ -549,15 +565,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
-      joinRoom();
+      if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) joinRoom();
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      if (StringUtils.isEmpty(live.getLinkId())
-          && !live.isGroup()
-          && tribeJoinRoom.getRoomSize() < 2) {
-        viewLiveContainer.openInviteView();
-      }
+
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
@@ -572,7 +584,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-          invite(recipient.getSubId());
+          if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
+            Timber.d("on dropped the dice :" + live.getSessionId());
+            livePresenter.roomAcceptRandom(live.getSessionId());
+            reRollTheDiceFromLiveRoom();
+          } else {
+            invite(recipient.getSubId());
+          }
         }));
 
     subscriptions.add(
@@ -587,7 +605,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
                 .show();
           } else {
-            navigator.sendInviteToCall(this, TagManagerUtils.CALL, live.getLinkId(), null, false);
+            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
+                live.getLinkId(), null, false);
           }
         }));
 
@@ -622,7 +641,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onScreenshot().subscribe(aVoid -> {
       if (RuntimePermissionUtil.checkPermission(context(), this)) {
-        takeScreenshot();
+        takeScreenShot();
       }
     }));
 
@@ -651,8 +670,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      String linkId = navigator.sendInviteToCall(this, TagManagerUtils.INVITE, null,
-          roomConfiguration.getRoomId(), false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null,
+              roomConfiguration.getRoomId(), false);
       livePresenter.bookRoomLink(linkId);
     }));
 
@@ -679,15 +699,51 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             PaletteGrid.getRandomColorExcluding(Color.BLACK), SOURCE_ADD_PEERS)));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
+
+    subscriptions.add(diceView.onNextDiceClick().subscribe(aVoid -> {
+      if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+        reRollTheDiceFromCallRoulette();
+      } else {
+        reRollTheDiceFromLiveRoom();
+      }
+    }));
+
+    subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
+      reRollTheDiceFromCallRoulette();
+    }));
+
+    subscriptions.add(notificationContainerView.onFacebookSuccess().subscribe(aVoid -> {
+      blockView.setVisibility(View.INVISIBLE);
+      viewLiveContainer.blockOpenInviteView(true);
+      initCallRouletteService();
+    }));
+  }
+
+  private void reRollTheDiceFromCallRoulette() {
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
+    viewLive.endCall(true);
+    viewLive.dispose(true);
+    viewLive.jump();
+    initRoom();
+  }
+
+  private void reRollTheDiceFromLiveRoom() {
+    viewLive.reRollTheDiceFromLiveRoom();
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
     return super.dispatchTouchEvent(ev);
+  }
+
+  private void takeScreenShot() {
+    viewLive.hideGamesBtn();
+    screenshotView.takeScreenshot();
+    viewLive.displayGamesBtn();
   }
 
   @Override
@@ -700,7 +756,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             new RuntimePermissionUtil.RPResultListener() {
               @Override public void onPermissionGranted() {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                  takeScreenshot();
+                  takeScreenShot();
                 }
               }
 
@@ -720,58 +776,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getDisplayName())));
   }
 
-  private void takeScreenshot() {
-    if (takeScreenshotEnable) {
-      takeScreenshotEnable = false;
-      subscriptions.add(
-          InstaCapture.getInstance(this).captureRx().subscribe(new Subscriber<Bitmap>() {
-            @Override public void onCompleted() {
-            }
-
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Bitmap bitmap) {
-              Bitmap bitmapWatermarked =
-                  BitmapUtils.watermarkBitmap(screenUtils, getResources(), bitmap);
-
-              Bitmap roundedBitmap =
-                  UIUtils.getRoundedCornerBitmap(bitmapWatermarked, Color.WHITE, CORNER_SCREENSHOT,
-                      CORNER_SCREENSHOT * 2, context());
-
-              BitmapUtils.saveScreenshotToDefaultDirectory(context(), bitmapWatermarked);
-
-              viewScreenShot.setImageBitmap(roundedBitmap);
-              viewScreenShot.setVisibility(View.VISIBLE);
-              viewScreenShot.animate()
-                  .alpha(1f)
-                  .setDuration(SCREENSHOT_DURATION)
-                  .setStartDelay(FLASH_DURATION)
-                  .setListener(new AnimatorListenerAdapter() {
-                    @Override public void onAnimationEnd(Animator animation) {
-                      viewScreenShot.animate().setListener(null).start();
-                      setScreenShotAnimation();
-                    }
-                  })
-                  .start();
-
-              viewFlash.animate()
-                  .setDuration(FLASH_DURATION)
-                  .alpha(1f)
-                  .withEndAction(() -> viewFlash.animate()
-                      .setDuration(FLASH_DURATION)
-                      .alpha(0f)
-                      .withEndAction(() -> viewFlash.animate().setListener(null).start()));
-
-              viewBGScreenshot.setVisibility(View.VISIBLE);
-              subscriptions.add(Observable.timer(2000 + SCREENSHOT_DURATION, TimeUnit.MILLISECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> viewBGScreenshot.setVisibility(View.GONE)));
-            }
-          }));
-    }
-  }
-
   private void leave() {
     if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
       subscriptions.add(DialogFactory.dialog(this,
@@ -785,27 +789,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     } else {
       finish();
     }
-  }
-
-  private void setScreenShotAnimation() {
-    Animation scaleAnim = AnimationUtils.loadAnimation(this, R.anim.screenshot_anim);
-    scaleAnim.setAnimationListener(new AnimationListenerAdapter() {
-
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        viewScreenShot.setAlpha(0f);
-        viewScreenShot.setVisibility(View.GONE);
-        takeScreenshotEnable = true;
-
-        Toast.makeText(LiveActivity.this,
-            EmojiParser.demojizedText(getString(R.string.live_screenshot_saved_toast)),
-            Toast.LENGTH_SHORT).show();
-
-        animation.setAnimationListener(null);
-      }
-    });
-
-    viewScreenShot.startAnimation(scaleAnim);
   }
 
   private void putExtraRatingNotif() {
@@ -861,9 +844,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           (Serializable) peopleInLive);
       extra.putDouble(SharingCardNotificationView.DURATION_CALL, viewLive.getDuration());
       returnIntent.putExtras(extra);
-    } else if ((liveIsInvite
-        || !activeUersIdsInvitedInLiveRoom.isEmpty()
-        || !anonymousInLive.isEmpty()) && peopleInLive.size() > 1) {
+    } else if ((liveIsInvite ||
+        !activeUersIdsInvitedInLiveRoom.isEmpty() ||
+        !anonymousInLive.isEmpty()) && peopleInLive.size() > 1) {
       returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GRP_NOTIF, true);
       Bundle extra = new Bundle();
       extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
@@ -881,7 +864,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void onRoomLink(String roomLink) {
     String linkId = StringUtils.getLinkIdFromUrl(roomLink);
-    navigator.sendInviteToCall(this, TagManagerUtils.CALL, linkId, null, false);
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, linkId, null,
+        false);
   }
 
   @Override public void onAddError() {
@@ -916,7 +900,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void invite(String userId) {
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
-    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
+    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId); // MADA
   }
 
   private void ready() {
@@ -989,18 +973,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     onUpdateFriendshipList.onNext(friendshipList);
   }
 
+  @Override public void randomRoomAssignedSubscriber(String roomId) {
+    Timber.d("random room assigned " + roomId);
+    viewLiveContainer.blockOpenInviteView(false);
+    live.setSessionId(roomId);
+    joinRoom();
+  }
+
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {
     this.roomConfiguration = roomConfiguration;
     this.roomConfiguration.setRoutingMode(routingMode.get());
     viewLive.joinRoom(this.roomConfiguration);
     if (!live.isGroup() && !live.isSessionOrLink()) {
-      livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId());
+      livePresenter.inviteUserToRoom(this.roomConfiguration.getRoomId(), live.getSubId()); // MADA
     }
     live.setSessionId(roomConfiguration.getRoomId());
 
-    if (!StringUtils.isEmpty(live.getLinkId()) && !StringUtils.isEmpty(
-        roomConfiguration.getInitiatorId()) && !roomConfiguration.getInitiatorId()
-        .equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getLinkId()) &&
+        !StringUtils.isEmpty(roomConfiguration.getInitiatorId()) &&
+        !roomConfiguration.getInitiatorId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,
@@ -1054,9 +1045,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
-          .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
-          && live.getSessionId().equals(notificationPayload.getSessionId()))) {
+      if (live.getSubId().equals(notificationPayload.getUserId()) ||
+          live.getSubId().equals(notificationPayload.getGroupId()) ||
+          (live.getSessionId() != null &&
+              live.getSessionId().equals(notificationPayload.getSessionId()))) {
 
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
           displayNotification(EmojiParser.demojizedText(

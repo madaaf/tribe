@@ -55,8 +55,8 @@ public class TextureViewRenderer extends TextureView
   private int surfaceHeight;
 
   // Detecting FPS DROP
-  private int framesRendered;
-  private long lastRenderingCheck = 0L;
+  private int framesRendered, framesRenderedFreeze;
+  private long lastRenderingCheck = 0L, lastFreezeCheck = 0L;
 
   /**
    * Standard View constructor. In order to render something, you must first call init().
@@ -203,6 +203,7 @@ public class TextureViewRenderer extends TextureView
     eglRenderer.renderFrame(frame);
 
     framesRendered++;
+    framesRenderedFreeze++;
   }
 
   @Override public void renderFrame(TribeI420Frame frame) {
@@ -211,6 +212,7 @@ public class TextureViewRenderer extends TextureView
     eglRenderer.renderFrame(webRtcFrame);
 
     framesRendered++;
+    framesRenderedFreeze++;
   }
 
   // View layout interface.
@@ -234,11 +236,11 @@ public class TextureViewRenderer extends TextureView
   private void updateSurfaceSize() {
     ThreadUtils.checkIsOnMainThread();
     synchronized (layoutLock) {
-      if (enableFixedSize
-          && rotatedFrameWidth != 0
-          && rotatedFrameHeight != 0
-          && getWidth() != 0
-          && getHeight() != 0) {
+      if (enableFixedSize &&
+          rotatedFrameWidth != 0 &&
+          rotatedFrameHeight != 0 &&
+          getWidth() != 0 &&
+          getHeight() != 0) {
         final float layoutAspectRatio = getWidth() / (float) getHeight();
         final float frameAspectRatio = rotatedFrameWidth / (float) rotatedFrameHeight;
         final int drawnFrameWidth;
@@ -253,22 +255,22 @@ public class TextureViewRenderer extends TextureView
         // Aspect ratio of the drawn frame and the view is the same.
         final int width = Math.min(getWidth(), drawnFrameWidth);
         final int height = Math.min(getHeight(), drawnFrameHeight);
-        logD("updateSurfaceSize. Layout size: "
-            + getWidth()
-            + "x"
-            + getHeight()
-            + ", frame size: "
-            + rotatedFrameWidth
-            + "x"
-            + rotatedFrameHeight
-            + ", requested surface size: "
-            + width
-            + "x"
-            + height
-            + ", old surface size: "
-            + surfaceWidth
-            + "x"
-            + surfaceHeight);
+        logD("updateSurfaceSize. Layout size: " +
+            getWidth() +
+            "x" +
+            getHeight() +
+            ", frame size: " +
+            rotatedFrameWidth +
+            "x" +
+            rotatedFrameHeight +
+            ", requested surface size: " +
+            width +
+            "x" +
+            height +
+            ", old surface size: " +
+            surfaceWidth +
+            "x" +
+            surfaceHeight);
         if (width != surfaceWidth || height != surfaceHeight) {
           surfaceWidth = width;
           surfaceHeight = height;
@@ -299,15 +301,15 @@ public class TextureViewRenderer extends TextureView
           rendererEvents.onFirstFrameRendered();
         }
       }
-      if (rotatedFrameWidth != frame.rotatedWidth()
-          || rotatedFrameHeight != frame.rotatedHeight()
-          || frameRotation != frame.rotationDegree) {
-        logD("Reporting frame resolution changed to "
-            + frame.width
-            + "x"
-            + frame.height
-            + " with rotation "
-            + frame.rotationDegree);
+      if (rotatedFrameWidth != frame.rotatedWidth() ||
+          rotatedFrameHeight != frame.rotatedHeight() ||
+          frameRotation != frame.rotationDegree) {
+        logD("Reporting frame resolution changed to " +
+            frame.width +
+            "x" +
+            frame.height +
+            " with rotation " +
+            frame.rotationDegree);
         if (rendererEvents != null) {
           rendererEvents.onFrameResolutionChanged(frame.width, frame.height, frame.rotationDegree);
         }
@@ -366,5 +368,24 @@ public class TextureViewRenderer extends TextureView
     lastRenderingCheck = System.currentTimeMillis();
 
     return isRenderingWell;
+  }
+
+  public boolean isFreeze() {
+    boolean isFreeze = false;
+
+    if (lastFreezeCheck != 0L) {
+      long timeIntervalSinceLastCheck = System.currentTimeMillis() - lastFreezeCheck;
+      int framesRenderedSinceLastCheck = framesRenderedFreeze;
+      float timeIntervalInSecs = (timeIntervalSinceLastCheck / 1000);
+      if (timeIntervalInSecs > 0) {
+        float fps = (framesRenderedSinceLastCheck / timeIntervalInSecs);
+        isFreeze = fps == 0;
+      }
+    }
+
+    framesRenderedFreeze = 0;
+    lastFreezeCheck = System.currentTimeMillis();
+
+    return isFreeze;
   }
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+
+  <LinearLayout
+      android:id="@+id/fbCallRouletteView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="20dp"
+      android:layout_marginLeft="30dp"
+      android:layout_marginRight="30dp"
+      android:layout_marginTop="70dp"
+      android:orientation="vertical"
+      >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="@drawable/shape_rect_white_rounded_corners_top"
+        >
+
+
+      <ImageView
+          android:id="@+id/imageView4"
+          android:layout_width="match_parent"
+          android:layout_height="180dp"
+          android:scaleType="fitXY"
+          android:src="@drawable/banner_fb_callroulette"
+          />
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="35dp"
+        android:weightSum="1"
+        >
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="25dp"
+          android:layout_marginTop="5dp"
+          android:gravity="center"
+          android:text="@string/unlock_roll_the_dice_title"
+          style="@style/Headline.Black.2"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="15dp"
+          android:gravity="center"
+          android:text="@string/unlock_roll_the_dice_description"
+          android:textSize="13sp"
+          style="@style/Headline.Black40.2"
+          />
+
+    </LinearLayout>
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnAction"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/shape_rect_blue_fb_bottom_corner"
+        android:gravity="center"
+        android:text="@string/unlock_roll_the_dice_facebook_action"
+        android:textSize="15sp"
+        style="@style/Headline.White.2"
+        />
+  </LinearLayout>
+
+  <com.tribe.app.presentation.view.widget.DiceView
+      android:id="@+id/diceLayoutRoomView"
+      android:layout_width="150dp"
+      android:layout_height="150dp"
+      android:layout_gravity="top|center"
+      android:layout_marginTop="175dp"
+      android:gravity="bottom"
+      android:visibility="visible"
+      app:diceType="fbNotif"
+      />
+
+
+</merge>

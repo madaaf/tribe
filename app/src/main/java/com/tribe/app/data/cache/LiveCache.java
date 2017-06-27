@@ -31,4 +31,8 @@ import rx.Observable;
   Observable<Map<String, Invite>> inviteMap();
 
   Map<String, Invite> getInviteMap();
+
+  Observable<String> getRandomRoomAssignedValue();
+
+  void putRandomRoomAssigned(String assignedRoomId);
 }

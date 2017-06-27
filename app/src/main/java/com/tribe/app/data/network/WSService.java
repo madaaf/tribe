@@ -35,6 +35,9 @@ import timber.log.Timber;
 
 @Singleton public class WSService extends Service {
 
+  public static final String TYPE = "TYPE";
+  public static final String CALL_ROULETTE_TYPE = "CALL_ROULETTE_TYPE";
+
   public static final String USER_SUFFIX = "___u";
   public static final String GROUP_SUFFIX = "___g";
   public static final String FRIENDSHIP_CREATED_SUFFIX = "___fc";
@@ -44,9 +47,11 @@ import timber.log.Timber;
   public static final String MEMBERSHIP_REMOVED_SUFFIX = "___mr";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
+  public static final String RANDOM_ROOM_ASSIGNED = "___ra";
 
-  public static Intent getCallingIntent(Context context) {
+  public static Intent getCallingIntent(Context context, String type) {
     Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(TYPE, type);
     return intent;
   }
 
@@ -93,7 +98,25 @@ import timber.log.Timber;
     super.onDestroy();
   }
 
+  public void subscribeChatRoulette() {
+    String hash = generateHash();
+    StringBuffer subscriptionsBuffer = new StringBuffer();
+    append(subscriptionsBuffer,
+        getApplicationContext().getString(R.string.subscription_randomRoomAssigned,
+            hash + RANDOM_ROOM_ASSIGNED));
+
+    String req =
+        getApplicationContext().getString(R.string.subscription, subscriptionsBuffer.toString());
+
+    webSocketConnection.send(req);
+  }
+
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
+    if (intent != null && intent.getStringExtra(TYPE) != null && intent.getStringExtra(TYPE)
+        .equals(CALL_ROULETTE_TYPE)) {
+      subscribeChatRoulette();
+    }
+
     if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
         || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
@@ -220,6 +243,11 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onRemovedOnline().subscribe(s -> {
       liveCache.removeOnline(s);
+    }));
+
+    persistentSubscriptions.add(jsonToModel.onRandomRoomAssigned().subscribe(assignedRoomId -> {
+      Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
+      liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated().subscribe(userRealmList -> {

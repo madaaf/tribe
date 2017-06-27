@@ -107,7 +107,7 @@ public class LiveInviteView extends FrameLayout {
   private void initResources() {
 
   }
-  
+
   public void setFadeInEffet(float fadeInEffet) {
     setAlpha(fadeInEffet);
   }
@@ -164,6 +164,10 @@ public class LiveInviteView extends FrameLayout {
 
   public void removeItemAtPosition(int position) {
     //adapter.removeItem(position);
+  }
+
+  public void diceDragued() {
+    adapter.diceDragued();
   }
 
   public void setDragging(boolean dragging) {

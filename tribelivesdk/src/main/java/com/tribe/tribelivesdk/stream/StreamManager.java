@@ -32,8 +32,9 @@ public class StreamManager {
 
   // OBSERVABLES
   private CompositeSubscription localSubscriptions = new CompositeSubscription();
-  private Subscription subscriptionRenderingWell;
+  private Subscription subscriptionRenderingWell, subscriptionFreezeLive;
   private PublishSubject<TribePeerMediaConfiguration> onMediaChanged = PublishSubject.create();
+  private PublishSubject<Boolean> isFreeze = PublishSubject.create();
 
   public StreamManager(Context context) {
     this.context = context;
@@ -61,6 +62,11 @@ public class StreamManager {
         .doOnNext(mediaConfiguration -> setLocalAudioEnabled(mediaConfiguration.isAudioEnabled()))
         .subscribe(mediaConfiguration -> onMediaChanged.onNext(mediaConfiguration)));
 
+    subscriptionFreezeLive =
+        Observable.interval(0, DURATION, TimeUnit.SECONDS).onBackpressureDrop().subscribe(aLong -> {
+          if (localPeerView.isFreeze()) isFreeze.onNext(true);
+        });
+
     subscriptionRenderingWell =
         Observable.interval(0, DURATION, TimeUnit.SECONDS).onBackpressureDrop().subscribe(aLong -> {
           Collection<RemotePeer> remotePeerCollection = remotePeerMap.getMap().values();
@@ -68,9 +74,9 @@ public class StreamManager {
             boolean isRenderingWell = remotePeer.isRenderingWell();
             TribePeerMediaConfiguration mediaConfiguration = remotePeer.getMediaConfiguration();
 
-            if (!isRenderingWell
-                && mediaConfiguration.isAudioEnabled()
-                && mediaConfiguration.isVideoEnabled()) {
+            if (!isRenderingWell &&
+                mediaConfiguration.isAudioEnabled() &&
+                mediaConfiguration.isVideoEnabled()) {
               mediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.FPS_DROP);
               remotePeer.setMediaConfiguration(mediaConfiguration);
             } else if (mediaConfiguration.isLowConnection()) {
@@ -263,6 +269,7 @@ public class StreamManager {
       }
 
       if (subscriptionRenderingWell != null) subscriptionRenderingWell.unsubscribe();
+      if (subscriptionFreezeLive != null) subscriptionFreezeLive.unsubscribe();
     }
 
     Timber.d("End disposing stream manager");
@@ -275,5 +282,9 @@ public class StreamManager {
 
   public Observable<TribePeerMediaConfiguration> onMediaChanged() {
     return onMediaChanged;
+  }
+
+  public Observable<Boolean> isFreeze() {
+    return isFreeze;
   }
 }

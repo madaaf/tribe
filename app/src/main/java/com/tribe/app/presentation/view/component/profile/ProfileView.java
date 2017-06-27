@@ -65,8 +65,6 @@ public class ProfileView extends ScrollView {
 
   @BindView(R.id.viewActionPhoneIntegration) ActionView viewActionPhoneIntegration;
 
-  @BindView(R.id.viewActionVideo) ActionView viewActionVideo;
-
   @BindView(R.id.viewActionBlocked) ActionView viewActionBlocked;
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
@@ -224,10 +222,6 @@ public class ProfileView extends ScrollView {
 
   public Observable<Void> onDebugMode() {
     return onDebugMode;
-  }
-
-  public Observable<Void> onVideo() {
-    return viewActionVideo.onClick();
   }
 
   public Observable<Void> onShare() {

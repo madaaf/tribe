@@ -241,7 +241,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
           bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
           tagManager.trackEvent(TagManagerUtils.Invites, bundle);
           String linkId =
-              navigator.sendInviteToCall(this, TagManagerUtils.GROUP, null, null, false);
+              navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.GROUP, null, null, false);
           groupPresenter.bookRoomLink(linkId);
         }
       }
@@ -475,7 +475,7 @@ public class GroupActivity extends BaseActivity implements GroupMVPView {
             .filter(x -> x == true)
             .subscribe(a -> {
               String linkId =
-                  navigator.sendInviteToCall(this, TagManagerUtils.GROUP, null, user.getPhone(),
+                  navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.GROUP, null, user.getPhone(),
                       false);
               groupPresenter.bookRoomLink(linkId);
             });
