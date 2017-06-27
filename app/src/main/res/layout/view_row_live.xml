@@ -8,6 +8,16 @@
       android:layout_gravity="center"
       />
 
+  <View
+      android:id="@+id/ok"
+      android:layout_width="100dp"
+      android:layout_height="100dp"
+      android:layout_gravity="bottom|center"
+      android:background="@android:color/black"
+      android:visibility="visible"
+      />
+
+
   <LinearLayout
       android:id="@+id/layoutStream"
       android:layout_width="match_parent"
