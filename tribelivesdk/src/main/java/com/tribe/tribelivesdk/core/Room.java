@@ -130,7 +130,7 @@ public class Room {
 
     persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
       onRollTheDiceReceived.onNext(null);
-    }).subscribe());//SOEF
+    }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -228,13 +228,6 @@ public class Room {
 
           jsonToModel.convert(message);
         }));
-  }
-
-  public void rollTheDice(String userId) {//SOEF
-    Timber.d("roll the dice");
-    if (webSocketConnection == null) return;
-    webRTCClient.initSubscriptions();
-    //webSocketConnection.send(getDicePayload(user).toString());
   }
 
   public void joinRoom() {
@@ -366,7 +359,6 @@ public class Room {
       return MESSAGE_NONE;
     }
   }
-
 
   private JSONObject getJoinPayload(String roomId, String tokenId, int orientation,
       boolean frontFacing) {

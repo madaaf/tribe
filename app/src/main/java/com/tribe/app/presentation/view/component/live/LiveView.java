@@ -544,8 +544,6 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    // tempSubscriptions.add(room.onRollTheDiceReceived().subscribe(onRollTheDiceReceived)); // SOEF
-
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
@@ -638,8 +636,8 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(
         room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-          Timber.e("SOEF rollTheDice received by WEB SIGNALING");
-          viewRoom.onRollTheDiceReceived();//SOEFFIHSHSK
+          Timber.e("rollTheDice received");
+          viewRoom.onRollTheDiceReceived();
           live.setDiceDragedInRoom(true);
         }));
 
@@ -741,7 +739,7 @@ public class LiveView extends FrameLayout {
 
       liveInviteMap.put(latestView.getGuest().getId(), latestView);
 
-      if (!latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {//SOEF
+      if (!latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
         room.sendToPeers(getInvitedPayload(), true);
       }
 

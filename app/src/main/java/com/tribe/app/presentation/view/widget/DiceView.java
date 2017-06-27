@@ -154,11 +154,13 @@ public class DiceView extends FrameLayout {
     switch (type) {
       case TYPE_FROM_GRID:
         bgView.setVisibility(GONE);
+        label.setVisibility(GONE);
         dice.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.dice_top_bar_bg));
         Timber.d("dice from grid");
         break;
       case TYPE_FROM_TILE:
         bgView.setVisibility(GONE);
+        label.setVisibility(GONE);
         dice.setScaleY(1);
         dice.setScaleX(1);
         dice.setBackground(
@@ -167,6 +169,7 @@ public class DiceView extends FrameLayout {
         break;
       case TYPE_FROM_ROOM:
         bgView.setVisibility(VISIBLE);
+        label.setVisibility(VISIBLE);
         sizeDice = screenUtils.dpToPx(60);
         setDiceSize(sizeDice);
         showLabel(true);
@@ -174,7 +177,8 @@ public class DiceView extends FrameLayout {
         break;
       case TYPE_FROM_FB_NOTIF:
         bgView.setVisibility(GONE);
-        sizeDice = screenUtils.dpToPx(60);
+        label.setVisibility(GONE);
+        sizeDice = screenUtils.dpToPx(70);
         setDiceSize(sizeDice);
         showLabel(false);
         dice.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_dice_fb));
@@ -185,9 +189,9 @@ public class DiceView extends FrameLayout {
 
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        sizeDot = (int) (0.15 * dice.getWidth());
+        sizeDot = (int) (0.13 * dice.getWidth());
         dotsMargin = (int) (sizeDot / 9.75);
-        unit = (int) (sizeDot * 1.20);
+        unit = (int) (sizeDot * 1.18);
 
         initDots();
         startDiceAnimation();
@@ -231,15 +235,9 @@ public class DiceView extends FrameLayout {
   private void showLabel(boolean showLabel) {
     if (showLabel) {
       label.setAlpha(0);
-      label.setVisibility(VISIBLE);
       label.animate().alpha(1).setDuration(500).setListener(null).start();
     } else {
-      label.animate()
-          .alpha(0)
-          .setDuration(500)
-          .setListener(null)
-          .withEndAction(() -> label.setVisibility(GONE))
-          .start();
+      label.animate().alpha(0).setDuration(500).setListener(null).start();
     }
   }
 

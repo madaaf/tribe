@@ -47,7 +47,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/06/2016.
@@ -294,8 +293,6 @@ public class TileView extends SquareCardView {
         if (diceView != null) {
           diceView.setScaleX(scale);
           diceView.setScaleY(scale);
-          Timber.e("SOEF OK VALUE " + value);
-          Timber.e("SOEF OK scale " + scale);
           txtStatus.setAlpha(1 - value);
         }
 

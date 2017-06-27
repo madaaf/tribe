@@ -103,7 +103,7 @@ import timber.log.Timber;
     StringBuffer subscriptionsBuffer = new StringBuffer();
     append(subscriptionsBuffer,
         getApplicationContext().getString(R.string.subscription_randomRoomAssigned,
-            hash + RANDOM_ROOM_ASSIGNED));//SOEF
+            hash + RANDOM_ROOM_ASSIGNED));
 
     String req =
         getApplicationContext().getString(R.string.subscription, subscriptionsBuffer.toString());

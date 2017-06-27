@@ -422,12 +422,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
 
-          if (!FacebookUtils.isLoggedIn()) {
+          if (!FacebookUtils.isLoggedIn()) { //SOEF
+            //if (true) {
             Timber.d("not logged on fb ");
             blockView.setVisibility(VISIBLE);
             blockView.setOnTouchListener((v, event) -> true);
             notificationContainerView.
-                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);//SOEF
+                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
           } else {
             viewLiveContainer.blockOpenInviteView(true);
             initCallRouletteService();
