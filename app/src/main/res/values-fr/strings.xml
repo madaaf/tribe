@@ -570,6 +570,8 @@
 	<string name="game_event_post_it_re_roll">%1$s a renouvelé les noms ! :video_game:</string>
 	<string name="game_event_stopped">%1$s a arreté le jeu "%2$s". :video_game:</string>
 	<string name="game_tutorial">Appuie longtemps sur le bouton du jeu pour arreter.</string>
+	<string name="game_song_pop">Song Pop</string>
+	<string name="game_song_pop_rule">Devinez une autre chanson !</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renouveler les noms</string>
 	<string name="game_post_it_menu_stop">Arreter ce jeu</string>

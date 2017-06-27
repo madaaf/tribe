@@ -570,6 +570,8 @@
 	<string name="game_event_post_it_re_roll">%1$s renewed the names! :video_game:</string>
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
 	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
+	<string name="game_song_pop">Song Pop</string>
+	<string name="game_song_pop_rule">Guess a new song!</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
@@ -591,7 +593,7 @@
 	<string name="roll_the_dice_invite_title">Roll the dice!</string>
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
 	<string name="roll_the_dice_grid_button">Roll the dice to meet new people!</string>
-	<string name="roll_the_dice_next_button">Next!</string>
+	<string name="roll_the_dice_next_button">Next</string>
 	<string name="roll_the_dice_notification">%1$s just rolled the dice!</string>
 	
 	<!-- Fallback call invitations -->
@@ -604,9 +606,7 @@
 	<string name="unlock_roll_the_dice_description">Facebook is required to keep this place safe, warm and get matches based on common interests and friends.</string>
 	<string name="unlock_roll_the_dice_facebook_action">Unlock with Facebook</string>
 	<string name="unlock_roll_the_dice_locked">You need to be 13 years old\nor over to roll the dice.</string>
-
 	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s may be under 13 years old</string>
 	<string name="unlock_roll_the_dice_impossible_popup_message">Your friends need to be 13 years old or older to join a call where the Dice is enabled.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_action">Good to know</string>
-
 </resources>
