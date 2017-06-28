@@ -71,16 +71,26 @@
     </LinearLayout>
 
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
+    <FrameLayout
         android:id="@+id/btnAction"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_gravity="center"
         android:background="@color/blue.facebook.dark.hard"
         android:gravity="center"
-        android:text="@string/unlock_roll_the_dice_facebook_action"
-        android:textSize="15sp"
-        style="@style/Headline.White.2"
-        />
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtAction"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:text="@string/unlock_roll_the_dice_facebook_action"
+          android:textSize="15sp"
+          style="@style/Headline.White.2"
+          />
+    </FrameLayout>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtBottom"

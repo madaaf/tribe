@@ -124,9 +124,7 @@ public class NotificationContainerView extends FrameLayout {
           break;
         case DISPLAY_FB_CALL_ROULETTE:
           initRemoteConfig();
-          Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_with_duration);
           container.setOnTouchListener((v, event) -> {
-            textDismiss.startAnimation(shake);
             return false;
           });
           textDismiss.setOnTouchListener((v, event) -> {

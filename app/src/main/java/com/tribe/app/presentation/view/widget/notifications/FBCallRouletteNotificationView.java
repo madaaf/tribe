@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +35,8 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   @BindView(R.id.txtTitle) TextViewFont txtLabel;
   @BindView(R.id.txtSubTitle) TextViewFont txtSubLabel;
   @BindView(R.id.txtBottom) TextViewFont txtBottom;
-  @BindView(R.id.btnAction) TextViewFont btnAction;
+  @BindView(R.id.txtAction) TextViewFont txtAction;
+  @BindView(R.id.btnAction) FrameLayout btnAction;
 
   private LayoutInflater inflater;
 
@@ -80,6 +84,12 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     diceView.setVisibility(VISIBLE);
     diceView.startDiceAnimation();
     initRemoteConfig();
+
+    Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_with_duration);
+    setOnTouchListener((v, event) -> {
+      txtAction.startAnimation(shake);
+      return false;
+    });
   }
 
   private void initRemoteConfig() {
@@ -94,7 +104,6 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
         setLabelFromFirebase();
       }
     });
-
   }
 
   private void setLabelFromFirebase() {
@@ -105,7 +114,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     txtSubLabel.setText(txt2);
     String txt3 =
         firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_facebook_action);
-    btnAction.setText(txt3);
+    txtAction.setText(txt3);
     String txt4 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_disclaimer);
     txtBottom.setText(txt4);
   }
