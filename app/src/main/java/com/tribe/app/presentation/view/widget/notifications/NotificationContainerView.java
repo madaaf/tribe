@@ -118,7 +118,12 @@ public class NotificationContainerView extends FrameLayout {
           notifIsDisplayed = displayInviteNotification();
           break;
         case DISPLAY_FB_CALL_ROULETTE:
-          textDismiss.setAlpha(0);
+          container.setOnTouchListener(null);
+          textDismiss.setOnTouchListener((v, event) -> {
+            hideView();
+            return false;
+          });
+          textDismiss.setText(getContext().getString(R.string.unlock_roll_the_dice_decline_action));
           notifIsDisplayed = displayFbCallRouletteNotification();
       }
     } else if (data != null) {

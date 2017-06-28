@@ -67,6 +67,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     inflater.inflate(R.layout.view_facebook_callroulette, this, true);
     unbinder = ButterKnife.bind(this);
     diceView.setVisibility(VISIBLE);
+    diceView.startDiceAnimation();
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
