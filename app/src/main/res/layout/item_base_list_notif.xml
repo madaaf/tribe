@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContentok"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:background="@null"
+    android:clickable="true"
+    android:foreground="@drawable/selectable_button"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    >
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="65dp"
+      android:paddingLeft="@dimen/horizontal_margin_small"
+      android:paddingRight="@dimen/horizontal_margin_small"
+      >
+
+    <include layout="@layout/item_user_base" />
+
+
+    <ImageView
+        android:id="@+id/btnMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="13dp"
+        android:clickable="true"
+        android:src="@drawable/extend_btn_notif"
+        />
+
+
+  </FrameLayout>
+  <FrameLayout
+      android:id="@+id/layoutAddFriend"
+      android:layout_width="match_parent"
+      android:layout_height="65dp"
+      android:layout_marginTop="65dp"
+      android:clickable="true"
+      android:background="@drawable/shape_rect_blueaddfriend_rounded_corners"
+      >
+
+    <FrameLayout
+        android:id="@+id/AddBtnBg"
+        android:layout_width="65dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_rect_blueaddfriendplus_rounded_corners"
+        >
+      <ImageView
+          android:id="@+id/iconAdd"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:src="@drawable/add_icon_bg"
+          />
+
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/btnAdd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:animateLayoutChanges="true"
+        android:paddingBottom="@dimen/horizontal_margin_smaller"
+        android:paddingLeft="@dimen/horizontal_margin_small"
+        android:paddingRight="@dimen/horizontal_margin_small"
+        android:paddingTop="@dimen/horizontal_margin_smaller"
+        >
+
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtAction"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:maxLines="1"
+          android:text="@string/action_add_friend"
+          style="@style/Body.Two.White"
+          />
+
+      <com.github.rahatarmanahmed.cpv.CircularProgressView
+          android:id="@+id/progressBarAdd"
+          android:layout_width="20dp"
+          android:layout_height="20dp"
+          android:layout_gravity="center"
+          android:alpha="0"
+          app:cpv_animAutostart="true"
+          app:cpv_color="@android:color/white"
+          app:cpv_indeterminate="true"
+          app:cpv_thickness="2dp"
+          />
+
+    </FrameLayout>
+  </FrameLayout>
+
+</FrameLayout>

@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,6 @@ import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
@@ -665,7 +663,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
 
-    subscriptions.add(userInfosNotificationView.onInvite().subscribe(contact -> {
+/*    subscriptions.add(userInfosNotificationView.onInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
@@ -675,14 +673,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null,
               roomConfiguration.getRoomId(), false);
       livePresenter.bookRoomLink(linkId);
-    }));
+    }));*/
 
-    subscriptions.add(userInfosNotificationView.onClickMore().subscribe(recipient -> {
-      DialogFactory.showBottomSheetForMoreBtn(this, recipient.getDisplayName())
+    subscriptions.add(userInfosNotificationView.onClickMore().subscribe(tribeGuest -> {
+      DialogFactory.showBottomSheetForMoreBtn(this, tribeGuest.getDisplayName())
           .subscribe(labelType -> {
             if (labelType.getTypeDef().equals(LabelType.REPORT)) {
-              Timber.e("report user " + recipient.getId());
-              livePresenter.reportUser(recipient.getId());
+              Timber.e("report user " + tribeGuest.getId());
+              livePresenter.reportUser(tribeGuest.getId());
             } else {
               Timber.d("cancel report user");
             }
@@ -692,7 +690,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(
         userInfosNotificationView.onAdd().subscribe(s -> livePresenter.createFriendship(s)));
 
-    subscriptions.add(userInfosNotificationView.onUnblock()
+/*    subscriptions.add(userInfosNotificationView.onUnblock()
         .doOnError(Throwable::printStackTrace)
         .flatMap(recipient -> DialogFactory.dialog(this, recipient.getDisplayName(),
             context().getString(R.string.search_unblock_alert_message),
@@ -705,11 +703,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
                 FriendshipRealm.DEFAULT);
           }
-        }));
+        }));*/
 
-    subscriptions.add(userInfosNotificationView.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient,
-            PaletteGrid.getRandomColorExcluding(Color.BLACK), SOURCE_ADD_PEERS)));
+    //subscriptions.add(userInfosNotificationView.onHangLive()
+    //    .subscribe(recipient -> navigator.navigateToLive(this, recipient,
+    //        PaletteGrid.getRandomColorExcluding(Color.BLACK), SOURCE_ADD_PEERS)));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
