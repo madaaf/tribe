@@ -50,7 +50,6 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
@@ -419,8 +418,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
 
-          if (!FacebookUtils.isLoggedIn()) {
-            //if (true) {
+          // if (!FacebookUtils.isLoggedIn()) {
+          if (true) {
             Timber.d("not logged on fb ");
             blockView.setVisibility(VISIBLE);
             blockView.setOnTouchListener((v, event) -> true);

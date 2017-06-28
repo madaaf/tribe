@@ -10,10 +10,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.BuildConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.mvp.view.FBInfoMVPView;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.widget.DiceView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import timber.log.Timber;
 
 /**
@@ -24,9 +29,15 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
 
   @BindView(R.id.fbCallRouletteView) LinearLayout fbCallRouletteView;
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  @BindView(R.id.txtTitle) TextViewFont txtLabel;
+  @BindView(R.id.txtSubTitle) TextViewFont txtSubLabel;
+  @BindView(R.id.txtBottom) TextViewFont txtBottom;
+  @BindView(R.id.btnAction) TextViewFont btnAction;
+
+  private LayoutInflater inflater;
 
   // VARIABLES
-  private LayoutInflater inflater;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
   private Unbinder unbinder;
 
   public FBCallRouletteNotificationView(@NonNull Context context) {
@@ -68,6 +79,35 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     unbinder = ButterKnife.bind(this);
     diceView.setVisibility(VISIBLE);
     diceView.startDiceAnimation();
+    initRemoteConfig();
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+        setLabelFromFirebase();
+      }
+    });
+
+  }
+
+  private void setLabelFromFirebase() {
+    String txt1 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_title);
+    txtLabel.setText(txt1);
+    String txt2 =
+        firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_description);
+    txtSubLabel.setText(txt2);
+    String txt3 =
+        firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_facebook_action);
+    btnAction.setText(txt3);
+    String txt4 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_disclaimer);
+    txtBottom.setText(txt4);
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {

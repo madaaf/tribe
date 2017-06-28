@@ -16,6 +16,17 @@ public class Constants {
   public static final String FIREBASE_RATING_NOTIF_TIMEOUT = "calls_ratings_timeout";
   public static final String FIREBASE_COUNTRY_CODES_INVITE = "invite_friends_enabled_country_codes";
 
+  public static final String wording_unlock_roll_the_dice_title =
+      "wording_unlock_roll_the_dice_title";
+  public static final String wording_unlock_roll_the_dice_description =
+      "wording_unlock_roll_the_dice_description";
+  public static final String wording_unlock_roll_the_dice_facebook_action =
+      "wording_unlock_roll_the_dice_facebook_action";
+  public static final String wording_unlock_roll_the_dice_disclaimer =
+      "wording_unlock_roll_the_dice_disclaimer";
+  public static final String wording_unlock_roll_the_dice_decline_action =
+      "wording_unlock_roll_the_dice_decline_action";
+
   // NOTIFICATIONS
   public static final String NOTIFICATION_HOME = "home";
   public static final String NOTIFICATION_LIVE = "live";
