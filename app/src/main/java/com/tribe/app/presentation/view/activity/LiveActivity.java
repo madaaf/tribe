@@ -541,16 +541,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           liveIsInvite = live.isInvite();
           if (live.getMembers() != null) {
             for (Friendship fr : friendshipList) {
-              if (!live.isGroupMember(fr.getFriend().getId()) &&
-                  !fr.getFriend().getId().equals(live.getSubId()) &&
-                  !idsToFilter.contains(fr.getFriend().getId())) {
+              if (!live.isGroupMember(fr.getFriend().getId()) && !fr.getFriend()
+                  .getId()
+                  .equals(live.getSubId()) && !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
           } else {
             for (Friendship fr : friendshipList) {
-              if (!live.getSubId().equals(fr.getFriend().getId()) &&
-                  !idsToFilter.contains(fr.getFriend().getId())) {
+              if (!live.getSubId().equals(fr.getFriend().getId()) && !idsToFilter.contains(
+                  fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
@@ -732,8 +732,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE &&
-        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
+        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -844,9 +844,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           (Serializable) peopleInLive);
       extra.putDouble(SharingCardNotificationView.DURATION_CALL, viewLive.getDuration());
       returnIntent.putExtras(extra);
-    } else if ((liveIsInvite ||
-        !activeUersIdsInvitedInLiveRoom.isEmpty() ||
-        !anonymousInLive.isEmpty()) && peopleInLive.size() > 1) {
+    } else if ((liveIsInvite
+        || !activeUersIdsInvitedInLiveRoom.isEmpty()
+        || !anonymousInLive.isEmpty()) && peopleInLive.size() > 1) {
       returnIntent.putExtra(NotificationContainerView.DISPLAY_CREATE_GRP_NOTIF, true);
       Bundle extra = new Bundle();
       extra.putSerializable(CreateGroupNotificationView.PREFILLED_GRP_MEMBERS,
@@ -989,9 +989,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
     live.setSessionId(roomConfiguration.getRoomId());
 
-    if (!StringUtils.isEmpty(live.getLinkId()) &&
-        !StringUtils.isEmpty(roomConfiguration.getInitiatorId()) &&
-        !roomConfiguration.getInitiatorId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getLinkId()) && !StringUtils.isEmpty(
+        roomConfiguration.getInitiatorId()) && !roomConfiguration.getInitiatorId()
+        .equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,
@@ -1045,10 +1045,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (live.getSubId().equals(notificationPayload.getUserId()) ||
-          live.getSubId().equals(notificationPayload.getGroupId()) ||
-          (live.getSessionId() != null &&
-              live.getSessionId().equals(notificationPayload.getSessionId()))) {
+      if (live.getSubId().equals(notificationPayload.getUserId()) || live.getSubId()
+          .equals(notificationPayload.getGroupId()) || (live.getSessionId() != null
+          && live.getSessionId().equals(notificationPayload.getSessionId()))) {
 
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
           displayNotification(EmojiParser.demojizedText(

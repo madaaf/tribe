@@ -23,7 +23,10 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -35,6 +38,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -85,6 +89,7 @@ public class NotificationContainerView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private GestureDetectorCompat gestureScanner;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -118,7 +123,14 @@ public class NotificationContainerView extends FrameLayout {
           notifIsDisplayed = displayInviteNotification();
           break;
         case DISPLAY_FB_CALL_ROULETTE:
-          textDismiss.setAlpha(0);
+          initRemoteConfig();
+          container.setOnTouchListener((v, event) -> {
+            return false;
+          });
+          textDismiss.setOnTouchListener((v, event) -> {
+            hideView();
+            return false;
+          });
           notifIsDisplayed = displayFbCallRouletteNotification();
       }
     } else if (data != null) {
@@ -127,6 +139,21 @@ public class NotificationContainerView extends FrameLayout {
 
     initSubscription();
     return notifIsDisplayed;
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+        textDismiss.setText(
+            firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_decline_action));
+      }
+    });
   }
 
   ///////////////////

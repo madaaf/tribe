@@ -14,7 +14,7 @@
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
-	<string name="action_adding_friend">Loading...</string>
+	<string name="action_adding_friend">Adding...</string>
 	<string name="action_friend_added">Friend added!</string>
 	<string name="action_friend">Added</string>
 	<string name="action_unblock">Unblock</string>
@@ -571,7 +571,12 @@
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
 	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
 	<string name="game_song_pop">Song Pop</string>
-	<string name="game_song_pop_rule">Guess a new song!</string>
+	<string name="game_song_pop_rule">Guess 5 new songs!</string>
+	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
+	<string name="game_song_pop_status_guess">Guess the song! :musical_note:</string>
+	<string name="game_song_pop_status_wrong_answer">Arrgh! That\'s not the song! :hear_no_evil:</string>
+	<string name="game_song_pop_status_no_winner">Nobody guessed! :metal:</string>
+	<string name="game_song_pop_status_winner">%1$s guessed! :metal:</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
@@ -609,4 +614,6 @@
 	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s may be under 13 years old</string>
 	<string name="unlock_roll_the_dice_impossible_popup_message">Your friends need to be 13 years old or older to join a call where the Dice is enabled.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_action">Good to know</string>
+	<string name="unlock_roll_the_dice_disclaimer">We don\'t post anything on Facebook</string>
+	<string name="unlock_roll_the_dice_decline_action">No, I don\'t want to meet new people</string>
 </resources>

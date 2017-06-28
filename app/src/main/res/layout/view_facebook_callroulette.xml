@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-
   <LinearLayout
       android:id="@+id/fbCallRouletteView"
       android:layout_width="match_parent"
@@ -41,10 +40,14 @@
         android:background="@android:color/white"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="35dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="25dp"
+        android:paddingStart="25dp"
+        android:paddingTop="25dp"
         android:weightSum="1"
         >
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtTitle"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="25dp"
@@ -55,6 +58,7 @@
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtSubTitle"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginBottom="15dp"
@@ -67,16 +71,43 @@
     </LinearLayout>
 
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
+    <FrameLayout
         android:id="@+id/btnAction"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@drawable/shape_rect_blue_fb_bottom_corner"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:background="@color/blue.facebook.dark.hard"
         android:gravity="center"
-        android:text="@string/unlock_roll_the_dice_facebook_action"
-        android:textSize="15sp"
-        style="@style/Headline.White.2"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtAction"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:text="@string/unlock_roll_the_dice_facebook_action"
+          android:textSize="15sp"
+          style="@style/Headline.White.2"
+          />
+    </FrameLayout>
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBottom"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_rect_white_bottom_corner"
+        android:drawablePadding="10dp"
+        android:drawableStart="@drawable/picto_info"
+        android:gravity="center"
+        android:paddingEnd="34dp"
+        android:paddingStart="34dp"
+        android:text="@string/unlock_roll_the_dice_disclaimer"
+        android:textSize="11sp"
+        style="@style/Headline.Black40.2"
         />
+
   </LinearLayout>
 
   <com.tribe.app.presentation.view.widget.DiceView
@@ -89,6 +120,5 @@
       android:visibility="visible"
       app:diceType="fbNotif"
       />
-
 
 </merge>
