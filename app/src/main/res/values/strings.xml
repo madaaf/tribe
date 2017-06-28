@@ -571,7 +571,12 @@
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
 	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
 	<string name="game_song_pop">Song Pop</string>
-	<string name="game_song_pop_rule">Guess a new song!</string>
+	<string name="game_song_pop_rule">Guess 5 new songs!</string>
+	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
+	<string name="game_song_pop_status_guess">Guess the song! :musical_note:</string>
+	<string name="game_song_pop_status_wrong_answer">Arrgh! That\'s not the song! :hear_no_evil:</string>
+	<string name="game_song_pop_status_no_winner">Nobody guessed! :metal:</string>
+	<string name="game_song_pop_status_winner">%1$s guessed! :metal:</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>

@@ -123,4 +123,6 @@ public interface TribeApi {
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> roomAcceptRandom(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> reportUser(@Field("query") String query);
 }

@@ -20,6 +20,7 @@ import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
 import com.tribe.app.domain.interactor.user.RandomRoomAssigned;
+import com.tribe.app.domain.interactor.user.ReportUser;
 import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
@@ -48,6 +49,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private BookRoomLink bookRoomLink;
   private RoomAcceptRandom roomAcceptRandom;
   private RandomRoomAssigned randomRoomAssigned;
+  private ReportUser reportUser;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -61,7 +63,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       DeclineInvite declineInvite, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
-      RandomRoomAssigned randomRoomAssigned) {
+      RandomRoomAssigned randomRoomAssigned, ReportUser reportUser) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -76,6 +78,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.bookRoomLink = bookRoomLink;
     this.roomAcceptRandom = roomAcceptRandom;
     this.randomRoomAssigned = randomRoomAssigned;
+    this.reportUser = reportUser;
   }
 
   @Override public void onViewDetached() {
@@ -93,6 +96,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     bookRoomLink.unsubscribe();
     roomAcceptRandom.unsubscribe();
     randomRoomAssigned.unsubscribe();
+    reportUser.unsubscribe();
     liveMVPView = null;
   }
 
@@ -300,6 +304,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   public void roomAcceptRandom(String roomId) {
     roomAcceptRandom.setRoomId(roomId);
     roomAcceptRandom.execute(new DefaultSubscriber());
+  }
+
+  public void reportUser(String userId) {
+    reportUser.setUserId(userId);
+    reportUser.execute(new DefaultSubscriber());
   }
 
   public void randomRoomAssigned() {

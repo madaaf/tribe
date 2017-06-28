@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -27,6 +28,7 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
   // OBSERVABLES
   private PublishSubject<View> onClickInvite = PublishSubject.create();
+  private PublishSubject<View> onClickMore = PublishSubject.create();
 
   public TribeGuestAdapterDelegate(Context context) {
     this.context = context;
@@ -55,6 +57,7 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     vh.txtDescription.setText(context.getString(R.string.live_external_user_username));
     vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
+    vh.btnMore.setOnClickListener(v -> onClickMore.onNext(vh.itemView));
   }
 
   @Override
@@ -67,6 +70,10 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     return onClickInvite;
   }
 
+  public Observable<View> onClickMore() {
+    return onClickMore;
+  }
+
   static class TribeGuestViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.txtName) TextViewFont txtName;
@@ -76,6 +83,8 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     @BindView(R.id.btnAdd) View btnAdd;
 
     @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+
+    @BindView(R.id.btnMore) ImageView btnMore;
 
     public TribeGuestViewHolder(View itemView) {
       super(itemView);

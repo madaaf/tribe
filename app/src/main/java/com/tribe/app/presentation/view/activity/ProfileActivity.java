@@ -356,7 +356,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsManageFriendships =
         (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
 
-    subscriptions.add(viewSettingsManageFriendships.onClickRemove()
+    subscriptions.add(viewSettingsManageFriendships.onClickRemove() //SOEF
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {

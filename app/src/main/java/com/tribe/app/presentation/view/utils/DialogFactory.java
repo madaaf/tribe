@@ -129,6 +129,11 @@ public final class DialogFactory {
     return createBottomSheet(context, generateLabelsForCamera(context));
   }
 
+  public static Observable<LabelType> showBottomSheetForMoreBtn(Context context,
+      String displayName) {
+    return createBottomSheet(context, generateLabelsForMoreBtn(context, displayName));
+  }
+
   private static List<LabelType> generateLabelsForCamera(Context context) {
     List<LabelType> cameraTypeList = new ArrayList<>();
     cameraTypeList.add(
@@ -143,6 +148,15 @@ public final class DialogFactory {
     return createBottomSheet(context, generateLabelsForRecipient(context, recipient));
   }
 
+  private static List<LabelType> generateLabelsForMoreBtn(Context context, String displayName) {
+    List<LabelType> cameraTypeList = new ArrayList<>();
+    cameraTypeList.add(new LabelType(context.getString(R.string.action_report) + " " + displayName,
+        LabelType.REPORT));
+    cameraTypeList.add(new LabelType(context.getString(R.string.action_cancel), LabelType.CANCEL));
+    return cameraTypeList;
+  }
+
+  //SOEF
   private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
     List<LabelType> moreTypeList = new ArrayList<>();
 

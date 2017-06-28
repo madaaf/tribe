@@ -142,7 +142,7 @@ public class UserInfosNotificationView extends FrameLayout {
         .start();
   }
 
-  public void displayView(Object obj) {
+  public void displayView(Object obj) { //SOEF
     if (getVisibility() == View.VISIBLE || animating) return;
 
     animating = true;
@@ -178,6 +178,12 @@ public class UserInfosNotificationView extends FrameLayout {
 
   public Observable<View> onInvite() {
     return contactAdapter.onClickInvite();
+  }
+
+  public Observable<User> onClickMore() {
+    return contactAdapter.onClickMore()
+        .map(view -> ((User) contactAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view))));
   }
 
   public Observable<String> onAdd() {

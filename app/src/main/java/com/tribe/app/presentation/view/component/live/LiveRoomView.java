@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.annotation.IntDef;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -16,7 +17,6 @@ import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.Transformation;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -383,23 +384,22 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void setAvatar(LiveRowView liveRowView, int gravity, int index) {
-  /*  AvatarView avatarView = new AvatarView(getContext());
-    avatarView.setBackgroundResource(R.drawable.shape_circle_white);
+    AvatarView avatarView = new AvatarView(getContext());
+    //avatarView.setBackgroundResource(R.drawable.shape_circle_white);
     int padding = screenUtils.dpToPx(10);
     avatarView.setPadding(padding, padding, padding, padding);
     avatarView.load(liveRowView.getGuest().getPicture());
-    */
+    ViewCompat.setElevation(avatarView, 10);
 
-    TextView avatarView = new TextView(getContext());
+ /*   TextView avatarView = new TextView(getContext());
     avatarView.setBackgroundResource(R.drawable.shape_circle_white);
-    avatarView.setText(index + " ");
+    avatarView.setText(index + " ");*/
 
     FrameLayout.LayoutParams layoutParams =
         new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     layoutParams.gravity = gravity;
-    //Gravity.CENTER | Gravity.BOTTOM;
-    layoutParams.width = screenUtils.dpToPx(35);
-    layoutParams.height = screenUtils.dpToPx(35);
+    layoutParams.width = screenUtils.dpToPx(60);
+    layoutParams.height = screenUtils.dpToPx(60);
     avatarView.setLayoutParams(layoutParams);
     liveRowView.addView(avatarView);
   }
