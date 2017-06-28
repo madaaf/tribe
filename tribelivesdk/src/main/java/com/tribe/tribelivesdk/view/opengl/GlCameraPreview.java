@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.view.opengl;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -10,7 +11,9 @@ import com.tribe.tribelivesdk.view.opengl.gles.DefaultConfigChooser;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultContextFactory;
 import com.tribe.tribelivesdk.view.opengl.gles.GlTextureView;
 import com.tribe.tribelivesdk.view.opengl.renderer.PreviewRenderer;
+import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.FrameTexture;
+import javax.microedition.khronos.egl.EGLConfig;
 import rx.Observable;
 
 import static android.opengl.GLES20.GL_MAX_RENDERBUFFER_SIZE;
@@ -26,8 +29,6 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
 
   @NonNull protected final PreviewRenderer renderer;
 
-  final boolean faceMirror = true;
-
   public GlCameraPreview(@NonNull final Context context) {
     this(context, null);
   }
@@ -35,7 +36,9 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   public GlCameraPreview(@NonNull final Context context, final AttributeSet attrs) {
     super(context, attrs);
 
-    setEGLConfigChooser(new DefaultConfigChooser(false, 2));
+    setEGLConfigChooser(
+        new DefaultConfigChooser(8, 8, 8, 8, EGL14.EGL_OPENGL_ES2_BIT, EGL14.EGL_PBUFFER_BIT,
+            EGL14.EGL_NONE));
     setEGLContextFactory(new DefaultContextFactory(2));
 
     renderer = new PreviewRenderer(context, this);
@@ -89,7 +92,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
     return renderer.onSurfaceTextureReady();
   }
 
-  public Observable<FrameTexture> onFrameAvailable() {
+  public Observable<Frame> onFrameAvailable() {
     return renderer.onFrameAvailable();
   }
 }

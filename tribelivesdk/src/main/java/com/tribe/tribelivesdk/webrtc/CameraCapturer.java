@@ -26,7 +26,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
     implements CameraVideoCapturer {
@@ -49,7 +48,7 @@ import timber.log.Timber;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription subscriptionCaptureTexture;
+  private Subscription subscriptionCaptureByteBuffer;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
   private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
@@ -185,7 +184,7 @@ import timber.log.Timber;
 
         cameraStatistics.addFrame();
 
-        onFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
+        //onFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
       }
     }
 
@@ -290,13 +289,14 @@ import timber.log.Timber;
     this.surfaceHelper = surfaceTextureHelper;
     cameraThreadHandler = surfaceTextureHelper == null ? null : surfaceTextureHelper.getHandler();
 
-    //frameManager = new FrameManager(applicationContext);
-    //subscriptions.add(frameManager.onRemoteFrame()
-    //    .onBackpressureDrop()
-    //    .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
-    //    .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
-    //        frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
-    //subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
+    frameManager = new FrameManager(applicationContext);
+    subscriptions.add(frameManager.onRemoteFrame()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
+        .subscribe(frame -> {
+          capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
+              frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp());
+        }));
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -319,8 +319,8 @@ import timber.log.Timber;
       openAttemptsRemaining = MAX_OPEN_CAMERA_ATTEMPTS;
       createSessionInternal(0);
 
-      //frameManager.startCapture();
-      //frameManager.initFrameSubscription(onFrame);
+      frameManager.startCapture();
+      frameManager.initFrameSubscription(onFrame);
       //frameManager.initNewFacesObs(onFaces);
     }
   }
@@ -349,8 +349,8 @@ import timber.log.Timber;
         cameraThreadHandler.post(() -> oldSession.stop());
         currentSession = null;
         capturerObserver.onCapturerStopped();
-        //frameManager.stopCapture();
-        if (subscriptionCaptureTexture != null) subscriptionCaptureTexture.unsubscribe();
+        frameManager.stopCapture();
+        if (subscriptionCaptureByteBuffer != null) subscriptionCaptureByteBuffer.unsubscribe();
       } else {
         Logging.d(TAG, "Stop capture: No session open");
       }
@@ -372,7 +372,7 @@ import timber.log.Timber;
     surfaceTexture = null;
     subscriptions.clear();
     stopCapture();
-    //frameManager.dispose();
+    frameManager.dispose();
   }
 
   @Override public void switchCamera(final CameraSwitchHandler switchEventsHandler) {
@@ -381,7 +381,7 @@ import timber.log.Timber;
   }
 
   @Override public void switchFilter() {
-    //frameManager.switchFilter();
+    frameManager.switchFilter();
   }
 
   @Override public boolean isScreencast() {
@@ -408,11 +408,10 @@ import timber.log.Timber;
     Logging.d(TAG, "Set preview texture : done");
   }
 
-  @Override public void initFrameTextureAvailableObs(Observable<FrameTexture> obs) {
-    Timber.d("InitFrameTexture");
-    subscriptionCaptureTexture = obs.onBackpressureDrop()
+  @Override public void initFrameAvailableObs(Observable<Frame> obs) {
+    subscriptionCaptureByteBuffer = obs.onBackpressureDrop()
         .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
-        .subscribe(frameTexture -> {
+        .subscribe(frame -> {
           checkIsOnCameraThread();
           synchronized (stateLock) {
             if (!firstFrameObserved) {
@@ -421,9 +420,8 @@ import timber.log.Timber;
             }
 
             cameraStatistics.addFrame();
-            capturerObserver.onTextureFrameCaptured(frameTexture.getWidth(), frameTexture.getHeight(), frameTexture.getOesTextureId(),
-                frameTexture.getTransformMatrix(), frameTexture.getRotation(),
-                frameTexture.getTimestamp());
+
+            onFrame.onNext(frame);
           }
         });
   }
@@ -447,7 +445,7 @@ import timber.log.Timber;
   private void switchCameraInternal(final CameraSwitchHandler switchEventsHandler) {
     Logging.d(TAG, "switchCamera internal");
 
-    //frameManager.switchCamera();
+    frameManager.switchCamera();
 
     final String[] deviceNames = cameraEnumerator.getDeviceNames();
 
@@ -521,10 +519,6 @@ import timber.log.Timber;
   /////////////////
   // OBSERVABLES //
   /////////////////
-
-  public Observable<TribeI420Frame> onLocalFrame() {
-    return onLocalFrame;
-  }
 
   public Observable<CameraInfo> onNewCameraInfo() {
     return onNewCameraInfo;

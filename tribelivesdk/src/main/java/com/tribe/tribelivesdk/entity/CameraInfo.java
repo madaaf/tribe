@@ -31,4 +31,8 @@ public class CameraInfo {
   public Camera.CameraInfo getCameraInfo() {
     return cameraInfo;
   }
+
+  public boolean isFrontFacing() {
+    return cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT;
+  }
 }

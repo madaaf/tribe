@@ -137,5 +137,5 @@ public interface CameraVideoCapturer extends VideoCapturer {
 
   void setPreviewTexture(SurfaceTexture surfaceTexture);
 
-  void initFrameTextureAvailableObs(Observable<FrameTexture> frameTextureObs);
+  void initFrameAvailableObs(Observable<Frame> frameObs);
 }

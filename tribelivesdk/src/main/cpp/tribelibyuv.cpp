@@ -47,9 +47,16 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ARGBToYUV(JNIEnv *env, jobjec
                                                              jint width,
                                                              jint height,
                                                              jbyteArray yuvOutArray) {
-
     jbyte *rgbData = (jbyte *) env->GetPrimitiveArrayCritical(argbArray, 0);
     jbyte *yuvOut = (jbyte *) env->GetPrimitiveArrayCritical(yuvOutArray, 0);
+
+    const uint8 *srcDataRGBA = (uint8 *) rgbData;
+    int src_stride_rgba = width << 2;
+    uint8 *dstDataARGB = (uint8 *) rgbData;
+    int dst_stride_argb = width << 2;
+
+    int r1 = ABGRToARGB(srcDataRGBA, src_stride_rgba, dstDataARGB, dst_stride_argb, width,
+                        height);
 
     const uint8 *srcData = (uint8 *) rgbData;
     int src_stride_argb = width << 2;

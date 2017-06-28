@@ -11,7 +11,7 @@ import butterknife.Unbinder;
 import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.view.opengl.GlCameraPreview;
-import com.tribe.tribelivesdk.webrtc.FrameTexture;
+import com.tribe.tribelivesdk.webrtc.Frame;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
@@ -25,7 +25,7 @@ public class GlLocalView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
-  private PublishSubject<FrameTexture> onFrameAvailable = PublishSubject.create();
+  private PublishSubject<Frame> onFrameAvailable = PublishSubject.create();
 
   public GlLocalView(Context context) {
     super(context);
@@ -76,7 +76,7 @@ public class GlLocalView extends FrameLayout {
     return onSurfaceTextureReady;
   }
 
-  public Observable<FrameTexture> onFrameAvailable() {
+  public Observable<Frame> onFrameAvailable() {
     return onFrameAvailable;
   }
 }

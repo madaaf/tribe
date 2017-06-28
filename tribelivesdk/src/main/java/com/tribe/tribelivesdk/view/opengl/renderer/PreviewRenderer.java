@@ -2,8 +2,9 @@ package com.tribe.tribelivesdk.view.opengl.renderer;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
+import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,9 +13,10 @@ import com.tribe.tribelivesdk.view.opengl.filter.ColorFilterBW;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
-import com.tribe.tribelivesdk.webrtc.FrameTexture;
-import com.tribe.tribelivesdk.webrtc.YuvConverter;
+import com.tribe.tribelivesdk.webrtc.Frame;
+import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
 import org.webrtc.CameraEnumerationAndroid;
 import rx.Observable;
@@ -30,6 +32,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     implements PreviewTextureInterface.OnFrameAvailableListener {
   private static final String TAG = "PreviewRenderer";
 
+  private static final File FILES_DIR = Environment.getExternalStorageDirectory();
+
   @NonNull private final Handler mainHandler;
 
   private PreviewTextureInterface previewTexture;
@@ -43,13 +47,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @Nullable private ImageFilter filter;
   private ByteBuffer byteBuffer;
   private Object frameListenerLock = new Object();
-  private FrameTexture frameTexture;
-  private YuvConverter yuvConverter;
+  private Frame frame;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
-  private PublishSubject<FrameTexture> onFrameAvailable = PublishSubject.create();
+  private PublishSubject<Frame> onFrameAvailable = PublishSubject.create();
 
   public PreviewRenderer(@NonNull Context context, final RendererCallback callback) {
     super();
@@ -65,11 +68,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     Matrix.setIdentityM(matrix, 0);
     Matrix.rotateM(matrix, 0, orientation, 0.0f, 0.0f, 1f);
-
-    if (cameraInfo == null ||
-        cameraInfo.getCameraInfo().facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-      //Matrix.scaleM(matrix, 0, 1.0f, -1.0f, 1.0f);
-    }
 
     final CameraEnumerationAndroid.CaptureFormat captureFormat = cameraInfo.getCaptureFormat();
     cameraRatio = 1;
@@ -141,7 +139,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     surfaceWidth = width;
     surfaceHeight = height;
 
-    byteBuffer = ByteBuffer.allocateDirect(width * height * 4);
+    byteBuffer = ByteBuffer.allocateDirect((int) surfaceWidth * (int) surfaceHeight * 4);
+    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
     stageRatio = (stageRatio == Float.MIN_VALUE) ? width / (float) height : stageRatio;
     try {
@@ -166,41 +165,49 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     Matrix.multiplyMM(mvpMatrix, 0, vMatrix, 0, matrix, 0);
     Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, mvpMatrix, 0);
 
-    if (previewTexture != null) {
+    if (previewTexture != null && byteBuffer != null) {
       filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
+
+      synchronized (frameListenerLock) {
+        byteBuffer.rewind();
+        long start = System.currentTimeMillis();
+
+        //  Timber.d("glReadPixels: " + (end - start));
+
+        int width = (int) surfaceWidth;
+        int height = (int) surfaceHeight;
+        GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+            byteBuffer);
+        byteBuffer.flip();
+        long end = System.currentTimeMillis();
+        Timber.d("glReadPixels: " + (end - start));
+
+        //BufferedOutputStream bos = null;
+        //try {
+        //  File file =
+        //      new File(FILES_DIR, String.format("frame-" + System.currentTimeMillis() + ".png"));
+        //  bos = new BufferedOutputStream(new FileOutputStream(file.toString()));
+        //  Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        //  byteBuffer.rewind();
+        //  bmp.copyPixelsFromBuffer(byteBuffer);
+        //  bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
+        //  bmp.recycle();
+        //} catch (FileNotFoundException e) {
+        //  e.printStackTrace();
+        //} finally {
+        //  if (bos != null) {
+        //    try {
+        //      bos.close();
+        //    } catch (IOException e) {
+        //      e.printStackTrace();
+        //    }
+        //  }
+        //}
+        frame = new Frame(byteBuffer.array(), width, height, cameraInfo.getFrameOrientation(),
+            previewTexture.getTimestamp(), cameraInfo.isFrontFacing());
+        onFrameAvailable.onNext(frame);
+      }
     }
-
-    if (yuvConverter == null) {
-      yuvConverter = new YuvConverter();
-    }
-
-    if (previewTexture != null) {
-      int width = cameraInfo.getCaptureFormat().width;
-      int height = cameraInfo.getCaptureFormat().height;
-      int uv_width = (width + 7) / 8;
-      int stride = 8 * uv_width;
-
-      previewTexture.getTransformMatrix(stMatrixBis);
-
-      byteBuffer.clear();
-      yuvConverter.convert(byteBuffer, width, height, stride, previewTexture.getTextureId(),
-          stMatrixBis);
-    }
-
-    //if (previewTexture != null) {
-    //  frameTexture = new FrameTexture(cameraInfo.getCaptureFormat().width,
-    //      cameraInfo.getCaptureFormat().height, previewTexture.getTextureId(), stMatrix,
-    //      cameraInfo.getFrameOrientation(), previewTexture.getTimestamp());
-    //  onFrameAvailable.onNext(frameTexture);
-    //}
-
-    //synchronized (frameListenerLock) {
-    //  long start = System.currentTimeMillis();
-    //  GLES20.glReadPixels(0, 0, (int) surfaceWidth, (int) surfaceHeight, GLES20.GL_RGBA,
-    //      GLES20.GL_UNSIGNED_BYTE, byteBuffer);
-    //  long end = System.currentTimeMillis();
-    //  Timber.d("glReadPixels: " + (end - start));
-    //}
   }
 
   @Override
@@ -225,7 +232,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     return onSurfaceTextureReady;
   }
 
-  public Observable<FrameTexture> onFrameAvailable() {
+  public Observable<Frame> onFrameAvailable() {
     return onFrameAvailable;
   }
 }
