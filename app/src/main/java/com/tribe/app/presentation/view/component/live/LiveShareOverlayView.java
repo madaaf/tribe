@@ -10,7 +10,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +20,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
@@ -39,9 +39,11 @@ public class LiveShareOverlayView extends LinearLayout {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject Navigator navigator;
+
   @BindView(R.id.btnShare) View btnShare;
 
-  @BindView(R.id.viewLiveShareOverlayContainer) FrameLayout container;
+  @BindView(R.id.viewLiveShareOverlayContainer) LinearLayout container;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -139,6 +141,10 @@ public class LiveShareOverlayView extends LinearLayout {
 
   @OnClick(R.id.btnShare) void share() {
     onShare.onNext(null);
+  }
+
+  @OnClick(R.id.btnDice) void btnDiceClicked() {
+    navigator.navigateToNewCall((Activity) getContext(), LiveActivity.SOURCE_CALL_ROULETTE);
   }
 
   /////////////////
