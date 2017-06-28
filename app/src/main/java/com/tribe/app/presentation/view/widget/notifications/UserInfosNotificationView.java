@@ -180,9 +180,9 @@ public class UserInfosNotificationView extends FrameLayout {
     return contactAdapter.onClickInvite();
   }
 
-  public Observable<User> onClickMore() {
+  public Observable<Recipient> onClickMore() {
     return contactAdapter.onClickMore()
-        .map(view -> ((User) contactAdapter.getItemAtPosition(
+        .map(view -> ((Recipient) contactAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view))));
   }
 

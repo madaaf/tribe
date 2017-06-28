@@ -167,7 +167,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<View> onClickMore() {
-    return tribeGuestAdapterDelegate.onClickMore();
+    return recipientListAdapterDelegate.clickMore();
   }
 
   public Observable<View> onHangLive() {

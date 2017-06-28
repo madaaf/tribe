@@ -38,15 +38,6 @@
         />
   </FrameLayout>
 
-  <ImageView
-      android:id="@+id/btnMore"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_vertical|end"
-      android:layout_marginEnd="90dp"
-      android:clickable="true"
-      android:src="@drawable/extend_btn_notif"
-      />
 
 
 </FrameLayout>

@@ -67,5 +67,6 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
     } else if (user.isFriend()) {
       vh.btnAdd.setOnClickListener(null);
     }
+    vh.btnMore.setOnClickListener(v -> clickMore.onNext(vh.itemView));
   }
 }

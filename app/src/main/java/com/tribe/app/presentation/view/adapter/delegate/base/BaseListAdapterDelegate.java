@@ -53,6 +53,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
 
   // RX SUBSCRIPTIONS / SUBJECTS
   protected final PublishSubject<View> clickAdd = PublishSubject.create();
+  protected final PublishSubject<View> clickMore = PublishSubject.create();
   protected final PublishSubject<View> clickRemove = PublishSubject.create();
   protected final PublishSubject<View> clickHangLive = PublishSubject.create();
   protected final PublishSubject<View> clickLong = PublishSubject.create();
@@ -259,6 +260,10 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
 
   public Observable<View> clickAdd() {
     return clickAdd;
+  }
+
+  public Observable<View> clickMore() {
+    return clickMore;
   }
 
   public Observable<View> clickRemove() {

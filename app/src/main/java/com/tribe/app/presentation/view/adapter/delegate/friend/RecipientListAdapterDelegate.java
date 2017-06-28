@@ -82,5 +82,6 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
     } else {
       vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
     }
+    vh.btnMore.setOnClickListener(v -> clickMore.onNext(vh.itemView));
   }
 }
