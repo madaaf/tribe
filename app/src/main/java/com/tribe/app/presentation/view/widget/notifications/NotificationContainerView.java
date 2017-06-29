@@ -150,8 +150,9 @@ public class NotificationContainerView extends FrameLayout {
     firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         firebaseRemoteConfig.activateFetched();
-        textDismiss.setText(
-            firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_decline_action));
+        String text =
+            firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_decline_action);
+        if (!text.isEmpty()) textDismiss.setText(text);
       }
     });
   }

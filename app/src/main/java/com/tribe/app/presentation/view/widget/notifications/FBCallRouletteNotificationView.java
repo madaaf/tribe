@@ -108,15 +108,15 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
 
   private void setLabelFromFirebase() {
     String txt1 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_title);
-    txtLabel.setText(txt1);
+    if (!txt1.isEmpty()) txtLabel.setText(txt1);
     String txt2 =
         firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_description);
-    txtSubLabel.setText(txt2);
+    if (!txt2.isEmpty())  txtSubLabel.setText(txt2);
     String txt3 =
         firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_facebook_action);
-    txtAction.setText(txt3);
+    if (!txt3.isEmpty())  txtAction.setText(txt3);
     String txt4 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_disclaimer);
-    txtBottom.setText(txt4);
+    if (!txt4.isEmpty())  txtBottom.setText(txt4);
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
