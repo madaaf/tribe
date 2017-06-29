@@ -30,6 +30,13 @@ public class FriendshiptNotifAdapterDelegate extends RxAdapterDelegate<List<Obje
   }
 
   @Override public boolean isForViewType(@NonNull List<Object> items, int position) {
+ /*   Friendship friendship = null;
+    if (items.get(position) instanceof Recipient) {
+      friendship = (Friendship) items.get(position);
+      friendship.getStatus();
+    }
+    return items.get(position) instanceof Recipient && friendship.getStatus()
+        .equals(FriendshipRealm.HIDDEN);*/
     return items.get(position) instanceof Recipient;
   }
 
