@@ -687,8 +687,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           });
     }));
 
-    subscriptions.add(
-        userInfosNotificationView.onAdd().subscribe(s -> livePresenter.createFriendship(s)));
+    subscriptions.add(userInfosNotificationView.onAdd().subscribe(s -> {
+      livePresenter.createFriendship(s);
+    }));
 
 /*    subscriptions.add(userInfosNotificationView.onUnblock()
         .doOnError(Throwable::printStackTrace)

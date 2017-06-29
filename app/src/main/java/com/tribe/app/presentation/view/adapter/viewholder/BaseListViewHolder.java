@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 /**
  * Created by tiago on 01/10/2016.
  */
+
 public class BaseListViewHolder extends RecyclerView.ViewHolder {
 
   public BaseListViewHolder(View itemView) {

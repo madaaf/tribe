@@ -6,16 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -42,7 +37,7 @@ public class FriendshiptNotifAdapterDelegate extends RxAdapterDelegate<List<Obje
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    FriendshipNotifViewHolder vh = new FriendshipNotifViewHolder(
+    BaseNotifViewHolder vh = new BaseNotifViewHolder(
         layoutInflater.inflate(R.layout.item_base_list_notif, parent, false));
 
     vh.btnMore.setOnClickListener(v -> clickMore.onNext(vh.itemView));
@@ -52,7 +47,7 @@ public class FriendshiptNotifAdapterDelegate extends RxAdapterDelegate<List<Obje
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    FriendshipNotifViewHolder vh = (FriendshipNotifViewHolder) holder;
+    BaseNotifViewHolder vh = (BaseNotifViewHolder) holder;
     Friendship friendship = (Friendship) items.get(position);
 
     vh.txtName.setText(friendship.getDisplayName());
@@ -72,31 +67,5 @@ public class FriendshiptNotifAdapterDelegate extends RxAdapterDelegate<List<Obje
 
   public Observable<View> clickMore() {
     return clickMore;
-  }
-
-  static class FriendshipNotifViewHolder extends RecyclerView.ViewHolder {
-
-    @BindView(R.id.txtName) TextViewFont txtName;
-
-    @BindView(R.id.txtUsername) TextViewFont txtDescription;
-
-    @BindView(R.id.btnAdd) View btnAdd;
-
-    @BindView(R.id.viewAvatar) AvatarView viewAvatar;
-
-    @BindView(R.id.btnMore) ImageView btnMore;
-
-    @BindView(R.id.iconAdd) ImageView iconAdd;
-
-    @BindView(R.id.txtAction) TextViewFont txtAction;
-
-    @BindView(R.id.layoutAddFriend) FrameLayout layoutAddFriend;
-
-    @BindView(R.id.AddBtnBg) FrameLayout addBtnBg;
-
-    public FriendshipNotifViewHolder(View itemView) {
-      super(itemView);
-      ButterKnife.bind(this, itemView);
-    }
   }
 }

@@ -14,14 +14,11 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 18/05/2016.
  */
 public class NotifContactAdapter extends RecyclerView.Adapter {
-
-  public static final int HEADER_TYPE = 99;
 
   // DELEGATES
   protected RxAdapterDelegatesManager delegatesManager;
@@ -146,7 +143,6 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
   }*/
 
   public Observable<View> onClickAdd() {
-    Timber.e("SOEF ON CLICK onClickAdd");
     return userListAdapterDelegate.onClickAdd();
   }
 
