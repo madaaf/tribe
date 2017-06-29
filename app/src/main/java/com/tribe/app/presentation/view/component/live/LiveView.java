@@ -576,7 +576,7 @@ public class LiveView extends FrameLayout {
         room.onRemotePeerAdded().observeOn(AndroidSchedulers.mainThread()).subscribe(remotePeer -> {
           if (isFirstToJoin) {
             isFirstToJoin = !isFirstToJoin;
-            viewStatusName.refactorTitle();
+            if (viewStatusName != null) viewStatusName.refactorTitle();
           }
           soundManager.playSound(SoundManager.JOIN_CALL, SoundManager.SOUND_MAX);
           joinLive = true;
