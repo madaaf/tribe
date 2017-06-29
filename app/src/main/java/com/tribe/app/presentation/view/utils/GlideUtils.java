@@ -98,7 +98,8 @@ public class GlideUtils {
             .load(file)
             .signature(new StringSignature(String.valueOf(file.lastModified())));
       } else if (StringUtils.isEmpty(url)) {
-        drawableRequestBuilder = Glide.with(context).load(randomPlaceholder);
+        // drawableRequestBuilder = Glide.with(context).load(randomPlaceholder);
+        drawableRequestBuilder = Glide.with(context).load("").placeholder(randomPlaceholder);
       } else {
         drawableRequestBuilder = Glide.with(context).load(url).error(randomPlaceholder);
       }
