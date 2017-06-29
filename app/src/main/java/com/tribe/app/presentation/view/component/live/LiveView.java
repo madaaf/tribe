@@ -631,8 +631,13 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onRemotePeerUpdated()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(remotePeer -> Timber.d(
-            "Remote peer updated with id : " + remotePeer.getSession().getPeerId())));
+        .subscribe(remotePeer -> {
+          if (remotePeer != null && remotePeer.getSession() != null) {
+            Timber.d("Remote peer updated with id : " + remotePeer.getSession().getPeerId());
+          } else {
+            Timber.d("Remote peer updated with id : null");
+          }
+        }));
 
     tempSubscriptions.add(
         room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
