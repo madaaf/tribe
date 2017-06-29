@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
@@ -39,9 +40,24 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     anim = android.view.animation.AnimationUtils.loadAnimation(context, R.anim.rotate90);
   }
 
-  protected RecyclerView.ViewHolder onCreateViewHolderForUnfriend(ViewGroup parent) {
+  protected RecyclerView.ViewHolder onCreateViewHolderNotif(ViewGroup parent) {
     BaseNotifViewHolder vh = new BaseNotifViewHolder(
         layoutInflater.inflate(R.layout.item_base_list_notif, parent, false));
+    return vh;
+  }
+
+  protected void onBindViewHolderForUnfriend(List<Object> items, int position,
+      RecyclerView.ViewHolder holder) {
+    BaseNotifViewHolder vh = (BaseNotifViewHolder) holder;
+    User user = (User) items.get(position);
+
+    vh.txtName.setText(user.getDisplayName());
+    vh.txtDescription.setText(user.getUsername());
+    vh.viewAvatar.setHasShadow(false);
+    vh.viewAvatar.load("");
+    vh.txtAction.setText(context.getString(R.string.action_add_friend));
+    vh.iconAdd.setImageResource(R.drawable.add_icon_bg);
+    vh.iconAdd.startAnimation(anim);
 
     vh.btnMore.setOnClickListener(v -> clickMore.onNext(vh.itemView));
     vh.layoutAddFriend.setOnClickListener(v -> {
@@ -73,20 +89,21 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
           vh.addBtnBg.getHeight(), vh.addBtnBg.getHeight());
       vh.addBtnBg.startAnimation(resizeAnim);
     });
-    return vh;
   }
 
-  protected void onBindViewHolderForUnfriend(List<Object> items, int position,
+  protected void onBindViewHolderForFriend(List<Object> items, int position,
       RecyclerView.ViewHolder holder) {
     BaseNotifViewHolder vh = (BaseNotifViewHolder) holder;
-    User user = (User) items.get(position);
+    Friendship friendship = (Friendship) items.get(position);
 
-    vh.txtName.setText(user.getDisplayName());
-    vh.txtDescription.setText(user.getUsername());
+    vh.txtName.setText(friendship.getDisplayName());
+    vh.txtDescription.setText(friendship.getUsername());
     vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
-    vh.txtAction.setText(context.getString(R.string.action_add_friend));
-    vh.iconAdd.setImageResource(R.drawable.add_icon_bg);
-    vh.iconAdd.startAnimation(anim);
+    vh.txtAction.setText(context.getString(R.string.action_friend_added));
+    vh.iconAdd.setImageResource(R.drawable.added_icon_bg);
+    vh.addBtnBg.setBackground(null);
+
+    vh.btnMore.setOnClickListener(v -> clickMore.onNext(vh.itemView));
   }
 }

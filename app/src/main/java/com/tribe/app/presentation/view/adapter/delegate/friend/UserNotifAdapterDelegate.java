@@ -9,16 +9,11 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
 import java.util.List;
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 11/29/16.
  */
 public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
-
-  // OBSERVABLES
-  //private PublishSubject<View> onClickAdd = PublishSubject.create();
-  private PublishSubject<View> clickMore = PublishSubject.create();
 
   public UserNotifAdapterDelegate(Context context) {
     super(context);
@@ -34,7 +29,7 @@ public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    return onCreateViewHolderForUnfriend(parent);
+    return onCreateViewHolderNotif(parent);
   }
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
@@ -47,12 +42,6 @@ public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
       int position, List<Object> payloads) {
 
   }
-  /*
-
-  public Observable<View> onClickAdd() {
-    return onClickAdd;
-  }
-  */
 
   public Observable<View> onClickAdd() {
     return onClickAdd;

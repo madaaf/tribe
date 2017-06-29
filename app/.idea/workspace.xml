@@ -24,9 +24,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseNotifAdapterDelegate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../AdapterDelegates/src/main/java/com/hannesdorfmann/adapterdelegates2/AdapterDelegatesManager.java" afterPath="$PROJECT_DIR$/../AdapterDelegates/src/main/java/com/hannesdorfmann/adapterdelegates2/AdapterDelegatesManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseNotifAdapterDelegate.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseNotifAdapterDelegate.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java" />
     </list>
@@ -63,8 +63,8 @@
       <file leaf-file-name="NotifContactAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/NotifContactAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="145" column="41" selection-start-line="145" selection-start-column="41" selection-end-line="145" selection-end-column="41" />
+            <state relative-caret-position="364">
+              <caret line="141" column="52" selection-start-line="141" selection-start-column="43" selection-end-line="141" selection-end-column="52" />
               <folding>
                 <element signature="e#4348#4349#0" expanded="true" />
                 <element signature="e#4401#4402#0" expanded="true" />
@@ -76,27 +76,23 @@
       <file leaf-file-name="FriendshiptNotifAdapterDelegate.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="473">
-              <caret line="43" column="53" selection-start-line="43" selection-start-column="53" selection-end-line="43" selection-end-column="53" />
+            <state relative-caret-position="244">
+              <caret line="40" column="30" selection-start-line="40" selection-start-column="30" selection-end-line="40" selection-end-column="30" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <marker date="1498776098000" expanded="false" signature="2298:2345" ph="&quot;Friend added!&quot;" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UserNotifAdapterDelegate.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java">
+      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="481">
-              <caret line="57" column="18" selection-start-line="57" selection-start-column="18" selection-end-line="57" selection-end-column="18" />
+            <state relative-caret-position="93">
+              <caret line="665" column="0" selection-start-line="665" selection-start-column="0" selection-end-line="675" selection-end-column="10" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#777#778#0" expanded="true" />
-                <element signature="e#801#802#0" expanded="true" />
-                <element signature="e#1701#1702#0" expanded="true" />
-                <element signature="e#1728#1729#0" expanded="true" />
+                <marker date="1498778117000" expanded="true" signature="26505:26563" ph="&quot;You blocked this friend.&#10;Unblock him to video call with...&quot;" />
+                <marker date="1498778117000" expanded="false" signature="26577:26663" ph="&quot;Unblock {recipient.getDisplayName()}&quot;" />
               </folding>
             </state>
           </provider>
@@ -105,28 +101,28 @@
       <file leaf-file-name="BaseNotifAdapterDelegate.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseNotifAdapterDelegate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="93">
-              <caret line="65" column="24" selection-start-line="65" selection-start-column="24" selection-end-line="65" selection-end-column="24" />
+            <state relative-caret-position="202">
+              <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1916#1964#0" expanded="true" />
-                <element signature="e#2132#2953#0" expanded="true" />
-                <element signature="e#2886#2933#0" expanded="true" />
-                <element signature="e#2952#2953#0" expanded="true" />
-                <element signature="e#3586#3631#0" expanded="true" />
+                <element signature="e#2204#2249#0" expanded="true" />
+                <element signature="e#2532#2580#0" expanded="true" />
+                <element signature="e#2748#3569#0" expanded="true" />
+                <element signature="e#3502#3549#0" expanded="true" />
+                <element signature="e#3568#3569#0" expanded="true" />
+                <element signature="e#4215#4262#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UserInfosNotificationView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/UserInfosNotificationView.java">
+      <file leaf-file-name="UserNotifAdapterDelegate.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="198" column="33" selection-start-line="198" selection-start-column="33" selection-end-line="198" selection-end-column="33" />
+            <state relative-caret-position="525">
+              <caret line="37" column="3" selection-start-line="37" selection-start-column="3" selection-end-line="37" selection-end-column="3" />
               <folding>
-                <element signature="e#4222#4457#0" expanded="true" />
-                <element signature="e#4456#4457#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -6185,10 +6181,10 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/AnimationUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRowView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
         <option value="$PROJECT_DIR$/../AdapterDelegates/src/main/java/com/hannesdorfmann/adapterdelegates2/AdapterDelegatesManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseNotifAdapterDelegate.java" />
       </list>
     </option>
@@ -6991,15 +6987,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="19" y="23" width="1602" height="989" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32837528" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3585338" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21730769" sideWeight="0.36027715" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21730769" sideWeight="0.35738254" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27459955" sideWeight="0.502834" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5040092" sideWeight="0.49716598" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31729668" sideWeight="0.49716598" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3871795" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -7007,7 +7003,7 @@
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2490242" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27688786" sideWeight="0.502442" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21730769" sideWeight="0.6397229" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21730769" sideWeight="0.64261746" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18327606" sideWeight="0.49554655" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21611722" sideWeight="0.47420964" order="1" side_tool="false" content_ui="tabs" />
@@ -7042,12 +7038,6 @@
           <line>198</line>
           <properties />
           <option name="timeStamp" value="1295" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java</url>
-          <line>43</line>
-          <properties />
-          <option name="timeStamp" value="1297" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -7584,17 +7574,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="707" column="0" selection-start-line="693" selection-start-column="0" selection-end-line="707" selection-end-column="0" />
-          <folding>
-            <marker date="1498774151000" expanded="true" signature="26460:26518" ph="&quot;You blocked this friend.&#10;Unblock him to video call with...&quot;" />
-            <marker date="1498774151000" expanded="false" signature="26532:26618" ph="&quot;Unblock {recipient.getDisplayName()}&quot;" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRowView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="671">
@@ -7655,20 +7634,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="473">
-          <caret line="43" column="53" selection-start-line="43" selection-start-column="53" selection-end-line="43" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <marker date="1498776098000" expanded="false" signature="2298:2345" ph="&quot;Friend added!&quot;" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/UserInfosNotificationView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
+        <state relative-caret-position="262">
           <caret line="198" column="33" selection-start-line="198" selection-start-column="33" selection-end-line="198" selection-end-column="33" />
           <folding>
             <element signature="e#4222#4457#0" expanded="true" />
@@ -7677,10 +7645,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="37" column="3" selection-start-line="37" selection-start-column="3" selection-end-line="37" selection-end-column="3" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/NotifContactAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="145" column="41" selection-start-line="145" selection-start-column="41" selection-end-line="145" selection-end-column="41" />
+        <state relative-caret-position="364">
+          <caret line="141" column="52" selection-start-line="141" selection-start-column="43" selection-end-line="141" selection-end-column="52" />
           <folding>
             <element signature="e#4348#4349#0" expanded="true" />
             <element signature="e#4401#4402#0" expanded="true" />
@@ -7688,31 +7666,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserNotifAdapterDelegate.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="57" column="18" selection-start-line="57" selection-start-column="18" selection-end-line="57" selection-end-column="18" />
+        <state relative-caret-position="93">
+          <caret line="665" column="0" selection-start-line="665" selection-start-column="0" selection-end-line="675" selection-end-column="10" />
+          <folding>
+            <marker date="1498778117000" expanded="true" signature="26505:26563" ph="&quot;You blocked this friend.&#10;Unblock him to video call with...&quot;" />
+            <marker date="1498778117000" expanded="false" signature="26577:26663" ph="&quot;Unblock {recipient.getDisplayName()}&quot;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/FriendshiptNotifAdapterDelegate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="40" column="30" selection-start-line="40" selection-start-column="30" selection-end-line="40" selection-end-column="30" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#777#778#0" expanded="true" />
-            <element signature="e#801#802#0" expanded="true" />
-            <element signature="e#1701#1702#0" expanded="true" />
-            <element signature="e#1728#1729#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseNotifAdapterDelegate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="93">
-          <caret line="65" column="24" selection-start-line="65" selection-start-column="24" selection-end-line="65" selection-end-column="24" />
+        <state relative-caret-position="202">
+          <caret line="49" column="36" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1916#1964#0" expanded="true" />
-            <element signature="e#2132#2953#0" expanded="true" />
-            <element signature="e#2886#2933#0" expanded="true" />
-            <element signature="e#2952#2953#0" expanded="true" />
-            <element signature="e#3586#3631#0" expanded="true" />
+            <element signature="e#2204#2249#0" expanded="true" />
+            <element signature="e#2532#2580#0" expanded="true" />
+            <element signature="e#2748#3569#0" expanded="true" />
+            <element signature="e#3502#3549#0" expanded="true" />
+            <element signature="e#3568#3569#0" expanded="true" />
+            <element signature="e#4215#4262#0" expanded="true" />
           </folding>
         </state>
       </provider>

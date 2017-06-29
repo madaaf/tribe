@@ -688,7 +688,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(userInfosNotificationView.onAdd().subscribe(s -> {
-      livePresenter.createFriendship(s);
+      Timber.e("SOEF CREATE FRIENDSHIPE");
+      //livePresenter.createFriendship(s);
     }));
 
 /*    subscriptions.add(userInfosNotificationView.onUnblock()
@@ -706,9 +707,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));*/
 
-    //subscriptions.add(userInfosNotificationView.onHangLive()
-    //    .subscribe(recipient -> navigator.navigateToLive(this, recipient,
-    //        PaletteGrid.getRandomColorExcluding(Color.BLACK), SOURCE_ADD_PEERS)));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
