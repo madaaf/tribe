@@ -38,8 +38,8 @@
       android:layout_width="match_parent"
       android:layout_height="65dp"
       android:layout_marginTop="65dp"
-      android:clickable="true"
       android:background="@drawable/shape_rect_blueaddfriend_rounded_corners"
+      android:clickable="true"
       >
 
     <FrameLayout
@@ -50,9 +50,9 @@
         >
       <ImageView
           android:id="@+id/iconAdd"
-          android:layout_width="wrap_content"
+          android:layout_width="65dp"
           android:layout_height="wrap_content"
-          android:layout_gravity="center"
+          android:layout_gravity="center_vertical"
           android:src="@drawable/add_icon_bg"
           />
 

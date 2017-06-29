@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;

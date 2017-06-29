@@ -166,10 +166,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
         contactsGridAdapterDelegate.onClickInvite());
   }
 
-  public Observable<View> onClickMore() {
-    return recipientListAdapterDelegate.clickMore();
-  }
-
   public Observable<View> onHangLive() {
     return Observable.merge(searchResultGridAdapterDelegate.onHangLive(),
         recipientListAdapterDelegate.onHangLive());

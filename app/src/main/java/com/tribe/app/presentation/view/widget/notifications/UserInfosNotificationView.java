@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 05/12/2017.
@@ -115,7 +114,7 @@ public class UserInfosNotificationView extends FrameLayout {
   }
 
   private void setTimer() {
-    timerSubscription = Observable.timer(5, TimeUnit.SECONDS)
+    timerSubscription = Observable.timer(10, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> hideView());
   }
@@ -144,7 +143,7 @@ public class UserInfosNotificationView extends FrameLayout {
         .start();
   }
 
-  public void displayView(Object obj) { //SOEF
+  public void displayView(Object obj) {
     if (getVisibility() == View.VISIBLE || animating) return;
 
     animating = true;
@@ -197,7 +196,6 @@ public class UserInfosNotificationView extends FrameLayout {
   }
 
   public Observable<String> onAdd() {
-    Timber.e("SOEF ON ADD");
     return contactAdapter.onClickAdd()
         .map(view -> ((User) contactAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view))).getId());

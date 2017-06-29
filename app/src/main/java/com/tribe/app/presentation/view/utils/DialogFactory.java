@@ -156,7 +156,6 @@ public final class DialogFactory {
     return cameraTypeList;
   }
 
-  //SOEF
   private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
     List<LabelType> moreTypeList = new ArrayList<>();
 

@@ -1,4 +1,4 @@
- package com.tribe.app.presentation.view.activity;
+package com.tribe.app.presentation.view.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -356,12 +356,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsManageFriendships =
         (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
 
-    subscriptions.add(viewSettingsManageFriendships.onClickRemove() //SOEF
+    subscriptions.add(viewSettingsManageFriendships.onClickRemove()
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                    .equals(LabelType.BLOCK_HIDE)) {
                   Friendship friendship = (Friendship) recipient;
                   profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -469,8 +469,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid ||
-          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
+          .equals(getCurrentUser().getUsername()));
     }
   }
 
