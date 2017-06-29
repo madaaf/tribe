@@ -247,8 +247,9 @@ public class LiveView extends FrameLayout {
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) ||
-          (live.getId().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) || (
+          live.getId().equals(Live.NEW_CALL)
+              && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -587,10 +588,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : " +
-              remotePeer.getSession().getPeerId() +
-              " & view : " +
-              remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : "
+              + remotePeer.getSession().getPeerId()
+              + " & view : "
+              + remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -645,8 +646,8 @@ public class LiveView extends FrameLayout {
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
             for (TribeGuest trg : tribeGuests) {
-              if (!liveInviteMap.getMap().containsKey(trg.getId()) &&
-                  !liveRowViewMap.getMap().containsKey(trg.getId())) {
+              if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
+                  .containsKey(trg.getId())) {
                 if (!user.getId().equals(trg.getId())) {
                   addTribeGuest(trg);
                   onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
@@ -833,8 +834,8 @@ public class LiveView extends FrameLayout {
   }
 
   public void addTribeGuest(TribeGuest trg) {
-    if (!liveInviteMap.getMap().containsKey(trg.getId()) &&
-        !liveRowViewMap.getMap().containsKey(trg.getId())) {
+    if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
+        .containsKey(trg.getId())) {
       LiveRowView liveRowView = new LiveRowView(getContext());
       liveRowView.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -899,7 +900,6 @@ public class LiveView extends FrameLayout {
   public boolean isDiceDragedInRoom() {
     return live.isDiceDragedInRoom();
   }
-
 
   public void reRollTheDiceFromLiveRoom() {
     Timber.d("roll the dice");
@@ -1020,9 +1020,6 @@ public class LiveView extends FrameLayout {
 
     if (liveRowView != null) {
       tempSubscriptions.add(liveRowView.onClick().map(tribeGuest -> {
-        if (tribeGuest.isFriend() && getUsersInLiveRoom().getPeopleInRoom().size() < 2) {
-          return null;
-        }
         Object o = computeGuest(tribeGuest.getId());
         if (o == null) {
           return tribeGuest;

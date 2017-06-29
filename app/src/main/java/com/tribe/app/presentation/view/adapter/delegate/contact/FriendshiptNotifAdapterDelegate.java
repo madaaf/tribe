@@ -15,9 +15,6 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-/**
- * Created by tiago on 18/05/2016.
- */
 public class FriendshiptNotifAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
   protected LayoutInflater layoutInflater;

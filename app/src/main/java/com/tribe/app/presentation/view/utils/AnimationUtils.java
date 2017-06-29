@@ -25,6 +25,10 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
@@ -39,6 +43,8 @@ public class AnimationUtils {
   private static final float OVERSHOOT_REPLACE = 1f;
   private static final int DURATION_REPLACE = 300;
 
+  private static double TENSION = 400;
+  private static double DAMPER = 10;
   public static final float SCALE_RESET = 1f;
   public static final float SCALE_INVISIBLE = 0f;
   public static final int TRANSLATION_RESET = 0;
@@ -151,6 +157,21 @@ public class AnimationUtils {
         .setInterpolator(new DecelerateInterpolator())
         .setDuration(duration)
         .start();
+  }
+
+  public static void addSpringAnim(View v) {
+    SpringSystem springSystem = SpringSystem.create();
+    Spring spring = springSystem.createSpring();
+    SpringConfig config = new SpringConfig(TENSION, DAMPER);
+    spring.setSpringConfig(config);
+    spring.addListener(new SimpleSpringListener() {
+      @Override public void onSpringUpdate(Spring spring) {
+        float value = (float) spring.getCurrentValue();
+        v.setScaleX(value);
+        v.setScaleY(value);
+      }
+    });
+    spring.setEndValue(1);
   }
 
   public static void fadeIn(View v, long duration) {
