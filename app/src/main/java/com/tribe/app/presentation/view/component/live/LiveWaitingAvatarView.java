@@ -320,8 +320,8 @@ public class LiveWaitingAvatarView extends FrameLayout {
   }
 
   public void load(String url) {
-    //if (ViewCompat.isAttachedToWindow(this)) {
-      avatar.load(url);
+    // if (ViewCompat.isAttachedToWindow(this)) {
+    avatar.load(url);
     //}
   }
 
