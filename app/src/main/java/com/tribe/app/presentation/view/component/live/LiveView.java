@@ -641,7 +641,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(
         room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-          Timber.e("rollTheDice received");
+          Timber.d("rollTheDice received");
           viewRoom.onRollTheDiceReceived();
           live.setDiceDragedInRoom(true);
         }));
