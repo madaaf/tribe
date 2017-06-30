@@ -145,6 +145,7 @@ public class LiveShareOverlayView extends LinearLayout {
 
   @OnClick(R.id.btnDice) void btnDiceClicked() {
     navigator.navigateToNewCall((Activity) getContext(), LiveActivity.SOURCE_CALL_ROULETTE);
+    ((Activity) getContext()).finish();
   }
 
   /////////////////

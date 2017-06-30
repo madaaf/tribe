@@ -417,20 +417,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         livePresenter.loadFriendshipList();
 
-        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
-
-          if (!FacebookUtils.isLoggedIn()) {
-            //if (true) {
-            Timber.d("not logged on fb ");
-            blockView.setVisibility(VISIBLE);
-            blockView.setOnTouchListener((v, event) -> true);
-            notificationContainerView.
-                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
-          } else {
-            viewLiveContainer.blockOpenInviteView(true);
-            initCallRouletteService();
-          }
-        }
+        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
         if (live.isGroup()) {
           viewLive.start(live);
@@ -451,8 +438,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
   }
 
+  private void launchCallRoulette() {
+    if (!FacebookUtils.isLoggedIn()) {
+      //if (true) {
+      Timber.d("not logged on fb ");
+      blockView.setVisibility(VISIBLE);
+      blockView.setOnTouchListener((v, event) -> true);
+      notificationContainerView.
+          showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+    } else {
+      viewLiveContainer.blockOpenInviteView(true);
+      initCallRouletteService();
+    }
+  }
+
   private void initCallRouletteService() {
-    viewLive.setSourceLive(live.getSource());
+    viewLive.setSourceLive(SOURCE_CALL_ROULETTE);
     startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
     livePresenter.randomRoomAssigned();
   }

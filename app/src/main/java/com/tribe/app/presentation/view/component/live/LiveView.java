@@ -1441,7 +1441,7 @@ public class LiveView extends FrameLayout {
   public Observable<Void> onRoomFull() {
     return onRoomFull;
   }
-
+  
   public Observable<Object> onRemotePeerClick() {
     return onRemotePeerClick;
   }
