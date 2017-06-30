@@ -106,6 +106,10 @@ import rx.Observable;
     return userDataStore.callRouletteMap();
   }
 
+  @Override public Observable<Boolean> reportUser(String userId) {
+    return null;
+  }
+
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }

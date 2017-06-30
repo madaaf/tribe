@@ -1,26 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-  <FrameLayout
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+  <LinearLayout
       android:id="@+id/viewLiveShareOverlayContainer"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:orientation="vertical"
       >
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/horizontal_margin"
         android:gravity="center"
-        android:text="@string/live_share_new_call_description"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="5dp"
+          android:text="@string/live_share_new_call_or_dice_description_call"
+          style="@style/Title.2.White"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="5dp"
+          android:text="@string/live_share_new_call_or_dice_description_or"
+          style="@style/Title.2.White40"
+          />
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="5dp"
+          android:text="@string/live_share_new_call_or_dice_description_dice"
+          style="@style/Title.2.White"
+          />
+
+    </LinearLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/live_share_new_call_or_dice_description_subtitle"
         style="@style/Title.2.White40"
         />
 
+
     <FrameLayout
         android:id="@+id/btnShare"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="@dimen/top_bar_height_small"
         android:layout_marginTop="@dimen/horizontal_margin_small"
         android:background="@drawable/selectable_button_all_rounded_5_white"
         android:clickable="true"
+        android:gravity="center"
         >
 
       <com.tribe.app.presentation.view.widget.TextViewFont
@@ -33,13 +72,45 @@
           android:drawableStart="@drawable/picto_share_link"
           android:gravity="center"
           android:maxLines="1"
-          android:text="@string/live_share_new_call_button"
+          android:text="@string/live_share_new_call_or_dice_description_call"
           style="@style/Body.Two.Black"
           />
 
     </FrameLayout>
 
-  </FrameLayout>
+    <FrameLayout
+        android:id="@+id/btnDice"
+        android:layout_width="190dp"
+        android:layout_height="@dimen/top_bar_height_small"
+        android:layout_marginTop="@dimen/horizontal_margin_small"
+        android:background="@drawable/selectable_button_all_rounded_5_white"
+        android:clickable="true"
+        >
+
+      <com.tribe.app.presentation.view.widget.DiceView
+          android:id="@+id/diceLayout"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_gravity="center_vertical"
+          android:gravity="center"
+          app:diceType="tileView"
+          />
+
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:layout_marginStart="20dp"
+          android:gravity="center"
+          android:maxLines="1"
+          android:text="@string/live_share_roll_the_dice_button"
+          style="@style/Body.Two.Black"
+          />
+
+    </FrameLayout>
+
+  </LinearLayout>
 
 
 </merge>

@@ -212,6 +212,9 @@
   <color name="watermark.5">#938FEA</color>
   <color name="watermark.6">#F8C5D3</color>
 
+  <color name="blue.addfriend">#33DCCD</color>
+  <color name="blue.addfriend.validate">#3DE9DA</color>
+
 
   <!-- Watermark -->
   <color name="dice.1">#FFA497</color>

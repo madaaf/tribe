@@ -570,10 +570,11 @@
 	<string name="game_event_post_it_re_roll">%1$s a renouvelé les noms ! :video_game:</string>
 	<string name="game_event_stopped">%1$s a arreté le jeu "%2$s". :video_game:</string>
 	<string name="game_tutorial">Appuie longtemps sur le bouton du jeu pour arreter.</string>
-	<string name="game_song_pop">Song Pop</string>
+	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
 	<string name="game_song_pop_menu_re_roll">Renouveler les morceaux</string>
-	<string name="game_song_pop_status_guess">Devinez le morceau ! :musical_note:</string>
+	<string name="game_song_pop_status_pick_playlist">Choisis une playlist ! :musical_note:</string>
+	<string name="game_song_pop_status_guess">Devine le morceau en premier ! :musical_note:</string>
 	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau ! :hear_no_evil:</string>
 	<string name="game_song_pop_status_no_winner">Personne n\'a deviné ! :metal:</string>
 	<string name="game_song_pop_status_winner">%1$s a deviné ! :metal:</string>

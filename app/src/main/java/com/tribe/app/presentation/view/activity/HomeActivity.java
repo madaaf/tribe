@@ -564,7 +564,7 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
     subscriptions.add(topBarContainer.onClickCallroulette().subscribe(aVoid -> {
-      navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);//SIOEF
+      navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);
     }));
 
     subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
@@ -118,6 +119,12 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    Glide.get(getContext()).clearMemory();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    Glide.get(getContext()).clearMemory();
   }
 
   @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

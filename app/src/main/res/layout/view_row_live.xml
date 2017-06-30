@@ -34,14 +34,4 @@
       android:visibility="gone"
       />
 
-  <ImageView
-      android:id="@+id/addFriend"
-      android:layout_width="40dp"
-      android:layout_height="40dp"
-      android:layout_gravity="center"
-      android:clickable="true"
-      android:src="@drawable/picto_add_friend"
-      android:visibility="gone"
-      />
-
 </merge>

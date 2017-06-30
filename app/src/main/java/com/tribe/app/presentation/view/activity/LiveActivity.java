@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +35,7 @@ import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
@@ -417,20 +417,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         livePresenter.loadFriendshipList();
 
-        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
-
-          if (!FacebookUtils.isLoggedIn()) {
-            //if (true) {
-            Timber.d("not logged on fb ");
-            blockView.setVisibility(VISIBLE);
-            blockView.setOnTouchListener((v, event) -> true);
-            notificationContainerView.
-                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
-          } else {
-            viewLiveContainer.blockOpenInviteView(true);
-            initCallRouletteService();
-          }
-        }
+        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
         if (live.isGroup()) {
           viewLive.start(live);
@@ -451,8 +438,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
   }
 
+  private void launchCallRoulette() {
+    if (!FacebookUtils.isLoggedIn()) {
+      //if (true) {
+      Timber.d("not logged on fb ");
+      blockView.setVisibility(VISIBLE);
+      blockView.setOnTouchListener((v, event) -> true);
+      notificationContainerView.
+          showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+    } else {
+      viewLiveContainer.blockOpenInviteView(true);
+      initCallRouletteService();
+    }
+  }
+
   private void initCallRouletteService() {
-    viewLive.setSourceLive(live.getSource());
+    viewLive.setSourceLive(SOURCE_CALL_ROULETTE);
     startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
     livePresenter.randomRoomAssigned();
   }
@@ -664,7 +665,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
 
-    subscriptions.add(userInfosNotificationView.onInvite().subscribe(contact -> {
+    subscriptions.add(userInfosNotificationView.onClickInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
@@ -676,27 +677,26 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       livePresenter.bookRoomLink(linkId);
     }));
 
-    subscriptions.add(
-        userInfosNotificationView.onAdd().subscribe(s -> livePresenter.createFriendship(s)));
+    subscriptions.add(userInfosNotificationView.onClickMore().subscribe(tribeGuest -> {
+      DialogFactory.showBottomSheetForMoreBtn(this, tribeGuest.getDisplayName())
+          .subscribe(labelType -> {
+            if (labelType.getTypeDef().equals(LabelType.REPORT)) {
+              Timber.e("report user " + tribeGuest.getId());
+              livePresenter.reportUser(tribeGuest.getId());
+            } else {
+              Timber.d("cancel report user");
+            }
+          });
+    }));
 
-    subscriptions.add(userInfosNotificationView.onUnblock()
-        .doOnError(Throwable::printStackTrace)
-        .flatMap(recipient -> DialogFactory.dialog(this, recipient.getDisplayName(),
-            context().getString(R.string.search_unblock_alert_message),
-            context().getString(R.string.search_unblock_alert_unblock, recipient.getDisplayName()),
-            context().getString(R.string.search_unblock_alert_cancel)), Pair::new)
-        .filter(pair -> pair.second)
-        .subscribe(pair -> {
-          Friendship recipient = (Friendship) pair.first;
-          if (recipient != null) {
-            livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
-                FriendshipRealm.DEFAULT);
-          }
-        }));
+    subscriptions.add(userInfosNotificationView.onAdd().subscribe(s -> {
+      livePresenter.createFriendship(s);
+    }));
 
-    subscriptions.add(userInfosNotificationView.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient,
-            PaletteGrid.getRandomColorExcluding(Color.BLACK), SOURCE_ADD_PEERS)));
+    subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
+      livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
+          FriendshipRealm.DEFAULT);
+    }));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 

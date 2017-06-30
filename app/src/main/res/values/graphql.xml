@@ -564,5 +564,8 @@
     roomAcceptRandom(roomId : \"%1$s\")
   </string>
 
+  <string name="reportUser" translatable="false">
+    reportUser(userId : \"%1$s\")
+  </string>
 
 </resources>

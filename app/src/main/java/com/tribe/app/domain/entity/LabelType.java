@@ -22,10 +22,13 @@ public class LabelType implements Serializable {
   public static final String REMOVE_FROM_ADMIN = "removeFromAdmin";
 
   public static final String BLOCK = "block";
-  public static final String CANCEL = "cancel";
+  public static final String CANCELBTN = "cancelbtn";
 
   public static final String OPEN_CAMERA = "openCamera";
   public static final String OPEN_PHOTOS = "openPhotos";
+
+  public static final String REPORT = "report";
+  public static final String CANCEL = "cancel";
 
   public static final String CLEAR_MESSAGES = "clearMessages";
 

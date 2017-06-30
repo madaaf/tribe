@@ -244,23 +244,10 @@ public class LiveLocalView extends FrameLayout {
   }
 
   public void hideShareOverlay() {
-
-    /*if (source.equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
-      viewCallRouletteOverlay.show();
-    } else {
-      viewShareOverlay.show();
-    }*/
-
     viewShareOverlay.hide();
   }
 
   public void showShareOverlay(@LiveActivity.Source String source) {
-   /* if (source.equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
-      viewCallRouletteOverlay.show();
-    } else {
-
-    }*/
-
     viewShareOverlay.show(source);
   }
 

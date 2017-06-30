@@ -5,7 +5,7 @@
   <LinearLayout
       android:id="@+id/viewContainer"
       android:layout_width="match_parent"
-      android:layout_height="80dp"
+      android:layout_height="wrap_content"
       android:background="@drawable/bg_notifications_live_peer_action"
       android:clickable="true"
       android:orientation="vertical"
