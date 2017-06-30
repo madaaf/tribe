@@ -80,7 +80,7 @@
 
     <FrameLayout
         android:id="@+id/btnDice"
-        android:layout_width="180dp"
+        android:layout_width="190dp"
         android:layout_height="@dimen/top_bar_height_small"
         android:layout_marginTop="@dimen/horizontal_margin_small"
         android:background="@drawable/selectable_button_all_rounded_5_white"
@@ -92,7 +92,6 @@
           android:layout_width="50dp"
           android:layout_height="50dp"
           android:layout_gravity="center_vertical"
-          android:layout_marginEnd="5dp"
           android:gravity="center"
           app:diceType="tileView"
           />
@@ -102,8 +101,7 @@
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
           android:layout_gravity="center"
-          android:layout_marginStart="10dp"
-          android:drawablePadding="10dp"
+          android:layout_marginStart="20dp"
           android:gravity="center"
           android:maxLines="1"
           android:text="@string/live_share_roll_the_dice_button"
