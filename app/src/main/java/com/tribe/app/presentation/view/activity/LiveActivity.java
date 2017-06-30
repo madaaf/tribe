@@ -664,7 +664,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
 
-/*    subscriptions.add(userInfosNotificationView.onInvite().subscribe(contact -> {
+    subscriptions.add(userInfosNotificationView.onClickInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
@@ -674,7 +674,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null,
               roomConfiguration.getRoomId(), false);
       livePresenter.bookRoomLink(linkId);
-    }));*/
+    }));
 
     subscriptions.add(userInfosNotificationView.onClickMore().subscribe(tribeGuest -> {
       DialogFactory.showBottomSheetForMoreBtn(this, tribeGuest.getDisplayName())

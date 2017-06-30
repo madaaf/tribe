@@ -195,6 +195,10 @@ public class UserInfosNotificationView extends FrameLayout {
     });
   }
 
+  public Observable<View> onClickInvite() {
+    return contactAdapter.onClickInvite();
+  }
+
   public Observable<String> onAdd() {
     return contactAdapter.onClickAdd()
         .map(view -> ((User) contactAdapter.getItemAtPosition(

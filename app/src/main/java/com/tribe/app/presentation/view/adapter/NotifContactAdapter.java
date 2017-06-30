@@ -129,6 +129,10 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
     return friendshiptNotifAdapterDelegate.onUnblock();
   }
 
+  public Observable<View> onClickInvite() {
+    return tribeGuestAdapterDelegate.onClickInvite();
+  }
+
   public Observable<View> onClickAdd() {
     return userListAdapterDelegate.onClickAdd();
   }
