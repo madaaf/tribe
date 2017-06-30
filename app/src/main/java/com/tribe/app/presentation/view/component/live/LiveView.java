@@ -1025,9 +1025,6 @@ public class LiveView extends FrameLayout {
 
     if (liveRowView != null) {
       tempSubscriptions.add(liveRowView.onClick().map(tribeGuest -> {
-        if (tribeGuest.isFriend() && getUsersInLiveRoom().getPeopleInRoom().size() < 2) {
-          return null;
-        }
         Object o = computeGuest(tribeGuest.getId());
         if (o == null) {
           return tribeGuest;
@@ -1453,7 +1450,7 @@ public class LiveView extends FrameLayout {
   public Observable<Void> onRoomFull() {
     return onRoomFull;
   }
-
+  
   public Observable<Object> onRemotePeerClick() {
     return onRemotePeerClick;
   }

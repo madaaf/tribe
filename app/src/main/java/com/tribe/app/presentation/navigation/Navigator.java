@@ -425,7 +425,8 @@ public class Navigator {
                 finalUrl = url;
               }
 
-              openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber, shouldOpenDefaultSms);
+              openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
+                  shouldOpenDefaultSms);
             });
 
     return linkId;

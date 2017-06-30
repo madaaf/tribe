@@ -185,5 +185,7 @@ public interface UserRepository {
 
   Observable<String> randomRoomAssigned();
 
+  Observable<Boolean> reportUser(String userId);
+
   Observable<List<Friendship>> unblockedFriendships();
 }

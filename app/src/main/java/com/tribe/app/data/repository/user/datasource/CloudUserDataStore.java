@@ -1073,4 +1073,11 @@ public class CloudUserDataStore implements UserDataStore {
 
     return this.tribeApi.roomAcceptRandom(request);
   }
+
+  @Override public Observable<Boolean> reportUser(String userId) {
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.reportUser, userId));
+
+    return this.tribeApi.reportUser(request);
+  }
 }

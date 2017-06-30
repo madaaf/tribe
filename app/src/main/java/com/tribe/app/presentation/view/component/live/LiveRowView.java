@@ -4,21 +4,15 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.facebook.rebound.SimpleSpringListener;
-import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringConfig;
-import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
@@ -44,8 +38,6 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveRowView extends FrameLayout {
 
   private static final int DURATION = 500;
-  private static double TENSION = 400;
-  private static double DAMPER = 10;
 
   @Inject ScreenUtils screenUtils;
 
@@ -58,8 +50,6 @@ public class LiveRowView extends FrameLayout {
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
   @BindView(R.id.viewBackground) View backgroundView;
-
-  @BindView(R.id.addFriend) ImageView btnAddFriend;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -128,9 +118,9 @@ public class LiveRowView extends FrameLayout {
     }
 
     if (guest.isFriend() || guest.isExternal()) {
-      btnAddFriend.setVisibility(GONE);
+      //btnAddFriend.setVisibility(GONE);
     } else {
-      animateAddBtn();
+      //animateAddBtn();
     }
   }
 
@@ -259,41 +249,9 @@ public class LiveRowView extends FrameLayout {
 
   @OnClick(R.id.layoutStream) void onClickStream(View v) {
     if (guest != null) onClick.onNext(guest);
-    if(guest.getId().equals(Recipient.ID_CALL_ROULETTE)){
+    if (guest.getId().equals(Recipient.ID_CALL_ROULETTE)) {
       onRollTheDice.onNext(null);
     }
-  }
-
-  @OnClick(R.id.addFriend) void addFriendClick() {
-    onClick.onNext(guest);
-    hideAddBtn();
-  }
-
-  private void animateAddBtn() {
-    btnAddFriend.setScaleX(0);
-    btnAddFriend.setScaleY(0);
-
-    new Handler().postDelayed(() -> {
-      btnAddFriend.setVisibility(VISIBLE);
-      SpringSystem springSystem = SpringSystem.create();
-      Spring spring = springSystem.createSpring();
-      SpringConfig config = new SpringConfig(TENSION, DAMPER);
-      spring.setSpringConfig(config);
-      spring.addListener(new SimpleSpringListener() {
-        @Override public void onSpringUpdate(Spring spring) {
-          float value = (float) spring.getCurrentValue();
-          btnAddFriend.setScaleX(value);
-          btnAddFriend.setScaleY(value);
-        }
-      });
-      spring.setEndValue(1);
-    }, 1000);
-
-    //btnAddFriend.animate().scaleX(1f).scaleY(1f).setDuration(VISIBLE * 2);
-  }
-
-  private void hideAddBtn() {
-    btnAddFriend.animate().scaleX(0).scaleY(0).setDuration(DURATION);
   }
 
   /////////////////
@@ -312,11 +270,11 @@ public class LiveRowView extends FrameLayout {
     return viewWaiting.onShouldRemoveGuest();
   }
 
-  public Observable<TribeGuest> onClick() {
-    return onClick;
-  }
-
   public Observable<Void> onRollTheDice() {
     return onRollTheDice;
+  }
+
+  public Observable<TribeGuest> onClick() {
+    return onClick;
   }
 }

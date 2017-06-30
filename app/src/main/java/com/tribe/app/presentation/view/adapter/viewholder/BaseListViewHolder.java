@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 /**
  * Created by tiago on 01/10/2016.
  */
+
 public class BaseListViewHolder extends RecyclerView.ViewHolder {
 
   public BaseListViewHolder(View itemView) {
@@ -40,6 +41,8 @@ public class BaseListViewHolder extends RecyclerView.ViewHolder {
   @BindView(R.id.txtAction) public TextViewFont txtAction;
 
   @BindView(R.id.btnAdd) public View btnAdd;
+
+  @Nullable @BindView(R.id.btnMore) public View btnMore;
 
   @Nullable @BindView(R.id.progressBarAdd) public CircularProgressView progressBarAdd;
 

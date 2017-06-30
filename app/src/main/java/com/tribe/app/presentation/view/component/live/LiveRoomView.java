@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.annotation.IntDef;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -345,6 +348,60 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
+
+    setAvatarPicto(liveRowView, viewIndex);
+  }
+
+  private void setAvatarPicto(LiveRowView liveRowView, int index) {
+    switch (index) {
+      case 0:
+        setAvatar(liveRowView, Gravity.CENTER, index);
+      case 1:
+        setAvatar(liveRowView, Gravity.START | Gravity.BOTTOM, index);
+        break;
+      case 2:
+        setAvatar(liveRowView, Gravity.END | Gravity.BOTTOM, index);
+        break;
+      case 3:
+        setAvatar(liveRowView, Gravity.START | Gravity.TOP, index);
+        break;
+      case 4:
+        setAvatar(liveRowView, Gravity.END | Gravity.TOP, index);
+        break;
+      case 5:
+        setAvatar(liveRowView, Gravity.START | Gravity.BOTTOM, index);
+        break;
+      case 6:
+        setAvatar(liveRowView, Gravity.END | Gravity.BOTTOM, index);
+        break;
+      case 7:
+        setAvatar(liveRowView, Gravity.START | Gravity.TOP, index);
+        break;
+      case 8:
+        setAvatar(liveRowView, Gravity.CENTER, index);
+        break;
+    }
+  }
+
+  private void setAvatar(LiveRowView liveRowView, int gravity, int index) {
+    AvatarView avatarView = new AvatarView(getContext());
+    //avatarView.setBackgroundResource(R.drawable.shape_circle_white);
+    int padding = screenUtils.dpToPx(10);
+    avatarView.setPadding(padding, padding, padding, padding);
+    avatarView.load(liveRowView.getGuest().getPicture());
+    ViewCompat.setElevation(avatarView, 10);
+
+ /*   TextView avatarView = new TextView(getContext());
+    avatarView.setBackgroundResource(R.drawable.shape_circle_white);
+    avatarView.setText(index + " ");*/
+
+    FrameLayout.LayoutParams layoutParams =
+        new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    layoutParams.gravity = gravity;
+    layoutParams.width = screenUtils.dpToPx(60);
+    layoutParams.height = screenUtils.dpToPx(60);
+    avatarView.setLayoutParams(layoutParams);
+    liveRowView.addView(avatarView);
   }
 
   private void setScreenSize(int openInviteWidth) {
