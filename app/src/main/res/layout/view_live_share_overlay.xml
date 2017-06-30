@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
   <LinearLayout
       android:id="@+id/viewLiveShareOverlayContainer"
       android:layout_width="match_parent"
@@ -85,12 +87,23 @@
         android:clickable="true"
         >
 
+      <com.tribe.app.presentation.view.widget.DiceView
+          android:id="@+id/diceLayout"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_gravity="center_vertical"
+          android:layout_marginEnd="5dp"
+          android:gravity="center"
+          app:diceType="tileView"
+          />
+
+
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
           android:layout_gravity="center"
+          android:layout_marginStart="10dp"
           android:drawablePadding="10dp"
-          android:drawableStart="@drawable/dice_icon"
           android:gravity="center"
           android:maxLines="1"
           android:text="@string/live_share_roll_the_dice_button"

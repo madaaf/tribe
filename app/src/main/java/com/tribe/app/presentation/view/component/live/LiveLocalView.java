@@ -302,5 +302,4 @@ public class LiveLocalView extends FrameLayout {
   public Observable<Void> onShare() {
     return viewShareOverlay.onShare();
   }
-
 }
