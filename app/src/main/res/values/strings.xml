@@ -153,7 +153,7 @@
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
 	<string name="grid_tutorial_profile">Manage your account,\nfriendships and more!</string>
 	<string name="grid_syncing_contacts_banner">Syncing contacts...</string>
-	<string name="grid_sync_failed_contacts_banner">Syncronisation failed</string>
+	<string name="grid_sync_failed_contacts_banner">Synchronization failed</string>
 	<string name="grid_synced_contacts_banner">Contacts synced!</string>
 	
 	<!-- Group Identification -->
@@ -573,6 +573,7 @@
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
 	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
+	<string name="game_song_pop_status_pick_playlist">Pick a playlist! :musical_note:</string>
 	<string name="game_song_pop_status_guess">Guess the song first! :musical_note:</string>
 	<string name="game_song_pop_status_wrong_answer">Arrgh! That\'s not the song! :hear_no_evil:</string>
 	<string name="game_song_pop_status_no_winner">Nobody guessed! :metal:</string>

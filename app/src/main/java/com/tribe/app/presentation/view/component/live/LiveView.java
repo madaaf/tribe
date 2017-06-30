@@ -945,7 +945,7 @@ public class LiveView extends FrameLayout {
 
     if (nbLiveInRoom() == 0) {
       soundManager.cancelMediaPlayer();
-      viewStatusName.setStatus(LiveStatusNameView.DONE);
+      if (viewStatusName != null) viewStatusName.setStatus(LiveStatusNameView.DONE);
     }
 
     if (liveInviteMap.getMap()
@@ -1450,7 +1450,7 @@ public class LiveView extends FrameLayout {
   public Observable<Void> onRoomFull() {
     return onRoomFull;
   }
-  
+
   public Observable<Object> onRemotePeerClick() {
     return onRemotePeerClick;
   }

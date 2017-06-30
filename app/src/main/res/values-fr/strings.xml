@@ -573,6 +573,7 @@
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
 	<string name="game_song_pop_menu_re_roll">Renouveler les morceaux</string>
+	<string name="game_song_pop_status_pick_playlist">Choisis une playlist ! :musical_note:</string>
 	<string name="game_song_pop_status_guess">Devine le morceau en premier ! :musical_note:</string>
 	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau ! :hear_no_evil:</string>
 	<string name="game_song_pop_status_no_winner">Personne n\'a deviné ! :metal:</string>
