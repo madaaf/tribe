@@ -32,6 +32,7 @@ import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
@@ -688,25 +689,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(userInfosNotificationView.onAdd().subscribe(s -> {
-      Timber.e("SOEF CREATE FRIENDSHIPE");
-      //livePresenter.createFriendship(s);
+      livePresenter.createFriendship(s);
     }));
 
-/*    subscriptions.add(userInfosNotificationView.onUnblock()
-        .doOnError(Throwable::printStackTrace)
-        .flatMap(recipient -> DialogFactory.dialog(this, recipient.getDisplayName(),
-            context().getString(R.string.search_unblock_alert_message),
-            context().getString(R.string.search_unblock_alert_unblock, recipient.getDisplayName()),
-            context().getString(R.string.search_unblock_alert_cancel)), Pair::new)
-        .filter(pair -> pair.second)
-        .subscribe(pair -> {
-          Friendship recipient = (Friendship) pair.first;
-          if (recipient != null) {
-            livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
-                FriendshipRealm.DEFAULT);
-          }
-        }));*/
-
+    subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
+      livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
+          FriendshipRealm.DEFAULT);
+    }));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 

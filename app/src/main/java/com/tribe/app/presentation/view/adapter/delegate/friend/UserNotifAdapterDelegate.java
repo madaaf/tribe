@@ -34,7 +34,8 @@ public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    onBindViewHolderForUnfriend(items, position, holder);
+    User user = (User) items.get(position);
+    onBindViewHolderForUnfriend(user, holder, false);
   }
 
   @Override

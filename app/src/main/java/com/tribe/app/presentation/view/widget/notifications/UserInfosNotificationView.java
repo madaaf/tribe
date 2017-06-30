@@ -201,15 +201,9 @@ public class UserInfosNotificationView extends FrameLayout {
             recyclerViewContacts.getChildLayoutPosition(view))).getId());
   }
 
-/*  public Observable<Recipient> onUnblock() {
+  public Observable<Recipient> onUnblock() {
     return contactAdapter.onUnblock()
         .map(view -> ((Recipient) contactAdapter.getItemAtPosition(
             recyclerViewContacts.getChildAdapterPosition(view))));
-  }*/
-
-  //public Observable<Recipient> onHangLive() {
-  //  return contactAdapter.onHangLive()
-  //      .map(view -> ((Recipient) contactAdapter.getItemAtPosition(
-  //          recyclerViewContacts.getChildAdapterPosition(view))));
-  //}
+  }
 }

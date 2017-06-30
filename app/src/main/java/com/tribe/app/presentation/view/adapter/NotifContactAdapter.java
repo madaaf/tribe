@@ -124,23 +124,10 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
       }
     }
   }
-/*
-  // OBSERVABLES
 
-  public Observable<View> onClickAdd() {
-    return Observable.merge(tribeGuestAdapterDelegate.onClickAdd(),
-        recipientListAdapterDelegate.onClickAdd());
-    return null;
-  }
-
- public Observable<View> onClickAdd() {
-    Timber.e("SOEF ON CLICK INVITE");
-    return userListAdapterDelegate.onClickAdd();
-  }
-
-   public Observable<View> onUnblock() {
+  public Observable<View> onUnblock() {
     return friendshiptNotifAdapterDelegate.onUnblock();
-  }*/
+  }
 
   public Observable<View> onClickAdd() {
     return userListAdapterDelegate.onClickAdd();

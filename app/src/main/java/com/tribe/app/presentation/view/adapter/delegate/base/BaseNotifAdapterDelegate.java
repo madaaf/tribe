@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
@@ -31,6 +30,7 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
 
   // OBSERVABLES
   protected PublishSubject<View> onClickAdd = PublishSubject.create();
+  protected PublishSubject<View> onUnblock = PublishSubject.create();
   protected PublishSubject<View> clickMore = PublishSubject.create();
 
   public BaseNotifAdapterDelegate(Context context) {
@@ -46,10 +46,9 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     return vh;
   }
 
-  protected void onBindViewHolderForUnfriend(List<Object> items, int position,
-      RecyclerView.ViewHolder holder) {
+  protected void onBindViewHolderForUnfriend(User user, RecyclerView.ViewHolder holder,
+      boolean isHidden) {
     BaseNotifViewHolder vh = (BaseNotifViewHolder) holder;
-    User user = (User) items.get(position);
 
     vh.txtName.setText(user.getDisplayName());
     vh.txtDescription.setText(user.getUsername());
@@ -61,7 +60,11 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
 
     vh.btnMore.setOnClickListener(v -> clickMore.onNext(vh.itemView));
     vh.layoutAddFriend.setOnClickListener(v -> {
-      onClickAdd.onNext(vh.itemView);
+      if (isHidden) {
+        onUnblock.onNext(vh.itemView);
+      } else {
+        onClickAdd.onNext(vh.itemView);
+      }
       vh.txtAction.setText(context.getString(R.string.action_adding_friend));
       resizeAnim = new ResizeAnimation(vh.addBtnBg);
       resizeAnim.setDuration(500);
@@ -91,13 +94,11 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     });
   }
 
-  protected void onBindViewHolderForFriend(List<Object> items, int position,
-      RecyclerView.ViewHolder holder) {
+  protected void onBindViewHolderForFriend(User user, RecyclerView.ViewHolder holder) {
     BaseNotifViewHolder vh = (BaseNotifViewHolder) holder;
-    Friendship friendship = (Friendship) items.get(position);
 
-    vh.txtName.setText(friendship.getDisplayName());
-    vh.txtDescription.setText(friendship.getUsername());
+    vh.txtName.setText(user.getDisplayName());
+    vh.txtDescription.setText(user.getUsername());
     vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
     vh.txtAction.setText(context.getString(R.string.action_friend_added));

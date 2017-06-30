@@ -14,11 +14,8 @@ import rx.Observable;
 
 public class FriendshiptNotifAdapterDelegate extends BaseNotifAdapterDelegate {
 
-  private Context context;
-
   public FriendshiptNotifAdapterDelegate(Context context) {
     super(context);
-    this.context = context;
   }
 
   @Override public boolean isForViewType(@NonNull List<Object> items, int position) {
@@ -34,23 +31,25 @@ public class FriendshiptNotifAdapterDelegate extends BaseNotifAdapterDelegate {
     Friendship friendship = null;
     if (items.get(position) instanceof Recipient) {
       friendship = (Friendship) items.get(position);
-      friendship.getStatus();
     }
-    if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) || friendship.getStatus()
-        .equals(FriendshipRealm.BLOCKED)) {
-      onBindViewHolderForUnfriend(items, position, holder);
+    if (friendship.getStatus() != null && friendship.getStatus().equals(FriendshipRealm.HIDDEN)
+        || friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
+      onBindViewHolderForUnfriend(friendship.getFriend(), holder, true);
     } else {
-      onBindViewHolderForFriend(items, position, holder);
+      onBindViewHolderForFriend(friendship.getFriend(), holder);
     }
   }
 
   @Override
   public void onBindViewHolder(@NonNull List<Object> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
-
   }
 
   public Observable<View> clickMore() {
     return clickMore;
+  }
+
+  public Observable<View> onUnblock() {
+    return onUnblock;
   }
 }
