@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget.notifications;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -19,6 +20,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.mvp.view.FBInfoMVPView;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -111,12 +113,12 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     if (!txt1.isEmpty()) txtLabel.setText(txt1);
     String txt2 =
         firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_description);
-    if (!txt2.isEmpty())  txtSubLabel.setText(txt2);
+    if (!txt2.isEmpty()) txtSubLabel.setText(txt2);
     String txt3 =
         firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_facebook_action);
-    if (!txt3.isEmpty())  txtAction.setText(txt3);
+    if (!txt3.isEmpty()) txtAction.setText(txt3);
     String txt4 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_disclaimer);
-    if (!txt4.isEmpty())  txtBottom.setText(txt4);
+    if (!txt4.isEmpty()) txtBottom.setText(txt4);
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
@@ -125,10 +127,17 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   @Override public void successFacebookLogin() {
     Timber.d("successFacebookLogin");
     onFacebookSuccess.onNext(null);
+
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_SUCCESS);
+    tagManager.trackEvent(TagManagerUtils.FacebookGate, properties);
     super.hideView();
   }
 
   @Override public void errorFacebookLogin() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_FAILED);
+    tagManager.trackEvent(TagManagerUtils.FacebookGate, properties);
     Timber.e("errorFacebookLogin");
   }
 }
