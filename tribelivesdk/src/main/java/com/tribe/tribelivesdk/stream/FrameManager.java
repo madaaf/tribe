@@ -1,9 +1,9 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
-import android.hardware.Camera;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
+import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -22,6 +22,7 @@ public class FrameManager {
   private UlseeManager ulseeManager;
   //private VisionAPIManager visionAPIManager;
   private LibYuvConverter libYuvConverter;
+  private OpenCVWrapper openCVWrapper;
   //private FilterManager filterManager;
   private byte[] argb, yuvOut;
   private boolean firstFrame, processing = false;
@@ -36,11 +37,11 @@ public class FrameManager {
   public FrameManager(Context context) {
     this.context = context;
     libYuvConverter = new LibYuvConverter();
-
+    openCVWrapper = new OpenCVWrapper();
     //initVisionAPIManager();
     //initGameManager();
     //initFilterManager();
-    //initUlseeManager();
+    initUlseeManager();
   }
 
   //private void initFilterManager() {
@@ -60,21 +61,15 @@ public class FrameManager {
   //  subscriptions.add(gameManager.onLocalFrame().onBackpressureDrop().subscribe(onLocalFrame));
   //}
 
-  //private void initUlseeManager() {
-  //  ulseeManager = UlseeManager.getInstance(context);
-  //}
+  private void initUlseeManager() {
+    ulseeManager = UlseeManager.getInstance(context);
+  }
 
   //private void initVisionAPIManager() {
   //  visionAPIManager = VisionAPIManager.getInstance(context);
   //}
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
-    //ulseeManager.initFrameSubscription(onFrame);
-    //if (gameManager.isFacialRecognitionNeeded()) {
-    //  visionAPIManager.initFrameSubscription(onFrame);
-    //  visionAPIManager.initFrameSizeChangeObs(onFrameSizeChange);
-    //}
-
     subscriptions.add(onFrame.onBackpressureDrop()
         .filter(frame -> !processing)
         .observeOn(Schedulers.computation())
@@ -98,7 +93,9 @@ public class FrameManager {
 
           boolean shouldSendRemoteFrame = true;
 
-          libYuvConverter.ARGBToYUV(frame1.getData(), frame1.getWidth(), frame1.getHeight(), yuvOut);
+          openCVWrapper.flipBeforeSending(frame1.getData(), argb, frame1.getWidth(),
+              frame1.getHeight());
+          libYuvConverter.ARGBToYUV(argb, frame1.getWidth(), frame1.getHeight(), yuvOut);
           frame1.setDataOut(yuvOut);
 
           if (shouldSendRemoteFrame) onRemoteFrame.onNext(frame1);
@@ -108,8 +105,8 @@ public class FrameManager {
         .subscribe(frame -> processing = false));
   }
 
-  public void initNewFacesObs(Observable<Camera.Face[]> obs) {
-    //ulseeManager.initNewFacesObs(obs);
+  public void initPreviewFrameSubscription(Observable<Frame> onPreviewFrame) {
+    ulseeManager.initFrameSubscription(onPreviewFrame);
   }
 
   public void switchFilter() {
@@ -129,7 +126,7 @@ public class FrameManager {
   public void stopCapture() {
     firstFrame = true;
     subscriptions.clear();
-    //ulseeManager.stopCapture();
+    ulseeManager.stopCapture();
     //visionAPIManager.stopCapture();
   }
 

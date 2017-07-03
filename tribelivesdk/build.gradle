@@ -50,12 +50,21 @@ android {
       jniLibs.srcDir('src/main/jniLibs/')
     }
   }
+
+  packagingOptions {
+    //exclude('lib/x86_64/libopencvtribejava.so')
+    //pickFirst('lib/*/libopencvtribejava.so')
+    //pickFirst 'lib/x86/libopencvtribejava.so'
+    //pickFirst 'lib/armeabi-v7a/libopencvtribejava.so'
+  }
 }
 
 dependencies {
   def presentationDependencies = rootProject.ext.presentationDependencies
   def presentationTestDependencies = rootProject.ext.presentationTestDependencies
   def developmentDependencies = rootProject.ext.developmentDependencies
+
+  compile project(':ulseefacear')
 
   compile fileTree(dir: 'libs', include: ['*.jar'])
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

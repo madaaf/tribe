@@ -97,4 +97,28 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_addPostIt(JNIEnv *env, jobject,
     return true;
 }
 
+JNIEXPORT jboolean JNICALL
+Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_flipBeforeSending(JNIEnv *env, jobject,
+                                                                   jbyteArray argbIn,
+                                                                   jbyteArray argbOut,
+                                                                   jint frameWidth,
+                                                                   jint frameHeight) {
+    jbyte *argbInData = env->GetByteArrayElements(argbIn, 0);
+    jbyte *argbOutData = env->GetByteArrayElements(argbOut, 0);
+
+    cv::Mat _rgbaIn(frameWidth, frameHeight, CV_8UC4, (uchar *) argbInData);
+    cv::Mat _rgbaOut(frameWidth, frameHeight, CV_8UC4, (uchar *) argbOutData);
+    cv::flip(_rgbaIn, _rgbaOut, -1);
+
+    //_rgbaIn.copyTo(_rgbaOut);
+
+    _rgbaIn.release();
+    _rgbaOut.release();
+
+    env->ReleaseByteArrayElements(argbIn, argbInData, 0);
+    env->ReleaseByteArrayElements(argbOut, argbOutData, 0);
+
+    return true;
+}
+
 } // end of extern "C" (global C/C++ functions that aren't part of a C++ Class)

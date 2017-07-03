@@ -168,45 +168,45 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (previewTexture != null && byteBuffer != null) {
       filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
 
-      synchronized (frameListenerLock) {
-        byteBuffer.rewind();
-        long start = System.currentTimeMillis();
-
-        //  Timber.d("glReadPixels: " + (end - start));
-
-        int width = (int) surfaceWidth;
-        int height = (int) surfaceHeight;
-        GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
-            byteBuffer);
-        byteBuffer.flip();
-        long end = System.currentTimeMillis();
-        Timber.d("glReadPixels: " + (end - start));
-
-        //BufferedOutputStream bos = null;
-        //try {
-        //  File file =
-        //      new File(FILES_DIR, String.format("frame-" + System.currentTimeMillis() + ".png"));
-        //  bos = new BufferedOutputStream(new FileOutputStream(file.toString()));
-        //  Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        //  byteBuffer.rewind();
-        //  bmp.copyPixelsFromBuffer(byteBuffer);
-        //  bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
-        //  bmp.recycle();
-        //} catch (FileNotFoundException e) {
-        //  e.printStackTrace();
-        //} finally {
-        //  if (bos != null) {
-        //    try {
-        //      bos.close();
-        //    } catch (IOException e) {
-        //      e.printStackTrace();
-        //    }
-        //  }
-        //}
-        frame = new Frame(byteBuffer.array(), width, height, cameraInfo.getFrameOrientation(),
-            previewTexture.getTimestamp(), cameraInfo.isFrontFacing());
-        onFrameAvailable.onNext(frame);
-      }
+      //synchronized (frameListenerLock) {
+      //  byteBuffer.rewind();
+      //  long start = System.currentTimeMillis();
+      //
+      //  //  Timber.d("glReadPixels: " + (end - start));
+      //
+      //  int width = (int) surfaceWidth;
+      //  int height = (int) surfaceHeight;
+      //  GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
+      //      byteBuffer);
+      //  byteBuffer.flip();
+      //  long end = System.currentTimeMillis();
+      //  Timber.d("glReadPixels: " + (end - start));
+      //
+      //  //BufferedOutputStream bos = null;
+      //  //try {
+      //  //  File file =
+      //  //      new File(FILES_DIR, String.format("frame-" + System.currentTimeMillis() + ".png"));
+      //  //  bos = new BufferedOutputStream(new FileOutputStream(file.toString()));
+      //  //  Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+      //  //  byteBuffer.rewind();
+      //  //  bmp.copyPixelsFromBuffer(byteBuffer);
+      //  //  bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
+      //  //  bmp.recycle();
+      //  //} catch (FileNotFoundException e) {
+      //  //  e.printStackTrace();
+      //  //} finally {
+      //  //  if (bos != null) {
+      //  //    try {
+      //  //      bos.close();
+      //  //    } catch (IOException e) {
+      //  //      e.printStackTrace();
+      //  //    }
+      //  //  }
+      //  //}
+      //  frame = new Frame(byteBuffer.array(), width, height, 0, previewTexture.getTimestamp(),
+      //      cameraInfo.isFrontFacing());
+      //  onFrameAvailable.onNext(frame);
+      //}
     }
   }
 

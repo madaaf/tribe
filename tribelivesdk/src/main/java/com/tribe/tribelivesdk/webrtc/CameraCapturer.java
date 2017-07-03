@@ -50,6 +50,7 @@ import rx.subscriptions.CompositeSubscription;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Subscription subscriptionCaptureByteBuffer;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
+  private PublishSubject<Frame> onPreviewFrame = PublishSubject.create();
   private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
   private PublishSubject<CameraInfo> onNewCameraInfo = PublishSubject.create();
@@ -184,7 +185,7 @@ import rx.subscriptions.CompositeSubscription;
 
         cameraStatistics.addFrame();
 
-        //onFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
+        onPreviewFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
       }
     }
 
@@ -293,10 +294,8 @@ import rx.subscriptions.CompositeSubscription;
     subscriptions.add(frameManager.onRemoteFrame()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
-        .subscribe(frame -> {
-          capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
-              frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp());
-        }));
+        .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
+            frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
   }
 
   @Override public void startCapture(int width, int height, int framerate) {
@@ -321,6 +320,7 @@ import rx.subscriptions.CompositeSubscription;
 
       frameManager.startCapture();
       frameManager.initFrameSubscription(onFrame);
+      frameManager.initPreviewFrameSubscription(onPreviewFrame);
       //frameManager.initNewFacesObs(onFaces);
     }
   }
