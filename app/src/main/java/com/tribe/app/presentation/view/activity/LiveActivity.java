@@ -561,7 +561,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(
-            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships)));
+            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships, live.getSource()))); //SOEF
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);

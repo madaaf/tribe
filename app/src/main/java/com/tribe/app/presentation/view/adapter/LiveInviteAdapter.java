@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteAdapterDelegate;
@@ -22,6 +23,8 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -111,10 +114,12 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     return friendship;
   }
 
-  public void setItems(List<Recipient> items) {
+  public void setItems(List<Recipient> items, @LiveActivity.Source String source) {
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
-    if (!diceDragued) this.items.add(getDiceItem());
+    if (!diceDragued && source != null && !source.equals(SOURCE_CALL_ROULETTE)) {
+      this.items.add(getDiceItem());
+    }
     this.items.addAll(items);
     ListUtils.addEmptyItems(screenUtils, this.items);
     notifyDataSetChanged();
