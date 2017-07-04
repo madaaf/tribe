@@ -148,6 +148,7 @@ public class LiveView extends FrameLayout {
   private boolean isFirstToJoin = true;
   private double duration;
   private GameManager gameManager;
+  private String fbId;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, tooltipFirstGameHeight;
@@ -771,8 +772,17 @@ public class LiveView extends FrameLayout {
     viewControlsLive.reduceParam();
   }
 
+  public String getFbId() {
+    return fbId;
+  }
+
+  public Live getLive() {
+    return live;
+  }
+
   public void start(Live live) {
     this.live = live;
+    this.fbId = live.getFbId();
 
     room = tribeLiveSDK.newRoom();
     room.initLocalStream(viewLocalLive.getLocalPeerView());

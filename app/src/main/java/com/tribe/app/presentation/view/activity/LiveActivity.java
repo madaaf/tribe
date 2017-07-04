@@ -150,7 +150,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .countdown(!recipient.isLive())
         .picture(recipient.getProfilePicture())
         .source(source);
-
+    if (recipient instanceof Friendship) {
+      String fbId = ((Friendship) recipient).getFriend().getFbid();
+      builder.fbId(fbId);
+    }
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
       builder.memberList(invite.getMembers());
@@ -560,8 +563,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         })
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-            filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships, live.getSource()))); //SOEF
+        .subscribe(filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships,
+            live.getSource())));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);

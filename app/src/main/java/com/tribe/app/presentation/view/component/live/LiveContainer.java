@@ -118,6 +118,8 @@ public class LiveContainer extends FrameLayout {
   boolean enabledTimer = false;
   private int nbrCall = 0;
   private boolean blockOpenInviteView;
+  private String userUnder13 = "";
+
   // DIMENS
   private int thresholdEnd;
 
@@ -487,8 +489,6 @@ public class LiveContainer extends FrameLayout {
     }
   }
 
-  private String userUnder13 = "";
-
   private void displayDialogAgePerm(String displayName) {
     DialogFactory.dialog(getContext(),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_title, displayName),
@@ -498,16 +498,22 @@ public class LiveContainer extends FrameLayout {
         .subscribe();
   }
 
-  private boolean isGuestUnder13(User guest) {
-    if (guest.getFbid() == null || guest.getFbid().isEmpty()) {
-      userUnder13 = guest.getDisplayName();
+  public void getUserUnder13(String fbId, String displayName) {
+    if ((fbId == null || fbId.isEmpty()) && !displayName.equals(
+        getContext().getString(R.string.roll_the_dice_invite_title))) {
+      userUnder13 = displayName;
     }
-    if (guest.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
+  }
+
+  private boolean isGuestUnder13(User user) {
+    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName());
+    getUserUnder13(user.getFbid(), user.getDisplayName());
+    if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
       displayDialogAgePerm(userUnder13);
       return true;
     } else if (viewLive.getSource().equals(SOURCE_CALL_ROULETTE) || viewLive.isDiceDragedInRoom()) {
-      if (guest.getFbid() == null || guest.getFbid().isEmpty()) {
-        displayDialogAgePerm(guest.getDisplayName());
+      if (user.getFbid() == null || user.getFbid().isEmpty()) {
+        displayDialogAgePerm(user.getDisplayName());
         return true;
       }
     }
