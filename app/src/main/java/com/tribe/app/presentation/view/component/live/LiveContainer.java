@@ -133,6 +133,7 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Float> onAlpha = PublishSubject.create();
   private PublishSubject<Boolean> onDropEnabled = PublishSubject.create();
   private PublishSubject<TileView> onDropped = PublishSubject.create();
+  private PublishSubject<Void> onDroppedUnder13 = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveContainer(Context context) {
@@ -525,6 +526,7 @@ public class LiveContainer extends FrameLayout {
 
     Friendship friendshiip = (Friendship) currentTileView.getRecipient();
     if (isGuestUnder13(friendshiip.getFriend())) {
+      onDroppedUnder13.onNext(null);
       return;
     }
 
@@ -725,5 +727,9 @@ public class LiveContainer extends FrameLayout {
 
   public Observable<TileView> onDropped() {
     return onDropped;
+  }
+
+  public Observable<Void> onDroppedUnder13() {
+    return onDroppedUnder13;
   }
 }

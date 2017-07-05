@@ -31,6 +31,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
@@ -171,6 +172,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceivedWithNoFbId = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
@@ -643,8 +645,12 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(
         room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
           Timber.d("rollTheDice received");
-          viewRoom.onRollTheDiceReceived();
-          live.setDiceDragedInRoom(true);
+          if (FacebookUtils.isLoggedIn()) {
+            viewRoom.onRollTheDiceReceived();
+            live.setDiceDragedInRoom(true);
+          } else {
+            onRollTheDiceReceivedWithNoFbId.onNext(null);
+          }
         }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
@@ -1471,6 +1477,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
+  }
+
+  public Observable<Void> onRollTheDiceReceivedWithNoFbId() {
+    return onRollTheDiceReceivedWithNoFbId;
   }
 }
 

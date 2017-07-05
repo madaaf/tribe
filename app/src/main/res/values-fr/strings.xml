@@ -582,6 +582,11 @@
 	<string name="game_post_it_menu_re_roll">Renouveler les noms</string>
 	<string name="game_post_it_menu_stop">Arreter ce jeu</string>
 	<string name="game_post_it_rule">Devinez qui vous êtes\nà l\'aide de vos amis.</string>
+	<string name="game_challenges">Challenges</string>
+	<string name="game_challenges_rule">Lance le prochain challenge !</string>
+	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
+	<string name="game_challenges_turn_prefix">À</string>
+	<string name="game_challenges_turn_suffix">de...</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>

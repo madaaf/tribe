@@ -441,20 +441,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
   }
 
-  private void launchCallRoulette() {
-    if (!FacebookUtils.isLoggedIn()) {
-      //if (true) {
-      Timber.d("not logged on fb ");
-      blockView.setVisibility(VISIBLE);
-      blockView.setOnTouchListener((v, event) -> true);
-      notificationContainerView.
-          showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
-    } else {
-      viewLiveContainer.blockOpenInviteView(true);
-      initCallRouletteService();
-    }
-  }
-
   private void initCallRouletteService() {
     viewLive.setSourceLive(SOURCE_CALL_ROULETTE);
     startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
@@ -528,6 +514,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return time == 0 ? 10 : time;
   }
 
+  private void launchCallRoulette() {
+    if (!FacebookUtils.isLoggedIn()) {
+      //if (true) {
+      Timber.d("not logged on fb ");
+      blockView.setVisibility(VISIBLE);
+      blockView.setOnTouchListener((v, event) -> true);
+      notificationContainerView.
+          showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+    } else {
+      viewLiveContainer.blockOpenInviteView(true);
+      initCallRouletteService();
+    }
+  }
+
   private void initSubscriptions() {
 
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
@@ -590,12 +590,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
             Timber.d("on dropped the dice :" + live.getSessionId());
-            livePresenter.roomAcceptRandom(live.getSessionId());
+            livePresenter.roomAcceptRandom(live.getSessionId()); //SOEF
             reRollTheDiceFromLiveRoom();
           } else {
             invite(recipient.getSubId());
           }
         }));
+
+    subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(aVoid -> {
+      reRollTheDiceFromLiveRoom();
+    }));
+
+    subscriptions.add(viewLive.onRollTheDiceReceivedWithNoFbId().subscribe(aVoid -> {
+      notificationContainerView.
+          showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+    }));
 
     subscriptions.add(
         Observable.merge(viewInviteLive.onInviteLiveClick(), viewLive.onShare()).subscribe(view -> {
