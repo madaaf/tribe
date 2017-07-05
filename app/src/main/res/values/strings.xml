@@ -582,6 +582,11 @@
 	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
 	<string name="game_post_it_rule">Guess who you are\nby asking your friends!</string>
+	<string name="game_challenges">Challenges</string>
+	<string name="game_challenges_rule">Put on the next challenge!</string>
+	<string name="game_challenges_next_impossible">Only others can next your challenge!</string>
+	<string name="game_challenges_turn_prefix"></string>
+	<string name="game_challenges_turn_suffix">\'s turn to...</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>

@@ -9,11 +9,13 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.tribe.tribelivesdk.entity.CameraInfo;
+import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.view.opengl.filter.ColorFilterBW;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import com.uls.renderer.GLRenderMask;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -35,16 +37,18 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private static final File FILES_DIR = Environment.getExternalStorageDirectory();
 
   @NonNull private final Handler mainHandler;
-
+  private Context context;
   private PreviewTextureInterface previewTexture;
   private boolean updateSurface = false;
-
+  private UlseeManager ulseeManager;
   private final float[] mvpMatrix = new float[16], projMatrix = new float[16], matrix =
       new float[16], vMatrix = new float[16], stMatrix = new float[16], stMatrixBis = new float[16];
   private CameraInfo cameraInfo;
   private float cameraRatio = 1, surfaceWidth = 1, surfaceHeight = 1;
   private final RendererCallback rendererCallback;
-  @Nullable private ImageFilter filter;
+  private ImageFilter filter;
+  private GLRenderMask maskRender;
+  private UlsRenderer ulsRenderer;
   private ByteBuffer byteBuffer;
   private Object frameListenerLock = new Object();
   private Frame frame;
@@ -57,8 +61,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   public PreviewRenderer(@NonNull Context context, final RendererCallback callback) {
     super();
     resetMatrix();
+    this.context = context;
     rendererCallback = callback;
     mainHandler = new Handler(context.getMainLooper());
+    ulseeManager = UlseeManager.getInstance(context);
   }
 
   private void computeMatrices() {
@@ -129,15 +135,20 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       updateSurface = false;
     }
 
+    maskRender = new GLRenderMask(context);
+    ulsRenderer = UlsRenderer.getInstance(context);
+    ulsRenderer.ulsSurfaceCreated(null, null);
+
     mainHandler.post(() -> rendererCallback.onRendererInitialized());
   }
 
   private float stageRatio = Float.MIN_VALUE;
 
   @Override public void onSurfaceChanged(final int width, final int height) {
-
     surfaceWidth = width;
     surfaceHeight = height;
+
+    ulsRenderer.ulsSurfaceChanged(null, width, height);
 
     byteBuffer = ByteBuffer.allocateDirect((int) surfaceWidth * (int) surfaceHeight * 4);
     byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -168,7 +179,11 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (previewTexture != null && byteBuffer != null) {
       filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
 
+      for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
+        draw(i, cameraInfo.getFrameOrientation());
+      }
       //synchronized (frameListenerLock) {
+      // TODO not efficient enough, find another way to grab the frames, maybe through JNI?
       //  byteBuffer.rewind();
       //  long start = System.currentTimeMillis();
       //
@@ -207,6 +222,70 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       //      cameraInfo.isFrontFacing());
       //  onFrameAvailable.onNext(frame);
       //}
+    }
+  }
+
+  public void draw(int index, int rotation) {
+    float ratioH = 720f / 1280f;
+
+    float[][] shape = ulseeManager.getShape();
+    float[][] pose = ulseeManager.getPose();
+    float[][] confidence = ulseeManager.getConfidence();
+    float[] poseQuality = ulseeManager.getPoseQuality();
+    float[][] gaze = ulseeManager.getGaze();
+    float[][] pupils = ulseeManager.getPupils();
+    int cameraRotation = ulseeManager.getCameraRotation();
+
+    if (shape[index] == null) {
+      ulsRenderer.setTrackParamNoFace(cameraInfo.isFrontFacing());
+      ulsRenderer.ulsDrawFrame(null, index, ratioH, false);
+    } else {
+      if (pose != null && poseQuality[index] > 0.0f) {
+        maskRender.drawMask(shape[index], confidence[index], 5.0f, rotation,
+            cameraInfo.getCaptureFormat().width, cameraInfo.getCaptureFormat().height,
+            ulsRenderer.getMaskFile(), cameraInfo.isFrontFacing());
+        if (cameraInfo.isFrontFacing()) {
+          ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
+              cameraInfo.getCaptureFormat().height, shape[index], confidence[index], pupils[index],
+              gaze[index], pose[index], poseQuality[index], cameraInfo.isFrontFacing(),
+              cameraRotation);
+        } else {
+          float[] flippedFaceShape = new float[99 * 2];
+          flipFaceShape(flippedFaceShape, shape[index]);
+
+          ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
+              cameraInfo.getCaptureFormat().height, flippedFaceShape, confidence[index],
+              pupils[index], gaze[index], pose[index], poseQuality[index],
+              cameraInfo.isFrontFacing(), cameraRotation);
+        }
+
+        ulsRenderer.ulsDrawFrame(null, index, ratioH, true);
+      }
+
+      if (cameraInfo.isFrontFacing()) {
+        ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
+            cameraInfo.getCaptureFormat().height, shape[index], confidence[index], pupils[index],
+            gaze[index], pose[index], poseQuality[index], cameraInfo.isFrontFacing(),
+            cameraRotation);
+      } else {
+        float[] flippedFaceShape = new float[99 * 2];
+        flipFaceShape(flippedFaceShape, shape[index]);
+
+        ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
+            cameraInfo.getCaptureFormat().height, flippedFaceShape, confidence[index],
+            pupils[index], gaze[index], pose[index], poseQuality[index], cameraInfo.isFrontFacing(),
+            cameraRotation);
+      }
+    }
+
+    GLES20.glFlush();
+  }
+
+  private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {
+    if (oriFaceShape == null) return;
+    for (int i = 0; i < 99; i++) {
+      flippedFaceShape[i * 2] = cameraInfo.getCaptureFormat().width - oriFaceShape[i * 2];
+      flippedFaceShape[i * 2 + 1] = cameraInfo.getCaptureFormat().height - oriFaceShape[i * 2 + 1];
     }
   }
 

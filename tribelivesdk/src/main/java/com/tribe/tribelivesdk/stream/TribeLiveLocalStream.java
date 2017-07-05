@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.view.LocalPeerView;
@@ -37,6 +38,7 @@ public class TribeLiveLocalStream {
   private AudioSource audioSource;
   private VideoTrack videoTrack;
   private CameraCapturer capturer;
+  private SurfaceTexture surfaceTexture;
   private List<CameraEnumerationAndroid.CaptureFormat> captureFormatList;
   private boolean capturing = false;
 
@@ -62,9 +64,11 @@ public class TribeLiveLocalStream {
     generateVideoCapturer();
 
     if (capturer != null) {
-      subscriptions.add(peerView.getGlLocalView()
-          .onSurfaceTextureReady()
-          .subscribe(surfaceTexture -> capturer.setPreviewTexture(surfaceTexture)));
+      subscriptions.add(
+          peerView.getGlLocalView().onSurfaceTextureReady().subscribe(surfaceTexture -> {
+            this.surfaceTexture = surfaceTexture;
+            if (capturer != null) capturer.setPreviewTexture(surfaceTexture);
+          }));
 
       peerView.initOnNewCameraInfo(capturer.onNewCameraInfo());
     }
@@ -104,6 +108,7 @@ public class TribeLiveLocalStream {
 
         if (cameraCapturer != null) {
           capturer = cameraCapturer;
+          if (surfaceTexture != null) capturer.setPreviewTexture(surfaceTexture);
           return;
         }
       }
@@ -118,6 +123,7 @@ public class TribeLiveLocalStream {
         captureFormatList = enumerator.getSupportedFormats(deviceName);
         if (cameraCapturer != null) {
           capturer = cameraCapturer;
+          if (surfaceTexture != null) capturer.setPreviewTexture(surfaceTexture);
           return;
         }
       }

@@ -35,12 +35,11 @@ public class UlseeManager {
   private FrameExecutor frameExecutor;
   private UlsMultiTracker ulsTracker;
   private DeviceRotationDetector deviceRotationDetector;
-  private boolean faceDetectionRunning = false, hasFacesFromCamera = false, firstFrame = true,
-      faceTracked;
+  private boolean faceDetectionRunning = false, firstFrame = true, faceTracked;
   private long timeDoFaceDet;
   private int lastFrameRotation, cameraRotation = 90, alive, displayRotation;
-  private int[] rotations;
-  private float[][] shape, confidence;
+  private float[][] shape, confidence, pose, pupils, gaze;
+  private float[] poseQuality;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -62,6 +61,10 @@ public class UlseeManager {
   private void initTracker(Context context) {
     shape = new float[MAX_TRACKER][];
     confidence = new float[MAX_TRACKER][];
+    pose = new float[MAX_TRACKER][];
+    poseQuality = new float[MAX_TRACKER];
+    pupils = new float[MAX_TRACKER][];
+    gaze = new float[MAX_TRACKER][];
 
     ulsTracker = new UlsMultiTracker(context, MAX_TRACKER,
         UlsMultiTracker.UlsTrackerInterfaceType.NV21_BYTEARRAY);
@@ -133,27 +136,41 @@ public class UlseeManager {
           }
 
           //Timber.d("Alive : " + alive);
-
           if (alive > 0) {
             for (int k = 0; k < MAX_TRACKER; k++) {
               shape[k] = ulsTracker.getShape(k);
               confidence[k] = ulsTracker.getConfidence(k);
-              //Timber.d("Shape[" + k + "], : " + shape[k][18]);
-              //Timber.d("Confidence[" + k + "], : " + confidence[k][18]);
+              float[] xy = ulsTracker.getTranslationInImage(k);
+              if (xy != null) {
+                pose[k] = new float[6];
+                float[] angles = ulsTracker.getRotationAngles(k);
+                pose[k][0] = angles[0];
+                pose[k][1] = angles[1];
+                pose[k][2] = angles[2];
+                pose[k][3] = xy[0];
+                pose[k][4] = xy[1];
+                pose[k][5] = ulsTracker.getScaleInImage(k);
+              } else {
+                pose[k] = null;
+              }
+              poseQuality[k] = ulsTracker.getPoseQuality(k);
+              gaze[k] = ulsTracker.getGaze(k);
+              pupils[k] = ulsTracker.getPupils(k);
             }
           } else {
-            for (int k = alive; k < MAX_TRACKER; k++) {
+            for (int k = 0; k < MAX_TRACKER; k++) {
               shape[k] = null;
               confidence[k] = null;
+              pose[k] = null;
+              poseQuality[k] = 0.0f;
+              gaze[k] = null;
+              pupils[k] = null;
             }
           }
 
           return frame;
         })
         .filter(frame1 -> {
-          //Timber.d("Go ! : " + (alive < UlseeManager.MAX_TRACKER &&
-          //    (System.currentTimeMillis() - timeDoFaceDet >= 1500 || alive == 0) &&
-          //    !faceDetectionRunning));
           return (alive < UlseeManager.MAX_TRACKER &&
               (System.currentTimeMillis() - timeDoFaceDet >= 1500 || alive == 0) &&
               !faceDetectionRunning);
@@ -189,5 +206,33 @@ public class UlseeManager {
   public void updateDisplayRotation(Context context) {
     WindowManager windowService = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     displayRotation = windowService.getDefaultDisplay().getRotation();
+  }
+
+  public float[][] getShape() {
+    return shape;
+  }
+
+  public float[][] getPose() {
+    return pose;
+  }
+
+  public float[] getPoseQuality() {
+    return poseQuality;
+  }
+
+  public float[][] getConfidence() {
+    return confidence;
+  }
+
+  public float[][] getGaze() {
+    return gaze;
+  }
+
+  public float[][] getPupils() {
+    return pupils;
+  }
+
+  public int getCameraRotation() {
+    return cameraRotation;
   }
 }
