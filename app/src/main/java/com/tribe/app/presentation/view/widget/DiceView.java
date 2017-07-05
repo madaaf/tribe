@@ -591,7 +591,10 @@ public class DiceView extends FrameLayout {
     }
 
     for (int i = 0; i < NB_VIEWS; i++) {
-      dotsContainer.addView(viewDots.get(NB_VIEWS - i - 1));
+      View v = viewDots.get(NB_VIEWS - i - 1);
+      //dotsContainer.addView(v);
+      if (v.getParent() != null) ((ViewGroup) v.getParent()).removeView(v);
+      dotsContainer.addView(v);
     }
   }
 
