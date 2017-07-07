@@ -68,6 +68,7 @@ public class UlseeManager {
 
     ulsTracker = new UlsMultiTracker(context, MAX_TRACKER,
         UlsMultiTracker.UlsTrackerInterfaceType.NV21_BYTEARRAY);
+    ulsTracker.setTrackerConfidenceThreshold(0.39f, 0.2f);
 
     boolean activation = ulsTracker.activate(ACTIVATION_KEY);
 
@@ -75,9 +76,8 @@ public class UlseeManager {
       ulsTracker.initialise();
     }
 
-    ulsTracker.setTrackerConfidenceThreshold(0.39f, 0.2f);
-    ulsTracker.setSticky(true);
     ulsTracker.setTrackMode(UlsTrackerMode.TRACK_FACE_AND_POSE);
+    ulsTracker.setSticky(true);
     ulsTracker.setHighPrecision(true);
   }
 
@@ -170,14 +170,12 @@ public class UlseeManager {
 
           return frame;
         })
-        .filter(frame1 -> {
-          return (alive < UlseeManager.MAX_TRACKER &&
-              (System.currentTimeMillis() - timeDoFaceDet >= 1500 || alive == 0) &&
-              !faceDetectionRunning);
-        })
+        .filter(frame1 -> ((alive == 0 || System.currentTimeMillis() - timeDoFaceDet >= 30000) &&
+            !faceDetectionRunning))
         .flatMap(frame -> Observable.just(frame)
-            .observeOn(Schedulers.from(frameExecutor))
+            .subscribeOn(Schedulers.from(frameExecutor))
             .map(frame1 -> {
+              //Timber.d("Thread name : " + Thread.currentThread().getName());
               faceDetectionRunning = true;
 
               final int detectDegree =
@@ -234,5 +232,30 @@ public class UlseeManager {
 
   public int getCameraRotation() {
     return cameraRotation;
+  }
+
+  public boolean isOpenMouth() {
+    for (int k = 0; k < MAX_TRACKER; k++) {
+
+      if (shape == null) {
+        shape = new float[5][];
+      }
+
+      shape[k] = ulsTracker.getShape(k);
+      float scale = ulsTracker.getScaleInImage(k);
+
+      if (shape[k] != null && scale > 0) {
+        double dist = Math.sqrt(
+            ((shape[k][2 * 60] - shape[k][2 * 65]) * (shape[k][2 * 60] - shape[k][2 * 65]) +
+                ((shape[k][2 * 60 + 1] - shape[k][2 * 65 + 1]) *
+                    (shape[k][2 * 60 + 1] - shape[k][2 * 65 + 1]))) / (0.9 * scale));
+
+        if (dist > 4) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

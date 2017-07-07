@@ -585,8 +585,8 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Lance le prochain challenge !</string>
 	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
-	<string name="game_challenges_turn_prefix">À</string>
-	<string name="game_challenges_turn_suffix">de...</string>
+	<string name="game_challenges_turn">À %1$s de...</string>
+	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -606,6 +606,7 @@
 	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
+	<string name="roll_the_dice_kicked_notification">Le dé vient d\'être relancé\npar un groupe d\'amis</string>
 	
 	<!-- Fallback call invitations -->
 	<string name="fallback_invitation_call_title">Si tu ne préviens pas tes amis\nils ne viendront pas!</string>

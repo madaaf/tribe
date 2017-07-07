@@ -153,6 +153,11 @@ public class UlsRenderer {
 
   }
 
+  public void updateCameraInfo(CameraInfo cameraInfo) {
+    this.cameraInfo = cameraInfo;
+    this.cameraRotation = 270;
+  }
+
   public void setTrackParam(int width, int height, float[] shape, float[] shapeQuality,
       float[] pupils, float[] gaze, float[] pose, float poseQuality, boolean isFront,
       int cameraRotation) {
@@ -220,7 +225,7 @@ public class UlsRenderer {
               }
             }
           } else {
-            plane.setTrackRotation(0, 0, cameraRotation);
+            plane.setTrackRotation(0, 0, this.cameraRotation);
           }
           if (!obj.useCoordinate) {
             plane.setUlsTrackScale(pose[5] * obj.imgScale * 0.9f);
@@ -250,8 +255,10 @@ public class UlsRenderer {
             }
           } else {
             plane.setUlsTrackScale(obj.imgScale * 5.5f);
-            float glXcoord = (float) (640 - obj.animateAtXcoord) / 360;
-            float glYcoord = (float) (360 - obj.animateAtYcoord) / 360;
+            float glXcoord =
+                (float) (cameraInfo.getCaptureFormat().width - obj.animateAtXcoord) / 360;
+            float glYcoord =
+                (float) (cameraInfo.getCaptureFormat().height - obj.animateAtYcoord) / 360;
             plane.setTrackPostion(glXcoord, glYcoord, 0);
           }
           AnimationObjectHolder.setAnimationObjects(i, obj);
@@ -270,8 +277,8 @@ public class UlsRenderer {
         plane.setVerticesWHScale(obj.animTempMat.cols(), obj.animTempMat.rows());
         plane.setTrackRotation(0, 0, cameraRotation);
         plane.setUlsTrackScale(obj.imgScale * 5.5f);
-        float glXcoord = (float) (640 - obj.animateAtXcoord) / 360;
-        float glYcoord = (float) (360 - obj.animateAtYcoord) / 360;
+        float glXcoord = (float) (cameraInfo.getCaptureFormat().width - obj.animateAtXcoord) / 360;
+        float glYcoord = (float) (cameraInfo.getCaptureFormat().height - obj.animateAtYcoord) / 360;
         plane.setTrackPostion(glXcoord, glYcoord, 0);
         AnimationObjectHolder.setAnimationObjects(i, obj);
       }

@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.view.opengl.renderer;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -8,15 +9,21 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.view.opengl.filter.ColorFilterBW;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
+import com.tribe.tribelivesdk.view.opengl.utils.UlsFaceAR;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.uls.renderer.GLRenderMask;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -53,6 +60,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private Object frameListenerLock = new Object();
   private Frame frame;
 
+  // TO PUT SOMEWHERE ELSE
+  private String basePath, maskAndGlassesPath;
+  private int maskFrameNumber = 1, stickerFrameNumber = 1;
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<SurfaceTexture> onSurfaceTextureReady = PublishSubject.create();
@@ -65,6 +76,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     rendererCallback = callback;
     mainHandler = new Handler(context.getMainLooper());
     ulseeManager = UlseeManager.getInstance(context);
+    basePath = Environment.getExternalStorageDirectory().toString() +
+        File.separator +
+        "ULSee" +
+        File.separator;
+    maskAndGlassesPath = basePath + "maskAndGlasses" + File.separator;
+    checkFiles();
   }
 
   private void computeMatrices() {
@@ -90,6 +107,79 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     Matrix.setLookAtM(vMatrix, 0, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   }
 
+  private void checkFiles() {
+    File clipartDir = new File(maskAndGlassesPath);
+    if (!clipartDir.exists()) {
+      clipartDir.mkdirs();
+    }
+
+    copyFolder("ulsdata");
+  }
+
+  private void copyFolder(String path) {
+    AssetManager assetManager = context.getResources().getAssets();
+    String[] files = null;
+    try {
+      files = assetManager.list(path);
+    } catch (Exception e) {
+      Log.e("read ulsdata ERROR", "" + path + " : " + e.toString());
+      e.printStackTrace();
+    }
+    if (files != null) {
+      for (String file : files) {
+        InputStream in;
+        OutputStream out;
+        try {
+          File targetFile = new File(maskAndGlassesPath + file);
+          if (!targetFile.exists()) {
+            in = assetManager.open(path + "/" + file);
+            out = new FileOutputStream(maskAndGlassesPath + file);
+            copyFile(in, out);
+            in.close();
+            out.flush();
+            out.close();
+          }
+        } catch (Exception e) {
+          Log.e("copy ulsdata ERROR", e.toString());
+          e.printStackTrace();
+        }
+        Log.d("copy ", "" + path + "/" + file);
+      }
+    }
+  }
+
+  private void copyFile(InputStream in, OutputStream out) throws IOException {
+    byte[] buffer = new byte[1024];
+    int read;
+    while ((read = in.read(buffer)) != -1) {
+      out.write(buffer, 0, read);
+    }
+  }
+
+  public void computeMask() {
+    boolean isFrontFacing = cameraInfo.isFrontFacing();
+
+    String mouthUp = maskAndGlassesPath + "mouthUp.png";
+    UlsFaceAR.insertAnimationObjectAtIndex(1, mouthUp, 51, true, 0.3f, isFrontFacing);
+
+    String mouthDown = maskAndGlassesPath + "mouthBottom.png";
+    UlsFaceAR.insertAnimationObjectAtIndex(2, mouthDown, 64, true, 0.35f, isFrontFacing);
+
+    String glasses = maskAndGlassesPath + "sunglass_newyear.png";
+    UlsFaceAR.insertAnimationObjectAtIndex(3, glasses, 27, true, 0.6f, isFrontFacing);
+
+    String cheek = maskAndGlassesPath + "cosmetic_new.png";
+    UlsFaceAR.insertAnimationObjectAtIndex(4, cheek, 29, true, 1f, isFrontFacing);
+
+    String chickHead =
+        maskAndGlassesPath + "ChickenHead" + Integer.toString(maskFrameNumber) + ".png";
+    UlsFaceAR.insertAnimationObjectAtIndex(5, chickHead, 91, true, 0.5f, isFrontFacing);
+    maskFrameNumber = maskFrameNumber < 7 ? maskFrameNumber + 1 : 1;
+
+    stickerFrameNumber = 1;
+    UlsFaceAR.cleanAnimationObjectAtIndex(6);
+  }
+
   @Nullable public ImageFilter getFilter() {
     return filter;
   }
@@ -110,6 +200,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   public void updateCameraInfo(CameraInfo cameraInfo) {
     this.cameraInfo = cameraInfo;
     computeMatrices();
+    computeMask();
+
+    if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
 
   public void onStartPreview() {
@@ -138,6 +231,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     maskRender = new GLRenderMask(context);
     ulsRenderer = UlsRenderer.getInstance(context);
     ulsRenderer.ulsSurfaceCreated(null, null);
+    if (cameraInfo != null) ulsRenderer.updateCameraInfo(cameraInfo);
 
     mainHandler.post(() -> rendererCallback.onRendererInitialized());
   }
@@ -155,7 +249,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     stageRatio = (stageRatio == Float.MIN_VALUE) ? width / (float) height : stageRatio;
     try {
-      Matrix.frustumM(projMatrix, 0, -stageRatio, stageRatio, -1, 1, 5, 7);
+      float zoom = 4f;
+      Matrix.frustumM(projMatrix, 0, -stageRatio, stageRatio, -1, 1, zoom, 25 * zoom);
     } catch (Exception ignored) {
       Timber.e("onSurfaceChanged exception", ignored);
     }
@@ -179,11 +274,14 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (previewTexture != null && byteBuffer != null) {
       filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
 
+      int rotation = ulseeManager.getCameraRotation();
+      if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
+
       for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
-        draw(i, cameraInfo.getFrameOrientation());
+        draw(i, rotation);
       }
       //synchronized (frameListenerLock) {
-      // TODO not efficient enough, find another way to grab the frames, maybe through JNI?
+      // //TODO not efficient enough, find another way to grab the frames, maybe through JNI?
       //  byteBuffer.rewind();
       //  long start = System.currentTimeMillis();
       //
@@ -195,7 +293,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       //      byteBuffer);
       //  byteBuffer.flip();
       //  long end = System.currentTimeMillis();
-      //  Timber.d("glReadPixels: " + (end - start));
+      //  //Timber.d("glReadPixels: " + (end - start));
       //
       //  //BufferedOutputStream bos = null;
       //  //try {
@@ -226,8 +324,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   public void draw(int index, int rotation) {
+    //float ratioH =
+    //    (float) cameraInfo.getCaptureFormat().height / cameraInfo.getCaptureFormat().width;
     float ratioH = 720f / 1280f;
-
     float[][] shape = ulseeManager.getShape();
     float[][] pose = ulseeManager.getPose();
     float[][] confidence = ulseeManager.getConfidence();
@@ -235,45 +334,44 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     float[][] gaze = ulseeManager.getGaze();
     float[][] pupils = ulseeManager.getPupils();
     int cameraRotation = ulseeManager.getCameraRotation();
+    boolean isFrontFacing = cameraInfo.isFrontFacing();
 
     if (shape[index] == null) {
-      ulsRenderer.setTrackParamNoFace(cameraInfo.isFrontFacing());
+      ulsRenderer.setTrackParamNoFace(isFrontFacing);
       ulsRenderer.ulsDrawFrame(null, index, ratioH, false);
     } else {
       if (pose != null && poseQuality[index] > 0.0f) {
         maskRender.drawMask(shape[index], confidence[index], 5.0f, rotation,
             cameraInfo.getCaptureFormat().width, cameraInfo.getCaptureFormat().height,
-            ulsRenderer.getMaskFile(), cameraInfo.isFrontFacing());
-        if (cameraInfo.isFrontFacing()) {
+            ulsRenderer.getMaskFile(), isFrontFacing);
+        if (isFrontFacing) {
           ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
               cameraInfo.getCaptureFormat().height, shape[index], confidence[index], pupils[index],
-              gaze[index], pose[index], poseQuality[index], cameraInfo.isFrontFacing(),
-              cameraRotation);
+              gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation);
         } else {
           float[] flippedFaceShape = new float[99 * 2];
           flipFaceShape(flippedFaceShape, shape[index]);
 
           ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
               cameraInfo.getCaptureFormat().height, flippedFaceShape, confidence[index],
-              pupils[index], gaze[index], pose[index], poseQuality[index],
-              cameraInfo.isFrontFacing(), cameraRotation);
+              pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
+              cameraRotation);
         }
 
         ulsRenderer.ulsDrawFrame(null, index, ratioH, true);
       }
 
-      if (cameraInfo.isFrontFacing()) {
+      if (isFrontFacing) {
         ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
             cameraInfo.getCaptureFormat().height, shape[index], confidence[index], pupils[index],
-            gaze[index], pose[index], poseQuality[index], cameraInfo.isFrontFacing(),
-            cameraRotation);
+            gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation);
       } else {
         float[] flippedFaceShape = new float[99 * 2];
         flipFaceShape(flippedFaceShape, shape[index]);
 
         ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
             cameraInfo.getCaptureFormat().height, flippedFaceShape, confidence[index],
-            pupils[index], gaze[index], pose[index], poseQuality[index], cameraInfo.isFrontFacing(),
+            pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
             cameraRotation);
       }
     }
