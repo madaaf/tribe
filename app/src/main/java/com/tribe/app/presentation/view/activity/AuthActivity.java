@@ -49,11 +49,10 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
 
   // VARIABLES
-
   private LoginEntity loginEntity;
-  private ShakeDetector mShakeDetector;
-  private SensorManager mSensorManager;
-  private Sensor mAccelerometer;
+  private ShakeDetector shakeDetector;
+  private SensorManager sensorManager;
+  private Sensor accelerometer;
   private Uri deepLink = null;
   private AuthCallback authCallback;
 
@@ -138,16 +137,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
   }
 
   private void setSandboxBehavior() {
-    mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-    mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    mShakeDetector = new ShakeDetector(() -> {
+    sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    shakeDetector = new ShakeDetector(() -> {
       navigator.navigateToSandbox(this);
     });
   }
 
   private void initRessource() {
     authPresenter.onViewAttached(this);
-    mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+    sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_UI);
   }
 
   private void connectUser(User user) {
@@ -195,7 +194,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
 
   @Override protected void onDestroy() {
     authPresenter.onViewDetached();
-    mSensorManager.unregisterListener(mShakeDetector);
+    sensorManager.unregisterListener(shakeDetector);
     super.onDestroy();
   }
 

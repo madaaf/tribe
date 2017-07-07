@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.SquareCardView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -58,6 +59,7 @@ public class TileView extends SquareCardView {
   public final static int TYPE_INVITE_LIVE_CO = 2;
   public final static int TYPE_NORMAL = 3;
   public final static int TYPE_INVITE = 4;
+  public final static int TYPE_CALL_ROULETTE = 5;
 
   private final int MINUTES_LIMIT = 120 * 60 * 1000;
   private final int HOURS_LIMIT = 48 * 24 * 60 * 1000;
@@ -96,7 +98,7 @@ public class TileView extends SquareCardView {
 
   @Nullable @BindView(R.id.layoutName) public ViewGroup layoutName;
 
-  @BindView(R.id.avatar) public AvatarView avatar;
+  @Nullable @BindView(R.id.avatar) public AvatarView avatar;
 
   @Nullable @BindView(R.id.layoutPulse) public PulseLayout layoutPulse;
 
@@ -107,6 +109,8 @@ public class TileView extends SquareCardView {
   @BindView(R.id.viewBG) View viewBG;
 
   @Nullable @BindView(R.id.imgIndInvite) ImageView imgIndInvite;
+
+  @Nullable @BindView(R.id.diceLayout) DiceView diceView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -174,6 +178,10 @@ public class TileView extends SquareCardView {
 
       case TYPE_INVITE:
         resLayout = R.layout.view_tile_invite;
+        break;
+
+      case TYPE_CALL_ROULETTE:
+        resLayout = R.layout.view_tile_call_roulette;
         break;
     }
 
@@ -282,6 +290,11 @@ public class TileView extends SquareCardView {
 
         avatar.setScaleX(scale);
         avatar.setScaleY(scale);
+        if (diceView != null) {
+          diceView.setScaleX(scale);
+          diceView.setScaleY(scale);
+          txtStatus.setAlpha(1 - value);
+        }
 
         int cardRadius = Math.max((int) (cardRadiusMin + (diffCardRadius * value)), cardRadiusMin);
         setRadius(cardRadius);
@@ -402,7 +415,7 @@ public class TileView extends SquareCardView {
   public void setInfo(Recipient recipient) {
     setRecipient(recipient);
     setAvatar();
-    setName();
+    if (txtName != null) setName();
 
     if (isGrid()) {
       setStatus();
@@ -414,7 +427,7 @@ public class TileView extends SquareCardView {
         imgIndInvite.setVisibility(View.VISIBLE);
         imgIndInvite.setImageResource(R.drawable.picto_online);
       } else {
-        imgIndInvite.setVisibility(View.GONE);
+        if (imgIndInvite != null) imgIndInvite.setVisibility(View.GONE);
       }
     }
   }

@@ -54,7 +54,6 @@ public abstract class RecipientGridAdapterDelegate extends RxAdapterDelegate<Lis
       @NonNull RecyclerView.ViewHolder holder) {
     RecipientGridViewHolder vh = (RecipientGridViewHolder) holder;
     Recipient recipient = items.get(position);
-
     vh.viewTile.setInfo(recipient);
     vh.viewTile.setBackground(position);
   }

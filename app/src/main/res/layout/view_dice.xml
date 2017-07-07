@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+  <FrameLayout
+      android:id="@+id/diceBgView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@color/black.opacity.40"
+      android:visibility="gone"
+      />
+
+  <FrameLayout
+      android:id="@+id/diceView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:layout_margin="5dp"
+      android:background="@drawable/shape_dice"
+      android:clickable="false"
+      android:gravity="center"
+      />
+
+  <FrameLayout
+      android:id="@+id/dotsContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      />
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:alpha="0"
+        android:gravity="center"
+        android:text="@string/roll_the_dice_next_button"
+        style="@style/Headline.Black.2"
+        />
+  </FrameLayout>
+
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginTop="65dp"
+      android:maxLines="1"
+      android:text="@string/roll_the_dice_live_status_searching"
+      android:visibility="gone"
+      style="@style/Body.Two.White"
+      />
+
+</merge>

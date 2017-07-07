@@ -4,9 +4,12 @@ import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.support.annotation.IntDef;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +22,22 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.google.android.flexbox.FlexboxLayout;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 public class LiveRoomView extends FrameLayout {
 
@@ -52,10 +64,17 @@ public class LiveRoomView extends FrameLayout {
   private int heightScreen;
   private boolean isConfigurationChanged = false;
   private int heightOndropBar;
+  private @LiveActivity.Source String source;
+  private boolean isCallRouletteMode = false;
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
   @BindView(R.id.cardview) CardView cardView;
+
+  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+
+  private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
+  private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
 
   public LiveRoomView(Context context) {
     super(context);
@@ -113,6 +132,43 @@ public class LiveRoomView extends FrameLayout {
         .inject(this);
   }
 
+  public void onDropItem(TileView tileView) {
+    // drag and drop dice item view
+    LiveRowView lastViewAdded =
+        (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+    if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+      isCallRouletteMode = true;
+      removeView(lastViewAdded);
+      new Handler().postDelayed(() -> {
+        onShouldCloseInvites.onNext(null);
+        diceView.setVisibility(VISIBLE);
+        diceView.startDiceAnimation();
+      }, 800);
+    }
+  }
+
+  /**
+   * ON ROLL THE DICE MESSAGE HAS RECEIVED. SOMEONE NEXT THE DICE
+   * IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTEUR
+   * IF I AM IN CALL ROULETTE MODE => I AM NEXED, I LEAVE THE ROOM AND ENTER I ANOTHER ONE
+   */
+  public void onRollTheDiceReceived() {
+    isCallRouletteMode = true;
+    onShouldCloseInvites.onNext(null);
+    diceView.setVisibility(VISIBLE);
+    diceView.startDiceAnimation();
+    if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
+      onChangeCallRouletteRoom.onNext(null);
+    }
+  }
+
+  public void setSource(@LiveActivity.Source String source) {
+    this.source = source;
+    if (source.equals(SOURCE_CALL_ROULETTE)) {
+      diceView.setVisibility(VISIBLE);
+    }
+  }
+
   public void onDropEnabled(Boolean enabled) {
     LiveRowView lastViewAdded =
         (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
@@ -127,7 +183,6 @@ public class LiveRoomView extends FrameLayout {
       resizeAnimation =
           new ResizeAnimation(l, lastViewAdded, onDroppedBarHeight, flexboxLayout.getHeight());
     }
-
     resizeAnimation.setDuration(DURATION * 2);
     resizeAnimation.setInterpolator(new OvershootInterpolator(0.4f));
     lastViewAdded.startAnimation(resizeAnimation);
@@ -141,6 +196,13 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.removeView(view);
     setViewsOrder();
     setConfigurationScreen();
+
+    if (source != null
+        && source.equals(SOURCE_CALL_ROULETTE)
+        && flexboxLayout.getChildCount() < 2) {
+      diceView.setVisibility(VISIBLE);
+      diceView.startDiceAnimation();
+    }
   }
 
   public int getRowsInLive() {
@@ -162,6 +224,9 @@ public class LiveRoomView extends FrameLayout {
 
   public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
     int viewIndex = flexboxLayout.getChildCount();
+    if ((source != null && source.equals(SOURCE_CALL_ROULETTE)) || isCallRouletteMode) {
+      diceView.setNextAnimation();
+    }
     setScreenSize(0);
     addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
     setViewsOrder();
@@ -170,6 +235,11 @@ public class LiveRoomView extends FrameLayout {
 
   public void setType(@TribeRoomViewType int type) {
     if (this.type == type) return;
+    if (type == LINEAR) {
+      diceView.animate().alpha(0f).setDuration(300).setListener(null).start();
+    } else {
+      diceView.animate().alpha(1f).setDuration(300).setListener(null).start();
+    }
     this.type = type;
     setScreenSize(0);
     setConfigurationScreen();
@@ -278,6 +348,60 @@ public class LiveRoomView extends FrameLayout {
           flexboxLayout.addView(liveRowView);
         }
     }
+
+    setAvatarPicto(liveRowView, viewIndex);
+  }
+
+  private void setAvatarPicto(LiveRowView liveRowView, int index) {
+    switch (index) {
+      case 0:
+        setAvatar(liveRowView, Gravity.CENTER, index);
+      case 1:
+        setAvatar(liveRowView, Gravity.START | Gravity.BOTTOM, index);
+        break;
+      case 2:
+        setAvatar(liveRowView, Gravity.END | Gravity.BOTTOM, index);
+        break;
+      case 3:
+        setAvatar(liveRowView, Gravity.START | Gravity.TOP, index);
+        break;
+      case 4:
+        setAvatar(liveRowView, Gravity.END | Gravity.TOP, index);
+        break;
+      case 5:
+        setAvatar(liveRowView, Gravity.START | Gravity.BOTTOM, index);
+        break;
+      case 6:
+        setAvatar(liveRowView, Gravity.END | Gravity.BOTTOM, index);
+        break;
+      case 7:
+        setAvatar(liveRowView, Gravity.START | Gravity.TOP, index);
+        break;
+      case 8:
+        setAvatar(liveRowView, Gravity.CENTER, index);
+        break;
+    }
+  }
+
+  private void setAvatar(LiveRowView liveRowView, int gravity, int index) {
+    AvatarView avatarView = new AvatarView(getContext());
+    //avatarView.setBackgroundResource(R.drawable.shape_circle_white);
+    int padding = screenUtils.dpToPx(10);
+    avatarView.setPadding(padding, padding, padding, padding);
+    avatarView.load(liveRowView.getGuest().getPicture());
+    ViewCompat.setElevation(avatarView, 10);
+
+ /*   TextView avatarView = new TextView(getContext());
+    avatarView.setBackgroundResource(R.drawable.shape_circle_white);
+    avatarView.setText(index + " ");*/
+
+    FrameLayout.LayoutParams layoutParams =
+        new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    layoutParams.gravity = gravity;
+    layoutParams.width = screenUtils.dpToPx(60);
+    layoutParams.height = screenUtils.dpToPx(60);
+    avatarView.setLayoutParams(layoutParams);
+    liveRowView.addView(avatarView);
   }
 
   private void setScreenSize(int openInviteWidth) {
@@ -398,5 +522,13 @@ public class LiveRoomView extends FrameLayout {
     @Override public boolean willChangeBounds() {
       return true;
     }
+  }
+
+  public Observable<Void> onShouldCloseInvites() {
+    return onShouldCloseInvites;
+  }
+
+  public Observable<Void> onChangeCallRouletteRoom() {
+    return onChangeCallRouletteRoom;
   }
 }

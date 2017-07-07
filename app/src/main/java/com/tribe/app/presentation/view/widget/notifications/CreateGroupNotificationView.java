@@ -77,7 +77,8 @@ public class CreateGroupNotificationView extends LifeNotification {
   private void setMembers(List<TribeGuest> members) {
     prefilledGrpMembers.clear();
     setNamesMembers(members);
-    avatarsSuperposedView.drawAvatarsMembersLayout(members, Color.WHITE, AvatarsSuperposedLayout.AVATARS_SMALL_SIZE);
+    avatarsSuperposedView.drawAvatarsMembersLayout(members, Color.WHITE,
+        AvatarsSuperposedLayout.AVATARS_SMALL_SIZE);
     prefilledGrpMembers = getUserList(members);
   }
 

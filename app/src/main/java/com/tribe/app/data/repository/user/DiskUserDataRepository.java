@@ -100,6 +100,16 @@ import rx.Observable;
         });
   }
 
+  @Override public Observable<String> randomRoomAssigned() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.callRouletteMap();
+  }
+
+  @Override public Observable<Boolean> reportUser(String userId) {
+    return null;
+  }
+
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }
@@ -409,6 +419,10 @@ import rx.Observable;
   }
 
   @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    return null;
+  }
+
+  @Override public Observable<Void> roomAcceptRandom(String roomId) {
     return null;
   }
 

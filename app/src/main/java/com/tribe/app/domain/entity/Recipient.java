@@ -16,6 +16,7 @@ public abstract class Recipient implements Serializable, BaseListInterface {
   public static final String ID_HEADER = "HEADER";
   public static final String ID_MORE = "MORE";
   public static final String ID_VIDEO = "VIDEO";
+  public static final String ID_CALL_ROULETTE = "ID_CALL_ROULETTE";
 
   public static final String DISPLAY_NAME = "DISPLAY_NAME";
   public static final String PROFILE_PICTURE = "PROFILE_PICTURE";
@@ -111,7 +112,8 @@ public abstract class Recipient implements Serializable, BaseListInterface {
     return (getId().equals(Recipient.ID_EMPTY)
         || getId().equals(Recipient.ID_HEADER)
         || getId().equals(Recipient.ID_MORE)
-        || getId().equals(Recipient.ID_VIDEO));
+        || getId().equals(Recipient.ID_VIDEO)
+        || getId().equals(Recipient.ID_CALL_ROULETTE));
   }
 
   @Override public void setAnimateAdd(boolean animateAdd) {

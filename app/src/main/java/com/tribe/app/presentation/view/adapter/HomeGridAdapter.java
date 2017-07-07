@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.MoreFriendsAdapterDelegate;
@@ -32,6 +33,7 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
   private UserConnectedGridAdapterDelegate userConnectedGridAdapterDelegate;
   private MoreFriendsAdapterDelegate moreFriendsAdapterDelegate;
   private VideoDemoAdapterDelegate videoDemoAdapterDelegate;
+
 
   // VARIABLES
   private List<Recipient> items;

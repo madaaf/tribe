@@ -6,6 +6,7 @@ import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 01/27/2017.
@@ -16,6 +17,7 @@ public class LiveCacheImpl implements LiveCache {
   private ObservableRxHashMap<String, Boolean> onlineMap;
   private ObservableRxHashMap<String, Boolean> liveMap;
   private ObservableRxHashMap<String, Invite> inviteMap;
+  private PublishSubject<String> roomCallRouletteMap = PublishSubject.create();
 
   @Inject public LiveCacheImpl(Context context) {
     this.context = context;
@@ -66,5 +68,13 @@ public class LiveCacheImpl implements LiveCache {
 
   @Override public Map<String, Invite> getInviteMap() {
     return inviteMap.getMap();
+  }
+
+  @Override public Observable<String> getRandomRoomAssignedValue() {
+    return roomCallRouletteMap;
+  }
+
+  @Override public void putRandomRoomAssigned(String assignedRoomId) {
+    roomCallRouletteMap.onNext(assignedRoomId);
   }
 }

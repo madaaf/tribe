@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -105,6 +106,11 @@ public class LocalPeerView extends FrameLayout {
 
   public GlLocalView getGlLocalView() {
     return glLocalView;
+  }
+
+  public boolean isFreeze() {
+    // TODO REDO
+    return false;
   }
 
   /////////////////

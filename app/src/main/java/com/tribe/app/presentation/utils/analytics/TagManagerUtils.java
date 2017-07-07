@@ -51,6 +51,7 @@ public class TagManagerUtils {
   public static final String Logout = "Logout";
   public static final String Calls = "Calls";
   public static final String Notification_AppOpen = "Notification_AppOpen";
+  public static final String FacebookGate = "FacebookGate";
 
   /**
    * ERRORS
@@ -87,6 +88,7 @@ public class TagManagerUtils {
   public static final String NOTIFICATIONS_ENABLED = "notifications_enabled";
   public static final String LEFT = "left";
   public static final String DURATION = "duration";
+  public static final String IS_CALL_ROULETTE = "is_call_roulette";
   public static final String TYPE = "type";
   public static final String DIRECT = "direct";
   public static final String AVERAGE_MEMBERS_COUNT = "average_members_count";
@@ -122,6 +124,10 @@ public class TagManagerUtils {
   public static final String USER_HAS_PROFILE_PICTURE = "user_has_profile_picture";
   public static final String USER_ONBOARDING_COMPLETED = "user_onboarding_completed";
   public static final String USER_LANGUAGE = "user_language";
+  public static final String FB_ACTION_CANCELLED = "cancelled";
+  public static final String FB_ACTION_FAILED = "failed";
+  public static final String FB_ACTION_SUCCESS = "succeeded";
+  public static final String FB_ACTION = "action";
 
   /**
    * MIXPANEL PROPERTIES

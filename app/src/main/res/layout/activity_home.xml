@@ -25,7 +25,7 @@
     <com.tribe.app.presentation.view.component.TopBarView
         android:id="@+id/topBarView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_bar_height"
+        android:layout_height="@dimen/top_bar_height_expend"
         android:background="@null"
         />
 
@@ -51,6 +51,7 @@
         android:elevation="10dp"
         android:foreground="@drawable/selectable_button"
         />
+
 
   </com.tribe.app.presentation.view.component.TopBarContainer>
 

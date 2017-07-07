@@ -54,7 +54,6 @@
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|center_horizontal"
       android:layout_margin="@dimen/vertical_margin_small"
-      android:maxLines="1"
       android:text="@string/live_drag_friends"
       style="@style/Body.Two.White"
       />

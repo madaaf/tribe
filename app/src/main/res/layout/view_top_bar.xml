@@ -31,13 +31,15 @@
   <FrameLayout
       android:id="@+id/viewTopBarContainer"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
+
+      android:padding="10dp"
       >
     <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/viewAvatar"
         android:layout_width="@dimen/avatar_size_smaller"
         android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="center_vertical|left"
+        android:layout_gravity="left"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:clickable="true"
         android:foreground="@drawable/selectable_button_oval_light"
@@ -52,7 +54,7 @@
         android:id="@+id/btnInvite"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_gravity="right|center_vertical"
+        android:layout_gravity="right"
         android:background="@drawable/selectable_button_all_rounded_5_green"
         android:clickable="true"
         android:drawablePadding="8dp"
@@ -69,7 +71,7 @@
         android:id="@+id/imgClose"
         android:layout_width="@dimen/avatar_size_smaller"
         android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="right|center_vertical"
+        android:layout_gravity="right"
         android:layout_marginRight="@dimen/horizontal_margin_small"
         android:background="@drawable/bg_top_bar_circle"
         android:clickable="true"
@@ -82,11 +84,8 @@
         android:id="@+id/btnSearch"
         android:layout_width="match_parent"
         android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="center_vertical|left"
         android:background="@drawable/shape_rect_rounded_white_10"
         android:clickable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:paddingLeft="@dimen/horizontal_margin_smaller"
         >
 
@@ -103,8 +102,8 @@
           android:id="@+id/editTextSearch"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:layout_marginLeft="20dp"
-          android:layout_marginRight="15dp"
+          android:layout_marginEnd="15dp"
+          android:layout_marginStart="20dp"
           android:background="@null"
           android:gravity="center_vertical"
           android:hint="@string/topbar_search"
@@ -153,9 +152,46 @@
             android:src="@drawable/picto_synch_contacts"
             />
       </FrameLayout>
-
-
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/callRoulette"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/shape_rect_white_corner"
+        android:clickable="true"
+        android:gravity="center"
+        android:padding="15dp"
+        >
+
+      <com.tribe.app.presentation.view.widget.DiceView
+          android:id="@+id/diceLayout"
+          android:layout_width="45dp"
+          android:layout_height="45dp"
+          android:layout_marginEnd="4dp"
+          app:diceType="homeGrid"
+          />
+
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginStart="5dp"
+          android:gravity="center"
+          android:paddingEnd="50dp"
+          android:paddingStart="50dp"
+          android:text="@string/roll_the_dice_grid_button"
+          android:textSize="15sp"
+          style="@style/Body.Two.Black"
+          />
+
+    </FrameLayout>
   </FrameLayout>
+
+
 </merge>

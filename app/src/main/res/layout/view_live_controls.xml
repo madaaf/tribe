@@ -48,6 +48,20 @@
       />
 
   <ImageView
+      android:id="@+id/btnScreenshot"
+      android:layout_width="@dimen/nav_icon_size"
+      android:layout_height="@dimen/nav_icon_size"
+      android:layout_gravity="left|top"
+      android:layout_marginStart="10dp"
+      android:layout_marginTop="5dp"
+      android:background="@drawable/selectable_button_oval_light"
+      android:clickable="true"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_screenshot_bck"
+      android:visibility="invisible"
+      />
+
+  <ImageView
       android:id="@+id/btnLeave"
       android:layout_width="@dimen/nav_icon_size"
       android:layout_height="@dimen/nav_icon_size"
@@ -59,100 +73,6 @@
       android:scaleType="centerInside"
       android:src="@drawable/picto_leave_live"
       />
-
-  <FrameLayout
-      android:id="@+id/layoutContainerParamLive"
-      android:layout_width="match_parent"
-      android:layout_height="150dp"
-      android:layout_gravity="bottom"
-      android:layout_marginBottom="5dp"
-      android:visibility="visible"
-      >
-
-    <LinearLayout
-        android:id="@+id/layoutGame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="5dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        >
-
-      <FrameLayout
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          >
-        <ImageView
-            android:id="@+id/btnNewGameOn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0"
-            android:background="@drawable/selectable_button_oval_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_game_live_close"
-            android:visibility="visible"
-            />
-
-        <ImageView
-            android:id="@+id/btnNewGameOff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selectable_button_oval_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_new_game"
-            android:visibility="visible"
-            />
-      </FrameLayout>
-
-      <ImageView
-          android:id="@+id/imgTriangleCloseGames"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="0.5dp"
-          android:layout_marginTop="-10dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_triangle_close"
-          android:visibility="gone"
-          />
-    </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/btnInviteLive"
-        android:layout_gravity="end|bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
-        >
-
-      <ImageView
-          android:id="@+id/imgAddIcon"
-          android:layout_width="@dimen/nav_icon_size"
-          android:layout_height="@dimen/nav_icon_size"
-          android:layout_marginEnd="-22dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_addbtn"
-          />
-
-      <ImageView
-          android:id="@+id/imgPlusAddIcon"
-          android:layout_width="@dimen/nav_icon_little_size"
-          android:layout_height="@dimen/nav_icon_little_size"
-          android:layout_marginTop="5dp"
-          android:layout_toEndOf="@id/imgAddIcon"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_plus_addbtn"
-          />
-
-    </RelativeLayout>
-
-
-  </FrameLayout>
 
   <LinearLayout
       android:id="@+id/layoutContainerParamExtendedLive"
@@ -273,4 +193,98 @@
           />
     </LinearLayout>
   </LinearLayout>
+  <FrameLayout
+      android:id="@+id/layoutContainerParamLive"
+      android:layout_width="match_parent"
+      android:layout_height="150dp"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="5dp"
+      android:visibility="visible"
+      >
+
+    <LinearLayout
+        android:id="@+id/layoutGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="5dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        >
+
+      <FrameLayout
+          android:id="@+id/btnNewGame"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          >
+        <ImageView
+            android:id="@+id/btnNewGameOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:background="@drawable/selectable_button_oval_light"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_game_live_close"
+            android:visibility="visible"
+            />
+
+        <ImageView
+            android:id="@+id/btnNewGameOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selectable_button_oval_light"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_new_game"
+            android:visibility="visible"
+            />
+      </FrameLayout>
+
+      <ImageView
+          android:id="@+id/imgTriangleCloseGames"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="0.5dp"
+          android:layout_marginTop="-10dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_triangle_close"
+          android:visibility="gone"
+          />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnInviteLive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/selectable_button_oval_light"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        >
+
+      <ImageView
+          android:id="@+id/imgAddIcon"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:layout_marginEnd="-22dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_addbtn"
+          />
+
+      <ImageView
+          android:id="@+id/imgPlusAddIcon"
+          android:layout_width="@dimen/nav_icon_little_size"
+          android:layout_height="@dimen/nav_icon_little_size"
+          android:layout_marginTop="5dp"
+          android:layout_toEndOf="@id/imgAddIcon"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_plus_addbtn"
+          />
+
+    </RelativeLayout>
+
+
+  </FrameLayout>
 </merge>

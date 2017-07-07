@@ -25,11 +25,15 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
@@ -43,6 +47,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -111,6 +117,9 @@ public class LiveContainer extends FrameLayout {
   private boolean hiddenControls = false;
   boolean enabledTimer = false;
   private int nbrCall = 0;
+  private boolean blockOpenInviteView;
+  private String userUnder13 = "";
+
   // DIMENS
   private int thresholdEnd;
 
@@ -124,6 +133,7 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Float> onAlpha = PublishSubject.create();
   private PublishSubject<Boolean> onDropEnabled = PublishSubject.create();
   private PublishSubject<TileView> onDropped = PublishSubject.create();
+  private PublishSubject<Void> onDroppedUnder13 = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveContainer(Context context) {
@@ -257,7 +267,13 @@ public class LiveContainer extends FrameLayout {
   //    TOUCH EVENTS   //
   ///////////////////////
 
+  public void blockOpenInviteView(boolean block) {
+    blockOpenInviteView = block;
+    viewLive.blockOpenInviteView(block);
+  }
+
   @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (blockOpenInviteView) return false;
     boolean isTouchInInviteView =
         ev.getRawX() >= screenUtils.getWidthPx() - screenUtils.dpToPx(LiveInviteView.WIDTH);
     if (!isEnabled() || hiddenControls) {
@@ -432,6 +448,9 @@ public class LiveContainer extends FrameLayout {
           onDropped.onNext(draggedTileView);
           enabledTimer = true;
           resetTimer();
+          if (draggedTileView.getRecipient().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+            viewInviteLive.diceDragued();
+          }
           viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         }
@@ -471,8 +490,45 @@ public class LiveContainer extends FrameLayout {
     }
   }
 
+  private void displayDialogAgePerm(String displayName) {
+    DialogFactory.dialog(getContext(),
+        getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_title, displayName),
+        getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_message),
+        getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_action), null)
+        .filter(x -> x == true)
+        .subscribe();
+  }
+
+  public void getUserUnder13(String fbId, String displayName) {
+    if ((fbId == null || fbId.isEmpty()) && !displayName.equals(
+        getContext().getString(R.string.roll_the_dice_invite_title))) {
+      userUnder13 = displayName;
+    }
+  }
+
+  private boolean isGuestUnder13(User user) {
+    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName());
+    getUserUnder13(user.getFbid(), user.getDisplayName());
+    if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
+      displayDialogAgePerm(userUnder13);
+      return true;
+    } else if (viewLive.getSource().equals(SOURCE_CALL_ROULETTE) || viewLive.isDiceDragedInRoom()) {
+      if (user.getFbid() == null || user.getFbid().isEmpty()) {
+        displayDialogAgePerm(user.getDisplayName());
+        return true;
+      }
+    }
+    return false;
+  }
+
   private void createTileForDrag() {
     viewInviteLive.setDragging(true);
+
+    Friendship friendshiip = (Friendship) currentTileView.getRecipient();
+    if (isGuestUnder13(friendshiip.getFriend())) {
+      onDroppedUnder13.onNext(null);
+      return;
+    }
 
     draggedTileView = new TileView(getContext(), currentTileView.getType());
     draggedTileView.setBackground(currentTileView.getPosition());
@@ -671,5 +727,9 @@ public class LiveContainer extends FrameLayout {
 
   public Observable<TileView> onDropped() {
     return onDropped;
+  }
+
+  public Observable<Void> onDroppedUnder13() {
+    return onDroppedUnder13;
   }
 }

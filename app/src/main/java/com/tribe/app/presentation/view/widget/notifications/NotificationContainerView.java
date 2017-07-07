@@ -23,7 +23,10 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -32,9 +35,11 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -53,7 +58,7 @@ public class NotificationContainerView extends FrameLayout {
 
   @StringDef({
       DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF,
-      DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF
+      DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF, DISPLAY_FB_CALL_ROULETTE
   }) public @interface NotifType {
   }
 
@@ -62,6 +67,7 @@ public class NotificationContainerView extends FrameLayout {
   public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
   public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
   public static final String DISPLAY_SHARING_NOTIF = "DISPLAY_SHARING_NOTIF";
+  public static final String DISPLAY_FB_CALL_ROULETTE = "DISPLAY_FB_CALL_ROULETTE";
 
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
   private final static int NOTIF_ANIM_DURATION_ENTER = 500;
@@ -84,11 +90,13 @@ public class NotificationContainerView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private GestureDetectorCompat gestureScanner;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   private PublishSubject<Void> onSendInvitations = PublishSubject.create();
+  private PublishSubject<Void> onFacebookSuccess = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -115,6 +123,19 @@ public class NotificationContainerView extends FrameLayout {
         case DISPLAY_INVITE_NOTIF:
           notifIsDisplayed = displayInviteNotification();
           break;
+        case DISPLAY_FB_CALL_ROULETTE:
+          initRemoteConfig();
+          container.setOnTouchListener((v, event) -> {
+            return false;
+          });
+          textDismiss.setOnTouchListener((v, event) -> {
+            Bundle properties = new Bundle();
+            properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_CANCELLED);
+            tagManager.trackEvent(TagManagerUtils.FacebookGate, properties);
+            hideView();
+            return false;
+          });
+          notifIsDisplayed = displayFbCallRouletteNotification();
       }
     } else if (data != null) {
       notifIsDisplayed = displayNotifFromIntent(data);
@@ -122,6 +143,22 @@ public class NotificationContainerView extends FrameLayout {
 
     initSubscription();
     return notifIsDisplayed;
+  }
+
+  private void initRemoteConfig() {
+    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
+    FirebaseRemoteConfigSettings configSettings =
+        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
+            .build();
+    firebaseRemoteConfig.setConfigSettings(configSettings);
+    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        firebaseRemoteConfig.activateFetched();
+        String text =
+            firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_decline_action);
+        if (!text.isEmpty()) textDismiss.setText(text);
+      }
+    });
   }
 
   ///////////////////
@@ -153,6 +190,13 @@ public class NotificationContainerView extends FrameLayout {
     return true;
   }
 
+  private boolean displayFbCallRouletteNotification() {
+    viewToDisplay = new FBCallRouletteNotificationView(context);
+    addViewInContainer(viewToDisplay);
+    animateView();
+    return true;
+  }
+
   private void initView(Context context) {
     this.context = context;
     initDependencyInjector();
@@ -167,6 +211,10 @@ public class NotificationContainerView extends FrameLayout {
     if (viewToDisplay == null) return;
     subscriptions.add(viewToDisplay.onHideNotification().subscribe(aVoid -> {
       hideView();
+    }));
+
+    subscriptions.add(viewToDisplay.onFacebookSuccess().subscribe(aVoid -> {
+      onFacebookSuccess.onNext(null);
     }));
 
     subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
@@ -207,7 +255,7 @@ public class NotificationContainerView extends FrameLayout {
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
-            textDismiss.setVisibility(VISIBLE);//SOEF
+            textDismiss.setVisibility(VISIBLE);
           }
         })
         .start();
@@ -290,6 +338,10 @@ public class NotificationContainerView extends FrameLayout {
 
   public Observable<Void> onSendInvitations() {
     return onSendInvitations;
+  }
+
+  public Observable<Void> onFacebookSuccess() {
+    return onFacebookSuccess;
   }
 
   ///////////////////

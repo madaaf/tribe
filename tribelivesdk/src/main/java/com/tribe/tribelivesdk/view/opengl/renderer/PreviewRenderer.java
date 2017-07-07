@@ -326,7 +326,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   public void draw(int index, int rotation) {
     //float ratioH =
     //    (float) cameraInfo.getCaptureFormat().height / cameraInfo.getCaptureFormat().width;
-    float ratioH = 720f / 1280f;
+    float ratioH = surfaceWidth / surfaceHeight;
     float[][] shape = ulseeManager.getShape();
     float[][] pose = ulseeManager.getPose();
     float[][] confidence = ulseeManager.getConfidence();

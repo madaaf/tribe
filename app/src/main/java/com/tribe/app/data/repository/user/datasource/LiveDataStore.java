@@ -15,4 +15,6 @@ public interface LiveDataStore {
   Observable<Map<String, Boolean>> liveMap();
 
   Observable<Map<String, Invite>> inviteMap();
+
+  Observable<String> callRouletteMap();
 }

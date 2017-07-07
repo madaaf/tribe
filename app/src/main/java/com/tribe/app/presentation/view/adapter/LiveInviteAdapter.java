@@ -4,9 +4,13 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
@@ -19,6 +23,8 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -33,25 +39,33 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   private UserInviteAdapterDelegate userInviteAdapterDelegate;
   private UserLiveCoInviteAdapterDelegate userLiveCoInviteAdapterDelegate;
   private UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate;
+  private CallRouletteAdapterDelegate callRouletteAdapterDelegate;
 
   // VARIABLES
   private List<Recipient> items;
   private boolean allEnabled = true;
+  private Context context;
+  private boolean diceDragued = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Inject public LiveInviteAdapter(Context context) {
+    this.context = context;
     screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
         .screenUtils();
     delegatesManager = new RxAdapterDelegatesManager<>();
 
     delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
         new UserInviteHeaderAdapterDelegate(context));
+
     delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, false, true));
 
     userInviteAdapterDelegate = new UserInviteAdapterDelegate(context);
     delegatesManager.addDelegate(userInviteAdapterDelegate);
+
+    callRouletteAdapterDelegate = new CallRouletteAdapterDelegate(context);
+    delegatesManager.addDelegate(callRouletteAdapterDelegate);
 
     userLiveCoInviteAdapterDelegate = new UserLiveCoInviteAdapterDelegate(context);
     delegatesManager.addDelegate(userLiveCoInviteAdapterDelegate);
@@ -84,6 +98,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
 
   public void releaseSubscriptions() {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+
     delegatesManager.releaseSubscriptions();
   }
 
@@ -91,12 +106,27 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     return items.size();
   }
 
-  public void setItems(List<Recipient> items) {
+  private Friendship getDiceItem() {
+    User friend = new User(Recipient.ID_CALL_ROULETTE);
+    friend.setDisplayName(context.getResources().getString(R.string.roll_the_dice_invite_title));
+    Friendship friendship = new Friendship(Recipient.ID_CALL_ROULETTE);
+    friendship.setFriend(friend);
+    return friendship;
+  }
+
+  public void setItems(List<Recipient> items, @LiveActivity.Source String source) {
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
+    if (!diceDragued && source != null && !source.equals(SOURCE_CALL_ROULETTE)) {
+      this.items.add(getDiceItem());
+    }
     this.items.addAll(items);
     ListUtils.addEmptyItems(screenUtils, this.items);
     notifyDataSetChanged();
+  }
+
+  public void diceDragued() {
+    diceDragued = true;
   }
 
   public Recipient getItemAtPosition(int position) {

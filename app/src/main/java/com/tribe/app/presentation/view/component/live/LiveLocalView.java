@@ -24,6 +24,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -246,8 +247,8 @@ public class LiveLocalView extends FrameLayout {
     viewShareOverlay.hide();
   }
 
-  public void showShareOverlay() {
-    viewShareOverlay.show();
+  public void showShareOverlay(@LiveActivity.Source String source) {
+    viewShareOverlay.show(source);
   }
 
   public void dispose() {

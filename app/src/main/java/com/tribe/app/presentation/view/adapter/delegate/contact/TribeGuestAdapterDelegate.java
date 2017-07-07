@@ -43,7 +43,6 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
         new TribeGuestViewHolder(layoutInflater.inflate(R.layout.item_guest, parent, false));
 
     vh.btnAdd.setOnClickListener(v -> onClickInvite.onNext(vh.itemView));
-
     return vh;
   }
 

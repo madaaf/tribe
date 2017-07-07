@@ -22,9 +22,10 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.adapter.ContactAdapter;
+import com.tribe.app.presentation.view.adapter.NotifContactAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -43,7 +44,7 @@ public class UserInfosNotificationView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject ContactAdapter contactAdapter;
+  @Inject NotifContactAdapter contactAdapter;
 
   @BindView(R.id.recyclerViewContacts) RecyclerView recyclerViewContacts;
 
@@ -113,7 +114,7 @@ public class UserInfosNotificationView extends FrameLayout {
   }
 
   private void setTimer() {
-    timerSubscription = Observable.timer(5, TimeUnit.SECONDS)
+    timerSubscription = Observable.timer(10, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> hideView());
   }
@@ -176,7 +177,25 @@ public class UserInfosNotificationView extends FrameLayout {
   // OBSERVABLES //
   /////////////////
 
-  public Observable<View> onInvite() {
+  public Observable<TribeGuest> onClickMore() {
+    return contactAdapter.onClickMore().map(view -> {
+      TribeGuest guest;
+      Object obj =
+          contactAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view));
+      if (obj instanceof Recipient) {
+        guest = new TribeGuest(((Recipient) obj).getId());
+        guest.setDisplayName(((Recipient) obj).getDisplayName());
+        return guest;
+      } else if (obj instanceof User) {
+        guest = new TribeGuest(((User) obj).getId());
+        guest.setDisplayName(((User) obj).getDisplayName());
+        return guest;
+      }
+      return null;
+    });
+  }
+
+  public Observable<View> onClickInvite() {
     return contactAdapter.onClickInvite();
   }
 
@@ -188,12 +207,6 @@ public class UserInfosNotificationView extends FrameLayout {
 
   public Observable<Recipient> onUnblock() {
     return contactAdapter.onUnblock()
-        .map(view -> ((Recipient) contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildAdapterPosition(view))));
-  }
-
-  public Observable<Recipient> onHangLive() {
-    return contactAdapter.onHangLive()
         .map(view -> ((Recipient) contactAdapter.getItemAtPosition(
             recyclerViewContacts.getChildAdapterPosition(view))));
   }

@@ -162,6 +162,4 @@ public class Friendship extends Recipient implements Comparable<Friendship>, Ser
 
     return name1.compareTo(name2);
   }
-
-
 }

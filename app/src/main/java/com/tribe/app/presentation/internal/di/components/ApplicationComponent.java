@@ -68,6 +68,7 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapter
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -94,6 +95,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
@@ -149,6 +151,8 @@ public interface ApplicationComponent {
 
   void inject(TopBarView topBarView);
 
+  void inject(DiceView diceView);
+
   void inject(VisualizerView visualizerView);
 
   void inject(TextViewAnimatedDots textViewAnimatedDots);
@@ -176,6 +180,8 @@ public interface ApplicationComponent {
   void inject(LiveInviteView liveInviteView);
 
   void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
+
+  void inject(CallRouletteAdapterDelegate callRouletteAdapterDelegate);
 
   void inject(LiveWaitingView liveWaitingView);
 

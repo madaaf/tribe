@@ -15,6 +15,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.component.TileView;
@@ -107,7 +108,7 @@ public class LiveInviteView extends FrameLayout {
   private void initResources() {
 
   }
-  
+
   public void setFadeInEffet(float fadeInEffet) {
     setAlpha(fadeInEffet);
   }
@@ -116,7 +117,7 @@ public class LiveInviteView extends FrameLayout {
     layoutManager = new LiveInviteLayoutManager(getContext());
     recyclerViewFriends.setLayoutManager(layoutManager);
     recyclerViewFriends.setItemAnimator(null);
-    adapter.setItems(new ArrayList<>());
+    adapter.setItems(new ArrayList<>(), null);
     recyclerViewFriends.setAdapter(adapter);
 
     // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
@@ -156,14 +157,19 @@ public class LiveInviteView extends FrameLayout {
   // PUBLIC //
   ///////////
 
-  public void renderFriendshipList(List<Friendship> friendshipList) {
+  public void renderFriendshipList(List<Friendship> friendshipList,
+      @LiveActivity.Source String source) {
     this.friendshipList.clear();
     this.friendshipList.addAll(friendshipList);
-    if (!dragging) adapter.setItems(this.friendshipList);
+    if (!dragging) adapter.setItems(this.friendshipList, source);
   }
 
   public void removeItemAtPosition(int position) {
     //adapter.removeItem(position);
+  }
+
+  public void diceDragued() {
+    adapter.diceDragued();
   }
 
   public void setDragging(boolean dragging) {

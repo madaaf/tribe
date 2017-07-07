@@ -279,7 +279,8 @@ public class AdapterDelegatesManager<T> {
     delegate.onBindViewHolder(items, position, viewHolder);
   }
 
-  public void onBindViewHolder(@NonNull T items, @NonNull RecyclerView.ViewHolder viewHolder, int position, List<Object> payloads) {
+  public void onBindViewHolder(@NonNull T items, @NonNull RecyclerView.ViewHolder viewHolder,
+      int position, List<Object> payloads) {
     AdapterDelegate<T> delegate = delegates.get(viewHolder.getItemViewType());
     if (delegate == null) {
       if (fallbackDelegate == null) {

@@ -177,4 +177,8 @@ public interface UserDataStore {
   Observable<String> getRoomLink(String roomId);
 
   Observable<Boolean> bookRoomLink(String linkId);
+
+  Observable<Void> roomAcceptRandom(String roomId);
+
+  Observable<Boolean> reportUser(String userId);
 }

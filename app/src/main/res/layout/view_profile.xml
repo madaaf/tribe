@@ -82,19 +82,6 @@
     <include layout="@layout/view_separator_simple"/>
 
     <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionVideo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionBody="@string/profile_video_demo_subtitle"
-        app:actionImage="@drawable/picto_play_video"
-        app:actionTitle="@string/profile_video_demo_title"
-        app:actionType="image"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
