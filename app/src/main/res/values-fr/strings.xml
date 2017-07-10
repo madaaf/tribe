@@ -585,8 +585,12 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Lance le prochain challenge !</string>
 	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
-	<string name="game_challenges_turn">À %1$s de...</string>
+	<string name="game_challenges_turn">est challengé</string>
+	<string name="game_challenges_your_turn">A ton tour d\'être challengé</string>
 	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
+	<string name="game_challenges_re_roll_notification">%1$s a changé de challenge!</string>
+	<string name="game_scream">Scream !</string>
+	<string name="game_scream_rule">Criez pour atteindre les sommets !</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -619,7 +623,7 @@
 	<string name="unlock_roll_the_dice_facebook_action">Débloquer avec Facebook</string>
 	<string name="unlock_roll_the_dice_locked">Vous devez avoir 13 ans\nou plus pour lancer le dé!</string>
 	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s a peut être moins de 13 ans</string>
-	<string name="unlock_roll_the_dice_impossible_popup_message">Vos amis doivent avoir au moins 13 ans pour participer à un call où le Dé est activé.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_message">Votre ami n\'est pas Facebook connecté. Nous avons affiché une pop-up Facebook sur son téléphone pour se Facebook connecter. Cela nous permettra de nous assurer que votre ami a bien 13 ans ou plus pour continuer cet appel incluant le Dé.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_action">Bon à savoir</string>
 	<string name="unlock_roll_the_dice_disclaimer">Nous ne publions rien sur Facebook</string>
 	<string name="unlock_roll_the_dice_decline_action">Non, je ne veux pas de nouvelles rencontres</string>

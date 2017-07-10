@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
-import com.tribe.tribelivesdk.view.opengl.filter.ColorFilterBW;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
@@ -62,7 +62,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   // TO PUT SOMEWHERE ELSE
   private String basePath, maskAndGlassesPath;
-  private int maskFrameNumber = 1, stickerFrameNumber = 1;
+  ;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -160,23 +160,20 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     boolean isFrontFacing = cameraInfo.isFrontFacing();
 
     String mouthUp = maskAndGlassesPath + "mouthUp.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(1, mouthUp, 51, true, 0.3f, isFrontFacing);
+    UlsFaceAR.insertAnimationObjectAtIndex(1, mouthUp, 51, true, 0.4f, isFrontFacing);
 
     String mouthDown = maskAndGlassesPath + "mouthBottom.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(2, mouthDown, 64, true, 0.35f, isFrontFacing);
+    UlsFaceAR.insertAnimationObjectAtIndex(2, mouthDown, 64, true, 0.4f, isFrontFacing);
 
     String glasses = maskAndGlassesPath + "sunglass_newyear.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(3, glasses, 27, true, 0.6f, isFrontFacing);
+    UlsFaceAR.insertAnimationObjectAtIndex(3, glasses, 27, true, 1.5f, isFrontFacing);
 
     String cheek = maskAndGlassesPath + "cosmetic_new.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(4, cheek, 29, true, 1f, isFrontFacing);
+    UlsFaceAR.insertAnimationObjectAtIndex(4, cheek, 29, true, 2f, isFrontFacing);
 
-    String chickHead =
-        maskAndGlassesPath + "ChickenHead" + Integer.toString(maskFrameNumber) + ".png";
-    UlsFaceAR.insertAnimationObjectAtIndex(5, chickHead, 91, true, 0.5f, isFrontFacing);
-    maskFrameNumber = maskFrameNumber < 7 ? maskFrameNumber + 1 : 1;
+    String chickHead = maskAndGlassesPath + "ChickenHead.png";
+    UlsFaceAR.insertAnimationObjectAtIndex(5, chickHead, 91, true, 0.8f, isFrontFacing);
 
-    stickerFrameNumber = 1;
     UlsFaceAR.cleanAnimationObjectAtIndex(6);
   }
 
@@ -220,7 +217,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @Override public void onSurfaceCreated(final EGLConfig config) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    filter = new ColorFilterBW();
+    filter = (ImageFilter) FilterManager.getInstance(context).getFilter();
 
     resetMatrix();
 
@@ -324,9 +321,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   public void draw(int index, int rotation) {
-    //float ratioH =
-    //    (float) cameraInfo.getCaptureFormat().height / cameraInfo.getCaptureFormat().width;
-    float ratioH = surfaceWidth / surfaceHeight;
+    float ratioH = (surfaceWidth / surfaceHeight);
     float[][] shape = ulseeManager.getShape();
     float[][] pose = ulseeManager.getPose();
     float[][] confidence = ulseeManager.getConfidence();

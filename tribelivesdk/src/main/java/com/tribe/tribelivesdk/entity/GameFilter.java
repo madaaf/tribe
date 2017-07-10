@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.entity;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 
 /**
  * Created by tiago on 02/06/2017.
@@ -14,7 +15,7 @@ public class GameFilter {
   protected int drawableRes;
   private boolean activated = false;
 
-  public GameFilter(Context context, String id, String name, int drawableRes) {
+  public GameFilter(Context context, String id, String name, @DrawableRes int drawableRes) {
     this.context = context;
     this.id = id;
     this.name = name;

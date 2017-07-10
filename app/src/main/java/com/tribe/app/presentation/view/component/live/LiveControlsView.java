@@ -36,10 +36,10 @@ import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.entity.GameFilter;
-import com.tribe.tribelivesdk.filters.Filter;
-import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -103,11 +103,11 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
 
   @BindViews({
-      R.id.btnCameraOn, R.id.btnCameraOff, R.id.btnOrientationCamera, R.id.btnMicro, R.id.btnExpand
+      R.id.btnExpand, R.id.layoutGame, R.id.btnInviteLive
   }) List<View> viewToHideFilters;
 
   @BindViews({
-      R.id.btnInviteLive, R.id.btnExpand
+      R.id.btnInviteLive, R.id.btnExpand, R.id.layoutFilter
   }) List<View> viewToHideGames;
 
   @BindView(R.id.btnLeave) ImageView btnLeave;
@@ -147,7 +147,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
   private PublishSubject<Void> onClickNotify = PublishSubject.create();
   private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
-  private PublishSubject<Filter> onClickFilter = PublishSubject.create();
+  private PublishSubject<FilterMask> onClickFilter = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
@@ -248,7 +248,7 @@ public class LiveControlsView extends FrameLayout {
     recyclerViewFilters.setTranslationY(screenUtils.getHeightPx() >> 1);
 
     subscriptions.add(filtersAdapter.onClick()
-        .map(view -> (Filter) filtersAdapter.getItemAtPosition(
+        .map(view -> (FilterMask) filtersAdapter.getItemAtPosition(
             recyclerViewFilters.getChildLayoutPosition(view)))
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(filter -> {
@@ -348,8 +348,7 @@ public class LiveControlsView extends FrameLayout {
     if (cameraEnabled) {
       setXTranslateAnimation(btnExpand, widthExtended);
     } else {
-      setXTranslateAnimation(btnExpand,
-          layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation);
     }
   }
 
@@ -371,9 +370,9 @@ public class LiveControlsView extends FrameLayout {
     clearTimer();
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
-    int toY = -screenUtils.dpToPx(70);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
+    int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
         .translationX(toX)
@@ -396,6 +395,8 @@ public class LiveControlsView extends FrameLayout {
       hideView(v);
     }
 
+    if (currentGameView != null) hideView(currentGameView);
+
     showRecyclerView(recyclerViewFilters);
   }
 
@@ -417,6 +418,8 @@ public class LiveControlsView extends FrameLayout {
     for (View v : viewToHideFilters) {
       showView(v);
     }
+
+    if (currentGameView != null) showView(currentGameView);
 
     hideRecyclerView(recyclerViewFilters);
   }
@@ -647,7 +650,7 @@ public class LiveControlsView extends FrameLayout {
         .subscribe(aLong -> {
           setXTranslateAnimation(btnMicro, -xTranslation);
           setXTranslateAnimation(btnExpand,
-              layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+              layoutContainerParamExtendedLive.getWidth() - xTranslation);
         }));
 
     onClickCameraEnable.onNext(null);
@@ -813,7 +816,7 @@ public class LiveControlsView extends FrameLayout {
     return onNotifyAnimationDone;
   }
 
-  public Observable<Filter> onClickFilter() {
+  public Observable<FilterMask> onClickFilter() {
     return onClickFilter;
   }
 

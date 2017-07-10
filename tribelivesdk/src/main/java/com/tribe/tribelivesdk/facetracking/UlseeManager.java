@@ -170,8 +170,7 @@ public class UlseeManager {
 
           return frame;
         })
-        .filter(frame1 -> ((alive == 0 || System.currentTimeMillis() - timeDoFaceDet >= 30000) &&
-            !faceDetectionRunning))
+        .filter(frame1 -> (alive == 0 && !faceDetectionRunning))
         .flatMap(frame -> Observable.just(frame)
             .subscribeOn(Schedulers.from(frameExecutor))
             .map(frame1 -> {

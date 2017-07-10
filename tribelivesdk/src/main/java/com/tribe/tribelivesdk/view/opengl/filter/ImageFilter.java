@@ -1,10 +1,12 @@
 package com.tribe.tribelivesdk.view.opengl.filter;
 
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.opengl.GLES11Ext;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.annotation.StringRes;
+import com.tribe.tribelivesdk.entity.GameFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.OpenGLES;
 import com.tribe.tribelivesdk.view.opengl.gles.Texture;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
@@ -34,10 +36,16 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
-/**
- * Created by laputan on 16/11/1.
- */
-public abstract class ImageFilter {
+public class ImageFilter extends FilterMask {
+
+  @StringDef({ IMAGE_FILTER_TAN, IMAGE_FILTER_BW, IMAGE_FILTER_HIPSTER, IMAGE_FILTER_NONE })
+  public @interface ImageFilterType {
+  }
+
+  public static final String IMAGE_FILTER_TAN = "IMAGE_FILTER_TAN";
+  public static final String IMAGE_FILTER_BW = "IMAGE_FILTER_BW";
+  public static final String IMAGE_FILTER_HIPSTER = "IMAGE_FILTER_HIPSTER";
+  public static final String IMAGE_FILTER_NONE = "IMAGE_FILTER_NONE";
 
   public static final String DEFAULT_ATTRIB_POSITION = "aPosition";
   public static final String DEFAULT_ATTRIB_TEXTURE_COORDINATE = "aTextureCoord";
@@ -46,8 +54,6 @@ public abstract class ImageFilter {
   private final OpenGLES openGLES = OpenGLES.getInstance();
 
   private int textureTarget = -1;
-  private int name;
-  private int drawableId;
 
   protected static final String DEFAULT_VERTEX_SHADER =
       "uniform mat4 uMVPMatrix;\n" +
@@ -114,30 +120,24 @@ public abstract class ImageFilter {
 
   private final HashMap<String, Integer> mHandleMap = new HashMap<>();
 
-  public ImageFilter() {
+  public ImageFilter(Context context, @ImageFilterType String id, String name,
+      @DrawableRes int drawableId) {
+    super(context, id, name, drawableId);
     mVertexShaderSource = DEFAULT_VERTEX_SHADER;
     mFragmentShaderSource = DEFAULT_FRAGMENT_SHADER_DUMMY;
   }
 
-  public Bitmap renderImage(Bitmap bitmap) {
-    return bitmap;
-  }
-
-  public ImageFilter(@StringRes int name, @DrawableRes int drawableId) {
-    this(name, drawableId, DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER_DUMMY);
-  }
-
-  public ImageFilter(@StringRes int name, @DrawableRes int drawableId,
-      @StringRes final int vertexShaderSourceResId,
+  public ImageFilter(Context context, @ImageFilterType String id, String name,
+      @DrawableRes int drawableId, @StringRes final int vertexShaderSourceResId,
       @StringRes final int fragmentShaderSourceResId) {
-    this(name, drawableId, ImgSdk.getAppResource().getString(vertexShaderSourceResId),
+    this(context, id, name, drawableId, ImgSdk.getAppResource().getString(vertexShaderSourceResId),
         ImgSdk.getAppResource().getString(fragmentShaderSourceResId));
   }
 
-  public ImageFilter(@StringRes int name, @DrawableRes int drawableId,
-      final String vertexShaderSource, final String fragmentShaderSource) {
-    this.name = name;
-    this.drawableId = drawableId;
+  public ImageFilter(Context context, @ImageFilterType String id, String name,
+      @DrawableRes int drawableId, final String vertexShaderSource,
+      final String fragmentShaderSource) {
+    super(context, id, name, drawableId);
     mVertexShaderSource = vertexShaderSource;
     mFragmentShaderSource = fragmentShaderSource;
   }

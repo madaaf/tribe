@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import com.tribe.app.R;
 import com.tribe.tribelivesdk.entity.GameFilter;
-import com.tribe.tribelivesdk.filters.Filter;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import java.util.List;
 
 /**
@@ -17,7 +17,7 @@ public class FilterAdapterDelegate extends GamesFiltersAdapterDelegate {
   }
 
   @Override public boolean isForViewType(@NonNull List<GameFilter> items, int position) {
-    return items.get(position) instanceof Filter;
+    return items.get(position) instanceof FilterMask;
   }
 
   protected int getLayoutId() {

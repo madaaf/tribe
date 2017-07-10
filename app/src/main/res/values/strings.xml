@@ -585,8 +585,12 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Put on the next challenge!</string>
 	<string name="game_challenges_next_impossible">Only others can next your challenge!</string>
-	<string name="game_challenges_turn">%1$s\'s turn to...</string>
+	<string name="game_challenges_turn">is challenged</string>
+	<string name="game_challenges_your_turn">Your turn to be challenged</string>
 	<string name="game_challenges_menu_re_roll">Change the challenge</string>
+	<string name="game_challenges_re_roll_notification">%1$s put on a new challenge!</string>
+	<string name="game_scream">Scream!</string>
+	<string name="game_scream_rule">Scream to reach the top!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -619,7 +623,7 @@
 	<string name="unlock_roll_the_dice_facebook_action">Unlock with Facebook</string>
 	<string name="unlock_roll_the_dice_locked">You need to be 13 years old\nor over to roll the dice.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s may be under 13 years old</string>
-	<string name="unlock_roll_the_dice_impossible_popup_message">Your friends need to be 13 years old or older to join a call where the Dice is enabled.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_message">Your friend is not Facebook connected yet. We just prompt a Facebook popup to let your friend connect with Facebook. It will let us make sure your friend is 13 years old or older to join this call where the Dice is enabled.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_action">Good to know</string>
 	<string name="unlock_roll_the_dice_disclaimer">We don\'t post anything on Facebook</string>
 	<string name="unlock_roll_the_dice_decline_action">No, I don\'t want to meet new people</string>

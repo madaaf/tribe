@@ -6,9 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.support.multidex.MultiDex;
-import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.digits.sdk.android.Digits;
@@ -46,12 +44,13 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
-import com.tribe.tribelivesdk.filters.Filter;
-import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
-import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
+import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.LutColorFilter;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
@@ -62,11 +61,6 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import timber.log.Timber;
@@ -256,14 +250,15 @@ public class AndroidApplication extends Application {
 
   private void initFilters() {
     FilterManager filterManager = FilterManager.getInstance(this);
-    List<Filter> filterList = new ArrayList<>();
-    filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_TAN, "Tan", R.drawable.picto_filter_tan,
-        R.drawable.lut_settled));
+    List<FilterMask> filterList = new ArrayList<>();
     filterList.add(
-        new LUT3DFilter(this, LUT3DFilter.LUT3D_HIPSTER, "Hipster", R.drawable.picto_filter_hipster,
-            R.drawable.lut_pola669));
-    filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_BW, "B&W", R.drawable.picto_filter_bw,
-        R.drawable.lut_litho));
+        new LutColorFilter(this, ImageFilter.IMAGE_FILTER_BW, "B&W", R.drawable.picto_filter_bw,
+            com.tribe.tribelivesdk.R.drawable.lut_bw));
+    filterList.add(
+        new LutColorFilter(this, ImageFilter.IMAGE_FILTER_TAN, "Tan", R.drawable.picto_filter_tan,
+            com.tribe.tribelivesdk.R.drawable.lut_settled));
+    filterList.add(new LutColorFilter(this, ImageFilter.IMAGE_FILTER_HIPSTER, "Hipster",
+        R.drawable.picto_filter_hipster, com.tribe.tribelivesdk.R.drawable.lut_pola669));
     filterManager.initFilters(filterList);
   }
 

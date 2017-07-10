@@ -1,5 +1,6 @@
 package com.tribe.tribelivesdk.view.opengl.filter;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
@@ -9,7 +10,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
-import android.support.annotation.StringRes;
+import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.view.opengl.utils.BitmapFactoryUtils;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 
@@ -26,10 +27,6 @@ import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glTexParameterf;
 import static android.opengl.GLES20.glTexParameteri;
 
-/**
- * Created by laputan on 16/12/21.
- */
-
 public class LutColorFilter extends ImageFilter {
 
   private final int[] textures = new int[1];
@@ -40,8 +37,6 @@ public class LutColorFilter extends ImageFilter {
   @NonNull private final Paint intensityPaint;
 
   private final static String FILTER_UNIFORM_SAMPLER = "lutTexture";
-
-  @NonNull private final Resources resources;
 
   private boolean lutBitmapInOpenGlUse = false;
 
@@ -81,15 +76,14 @@ public class LutColorFilter extends ImageFilter {
       "     gl_FragColor = mix(newColor1, newColor2, fract(blueColor));\n" +
       " }";
 
-  public LutColorFilter(@StringRes int name, @DrawableRes int thumbnailRes,
-      @DrawableRes @RawRes int lutResource) {
-    super(name, thumbnailRes, DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER_DUMMY);
+  public LutColorFilter(Context context, @ImageFilterType String id, String name,
+      @DrawableRes int thumbnailRes, @DrawableRes @RawRes int lutResource) {
+    super(context, id, name, thumbnailRes, DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER_DUMMY);
 
     intensityPaint = new Paint();
     intensityPaint.setAntiAlias(false);
     intensityPaint.setFilterBitmap(false);
 
-    resources = ImgSdk.getAppResource();
     lutResourceId = lutResource;
   }
 
@@ -121,7 +115,7 @@ public class LutColorFilter extends ImageFilter {
    * @return a lut to change Image Colors.
    */
   @Nullable public synchronized Bitmap getLutBitmap() {
-    return BitmapFactoryUtils.decodeResource(resources, lutResourceId);
+    return BitmapFactoryUtils.decodeResource(context.getResources(), lutResourceId);
   }
 
   @Override protected synchronized void setup(final int texTarget) {
