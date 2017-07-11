@@ -553,23 +553,27 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {
       Game currentGame = gameManager.getCurrentGame();
       Game game = gameManager.getGameById(pairSessionGame.second);
+      if (game != null) {
 
-      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+        String displayName = getDisplayNameFromSession(pairSessionGame.first);
 
-      if (currentGame == null) {
-        displayStartGameNotification(game.getName(), displayName);
-      } else {
-        displayReRollGameNotification(displayName);
+        if (currentGame == null) {
+          displayStartGameNotification(game.getName(), displayName);
+        } else {
+          displayReRollGameNotification(displayName);
+        }
+
+        startGame(game, false);
       }
-
-      startGame(game, false);
     }));
 
     tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
       Game game = gameManager.getGameById(pairSessionGame.second);
-      String displayName = getDisplayNameFromSession(pairSessionGame.first);
-      displayStopGameNotification(game.getName(), displayName);
-      stopGame(false);
+      if (game != null) {
+        String displayName = getDisplayNameFromSession(pairSessionGame.first);
+        displayStopGameNotification(game.getName(), displayName);
+        stopGame(false);
+      }
     }));
 
     tempSubscriptions.add(
