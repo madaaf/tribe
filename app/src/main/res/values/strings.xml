@@ -204,6 +204,10 @@
 	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
 	
 	<!-- Onboarding Phone -->
+	<string name="onboarding_baseline">Have fun, together.</string>
+	<string name="onboarding_enter_options">Enter with</string>
+	<string name="onboarding_option_facebook">Facebook</string>
+	<string name="onboarding_option_phone_number">Phone number</string>
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>

@@ -11,6 +11,7 @@ import butterknife.Unbinder;
 import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.view.opengl.GlCameraPreview;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -62,6 +63,10 @@ public class GlLocalView extends FrameLayout {
   public void initOnNewCameraInfo(Observable<CameraInfo> obs) {
     subscriptions.add(obs.observeOn(AndroidSchedulers.mainThread())
         .subscribe(cameraInfo -> onNewCameraInfo(cameraInfo)));
+  }
+
+  public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
+    glCameraPreview.initSwitchFilterSubscription(obs);
   }
 
   private void onNewCameraInfo(CameraInfo cameraInfo) {

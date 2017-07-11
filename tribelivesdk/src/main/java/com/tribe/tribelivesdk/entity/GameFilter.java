@@ -57,4 +57,13 @@ public class GameFilter {
   public boolean isActivated() {
     return activated;
   }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || !(o instanceof GameFilter)) return false;
+
+    GameFilter that = (GameFilter) o;
+
+    return id != null ? id.equals(that.id) : that.id == null;
+  }
 }

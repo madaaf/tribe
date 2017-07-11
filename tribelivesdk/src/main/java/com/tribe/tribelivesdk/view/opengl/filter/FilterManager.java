@@ -1,6 +1,9 @@
 package com.tribe.tribelivesdk.view.opengl.filter;
 
 import android.content.Context;
+import android.os.Environment;
+import com.tribe.tribelivesdk.util.FileUtils;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import rx.subscriptions.CompositeSubscription;
@@ -22,15 +25,42 @@ public class FilterManager {
   }
 
   // VARIABLES
+  private Context context;
   private List<FilterMask> filterList;
   private FilterMask current;
+  private String basePath, maskAndGlassesPath;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
   public FilterManager(Context context) {
+    this.context = context;
     filterList = new ArrayList<>();
+    basePath = Environment.getExternalStorageDirectory().toString() +
+        File.separator +
+        "ULSee" +
+        File.separator;
+    maskAndGlassesPath = basePath + "maskAndGlasses" + File.separator;
+
+    new Thread(() -> checkFiles()).start();
   }
+
+  ///////////////
+  //  PRIVATE  //
+  ///////////////
+
+  private void checkFiles() {
+    File clipartDir = new File(maskAndGlassesPath);
+    if (!clipartDir.exists()) {
+      clipartDir.mkdirs();
+    }
+
+    FileUtils.copyFolderFromAssets(context, "ulsdata", maskAndGlassesPath);
+  }
+
+  ///////////////
+  //  PUBLIC  //
+  ///////////////
 
   public void initFilters(List<FilterMask> filters) {
     filterList.clear();
@@ -54,6 +84,10 @@ public class FilterManager {
 
   public FilterMask getFilter() {
     return current;
+  }
+
+  public String getMaskAndGlassesPath() {
+    return maskAndGlassesPath;
   }
 
   public void dispose() {

@@ -1,29 +1,23 @@
 package com.tribe.tribelivesdk.view.opengl.renderer;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
+import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
-import com.tribe.tribelivesdk.view.opengl.utils.UlsFaceAR;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.uls.renderer.GLRenderMask;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -54,15 +48,13 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private float cameraRatio = 1, surfaceWidth = 1, surfaceHeight = 1;
   private final RendererCallback rendererCallback;
   private ImageFilter filter;
+  private FaceMaskFilter maskFilter;
   private GLRenderMask maskRender;
   private UlsRenderer ulsRenderer;
+  private FilterManager filterManager;
   private ByteBuffer byteBuffer;
   private Object frameListenerLock = new Object();
   private Frame frame;
-
-  // TO PUT SOMEWHERE ELSE
-  private String basePath, maskAndGlassesPath;
-  ;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -76,12 +68,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     rendererCallback = callback;
     mainHandler = new Handler(context.getMainLooper());
     ulseeManager = UlseeManager.getInstance(context);
-    basePath = Environment.getExternalStorageDirectory().toString() +
-        File.separator +
-        "ULSee" +
-        File.separator;
-    maskAndGlassesPath = basePath + "maskAndGlasses" + File.separator;
-    checkFiles();
+    filterManager = FilterManager.getInstance(context);
   }
 
   private void computeMatrices() {
@@ -107,97 +94,45 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     Matrix.setLookAtM(vMatrix, 0, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   }
 
-  private void checkFiles() {
-    File clipartDir = new File(maskAndGlassesPath);
-    if (!clipartDir.exists()) {
-      clipartDir.mkdirs();
-    }
-
-    copyFolder("ulsdata");
-  }
-
-  private void copyFolder(String path) {
-    AssetManager assetManager = context.getResources().getAssets();
-    String[] files = null;
-    try {
-      files = assetManager.list(path);
-    } catch (Exception e) {
-      Log.e("read ulsdata ERROR", "" + path + " : " + e.toString());
-      e.printStackTrace();
-    }
-    if (files != null) {
-      for (String file : files) {
-        InputStream in;
-        OutputStream out;
-        try {
-          File targetFile = new File(maskAndGlassesPath + file);
-          if (!targetFile.exists()) {
-            in = assetManager.open(path + "/" + file);
-            out = new FileOutputStream(maskAndGlassesPath + file);
-            copyFile(in, out);
-            in.close();
-            out.flush();
-            out.close();
-          }
-        } catch (Exception e) {
-          Log.e("copy ulsdata ERROR", e.toString());
-          e.printStackTrace();
+  public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
+    subscriptions.add(obs.subscribe(filterMask -> {
+      if (filterMask instanceof ImageFilter) {
+        if (maskFilter != null) {
+          maskFilter.release();
+          maskFilter = null;
         }
-        Log.d("copy ", "" + path + "/" + file);
+
+        ImageFilter shader = (ImageFilter) filterMask;
+        if (shader == null || shader.equals(filter)) {
+          shader = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
+        }
+
+        if (this.filter != null) {
+          this.filter.release();
+        }
+
+        this.filter = shader;
+      } else {
+        if (maskFilter != null) maskFilter.release();
+
+        if (this.filter != null) {
+          this.filter.release();
+          this.filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
+        }
+
+        FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
+        faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
+            cameraInfo.isFrontFacing());
+        maskFilter = (FaceMaskFilter) filterMask;
       }
-    }
-  }
 
-  private void copyFile(InputStream in, OutputStream out) throws IOException {
-    byte[] buffer = new byte[1024];
-    int read;
-    while ((read = in.read(buffer)) != -1) {
-      out.write(buffer, 0, read);
-    }
-  }
-
-  public void computeMask() {
-    boolean isFrontFacing = cameraInfo.isFrontFacing();
-
-    String mouthUp = maskAndGlassesPath + "mouthUp.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(1, mouthUp, 51, true, 0.4f, isFrontFacing);
-
-    String mouthDown = maskAndGlassesPath + "mouthBottom.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(2, mouthDown, 64, true, 0.4f, isFrontFacing);
-
-    String glasses = maskAndGlassesPath + "sunglass_newyear.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(3, glasses, 27, true, 1.5f, isFrontFacing);
-
-    String cheek = maskAndGlassesPath + "cosmetic_new.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(4, cheek, 29, true, 2f, isFrontFacing);
-
-    String chickHead = maskAndGlassesPath + "ChickenHead.png";
-    UlsFaceAR.insertAnimationObjectAtIndex(5, chickHead, 91, true, 0.8f, isFrontFacing);
-
-    UlsFaceAR.cleanAnimationObjectAtIndex(6);
-  }
-
-  @Nullable public ImageFilter getFilter() {
-    return filter;
-  }
-
-  public void setFilter(@Nullable final ImageFilter shader) {
-    if (shader != null && shader.equals(this.filter)) {
-      return;
-    }
-
-    if (this.filter != null) {
-      this.filter.release();
-    }
-
-    this.filter = shader;
-    rendererCallback.requestRender();
+      rendererCallback.requestRender();
+    }));
   }
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
     this.cameraInfo = cameraInfo;
     computeMatrices();
-    computeMask();
 
     if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
@@ -271,11 +206,13 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (previewTexture != null && byteBuffer != null) {
       filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
 
-      int rotation = ulseeManager.getCameraRotation();
-      if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
+      if (maskFilter != null) {
+        int rotation = ulseeManager.getCameraRotation();
+        if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
 
-      for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
-        draw(i, rotation);
+        for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
+          draw(i, rotation);
+        }
       }
       //synchronized (frameListenerLock) {
       // //TODO not efficient enough, find another way to grab the frames, maybe through JNI?

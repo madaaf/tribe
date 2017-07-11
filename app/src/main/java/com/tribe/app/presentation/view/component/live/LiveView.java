@@ -390,6 +390,8 @@ public class LiveView extends FrameLayout {
   }
 
   private void initSubscriptions() {
+    viewLocalLive.initSwitchFilterSubscription(viewControlsLive.onClickFilter());
+
     persistentSubscriptions.add(onHiddenControls().doOnNext(aBoolean -> {
       hiddenControls = aBoolean;
       viewLocalLive.hideControls(!hiddenControls);
@@ -461,9 +463,6 @@ public class LiveView extends FrameLayout {
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> refactorNotifyButton()));
     }));
-
-    persistentSubscriptions.add(
-        viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
       displayStartGameNotification(game.getName(), user.getDisplayName());

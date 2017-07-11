@@ -254,6 +254,7 @@ public class LiveControlsView extends FrameLayout {
         .subscribe(filter -> {
           filtersAdapter.updateSelected(filter);
           filterManager.setCurrentFilter(filter);
+          onClickFilter.onNext(filter);
         }));
   }
 
@@ -367,7 +368,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void showFilters() {
     filtersMenuOn = true;
-    clearTimer();
 
     int toX =
         (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
@@ -402,7 +402,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideFilters() {
     filtersMenuOn = false;
-    setTimer();
 
     layoutFilter.animate()
         .translationX(0)

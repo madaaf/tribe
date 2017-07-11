@@ -47,10 +47,12 @@ import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
+import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.LutColorFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.RabbitFaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
@@ -252,13 +254,15 @@ public class AndroidApplication extends Application {
     FilterManager filterManager = FilterManager.getInstance(this);
     List<FilterMask> filterList = new ArrayList<>();
     filterList.add(
-        new LutColorFilter(this, ImageFilter.IMAGE_FILTER_BW, "B&W", R.drawable.picto_filter_bw,
-            com.tribe.tribelivesdk.R.drawable.lut_bw));
-    filterList.add(
         new LutColorFilter(this, ImageFilter.IMAGE_FILTER_TAN, "Tan", R.drawable.picto_filter_tan,
             com.tribe.tribelivesdk.R.drawable.lut_settled));
     filterList.add(new LutColorFilter(this, ImageFilter.IMAGE_FILTER_HIPSTER, "Hipster",
         R.drawable.picto_filter_hipster, com.tribe.tribelivesdk.R.drawable.lut_pola669));
+    filterList.add(
+        new LutColorFilter(this, ImageFilter.IMAGE_FILTER_BW, "B&W", R.drawable.picto_filter_bw,
+            com.tribe.tribelivesdk.R.drawable.lut_bw));
+    filterList.add(new RabbitFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_SUNGLASSES, "Sunglasses",
+        R.drawable.picto_mask_round_glasses));
     filterManager.initFilters(filterList);
   }
 

@@ -33,6 +33,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.view.LocalPeerView;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -75,7 +76,6 @@ public class LiveLocalView extends FrameLayout {
   private PublishSubject<TribePeerMediaConfiguration> onEnableCamera = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
   private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
-  private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onClick = PublishSubject.create();
   private PublishSubject<Void> onStopGame = PublishSubject.create();
@@ -95,7 +95,7 @@ public class LiveLocalView extends FrameLayout {
     init();
   }
 
-  public void init() {
+  private void init() {
     initResources();
     initDependencyInjector();
 
@@ -125,7 +125,6 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
     viewPeerLocal.initSwitchCameraSubscription(onSwitchCamera);
-    viewPeerLocal.initSwitchFilterSubscription(onSwitchFilter);
     viewPeerLocal.initStartGameSubscription(onStartGame);
     viewPeerLocal.initStopGameSubscription(onStopGame);
 
@@ -219,15 +218,13 @@ public class LiveLocalView extends FrameLayout {
   //   PUBLIC    //
   /////////////////
 
+  public void initSwitchFilterSubscription(Observable<FilterMask> observable) {
+    viewPeerLocal.initSwitchFilterSubscription(observable);
+  }
+
   public void switchCamera() {
     if (!hiddenControls) {
       onSwitchCamera.onNext(null);
-    }
-  }
-
-  public void switchFilter() {
-    if (!hiddenControls) {
-      onSwitchFilter.onNext(null);
     }
   }
 

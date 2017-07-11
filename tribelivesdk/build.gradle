@@ -9,6 +9,10 @@ android {
   compileSdkVersion globalConfiguration.getAt("androidCompileSdkVersion")
   buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
 
+  aaptOptions {
+    cruncherEnabled = false
+  }
+
   defaultConfig {
     renderscriptTargetApi globalConfiguration.getAt("androidMinSdkVersion")
     renderscriptSupportModeEnabled true

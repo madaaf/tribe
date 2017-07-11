@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -23,7 +23,7 @@ public class LocalPeerView extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Observable<Void> onSwitchCamera;
-  private Observable<Void> onSwitchFilter;
+  private Observable<FilterMask> onSwitchFilter;
   private Observable<Game> onStartGame;
   private Observable<Void> onStopGame;
   private Observable<TribePeerMediaConfiguration> onEnableCamera;
@@ -80,8 +80,9 @@ public class LocalPeerView extends FrameLayout {
     //    .subscribe(aVoid -> setMirror(frontFacing)));
   }
 
-  public void initSwitchFilterSubscription(Observable<Void> obs) {
+  public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     onSwitchFilter = obs;
+    glLocalView.initSwitchFilterSubscription(onSwitchFilter);
   }
 
   public void initStartGameSubscription(Observable<Game> obs) {
@@ -129,7 +130,7 @@ public class LocalPeerView extends FrameLayout {
     return onSwitchCamera;
   }
 
-  public Observable<Void> onSwitchFilter() {
+  public Observable<FilterMask> onSwitchFilter() {
     return onSwitchFilter;
   }
 

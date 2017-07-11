@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.entity.CameraInfo;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultConfigChooser;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultContextFactory;
 import com.tribe.tribelivesdk.view.opengl.gles.GlTextureView;
@@ -22,12 +23,12 @@ import static android.opengl.GLES20.glGetIntegerv;
 
 public class GlCameraPreview extends GlTextureView implements PreviewRenderer.RendererCallback {
 
+  private final PreviewRenderer renderer;
   private int maxTextureSize;
   private int maxRenderBufferSize;
-
   private boolean isInitialized = false;
 
-  @NonNull protected final PreviewRenderer renderer;
+  // OBSERVABLE
 
   public GlCameraPreview(@NonNull final Context context) {
     this(context, null);
@@ -49,6 +50,10 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
 
   @Override public void onSurfaceChanged(int width, int height) {
 
+  }
+
+  public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
+    renderer.initSwitchFilterSubscription(obs);
   }
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
