@@ -500,8 +500,8 @@ public class LiveContainer extends FrameLayout {
   }
 
   public void getUserUnder13(String fbId, String displayName) {
-    if ((fbId == null || fbId.isEmpty()) && !displayName.equals(
-        getContext().getString(R.string.roll_the_dice_invite_title))) {
+    if ((fbId == null || fbId.isEmpty()) && (displayName != null && !displayName.equals(
+        getContext().getString(R.string.roll_the_dice_invite_title)))) {
       userUnder13 = displayName;
     }
   }
