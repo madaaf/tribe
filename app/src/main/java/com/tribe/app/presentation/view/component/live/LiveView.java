@@ -31,6 +31,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
@@ -148,6 +149,7 @@ public class LiveView extends FrameLayout {
   private boolean isFirstToJoin = true;
   private double duration;
   private GameManager gameManager;
+  private String fbId;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, tooltipFirstGameHeight;
@@ -170,6 +172,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<Void> onRollTheDiceReceivedWithNoFbId = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
@@ -553,23 +556,27 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {
       Game currentGame = gameManager.getCurrentGame();
       Game game = gameManager.getGameById(pairSessionGame.second);
+      if (game != null) {
 
-      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+        String displayName = getDisplayNameFromSession(pairSessionGame.first);
 
-      if (currentGame == null) {
-        displayStartGameNotification(game.getName(), displayName);
-      } else {
-        displayReRollGameNotification(displayName);
+        if (currentGame == null) {
+          displayStartGameNotification(game.getName(), displayName);
+        } else {
+          displayReRollGameNotification(displayName);
+        }
+
+        startGame(game, false);
       }
-
-      startGame(game, false);
     }));
 
     tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
       Game game = gameManager.getGameById(pairSessionGame.second);
-      String displayName = getDisplayNameFromSession(pairSessionGame.first);
-      displayStopGameNotification(game.getName(), displayName);
-      stopGame(false);
+      if (game != null) {
+        String displayName = getDisplayNameFromSession(pairSessionGame.first);
+        displayStopGameNotification(game.getName(), displayName);
+        stopGame(false);
+      }
     }));
 
     tempSubscriptions.add(
@@ -642,8 +649,12 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(
         room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
           Timber.d("rollTheDice received");
-          viewRoom.onRollTheDiceReceived();
-          live.setDiceDragedInRoom(true);
+          if (FacebookUtils.isLoggedIn()) {
+            viewRoom.onRollTheDiceReceived();
+            live.setDiceDragedInRoom(true);
+          } else {
+            onRollTheDiceReceivedWithNoFbId.onNext(null);
+          }
         }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
@@ -771,8 +782,17 @@ public class LiveView extends FrameLayout {
     viewControlsLive.reduceParam();
   }
 
+  public String getFbId() {
+    return fbId;
+  }
+
+  public Live getLive() {
+    return live;
+  }
+
   public void start(Live live) {
     this.live = live;
+    this.fbId = live.getFbId();
 
     room = tribeLiveSDK.newRoom();
     room.initLocalStream(viewLocalLive.getLocalPeerView());
@@ -1461,6 +1481,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
+  }
+
+  public Observable<Void> onRollTheDiceReceivedWithNoFbId() {
+    return onRollTheDiceReceivedWithNoFbId;
   }
 }
 

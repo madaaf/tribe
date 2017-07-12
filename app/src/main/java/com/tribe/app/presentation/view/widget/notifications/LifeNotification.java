@@ -31,6 +31,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class LifeNotification extends FrameLayout {
 
+  @Inject User user;
   @Inject StateManager stateManager;
   @Inject ScreenUtils screenUtils;
   @Inject Navigator navigator;

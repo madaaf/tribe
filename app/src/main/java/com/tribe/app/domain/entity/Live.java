@@ -31,6 +31,7 @@ public class Live implements Serializable {
   private boolean intent = false;
   private @LiveActivity.Source String source;
   private boolean isDiceDragedInRoom = false;
+  private String fbId;
 
   private Live(Builder builder) {
     this.id = builder.id;
@@ -49,6 +50,7 @@ public class Live implements Serializable {
     this.url = builder.url;
     this.source = builder.source;
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
+    this.fbId = builder.fbId;
   }
 
   public String getId() {
@@ -65,6 +67,10 @@ public class Live implements Serializable {
 
   public String getUserName() {
     return userName;
+  }
+
+  public String getFbId() {
+    return fbId;
   }
 
   public void setUserName(String userName) {
@@ -227,6 +233,7 @@ public class Live implements Serializable {
     private boolean isDiceDragedInRoom = false;
     private String userName;
     private @LiveActivity.Source String source;
+    private String fbId;
 
     public Builder(String id, String subId) {
       this.id = id;
@@ -237,6 +244,12 @@ public class Live implements Serializable {
       this.displayName = displayName;
       return this;
     }
+
+    public Builder fbId(String fbId) {
+      this.fbId = fbId;
+      return this;
+    }
+
 
     public Builder userName(String userName) {
       this.userName = userName;

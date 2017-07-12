@@ -51,6 +51,7 @@ public class TagManagerUtils {
   public static final String Logout = "Logout";
   public static final String Calls = "Calls";
   public static final String Notification_AppOpen = "Notification_AppOpen";
+  public static final String FacebookGate = "FacebookGate";
 
   /**
    * ERRORS
@@ -123,6 +124,10 @@ public class TagManagerUtils {
   public static final String USER_HAS_PROFILE_PICTURE = "user_has_profile_picture";
   public static final String USER_ONBOARDING_COMPLETED = "user_onboarding_completed";
   public static final String USER_LANGUAGE = "user_language";
+  public static final String FB_ACTION_CANCELLED = "cancelled";
+  public static final String FB_ACTION_FAILED = "failed";
+  public static final String FB_ACTION_SUCCESS = "succeeded";
+  public static final String FB_ACTION = "action";
 
   /**
    * MIXPANEL PROPERTIES

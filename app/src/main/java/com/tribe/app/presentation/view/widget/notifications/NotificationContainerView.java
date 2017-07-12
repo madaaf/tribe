@@ -35,6 +35,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
@@ -128,6 +129,9 @@ public class NotificationContainerView extends FrameLayout {
             return false;
           });
           textDismiss.setOnTouchListener((v, event) -> {
+            Bundle properties = new Bundle();
+            properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_CANCELLED);
+            tagManager.trackEvent(TagManagerUtils.FacebookGate, properties);
             hideView();
             return false;
           });

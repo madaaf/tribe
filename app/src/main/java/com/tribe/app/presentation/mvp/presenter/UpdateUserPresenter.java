@@ -51,7 +51,7 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
     values.add(new Pair<>(UserRealm.FBID, fbid));
 
-    getUpdateUserView().showLoading();
+    if (getUpdateUserView() != null) getUpdateUserView().showLoading();
 
     updateUserSubscriber = new UpdateUserSubscriber();
     updateUser.prepare(values);
@@ -90,13 +90,13 @@ public abstract class UpdateUserPresenter implements Presenter {
     if (!FacebookUtils.isLoggedIn()) {
       rxFacebook.requestLogin().subscribe(loginResult -> {
         if (FacebookUtils.isLoggedIn()) {
-          getUpdateUserView().successFacebookLogin();
+          if (getUpdateUserView() != null)  getUpdateUserView().successFacebookLogin();
         } else {
-          getUpdateUserView().errorFacebookLogin();
+          if (getUpdateUserView() != null)  getUpdateUserView().errorFacebookLogin();
         }
       });
     } else {
-      getUpdateUserView().successFacebookLogin();
+      if (getUpdateUserView() != null)  getUpdateUserView().successFacebookLogin();
     }
   }
 
@@ -118,12 +118,12 @@ public abstract class UpdateUserPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
-      getUpdateUserView().hideLoading();
+      if (getUpdateUserView() != null)  getUpdateUserView().hideLoading();
     }
 
     @Override public void onNext(User user) {
-      getUpdateUserView().hideLoading();
-      getUpdateUserView().successUpdateUser(user);
+      if (getUpdateUserView() != null)  getUpdateUserView().hideLoading();
+      if (getUpdateUserView() != null)  getUpdateUserView().successUpdateUser(user);
     }
   }
 
