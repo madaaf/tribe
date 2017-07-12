@@ -88,6 +88,7 @@ import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -354,6 +355,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLiveContainer.dispose();
     viewLive.dispose(false);
 
+    FilterManager.getInstance(this).setToDefault();
     gameManager.setCurrentGame(null);
 
     if (audioManager != null) {

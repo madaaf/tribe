@@ -66,8 +66,7 @@ public class FilterManager {
     filterList.clear();
     filterList.addAll(filters);
 
-    current = filterList.get(0);
-    current.setActivated(true);
+    setToDefault();
   }
 
   public void setCurrentFilter(FilterMask filter) {
@@ -88,6 +87,11 @@ public class FilterManager {
 
   public String getMaskAndGlassesPath() {
     return maskAndGlassesPath;
+  }
+
+  public void setToDefault() {
+    current = filterList.get(0);
+    current.setActivated(true);
   }
 
   public void dispose() {

@@ -52,7 +52,15 @@ import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.LutColorFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.BearFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.CatFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.FlowerCrownFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.NeonSkullFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.OrangeSunglassesFaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.mask.RabbitFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.RoundSunglassesFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.TattooFaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.UnicornFaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
@@ -252,6 +260,7 @@ public class AndroidApplication extends Application {
 
   private void initFilters() {
     FilterManager filterManager = FilterManager.getInstance(this);
+
     List<FilterMask> filterList = new ArrayList<>();
     filterList.add(
         new LutColorFilter(this, ImageFilter.IMAGE_FILTER_TAN, "Tan", R.drawable.picto_filter_tan,
@@ -261,8 +270,29 @@ public class AndroidApplication extends Application {
     filterList.add(
         new LutColorFilter(this, ImageFilter.IMAGE_FILTER_BW, "B&W", R.drawable.picto_filter_bw,
             com.tribe.tribelivesdk.R.drawable.lut_bw));
-    filterList.add(new RabbitFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_SUNGLASSES, "Sunglasses",
-        R.drawable.picto_mask_round_glasses));
+    filterList.add(new RabbitFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_RABBIT, "Rabbit",
+        R.drawable.picto_mask_rabbit));
+    filterList.add(
+        new OrangeSunglassesFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_ORANGE_SUNGLASSES,
+            "Orange Sunglasses", R.drawable.picto_mask_orange_glasses));
+    filterList.add(new TattooFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_TATTOO, "Tattoo",
+        R.drawable.picto_mask_tattoo));
+    filterList.add(
+        new FlowerCrownFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_FLOWER_CROWN, "Flower Crown",
+            R.drawable.picto_mask_flower_crown));
+    filterList.add(new BearFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_BEAR, "Bear",
+        R.drawable.picto_mask_bear));
+    filterList.add(
+        new RoundSunglassesFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_SUNGLASSES, "Sunglasses",
+            R.drawable.picto_mask_round_glasses));
+    filterList.add(new UnicornFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_UNICORN, "Unicorn",
+        R.drawable.picto_mask_unicorn));
+    filterList.add(new CatFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_CAT, "Cat",
+        R.drawable.picto_mask_cat));
+    filterList.add(
+        new NeonSkullFaceMaskFilter(this, FaceMaskFilter.FACE_MASK_NEON_SKULL, "Neon Skull",
+            R.drawable.picto_mask_skull));
+
     filterManager.initFilters(filterList);
   }
 

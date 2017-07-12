@@ -96,29 +96,27 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     subscriptions.add(obs.subscribe(filterMask -> {
+      if (filterMask == null || filterMask.equals(filter) || filterMask.equals(maskFilter)) {
+        clearImageFilter();
+        clearMask();
+        filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
+        return;
+      }
+
       if (filterMask instanceof ImageFilter) {
-        if (maskFilter != null) {
-          maskFilter.release();
-          maskFilter = null;
-        }
+        clearMask();
 
         ImageFilter shader = (ImageFilter) filterMask;
         if (shader == null || shader.equals(filter)) {
           shader = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
         }
 
-        if (this.filter != null) {
-          this.filter.release();
-        }
+        clearImageFilter();
 
         this.filter = shader;
       } else {
-        if (maskFilter != null) maskFilter.release();
-
-        if (this.filter != null) {
-          this.filter.release();
-          this.filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
-        }
+        clearMask();
+        clearImageFilter();
 
         FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
         faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
@@ -152,7 +150,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @Override public void onSurfaceCreated(final EGLConfig config) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    filter = (ImageFilter) FilterManager.getInstance(context).getFilter();
+    filter = (ImageFilter) filterManager.getFilter();
 
     resetMatrix();
 
@@ -257,8 +255,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     }
   }
 
-  public void draw(int index, int rotation) {
+  private void draw(int index, int rotation) {
     float ratioH = (surfaceWidth / surfaceHeight);
+    int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
     float[][] shape = ulseeManager.getShape();
     float[][] pose = ulseeManager.getPose();
     float[][] confidence = ulseeManager.getConfidence();
@@ -273,38 +272,32 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       ulsRenderer.ulsDrawFrame(null, index, ratioH, false);
     } else {
       if (pose != null && poseQuality[index] > 0.0f) {
-        maskRender.drawMask(shape[index], confidence[index], 5.0f, rotation,
-            cameraInfo.getCaptureFormat().width, cameraInfo.getCaptureFormat().height,
+        maskRender.drawMask(shape[index], confidence[index], 5.0f, rotation, width, height,
             ulsRenderer.getMaskFile(), isFrontFacing);
         if (isFrontFacing) {
-          ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
-              cameraInfo.getCaptureFormat().height, shape[index], confidence[index], pupils[index],
-              gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation);
+          ulsRenderer.setTrackParam(width, height, shape[index], confidence[index], pupils[index],
+              gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation, ratioH);
         } else {
           float[] flippedFaceShape = new float[99 * 2];
           flipFaceShape(flippedFaceShape, shape[index]);
 
-          ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
-              cameraInfo.getCaptureFormat().height, flippedFaceShape, confidence[index],
+          ulsRenderer.setTrackParam(width, height, flippedFaceShape, confidence[index],
               pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
-              cameraRotation);
+              cameraRotation, ratioH);
         }
 
         ulsRenderer.ulsDrawFrame(null, index, ratioH, true);
       }
 
       if (isFrontFacing) {
-        ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
-            cameraInfo.getCaptureFormat().height, shape[index], confidence[index], pupils[index],
-            gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation);
+        ulsRenderer.setTrackParam(width, height, shape[index], confidence[index], pupils[index],
+            gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation, ratioH);
       } else {
         float[] flippedFaceShape = new float[99 * 2];
         flipFaceShape(flippedFaceShape, shape[index]);
 
-        ulsRenderer.setTrackParam(cameraInfo.getCaptureFormat().width,
-            cameraInfo.getCaptureFormat().height, flippedFaceShape, confidence[index],
-            pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
-            cameraRotation);
+        ulsRenderer.setTrackParam(width, height, flippedFaceShape, confidence[index], pupils[index],
+            gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation, ratioH);
       }
     }
 
@@ -312,10 +305,26 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {
+    int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
+
     if (oriFaceShape == null) return;
     for (int i = 0; i < 99; i++) {
-      flippedFaceShape[i * 2] = cameraInfo.getCaptureFormat().width - oriFaceShape[i * 2];
-      flippedFaceShape[i * 2 + 1] = cameraInfo.getCaptureFormat().height - oriFaceShape[i * 2 + 1];
+      flippedFaceShape[i * 2] = width - oriFaceShape[i * 2];
+      flippedFaceShape[i * 2 + 1] = height - oriFaceShape[i * 2 + 1];
+    }
+  }
+
+  private void clearMask() {
+    if (maskFilter != null) {
+      maskFilter.release();
+      maskFilter = null;
+    }
+  }
+
+  private void clearImageFilter() {
+    if (maskFilter != null) {
+      maskFilter.release();
+      maskFilter = null;
     }
   }
 
