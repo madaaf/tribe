@@ -605,16 +605,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       // reRollTheDiceFromLiveRoom();
     }));
 
-    subscriptions.add(viewLive.unlockRollTheDice().subscribe(s -> {
-      Timber.e("SOEF 1 : unlockRollTheDice reveived " + s);
-      if (!FacebookUtils.isLoggedIn()) {
-        Timber.e("SOEF 1 : DISPLAY FB");
-       /* notificationContainerView.
-            showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);*/
-      } else {
-        Timber.e("SOEF 1 : NOT DISPLAY FB");
-      }
-    }));
+    subscriptions.add(viewLive.unlockRollTheDice()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> {//SOEF
+          Timber.e("SOEF 1 : unlockRollTheDice reveived " + s);
+          if (!FacebookUtils.isLoggedIn()) {
+            Timber.e("SOEF 1 : DISPLAY FB");
+            notificationContainerView.
+                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+          } else {
+            Timber.e("SOEF 1 : NOT DISPLAY FB");
+          }
+        }));
 
     subscriptions.add(viewLiveContainer.onDropDiceWithoutFbAuth().subscribe(aVoid -> {
       Timber.d("drag dice, user not fb loged, display fb notif auth");
@@ -744,7 +746,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       blockView.setVisibility(View.GONE);
       viewLiveContainer.blockOpenInviteView(false);
       initCallRouletteService();
-      viewLive.sendUnlocedkDice("test soef");
+      viewLive.sendUnlockedDice("test soef");
     }));
   }
 
