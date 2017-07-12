@@ -16,7 +16,8 @@ public class TribeJoinRoom {
     this.roomSize = roomSize;
   }
 
-  public TribeJoinRoom() {}
+  public TribeJoinRoom() {
+  }
 
   public List<TribeSession> getSessionList() {
     return sessionList;
