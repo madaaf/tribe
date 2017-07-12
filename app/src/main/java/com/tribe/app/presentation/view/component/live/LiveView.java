@@ -168,11 +168,11 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
+  private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
-  private PublishSubject<Void> onRollTheDiceReceivedWithNoFbId = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
@@ -547,6 +547,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
+    tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
+
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
@@ -653,7 +655,7 @@ public class LiveView extends FrameLayout {
             viewRoom.onRollTheDiceReceived();
             live.setDiceDragedInRoom(true);
           } else {
-            onRollTheDiceReceivedWithNoFbId.onNext(null);
+            Timber.d("user not connected to fb");
           }
         }));
 
@@ -934,6 +936,10 @@ public class LiveView extends FrameLayout {
 
   public void sendUnlockDice(String peerId, String userId) {
     room.sendUnlockDice(peerId, userId);
+  }
+
+  public void sendUnlocedkDice(String peerId) {
+    room.sendUnlockedDice(peerId);
   }
   ////////////////
   //  PRIVATE   //
@@ -1394,6 +1400,10 @@ public class LiveView extends FrameLayout {
     return onShouldJoinRoom;
   }
 
+  public Observable<String> unlockRollTheDice() {
+    return unlockRollTheDice;
+  }
+
   public Observable<TribeJoinRoom> onJoined() {
     return onJoined;
   }
@@ -1484,10 +1494,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
-  }
-
-  public Observable<Void> onRollTheDiceReceivedWithNoFbId() {
-    return onRollTheDiceReceivedWithNoFbId;
   }
 }
 

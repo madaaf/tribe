@@ -493,12 +493,12 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void displayDialogAgePerm(String displayName) {
-    DialogFactory.dialog(getContext(),
+    subscriptions.add(DialogFactory.dialog(getContext(),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_title, displayName),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_message),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_action), null)
-        .filter(x -> x == true)
-        .subscribe();
+        .subscribe());
+    Timber.e("DISPLAU DIALOG");
   }
 
   private String userUnder13Id;
@@ -514,8 +514,9 @@ public class LiveContainer extends FrameLayout {
 
   private boolean isGuestUnder13(User user) {
     getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName(),
-        viewLive.getLive().getId());
-    getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId());
+        viewLive.getLive().getSessionId()); // first user un room
+    //getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId());
+    getUserUnder13(user.getFbid(), user.getDisplayName(), viewLive.getLive().getSessionId()); //SOEF
 
     if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
       displayDialogAgePerm(userUnder13);

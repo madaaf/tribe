@@ -202,7 +202,9 @@ import timber.log.Timber;
                   boolean shouldAdd = true;
                   if (newInvite.getFriendships() != null) {
                     for (Friendship friendship : newInvite.getFriendships()) {
-                      if (friendship.getFriend().equals(user)) {
+                      if (friendship != null
+                          && friendship.getFriend() != null
+                          && friendship.getFriend().equals(user)) {
                         shouldAdd = false;
                       }
                     }

@@ -39,6 +39,7 @@ public class JsonToModel {
   private PublishSubject<TribeSession> onLeaveRoom = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onInvitedTribeGuestList = PublishSubject.create();
   private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
+  private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -168,7 +169,11 @@ public class JsonToModel {
             new TribeSession(session.getString("socketId"), session.getString("userId"));
 
         JSONObject message = d.getJSONObject("message");
-
+        if (message.has(Room.UNLOCK_ROLL_DICE)) {
+          JSONObject app = message.getJSONObject(Room.UNLOCK_ROLL_DICE);
+          String userId = app.get("by").toString();
+          unlockRollTheDice.onNext(userId);
+        }
         if (message.has(Room.MESSAGE_APP)) {
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
 
@@ -317,6 +322,10 @@ public class JsonToModel {
 
   public Observable<Void> onRollTheDiceReceived() {
     return onRollTheDiceReceived;
+  }
+
+  public Observable<String> unlockRollTheDice() {
+    return unlockRollTheDice;
   }
 
   public Observable<List<TribeGuest>> onInvitedTribeGuestList() {

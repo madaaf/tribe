@@ -125,9 +125,7 @@ public class NotificationContainerView extends FrameLayout {
           break;
         case DISPLAY_FB_CALL_ROULETTE:
           initRemoteConfig();
-          container.setOnTouchListener((v, event) -> {
-            return false;
-          });
+          container.setOnTouchListener((v, event) -> false);
           textDismiss.setOnTouchListener((v, event) -> {
             Bundle properties = new Bundle();
             properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_CANCELLED);
@@ -262,6 +260,7 @@ public class NotificationContainerView extends FrameLayout {
   }
 
   protected void hideView() {
+    container.setOnTouchListener((v, event) -> true);
     textDismiss.setVisibility(INVISIBLE);
     Animation slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);

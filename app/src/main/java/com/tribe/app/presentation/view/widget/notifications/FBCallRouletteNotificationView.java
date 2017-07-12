@@ -135,7 +135,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     Bundle properties = new Bundle();
     properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_SUCCESS);
     tagManager.trackEvent(TagManagerUtils.FacebookGate, properties);
-    super.hideView();
+    hideView();
   }
 
   @Override public void errorFacebookLogin() {
