@@ -601,6 +601,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       reRollTheDiceFromLiveRoom();
     }));
 
+    subscriptions.add(viewLiveContainer.onDropDiceWithoutFbAuth().subscribe(aVoid -> {
+      notificationContainerView.
+          showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+    }));
+
     subscriptions.add(viewLive.onRollTheDiceReceivedWithNoFbId().subscribe(aVoid -> {
       notificationContainerView.
           showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
