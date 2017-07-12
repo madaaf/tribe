@@ -225,6 +225,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Inject StateManager stateManager;
 
+  @Inject User user;
+
   @Inject @RoutingMode Preference<String> routingMode;
 
   @Inject @CallTagsMap Preference<String> callTagsMap;
@@ -597,7 +599,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
-    subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(aVoid -> {
+    subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
+      Timber.e("SOEF 1 : " + peerId + " " + user.getId());
+      viewLive.sendUnlockDice(peerId, user.getId());
       reRollTheDiceFromLiveRoom();
     }));
 

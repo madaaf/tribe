@@ -241,6 +241,12 @@ public class Room {
         }));
   }
 
+  public void sendUnlockDice(String peerId, String userId) {
+    Timber.e("SOEF 2 : " + peerId + " " + userId + " " + getSendUnlockRollTheDice(peerId,
+        userId).toString());
+    webSocketConnection.send(getSendUnlockRollTheDice(peerId, userId).toString());
+  }
+
   public void joinRoom() {
     if (webSocketConnection == null) return;
     Timber.d("Joining room");
@@ -349,8 +355,9 @@ public class Room {
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null &&
-        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }
@@ -464,6 +471,22 @@ public class Room {
     }
 
     JsonUtils.jsonPut(a, "d", d);
+    return a;
+  }
+
+  //SOEF
+  private JSONObject getSendUnlockRollTheDice(String peerId, String userId) {
+    JSONObject a = new JSONObject();
+    JsonUtils.jsonPut(a, "a", "sendMessage");
+    JSONObject d = new JSONObject();
+    JsonUtils.jsonPut(d, "to", peerId);
+    JSONObject appJson1 = new JSONObject();
+    JsonUtils.jsonPut(appJson1, "by", userId);
+    JSONObject appJson = new JSONObject();
+    JsonUtils.jsonPut(appJson, "unlockRollTheDice", appJson1);
+    JsonUtils.jsonPut(d, "message", appJson);
+    JsonUtils.jsonPut(a, "d", d);
+
     return a;
   }
 

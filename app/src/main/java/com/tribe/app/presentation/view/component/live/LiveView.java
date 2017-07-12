@@ -932,6 +932,9 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getUserPlayload(user), true);
   }
 
+  public void sendUnlockDice(String peerId, String userId) {
+    room.sendUnlockDice(peerId, userId);
+  }
   ////////////////
   //  PRIVATE   //
   ////////////////

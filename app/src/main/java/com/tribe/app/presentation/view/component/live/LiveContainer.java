@@ -30,6 +30,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -133,7 +134,7 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Float> onAlpha = PublishSubject.create();
   private PublishSubject<Boolean> onDropEnabled = PublishSubject.create();
   private PublishSubject<TileView> onDropped = PublishSubject.create();
-  private PublishSubject<Void> onDroppedUnder13 = PublishSubject.create();
+  private PublishSubject<String> onDroppedUnder13 = PublishSubject.create();
   private PublishSubject<Void> onDropDiceWithoutFbAuth = PublishSubject.create();
   private Subscription timerSubscription;
 
@@ -500,22 +501,28 @@ public class LiveContainer extends FrameLayout {
         .subscribe();
   }
 
-  public void getUserUnder13(String fbId, String displayName) {
+  private String userUnder13Id;
+
+  public void getUserUnder13(String fbId, String displayName, String userId) {
     if ((fbId == null || fbId.isEmpty()) && (displayName != null && !displayName.equals(
         getContext().getString(R.string.roll_the_dice_invite_title)))) {
       userUnder13 = displayName;
+      userUnder13Id = userId;
+      //SOEF
     }
   }
 
   private boolean isGuestUnder13(User user) {
-    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName());
-    getUserUnder13(user.getFbid(), user.getDisplayName());
+    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName(),
+        viewLive.getLive().getId());
+    getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId());
+
     if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
       displayDialogAgePerm(userUnder13);
       return true;
     } else if (viewLive.getSource().equals(SOURCE_CALL_ROULETTE) || viewLive.isDiceDragedInRoom()) {
       if (user.getFbid() == null || user.getFbid().isEmpty()) {
-        displayDialogAgePerm(user.getDisplayName());
+        displayDialogAgePerm(userUnder13);
         return true;
       }
     }
@@ -526,12 +533,12 @@ public class LiveContainer extends FrameLayout {
     viewInviteLive.setDragging(true);
 
     Friendship friendshiip = (Friendship) currentTileView.getRecipient();
-    if (friendshiip.getId().equals(Recipient.ID_CALL_ROULETTE)) {
+    if (friendshiip.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
       onDropDiceWithoutFbAuth.onNext(null);
       return;
     }
     if (isGuestUnder13(friendshiip.getFriend())) {
-      onDroppedUnder13.onNext(null);
+      onDroppedUnder13.onNext(userUnder13Id);
       return;
     }
 
@@ -734,7 +741,7 @@ public class LiveContainer extends FrameLayout {
     return onDropped;
   }
 
-  public Observable<Void> onDroppedUnder13() {
+  public Observable<String> onDroppedUnder13() {
     return onDroppedUnder13;
   }
 
