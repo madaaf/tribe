@@ -333,7 +333,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<String> getFbIdUpdated() {
+  @Override public Observable<User> getFbIdUpdated() {
     return null;
   }
 

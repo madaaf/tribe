@@ -324,7 +324,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     randomRoomAssigned.execute(randomRoomAssignedSubscriber);
   }
 
-  private final class FbIdUpdatedSubscriber extends DefaultSubscriber<String> {
+  private final class FbIdUpdatedSubscriber extends DefaultSubscriber<User> {
     @Override public void onCompleted() {
     }
 
@@ -332,8 +332,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       e.printStackTrace();
     }
 
-    @Override public void onNext(String fbId) {
-      liveMVPView.fbIdUpdatedSubscriber(fbId);
+    @Override public void onNext(User userUpdated) {
+      liveMVPView.fbIdUpdatedSubscriber(userUpdated);
     }
   }
 

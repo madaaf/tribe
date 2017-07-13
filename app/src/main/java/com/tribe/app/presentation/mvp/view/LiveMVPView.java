@@ -36,6 +36,5 @@ public interface LiveMVPView extends MVPView {
 
   void randomRoomAssignedSubscriber(String roomId);
 
-  void fbIdUpdatedSubscriber(String fbId);
-
+  void fbIdUpdatedSubscriber(User userUpdated);
 }

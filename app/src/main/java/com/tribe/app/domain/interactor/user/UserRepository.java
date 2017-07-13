@@ -185,7 +185,7 @@ public interface UserRepository {
 
   Observable<String> randomRoomAssigned();
 
-  Observable<String> getFbIdUpdated();
+  Observable<User> getFbIdUpdated();
 
   Observable<Boolean> reportUser(String userId);
 

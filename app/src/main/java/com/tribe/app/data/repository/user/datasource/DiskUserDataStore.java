@@ -19,6 +19,7 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +203,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.getRandomRoomAssignedValue();
   }
 
-  @Override public Observable<String> getFbIdUpdated() {
+  @Override public Observable<User> getFbIdUpdated() {
     return liveCache.getFbIdUpdated();
   }
 

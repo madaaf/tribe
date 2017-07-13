@@ -620,11 +620,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
-    subscriptions.add(viewLive.unlockedRollTheDice().subscribe(s -> {
-      Timber.d("SOEF unlockedRollTheDice received");
-      livePresenter.roomAcceptRandom(live.getSessionId());
-      reRollTheDiceFromLiveRoom();
-    }));
+    subscriptions.add(viewLive.unlockedRollTheDice()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> {
+          Timber.d("SOEF unlockedRollTheDice received");
+          livePresenter.roomAcceptRandom(live.getSessionId());
+          reRollTheDiceFromLiveRoom();
+        }));
 
     subscriptions.add(viewLive.onRollTheDice().subscribe(s -> {
       viewInviteLive.diceDragued();
@@ -1027,8 +1030,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     joinRoom();
   }
 
-  @Override public void fbIdUpdatedSubscriber(String fbId) {
-    Timber.e("SOEF GNID UPDATEd " + fbId);
+  @Override public void fbIdUpdatedSubscriber(User userUpdated) {
+    Timber.e("SOEF GNID UPDATEd " + userUpdated.getId() + " " + userUpdated.getFbid());
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

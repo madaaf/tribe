@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ import timber.log.Timber;
   private PublishSubject<List<GroupRealm>> onGroupListUpdated = PublishSubject.create();
   private PublishSubject<List<FriendshipRealm>> onFriendshipListUpdated = PublishSubject.create();
   private PublishSubject<String> onAddedOnline = PublishSubject.create();
-  private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
+  private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<List<String>> onAddedListOnline = PublishSubject.create();
   private PublishSubject<List<String>> onRemovedListOnline = PublishSubject.create();
   private PublishSubject<List<String>> onAddedListLive = PublishSubject.create();
@@ -84,7 +85,9 @@ import timber.log.Timber;
               if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
               if (jo.has("fbid")) {
                 String fbId = jo.get("fbid").getAsString();
-                onFbIdUpdated.onNext(fbId);
+                User user = new User(jo.get("id").getAsString());
+                user.setFbid(fbId);
+                onFbIdUpdated.onNext(user);
               }
               if (shouldUpdateOnlineStatus) {
                 if (userRealm.isOnline()) {
@@ -187,7 +190,7 @@ import timber.log.Timber;
     return onRandomRoomAssigned;
   }
 
-  public Observable<String> onFbIdUpdated() {
+  public Observable<User> onFbIdUpdated() {
     return onFbIdUpdated;
   }
 

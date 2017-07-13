@@ -106,7 +106,7 @@ import rx.Observable;
     return userDataStore.callRouletteMap();
   }
 
-  @Override public Observable<String> getFbIdUpdated() {
+  @Override public Observable<User> getFbIdUpdated() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
     return userDataStore.getFbIdUpdated();
