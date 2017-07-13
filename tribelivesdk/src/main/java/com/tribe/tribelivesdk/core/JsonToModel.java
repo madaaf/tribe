@@ -41,6 +41,7 @@ public class JsonToModel {
   private PublishSubject<Void> onRollTheDiceReceived = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
+  private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();

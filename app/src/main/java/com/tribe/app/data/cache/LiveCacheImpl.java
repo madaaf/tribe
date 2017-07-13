@@ -18,6 +18,7 @@ public class LiveCacheImpl implements LiveCache {
   private ObservableRxHashMap<String, Boolean> liveMap;
   private ObservableRxHashMap<String, Invite> inviteMap;
   private PublishSubject<String> roomCallRouletteMap = PublishSubject.create();
+  private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
 
   @Inject public LiveCacheImpl(Context context) {
     this.context = context;
@@ -76,5 +77,13 @@ public class LiveCacheImpl implements LiveCache {
 
   @Override public void putRandomRoomAssigned(String assignedRoomId) {
     roomCallRouletteMap.onNext(assignedRoomId);
+  }
+
+  @Override public void onFbIdUpdated(String fbId) {
+    onFbIdUpdated.onNext(fbId);
+  }
+
+  @Override public Observable<String> getFbIdUpdated() {
+    return onFbIdUpdated;
   }
 }

@@ -185,6 +185,8 @@ public interface UserRepository {
 
   Observable<String> randomRoomAssigned();
 
+  Observable<String> getFbIdUpdated();
+
   Observable<Boolean> reportUser(String userId);
 
   Observable<List<Friendship>> unblockedFriendships();

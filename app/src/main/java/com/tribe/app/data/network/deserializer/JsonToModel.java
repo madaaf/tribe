@@ -34,6 +34,7 @@ import timber.log.Timber;
   private PublishSubject<List<GroupRealm>> onGroupListUpdated = PublishSubject.create();
   private PublishSubject<List<FriendshipRealm>> onFriendshipListUpdated = PublishSubject.create();
   private PublishSubject<String> onAddedOnline = PublishSubject.create();
+  private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<List<String>> onAddedListOnline = PublishSubject.create();
   private PublishSubject<List<String>> onRemovedListOnline = PublishSubject.create();
   private PublishSubject<List<String>> onAddedListLive = PublishSubject.create();
@@ -81,7 +82,10 @@ import timber.log.Timber;
               userRealm.setJsonPayloadUpdate(jo);
 
               if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
-
+              if (jo.has("fbid")) {
+                String fbId = jo.get("fbid").getAsString();
+                onFbIdUpdated.onNext(fbId);
+              }
               if (shouldUpdateOnlineStatus) {
                 if (userRealm.isOnline()) {
                   onAddedOnline.onNext(userRealm.getId());
@@ -181,6 +185,10 @@ import timber.log.Timber;
 
   public Observable<String> onRandomRoomAssigned() {
     return onRandomRoomAssigned;
+  }
+
+  public Observable<String> onFbIdUpdated() {
+    return onFbIdUpdated;
   }
 
   public Observable<String> onRemovedOnline() {

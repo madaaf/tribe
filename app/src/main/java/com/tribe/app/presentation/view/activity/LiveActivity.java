@@ -442,6 +442,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         finish();
       }
     }));
+    livePresenter.fbidUpdated();
   }
 
   private void initCallRouletteService() {
@@ -1024,6 +1025,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLiveContainer.blockOpenInviteView(false);
     live.setSessionId(roomId);
     joinRoom();
+  }
+
+  @Override public void fbIdUpdatedSubscriber(String fbId) {
+    Timber.e("SOEF GNID UPDATEd " + fbId);
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

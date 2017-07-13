@@ -202,6 +202,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.getRandomRoomAssignedValue();
   }
 
+  @Override public Observable<String> getFbIdUpdated() {
+    return liveCache.getFbIdUpdated();
+  }
+
   @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
       String linkId) {
     return null;

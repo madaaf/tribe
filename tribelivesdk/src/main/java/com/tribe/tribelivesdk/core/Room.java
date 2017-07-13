@@ -590,6 +590,7 @@ public class Room {
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
   }
+
   public Observable<String> unlockedRollTheDice() {
     return unlockedRollTheDice;
   }

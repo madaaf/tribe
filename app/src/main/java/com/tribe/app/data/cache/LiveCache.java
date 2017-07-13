@@ -35,4 +35,8 @@ import rx.Observable;
   Observable<String> getRandomRoomAssignedValue();
 
   void putRandomRoomAssigned(String assignedRoomId);
+
+  void onFbIdUpdated(String fbId);
+
+  Observable<String> getFbIdUpdated();
 }

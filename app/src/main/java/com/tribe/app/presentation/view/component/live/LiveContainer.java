@@ -39,6 +39,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -77,6 +79,8 @@ public class LiveContainer extends FrameLayout {
   private static final int INVALID_POINTER = -1;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject User user;
 
   @Inject StateManager stateManager;
 
@@ -119,7 +123,9 @@ public class LiveContainer extends FrameLayout {
   boolean enabledTimer = false;
   private int nbrCall = 0;
   private boolean blockOpenInviteView;
-  private String userUnder13 = "";
+  private String userUnder13 = "", userUnder13Id = "";
+  private List<Friendship> friendshipList;
+  private List<User> userList = new ArrayList<>();
 
   // DIMENS
   private int thresholdEnd;
@@ -162,7 +168,7 @@ public class LiveContainer extends FrameLayout {
     applicationComponent.inject(this);
     screenUtils = applicationComponent.screenUtils();
 
-    initDimen();
+    initRessource();
     initUI();
     initSubscriptions();
   }
@@ -197,9 +203,11 @@ public class LiveContainer extends FrameLayout {
     scrollTolerance = screenUtils.dpToPx(SCROLL_TOLERANCE);
   }
 
-  private void initDimen() {
+  private void initRessource() {
     thresholdEnd =
         getContext().getResources().getDimensionPixelSize(R.dimen.threshold_open_live_invite);
+    friendshipList = user.getFriendships();
+    userList = new ArrayList<>();
   }
 
   private void initSubscriptions() {
@@ -501,22 +509,32 @@ public class LiveContainer extends FrameLayout {
     Timber.e("DISPLAU DIALOG");
   }
 
-  private String userUnder13Id;
-
   public void getUserUnder13(String fbId, String displayName, String userId) {
     if ((fbId == null || fbId.isEmpty()) && (displayName != null && !displayName.equals(
         getContext().getString(R.string.roll_the_dice_invite_title)))) {
       userUnder13 = displayName;
       userUnder13Id = userId;
+
+      for (Friendship fr : friendshipList) {
+        userList.add(fr.getFriend());
+      }
+
+      for (User user : userList) {
+        if (user.getId().equals(userId)) {
+          if (user.getFbid() != null && !user.getFbid().isEmpty()) {
+            userUnder13 = "";
+            userUnder13Id = "";
+          }
+        }
+      }
       //SOEF
     }
   }
 
   private boolean isGuestUnder13(User user) {
     getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName(),
-        viewLive.getLive().getSessionId()); // first user un room
-    //getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId());
-    getUserUnder13(user.getFbid(), user.getDisplayName(), viewLive.getLive().getSessionId()); //SOEF
+        viewLive.getLive().getId()); // first user in room
+    getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId()); //user I try to drag
 
     if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
       displayDialogAgePerm(userUnder13);

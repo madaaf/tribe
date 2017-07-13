@@ -252,6 +252,10 @@ import timber.log.Timber;
       liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
+    persistentSubscriptions.add(jsonToModel.onFbIdUpdated().subscribe(fbId -> {
+      liveCache.onFbIdUpdated(fbId);
+    }));
+
     persistentSubscriptions.add(jsonToModel.onUserListUpdated().subscribe(userRealmList -> {
       userCache.updateUserRealmList(userRealmList);
     }));

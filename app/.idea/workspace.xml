@@ -24,9 +24,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/FbIdUpdated.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCache.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCache.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCacheImpl.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCacheImpl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/DiskUserDataRepository.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/DiskUserDataRepository.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/DiskUserDataStore.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/DiskUserDataStore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/LiveDataStore.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/LiveDataStore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/UserRepository.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/UserRepository.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/AuthActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/AuthActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveInviteView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveInviteView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
     </list>
     <ignored path="app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -58,11 +74,69 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="JsonToModel.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="825">
+              <caret line="78" column="28" selection-start-line="78" selection-start-column="28" selection-end-line="78" selection-end-column="28" />
+              <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#2504#2505#0" expanded="false" />
+                <element signature="e#2536#2537#0" expanded="false" />
+                <element signature="e#12851#12852#0" expanded="false" />
+                <element signature="e#12878#12879#0" expanded="false" />
+                <element signature="e#12931#12932#0" expanded="false" />
+                <element signature="e#12963#12964#0" expanded="false" />
+                <element signature="e#13016#13017#0" expanded="false" />
+                <element signature="e#13044#13045#0" expanded="false" />
+                <element signature="e#13093#13094#0" expanded="false" />
+                <element signature="e#13117#13118#0" expanded="false" />
+                <element signature="e#13168#13169#0" expanded="false" />
+                <element signature="e#13196#13197#0" expanded="false" />
+                <element signature="e#13249#13250#0" expanded="false" />
+                <element signature="e#13287#13288#0" expanded="false" />
+                <element signature="e#13338#13339#0" expanded="false" />
+                <element signature="e#13372#13373#0" expanded="false" />
+                <element signature="e#13425#13426#0" expanded="false" />
+                <element signature="e#13461#13462#0" expanded="false" />
+                <element signature="e#13528#13529#0" expanded="false" />
+                <element signature="e#13568#13569#0" expanded="false" />
+                <element signature="e#13635#13636#0" expanded="false" />
+                <element signature="e#13675#13676#0" expanded="false" />
+                <element signature="e#14110#14111#0" expanded="false" />
+                <element signature="e#14136#14137#0" expanded="false" />
+                <element signature="e#14200#14201#0" expanded="false" />
+                <element signature="e#14227#14228#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WSService.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="333">
+              <caret line="255" column="22" selection-start-line="255" selection-start-column="22" selection-end-line="255" selection-end-column="22" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LiveCache.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCache.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="117">
+              <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="628" column="28" selection-start-line="628" selection-start-column="28" selection-end-line="628" selection-end-column="28" />
+            <state relative-caret-position="382">
+              <caret line="454" column="32" selection-start-line="454" selection-start-column="32" selection-end-line="454" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -70,82 +144,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LiveRoomView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java">
+      <file leaf-file-name="LivePresenter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="154" column="25" selection-start-line="154" selection-start-column="25" selection-end-line="154" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LiveInviteAdapter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/LiveInviteAdapter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="191">
-              <caret line="116" column="14" selection-start-line="116" selection-start-column="14" selection-end-line="116" selection-end-column="14" />
-              <folding>
-                <element signature="e#4907#4908#0" expanded="true" />
-                <element signature="e#4935#4936#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LiveInviteView.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveInviteView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="165" column="65" selection-start-line="165" selection-start-column="65" selection-end-line="165" selection-end-column="65" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Recipient.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/entity/Recipient.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="11" column="3" selection-start-line="11" selection-start-column="3" selection-end-line="11" selection-end-column="3" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LiveContainer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="431">
-              <caret line="456" column="49" selection-start-line="456" selection-start-column="35" selection-end-line="456" selection-end-column="49" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="659" column="39" selection-start-line="659" selection-start-column="39" selection-end-line="659" selection-end-column="39" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#48398#48399#0" expanded="true" />
-                <element signature="e#48428#48429#0" expanded="true" />
-                <element signature="e#48477#48478#0" expanded="true" />
-                <element signature="e#48502#48503#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HomeActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/HomeActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="432" column="0" selection-start-line="432" selection-start-column="0" selection-end-line="432" selection-end-column="0" />
+            <state relative-caret-position="312">
+              <caret line="339" column="17" selection-start-line="339" selection-start-column="17" selection-end-line="339" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -6133,19 +6136,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/res/values/dimen.xml" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/item_base_list.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/RecipientListAdapterDelegate.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/contact/NotifUserAdapterDelegate.java" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/view_live_controls.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/NotifUserAdapter.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/entity/Friendship.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/NotifAdapterDelegate.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/viewholder/BaseListViewHolder.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/viewholder/BaseNotifViewHolder.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/ResizeAnimation.java" />
-        <option value="$PROJECT_DIR$/src/main/res/layout/item_base_list_notif.xml" />
-        <option value="$PROJECT_DIR$/src/main/res/drawable/shape_rect_blueaddfriendplus_rounded_corners_expended.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/DialogFactory.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/ProfileActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseListAdapterDelegate.java" />
@@ -6170,20 +6160,33 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/FacebookPresenter.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/UpdateUserPresenter.java" />
         <option value="$PROJECT_DIR$/src/main/res/values/graphql.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" />
         <option value="$PROJECT_DIR$/../build.gradle" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/LifeNotification.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/NotificationContainerView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java" />
-        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
-        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/LiveInviteAdapter.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveInviteView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
+        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/AuthActivity.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/UserCache.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/UserCacheImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/LiveDataStore.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/DiskUserDataStore.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/UserRepository.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/DiskUserDataRepository.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/FbIdUpdated.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCacheImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCache.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java" />
+        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
       </list>
     </option>
   </component>
@@ -6216,11 +6219,11 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane />
-      </pane>
       <pane id="PackagesPane" />
       <pane id="AndroidView">
+        <subPane />
+      </pane>
+      <pane id="ProjectPane">
         <subPane />
       </pane>
       <pane id="Scope" />
@@ -6229,8 +6232,8 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Snapper/build.gradle" />
-    <property name="device.picker.selection" value="b5a48a3c e1505890" />
-    <property name="DEBUGGABLE_DEVICE" value="oneplus-a0001-e1505890" />
+    <property name="device.picker.selection" value="b5a48a3c" />
+    <property name="DEBUGGABLE_DEVICE" value="oneplus-oneplus_a3000-b5a48a3c" />
     <property name="DEBUGGABLE_PROCESS" value="com.tribe.app.debug" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
     <property name="DEBUGGER_ID" value="Auto" />
@@ -6246,10 +6249,10 @@
       <recent name="com.tribe.app.presentation.view.utils" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.tribe.app.domain.interactor.user" />
       <recent name="com.tribe.app.presentation.view.adapter.delegate.friend" />
       <recent name="com.tribe.app.presentation.view.adapter.delegate.contact" />
       <recent name="com.tribe.app.presentation.view.adapter" />
-      <recent name="com.tribe.app.domain.interactor.user" />
       <recent name="com.tribe.app.presentation.mvp.view" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
@@ -6282,55 +6285,6 @@
         <option name="Make" enabled="false" />
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
-    </configuration>
-    <configuration default="true" type="AndroidNativeAttachConfigurationType" factoryName="Android Native Attach">
-      <module name="" />
-      <option name="DEPLOY" value="true" />
-      <option name="ARTIFACT_NAME" value="" />
-      <option name="PM_INSTALL_OPTIONS" value="" />
-      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
-      <option name="MODE" value="do_nothing" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
-      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
-      <Auto>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Auto>
-      <Hybrid>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Hybrid>
-      <Java />
-      <Native>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Native>
-      <Profilers>
-        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
-        <option name="SUPPORT_LIB_ENABLED" value="true" />
-        <option name="INSTRUMENTATION_ENABLED" value="true" />
-      </Profilers>
-      <option name="DEEP_LINK" value="" />
-      <option name="ACTIVITY_CLASS" value="" />
-      <method />
     </configuration>
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
       <module name="" />
@@ -6643,29 +6597,28 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32837528" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24599542" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38493723" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3925519" sideWeight="0.27413794" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.50549453" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3451883" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4246862" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24847375" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27688786" sideWeight="0.502442" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20634921" sideWeight="0.6123348" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2991632" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20634921" sideWeight="0.4439528" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21611722" sideWeight="0.47420964" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24420024" sideWeight="0.5560472" order="7" side_tool="false" content_ui="tabs" x="-770" y="-953" width="1466" height="890" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2765568" sideWeight="0.7258621" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -6673,6 +6626,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2991632" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -6691,7 +6645,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java</url>
-          <line>223</line>
+          <line>224</line>
           <properties />
           <option name="timeStamp" value="1307" />
         </line-breakpoint>
@@ -6715,7 +6669,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>583</line>
+          <line>584</line>
           <properties />
           <option name="timeStamp" value="1399" />
         </line-breakpoint>
@@ -6762,20 +6716,8 @@
           <option name="timeStamp" value="1449" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java</url>
-          <line>508</line>
-          <properties />
-          <option name="timeStamp" value="1455" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>941</line>
-          <properties />
-          <option name="timeStamp" value="1475" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>613</line>
+          <line>614</line>
           <properties />
           <option name="timeStamp" value="1478" />
         </line-breakpoint>
@@ -6805,7 +6747,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>763</line>
+          <line>764</line>
           <properties />
           <option name="timeStamp" value="1487" />
         </line-breakpoint>
@@ -6817,25 +6759,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java</url>
-          <line>495</line>
-          <properties />
-          <option name="timeStamp" value="1490" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java</url>
-          <line>515</line>
+          <line>534</line>
           <properties />
           <option name="timeStamp" value="1491" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java</url>
-          <line>257</line>
-          <properties />
-          <option name="timeStamp" value="1492" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>1093</line>
+          <line>1098</line>
           <properties />
           <option name="timeStamp" value="1498" />
         </line-breakpoint>
@@ -6847,27 +6777,89 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>628</line>
+          <line>629</line>
           <properties />
           <option name="timeStamp" value="1503" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/LiveInviteAdapter.java</url>
-          <line>124</line>
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/HomeActivity.java</url>
+          <line>432</line>
           <properties />
-          <option name="timeStamp" value="1506" />
+          <option name="timeStamp" value="1508" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/LiveInviteAdapter.java</url>
-          <line>128</line>
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/HomeActivity.java</url>
+          <line>617</line>
+          <properties>
+            <option name="lambda-ordinal" value="0" />
+          </properties>
+          <option name="timeStamp" value="1509" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/notification/NotificationUtils.java</url>
+          <line>172</line>
           <properties />
-          <option name="timeStamp" value="1507" />
+          <option name="timeStamp" value="1512" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
+          <line>294</line>
+          <properties />
+          <option name="timeStamp" value="1513" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/notification/NotificationUtils.java</url>
+          <line>275</line>
+          <properties />
+          <option name="timeStamp" value="1515" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java</url>
+          <line>257</line>
+          <properties />
+          <option name="timeStamp" value="1526" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java</url>
+          <line>515</line>
+          <properties />
+          <option name="timeStamp" value="1529" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java</url>
+          <line>536</line>
+          <properties />
+          <option name="timeStamp" value="1530" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java</url>
+          <line>523</line>
+          <properties />
+          <option name="timeStamp" value="1533" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
+          <line>168</line>
+          <properties />
+          <option name="timeStamp" value="1534" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java</url>
+          <line>71</line>
+          <properties />
+          <option name="timeStamp" value="1539" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java</url>
+          <line>86</line>
+          <properties />
+          <option name="timeStamp" value="1542" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="1508" />
+      <option name="time" value="1545" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Android Hybrid Debugger (22990)-java">
@@ -6876,34 +6868,6 @@
       <configuration name="Android Hybrid Debugger (26130)-java">
         <watch expression="dotsContainer.getWidth()" language="JAVA" />
         <watch expression="txtNext.getWidth()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (32112)-java">
-        <watch expression="bitmapWatermarked" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (13729)-java">
-        <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin)" language="JAVA" />
-        <watch expression="sizeDot/26" language="JAVA" />
-        <watch expression="46.0/26.0" language="JAVA" />
-        <watch expression="(getResources().getDimensionPixelSize(R.dimen.dice_size) / 2) - 85" language="JAVA" />
-        <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin)" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (14646)-java">
-        <watch expression="sizeDot" language="JAVA" />
-        <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin)" language="JAVA" />
-        <watch expression="dice.getWidth() / 8.75" language="JAVA" />
-        <watch expression="0.114 * 35.0" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (18878)-java">
-        <watch expression="dotsMargin" language="JAVA" />
-        <watch expression="sizeDot" language="JAVA" />
-        <watch expression="(int) (0.15 * getWidth())" language="JAVA" />
-        <watch expression="(int) (0.115 * getWidth())" language="JAVA" />
-        <watch expression="(int) (sizeDot * 1.315)" language="JAVA" />
-        <watch expression="sizeDot / 9.75" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (15350)-java">
-        <watch expression="unit" language="JAVA" />
-        <watch expression="sizeDot" language="JAVA" />
       </configuration>
       <configuration name="Android Hybrid Debugger (1159)-java">
         <watch expression="live.getSource()" language="JAVA" />
@@ -6914,13 +6878,6 @@
         <watch expression="viewRoom" language="JAVA" />
         <watch expression="live.getSource()" language="JAVA" />
       </configuration>
-      <configuration name="Android Hybrid Debugger (16657)-java">
-        <watch expression="live.getSource()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (17616)-java">
-        <watch expression="viewLive.getUser()" language="JAVA" />
-        <watch expression="viewLive.getFbId()" language="JAVA" />
-      </configuration>
       <configuration name="Android Hybrid Debugger (21673)-java">
         <watch expression="txtNext.getWidth()" language="JAVA" />
         <watch expression="dotsContainer.getWidth()" language="JAVA" />
@@ -6928,27 +6885,11 @@
       <configuration name="Android Hybrid Debugger (18748)-java">
         <watch expression="isDiceDragedInRoom" language="JAVA" />
       </configuration>
-      <configuration name="Android Hybrid Debugger (15435)-java">
-        <watch expression="viewLive" language="JAVA" />
-        <watch expression="viewLive.getUser()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (21861)-java">
-        <watch expression="getUsersInLiveRoom();" language="JAVA" />
-      </configuration>
       <configuration name="Android Hybrid Debugger (8518)-java">
         <watch expression="live.getId()" language="JAVA" />
         <watch expression="user.getId()" language="JAVA" />
         <watch expression="peerId" language="JAVA" />
         <watch expression="user" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (5278)-java">
-        <watch expression="live.isDiceDragedInRoom()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (7140)-java">
-        <watch expression="dice.getWidth()" language="JAVA" />
-        <watch expression="dice.getHeight()" language="JAVA" />
-        <watch expression="dice.getWidth() &gt; (2 * sizeDice) " language="JAVA" />
-        <watch expression="dice.getHeight() &gt; (2 * sizeDice)" language="JAVA" />
       </configuration>
       <configuration name="Android Hybrid Debugger (15571)-java">
         <watch expression="dice.getRotation() % 180) == 0" language="JAVA" />
@@ -6980,18 +6921,12 @@
         <watch expression="userUnder13" language="JAVA" />
         <watch expression="guest.getDisplayName()" language="JAVA" />
       </configuration>
-      <configuration name="Android Hybrid Debugger (16144)-java">
-        <watch expression="dotsContainer.getWidth()" language="JAVA" />
-        <watch expression="txtNext.getWidth()" language="JAVA" />
-      </configuration>
       <configuration name="Android Hybrid Debugger (9795)-java">
         <watch expression="((Friendship) recipient).getFriend()" language="JAVA" />
       </configuration>
-      <configuration name="Android Hybrid Debugger (22956)-java">
-        <watch expression="getUsersInLiveRoom().getTribeGuestList().size() " language="JAVA" />
-        <watch expression="getUsersInLiveRoom().getTribeGuestList()." language="JAVA" />
-        <watch expression="getUsersInLiveRoom().getTribeGuestList()" language="JAVA" />
-        <watch expression="user" language="JAVA" />
+      <configuration name="Android Hybrid Debugger (16144)-java">
+        <watch expression="dotsContainer.getWidth()" language="JAVA" />
+        <watch expression="txtNext.getWidth()" language="JAVA" />
       </configuration>
       <configuration name="Android Hybrid Debugger (23752)-java">
         <watch expression="getUsersInLiveRoom().getTribeGuestList()" language="JAVA" />
@@ -7011,14 +6946,6 @@
         <watch expression="tutorialState.get().contains(key)" language="JAVA" />
         <watch expression="newStrSet" language="JAVA" />
       </configuration>
-      <configuration name="Android Hybrid Debugger (7078)-java">
-        <watch expression="dice.getWidth()" language="JAVA" />
-        <watch expression="dice.getHeight()" language="JAVA" />
-        <watch expression="dice.getWidth() &gt; (2 * sizeDice) || dice.getHeight() &gt; (2 * sizeDice)" language="JAVA" />
-        <watch expression="dice.getWidth() " language="JAVA" />
-        <watch expression="dice.getHeight()" language="JAVA" />
-        <watch expression="sizeDice" language="JAVA" />
-      </configuration>
       <configuration name="Android Hybrid Debugger (11875)-java">
         <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_size)" language="JAVA" />
         <watch expression="dice.getWidth()" language="JAVA" />
@@ -7026,26 +6953,6 @@
       <configuration name="Android Hybrid Debugger (29046)-java">
         <watch expression="(User) obj).getDisplayName()" language="JAVA" />
         <watch expression="((User) obj).getDisplayName()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (17898)-java">
-        <watch expression="user.getFbid()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (20442)-java">
-        <watch expression="currentTileView.getRecipient()" language="JAVA" />
-        <watch expression="viewLive.getFbId()" language="JAVA" />
-        <watch expression="viewLive" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (23149)-java">
-        <watch expression="message.get(&quot;by&quot;)" language="JAVA" />
-        <watch expression="message.get(&quot;unlockRollTheDice&quot;)" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (12007)-java">
-        <watch expression="latestView.getGuest().getFbid()" language="JAVA" />
-        <watch expression="latestView.getGuest()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (21723)-java">
-        <watch expression="guest.getId()" language="JAVA" />
-        <watch expression="user.getFriendshipList()" language="JAVA" />
       </configuration>
       <configuration name="Android Hybrid Debugger (19764)-java">
         <watch expression="sizeDot" language="JAVA" />
@@ -7060,6 +6967,112 @@
         <watch expression="draggedTileView.getId()" language="JAVA" />
         <watch expression="draggedTileView.getRecipient().getId()" language="JAVA" />
       </configuration>
+      <configuration name="Android Hybrid Debugger (26590)-java">
+        <watch expression="live.getSource()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (31000)-java">
+        <watch expression="reci.getId()" language="JAVA" />
+        <watch expression="((Recipient) obj).getId()" language="JAVA" />
+        <watch expression="((Friendship) reci).getFriend()" language="JAVA" />
+        <watch expression="reci.getDisplayName()" language="JAVA" />
+        <watch expression="((Recipient) obj).getDisplayName()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (32112)-java">
+        <watch expression="bitmapWatermarked" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (13729)-java">
+        <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin)" language="JAVA" />
+        <watch expression="sizeDot/26" language="JAVA" />
+        <watch expression="46.0/26.0" language="JAVA" />
+        <watch expression="(getResources().getDimensionPixelSize(R.dimen.dice_size) / 2) - 85" language="JAVA" />
+        <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin)" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (14646)-java">
+        <watch expression="sizeDot" language="JAVA" />
+        <watch expression="getResources().getDimensionPixelSize(R.dimen.view_dice_dot_margin)" language="JAVA" />
+        <watch expression="dice.getWidth() / 8.75" language="JAVA" />
+        <watch expression="0.114 * 35.0" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (18878)-java">
+        <watch expression="dotsMargin" language="JAVA" />
+        <watch expression="sizeDot" language="JAVA" />
+        <watch expression="(int) (0.15 * getWidth())" language="JAVA" />
+        <watch expression="(int) (0.115 * getWidth())" language="JAVA" />
+        <watch expression="(int) (sizeDot * 1.315)" language="JAVA" />
+        <watch expression="sizeDot / 9.75" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (15350)-java">
+        <watch expression="unit" language="JAVA" />
+        <watch expression="sizeDot" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (16657)-java">
+        <watch expression="live.getSource()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (17616)-java">
+        <watch expression="viewLive.getUser()" language="JAVA" />
+        <watch expression="viewLive.getFbId()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (15435)-java">
+        <watch expression="viewLive" language="JAVA" />
+        <watch expression="viewLive.getUser()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (21861)-java">
+        <watch expression="getUsersInLiveRoom();" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (5278)-java">
+        <watch expression="live.isDiceDragedInRoom()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (7140)-java">
+        <watch expression="dice.getWidth()" language="JAVA" />
+        <watch expression="dice.getHeight()" language="JAVA" />
+        <watch expression="dice.getWidth() &gt; (2 * sizeDice) " language="JAVA" />
+        <watch expression="dice.getHeight() &gt; (2 * sizeDice)" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (22956)-java">
+        <watch expression="getUsersInLiveRoom().getTribeGuestList().size() " language="JAVA" />
+        <watch expression="getUsersInLiveRoom().getTribeGuestList()." language="JAVA" />
+        <watch expression="getUsersInLiveRoom().getTribeGuestList()" language="JAVA" />
+        <watch expression="user" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (11131)-java">
+        <watch expression="user" language="JAVA" />
+        <watch expression="viewLive.getLive().getFbId()" language="JAVA" />
+        <watch expression="recipient" language="JAVA" />
+        <watch expression="((Friendship) recipient).getFriend()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (7078)-java">
+        <watch expression="dice.getWidth()" language="JAVA" />
+        <watch expression="dice.getHeight()" language="JAVA" />
+        <watch expression="dice.getWidth() &gt; (2 * sizeDice) || dice.getHeight() &gt; (2 * sizeDice)" language="JAVA" />
+        <watch expression="dice.getWidth() " language="JAVA" />
+        <watch expression="dice.getHeight()" language="JAVA" />
+        <watch expression="sizeDice" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (17898)-java">
+        <watch expression="user.getFbid()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (20442)-java">
+        <watch expression="currentTileView.getRecipient()" language="JAVA" />
+        <watch expression="viewLive.getFbId()" language="JAVA" />
+        <watch expression="viewLive" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (14011)-java">
+        <watch expression="userUnder13" language="JAVA" />
+        <watch expression="userUnder13" language="JAVA" />
+        <watch expression="userUnder13" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (23149)-java">
+        <watch expression="message.get(&quot;by&quot;)" language="JAVA" />
+        <watch expression="message.get(&quot;unlockRollTheDice&quot;)" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (12007)-java">
+        <watch expression="latestView.getGuest().getFbid()" language="JAVA" />
+        <watch expression="latestView.getGuest()" language="JAVA" />
+      </configuration>
+      <configuration name="Android Hybrid Debugger (21723)-java">
+        <watch expression="guest.getId()" language="JAVA" />
+        <watch expression="user.getFriendshipList()" language="JAVA" />
+      </configuration>
       <configuration name="Android Hybrid Debugger (19198)-java">
         <watch expression="currentTileView.getRecipient()" language="JAVA" />
         <watch expression="draggedTileView" language="JAVA" />
@@ -7071,177 +7084,12 @@
       <configuration name="Android Hybrid Debugger (11799)-java">
         <watch expression="currentTileView.getRecipient()" language="JAVA" />
       </configuration>
-      <configuration name="Android Hybrid Debugger (26590)-java">
-        <watch expression="live.getSource()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (31000)-java">
-        <watch expression="reci.getId()" language="JAVA" />
-        <watch expression="((Recipient) obj).getId()" language="JAVA" />
-        <watch expression="((Friendship) reci).getFriend()" language="JAVA" />
-        <watch expression="reci.getDisplayName()" language="JAVA" />
-        <watch expression="((Recipient) obj).getDisplayName()" language="JAVA" />
-      </configuration>
       <configuration name="Android Hybrid Debugger (31010)-java">
         <watch expression="delegatesManager" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="114" column="0" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/CloudUserDataStore.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="298" column="0" selection-start-line="298" selection-start-column="0" selection-end-line="298" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/GroupMVPView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/values/graphql.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6555">
-          <caret line="437" column="16" selection-start-line="437" selection-start-column="16" selection-end-line="437" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/AuthActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="119" column="27" selection-start-line="119" selection-start-column="27" selection-end-line="119" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="39" selection-start-line="18" selection-start-column="39" selection-end-line="18" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../gradle.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="36" column="32" selection-start-line="36" selection-start-column="32" selection-end-line="36" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="60" column="14" selection-start-line="60" selection-start-column="14" selection-end-line="60" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/FacebookPresenter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="40" column="41" selection-start-line="40" selection-start-column="41" selection-end-line="40" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.2.5/d6a786aebd3b7fc7070151735f6a76d92282a030/rxjava-1.2.5-sources.jar!/rx/functions/Action1.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="22" column="9" selection-start-line="22" selection-start-column="9" selection-end-line="22" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/UserCacheImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="229">
-          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/entity/User.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="52" column="41" selection-start-line="52" selection-start-column="41" selection-end-line="52" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/TribePeerConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/back/WebRTCClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="438">
-          <caret line="236" column="41" selection-start-line="236" selection-start-column="41" selection-end-line="236" selection-end-column="41" />
-          <folding>
-            <element signature="e#8186#8187#0" expanded="false" />
-            <element signature="e#8227#8228#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/DialogFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="93">
-          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/back/WebSocketConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="366" column="14" selection-start-line="366" selection-start-column="14" selection-end-line="366" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/LiveNotificationView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-135">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="721" column="14" selection-start-line="721" selection-start-column="14" selection-end-line="721" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/InvitesListDeserializer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="23" column="1" selection-start-line="23" selection-start-column="1" selection-end-line="23" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/entity/Invite.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="664">
@@ -7262,7 +7110,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
           <caret line="22070" column="12" selection-start-line="22070" selection-start-column="12" selection-end-line="22070" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7278,7 +7125,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7286,7 +7132,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
           <caret line="121" column="9" selection-start-line="121" selection-start-column="9" selection-end-line="121" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7294,14 +7139,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="94">
           <caret line="199" column="26" selection-start-line="199" selection-start-column="26" selection-end-line="199" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-713">
-          <caret line="100" column="24" selection-start-line="100" selection-start-column="21" selection-end-line="100" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7313,24 +7150,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="59">
-          <caret line="331" column="38" selection-start-line="331" selection-start-column="38" selection-end-line="331" selection-end-column="38" />
-          <folding>
-            <element signature="e#13264#13265#0" expanded="true" />
-            <element signature="e#13298#13299#0" expanded="true" />
-            <element signature="e#13351#13352#0" expanded="true" />
-            <element signature="e#13387#13388#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/navigation/Navigator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="167">
           <caret line="236" column="24" selection-start-line="236" selection-start-column="24" selection-end-line="236" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7338,25 +7161,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="328">
           <caret line="257" column="50" selection-start-line="255" selection-start-column="41" selection-end-line="257" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1159">
-          <caret line="153" column="41" selection-start-line="153" selection-start-column="39" selection-end-line="153" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="276" column="3" selection-start-line="276" selection-start-column="3" selection-end-line="276" selection-end-column="3" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7380,7 +7184,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="173">
           <caret line="184" column="17" selection-start-line="184" selection-start-column="17" selection-end-line="184" selection-end-column="47" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7388,7 +7191,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
           <caret line="173" column="27" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7396,17 +7198,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
           <caret line="213" column="23" selection-start-line="213" selection-start-column="23" selection-end-line="213" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="132" column="12" selection-start-line="132" selection-start-column="12" selection-end-line="132" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7414,10 +7205,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="287">
           <caret line="115" column="37" selection-start-line="115" selection-start-column="37" selection-end-line="115" selection-end-column="37" />
-          <folding>
-            <element signature="e#3823#3824#0" expanded="false" />
-            <element signature="e#3857#3858#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7426,8 +7213,8 @@
         <state relative-caret-position="145">
           <caret line="341" column="34" selection-start-line="341" selection-start-column="34" selection-end-line="341" selection-end-column="34" />
           <folding>
-            <element signature="e#12839#12840#0" expanded="true" />
-            <element signature="e#12873#12874#0" expanded="true" />
+            <element signature="e#12839#12840#0" expanded="false" />
+            <element signature="e#12873#12874#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -7436,68 +7223,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="98">
           <caret line="100" column="30" selection-start-line="100" selection-start-column="30" selection-end-line="100" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/HomeActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="432" column="0" selection-start-line="432" selection-start-column="0" selection-end-line="432" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="659" column="39" selection-start-line="659" selection-start-column="39" selection-end-line="659" selection-end-column="39" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#48398#48399#0" expanded="true" />
-            <element signature="e#48428#48429#0" expanded="true" />
-            <element signature="e#48477#48478#0" expanded="true" />
-            <element signature="e#48502#48503#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="431">
-          <caret line="456" column="49" selection-start-line="456" selection-start-column="35" selection-end-line="456" selection-end-column="49" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="154" column="25" selection-start-line="154" selection-start-column="25" selection-end-line="154" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="628" column="28" selection-start-line="628" selection-start-column="28" selection-end-line="628" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/LiveInviteAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="116" column="14" selection-start-line="116" selection-start-column="14" selection-end-line="116" selection-end-column="14" />
-          <folding>
-            <element signature="e#4907#4908#0" expanded="true" />
-            <element signature="e#4935#4936#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7511,9 +7236,335 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveInviteView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="165" column="65" selection-start-line="165" selection-start-column="65" selection-end-line="165" selection-end-column="65" />
+        <state relative-caret-position="454">
+          <caret line="178" column="40" selection-start-line="178" selection-start-column="40" selection-end-line="178" selection-end-column="40" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRoomView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="154" column="25" selection-start-line="154" selection-start-column="25" selection-end-line="154" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-25/com/android/internal/os/ZygoteInit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="775" column="0" selection-start-line="775" selection-start-column="0" selection-end-line="775" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/service/TribeFirebaseMessagingService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/notification/NotificationBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="210" column="0" selection-start-line="210" selection-start-column="0" selection-end-line="210" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/LiveInviteAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="124" column="0" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/AuthActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="118" column="69" selection-start-line="118" selection-start-column="69" selection-end-line="118" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/notification/NotificationUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="275" column="0" selection-start-line="275" selection-start-column="0" selection-end-line="275" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="118">
+          <caret line="534" column="0" selection-start-line="534" selection-start-column="0" selection-end-line="534" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/HomeActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="432" column="0" selection-start-line="432" selection-start-column="0" selection-end-line="432" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/CreateFriendshipDeserializer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="29" column="53" selection-start-line="29" selection-start-column="53" selection-end-line="29" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/UserCache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="515">
+          <caret line="74" column="35" selection-start-line="74" selection-start-column="35" selection-end-line="74" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/UserCacheImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="36" column="3" selection-start-line="36" selection-start-column="3" selection-end-line="36" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/LiveDataStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="21" column="1" selection-start-line="21" selection-start-column="1" selection-end-line="21" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/UserRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="350">
+          <caret line="179" column="48" selection-start-line="179" selection-start-column="48" selection-end-line="179" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/RandomRoomAssigned.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="320" column="45" selection-start-line="320" selection-start-column="45" selection-end-line="320" selection-end-column="45" />
+          <folding>
+            <element signature="e#14534#14535#0" expanded="true" />
+            <element signature="e#14555#14556#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DiceView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="589" column="22" selection-start-line="589" selection-start-column="22" selection-end-line="589" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="659" column="28" selection-start-line="659" selection-start-column="28" selection-end-line="659" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="679">
+          <caret line="138" column="3" selection-start-line="138" selection-start-column="3" selection-end-line="138" selection-end-column="3" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="58" column="29" selection-start-line="58" selection-start-column="29" selection-end-line="58" selection-end-column="29" />
+          <folding>
+            <element signature="e#14073#14074#0" expanded="false" />
+            <element signature="e#14097#14098#0" expanded="false" />
+            <element signature="e#15740#15741#0" expanded="false" />
+            <element signature="e#15762#15763#0" expanded="false" />
+            <element signature="e#15804#15805#0" expanded="false" />
+            <element signature="e#15828#15829#0" expanded="false" />
+            <element signature="e#22009#22010#0" expanded="false" />
+            <element signature="e#22034#22035#0" expanded="false" />
+            <element signature="e#22087#22088#0" expanded="false" />
+            <element signature="e#22125#22126#0" expanded="false" />
+            <element signature="e#22177#22178#0" expanded="false" />
+            <element signature="e#22212#22213#0" expanded="false" />
+            <element signature="e#22263#22264#0" expanded="false" />
+            <element signature="e#22297#22298#0" expanded="false" />
+            <element signature="e#22350#22351#0" expanded="false" />
+            <element signature="e#22386#22387#0" expanded="false" />
+            <element signature="e#22441#22442#0" expanded="false" />
+            <element signature="e#22475#22476#0" expanded="false" />
+            <element signature="e#22532#22533#0" expanded="false" />
+            <element signature="e#22568#22569#0" expanded="false" />
+            <element signature="e#22625#22626#0" expanded="false" />
+            <element signature="e#22661#22662#0" expanded="false" />
+            <element signature="e#22728#22729#0" expanded="false" />
+            <element signature="e#22768#22769#0" expanded="false" />
+            <element signature="e#22835#22836#0" expanded="false" />
+            <element signature="e#22875#22876#0" expanded="false" />
+            <element signature="e#22924#22925#0" expanded="false" />
+            <element signature="e#22948#22949#0" expanded="false" />
+            <element signature="e#22997#22998#0" expanded="false" />
+            <element signature="e#23031#23032#0" expanded="false" />
+            <element signature="e#23073#23074#0" expanded="false" />
+            <element signature="e#23100#23101#0" expanded="false" />
+            <element signature="e#23163#23164#0" expanded="false" />
+            <element signature="e#23189#23190#0" expanded="false" />
+            <element signature="e#23253#23254#0" expanded="false" />
+            <element signature="e#23280#23281#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="825">
+          <caret line="78" column="28" selection-start-line="78" selection-start-column="28" selection-end-line="78" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#2504#2505#0" expanded="false" />
+            <element signature="e#2536#2537#0" expanded="false" />
+            <element signature="e#12851#12852#0" expanded="false" />
+            <element signature="e#12878#12879#0" expanded="false" />
+            <element signature="e#12931#12932#0" expanded="false" />
+            <element signature="e#12963#12964#0" expanded="false" />
+            <element signature="e#13016#13017#0" expanded="false" />
+            <element signature="e#13044#13045#0" expanded="false" />
+            <element signature="e#13093#13094#0" expanded="false" />
+            <element signature="e#13117#13118#0" expanded="false" />
+            <element signature="e#13168#13169#0" expanded="false" />
+            <element signature="e#13196#13197#0" expanded="false" />
+            <element signature="e#13249#13250#0" expanded="false" />
+            <element signature="e#13287#13288#0" expanded="false" />
+            <element signature="e#13338#13339#0" expanded="false" />
+            <element signature="e#13372#13373#0" expanded="false" />
+            <element signature="e#13425#13426#0" expanded="false" />
+            <element signature="e#13461#13462#0" expanded="false" />
+            <element signature="e#13528#13529#0" expanded="false" />
+            <element signature="e#13568#13569#0" expanded="false" />
+            <element signature="e#13635#13636#0" expanded="false" />
+            <element signature="e#13675#13676#0" expanded="false" />
+            <element signature="e#14110#14111#0" expanded="false" />
+            <element signature="e#14136#14137#0" expanded="false" />
+            <element signature="e#14200#14201#0" expanded="false" />
+            <element signature="e#14227#14228#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/deserializer/JsonToModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="151">
+          <caret line="189" column="37" selection-start-line="189" selection-start-column="37" selection-end-line="189" selection-end-column="37" />
+          <folding>
+            <element signature="e#8619#8620#0" expanded="true" />
+            <element signature="e#8649#8650#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/network/WSService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="255" column="22" selection-start-line="255" selection-start-column="22" selection-end-line="255" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/FbIdUpdated.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="12" column="20" selection-start-line="12" selection-start-column="20" selection-end-line="12" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/DiskUserDataRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="129">
+          <caret line="108" column="47" selection-start-line="108" selection-start-column="47" selection-end-line="108" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/DiskUserDataStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="204" column="45" selection-start-line="204" selection-start-column="45" selection-end-line="204" selection-end-column="45" />
+          <folding>
+            <element signature="e#6455#6456#0" expanded="true" />
+            <element signature="e#6498#6499#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCacheImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="85" column="44" selection-start-line="85" selection-start-column="44" selection-end-line="85" selection-end-column="44" />
+          <folding>
+            <element signature="e#2363#2364#0" expanded="true" />
+            <element signature="e#2399#2400#0" expanded="true" />
+            <element signature="e#2457#2458#0" expanded="true" />
+            <element signature="e#2487#2488#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="117">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="339" column="17" selection-start-line="339" selection-start-column="17" selection-end-line="339" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="382">
+          <caret line="454" column="32" selection-start-line="454" selection-start-column="32" selection-end-line="454" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
