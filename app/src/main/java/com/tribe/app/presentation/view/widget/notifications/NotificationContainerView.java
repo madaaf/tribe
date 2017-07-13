@@ -47,6 +47,8 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -211,9 +213,12 @@ public class NotificationContainerView extends FrameLayout {
       hideView();
     }));
 
-    subscriptions.add(viewToDisplay.onFacebookSuccess().subscribe(aVoid -> {
-      onFacebookSuccess.onNext(null);
-    }));
+    subscriptions.add(viewToDisplay.onFacebookSuccess()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          onFacebookSuccess.onNext(null);
+        }));
 
     subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
 

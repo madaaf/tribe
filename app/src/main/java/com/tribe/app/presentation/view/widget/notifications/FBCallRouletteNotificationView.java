@@ -123,8 +123,8 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
     Timber.d("loadFacebookInfos " + facebookEntity.getId());
-    facebookPresenter.updateUser(user.getUsername(), user.getDisplayName(), "",
-        facebookEntity.getId());
+/*    facebookPresenter.updateUser(user.getUsername(), user.getDisplayName(), "",
+        facebookEntity.getId());*/
   }
 
   @Override public void successFacebookLogin() {

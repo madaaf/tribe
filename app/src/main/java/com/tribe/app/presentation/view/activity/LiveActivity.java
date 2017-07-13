@@ -442,7 +442,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         finish();
       }
     }));
-    livePresenter.fbidUpdated();
+    //livePresenter.fbidUpdated(); SOEF
   }
 
   private void initCallRouletteService() {
