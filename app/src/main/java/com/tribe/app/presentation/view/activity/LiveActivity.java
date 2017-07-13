@@ -625,6 +625,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       reRollTheDiceFromLiveRoom();
     }));
 
+    subscriptions.add(viewLive.onRollTheDice().subscribe(s -> {
+      viewInviteLive.diceDragued();
+      viewInviteLive.requestLayout();
+    }));
+
     subscriptions.add(viewLiveContainer.onDropDiceWithoutFbAuth().subscribe(aVoid -> {
       Timber.d("drag dice, user not fb loged, display fb notif auth");
       notificationContainerView.

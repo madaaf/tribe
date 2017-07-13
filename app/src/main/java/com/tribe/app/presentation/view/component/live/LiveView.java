@@ -657,6 +657,7 @@ public class LiveView extends FrameLayout {
           if (FacebookUtils.isLoggedIn()) {
             viewRoom.onRollTheDiceReceived();
             live.setDiceDragedInRoom(true);
+            onRollTheDice.onNext(null);
           } else {
             Timber.d("user not connected to fb");
           }
@@ -1409,6 +1410,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<String> unlockedRollTheDice() {
     return unlockedRollTheDice;
+  }
+
+  public Observable<String> onRollTheDice() {
+    return onRollTheDice;
   }
 
   public Observable<TribeJoinRoom> onJoined() {
