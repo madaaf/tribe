@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
+import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
@@ -55,6 +56,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private ByteBuffer byteBuffer;
   private Object frameListenerLock = new Object();
   private Frame frame;
+  private LibYuvConverter libYuvConverter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -69,6 +71,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     mainHandler = new Handler(context.getMainLooper());
     ulseeManager = UlseeManager.getInstance(context);
     filterManager = FilterManager.getInstance(context);
+    libYuvConverter = LibYuvConverter.getInstance();
   }
 
   private void computeMatrices() {
@@ -117,6 +120,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       } else {
         clearMask();
         clearImageFilter();
+        filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
 
         FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
         faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
@@ -172,6 +176,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     surfaceWidth = width;
     surfaceHeight = height;
 
+    libYuvConverter.initPBO((int) surfaceWidth, (int) surfaceHeight);
+
     ulsRenderer.ulsSurfaceChanged(null, width, height);
 
     byteBuffer = ByteBuffer.allocateDirect((int) surfaceWidth * (int) surfaceHeight * 4);
@@ -212,6 +218,17 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
           draw(i, rotation);
         }
       }
+
+      byteBuffer.rewind();
+      libYuvConverter.readFromPBO(byteBuffer, (int) surfaceWidth, (int) surfaceHeight);
+      byteBuffer.flip();
+
+      int width = (int) surfaceWidth;
+      int height = (int) surfaceHeight;
+      frame = new Frame(byteBuffer.array(), width, height, 0, previewTexture.getTimestamp(),
+          cameraInfo.isFrontFacing());
+      onFrameAvailable.onNext(frame);
+
       //synchronized (frameListenerLock) {
       // //TODO not efficient enough, find another way to grab the frames, maybe through JNI?
       //  byteBuffer.rewind();
@@ -305,7 +322,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {
-    int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
+    int width = (int) surfaceHeight, height = (int) surfaceWidth;
 
     if (oriFaceShape == null) return;
     for (int i = 0; i < 99; i++) {
@@ -322,9 +339,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void clearImageFilter() {
-    if (maskFilter != null) {
-      maskFilter.release();
-      maskFilter = null;
+    if (filter != null) {
+      filter.release();
     }
   }
 

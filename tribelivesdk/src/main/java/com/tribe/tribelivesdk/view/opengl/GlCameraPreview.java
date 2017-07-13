@@ -19,7 +19,9 @@ import rx.Observable;
 
 import static android.opengl.GLES20.GL_MAX_RENDERBUFFER_SIZE;
 import static android.opengl.GLES20.GL_MAX_TEXTURE_SIZE;
+import static android.opengl.GLES20.GL_VERSION;
 import static android.opengl.GLES20.glGetIntegerv;
+import static android.opengl.GLES20.glGetString;
 
 public class GlCameraPreview extends GlTextureView implements PreviewRenderer.RendererCallback {
 

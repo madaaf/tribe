@@ -36,7 +36,7 @@ public class FrameManager {
 
   public FrameManager(Context context) {
     this.context = context;
-    libYuvConverter = new LibYuvConverter();
+    libYuvConverter = LibYuvConverter.getInstance();
     openCVWrapper = new OpenCVWrapper();
     //initVisionAPIManager();
     //initGameManager();

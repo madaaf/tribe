@@ -1,15 +1,21 @@
 #include <libyuv.h>
 #include <string.h>
 
+
 #ifdef __ANDROID__
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "tribelibyuv::", __VA_ARGS__))
 
 #include <jni.h>
-#include <cstdint>
-#include <cstring>
+#include <android/log.h>
 
 #endif
+
+#define GL_GLEXT_PROTOTYPES 1
+#define GL3_PROTOTYPES 1
+
+#include <GLES3/gl3.h>
+#include <Timer.h>
 
 using namespace libyuv;
 
@@ -109,7 +115,7 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ARGBToI420(JNIEnv *env, jobje
     return r;
 }
 
-JNIEXPORT jint JNICALL
+JNIEXPORT void JNICALL
 Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_nativeCopyPlane(JNIEnv *jni, jclass,
                                                                    jobject j_src_buffer, jint width,
                                                                    jint height,
@@ -129,6 +135,95 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_nativeCopyPlane(JNIEnv *jni, 
             dst += dst_stride;
         }
     }
+}
+
+// Consts
+const int PBO_COUNT = 3;
+
+// Global variables
+GLuint pboIds[PBO_COUNT];
+jint nbBytes;
+uint64_t dx = 0;
+uint64_t numDownloads = 0;
+unsigned char *ptr;
+Timer t1;
+float readTime, processTime;
+
+JNIEXPORT void JNICALL
+Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_initPBO(JNIEnv *jni, jclass, jint width,
+                                                           jint height) {
+    nbBytes = width * height * 4;
+    glGenBuffers(PBO_COUNT, pboIds);
+
+    for (int i = 0; i < PBO_COUNT; ++i) {
+        //LOGI("pbodownloader.pbos[%d] = %d, nbytes: %d", i, pboIds[i], nbBytes);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[i]);
+        glBufferData(GL_PIXEL_PACK_BUFFER, nbBytes, NULL, GL_STREAM_READ);
+    }
+
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+}
+
+JNIEXPORT void JNICALL
+Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_readFromPBO(JNIEnv *jni, jclass, jobject buffer,
+                                                               jint width,
+                                                               jint height) {
+    uint8_t *dst =
+            reinterpret_cast<uint8_t *>(jni->GetDirectBufferAddress(buffer));
+
+    if (numDownloads < PBO_COUNT) {
+        /*
+           First we need to make sure all our pbos are bound, so glMap/Unmap will
+           read from the oldest bound buffer first.
+        */
+        t1.start();
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[dx]);
+        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE,
+                     0);   /* When a GL_PIXEL_PACK_BUFFER is bound, the last 0 is used as offset into the buffer to read into. */
+        //LOGI("glReadPixels() with pbo: %d", pboIds[dx]);
+        // measure the time reading framebuffer
+        t1.stop();
+        readTime = t1.getElapsedTimeInMilliSec();
+        ///////////////////////////////////////////////////
+        //LOGI("readTime %f ms", readTime);
+    } else {
+        //LOGI("glMapBuffer() with pbo: %d", pboIds[dx]);
+
+        // process pixel data /////////////////////////////
+        t1.start();
+
+        /* Read from the oldest bound pbo. */
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[dx]);
+
+        ptr = (unsigned char *) glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, nbBytes,
+                                                 GL_MAP_READ_BIT);
+        if (NULL != ptr) {
+            memcpy(dst, ptr, nbBytes);
+            glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+        } else {
+            //LOGI("Failed to map the buffer");
+        }
+
+        //LOGI("glReadPixels() with pbo: %d", pboIds[dx]);
+        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+
+        // measure the time reading framebuffer
+        t1.stop();
+        processTime = t1.getElapsedTimeInMilliSec();
+
+        //LOGI("processTime %f ms", processTime);
+    }
+
+    ++dx;
+    dx = dx % PBO_COUNT;
+
+    numDownloads++;
+    if (numDownloads == UINT64_MAX) {
+        numDownloads = PBO_COUNT;
+    }
+
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
 } // extern "C"
