@@ -99,6 +99,7 @@ public class Room {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
@@ -147,6 +148,8 @@ public class Room {
     }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+
+    persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -268,7 +271,7 @@ public class Room {
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
       if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
         webSocketConnection.send(
-            getSendUnlockedRollTheDice(tpc.getSession().getPeerId(), true).toString());
+            getSendUnlockedRollTheDice(tpc.getSession().getPeerId()).toString());
       }
     }
   }
@@ -516,13 +519,13 @@ public class Room {
     return a;
   }
 
-  private JSONObject getSendUnlockedRollTheDice(String peerId, boolean unlockedRollTheDice) {
+  private JSONObject getSendUnlockedRollTheDice(String peerId) {
     JSONObject a = new JSONObject();
     JsonUtils.jsonPut(a, "a", "sendMessage");
     JSONObject d = new JSONObject();
     JsonUtils.jsonPut(d, "to", peerId);
     JSONObject appJson = new JSONObject();
-    JsonUtils.jsonPut(appJson, Room.UNLOCKED_ROLL_DICE, unlockedRollTheDice);
+    JsonUtils.jsonPut(appJson, Room.UNLOCKED_ROLL_DICE, true);
     JsonUtils.jsonPut(d, "message", appJson);
     JsonUtils.jsonPut(a, "d", d);
 
@@ -586,6 +589,9 @@ public class Room {
 
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
+  }
+  public Observable<String> unlockedRollTheDice() {
+    return unlockedRollTheDice;
   }
 
   public Observable<RemotePeer> onRemotePeerAdded() {

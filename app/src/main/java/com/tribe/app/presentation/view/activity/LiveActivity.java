@@ -101,6 +101,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -602,10 +603,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
       Timber.e("SOEF 1 : " + peerId + " " + user.getId());
       viewLive.sendUnlockDice(peerId, user.getId());
-      // reRollTheDiceFromLiveRoom();
     }));
 
     subscriptions.add(viewLive.unlockRollTheDice()
+        .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> {//SOEF
           Timber.e("SOEF 1 : unlockRollTheDice reveived " + s);
@@ -617,6 +618,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             Timber.e("SOEF 1 : NOT DISPLAY FB");
           }
         }));
+
+    subscriptions.add(viewLive.unlockedRollTheDice().subscribe(s -> {
+      Timber.d("SOEF unlockedRollTheDice received");
+      livePresenter.roomAcceptRandom(live.getSessionId());
+      reRollTheDiceFromLiveRoom();
+    }));
 
     subscriptions.add(viewLiveContainer.onDropDiceWithoutFbAuth().subscribe(aVoid -> {
       Timber.d("drag dice, user not fb loged, display fb notif auth");
@@ -742,12 +749,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       reRollTheDiceFromCallRoulette();
     }));
 
-    subscriptions.add(notificationContainerView.onFacebookSuccess().subscribe(aVoid -> {//SOEF
-      blockView.setVisibility(View.GONE);
-      viewLiveContainer.blockOpenInviteView(false);
-      initCallRouletteService();
-      viewLive.sendUnlockedDice("test soef");
-    }));
+    subscriptions.add(notificationContainerView.onFacebookSuccess()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {//SOEF
+          blockView.setVisibility(View.GONE);
+          viewLiveContainer.blockOpenInviteView(false);
+          initCallRouletteService();
+          viewLive.sendUnlockedDice("test soef");
+        }));
   }
 
   private void reRollTheDiceFromCallRoulette() {

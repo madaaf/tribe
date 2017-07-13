@@ -169,6 +169,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
@@ -548,6 +549,8 @@ public class LiveView extends FrameLayout {
     }));
 
     tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
+
+    tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
@@ -1402,6 +1405,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
+  }
+
+  public Observable<String> unlockedRollTheDice() {
+    return unlockedRollTheDice;
   }
 
   public Observable<TribeJoinRoom> onJoined() {
