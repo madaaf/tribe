@@ -1,6 +1,8 @@
 package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
+import android.graphics.RectF;
+import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
@@ -107,6 +109,10 @@ public class FrameManager {
 
   public void initPreviewFrameSubscription(Observable<Frame> onPreviewFrame) {
     ulseeManager.initFrameSubscription(onPreviewFrame);
+  }
+
+  public void initNewFacesSubscriptions(Observable<Pair<RectF[], int[]>> observable) {
+    ulseeManager.initNewFacesSubscription(observable);
   }
 
   public void switchFilter() {

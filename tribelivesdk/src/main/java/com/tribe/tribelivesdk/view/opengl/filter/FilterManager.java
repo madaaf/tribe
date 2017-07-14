@@ -90,7 +90,7 @@ public class FilterManager {
   }
 
   public void setToDefault() {
-    current = filterList.get(0);
+    current = filterList.get(8);
     current.setActivated(true);
   }
 

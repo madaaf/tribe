@@ -13,7 +13,6 @@
   ((void)__android_log_print(ANDROID_LOG_INFO, "tribelibyuv::", __VA_ARGS__))
 
 #include <jni.h>
-#include <android/log.h>
 
 #endif
 
@@ -180,7 +179,7 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_readFromPBO(JNIEnv *jni, jcla
     uint8_t *dst =
             reinterpret_cast<uint8_t *>(jni->GetDirectBufferAddress(buffer));
 
-    t1.start();
+    //t1.start();
 
     glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[gpu2vram]);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -195,10 +194,10 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_readFromPBO(JNIEnv *jni, jcla
 
     glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 
-    t1.stop();
-    processTime = t1.getElapsedTimeInMilliSec();
+    //t1.stop();
+    //processTime = t1.getElapsedTimeInMilliSec();
 
-    LOGI("processTime %f ms", processTime);
+    //LOGI("processTime %f ms", processTime);
 
     // shift names
     GLuint temp = pboIds[0];

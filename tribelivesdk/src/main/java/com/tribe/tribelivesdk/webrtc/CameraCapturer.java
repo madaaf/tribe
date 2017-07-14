@@ -11,10 +11,13 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.stream.FrameManager;
 import java.util.Arrays;
@@ -26,6 +29,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
     implements CameraVideoCapturer {
@@ -45,13 +49,16 @@ import rx.subscriptions.CompositeSubscription;
   private final Handler uiThreadHandler;
   private boolean frontFacing = true;
   private SurfaceTexture surfaceTexture;
+  private int[] rotations;
+  private RectF[] rectFs;
+  private Pair<RectF[], int[]> pairFaceRotations;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Subscription subscriptionCaptureByteBuffer;
   private PublishSubject<Frame> onFrame = PublishSubject.create();
   private PublishSubject<Frame> onPreviewFrame = PublishSubject.create();
-  private PublishSubject<Camera.Face[]> onFaces = PublishSubject.create();
+  private PublishSubject<Pair<RectF[], int[]>> onFaces = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
   private PublishSubject<CameraInfo> onNewCameraInfo = PublishSubject.create();
 
@@ -209,7 +216,35 @@ import rx.subscriptions.CompositeSubscription;
     }
 
     @Override public void onDetectedFaces(Camera.Face[] faces) {
-      onFaces.onNext(faces);
+      if (currentSession == null) return;
+
+      rotations = new int[faces.length];
+      rectFs = new RectF[faces.length];
+      for (int i = 0; i < faces.length; i++) {
+        Camera.Face face = faces[i];
+
+        int width = currentSession.getCameraInfo().getCaptureFormat().width;
+        int height = currentSession.getCameraInfo().getCaptureFormat().height;
+
+        RectF bounds = new RectF(face.rect.left, face.rect.top, face.rect.right, face.rect.bottom);
+        Matrix matrix = new Matrix();
+
+                                    /*START - convert driver coordinates to View coordinates in pixels*/
+        matrix.setScale(1, 1); // for front facing camera (matrix.setScale(1, 1); otherwise)
+        matrix.postRotate(currentSession.getCameraInfo().getFrameOrientation());
+        // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
+        // UI coordinates range from (0, 0) to (width, height).
+        matrix.postScale(width / 2000f, height / 2000f);
+        matrix.postTranslate(width / 2f, height / 2f);
+        matrix.mapRect(bounds);
+
+        rectFs[i] = bounds;
+        Timber.d("Bounds : " + bounds);
+        rotations[i] = -currentSession.getCameraInfo().getFrameOrientation();
+      }
+
+      pairFaceRotations = new Pair<>(rectFs, rotations);
+      onFaces.onNext(pairFaceRotations);
     }
   };
 
@@ -319,9 +354,9 @@ import rx.subscriptions.CompositeSubscription;
       createSessionInternal(0);
 
       frameManager.startCapture();
-      frameManager.initFrameSubscription(onFrame);
+      //frameManager.initFrameSubscription(onFrame);
       frameManager.initPreviewFrameSubscription(onPreviewFrame);
-      //frameManager.initNewFacesObs(onFaces);
+      frameManager.initNewFacesSubscriptions(onFaces);
     }
   }
 

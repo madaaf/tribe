@@ -28,9 +28,9 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glViewport;
 
 public class PreviewRenderer extends GlFrameBufferObjectRenderer
     implements PreviewTextureInterface.OnFrameAvailableListener {
@@ -99,36 +99,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     subscriptions.add(obs.subscribe(filterMask -> {
-      if (filterMask == null || filterMask.equals(filter) || filterMask.equals(maskFilter)) {
-        clearImageFilter();
-        clearMask();
-        filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
-        return;
-      }
-
-      if (filterMask instanceof ImageFilter) {
-        clearMask();
-
-        ImageFilter shader = (ImageFilter) filterMask;
-        if (shader == null || shader.equals(filter)) {
-          shader = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
-        }
-
-        clearImageFilter();
-
-        this.filter = shader;
-      } else {
-        clearMask();
-        clearImageFilter();
-        filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
-
-        FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
-        faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
-            cameraInfo.isFrontFacing());
-        maskFilter = (FaceMaskFilter) filterMask;
-      }
-
-      rendererCallback.requestRender();
+      switchFilter(filterMask);
     }));
   }
 
@@ -154,7 +125,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @Override public void onSurfaceCreated(final EGLConfig config) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    filter = (ImageFilter) filterManager.getFilter();
+    switchFilter(filterManager.getFilter());
 
     resetMatrix();
 
@@ -203,7 +174,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       updateSurface = false;
     }
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
+    glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
     Matrix.multiplyMM(mvpMatrix, 0, vMatrix, 0, matrix, 0);
     Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, mvpMatrix, 0);
 
@@ -228,47 +200,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       frame = new Frame(byteBuffer.array(), width, height, 0, previewTexture.getTimestamp(),
           cameraInfo.isFrontFacing());
       onFrameAvailable.onNext(frame);
-
-      //synchronized (frameListenerLock) {
-      // //TODO not efficient enough, find another way to grab the frames, maybe through JNI?
-      //  byteBuffer.rewind();
-      //  long start = System.currentTimeMillis();
-      //
-      //  //  Timber.d("glReadPixels: " + (end - start));
-      //
-      //  int width = (int) surfaceWidth;
-      //  int height = (int) surfaceHeight;
-      //  GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
-      //      byteBuffer);
-      //  byteBuffer.flip();
-      //  long end = System.currentTimeMillis();
-      //  //Timber.d("glReadPixels: " + (end - start));
-      //
-      //  //BufferedOutputStream bos = null;
-      //  //try {
-      //  //  File file =
-      //  //      new File(FILES_DIR, String.format("frame-" + System.currentTimeMillis() + ".png"));
-      //  //  bos = new BufferedOutputStream(new FileOutputStream(file.toString()));
-      //  //  Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-      //  //  byteBuffer.rewind();
-      //  //  bmp.copyPixelsFromBuffer(byteBuffer);
-      //  //  bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
-      //  //  bmp.recycle();
-      //  //} catch (FileNotFoundException e) {
-      //  //  e.printStackTrace();
-      //  //} finally {
-      //  //  if (bos != null) {
-      //  //    try {
-      //  //      bos.close();
-      //  //    } catch (IOException e) {
-      //  //      e.printStackTrace();
-      //  //    }
-      //  //  }
-      //  //}
-      //  frame = new Frame(byteBuffer.array(), width, height, 0, previewTexture.getTimestamp(),
-      //      cameraInfo.isFrontFacing());
-      //  onFrameAvailable.onNext(frame);
-      //}
     }
   }
 
@@ -342,6 +273,38 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (filter != null) {
       filter.release();
     }
+  }
+
+  private void switchFilter(FilterMask filterMask) {
+    if (filterMask == null || filterMask.equals(filter) || filterMask.equals(maskFilter)) {
+      clearImageFilter();
+      clearMask();
+      filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
+      return;
+    }
+
+    if (filterMask instanceof ImageFilter) {
+      clearMask();
+
+      ImageFilter shader = (ImageFilter) filterMask;
+      if (shader == null || shader.equals(filter)) {
+        shader = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
+      }
+
+      clearImageFilter();
+
+      this.filter = shader;
+    } else {
+      clearMask();
+      clearImageFilter();
+      filter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
+
+      FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
+      faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(), cameraInfo.isFrontFacing());
+      maskFilter = (FaceMaskFilter) filterMask;
+    }
+
+    rendererCallback.requestRender();
   }
 
   @Override

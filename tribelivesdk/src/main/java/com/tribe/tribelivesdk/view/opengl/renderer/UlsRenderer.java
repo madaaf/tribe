@@ -160,7 +160,7 @@ public class UlsRenderer {
 
   public void setTrackParam(int width, int height, float[] shape, float[] shapeQuality,
       float[] pupils, float[] gaze, float[] pose, float poseQuality, boolean isFront,
-      int cameraRotation, float ratioH) {
+      int cameraRotation, float ratio) {
     Mesh.isFront = isFront;
     if (pose != null) {
       pose = Arrays.copyOf(pose, pose.length);
@@ -248,6 +248,8 @@ public class UlsRenderer {
                   realX = (2.0f * shape[2 * obj.pointIndex] / width - 1.0f) * 1280 / 720;
                   realY = -(2.0f * shape[2 * obj.pointIndex + 1] / height - 1.0f);
                 }
+
+                realX = realX - 0.01f; realY = realY - 0.01f;
 
                 plane.setTrackPostion(realX, realY, 0);
               }
