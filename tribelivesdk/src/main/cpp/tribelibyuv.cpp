@@ -154,16 +154,11 @@ jint nbBytes;
 unsigned char *ptr;
 Timer t1;
 float readTime, processTime;
-unsigned char *tempbuff = NULL;
 
 
 JNIEXPORT void JNICALL
 Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_initPBO(JNIEnv *jni, jclass, jint width,
                                                            jint height) {
-    tempbuff = (unsigned char *) valloc(BUFSIZE, PROT_NONE);
-    msync(ptr, BUFSIZE, MS_SYNC | MS_INVALIDATE);
-    vlock(tempbuff, BUFSIZE);
-
     nbBytes = width * height * 4;
     glGenBuffers(PBO_COUNT, pboIds);
 
