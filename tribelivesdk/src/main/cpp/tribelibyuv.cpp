@@ -1,6 +1,12 @@
 #include <libyuv.h>
 #include <string.h>
+#include <sys/mman.h>
 
+#define valloc(size, prot) mmap(NULL, (size), (prot), MAP_PRIVATE | MAP_ANON, -1, 0);
+#define vfree(mem, size)  munmap(mem, size)
+#define vlock(mem, size) mlock((mem), (size))
+
+#define BUFSIZE (4*1024)
 
 #ifdef __ANDROID__
 #define LOGI(...) \
@@ -142,16 +148,22 @@ const int PBO_COUNT = 3;
 
 // Global variables
 GLuint pboIds[PBO_COUNT];
+int vram2sys;         // index of PBO used to copy from vram to sysmem
+int gpu2vram;         // index of PBO used to copy framebuffer to vram
 jint nbBytes;
-uint64_t dx = 0;
-uint64_t numDownloads = 0;
 unsigned char *ptr;
 Timer t1;
 float readTime, processTime;
+unsigned char *tempbuff = NULL;
+
 
 JNIEXPORT void JNICALL
 Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_initPBO(JNIEnv *jni, jclass, jint width,
                                                            jint height) {
+    tempbuff = (unsigned char *) valloc(BUFSIZE, PROT_NONE);
+    msync(ptr, BUFSIZE, MS_SYNC | MS_INVALIDATE);
+    vlock(tempbuff, BUFSIZE);
+
     nbBytes = width * height * 4;
     glGenBuffers(PBO_COUNT, pboIds);
 
@@ -162,6 +174,8 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_initPBO(JNIEnv *jni, jclass, 
     }
 
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    vram2sys = 0;
+    gpu2vram = PBO_COUNT - 1;
 }
 
 JNIEXPORT void JNICALL
@@ -171,57 +185,31 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_readFromPBO(JNIEnv *jni, jcla
     uint8_t *dst =
             reinterpret_cast<uint8_t *>(jni->GetDirectBufferAddress(buffer));
 
-    if (numDownloads < PBO_COUNT) {
-        /*
-           First we need to make sure all our pbos are bound, so glMap/Unmap will
-           read from the oldest bound buffer first.
-        */
-        t1.start();
-        glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[dx]);
-        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE,
-                     0);   /* When a GL_PIXEL_PACK_BUFFER is bound, the last 0 is used as offset into the buffer to read into. */
-        //LOGI("glReadPixels() with pbo: %d", pboIds[dx]);
-        // measure the time reading framebuffer
-        t1.stop();
-        readTime = t1.getElapsedTimeInMilliSec();
-        ///////////////////////////////////////////////////
-        //LOGI("readTime %f ms", readTime);
-    } else {
-        //LOGI("glMapBuffer() with pbo: %d", pboIds[dx]);
+    t1.start();
 
-        // process pixel data /////////////////////////////
-        t1.start();
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[gpu2vram]);
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-        /* Read from the oldest bound pbo. */
-        glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[dx]);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, pboIds[vram2sys]);
 
-        ptr = (unsigned char *) glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, nbBytes,
-                                                 GL_MAP_READ_BIT);
-        if (NULL != ptr) {
-            memcpy(dst, ptr, nbBytes);
-            glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-        } else {
-            //LOGI("Failed to map the buffer");
-        }
-
-        //LOGI("glReadPixels() with pbo: %d", pboIds[dx]);
-        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-
-        // measure the time reading framebuffer
-        t1.stop();
-        processTime = t1.getElapsedTimeInMilliSec();
-
-        //LOGI("processTime %f ms", processTime);
+    ptr = (unsigned char *) glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, nbBytes,
+                                             GL_MAP_READ_BIT);
+    if (ptr != NULL) {
+        memcpy(dst, ptr, nbBytes);
     }
 
-    ++dx;
-    dx = dx % PBO_COUNT;
+    glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 
-    numDownloads++;
-    if (numDownloads == UINT64_MAX) {
-        numDownloads = PBO_COUNT;
-    }
+    t1.stop();
+    processTime = t1.getElapsedTimeInMilliSec();
+
+    LOGI("processTime %f ms", processTime);
+
+    // shift names
+    GLuint temp = pboIds[0];
+    for (int i = 1; i < PBO_COUNT; i++)
+        pboIds[i - 1] = pboIds[i];
+    pboIds[PBO_COUNT - 1] = temp;
 
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
