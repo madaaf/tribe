@@ -42,9 +42,6 @@ public class GlLocalView extends FrameLayout {
     initResources();
     initDependencyInjector();
 
-    LayoutInflater.from(getContext()).inflate(R.layout.view_gl_local, this);
-    unbinder = ButterKnife.bind(this);
-
     glCameraPreview = new GlCameraPreview(getContext(), null);
     addView(glCameraPreview, ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);
@@ -67,6 +64,10 @@ public class GlLocalView extends FrameLayout {
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     glCameraPreview.initSwitchFilterSubscription(obs);
+  }
+
+  public void initInviteOpenSubscription(Observable<Integer> obs) {
+    glCameraPreview.initInviteOpenSubscription(obs);
   }
 
   private void onNewCameraInfo(CameraInfo cameraInfo) {

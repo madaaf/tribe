@@ -239,7 +239,7 @@ import timber.log.Timber;
         matrix.mapRect(bounds);
 
         rectFs[i] = bounds;
-        Timber.d("Bounds : " + bounds);
+        //Timber.d("Bounds : " + bounds);
         rotations[i] = -currentSession.getCameraInfo().getFrameOrientation();
       }
 
@@ -356,7 +356,7 @@ import timber.log.Timber;
       frameManager.startCapture();
       //frameManager.initFrameSubscription(onFrame);
       frameManager.initPreviewFrameSubscription(onPreviewFrame);
-      frameManager.initNewFacesSubscriptions(onFaces);
+      //frameManager.initNewFacesSubscriptions(onFaces);
     }
   }
 

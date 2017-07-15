@@ -35,4 +35,12 @@ public class CameraInfo {
   public boolean isFrontFacing() {
     return cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT;
   }
+
+  public int rotatedWidth() {
+    return this.frameOrientation % 180 == 0 ? this.captureFormat.width : this.captureFormat.height;
+  }
+
+  public int rotatedHeight() {
+    return this.frameOrientation % 180 == 0 ? this.captureFormat.height : this.captureFormat.width;
+  }
 }

@@ -173,29 +173,29 @@ public class UlseeManager {
 
           return frame;
         })
-        //.filter(frame1 -> (alive == 0 && !faceDetectionRunning))
-        //.flatMap(frame -> Observable.just(frame)
-        //    .subscribeOn(Schedulers.from(frameExecutor))
-        //    .map(frame1 -> {
-        //      //Timber.d("Thread name : " + Thread.currentThread().getName());
-        //      faceDetectionRunning = true;
-        //
-        //      final int detectDegree =
-        //          (cameraRotation + 360 - deviceRotationDetector.getRotationDegree()) % 360;
-        //      //Timber.d("cameraRotation : "
-        // + cameraRotation);
-        //      //Timber.d("displayRotation : " + displayRotation);
-        //      //Timber.d("frameRotation : " + frame.getRotation());
-        //      //Timber.d("deviceRotationDetector.getRotationDegree : "
-        //      //    + deviceRotationDetector.getRotationDegree());
-        //      //Timber.d("Width : %d, Height : %d, Rotation : %d", frame.getWidth(), frame.getHeight(),
-        //      //    detectDegree);
-        //      ulsTracker.findFacesAndAdd(frame.getData(), frame.getWidth(), frame.getHeight(),
-        //          detectDegree, UlsMultiTracker.ImageDataType.NV21);
-        //      timeDoFaceDet = System.currentTimeMillis();
-        //      faceDetectionRunning = false;
-        //      return null;
-        //    }), 1)
+        .filter(frame1 -> (alive == 0 && !faceDetectionRunning))
+        .flatMap(frame -> Observable.just(frame)
+            .subscribeOn(Schedulers.from(frameExecutor))
+            .map(frame1 -> {
+              //Timber.d("Thread name : " + Thread.currentThread().getName());
+              faceDetectionRunning = true;
+
+              final int detectDegree =
+                  (cameraRotation + 360 - deviceRotationDetector.getRotationDegree()) % 360;
+              //Timber.d("cameraRotation : "
+              //+ cameraRotation);
+              //Timber.d("displayRotation : " + displayRotation);
+              //Timber.d("frameRotation : " + frame.getRotation());
+              //Timber.d("deviceRotationDetector.getRotationDegree : "
+              //    + deviceRotationDetector.getRotationDegree());
+              //Timber.d("Width : %d, Height : %d, Rotation : %d", frame.getWidth(), frame.getHeight(),
+              //    detectDegree);
+              ulsTracker.findFacesAndAdd(frame.getData(), frame.getWidth(), frame.getHeight(),
+                  detectDegree, UlsMultiTracker.ImageDataType.NV21);
+              timeDoFaceDet = System.currentTimeMillis();
+              faceDetectionRunning = false;
+              return null;
+            }), 1)
         .subscribe());
   }
 

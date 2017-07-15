@@ -19,7 +19,7 @@ public class NeonSkullFaceMaskFilter extends FaceMaskFilter {
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
       String neonSkullContour = path + "neon_skull_contour.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, neonSkullContour, 30, true, 1.5f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(1, neonSkullContour, 30, true, 1.75f, isFrontFacing);
 
       String neonSkullEyes = path + "neon_skull_eyes.png";
       UlsFaceAR.insertAnimationObjectAtIndex(2, neonSkullEyes, 27, true, 1.5f, isFrontFacing);

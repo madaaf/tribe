@@ -712,6 +712,8 @@ public class LiveView extends FrameLayout {
       viewRoom.setType(
           event == LiveContainer.EVENT_OPENED ? LiveRoomView.LINEAR : LiveRoomView.GRID);
     }));
+
+    viewLocalLive.initInviteOpenSubscription(obs);
   }
 
   public void initOnStartDragSubscription(Observable<TileView> obs) {

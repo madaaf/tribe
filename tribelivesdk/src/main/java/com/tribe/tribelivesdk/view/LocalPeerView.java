@@ -80,6 +80,10 @@ public class LocalPeerView extends FrameLayout {
     //    .subscribe(aVoid -> setMirror(frontFacing)));
   }
 
+  public void initInviteOpenSubscription(Observable<Integer> obs) {
+    glLocalView.initInviteOpenSubscription(obs);
+  }
+
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     onSwitchFilter = obs;
     glLocalView.initSwitchFilterSubscription(onSwitchFilter);

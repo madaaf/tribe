@@ -222,6 +222,10 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initSwitchFilterSubscription(observable);
   }
 
+  public void initInviteOpenSubscription(Observable<Integer> obs) {
+    viewPeerLocal.initInviteOpenSubscription(obs);
+  }
+
   public void switchCamera() {
     if (!hiddenControls) {
       onSwitchCamera.onNext(null);

@@ -13,24 +13,27 @@ import com.tribe.tribelivesdk.view.opengl.gles.DefaultContextFactory;
 import com.tribe.tribelivesdk.view.opengl.gles.GlTextureView;
 import com.tribe.tribelivesdk.view.opengl.renderer.PreviewRenderer;
 import com.tribe.tribelivesdk.webrtc.Frame;
-import com.tribe.tribelivesdk.webrtc.FrameTexture;
-import javax.microedition.khronos.egl.EGLConfig;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import rx.Observable;
+import rx.subscriptions.CompositeSubscription;
 
 import static android.opengl.GLES20.GL_MAX_RENDERBUFFER_SIZE;
 import static android.opengl.GLES20.GL_MAX_TEXTURE_SIZE;
-import static android.opengl.GLES20.GL_VERSION;
 import static android.opengl.GLES20.glGetIntegerv;
-import static android.opengl.GLES20.glGetString;
 
 public class GlCameraPreview extends GlTextureView implements PreviewRenderer.RendererCallback {
 
   private final PreviewRenderer renderer;
+  private int surfaceWidth, surfaceHeight, frameRotation, rotatedFrameWidth, rotatedFrameHeight;
   private int maxTextureSize;
   private int maxRenderBufferSize;
   private boolean isInitialized = false;
+  private final RendererCommon.VideoLayoutMeasure videoLayoutMeasure =
+      new RendererCommon.VideoLayoutMeasure();
+  private final Object layoutLock = new Object();
 
   // OBSERVABLE
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   public GlCameraPreview(@NonNull final Context context) {
     this(context, null);
@@ -56,6 +59,10 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     renderer.initSwitchFilterSubscription(obs);
+  }
+
+  public void initInviteOpenSubscription(Observable<Integer> obs) {
+    renderer.initInviteOpenSubscription(obs);
   }
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
