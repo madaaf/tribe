@@ -626,7 +626,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribe(s -> {
           Timber.d("SOEF unlockedRollTheDice received");
           livePresenter.roomAcceptRandom(live.getSessionId());
-          reRollTheDiceFromLiveRoom();
+          // reRollTheDiceFromLiveRoom();
+          diceView.setVisibility(VISIBLE);
+          diceView.startDiceAnimation();
+        }));
+
+    subscriptions.add(notificationContainerView.onFacebookSuccess()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {//SOEF
+          blockView.setVisibility(View.GONE);
+          viewLiveContainer.blockOpenInviteView(false);
+          initCallRouletteService();
+          viewLive.sendUnlockedDice("test soef");
         }));
 
     subscriptions.add(viewLive.onRollTheDice().subscribe(s -> {
@@ -757,16 +769,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
       reRollTheDiceFromCallRoulette();
     }));
-
-    subscriptions.add(notificationContainerView.onFacebookSuccess()
-        .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {//SOEF
-          blockView.setVisibility(View.GONE);
-          viewLiveContainer.blockOpenInviteView(false);
-          initCallRouletteService();
-          viewLive.sendUnlockedDice("test soef");
-        }));
   }
 
   private void reRollTheDiceFromCallRoulette() {
