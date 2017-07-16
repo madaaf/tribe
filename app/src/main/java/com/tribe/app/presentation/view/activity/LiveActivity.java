@@ -273,6 +273,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private List anonymousIdList = new ArrayList();
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
+  private List<String> userUnder13List = new ArrayList<>();
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -603,6 +604,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
       Timber.d("user under 13 dropped" + peerId);
+      userUnder13List.add(peerId);
       viewLive.sendUnlockDice(peerId, user.getId());
     }));
 
@@ -622,11 +624,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> {
-          //viewLive.getUsersInLiveRoom().getPeopleInRoom();
-          Timber.e("SOEF unlockedRollTheDice received " + s);//MADA SOEF
-          livePresenter.roomAcceptRandom(live.getSessionId());
-          diceView.setVisibility(VISIBLE);
-          diceView.startDiceAnimation();
+          userUnder13List.remove(s);
+          if (userUnder13List.isEmpty()) {
+            //viewLive.getUsersInLiveRoom().getPeopleInRoom();
+            Timber.e("SOEF unlockedRollTheDice received " + s);//MADA SOEF
+            livePresenter.roomAcceptRandom(live.getSessionId());
+            diceView.setVisibility(VISIBLE);
+            diceView.startDiceAnimation();
+          } else {
+            Timber.e("SOEF USER UNDER 13 LIST NOT EMPTY " + s);//MADA SOEF
+            for (String ok : userUnder13List) {
+              Timber.e("SOEF " + ok);
+            }
+          }
         }));
 
     subscriptions.add(notificationContainerView.onFacebookSuccess()
