@@ -11,12 +11,14 @@ public class CameraInfo {
 
   private CameraEnumerationAndroid.CaptureFormat captureFormat;
   private int frameOrientation;
+  private int frameOrientationUlsee;
   private Camera.CameraInfo cameraInfo;
 
-  public CameraInfo(CameraEnumerationAndroid.CaptureFormat captureFormat, int frameOrientation,
+  public CameraInfo(CameraEnumerationAndroid.CaptureFormat captureFormat, int frameOrientation, int frameOrientationUlsee,
       Camera.CameraInfo cameraInfo) {
     this.captureFormat = captureFormat;
     this.frameOrientation = frameOrientation;
+    this.frameOrientationUlsee = frameOrientationUlsee;
     this.cameraInfo = cameraInfo;
   }
 
@@ -26,6 +28,18 @@ public class CameraInfo {
 
   public int getFrameOrientation() {
     return frameOrientation;
+  }
+
+  public void setFrameOrientation(int frameOrientation) {
+    this.frameOrientation = frameOrientation;
+  }
+
+  public int getFrameOrientationUlsee() {
+    return frameOrientationUlsee;
+  }
+
+  public void setFrameOrientationUlsee(int frameOrientationUlsee) {
+    this.frameOrientationUlsee = frameOrientationUlsee;
   }
 
   public Camera.CameraInfo getCameraInfo() {

@@ -155,7 +155,7 @@ public class UlsRenderer {
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
     this.cameraInfo = cameraInfo;
-    this.cameraRotation = 270;
+    this.cameraRotation = cameraInfo.getFrameOrientationUlsee();
   }
 
   public void setTrackParam(int width, int height, float[] shape, float[] shapeQuality,
@@ -241,15 +241,17 @@ public class UlsRenderer {
               } else {
                 float realX;
                 float realY;
+
+                //float ratioCameraReal = (float) cameraInfo.getCaptureFormat().width / (float) cameraInfo.getCaptureFormat().height;
+                float ratioCameraReal = 1.78f;
+
                 if (isFront) {
-                  realX = (2.0f * shape[2 * obj.pointIndex] / width - 1.0f) * 1280 / 720;
+                  realX = (2.0f * shape[2 * obj.pointIndex] / width - 1.0f) * ratioCameraReal;
                   realY = 2.0f * shape[2 * obj.pointIndex + 1] / height - 1.0f;
                 } else {
-                  realX = (2.0f * shape[2 * obj.pointIndex] / width - 1.0f) * 1280 / 720;
+                  realX = (2.0f * shape[2 * obj.pointIndex] / width - 1.0f) * ratioCameraReal;
                   realY = -(2.0f * shape[2 * obj.pointIndex + 1] / height - 1.0f);
                 }
-
-                realX = realX - 0.01f; realY = realY - 0.01f;
 
                 plane.setTrackPostion(realX, realY, 0);
               }

@@ -41,7 +41,7 @@ public class LutColorFilter extends ImageFilter {
   private boolean lutBitmapInOpenGlUse = false;
 
   private final static String FRAGMENT_SHADER_DUMMY = "precision highp float;\n" +
-      " varying highp vec2 vTextureCoord;\n" +
+      " varying highp vec2 interp_tc;\n" +
       " uniform " +
       TARGET_PLACEHOLDER +
       " sTexture;\n" +
@@ -49,7 +49,7 @@ public class LutColorFilter extends ImageFilter {
       " \n" +
       " void main()\n" +
       " {\n" +
-      "     highp vec4 textureColor = texture2D(sTexture, vTextureCoord);\n" +
+      "     highp vec4 textureColor = texture2D(sTexture, interp_tc);\n" +
       "     textureColor = clamp(textureColor, 0.0, 1.0);\n" +
 
       "     highp float blueColor = textureColor.b * 63.0;\n" +
@@ -87,7 +87,7 @@ public class LutColorFilter extends ImageFilter {
     lutResourceId = lutResource;
   }
 
-  @Override public void onDraw() {
+  @Override protected void onDraw(int x, int y, int width, int height) {
     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
     GLES20.glUniform1i(getHandle(FILTER_UNIFORM_SAMPLER), 3);

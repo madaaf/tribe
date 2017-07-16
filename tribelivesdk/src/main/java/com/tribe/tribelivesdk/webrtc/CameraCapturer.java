@@ -192,6 +192,13 @@ import timber.log.Timber;
 
         cameraStatistics.addFrame();
 
+        if (rotation != lastFrameRotation && currentSession != null) {
+          onNewCameraInfo.onNext(currentSession.getCameraInfo());
+        }
+
+        lastFrameRotation = rotation;
+
+        //Timber.d("onByteBufferFrameCaptured FrameRotation : " + rotation);
         onPreviewFrame.onNext(new Frame(data, width, height, rotation, timestamp, frontFacing));
       }
     }
@@ -216,35 +223,35 @@ import timber.log.Timber;
     }
 
     @Override public void onDetectedFaces(Camera.Face[] faces) {
-      if (currentSession == null) return;
-
-      rotations = new int[faces.length];
-      rectFs = new RectF[faces.length];
-      for (int i = 0; i < faces.length; i++) {
-        Camera.Face face = faces[i];
-
-        int width = currentSession.getCameraInfo().getCaptureFormat().width;
-        int height = currentSession.getCameraInfo().getCaptureFormat().height;
-
-        RectF bounds = new RectF(face.rect.left, face.rect.top, face.rect.right, face.rect.bottom);
-        Matrix matrix = new Matrix();
-
-                                    /*START - convert driver coordinates to View coordinates in pixels*/
-        matrix.setScale(1, 1); // for front facing camera (matrix.setScale(1, 1); otherwise)
-        matrix.postRotate(currentSession.getCameraInfo().getFrameOrientation());
-        // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
-        // UI coordinates range from (0, 0) to (width, height).
-        matrix.postScale(width / 2000f, height / 2000f);
-        matrix.postTranslate(width / 2f, height / 2f);
-        matrix.mapRect(bounds);
-
-        rectFs[i] = bounds;
-        //Timber.d("Bounds : " + bounds);
-        rotations[i] = -currentSession.getCameraInfo().getFrameOrientation();
-      }
-
-      pairFaceRotations = new Pair<>(rectFs, rotations);
-      onFaces.onNext(pairFaceRotations);
+      //if (currentSession == null || currentSession.getCameraInfo() == null) return;
+      //
+      //rotations = new int[faces.length];
+      //rectFs = new RectF[faces.length];
+      //for (int i = 0; i < faces.length; i++) {
+      //  Camera.Face face = faces[i];
+      //
+      //  int width = currentSession.getCameraInfo().getCaptureFormat().width;
+      //  int height = currentSession.getCameraInfo().getCaptureFormat().height;
+      //
+      //  RectF bounds = new RectF(face.rect.left, face.rect.top, face.rect.right, face.rect.bottom);
+      //  Matrix matrix = new Matrix();
+      //
+      //                              /*START - convert driver coordinates to View coordinates in pixels*/
+      //  matrix.setScale(1, 1); // for front facing camera (matrix.setScale(1, 1); otherwise)
+      //  matrix.postRotate(currentSession.getCameraInfo().getFrameOrientation());
+      //  // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
+      //  // UI coordinates range from (0, 0) to (width, height).
+      //  matrix.postScale(width / 2000f, height / 2000f);
+      //  matrix.postTranslate(width / 2f, height / 2f);
+      //  matrix.mapRect(bounds);
+      //
+      //  rectFs[i] = bounds;
+      //  //Timber.d("Bounds : " + bounds);
+      //  rotations[i] = -currentSession.getCameraInfo().getFrameOrientation();
+      //}
+      //
+      //pairFaceRotations = new Pair<>(rectFs, rotations);
+      //onFaces.onNext(pairFaceRotations);
     }
   };
 
@@ -275,7 +282,7 @@ import timber.log.Timber;
   // Valid from onDone call until stopCapture, otherwise null.
   private CameraStatistics cameraStatistics; /* guarded by stateLock */
   private boolean firstFrameObserved; /* guarded by stateLock */
-  private int frameRotation; /* guarded by stateLock */
+  private int lastFrameRotation; /* guarded by stateLock */
 
   public CameraCapturer(String cameraName, CameraEventsHandler eventsHandler,
       CameraEnumerator cameraEnumerator) {
@@ -354,7 +361,7 @@ import timber.log.Timber;
       createSessionInternal(0);
 
       frameManager.startCapture();
-      //frameManager.initFrameSubscription(onFrame);
+      frameManager.initFrameSubscription(onFrame);
       frameManager.initPreviewFrameSubscription(onPreviewFrame);
       //frameManager.initNewFacesSubscriptions(onFaces);
     }

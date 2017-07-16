@@ -2,11 +2,11 @@ package com.tribe.tribelivesdk.view.opengl.filter;
 
 import android.content.Context;
 import android.opengl.GLES11Ext;
+import android.opengl.GLES20;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.annotation.StringRes;
-import com.tribe.tribelivesdk.entity.GameFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.OpenGLES;
 import com.tribe.tribelivesdk.view.opengl.gles.Texture;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
@@ -30,7 +30,6 @@ import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
-import static android.opengl.GLES20.glUniform1f;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
@@ -47,42 +46,37 @@ public class ImageFilter extends FilterMask {
   public static final String IMAGE_FILTER_HIPSTER = "IMAGE_FILTER_HIPSTER";
   public static final String IMAGE_FILTER_NONE = "IMAGE_FILTER_NONE";
 
-  public static final String DEFAULT_ATTRIB_POSITION = "aPosition";
-  public static final String DEFAULT_ATTRIB_TEXTURE_COORDINATE = "aTextureCoord";
+  public static final String DEFAULT_ATTRIB_POSITION = "in_pos";
+  public static final String DEFAULT_ATTRIB_TEXTURE_COORDINATE = "in_tc";
   public static final String DEFAULT_UNIFORM_SAMPLER = "sTexture";
 
   private final OpenGLES openGLES = OpenGLES.getInstance();
 
   private int textureTarget = -1;
 
-  protected static final String DEFAULT_VERTEX_SHADER =
-      "uniform mat4 uMVPMatrix;\n" +
-          "uniform mat4 uSTMatrix;\n" +
-          "uniform float uCRatio;\n" +
-
-          "attribute vec4 " +
-          DEFAULT_ATTRIB_POSITION +
-          ";\n" +
-          "attribute vec4 " +
-          DEFAULT_ATTRIB_TEXTURE_COORDINATE +
-          ";\n" +
-          "varying lowp vec2 vTextureCoord;\n" +
-
-          "void main() {\n" +
-          "vec4 scaledPos = " +
-          DEFAULT_ATTRIB_POSITION +
-          ";\n" +
-          "scaledPos.x = scaledPos.x * uCRatio;\n" +
-          "gl_Position = uMVPMatrix * scaledPos;\n" +
-          "vTextureCoord = (uSTMatrix * " +
-          DEFAULT_ATTRIB_TEXTURE_COORDINATE +
-          ").xy;\n" +
-          "}\n";
+  protected static final String DEFAULT_VERTEX_SHADER = "varying vec2 interp_tc;\n" +
+      "attribute vec4 " +
+      DEFAULT_ATTRIB_POSITION +
+      ";\n" +
+      "attribute vec4 " +
+      DEFAULT_ATTRIB_TEXTURE_COORDINATE +
+      ";\n" +
+      "\n" +
+      "uniform mat4 texMatrix;\n" +
+      "\n" +
+      "void main() {\n" +
+      "    gl_Position = " +
+      DEFAULT_ATTRIB_POSITION +
+      ";\n" +
+      "    interp_tc = (texMatrix * " +
+      DEFAULT_ATTRIB_TEXTURE_COORDINATE +
+      ").xy;\n" +
+      "}\n";
 
   protected static final String TARGET_PLACEHOLDER = "#*SAMPLER_TYPE*#";
 
   private static final String DEFAULT_FRAGMENT_SHADER_DUMMY = "precision mediump float;\n" +
-      "varying lowp vec2 vTextureCoord;\n" +
+      "varying lowp vec2 interp_tc;\n" +
       "uniform lowp " +
       TARGET_PLACEHOLDER +
       " " +
@@ -91,7 +85,7 @@ public class ImageFilter extends FilterMask {
       "void main() {\n" +
       "gl_FragColor = texture2D(" +
       DEFAULT_UNIFORM_SAMPLER +
-      ", vTextureCoord);\n" +
+      ", interp_tc);\n" +
       "}\n";
 
   private static final float[] VERTICES_DATA = new float[] {
@@ -201,22 +195,21 @@ public class ImageFilter extends FilterMask {
     releaseProgram();
   }
 
-  public synchronized void draw(@NonNull Texture texture, final float[] mvpMatrix,
-      final float[] stMatrix, final float aspectRatio) {
+  public synchronized void draw(@NonNull Texture texture, final float[] texMatrix, int viewportX,
+      int viewportY, int viewportWidth, int viewportHeight) {
     if (textureTarget != texture.getTextureTarget()) {
       setup(texture.getTextureTarget());
     }
 
     useProgram();
 
-    glUniformMatrix4fv(getHandle("uMVPMatrix"), 1, false, mvpMatrix, 0);
-    glUniformMatrix4fv(getHandle("uSTMatrix"), 1, false, stMatrix, 0);
-    glUniform1f(getHandle("uCRatio"), aspectRatio);
+    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrix, 0);
 
-    internalDraw(texture);
+    internalDraw(texture, viewportX, viewportY, viewportWidth, viewportHeight);
   }
 
-  private void internalDraw(@NonNull Texture texture) {
+  private void internalDraw(@NonNull Texture texture, int viewportX, int viewportY,
+      int viewportWidth, int viewportHeight) {
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferName);
     glEnableVertexAttribArray(getHandle(DEFAULT_ATTRIB_POSITION));
@@ -231,7 +224,7 @@ public class ImageFilter extends FilterMask {
     glBindTexture(texture.getTextureTarget(), texture.getTextureId());
     glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
 
-    onDraw();
+    onDraw(viewportX, viewportY, viewportWidth, viewportHeight);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -241,7 +234,10 @@ public class ImageFilter extends FilterMask {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 
-  protected void onDraw() {
+  protected void onDraw(int x, int y, int width, int height) {
+    // Draw quad.
+    GLES20.glViewport(x, y, width, height);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
   }
 
   protected final void useProgram() {

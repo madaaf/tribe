@@ -102,15 +102,21 @@ Java_com_tribe_tribelivesdk_opencv_OpenCVWrapper_flipBeforeSending(JNIEnv *env, 
                                                                    jbyteArray argbIn,
                                                                    jbyteArray argbOut,
                                                                    jint frameWidth,
-                                                                   jint frameHeight) {
+                                                                   jint frameHeight,
+                                                                   jfloat scale) {
     jbyte *argbInData = env->GetByteArrayElements(argbIn, 0);
     jbyte *argbOutData = env->GetByteArrayElements(argbOut, 0);
 
+    //Size size(frameWidth * scale, frameHeight * scale);
+    Size size(frameWidth, frameHeight);
+
     cv::Mat _rgbaIn(frameWidth, frameHeight, CV_8UC4, (uchar *) argbInData);
     cv::Mat _rgbaOut(frameWidth, frameHeight, CV_8UC4, (uchar *) argbOutData);
-    cv::flip(_rgbaIn, _rgbaOut, -1);
+    //cv::Mat _rgbaOut(size.width, size.height, CV_8UC4, (uchar *) argbOutData);
+    //cv::Mat _rgbaInScaled;
 
-    //_rgbaIn.copyTo(_rgbaOut);
+    //cv::resize(_rgbaIn, _rgbaIn, size, 0, 0, INTER_NEAREST);
+    cv::flip(_rgbaIn, _rgbaOut, -1);
 
     _rgbaIn.release();
     _rgbaOut.release();

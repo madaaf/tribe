@@ -11,12 +11,15 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 18/05/2017.
  */
 
 public class FrameManager {
+
+  private static final float SCALE = 0.3f;
 
   // VARIABLES
   private Context context;
@@ -81,24 +84,40 @@ public class FrameManager {
               previousWidth != frame1.getWidth() ||
               previousHeight != frame1.getHeight() ||
               previousRotation != frame1.getRotation()) {
+            //argb = new byte[(int) ((frame1.getWidth() * frame1.getHeight() * 4) * SCALE)];
+            //yuvOut = new byte[(int) ((frame1.getWidth() * frame1.getHeight()) * SCALE)];
             argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
             yuvOut = new byte[frame1.getData().length];
+
+            frame1.setDataOut(yuvOut);
+            //frame1.setWidth((int) (frame1.getWidth() * SCALE));
+            //frame1.setHeight((int) (frame1.getHeight() * SCALE));
 
             firstFrame = false;
             previousHeight = frame1.getHeight();
             previousWidth = frame1.getWidth();
             previousRotation = frame1.getRotation();
 
-            frame1.setDataOut(yuvOut);
             onFrameSizeChange.onNext(frame1);
           }
 
           boolean shouldSendRemoteFrame = true;
 
+          long timeStart = System.nanoTime();
           openCVWrapper.flipBeforeSending(frame1.getData(), argb, frame1.getWidth(),
-              frame1.getHeight());
+              frame1.getHeight(), SCALE);
+          long timeEndFlip = System.nanoTime();
+          Timber.d("Total time of flipping frame " +
+              " / " +
+              (timeEndFlip - timeStart) / 1000000.0f +
+              " ms");
           libYuvConverter.ARGBToYUV(argb, frame1.getWidth(), frame1.getHeight(), yuvOut);
           frame1.setDataOut(yuvOut);
+          long timeEnd = System.nanoTime();
+          Timber.d("Total time of converting frame " +
+              " / " +
+              (timeEnd - timeEndFlip) / 1000000.0f +
+              " ms");
 
           if (shouldSendRemoteFrame) onRemoteFrame.onNext(frame1);
 

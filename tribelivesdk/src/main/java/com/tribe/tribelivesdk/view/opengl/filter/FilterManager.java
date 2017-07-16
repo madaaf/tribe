@@ -90,6 +90,11 @@ public class FilterManager {
   }
 
   public void setToDefault() {
+    if (current != null) {
+      current.setActivated(false);
+      current.release();
+    }
+
     current = filterList.get(8);
     current.setActivated(true);
   }

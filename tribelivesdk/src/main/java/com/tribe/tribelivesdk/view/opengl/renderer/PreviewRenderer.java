@@ -22,7 +22,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
-import org.webrtc.CameraEnumerationAndroid;
+import org.webrtc.RendererCommon;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -43,10 +43,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private PreviewTextureInterface previewTexture;
   private boolean updateSurface = false, shouldUpdateAllocations = true, shouldSkipFrames = false;
   private UlseeManager ulseeManager;
-  private final float[] mvpMatrix = new float[16], projMatrix = new float[16], matrix =
-      new float[16], vMatrix = new float[16], stMatrix = new float[16], stMatrixBis = new float[16];
+  private float[] stMatrix = new float[16];
   private CameraInfo cameraInfo;
-  private float cameraRatio = 1, surfaceWidth = 1, surfaceHeight = 1;
+  private float surfaceWidth = 1, surfaceHeight = 1;
   private int framesSkipped = 0;
   private final RendererCallback rendererCallback;
   private ImageFilter filter;
@@ -90,6 +89,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
+    Timber.d("updateCameraInfo FrameRotation : " + cameraInfo.getFrameOrientation());
     this.cameraInfo = cameraInfo;
     computeMatrices();
 
@@ -153,18 +153,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
       byteBuffer = ByteBuffer.allocateDirect((int) surfaceWidth * (int) surfaceHeight * 4);
       byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
-      stageRatio = (stageRatio == Float.MIN_VALUE) ? width / (float) height : stageRatio;
-      try {
-        float zoom = 4f;
-        Matrix.frustumM(projMatrix, 0, -stageRatio, stageRatio, -1, 1, zoom, 25 * zoom);
-      } catch (Exception ignored) {
-        Timber.e("onSurfaceChanged exception", ignored);
-      }
     }
 
     if (rendererCallback != null) {
-      rendererCallback.onSurfaceChanged(width, height);
+      mainHandler.post(() -> rendererCallback.onSurfaceChanged(width, height));
     }
   }
 
@@ -172,16 +164,35 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (updateSurface && previewTexture != null) {
       previewTexture.updateTexImage();
       previewTexture.getTransformMatrix(stMatrix);
+      if (cameraInfo.isFrontFacing()) {
+        stMatrix = RendererCommon.multiplyMatrices(stMatrix, RendererCommon.horizontalFlipMatrix());
+      }
       updateSurface = false;
     }
 
     glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
     glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-    Matrix.multiplyMM(mvpMatrix, 0, vMatrix, 0, matrix, 0);
-    Matrix.multiplyMM(mvpMatrix, 0, projMatrix, 0, mvpMatrix, 0);
 
     if (previewTexture != null && byteBuffer != null) {
-      filter.draw(previewTexture, mvpMatrix, stMatrix, cameraRatio);
+      float[] texMatrix = com.tribe.tribelivesdk.webrtc.RendererCommon.rotateTextureMatrix(stMatrix,
+          cameraInfo.getFrameOrientation());
+      float[] drawMatrix;
+      synchronized (this.layoutLock) {
+        float[] layoutMatrix;
+        if (this.layoutAspectRatio > 0.0F) {
+          float currentTimeNs =
+              (float) cameraInfo.rotatedWidth() / (float) cameraInfo.rotatedHeight();
+          layoutMatrix = RendererCommon.getLayoutMatrix(cameraInfo.isFrontFacing(), currentTimeNs,
+              this.layoutAspectRatio);
+        } else {
+          layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
+              : RendererCommon.identityMatrix();
+        }
+
+        drawMatrix = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
+      }
+
+      filter.draw(previewTexture, drawMatrix, 0, 0, (int) surfaceWidth, (int) surfaceHeight);
 
       if (maskFilter != null) {
         int rotation = ulseeManager.getCameraRotation();
@@ -192,34 +203,35 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
         }
       }
 
-      if (shouldSkipFrames && framesSkipped < FRAMES_SKIP ||
-          ((int) surfaceWidth * (int) surfaceHeight * 4 != byteBuffer.capacity())) {
-        framesSkipped++;
-        onFrameAvailable.onNext(frame);
-        return;
-      } else {
-        Timber.d("Surface width : " + surfaceWidth + " / surface height : " + surfaceHeight);
-        //long timeStart = System.nanoTime();
-        byteBuffer.rewind();
-        libYuvConverter.readFromPBO(byteBuffer, (int) surfaceWidth, (int) surfaceHeight);
-        byteBuffer.flip();
+      synchronized (frameListenerLock) {
+        if (shouldSkipFrames && framesSkipped < FRAMES_SKIP ||
+            ((int) surfaceWidth * (int) surfaceHeight * 4 != byteBuffer.capacity())) {
+          framesSkipped++;
+          onFrameAvailable.onNext(frame);
+          return;
+        } else {
+          //long timeStart = System.nanoTime();
+          byteBuffer.rewind();
+          libYuvConverter.readFromPBO(byteBuffer, (int) surfaceWidth, (int) surfaceHeight);
+          byteBuffer.flip();
 
-        //long timeEndReadPBO = System.nanoTime();
-        //Timber.d("Total time of read PBO frame "
-        //    + " / "
-        //    + (timeEndReadPBO - timeStart) / 1000000.0f
-        //    + " ms");
-        int width = (int) surfaceWidth;
-        int height = (int) surfaceHeight;
-        frame = new Frame(byteBuffer.array(), width, height, 0, previewTexture.getTimestamp(),
-            cameraInfo.isFrontFacing());
-        onFrameAvailable.onNext(frame);
+          //long timeEndReadPBO = System.nanoTime();
+          //Timber.d("Total time of read PBO frame "
+          //    + " / "
+          //    + (timeEndReadPBO - timeStart) / 1000000.0f
+          //    + " ms");
+          int width = (int) surfaceWidth;
+          int height = (int) surfaceHeight;
+          frame = new Frame(byteBuffer.array(), width, height, 0, previewTexture.getTimestamp(),
+              cameraInfo.isFrontFacing());
+          onFrameAvailable.onNext(frame);
 
-        //long timeEndFrame = System.nanoTime();
-        //Timber.d("Total time of end frame "
-        //    + " / "
-        //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
-        //    + " ms");
+          //long timeEndFrame = System.nanoTime();
+          //Timber.d("Total time of end frame "
+          //    + " / "
+          //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
+          //    + " ms");
+        }
       }
     }
   }
@@ -274,30 +286,15 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void computeMatrices() {
-    final int orientation = (cameraInfo == null) ? 90 : cameraInfo.getFrameOrientation();
-
     resetMatrix();
-
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, orientation, 0.0f, 0.0f, 1f);
-
-    final CameraEnumerationAndroid.CaptureFormat captureFormat = cameraInfo.getCaptureFormat();
-    cameraRatio = 1;
-    if (captureFormat != null) {
-      cameraRatio = captureFormat.width / (float) captureFormat.height;
-    }
   }
 
   public void resetMatrix() {
     Matrix.setIdentityM(stMatrix, 0);
-    Matrix.setIdentityM(matrix, 0);
-    Matrix.rotateM(matrix, 0, 180, 0.0f, 0.0f, 1.0f);
-    Matrix.scaleM(matrix, 0, -1f, 1f, 1f);
-    Matrix.setLookAtM(vMatrix, 0, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
   }
 
   private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {
-    int width = (int) surfaceHeight, height = (int) surfaceWidth;
+    int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
 
     if (oriFaceShape == null) return;
     for (int i = 0; i < 99; i++) {

@@ -12,6 +12,7 @@ package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.Surface;
@@ -252,6 +253,10 @@ import org.webrtc.SurfaceTextureHelper;
           transformMatrix = RendererCommon.multiplyMatrices(transformMatrix,
               RendererCommon.horizontalFlipMatrix());
         }
+
+        cameraInfo.setFrameOrientation(rotation);
+        cameraInfo.setFrameOrientationUlsee(getCameraRotationForUlsee());
+
         events.onTextureFrameCaptured(Camera1Session.this, captureFormat.width,
             captureFormat.height, oesTextureId, transformMatrix, rotation, timestampNs);
       }
@@ -307,6 +312,7 @@ import org.webrtc.SurfaceTextureHelper;
         orientation = 0;
         break;
     }
+
     return orientation;
   }
 
@@ -316,6 +322,21 @@ import org.webrtc.SurfaceTextureHelper;
       rotation = 360 - rotation;
     }
     return (info.orientation + rotation) % 360;
+  }
+
+  private int getCameraRotationForUlsee() {
+    int result = 0;
+    int degrees = getDeviceOrientation();
+
+    if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+      result = (info.orientation + degrees) % 360;
+      result = (360 - result) % 360;  // compensate the mirror
+    } else {  // back-facing
+      degrees += 180;
+      result = (info.orientation - degrees + 360) % 360;
+    }
+
+    return result;
   }
 
   private void checkIsOnCameraThread() {
@@ -329,7 +350,9 @@ import org.webrtc.SurfaceTextureHelper;
     try {
       camera.setPreviewTexture(surfaceTexture);
 
-      if (camera.getParameters() != null && camera.getParameters().getMaxNumDetectedFaces() > 0 && !faceDetectionRunning) {
+      if (camera.getParameters() != null &&
+          camera.getParameters().getMaxNumDetectedFaces() > 0 &&
+          !faceDetectionRunning) {
         camera.setFaceDetectionListener((faces, camera1) -> events.onDetectedFaces(faces));
         camera.startFaceDetection();
         faceDetectionRunning = true;
@@ -343,7 +366,8 @@ import org.webrtc.SurfaceTextureHelper;
   }
 
   @Override public CameraInfo getCameraInfo() {
-    cameraInfo = new CameraInfo(captureFormat, getFrameOrientation(), info);
+    cameraInfo =
+        new CameraInfo(captureFormat, getFrameOrientation(), getCameraRotationForUlsee(), info);
     return cameraInfo;
   }
 }
