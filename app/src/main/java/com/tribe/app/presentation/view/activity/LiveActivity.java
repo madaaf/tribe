@@ -594,7 +594,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
             Timber.d("on dropped the dice :" + live.getSessionId());
-            livePresenter.roomAcceptRandom(live.getSessionId()); //SOEF
+            livePresenter.roomAcceptRandom(live.getSessionId());
             reRollTheDiceFromLiveRoom();
           } else {
             invite(recipient.getSubId());
@@ -602,22 +602,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
 
     subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
-      Timber.e("SOEF 1 : " + peerId + " " + user.getId());
+      Timber.d("user under 13 dropped" + peerId);
       viewLive.sendUnlockDice(peerId, user.getId());
     }));
 
     subscriptions.add(viewLive.unlockRollTheDice()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(s -> {//SOEF
-          Timber.e("SOEF 1 : unlockRollTheDice reveived " + s);
+        .subscribe(s -> {
+          Timber.d("unlockRollTheDice reveived " + s);
           if (!FacebookUtils.isLoggedIn()) {
-            Timber.e("SOEF 1 : DISPLAY FB");
             notificationContainerView.setUnlockRollTheDiceSenderId(s);
             notificationContainerView.
                 showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
-          } else {
-            Timber.e("SOEF 1 : NOT DISPLAY FB");
           }
         }));
 
@@ -625,7 +622,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> {
-
           //viewLive.getUsersInLiveRoom().getPeopleInRoom();
           Timber.e("SOEF unlockedRollTheDice received " + s);//MADA SOEF
           livePresenter.roomAcceptRandom(live.getSessionId());
@@ -636,7 +632,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(notificationContainerView.onFacebookSuccess()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(unlockRollTheDiceSenderId -> {//SOEF
+        .subscribe(unlockRollTheDiceSenderId -> {
           blockView.setVisibility(View.GONE);
           viewLiveContainer.blockOpenInviteView(false);
           initCallRouletteService();
@@ -1035,7 +1031,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void fbIdUpdatedSubscriber(User userUpdated) {
-    Timber.e("SOEF GNID UPDATEd " + userUpdated.getId() + " " + userUpdated.getFbid());
+    Timber.d("user fbId updated " + userUpdated.getId() + " " + userUpdated.getFbid());
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

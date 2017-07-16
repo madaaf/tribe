@@ -178,7 +178,7 @@ public class JsonToModel {
         }
 
         if (message.has(Room.UNLOCKED_ROLL_DICE)) {
-          unlockedRollTheDice.onNext(tribeSession.getUserId());//SOEF
+          unlockedRollTheDice.onNext(tribeSession.getUserId());
         }
         if (message.has(Room.MESSAGE_APP)) {
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);

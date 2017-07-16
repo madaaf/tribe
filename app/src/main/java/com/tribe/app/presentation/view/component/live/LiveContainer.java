@@ -526,7 +526,6 @@ public class LiveContainer extends FrameLayout {
           }
         }
       }
-      //SOEF
     }
   }
 

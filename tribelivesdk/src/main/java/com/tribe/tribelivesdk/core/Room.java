@@ -510,7 +510,6 @@ public class Room {
     return a;
   }
 
-  //SOEF
   private JSONObject getSendUnlockRollTheDice(String peerId, String userId) {
     JSONObject a = new JSONObject();
     JsonUtils.jsonPut(a, "a", "sendMessage");

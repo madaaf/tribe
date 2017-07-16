@@ -28,8 +28,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/LifeNotification.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/LifeNotification.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/NotificationContainerView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/NotificationContainerView.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
     </list>
@@ -63,14 +61,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Room.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Room.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="260" column="28" selection-start-line="260" selection-start-column="20" selection-end-line="260" selection-end-column="28" />
+            <state relative-caret-position="99">
+              <caret line="299" column="52" selection-start-line="299" selection-start-column="52" selection-end-line="299" selection-end-column="52" />
               <folding>
-                <element signature="e#22681#22682#0" expanded="true" />
-                <element signature="e#22717#22718#0" expanded="true" />
+                <element signature="e#22672#22673#0" expanded="true" />
+                <element signature="e#22708#22709#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -79,12 +77,22 @@
       <file leaf-file-name="JsonToModel.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
+            <state relative-caret-position="228">
+              <caret line="182" column="40" selection-start-line="182" selection-start-column="40" selection-end-line="182" selection-end-column="40" />
               <folding>
-                <element signature="e#13451#13452#0" expanded="true" />
-                <element signature="e#13487#13488#0" expanded="true" />
+                <element signature="e#13445#13446#0" expanded="true" />
+                <element signature="e#13481#13482#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FBCallRouletteNotificationView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="303">
+              <caret line="134" column="37" selection-start-line="134" selection-start-column="37" selection-end-line="134" selection-end-column="37" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -99,14 +107,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="466">
-              <caret line="628" column="12" selection-start-line="628" selection-start-column="12" selection-end-line="628" selection-end-column="12" />
+            <state relative-caret-position="199">
+              <caret line="628" column="40" selection-start-line="628" selection-start-column="40" selection-end-line="628" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LiveContainer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="129">
+              <caret line="527" column="7" selection-start-line="527" selection-start-column="7" selection-end-line="527" selection-end-column="7" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -6151,14 +6169,14 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/LifeNotification.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/NotificationContainerView.java" />
-        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
-        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
+        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
+        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java" />
       </list>
     </option>
   </component>
@@ -6626,7 +6644,7 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.50549453" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14435147" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3294979" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -6634,13 +6652,13 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27688786" sideWeight="0.502442" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15750916" sideWeight="0.4439528" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32217574" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35146442" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21611722" sideWeight="0.47420964" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34981686" sideWeight="0.5560472" order="7" side_tool="false" content_ui="tabs" x="-770" y="-953" width="1466" height="890" />
+      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23565324" sideWeight="0.5560472" order="7" side_tool="false" content_ui="tabs" x="-770" y="-953" width="1466" height="890" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -6737,12 +6755,6 @@
           <option name="timeStamp" value="1449" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>614</line>
-          <properties />
-          <option name="timeStamp" value="1478" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java</url>
           <line>139</line>
           <properties />
@@ -6768,7 +6780,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>1105</line>
+          <line>1101</line>
           <properties />
           <option name="timeStamp" value="1498" />
         </line-breakpoint>
@@ -6780,7 +6792,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>646</line>
+          <line>642</line>
           <properties />
           <option name="timeStamp" value="1503" />
         </line-breakpoint>
@@ -6824,7 +6836,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>642</line>
+          <line>638</line>
           <properties />
           <option name="timeStamp" value="1552" />
         </line-breakpoint>
@@ -6836,7 +6848,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>629</line>
+          <line>625</line>
           <properties />
           <option name="timeStamp" value="1554" />
         </line-breakpoint>
@@ -6846,13 +6858,6 @@
           <properties />
           <option name="timeStamp" value="1555" />
         </line-breakpoint>
-        <breakpoint enabled="true" type="OCSymbolicBreakpointType">
-          <properties>
-            <option name="moduleName" value="libart.so" />
-            <option name="symbolPattern" value="art_sigsegv_fault" />
-          </properties>
-          <option name="timeStamp" value="1556" />
-        </breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
@@ -7416,25 +7421,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="517" column="35" selection-start-line="517" selection-start-column="35" selection-end-line="517" selection-end-column="35" />
-          <folding>
-            <element signature="e#25302#25303#0" expanded="true" />
-            <element signature="e#25335#25336#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="135" column="13" selection-start-line="135" selection-start-column="13" selection-end-line="135" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/LifeNotification.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="438">
@@ -7473,17 +7459,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
-          <folding>
-            <element signature="e#13451#13452#0" expanded="true" />
-            <element signature="e#13487#13488#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="196">
@@ -7497,23 +7472,50 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="260" column="28" selection-start-line="260" selection-start-column="20" selection-end-line="260" selection-end-column="28" />
-          <folding>
-            <element signature="e#22681#22682#0" expanded="true" />
-            <element signature="e#22717#22718#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="129">
+          <caret line="527" column="7" selection-start-line="527" selection-start-column="7" selection-end-line="527" selection-end-column="7" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="466">
-          <caret line="628" column="12" selection-start-line="628" selection-start-column="12" selection-end-line="628" selection-end-column="12" />
+        <state relative-caret-position="199">
+          <caret line="628" column="40" selection-start-line="628" selection-start-column="40" selection-end-line="628" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="134" column="37" selection-start-line="134" selection-start-column="37" selection-end-line="134" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="182" column="40" selection-start-line="182" selection-start-column="40" selection-end-line="182" selection-end-column="40" />
+          <folding>
+            <element signature="e#13445#13446#0" expanded="true" />
+            <element signature="e#13481#13482#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="99">
+          <caret line="299" column="52" selection-start-line="299" selection-start-column="52" selection-end-line="299" selection-end-column="52" />
+          <folding>
+            <element signature="e#22672#22673#0" expanded="true" />
+            <element signature="e#22708#22709#0" expanded="true" />
           </folding>
         </state>
       </provider>
