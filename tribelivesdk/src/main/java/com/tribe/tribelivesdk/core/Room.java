@@ -250,13 +250,16 @@ public class Room {
   }
 
   public void sendUnlockDice(String peerId, String userId) {
-    Timber.e("SOEF 2 : " + peerId + " " + userId + " " + getSendUnlockRollTheDice(peerId,
-        userId).toString());
-
+    Timber.e("SOEF ROOM  : " + peerId + " " + userId + " ");
     if (webSocketConnection == null) return;
-
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+      if (tpc != null
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(peerId)) {
+
+        Timber.e("SOEF ROOM 1 : " + getSendUnlockRollTheDice(tpc.getSession().getPeerId(),
+            userId).toString());
+
         webSocketConnection.send(
             getSendUnlockRollTheDice(tpc.getSession().getPeerId(), userId).toString());
       }
@@ -264,12 +267,16 @@ public class Room {
   }
 
   public void sendUnlockedDice(String peerId) {
-    Timber.e("SOEF 3 : " + peerId);
-
+    Timber.e("SOEF ROOM : " + peerId);
     if (webSocketConnection == null) return;
-
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+      if (tpc != null
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(peerId)) {
+
+        Timber.e("SOEF ROOM 2 : " + peerId + getSendUnlockedRollTheDice(
+            tpc.getSession().getPeerId()).toString());
+
         webSocketConnection.send(
             getSendUnlockedRollTheDice(tpc.getSession().getPeerId()).toString());
       }

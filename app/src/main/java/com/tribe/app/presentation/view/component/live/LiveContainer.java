@@ -506,7 +506,6 @@ public class LiveContainer extends FrameLayout {
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_message),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_action), null)
         .subscribe());
-    Timber.e("DISPLAU DIALOG");
   }
 
   public void getUserUnder13(String fbId, String displayName, String userId) {

@@ -93,12 +93,13 @@ public class NotificationContainerView extends FrameLayout {
   private Context context;
   private GestureDetectorCompat gestureScanner;
   private FirebaseRemoteConfig firebaseRemoteConfig;
+  private String unlockRollTheDiceSenderId;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   private PublishSubject<Void> onSendInvitations = PublishSubject.create();
-  private PublishSubject<Void> onFacebookSuccess = PublishSubject.create();
+  private PublishSubject<String> onFacebookSuccess = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -191,7 +192,7 @@ public class NotificationContainerView extends FrameLayout {
   }
 
   private boolean displayFbCallRouletteNotification() {
-    viewToDisplay = new FBCallRouletteNotificationView(context);
+    viewToDisplay = new FBCallRouletteNotificationView(context, unlockRollTheDiceSenderId);
     addViewInContainer(viewToDisplay);
     animateView();
     return true;
@@ -216,8 +217,8 @@ public class NotificationContainerView extends FrameLayout {
     subscriptions.add(viewToDisplay.onFacebookSuccess()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {
-          onFacebookSuccess.onNext(null);
+        .subscribe(unlockRollTheDiceSenderId -> {
+          onFacebookSuccess.onNext(unlockRollTheDiceSenderId);
         }));
 
     subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
@@ -243,6 +244,10 @@ public class NotificationContainerView extends FrameLayout {
       ((ViewGroup) v.getParent()).removeView(v);
     }
     notificationView.addView(v);
+  }
+
+  public void setUnlockRollTheDiceSenderId(String unlockRollTheDiceSenderId) {
+    this.unlockRollTheDiceSenderId = unlockRollTheDiceSenderId;
   }
 
   private void animateView() {
@@ -344,7 +349,7 @@ public class NotificationContainerView extends FrameLayout {
     return onSendInvitations;
   }
 
-  public Observable<Void> onFacebookSuccess() {
+  public Observable<String> onFacebookSuccess() {
     return onFacebookSuccess;
   }
 

@@ -42,7 +42,7 @@ public class LifeNotification extends FrameLayout {
   protected PublishSubject<Void> onHideNotification = PublishSubject.create();
   protected PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   protected PublishSubject<Void> onSendInvitations = PublishSubject.create();
-  protected PublishSubject<Void> onFacebookSuccess = PublishSubject.create();
+  protected PublishSubject<String> onFacebookSuccess = PublishSubject.create();
 
   public LifeNotification(@NonNull Context context) {
     super(context);
@@ -113,7 +113,7 @@ public class LifeNotification extends FrameLayout {
     return onHideNotification;
   }
 
-  public Observable<Void> onFacebookSuccess() {
+  public Observable<String> onFacebookSuccess() {
     return onFacebookSuccess;
   }
 
