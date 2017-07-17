@@ -455,7 +455,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void successUpdateUser(User user) {
-
+    viewProfile.reloadUserUI();
+    this.clickBack();
   }
 
   @Override public void successFacebookLogin() {

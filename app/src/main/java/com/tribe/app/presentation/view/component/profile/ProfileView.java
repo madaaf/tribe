@@ -88,6 +88,8 @@ public class ProfileView extends ScrollView {
     initDependencyInjector();
     initUI();
     initSubscriptions();
+
+    reloadUserUI();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -102,14 +104,18 @@ public class ProfileView extends ScrollView {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
 
+  public void reloadUserUI() {
+
+    txtName.setText(user.getDisplayName());
+    txtUsername.setText("@" + user.getUsername());
+    viewAvatar.load(user.getProfilePicture());
+  }
+
   /////////////
   // PRIVATE //
   /////////////
 
   private void initUI() {
-    txtName.setText(user.getDisplayName());
-    txtUsername.setText("@" + user.getUsername());
-    viewAvatar.load(user.getProfilePicture());
 
     viewActionVisible.setValue(!user.isInvisibleMode());
     viewActionPhoneIntegration.setValue(fullScreenNotifications.get());

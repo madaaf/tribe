@@ -878,6 +878,7 @@ public class HomeActivity extends BaseActivity
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
+    if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
 
     if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
