@@ -28,6 +28,7 @@ public class FilterManager {
   private Context context;
   private List<FilterMask> filterList;
   private FilterMask current;
+  private ImageFilter baseFilter;
   private String basePath, maskAndGlassesPath;
 
   // OBSERVABLES
@@ -36,6 +37,7 @@ public class FilterManager {
   public FilterManager(Context context) {
     this.context = context;
     filterList = new ArrayList<>();
+    baseFilter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
     basePath = Environment.getExternalStorageDirectory().toString() +
         File.separator +
         "ULSee" +
@@ -95,8 +97,12 @@ public class FilterManager {
       current.release();
     }
 
-    current = filterList.get(8);
+    current = filterList.get(3);
     current.setActivated(true);
+  }
+
+  public ImageFilter getBaseFilter() {
+    return baseFilter;
   }
 
   public void dispose() {

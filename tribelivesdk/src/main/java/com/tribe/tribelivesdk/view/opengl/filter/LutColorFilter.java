@@ -88,9 +88,11 @@ public class LutColorFilter extends ImageFilter {
   }
 
   @Override protected void onDraw(int x, int y, int width, int height) {
+    GLES20.glViewport(x, y, width, height);
     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
     GLES20.glUniform1i(getHandle(FILTER_UNIFORM_SAMPLER), 3);
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
   }
 
   @Override public void release() {

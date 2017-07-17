@@ -9,24 +9,29 @@ import android.support.annotation.StringDef;
 import android.support.annotation.StringRes;
 import com.tribe.tribelivesdk.view.opengl.gles.OpenGLES;
 import com.tribe.tribelivesdk.view.opengl.gles.Texture;
+import com.tribe.tribelivesdk.view.opengl.renderer.FrameBufferObject;
+import com.tribe.tribelivesdk.view.opengl.renderer.PreviewRenderer;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import java.util.HashMap;
+import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
+import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
 import static android.opengl.GLES20.GL_TEXTURE0;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
-import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindBuffer;
+import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES20.glBindTexture;
+import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glDeleteBuffers;
 import static android.opengl.GLES20.glDeleteProgram;
 import static android.opengl.GLES20.glDeleteShader;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
-import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
@@ -53,6 +58,8 @@ public class ImageFilter extends FilterMask {
   private final OpenGLES openGLES = OpenGLES.getInstance();
 
   private int textureTarget = -1;
+  protected FrameBufferObject fbo;
+  protected int texCache = 0, cacheTexWidth, cacheTexHeight, textureWidth, textureHeight;
 
   protected static final String DEFAULT_VERTEX_SHADER = "varying vec2 interp_tc;\n" +
       "attribute vec4 " +
@@ -179,6 +186,8 @@ public class ImageFilter extends FilterMask {
     glDeleteBuffers(1, new int[] { vertexBufferName }, 0);
     vertexBufferName = 0;
 
+    textureTarget = -1;
+
     mHandleMap.clear();
     setupCompleted = false;
   }
@@ -187,29 +196,44 @@ public class ImageFilter extends FilterMask {
    * Release the shader program and texture
    */
   public synchronized void release() {
-    if (!setupCompleted) {
+    if (!setupCompleted || id.equals(IMAGE_FILTER_NONE)) {
       return;
     }
 
-    textureTarget = -1;
     releaseProgram();
   }
 
-  public synchronized void draw(@NonNull Texture texture, final float[] texMatrix, int viewportX,
-      int viewportY, int viewportWidth, int viewportHeight) {
+  public synchronized void draw(@NonNull Texture texture, final float[] texMatrix,
+      final float[] texMatrixFBO, int viewportX, int viewportY, int viewportWidth,
+      int viewportHeight) {
+
     if (textureTarget != texture.getTextureTarget()) {
       setup(texture.getTextureTarget());
     }
 
+    if (fbo == null) fbo = new FrameBufferObject();
+
+    textureWidth = PreviewRenderer.widthOut;
+    textureHeight = PreviewRenderer.heightOut;
+
+    //Timber.d("Id : " +
+    //        getId() +
+    //        "/ " +
+    //        "texCache == %d | cacheTexWidth == %d | textureWidth == %d | cacheTexHeight == %d | textureHeight == %d",
+    //    texCache, cacheTexWidth, textureWidth, cacheTexHeight, textureHeight);
+    if (texCache == 0 || cacheTexWidth != textureWidth || cacheTexHeight != textureHeight) {
+      resetCacheTexture();
+    }
+
     useProgram();
 
-    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrix, 0);
-
-    internalDraw(texture, viewportX, viewportY, viewportWidth, viewportHeight);
+    internalDraw(texture, texMatrix, texMatrixFBO, viewportX, viewportY, viewportWidth,
+        viewportHeight);
   }
 
-  private void internalDraw(@NonNull Texture texture, int viewportX, int viewportY,
-      int viewportWidth, int viewportHeight) {
+  private void internalDraw(@NonNull Texture texture, final float[] texMatrix,
+      final float[] texMatrixFBO, int viewportX, int viewportY, int viewportWidth,
+      int viewportHeight) {
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferName);
     glEnableVertexAttribArray(getHandle(DEFAULT_ATTRIB_POSITION));
@@ -219,18 +243,28 @@ public class ImageFilter extends FilterMask {
     glVertexAttribPointer(getHandle(DEFAULT_ATTRIB_TEXTURE_COORDINATE), VERTICES_DATA_UV_SIZE,
         GL_FLOAT, false, VERTICES_DATA_STRIDE_BYTES, VERTICES_DATA_UV_OFFSET);
 
-    glActiveTexture(GL_TEXTURE0);
+    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrixFBO, 0);
 
+    fbo.bind();
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(texture.getTextureTarget(), texture.getTextureId());
+    glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
+
+    onDraw(viewportX, viewportY, cacheTexWidth, cacheTexHeight);
+
+    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrix, 0);
+
+    glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texCache);
     glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
 
     onDraw(viewportX, viewportY, viewportWidth, viewportHeight);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
     glDisableVertexAttribArray(getHandle(DEFAULT_ATTRIB_POSITION));
     glDisableVertexAttribArray(getHandle(DEFAULT_ATTRIB_TEXTURE_COORDINATE));
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(texture.getTextureTarget(), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 
@@ -259,5 +293,33 @@ public class ImageFilter extends FilterMask {
     }
     mHandleMap.put(name, location);
     return location;
+  }
+
+  protected void resetCacheTexture() {
+    Timber.d("resetCacheTexture...");
+    cacheTexWidth = textureWidth;
+    cacheTexHeight = textureHeight;
+
+    if (texCache == 0) {
+      int[] texCacheArray = new int[1];
+      GLES20.glGenTextures(1, texCacheArray, 0);
+      texCache = texCacheArray[0];
+    }
+
+    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texCache);
+    GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, cacheTexWidth, cacheTexHeight, 0,
+        GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+
+    fbo.bindTexture(texCache);
+  }
+
+  public FrameBufferObject getFbo() {
+    return fbo;
   }
 }

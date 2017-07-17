@@ -107,17 +107,17 @@ public class FrameManager {
           openCVWrapper.flipBeforeSending(frame1.getData(), argb, frame1.getWidth(),
               frame1.getHeight(), SCALE);
           long timeEndFlip = System.nanoTime();
-          Timber.d("Total time of flipping frame " +
-              " / " +
-              (timeEndFlip - timeStart) / 1000000.0f +
-              " ms");
+          //Timber.d("Total time of flipping frame " +
+          //    " / " +
+          //    (timeEndFlip - timeStart) / 1000000.0f +
+          //    " ms");
           libYuvConverter.ARGBToYUV(argb, frame1.getWidth(), frame1.getHeight(), yuvOut);
           frame1.setDataOut(yuvOut);
           long timeEnd = System.nanoTime();
-          Timber.d("Total time of converting frame " +
-              " / " +
-              (timeEnd - timeEndFlip) / 1000000.0f +
-              " ms");
+          //Timber.d("Total time of converting frame " +
+          //    " / " +
+          //    (timeEnd - timeEndFlip) / 1000000.0f +
+          //    " ms");
 
           if (shouldSendRemoteFrame) onRemoteFrame.onNext(frame1);
 

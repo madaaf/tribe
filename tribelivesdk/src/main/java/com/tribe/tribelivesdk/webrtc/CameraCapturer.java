@@ -11,7 +11,6 @@
 package com.tribe.tribelivesdk.webrtc;
 
 import android.content.Context;
-import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -29,7 +28,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 @SuppressWarnings("deprecation") public abstract class CameraCapturer
     implements CameraVideoCapturer {
@@ -461,7 +459,7 @@ import timber.log.Timber;
               firstFrameObserved = true;
             }
 
-            cameraStatistics.addFrame();
+            if (cameraStatistics != null) cameraStatistics.addFrame();
 
             onFrame.onNext(frame);
           }
