@@ -274,6 +274,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
   private List<String> userUnder13List = new ArrayList<>();
+  private float initialBrightness = -1;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -294,6 +295,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     manageClickNotification(getIntent());
     initAppState();
     initGameManager();
+    initBrightness();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -350,6 +352,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onDestroy() {
     Timber.d("onDestroy");
+
+    resetBrightness();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -444,6 +448,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
     //livePresenter.fbidUpdated(); SOEF
+  }
+
+  private void initBrightness() {
+
+    /*WindowManager.LayoutParams attributes = getWindow().getAttributes();
+    initialBrightness = attributes.screenBrightness;
+    attributes.screenBrightness = 1;
+
+    getWindow().setAttributes(attributes);*/
+  }
+
+  private void resetBrightness() {
+
+    /*WindowManager.LayoutParams attributes = getWindow().getAttributes();
+    if (initialBrightness > 0 && attributes.screenBrightness == 1) {
+
+      attributes.screenBrightness = initialBrightness;
+      getWindow().setAttributes(attributes);
+    }*/
   }
 
   private void initCallRouletteService() {
