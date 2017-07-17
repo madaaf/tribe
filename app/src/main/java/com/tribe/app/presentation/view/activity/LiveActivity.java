@@ -605,7 +605,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
       Timber.d("user under 13 dropped" + peerId);
       userUnder13List.add(peerId);
-      viewLive.sendUnlockDice(peerId, user.getId());
+      viewLive.sendUnlockDice(peerId, user);
     }));
 
     subscriptions.add(viewLive.unlockRollTheDice()

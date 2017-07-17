@@ -65,8 +65,8 @@ public class Room {
   public static final String MESSAGE_REMOTE_SWITCH_MODE = "eventSetRemoteAudioVideoMode";
   public static final String MESSAGE_NONE = "none";
   public static final String MESSAGE_APP = "app";
-  public static final String UNLOCK_ROLL_DICE = "unlockRollTheDice";
-  public static final String UNLOCKED_ROLL_DICE = "unlockedRollTheDice";
+  public static final String MESSAGE_UNLOCK_ROLL_DICE = "unlockRollTheDice";
+  public static final String MESSAGE_UNLOCKED_ROLL_DICE = "unlockedRollTheDice";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
@@ -249,40 +249,6 @@ public class Room {
         }));
   }
 
-  public void sendUnlockDice(String peerId, String userId) {
-    Timber.e("SOEF ROOM  : " + peerId + " " + userId + " ");
-    if (webSocketConnection == null) return;
-    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null
-          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
-          && tpc.getSession().getUserId().equals(peerId)) {
-
-        Timber.e("SOEF ROOM 1 : " + getSendUnlockRollTheDice(tpc.getSession().getPeerId(),
-            userId).toString());
-
-        webSocketConnection.send(
-            getSendUnlockRollTheDice(tpc.getSession().getPeerId(), userId).toString());
-      }
-    }
-  }
-
-  public void sendUnlockedDice(String peerId) {
-    Timber.e("SOEF ROOM : " + peerId);
-    if (webSocketConnection == null) return;
-    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null
-          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
-          && tpc.getSession().getUserId().equals(peerId)) {
-
-        Timber.e("SOEF ROOM 2 : " + peerId + getSendUnlockedRollTheDice(
-            tpc.getSession().getPeerId()).toString());
-
-        webSocketConnection.send(
-            getSendUnlockedRollTheDice(tpc.getSession().getPeerId()).toString());
-      }
-    }
-  }
-
   public void joinRoom() {
     if (webSocketConnection == null) return;
     Timber.d("Joining room");
@@ -386,6 +352,19 @@ public class Room {
     if (webSocketConnection == null) return;
 
     webSocketConnection.send(getSendFreeze().toString());
+  }
+
+  public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
+
+    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
+      if (tpc != null
+              && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+              && tpc.getSession().getUserId().equals(userId)) {
+
+        webSocketConnection.send(
+                getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
+      }
+    }
   }
 
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
@@ -507,34 +486,6 @@ public class Room {
     }
 
     JsonUtils.jsonPut(a, "d", d);
-    return a;
-  }
-
-  private JSONObject getSendUnlockRollTheDice(String peerId, String userId) {
-    JSONObject a = new JSONObject();
-    JsonUtils.jsonPut(a, "a", "sendMessage");
-    JSONObject d = new JSONObject();
-    JsonUtils.jsonPut(d, "to", peerId);
-    JSONObject appJson1 = new JSONObject();
-    JsonUtils.jsonPut(appJson1, "by", userId);
-    JSONObject appJson = new JSONObject();
-    JsonUtils.jsonPut(appJson, Room.UNLOCK_ROLL_DICE, appJson1);
-    JsonUtils.jsonPut(d, "message", appJson);
-    JsonUtils.jsonPut(a, "d", d);
-
-    return a;
-  }
-
-  private JSONObject getSendUnlockedRollTheDice(String peerId) {
-    JSONObject a = new JSONObject();
-    JsonUtils.jsonPut(a, "a", "sendMessage");
-    JSONObject d = new JSONObject();
-    JsonUtils.jsonPut(d, "to", peerId);
-    JSONObject appJson = new JSONObject();
-    JsonUtils.jsonPut(appJson, Room.UNLOCKED_ROLL_DICE, true);
-    JsonUtils.jsonPut(d, "message", appJson);
-    JsonUtils.jsonPut(a, "d", d);
-
     return a;
   }
 

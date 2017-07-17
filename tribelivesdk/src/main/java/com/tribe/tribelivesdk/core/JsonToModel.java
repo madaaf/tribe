@@ -171,21 +171,22 @@ public class JsonToModel {
             new TribeSession(session.getString("socketId"), session.getString("userId"));
 
         JSONObject message = d.getJSONObject("message");
-        if (message.has(Room.UNLOCK_ROLL_DICE)) {
-          JSONObject app = message.getJSONObject(Room.UNLOCK_ROLL_DICE);
-          String userId = app.get("by").toString();
-          unlockRollTheDice.onNext(userId);
-        }
 
-        if (message.has(Room.UNLOCKED_ROLL_DICE)) {
-          unlockedRollTheDice.onNext(tribeSession.getUserId());
-        }
         if (message.has(Room.MESSAGE_APP)) {
           JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
 
-          if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {
+          if (app.has(Room.MESSAGE_UNLOCK_ROLL_DICE)) {
+            Timber.d("Receiving unlock roll the dice");
+            unlockRollTheDice.onNext(tribeSession.getUserId());
+
+          } else if (app.has(Room.MESSAGE_UNLOCKED_ROLL_DICE)) {
+            Timber.d("Receiving unlocked roll the dice");
+            unlockedRollTheDice.onNext(tribeSession.getUserId());
+
+          } else if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {
             Timber.d("Receiving roll the dice");
             onRollTheDiceReceived.onNext(null);
+
           } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();

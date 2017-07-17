@@ -59,6 +59,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -938,12 +939,12 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getUserPlayload(user), true);
   }
 
-  public void sendUnlockDice(String peerId, String userId) {
-    room.sendUnlockDice(peerId, userId);
+  public void sendUnlockDice(String peerUserId, User user) {
+    room.sendToUser(peerUserId, getUnlockRollTheDicePayload(user), true);
   }
 
-  public void sendUnlockedDice(String peerId) {
-    room.sendUnlockedDice(peerId);
+  public void sendUnlockedDice(String peerUserId) {
+    room.sendToUser(peerUserId, getUnlockedRollTheDicePayload(), true);
   }
   ////////////////
   //  PRIVATE   //
@@ -1142,6 +1143,24 @@ public class LiveView extends FrameLayout {
     }
     jsonPut(jsonObject, Room.MESSAGE_INVITE_ADDED, array);
     return jsonObject;
+  }
+
+  private JSONObject getUnlockRollTheDicePayload(User user) {
+
+    JSONObject appJson1 = new JSONObject();
+    JsonUtils.jsonPut(appJson1, "by", getUserPlayload(user));
+    JSONObject appJson = new JSONObject();
+    JsonUtils.jsonPut(appJson, Room.MESSAGE_UNLOCK_ROLL_DICE, appJson1);
+
+    return appJson;
+  }
+
+  private JSONObject getUnlockedRollTheDicePayload() {
+
+    JSONObject appJson = new JSONObject();
+    JsonUtils.jsonPut(appJson, Room.MESSAGE_UNLOCKED_ROLL_DICE, true);
+
+    return appJson;
   }
 
   private JSONObject getUserPlayload(User user) {
