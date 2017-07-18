@@ -805,6 +805,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void reRollTheDiceFromCallRoulette() {
+
+    Toast.makeText(this,
+            EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
+            Toast.LENGTH_LONG).show();
+
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
     viewLive.endCall(true);
     viewLive.dispose(true);

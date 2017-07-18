@@ -606,6 +606,7 @@
 	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
+	<string name="roll_the_dice_kicked_notification">Le dé vient d\'être relancé\npar un groupe d\'amis</string>
 	
 	<!-- Fallback call invitations -->
 	<string name="fallback_invitation_call_title">Si tu ne préviens pas tes amis\nils ne viendront pas!</string>
@@ -618,7 +619,7 @@
 	<string name="unlock_roll_the_dice_facebook_action">Débloquer avec Facebook</string>
 	<string name="unlock_roll_the_dice_locked">Vous devez avoir 13 ans\nou plus pour lancer le dé!</string>
 	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s a peut être moins de 13 ans</string>
-	<string name="unlock_roll_the_dice_impossible_popup_message">Vos amis doivent avoir au moins 13 ans pour participer à un call où le Dé est activé.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_message">Votre ami n\'est pas Facebook connecté. Nous avons affiché une pop-up Facebook sur son téléphone pour se Facebook connecter. Cela nous permettra de nous assurer que votre ami a bien 13 ans ou plus pour continuer cet appel incluant le Dé.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_action">Bon à savoir</string>
 	<string name="unlock_roll_the_dice_disclaimer">Nous ne publions rien sur Facebook</string>
 	<string name="unlock_roll_the_dice_decline_action">Non, je ne veux pas de nouvelles rencontres</string>
