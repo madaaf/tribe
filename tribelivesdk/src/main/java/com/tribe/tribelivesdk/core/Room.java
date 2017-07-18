@@ -100,7 +100,7 @@ public class Room {
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
-  private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
 
@@ -166,7 +166,7 @@ public class Room {
 
     persistentSubscriptions.add(
         jsonToModel.onError().observeOn(AndroidSchedulers.mainThread()).subscribe(error -> {
-          if (error.getId() == WebSocketError.ERROR_ROOM_FULL) onRoomFull.onNext(null);
+          onRoomError.onNext(error);
         }));
 
     persistentSubscriptions.add(
@@ -580,8 +580,8 @@ public class Room {
     return onShouldLeaveRoom;
   }
 
-  public Observable<Void> onRoomFull() {
-    return onRoomFull;
+  public Observable<WebSocketError> onRoomError() {
+    return onRoomError;
   }
 
   public Observable<Pair<TribeSession, String>> onNewGame() {

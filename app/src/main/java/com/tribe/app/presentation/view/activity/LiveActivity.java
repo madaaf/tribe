@@ -42,6 +42,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -87,6 +88,7 @@ import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -741,7 +743,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
     }));
 
-    subscriptions.add(viewLive.onRoomFull().subscribe(aVoid -> roomFull()));
+    subscriptions.add(viewLive.onRoomError().subscribe(error -> roomError(error)));
 
     subscriptions.add(viewLive.onRemotePeerClick().subscribe(o -> {
       if (o != null) userInfosNotificationView.displayView(o);
@@ -993,6 +995,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void roomFull() {
     putExtraErrorNotif();
     finish();
+  }
+
+  private void roomError(WebSocketError error) {
+
+    if (error.getId() == WebSocketError.ERROR_ROOM_FULL) {
+      roomFull();
+
+    } else {
+      Toast.makeText(getApplicationContext(),
+              ErrorMessageFactory.create(getBaseContext(), null),
+              Toast.LENGTH_LONG).show();
+
+      finish();
+    }
   }
 
   private void putExtraHomeIntent() {

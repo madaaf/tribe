@@ -59,6 +59,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
@@ -174,7 +175,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
-  private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
@@ -557,7 +558,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
 
-    tempSubscriptions.add(room.onRoomFull().subscribe(onRoomFull));
+    tempSubscriptions.add(room.onRoomError().subscribe(onRoomError));
 
     tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {
       Game currentGame = gameManager.getCurrentGame();
@@ -1511,8 +1512,8 @@ public class LiveView extends FrameLayout {
     return onChangeCallRouletteRoom;
   }
 
-  public Observable<Void> onRoomFull() {
-    return onRoomFull;
+  public Observable<WebSocketError> onRoomError() {
+    return onRoomError;
   }
 
   public Observable<Object> onRemotePeerClick() {
