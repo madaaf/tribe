@@ -8,6 +8,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.AccessToken;
 import java.lang.reflect.Type;
+import java.util.Calendar;
+import java.util.Date;
 
 public class TribeAccessTokenDeserializer implements JsonDeserializer<AccessToken> {
 
@@ -19,6 +21,13 @@ public class TribeAccessTokenDeserializer implements JsonDeserializer<AccessToke
     AccessToken accessToken = new AccessToken();
     accessToken.setAccessToken(results.get("access_token").getAsString());
     accessToken.setRefreshToken(results.get("refresh_token").getAsString());
+
+    long expiresIn = results.get("access_expires_in").getAsLong();
+    if (expiresIn > 0) {
+      Date expiresAt = new Date();
+      expiresAt.setTime(expiresAt.getTime() + expiresIn * 1000);
+      accessToken.setAccessExpiresAt(expiresAt);
+    }
 
     JsonElement element = results.get("user_id");
 

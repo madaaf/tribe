@@ -1,6 +1,9 @@
 package com.tribe.app.data.realm;
 
 import com.tribe.app.presentation.utils.StringUtils;
+
+import java.util.Date;
+
 import io.realm.RealmObject;
 import javax.inject.Singleton;
 
@@ -10,6 +13,7 @@ import javax.inject.Singleton;
   private String token_type;
   private String refresh_token;
   private String user_id;
+  private Date access_expires_at;
 
   public String getAccessToken() {
     return access_token;
@@ -47,6 +51,14 @@ import javax.inject.Singleton;
     this.user_id = user_id;
   }
 
+  public Date getAccessExpiresAt() {
+    return access_expires_at;
+  }
+
+  public void setAccessExpiresAt(Date access_expires_at) {
+    this.access_expires_at = access_expires_at;
+  }
+
   public boolean isAnonymous() {
     return user_id == null || user_id.startsWith("anon__");
   }
@@ -56,6 +68,7 @@ import javax.inject.Singleton;
     this.token_type = accessToken.token_type;
     this.refresh_token = accessToken.refresh_token;
     this.user_id = accessToken.user_id;
+    this.access_expires_at = accessToken.access_expires_at;
   }
 
   public void clear() {
@@ -63,5 +76,6 @@ import javax.inject.Singleton;
     token_type = null;
     refresh_token = null;
     user_id = null;
+    access_expires_at = null;
   }
 }

@@ -614,6 +614,7 @@ public class CloudUserDataStore implements UserDataStore {
       this.accessToken.setRefreshToken(accessToken.getRefreshToken());
       this.accessToken.setTokenType(accessToken.getTokenType());
       this.accessToken.setUserId(accessToken.getUserId());
+      this.accessToken.setAccessExpiresAt(accessToken.getAccessExpiresAt());
 
       CloudUserDataStore.this.userCache.put(accessToken);
     }

@@ -94,7 +94,9 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -251,10 +253,9 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-
-    httpClientBuilder.authenticator(
-        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
-            tagManager));
+    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
+    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -279,10 +280,9 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-
-    httpClientBuilder.authenticator(
-        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
-            tagManager));
+    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
+    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -307,10 +307,9 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-
-    httpClientBuilder.authenticator(
-        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
-            tagManager));
+    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
+    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -349,6 +348,11 @@ import timber.log.Timber;
 
     @Override public Request authenticate(Route route, okhttp3.Response response)
         throws IOException {
+
+      return refresh(response.request(), response);
+    }
+
+    public Request refresh(Request request, okhttp3.Response response) {
       if (accessToken == null || accessToken.getRefreshToken() == null) return null;
 
       if (isRefreshing.compareAndSet(false, true)) {
@@ -379,13 +383,15 @@ import timber.log.Timber;
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
           accessToken.setAccessToken(newAccessToken.getAccessToken());
           accessToken.setRefreshToken(newAccessToken.getRefreshToken());
+          accessToken.setAccessExpiresAt(newAccessToken.getAccessExpiresAt());
+          accessToken.setUserId(newAccessToken.getUserId());
           accessToken.setTokenType("Bearer");
           userCache.put(accessToken);
           tribeAuthorizer.setAccessToken(accessToken);
 
           clearLock();
 
-          return response.request()
+          return request
               .newBuilder()
               .header("Authorization",
                   accessToken.getTokenType() + " " + accessToken.getAccessToken())
@@ -433,7 +439,7 @@ import timber.log.Timber;
       } else {
         boolean conditionOpened = LOCK.block(60000);
         if (conditionOpened) {
-          return response.request()
+          return request
               .newBuilder()
               .header("Authorization",
                   accessToken.getTokenType() + " " + accessToken.getAccessToken())
@@ -442,6 +448,33 @@ import timber.log.Timber;
 
         return null;
       }
+    }
+  }
+
+  private class TribeTokenExpirationInterceptor implements Interceptor {
+
+    private TribeAuthorizer tribeAuthorizer;
+    private TribeAuthenticator tribeAuthenticator;
+
+    public TribeTokenExpirationInterceptor(TribeAuthorizer tribeAuthorizer, TribeAuthenticator tribeAuthenticator) {
+      this.tribeAuthorizer = tribeAuthorizer;
+      this.tribeAuthenticator = tribeAuthenticator;
+    }
+
+    @Override
+    public okhttp3.Response intercept(Chain chain) throws IOException {
+
+      if (tribeAuthorizer != null &&
+              tribeAuthorizer.getAccessToken() != null &&
+              tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
+              tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+
+        Timber.d("The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
+
+        return chain.proceed(tribeAuthenticator.refresh(chain.request(), null));
+      }
+
+      return chain.proceed(chain.request());
     }
   }
 
