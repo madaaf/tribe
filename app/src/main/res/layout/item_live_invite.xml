@@ -53,6 +53,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|center_horizontal"
+      android:textAlignment="center"
       android:layout_margin="@dimen/vertical_margin_small"
       android:text="@string/live_drag_friends"
       style="@style/Body.Two.White"
