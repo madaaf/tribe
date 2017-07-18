@@ -47,6 +47,10 @@ import javax.inject.Singleton;
     this.user_id = user_id;
   }
 
+  public boolean isAnonymous() {
+    return user_id == null || user_id.startsWith("anon__");
+  }
+
   public void copy(AccessToken accessToken) {
     this.access_token = accessToken.access_token;
     this.token_type = accessToken.token_type;

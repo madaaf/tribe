@@ -19,6 +19,7 @@ import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.HEAD;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -98,7 +99,7 @@ public interface TribeApi {
 
   @HEAD Observable<Response<Void>> getHeadDeepLink(@Url String url);
 
-  @FormUrlEncoded @POST("/graphql") Observable<RoomConfiguration> joinRoom(
+  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<RoomConfiguration> joinRoom(
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
