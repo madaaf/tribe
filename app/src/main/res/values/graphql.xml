@@ -4,6 +4,7 @@
         {
             user {
                 ...UserInfos
+                time_in_call
 
                 friendships {
                     ...FriendshipInfos

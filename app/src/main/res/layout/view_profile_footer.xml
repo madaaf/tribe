@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="50dp">
+
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:src="@drawable/picto_tribe_logo_black" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center|top"
+                android:gravity="center">
+
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    style="@style/Body.Two.Black40"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profile_calls_length_prefix" />
+
+                <com.tribe.app.presentation.view.widget.TextViewFont
+                    android:id="@+id/txtTimeInCall"
+                    style="@style/Body.Two.Black"
+                    android:text=" test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_calls_length_suffix"
+                style="@style/Body.Two.Black40" />
+
+        </FrameLayout>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtVersion"
+            style="@style/Caption.One.Black40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center" />
+    </LinearLayout>
+</merge>

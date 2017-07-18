@@ -44,6 +44,7 @@ public class User implements Serializable, BaseListInterface {
   private boolean invisible_mode;
   private boolean push_notif;
   private boolean is_online = false;
+  private long time_in_call = 0;
   private Date last_seen_at;
 
   private boolean isNewFriend = false;
@@ -137,6 +138,14 @@ public class User implements Serializable, BaseListInterface {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public long getTimeInCall() {
+    return time_in_call;
+  }
+
+  public void setTimeInCall(long time_in_call) {
+    this.time_in_call = time_in_call;
   }
 
   public void setFriendships(List<Friendship> friendships) {

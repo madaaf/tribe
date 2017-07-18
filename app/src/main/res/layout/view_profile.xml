@@ -169,30 +169,7 @@
 
     <include layout="@layout/view_separator_simple"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="50dp"
-        >
+    <include layout="@layout/view_profile_footer"/>
 
-      <ImageView
-          android:id="@+id/imgLogo"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:src="@drawable/picto_tribe_logo_black"
-          />
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtVersion"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/vertical_margin"
-          android:clickable="true"
-          android:gravity="center"
-          style="@style/Body.One.Black40"
-          />
-    </LinearLayout>
   </LinearLayout>
 </com.tribe.app.presentation.view.component.profile.ProfileView>
