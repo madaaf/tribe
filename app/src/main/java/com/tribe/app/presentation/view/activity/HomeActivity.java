@@ -504,7 +504,7 @@ public class HomeActivity extends BaseActivity
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
-          temp.add(new Friendship(Recipient.ID_VIDEO));
+          // temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {

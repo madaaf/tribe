@@ -24,12 +24,19 @@
         android:orientation="vertical"
 
         >
+
+      <com.tribe.app.presentation.view.component.live.TooltipVideoView
+          android:layout_width="match_parent"
+          android:layout_height="143dp"/>
+
+      <!--
       <ImageView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:scaleType="fitStart"
           android:src="@drawable/bg_drag_friend_popup_view"
           />
+      -->
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/textViewFont"
@@ -41,7 +48,7 @@
           android:paddingBottom="30dp"
           android:paddingEnd="10dp"
           android:paddingStart="10dp"
-          android:paddingTop="30dp"
+          android:paddingTop="50dp"
           android:text="@string/live_tutorial_drag_as_guest"
           style="@style/Title.2.Black"
           />

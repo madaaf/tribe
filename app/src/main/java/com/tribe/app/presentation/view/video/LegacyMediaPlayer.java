@@ -114,7 +114,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
         mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
         mediaPlayer.setAudioStreamType(getAudioStreamType());
       } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
-        AssetFileDescriptor afd = context.getAssets().openFd("video/onboarding_video.mp4");
+        AssetFileDescriptor afd = context.getAssets().openFd("video/tooltip.mp4");
         mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
         afd.close();
       }
