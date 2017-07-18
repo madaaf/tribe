@@ -37,6 +37,7 @@ public class AvatarsSuperposedLayout extends LinearLayout {
   }) public @interface AvatarSize {
   }
 
+  private final static int MAX_AVATAR = 10;
   public final static int AVATARS_SMALL_SIZE = 55;
   public final static int AVATARS_BIG_SIZE = 115;
 
@@ -102,7 +103,9 @@ public class AvatarsSuperposedLayout extends LinearLayout {
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
             null, false, user.getUsername()));
 
-    for (int i = 0; i < members.size(); i++) {
+    int maxAvatar = members.size() > MAX_AVATAR ? MAX_AVATAR : members.size();
+
+    for (int i = 0; i < maxAvatar; i++) {
 
       TribeGuest tribeGuest = members.get(i);
       AvatarView avatarView = new AvatarView(getContext());

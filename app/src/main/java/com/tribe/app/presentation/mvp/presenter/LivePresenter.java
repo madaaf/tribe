@@ -13,6 +13,7 @@ import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
+import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
@@ -49,6 +50,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private BookRoomLink bookRoomLink;
   private RoomAcceptRandom roomAcceptRandom;
   private RandomRoomAssigned randomRoomAssigned;
+  private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
 
   // SUBSCRIBERS
@@ -56,6 +58,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
   private CreateFriendshipSubscriber createFriendshipSubscriber;
   private RandomRoomAssignedSubscriber randomRoomAssignedSubscriber;
+  private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
       BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
@@ -63,7 +66,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       DeclineInvite declineInvite, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
-      RandomRoomAssigned randomRoomAssigned, ReportUser reportUser) {
+      RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -79,6 +82,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.roomAcceptRandom = roomAcceptRandom;
     this.randomRoomAssigned = randomRoomAssigned;
     this.reportUser = reportUser;
+    this.fbIdUpdated = fbIdUpdated;
   }
 
   @Override public void onViewDetached() {
@@ -97,6 +101,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     roomAcceptRandom.unsubscribe();
     randomRoomAssigned.unsubscribe();
     reportUser.unsubscribe();
+    fbIdUpdated.unsubscribe();
     liveMVPView = null;
   }
 
@@ -317,5 +322,26 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
     randomRoomAssignedSubscriber = new RandomRoomAssignedSubscriber();
     randomRoomAssigned.execute(randomRoomAssignedSubscriber);
+  }
+
+  private final class FbIdUpdatedSubscriber extends DefaultSubscriber<User> {
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(User userUpdated) {
+      liveMVPView.fbIdUpdatedSubscriber(userUpdated);
+    }
+  }
+
+  public void fbidUpdated() {
+    if (fbIdUpdatedSubscriber != null) {
+      fbIdUpdatedSubscriber.unsubscribe();
+    }
+    fbIdUpdatedSubscriber = new FbIdUpdatedSubscriber();
+    fbIdUpdated.execute(fbIdUpdatedSubscriber);
   }
 }

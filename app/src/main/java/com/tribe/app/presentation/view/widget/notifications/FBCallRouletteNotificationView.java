@@ -45,15 +45,18 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   // VARIABLES
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private Unbinder unbinder;
+  private String unlockRollTheDiceSenderId;
 
-  public FBCallRouletteNotificationView(@NonNull Context context) {
+  public FBCallRouletteNotificationView(@NonNull Context context,
+      String unlockRollTheDiceSenderId) {
     super(context);
-    initView(context);
+    initView(context, unlockRollTheDiceSenderId);
   }
 
-  public FBCallRouletteNotificationView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public FBCallRouletteNotificationView(@NonNull Context context, @Nullable AttributeSet attrs,
+      String unlockRollTheDiceSenderId) {
     super(context, attrs);
-    initView(context);
+    initView(context, unlockRollTheDiceSenderId);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -78,7 +81,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   //    PRIVATE    //
   ///////////////////
 
-  private void initView(Context context) {
+  private void initView(Context context, String unlockRollTheDiceSenderId) {
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_facebook_callroulette, this, true);
@@ -86,7 +89,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
     diceView.setVisibility(VISIBLE);
     diceView.startDiceAnimation();
     initRemoteConfig();
-
+    this.unlockRollTheDiceSenderId = unlockRollTheDiceSenderId;
     Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_with_duration);
     setOnTouchListener((v, event) -> {
       txtAction.startAnimation(shake);
@@ -130,12 +133,12 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   @Override public void successFacebookLogin() {
     Timber.d("successFacebookLogin");
     facebookPresenter.loadFacebookInfos();
-    onFacebookSuccess.onNext(null);
+    onFacebookSuccess.onNext(unlockRollTheDiceSenderId);
 
     Bundle properties = new Bundle();
     properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_SUCCESS);
     tagManager.trackEvent(TagManagerUtils.FacebookGate, properties);
-    super.hideView();
+    hideView();
   }
 
   @Override public void errorFacebookLogin() {

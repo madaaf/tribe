@@ -30,6 +30,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -38,6 +39,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -76,6 +79,8 @@ public class LiveContainer extends FrameLayout {
   private static final int INVALID_POINTER = -1;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject User user;
 
   @Inject StateManager stateManager;
 
@@ -118,7 +123,9 @@ public class LiveContainer extends FrameLayout {
   boolean enabledTimer = false;
   private int nbrCall = 0;
   private boolean blockOpenInviteView;
-  private String userUnder13 = "";
+  private String userUnder13 = "", userUnder13Id = "";
+  private List<Friendship> friendshipList;
+  private List<User> userList = new ArrayList<>();
 
   // DIMENS
   private int thresholdEnd;
@@ -133,7 +140,8 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Float> onAlpha = PublishSubject.create();
   private PublishSubject<Boolean> onDropEnabled = PublishSubject.create();
   private PublishSubject<TileView> onDropped = PublishSubject.create();
-  private PublishSubject<Void> onDroppedUnder13 = PublishSubject.create();
+  private PublishSubject<String> onDroppedUnder13 = PublishSubject.create();
+  private PublishSubject<Void> onDropDiceWithoutFbAuth = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveContainer(Context context) {
@@ -160,7 +168,7 @@ public class LiveContainer extends FrameLayout {
     applicationComponent.inject(this);
     screenUtils = applicationComponent.screenUtils();
 
-    initDimen();
+    initRessource();
     initUI();
     initSubscriptions();
   }
@@ -195,9 +203,11 @@ public class LiveContainer extends FrameLayout {
     scrollTolerance = screenUtils.dpToPx(SCROLL_TOLERANCE);
   }
 
-  private void initDimen() {
+  private void initRessource() {
     thresholdEnd =
         getContext().getResources().getDimensionPixelSize(R.dimen.threshold_open_live_invite);
+    friendshipList = user.getFriendships();
+    userList = new ArrayList<>();
   }
 
   private void initSubscriptions() {
@@ -491,30 +501,45 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void displayDialogAgePerm(String displayName) {
-    DialogFactory.dialog(getContext(),
+    subscriptions.add(DialogFactory.dialog(getContext(),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_title, displayName),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_message),
         getContext().getString(R.string.unlock_roll_the_dice_impossible_popup_action), null)
-        .filter(x -> x == true)
-        .subscribe();
+        .subscribe());
   }
 
-  public void getUserUnder13(String fbId, String displayName) {
+  public void getUserUnder13(String fbId, String displayName, String userId) {
     if ((fbId == null || fbId.isEmpty()) && (displayName != null && !displayName.equals(
         getContext().getString(R.string.roll_the_dice_invite_title)))) {
       userUnder13 = displayName;
+      userUnder13Id = userId;
+
+      for (Friendship fr : friendshipList) {
+        userList.add(fr.getFriend());
+      }
+
+      for (User user : userList) {
+        if (user.getId().equals(userId)) {
+          if (user.getFbid() != null && !user.getFbid().isEmpty()) {
+            userUnder13 = "";
+            userUnder13Id = "";
+          }
+        }
+      }
     }
   }
 
   private boolean isGuestUnder13(User user) {
-    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName());
-    getUserUnder13(user.getFbid(), user.getDisplayName());
+    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName(),
+        viewLive.getLive().getId()); // first user in room
+    getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId()); //user I try to drag
+
     if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {
       displayDialogAgePerm(userUnder13);
       return true;
     } else if (viewLive.getSource().equals(SOURCE_CALL_ROULETTE) || viewLive.isDiceDragedInRoom()) {
       if (user.getFbid() == null || user.getFbid().isEmpty()) {
-        displayDialogAgePerm(user.getDisplayName());
+        displayDialogAgePerm(userUnder13);
         return true;
       }
     }
@@ -525,8 +550,12 @@ public class LiveContainer extends FrameLayout {
     viewInviteLive.setDragging(true);
 
     Friendship friendshiip = (Friendship) currentTileView.getRecipient();
+    if (friendshiip.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
+      onDropDiceWithoutFbAuth.onNext(null);
+      return;
+    }
     if (isGuestUnder13(friendshiip.getFriend())) {
-      onDroppedUnder13.onNext(null);
+      onDroppedUnder13.onNext(userUnder13Id);
       return;
     }
 
@@ -729,7 +758,11 @@ public class LiveContainer extends FrameLayout {
     return onDropped;
   }
 
-  public Observable<Void> onDroppedUnder13() {
+  public Observable<String> onDroppedUnder13() {
     return onDroppedUnder13;
+  }
+
+  public Observable<Void> onDropDiceWithoutFbAuth() {
+    return onDropDiceWithoutFbAuth;
   }
 }

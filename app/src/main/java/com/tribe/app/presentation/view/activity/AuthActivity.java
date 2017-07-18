@@ -119,7 +119,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
         Timber.d("KPI_Onboarding_PinFailed");
         userPhoneNumber.set(null);
-        Timber.e("digit login failure :" + error);
         digitAuth();
       }
     };

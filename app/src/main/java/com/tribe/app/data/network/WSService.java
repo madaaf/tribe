@@ -202,7 +202,9 @@ import timber.log.Timber;
                   boolean shouldAdd = true;
                   if (newInvite.getFriendships() != null) {
                     for (Friendship friendship : newInvite.getFriendships()) {
-                      if (friendship.getFriend().equals(user)) {
+                      if (friendship != null
+                          && friendship.getFriend() != null
+                          && friendship.getFriend().equals(user)) {
                         shouldAdd = false;
                       }
                     }
@@ -248,6 +250,10 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onRandomRoomAssigned().subscribe(assignedRoomId -> {
       Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
       liveCache.putRandomRoomAssigned(assignedRoomId);
+    }));
+
+    persistentSubscriptions.add(jsonToModel.onFbIdUpdated().subscribe(userUpdated -> {
+      liveCache.onFbIdUpdated(userUpdated);
     }));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated().subscribe(userRealmList -> {

@@ -65,6 +65,8 @@ public class Room {
   public static final String MESSAGE_REMOTE_SWITCH_MODE = "eventSetRemoteAudioVideoMode";
   public static final String MESSAGE_NONE = "none";
   public static final String MESSAGE_APP = "app";
+  public static final String MESSAGE_UNLOCK_ROLL_DICE = "unlockRollTheDice";
+  public static final String MESSAGE_UNLOCKED_ROLL_DICE = "unlockedRollTheDice";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
@@ -96,6 +98,8 @@ public class Room {
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
+  private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
@@ -142,6 +146,10 @@ public class Room {
     persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
       onRollTheDiceReceived.onNext(null);
     }).subscribe());
+
+    persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+
+    persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -346,11 +354,25 @@ public class Room {
     webSocketConnection.send(getSendFreeze().toString());
   }
 
+  public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
+
+    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
+      if (tpc != null
+              && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+              && tpc.getSession().getUserId().equals(userId)) {
+
+        webSocketConnection.send(
+                getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
+      }
+    }
+  }
+
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null &&
-        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }
@@ -520,6 +542,14 @@ public class Room {
 
   public Observable<String> onRoomStateChanged() {
     return onRoomStateChanged;
+  }
+
+  public Observable<String> unlockRollTheDice() {
+    return unlockRollTheDice;
+  }
+
+  public Observable<String> unlockedRollTheDice() {
+    return unlockedRollTheDice;
   }
 
   public Observable<RemotePeer> onRemotePeerAdded() {
