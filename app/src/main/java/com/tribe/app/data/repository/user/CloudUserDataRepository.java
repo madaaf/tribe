@@ -333,6 +333,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<User> getFbIdUpdated() {
+    return null;
+  }
+
   @Override public Observable<Boolean> reportUser(String userId) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();

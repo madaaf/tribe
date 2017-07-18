@@ -59,6 +59,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,11 +169,12 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
+  private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
-  private PublishSubject<Void> onRollTheDiceReceivedWithNoFbId = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
@@ -547,6 +549,10 @@ public class LiveView extends FrameLayout {
       }
     }));
 
+    tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
+
+    tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
@@ -652,8 +658,9 @@ public class LiveView extends FrameLayout {
           if (FacebookUtils.isLoggedIn()) {
             viewRoom.onRollTheDiceReceived();
             live.setDiceDragedInRoom(true);
+            onRollTheDice.onNext(null);
           } else {
-            onRollTheDiceReceivedWithNoFbId.onNext(null);
+            Timber.d("user not connected to fb");
           }
         }));
 
@@ -932,6 +939,13 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getUserPlayload(user), true);
   }
 
+  public void sendUnlockDice(String peerUserId, User user) {
+    room.sendToUser(peerUserId, getUnlockRollTheDicePayload(user), true);
+  }
+
+  public void sendUnlockedDice(String peerUserId) {
+    room.sendToUser(peerUserId, getUnlockedRollTheDicePayload(), true);
+  }
   ////////////////
   //  PRIVATE   //
   ////////////////
@@ -1129,6 +1143,24 @@ public class LiveView extends FrameLayout {
     }
     jsonPut(jsonObject, Room.MESSAGE_INVITE_ADDED, array);
     return jsonObject;
+  }
+
+  private JSONObject getUnlockRollTheDicePayload(User user) {
+
+    JSONObject appJson1 = new JSONObject();
+    JsonUtils.jsonPut(appJson1, "by", getUserPlayload(user));
+    JSONObject appJson = new JSONObject();
+    JsonUtils.jsonPut(appJson, Room.MESSAGE_UNLOCK_ROLL_DICE, appJson1);
+
+    return appJson;
+  }
+
+  private JSONObject getUnlockedRollTheDicePayload() {
+
+    JSONObject appJson = new JSONObject();
+    JsonUtils.jsonPut(appJson, Room.MESSAGE_UNLOCKED_ROLL_DICE, true);
+
+    return appJson;
   }
 
   private JSONObject getUserPlayload(User user) {
@@ -1391,6 +1423,18 @@ public class LiveView extends FrameLayout {
     return onShouldJoinRoom;
   }
 
+  public Observable<String> unlockRollTheDice() {
+    return unlockRollTheDice;
+  }
+
+  public Observable<String> unlockedRollTheDice() {
+    return unlockedRollTheDice;
+  }
+
+  public Observable<String> onRollTheDice() {
+    return onRollTheDice;
+  }
+
   public Observable<TribeJoinRoom> onJoined() {
     return onJoined;
   }
@@ -1481,10 +1525,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
-  }
-
-  public Observable<Void> onRollTheDiceReceivedWithNoFbId() {
-    return onRollTheDiceReceivedWithNoFbId;
   }
 }
 

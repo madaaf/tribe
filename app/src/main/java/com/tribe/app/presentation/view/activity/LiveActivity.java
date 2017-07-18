@@ -101,6 +101,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -225,6 +226,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Inject StateManager stateManager;
 
+  @Inject User user;
+
   @Inject @RoutingMode Preference<String> routingMode;
 
   @Inject @CallTagsMap Preference<String> callTagsMap;
@@ -270,6 +273,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private List anonymousIdList = new ArrayList();
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
+  private List<String> userUnder13List = new ArrayList<>();
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -439,6 +443,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         finish();
       }
     }));
+    //livePresenter.fbidUpdated(); SOEF
   }
 
   private void initCallRouletteService() {
@@ -590,18 +595,67 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
             Timber.d("on dropped the dice :" + live.getSessionId());
-            livePresenter.roomAcceptRandom(live.getSessionId()); //SOEF
+            livePresenter.roomAcceptRandom(live.getSessionId());
             reRollTheDiceFromLiveRoom();
           } else {
             invite(recipient.getSubId());
           }
         }));
 
-    subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(aVoid -> {
-      reRollTheDiceFromLiveRoom();
+    subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
+      Timber.d("user under 13 dropped" + peerId);
+      userUnder13List.add(peerId);
+      viewLive.sendUnlockDice(peerId, user);
     }));
 
-    subscriptions.add(viewLive.onRollTheDiceReceivedWithNoFbId().subscribe(aVoid -> {
+    subscriptions.add(viewLive.unlockRollTheDice()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> {
+          Timber.d("unlockRollTheDice reveived " + s);
+          if (!FacebookUtils.isLoggedIn()) {
+            notificationContainerView.setUnlockRollTheDiceSenderId(s);
+            notificationContainerView.
+                showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
+          }
+        }));
+
+    subscriptions.add(viewLive.unlockedRollTheDice()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> {
+          userUnder13List.remove(s);
+          if (userUnder13List.isEmpty()) {
+            //viewLive.getUsersInLiveRoom().getPeopleInRoom();
+            Timber.e("SOEF unlockedRollTheDice received " + s);//MADA SOEF
+            livePresenter.roomAcceptRandom(live.getSessionId());
+            diceView.setVisibility(VISIBLE);
+            diceView.startDiceAnimation();
+          } else {
+            Timber.e("SOEF USER UNDER 13 LIST NOT EMPTY " + s);//MADA SOEF
+            for (String ok : userUnder13List) {
+              Timber.e("SOEF " + ok);
+            }
+          }
+        }));
+
+    subscriptions.add(notificationContainerView.onFacebookSuccess()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(unlockRollTheDiceSenderId -> {
+          blockView.setVisibility(View.GONE);
+          viewLiveContainer.blockOpenInviteView(false);
+          initCallRouletteService();
+          viewLive.sendUnlockedDice(unlockRollTheDiceSenderId);
+        }));
+
+    subscriptions.add(viewLive.onRollTheDice().subscribe(s -> {
+      viewInviteLive.diceDragued();
+      viewInviteLive.requestLayout();
+    }));
+
+    subscriptions.add(viewLiveContainer.onDropDiceWithoutFbAuth().subscribe(aVoid -> {
+      Timber.d("drag dice, user not fb loged, display fb notif auth");
       notificationContainerView.
           showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
     }));
@@ -722,12 +776,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
       reRollTheDiceFromCallRoulette();
-    }));
-
-    subscriptions.add(notificationContainerView.onFacebookSuccess().subscribe(aVoid -> {
-      blockView.setVisibility(View.INVISIBLE);
-      viewLiveContainer.blockOpenInviteView(true);
-      initCallRouletteService();
     }));
   }
 
@@ -990,6 +1038,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     viewLiveContainer.blockOpenInviteView(false);
     live.setSessionId(roomId);
     joinRoom();
+  }
+
+  @Override public void fbIdUpdatedSubscriber(User userUpdated) {
+    Timber.d("user fbId updated " + userUpdated.getId() + " " + userUpdated.getFbid());
   }
 
   @Override public void onJoinedRoom(RoomConfiguration roomConfiguration) {

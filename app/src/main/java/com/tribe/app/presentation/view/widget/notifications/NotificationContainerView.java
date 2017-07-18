@@ -47,6 +47,8 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -91,12 +93,13 @@ public class NotificationContainerView extends FrameLayout {
   private Context context;
   private GestureDetectorCompat gestureScanner;
   private FirebaseRemoteConfig firebaseRemoteConfig;
+  private String unlockRollTheDiceSenderId;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   private PublishSubject<Void> onSendInvitations = PublishSubject.create();
-  private PublishSubject<Void> onFacebookSuccess = PublishSubject.create();
+  private PublishSubject<String> onFacebookSuccess = PublishSubject.create();
 
   public NotificationContainerView(@NonNull Context context) {
     super(context);
@@ -125,9 +128,7 @@ public class NotificationContainerView extends FrameLayout {
           break;
         case DISPLAY_FB_CALL_ROULETTE:
           initRemoteConfig();
-          container.setOnTouchListener((v, event) -> {
-            return false;
-          });
+          container.setOnTouchListener((v, event) -> false);
           textDismiss.setOnTouchListener((v, event) -> {
             Bundle properties = new Bundle();
             properties.putString(TagManagerUtils.FB_ACTION, TagManagerUtils.FB_ACTION_CANCELLED);
@@ -191,7 +192,7 @@ public class NotificationContainerView extends FrameLayout {
   }
 
   private boolean displayFbCallRouletteNotification() {
-    viewToDisplay = new FBCallRouletteNotificationView(context);
+    viewToDisplay = new FBCallRouletteNotificationView(context, unlockRollTheDiceSenderId);
     addViewInContainer(viewToDisplay);
     animateView();
     return true;
@@ -213,9 +214,12 @@ public class NotificationContainerView extends FrameLayout {
       hideView();
     }));
 
-    subscriptions.add(viewToDisplay.onFacebookSuccess().subscribe(aVoid -> {
-      onFacebookSuccess.onNext(null);
-    }));
+    subscriptions.add(viewToDisplay.onFacebookSuccess()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(unlockRollTheDiceSenderId -> {
+          onFacebookSuccess.onNext(unlockRollTheDiceSenderId);
+        }));
 
     subscriptions.add(viewToDisplay.onAcceptedPermission().subscribe(onAcceptedPermission));
 
@@ -242,6 +246,10 @@ public class NotificationContainerView extends FrameLayout {
     notificationView.addView(v);
   }
 
+  public void setUnlockRollTheDiceSenderId(String unlockRollTheDiceSenderId) {
+    this.unlockRollTheDiceSenderId = unlockRollTheDiceSenderId;
+  }
+
   private void animateView() {
     notificationView.setTranslationY(-screenUtils.getHeightPx());
 
@@ -262,6 +270,7 @@ public class NotificationContainerView extends FrameLayout {
   }
 
   protected void hideView() {
+    container.setOnTouchListener((v, event) -> true);
     textDismiss.setVisibility(INVISIBLE);
     Animation slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
@@ -340,7 +349,7 @@ public class NotificationContainerView extends FrameLayout {
     return onSendInvitations;
   }
 
-  public Observable<Void> onFacebookSuccess() {
+  public Observable<String> onFacebookSuccess() {
     return onFacebookSuccess;
   }
 

@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.User;
 import java.util.Map;
 import rx.Observable;
 
@@ -17,4 +18,6 @@ public interface LiveDataStore {
   Observable<Map<String, Invite>> inviteMap();
 
   Observable<String> callRouletteMap();
+
+  Observable<User> getFbIdUpdated();
 }
