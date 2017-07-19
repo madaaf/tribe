@@ -114,6 +114,9 @@ public class EmojiParser {
     String returnTextString = text;
     // Pattern to match
     Pattern pattern = Pattern.compile("(\\:[^\\:]+\\:)");
+    if (pattern == null) {
+      return returnTextString;
+    }
     Matcher matcher = pattern.matcher(text);
     while (matcher.find()) {
       String found = matcher.group();

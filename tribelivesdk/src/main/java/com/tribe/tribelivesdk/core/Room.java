@@ -190,8 +190,10 @@ public class Room {
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
 
-    persistentSubscriptions.add(
-        jsonToModel.onNewGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onNewGame));
+    persistentSubscriptions.add(jsonToModel.onNewGame()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(onNewGame));
 
     persistentSubscriptions.add(
         jsonToModel.onStopGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onStopGame));
@@ -320,7 +322,7 @@ public class Room {
     if (tempSubscriptions.hasSubscriptions()) tempSubscriptions.clear();
 
     options = null;
-    webSocketConnection.disconnect(false);
+    if (webSocketConnection != null) webSocketConnection.disconnect(false);
     webSocketConnection = null;
     webRTCClient.dispose(shouldDisposeLocal);
   }
@@ -358,11 +360,11 @@ public class Room {
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
       if (tpc != null
-              && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
-              && tpc.getSession().getUserId().equals(userId)) {
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(userId)) {
 
         webSocketConnection.send(
-                getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
+            getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
       }
     }
   }

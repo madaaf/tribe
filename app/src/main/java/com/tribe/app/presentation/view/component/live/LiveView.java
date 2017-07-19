@@ -959,7 +959,7 @@ public class LiveView extends FrameLayout {
     if (!live.getId().equals(Live.NEW_CALL)) return;
 
     int nbPeople = nbInRoom();
-    if (nbPeople > 1) {
+    if (viewLocalLive != null && nbPeople > 1) {
       viewLocalLive.hideShareOverlay();
     } else {
       viewLocalLive.showShareOverlay(live.getSource());

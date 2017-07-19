@@ -252,9 +252,10 @@ import static android.R.attr.id;
     Timber.d("Disposing subscriptions");
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
+    Collection<TribePeerConnection> peerConnectionsValueList = peerConnections.values();
     if (peerConnections != null && peerConnections.size() > 0) {
       Timber.d("Iterating peer subscriptions");
-      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
+      for (TribePeerConnection tribePeerConnection : peerConnectionsValueList) {
         tribePeerConnection.dispose();
       }
 
