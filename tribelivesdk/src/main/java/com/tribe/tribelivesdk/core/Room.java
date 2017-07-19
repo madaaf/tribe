@@ -189,7 +189,7 @@ public class Room {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
-    
+
     persistentSubscriptions.add(jsonToModel.onNewGame()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
@@ -322,7 +322,7 @@ public class Room {
     if (tempSubscriptions.hasSubscriptions()) tempSubscriptions.clear();
 
     options = null;
-    webSocketConnection.disconnect(false);
+    if (webSocketConnection != null) webSocketConnection.disconnect(false);
     webSocketConnection = null;
     webRTCClient.dispose(shouldDisposeLocal);
   }
