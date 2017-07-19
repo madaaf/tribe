@@ -727,7 +727,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onStartGame().subscribe(game -> {
       if (game != null && game instanceof GamePostIt) {
         GamePostIt gamePostIt = (GamePostIt) game;
-        if (!gamePostIt.hasNames()) livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
+        switch (game.getId()) {
+          case Game.GAME_POST_IT:
+            if (!gamePostIt.hasNames()) {
+              livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
+            }
+            break;
+          case Game.GAME_CHALLENGE:
+            if (!gamePostIt.hasNames()) {
+              Timber.e("SOEF START GAME CHALLENGE");
+              livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+            }
+            break;
+        }
       }
     }));
 

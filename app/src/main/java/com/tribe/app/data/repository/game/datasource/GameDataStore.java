@@ -9,4 +9,6 @@ import rx.Observable;
 public interface GameDataStore {
 
   Observable<List<String>> getNamesForPostItGame();
+
+  Observable<List<String>> getDataForChallengeGame();
 }

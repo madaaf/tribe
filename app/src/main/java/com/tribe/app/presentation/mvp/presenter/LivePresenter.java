@@ -8,6 +8,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.game.GetDataChallengesGame;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
@@ -47,6 +48,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
+  private GetDataChallengesGame getDataChallengesGame;
   private BookRoomLink bookRoomLink;
   private RoomAcceptRandom roomAcceptRandom;
   private RandomRoomAssigned randomRoomAssigned;
@@ -66,7 +68,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       DeclineInvite declineInvite, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
-      RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated) {
+      RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
+      GetDataChallengesGame getDataChallengesGame) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -83,6 +86,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.randomRoomAssigned = randomRoomAssigned;
     this.reportUser = reportUser;
     this.fbIdUpdated = fbIdUpdated;
+    this.getDataChallengesGame = getDataChallengesGame;
   }
 
   @Override public void onViewDetached() {
@@ -102,6 +106,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     randomRoomAssigned.unsubscribe();
     reportUser.unsubscribe();
     fbIdUpdated.unsubscribe();
+    getDataChallengesGame.unsubscribe();
     liveMVPView = null;
   }
 
@@ -273,6 +278,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
   }
 
+  public void getDataChallengesGame(String lang) {
+    getDataChallengesGame.setup(lang);
+    getDataChallengesGame.execute(new GetNamesPostItGameSubscriber());
+  }
+
   private final class RandomRoomAssignedSubscriber extends DefaultSubscriber<String> {
     @Override public void onCompleted() {
     }
@@ -297,6 +307,9 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
 
     @Override public void onNext(List<String> nameList) {
+      for (String name : nameList) {
+        Timber.e("SOEF " + name);
+      }
       liveMVPView.onNamesPostItGame(nameList);
     }
   }

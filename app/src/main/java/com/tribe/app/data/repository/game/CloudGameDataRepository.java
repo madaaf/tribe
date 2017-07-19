@@ -21,4 +21,9 @@ import rx.Observable;
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getNamesForPostItGame();
   }
+
+  @Override public Observable<List<String>> getDataForChallengeGame(String lang) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getDataForChallengeGame();
+  }
 }

@@ -52,8 +52,10 @@ public class GameChallengesView extends FrameLayout {
     adapter = new GameChallengeViewPagerAdapter(context);
     // Affectation de l'adapter au ViewPager
     viewpager.setAdapter(adapter);
+    //viewpager.setPageMargin(12);
+    //
 /*    viewpager.setClipToPadding(false);
-    viewpager.setPageMargin(12);*/
+   */
   }
 
   public void displayView() {
