@@ -12,14 +12,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NameListPostItGameDeserializer implements JsonDeserializer<List<String>> {
+public class DataGameDeserializer implements JsonDeserializer<List<String>> {
 
   private static String GAME_POST_IT = "names";
   private static String GAME_CHALLENGES = "challenges";
 
   private String lang;
 
-  public NameListPostItGameDeserializer(Context context) {
+  public DataGameDeserializer(Context context) {
     this.lang = DeviceUtils.getLanguage(context);
   }
 

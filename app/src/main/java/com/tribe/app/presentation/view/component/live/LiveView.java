@@ -54,6 +54,7 @@ import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -505,6 +506,10 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
       onShouldCloseInvites.onNext(null);
     }));
+  }
+
+  public void setGameChallenge(GameChallenge gameChallenge) {
+    gameChallengesView.setGameChallenge(gameChallenge);
   }
 
   ///////////////////
@@ -1535,5 +1540,6 @@ public class LiveView extends FrameLayout {
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
   }
+
 }
 

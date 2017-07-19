@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.R;
+import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 19/07/2017.
@@ -13,11 +15,15 @@ import com.tribe.app.R;
 
 public class GameChallengeViewPagerAdapter extends PagerAdapter {
 
+  // @BindView(R.id.txtChallenge) TextViewFont txtChallenge;
+
   private Context mContext;
   LayoutInflater mLayoutInflater;
+  private List<String> items;
 
-  public GameChallengeViewPagerAdapter(Context context) {
+  public GameChallengeViewPagerAdapter(Context context, List<String> items) {
     mContext = context;
+    this.items = items;
     mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
   }
 
@@ -30,7 +36,15 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
+    String ok = "";
+    if (items != null) {
+      ok = items.get(position);
+    }
+    Timber.e("ok sjdke");
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
+
+    TextViewFont txt = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
+    txt.setText(ok);
     container.addView(itemView);
     return itemView;
   }

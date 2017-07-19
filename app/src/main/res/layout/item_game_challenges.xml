@@ -27,7 +27,7 @@
 
 
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnAction2"
+        android:id="@+id/txtChallenge"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_gravity="bottom"

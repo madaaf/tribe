@@ -48,6 +48,7 @@ import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
 import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -263,7 +264,7 @@ public class AndroidApplication extends Application {
     gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
         R.drawable.picto_game_post_it));
     gameManager.addGame(
-        new GamePostIt(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
+        new GameChallenge(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
             R.drawable.icon_game_challenge));
   }
 

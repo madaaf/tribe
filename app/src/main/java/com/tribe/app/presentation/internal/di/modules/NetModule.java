@@ -31,7 +31,7 @@ import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
-import com.tribe.app.data.network.deserializer.NameListPostItGameDeserializer;
+import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
@@ -136,8 +136,8 @@ import timber.log.Timber;
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
     GroupDeserializer groupDeserializer = new GroupDeserializer();
-    NameListPostItGameDeserializer nameListPostItGameDeserializer =
-        new NameListPostItGameDeserializer(context);
+    DataGameDeserializer dataGameDeserializer =
+        new DataGameDeserializer(context);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
@@ -173,7 +173,7 @@ import timber.log.Timber;
         .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
         .registerTypeAdapter(new TypeToken<List<String>>() {
-        }.getType(), nameListPostItGameDeserializer)
+        }.getType(), dataGameDeserializer)
         .create();
   }
 

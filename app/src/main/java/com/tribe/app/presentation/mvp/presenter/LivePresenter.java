@@ -280,7 +280,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
 
   public void getDataChallengesGame(String lang) {
     getDataChallengesGame.setup(lang);
-    getDataChallengesGame.execute(new GetNamesPostItGameSubscriber());
+    getDataChallengesGame.execute(new GetDataChallengesGameSubscriber());
   }
 
   private final class RandomRoomAssignedSubscriber extends DefaultSubscriber<String> {
@@ -311,6 +311,23 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
         Timber.e("SOEF " + name);
       }
       liveMVPView.onNamesPostItGame(nameList);
+    }
+  }
+
+  private final class GetDataChallengesGameSubscriber extends DefaultSubscriber<List<String>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(List<String> nameList) {
+      for (String name : nameList) {
+        Timber.e("SOEF " + name);
+      }
+      liveMVPView.onDataChallengesGame(nameList);
     }
   }
 

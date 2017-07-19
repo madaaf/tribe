@@ -16,6 +16,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.tribelivesdk.game.GameChallenge;
 
 /**
  * Created by madaaflak on 19/07/2017.
@@ -29,6 +30,7 @@ public class GameChallengesView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private GameChallengeViewPagerAdapter adapter;
+  private GameChallenge gameChallenge;
 
   @BindView(R.id.pager) ViewPager viewpager;
 
@@ -49,9 +51,6 @@ public class GameChallengesView extends FrameLayout {
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
 
-    adapter = new GameChallengeViewPagerAdapter(context);
-    // Affectation de l'adapter au ViewPager
-    viewpager.setAdapter(adapter);
     //viewpager.setPageMargin(12);
     //
 /*    viewpager.setClipToPadding(false);
@@ -62,6 +61,12 @@ public class GameChallengesView extends FrameLayout {
     setVisibility(VISIBLE);
 /*    Animation anim = AnimationUtils.loadAnimation(context, R.anim.slide_right_to_center);
     startAnimation(anim);*/
+  }
+
+  public void setGameChallenge(GameChallenge gameChallenge) {
+    this.gameChallenge = gameChallenge;
+    adapter = new GameChallengeViewPagerAdapter(context, gameChallenge.getNameList());
+    viewpager.setAdapter(adapter);
   }
 
   protected void initDependencyInjector() {

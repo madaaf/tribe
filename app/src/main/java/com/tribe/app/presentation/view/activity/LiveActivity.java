@@ -83,6 +83,7 @@ import com.tribe.app.presentation.view.widget.notifications.RatingNotificationVi
 import com.tribe.app.presentation.view.widget.notifications.SharingCardNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -626,16 +627,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribe(s -> {
           userUnder13List.remove(s);
           if (userUnder13List.isEmpty()) {
-            //viewLive.getUsersInLiveRoom().getPeopleInRoom();
-            Timber.e("SOEF unlockedRollTheDice received " + s);//MADA SOEF
             livePresenter.roomAcceptRandom(live.getSessionId());
             diceView.setVisibility(VISIBLE);
             diceView.startDiceAnimation();
-          } else {
-            Timber.e("SOEF USER UNDER 13 LIST NOT EMPTY " + s);//MADA SOEF
-            for (String ok : userUnder13List) {
-              Timber.e("SOEF " + ok);
-            }
           }
         }));
 
@@ -725,16 +719,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onStartGame().subscribe(game -> {
-      if (game != null && game instanceof GamePostIt) {
-        GamePostIt gamePostIt = (GamePostIt) game;
+      if (game != null) {
         switch (game.getId()) {
           case Game.GAME_POST_IT:
+            GamePostIt gamePostIt = (GamePostIt) game;
             if (!gamePostIt.hasNames()) {
               livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
             }
             break;
           case Game.GAME_CHALLENGE:
-            if (!gamePostIt.hasNames()) {
+            GameChallenge gameChallenge = (GameChallenge) game;
+            if (!gameChallenge.hasNames()) {
               Timber.e("SOEF START GAME CHALLENGE");
               livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
             }
@@ -954,6 +949,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (game != null && game instanceof GamePostIt) {
       GamePostIt gamePostIt = (GamePostIt) game;
       gamePostIt.setNameList(nameList);
+    }
+  }
+
+  @Override public void onDataChallengesGame(List<String> nameList) {
+    Game game = gameManager.getCurrentGame();
+
+    if (game != null && game instanceof GameChallenge) {
+      GameChallenge gameChallenge = (GameChallenge) game;
+      gameChallenge.setNameList(nameList); //SOEF
+      viewLive.setGameChallenge(gameChallenge);
     }
   }
 
