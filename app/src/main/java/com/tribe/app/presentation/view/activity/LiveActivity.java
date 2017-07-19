@@ -52,6 +52,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -234,6 +235,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
+  @Inject @DataChallengesGame Preference<Set<String>> dataChallengesGames;
 
   @Inject MissedCallManager missedCallManager;
 
@@ -732,6 +735,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             if (!gameChallenge.hasNames()) {
               Timber.e("SOEF START GAME CHALLENGE");
               livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+            } else {
+              launchChallengeGame();
             }
             break;
         }
@@ -953,11 +958,24 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {
+    List<String> challengeList = new ArrayList<>();
+    challengeList.addAll(nameList);
+    dataChallengesGames.set(new HashSet<>());
+    PreferencesUtils.addListToSet(dataChallengesGames, nameList);
+    launchChallengeGame();
+  }
+
+  private void launchChallengeGame() {
+    Timber.e("launchChallengeGame");
     Game game = gameManager.getCurrentGame();
+    List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+    List<String> challengeList = new ArrayList<>();
+    challengeList.addAll(dataChallengesGames.get());
 
     if (game != null && game instanceof GameChallenge) {
       GameChallenge gameChallenge = (GameChallenge) game;
-      gameChallenge.setNameList(nameList); //SOEF
+      gameChallenge.setNameList(challengeList); //SOEF
+      gameChallenge.setGuestList(guestList); //SOEF
       viewLive.setGameChallenge(gameChallenge);
     }
   }

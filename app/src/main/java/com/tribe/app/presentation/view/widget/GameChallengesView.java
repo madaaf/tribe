@@ -17,6 +17,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.model.TribeGuest;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 19/07/2017.
@@ -57,15 +59,27 @@ public class GameChallengesView extends FrameLayout {
    */
   }
 
+/*
   public void displayView() {
     setVisibility(VISIBLE);
+*/
 /*    Animation anim = AnimationUtils.loadAnimation(context, R.anim.slide_right_to_center);
-    startAnimation(anim);*/
+    startAnimation(anim);*//*
+
   }
+*/
 
   public void setGameChallenge(GameChallenge gameChallenge) {
+    setVisibility(VISIBLE);
+    for (TribeGuest guest : gameChallenge.getGuestList()) {
+      Timber.e("SOEF guest " + guest.getDisplayName());
+    }
+
+    for (String guest : gameChallenge.getNameList()) {
+      Timber.e("SOEF data " + guest);
+    }
     this.gameChallenge = gameChallenge;
-    adapter = new GameChallengeViewPagerAdapter(context, gameChallenge.getNameList());
+    adapter = new GameChallengeViewPagerAdapter(context, gameChallenge);
     viewpager.setAdapter(adapter);
   }
 

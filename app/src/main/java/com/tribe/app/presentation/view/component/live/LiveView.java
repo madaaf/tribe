@@ -477,7 +477,7 @@ public class LiveView extends FrameLayout {
           break;
         case Game.GAME_CHALLENGE:
           Timber.e("SOEF HAME CHAMLENGE");
-          gameChallengesView.displayView();
+          //gameChallengesView.displayView();
           break;
       }
     }));
@@ -1540,6 +1540,5 @@ public class LiveView extends FrameLayout {
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
   }
-
 }
 

@@ -307,9 +307,6 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
 
     @Override public void onNext(List<String> nameList) {
-      for (String name : nameList) {
-        Timber.e("SOEF " + name);
-      }
       liveMVPView.onNamesPostItGame(nameList);
     }
   }
@@ -324,9 +321,6 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
 
     @Override public void onNext(List<String> nameList) {
-      for (String name : nameList) {
-        Timber.e("SOEF " + name);
-      }
       liveMVPView.onDataChallengesGame(nameList);
     }
   }

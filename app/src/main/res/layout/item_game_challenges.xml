@@ -32,9 +32,10 @@
         android:layout_height="100dp"
         android:layout_gravity="bottom"
         android:layout_marginTop="65dp"
-        android:layout_weight="1"
         android:background="@drawable/shape_rect_blue_new_bottom_corner"
         android:gravity="center"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
         android:text="@string/enjoying_tribe_popup_action2"
         style="@style/Headline.White.2"
         />
