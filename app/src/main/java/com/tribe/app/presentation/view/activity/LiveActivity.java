@@ -92,6 +92,7 @@ import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -454,21 +455,25 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initBrightness() {
 
-    /*WindowManager.LayoutParams attributes = getWindow().getAttributes();
-    initialBrightness = attributes.screenBrightness;
-    attributes.screenBrightness = 1;
+    int hour = Calendar.getInstance().get(Calendar.HOUR);
 
-    getWindow().setAttributes(attributes);*/
+    if (hour <= 7 || hour >= 20) {
+      WindowManager.LayoutParams attributes = getWindow().getAttributes();
+      initialBrightness = attributes.screenBrightness;
+      attributes.screenBrightness = 1;
+
+      getWindow().setAttributes(attributes);
+    }
   }
 
   private void resetBrightness() {
 
-    /*WindowManager.LayoutParams attributes = getWindow().getAttributes();
+    WindowManager.LayoutParams attributes = getWindow().getAttributes();
     if (initialBrightness > 0 && attributes.screenBrightness == 1) {
 
       attributes.screenBrightness = initialBrightness;
       getWindow().setAttributes(attributes);
-    }*/
+    }
   }
 
   private void initCallRouletteService() {

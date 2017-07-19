@@ -8,6 +8,8 @@ import java.util.Date;
 
 public class CallLevelHelper {
 
+    // TODO : Check all this stuff, between minutes and seconds. There may be a mic-mac somewhere.
+
     private static final int LEVEL_1 =   2 * 60;
     private static final int LEVEL_2 =   5 * 60;
     private static final int LEVEL_3 =  10 * 60;
