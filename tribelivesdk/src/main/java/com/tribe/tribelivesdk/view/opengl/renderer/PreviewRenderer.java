@@ -51,7 +51,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private CameraInfo cameraInfo;
   private float surfaceWidth = 1, surfaceHeight = 1;
   private int framesSkipped = 0;
-  public static int widthOut = 480, heightOut = 480;
+  public static int widthOut = 480, heightOut = 640;
   private final RendererCallback rendererCallback;
   private ImageFilter filter;
   private FaceMaskFilter maskFilter;
@@ -97,6 +97,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     Timber.d("updateCameraInfo FrameRotation : " + cameraInfo.getFrameOrientation());
     this.cameraInfo = cameraInfo;
     computeMatrices();
+    //computeSizeOutput();
+
+    //if (filter != null) filter.updateTextureSize(widthOut, heightOut);
 
     if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
@@ -120,6 +123,30 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     previewTexture.setup();
   }
 
+  public void dispose() {
+    subscriptions.clear();
+
+    if (byteBuffer != null) {
+      byteBuffer.clear();
+      byteBuffer = null;
+    }
+
+    previewTexture.release();
+    previewTexture = null;
+
+    filter.release();
+    filter = null;
+
+    if (maskFilter != null) {
+      maskFilter.release();
+      maskFilter = null;
+    }
+
+    libYuvConverter.releasePBO();
+
+    maskRender = null;
+  }
+
   @Override public void onSurfaceCreated(final EGLConfig config) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -138,8 +165,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     mainHandler.post(() -> rendererCallback.onRendererInitialized());
   }
-
-  private float stageRatio = Float.MIN_VALUE;
 
   @Override public void onSurfaceChanged(final int width, final int height) {
     if (!shouldSkipFrames && !shouldUpdateAllocations) {
@@ -253,6 +278,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
           //    + " / "
           //    + (timeEndReadPBO - timeStart) / 1000000.0f
           //    + " ms");
+          //Timber.d("WidthOut : " + widthOut + " / height out : " + heightOut);
           frame =
               new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
                   cameraInfo.isFrontFacing());
@@ -361,7 +387,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       float ratioMax = (float) maxWidth / (float) maxHeight;
 
       widthOut = maxWidth;
-      height = maxHeight;
+      heightOut = maxHeight;
       if (ratioMax > 1) {
         widthOut = (int) ((float) maxHeight * ratioBitmap);
       } else {
@@ -371,6 +397,9 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       widthOut = (int) surfaceWidth;
       heightOut = (int) surfaceHeight;
     }
+
+    widthOut += (widthOut % 2);
+    heightOut += (heightOut % 2);
   }
 
   private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {

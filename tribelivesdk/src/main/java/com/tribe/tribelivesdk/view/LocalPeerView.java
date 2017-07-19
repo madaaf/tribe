@@ -62,6 +62,11 @@ public class LocalPeerView extends FrameLayout {
 
   public void dispose() {
     if (subscriptions != null) subscriptions.clear();
+
+    if (glLocalView != null) {
+      glLocalView.dispose();
+      glLocalView = null;
+    }
   }
 
   public void initEnableCameraSubscription(Observable<TribePeerMediaConfiguration> obs) {

@@ -118,6 +118,8 @@ public class UlseeManager {
   }
 
   public void initFrameSubscription(Observable<Frame> obs) {
+    if (subscriptions.hasSubscriptions()) return;
+
     subscriptions.add(obs.onBackpressureDrop()
         .observeOn(Schedulers.computation())
         .map(frame -> {
@@ -200,9 +202,8 @@ public class UlseeManager {
   }
 
   public void initNewFacesSubscription(Observable<Pair<RectF[], int[]>> obs) {
-    subscriptions.add(obs.onBackpressureDrop()
-        .observeOn(Schedulers.computation())
-        .subscribe(pair -> {
+    subscriptions.add(
+        obs.onBackpressureDrop().observeOn(Schedulers.computation()).subscribe(pair -> {
           ulsTracker.addFaces(pair.first, pair.second);
         }));
   }
@@ -268,5 +269,9 @@ public class UlseeManager {
     }
 
     return false;
+  }
+
+  public void dispose() {
+    subscriptions.clear();
   }
 }

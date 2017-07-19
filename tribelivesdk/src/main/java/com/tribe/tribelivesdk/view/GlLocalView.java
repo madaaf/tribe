@@ -70,6 +70,11 @@ public class GlLocalView extends FrameLayout {
     glCameraPreview.initInviteOpenSubscription(obs);
   }
 
+  public void dispose() {
+    glCameraPreview.dispose();
+    glCameraPreview = null;
+  }
+
   private void onNewCameraInfo(CameraInfo cameraInfo) {
     glCameraPreview.updateCameraInfo(cameraInfo);
   }

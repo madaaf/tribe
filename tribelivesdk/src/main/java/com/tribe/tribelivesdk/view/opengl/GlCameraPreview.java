@@ -195,6 +195,10 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
     startPreview();
   }
 
+  public void dispose() {
+    renderer.dispose();
+  }
+
   private synchronized void startPreviewAfterTextureSizeAvailable() {
     post(() -> {
       requestLayout();

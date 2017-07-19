@@ -154,6 +154,11 @@ unsigned char *ptr;
 Timer t1;
 float readTime, processTime;
 
+JNIEXPORT void JNICALL
+Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_releasePBO(JNIEnv *jni) {
+    glDeleteBuffers(PBO_COUNT, pboIds);
+
+}
 
 JNIEXPORT void JNICALL
 Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_initPBO(JNIEnv *jni, jclass, jint width,

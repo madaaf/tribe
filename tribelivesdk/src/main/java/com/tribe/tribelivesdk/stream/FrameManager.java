@@ -6,12 +6,13 @@ import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
+import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 18/05/2017.
@@ -28,13 +29,14 @@ public class FrameManager {
   //private VisionAPIManager visionAPIManager;
   private LibYuvConverter libYuvConverter;
   private OpenCVWrapper openCVWrapper;
-  //private FilterManager filterManager;
+  private FilterManager filterManager;
   private byte[] argb, yuvOut;
   private boolean firstFrame, processing = false;
   private int previousWidth = 0, previousHeight = 0, previousRotation = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Observable<Frame> onNewPreviewFrame;
   private PublishSubject<Frame> onFrameSizeChange = PublishSubject.create();
   private PublishSubject<Frame> onNewFrame = PublishSubject.create();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
@@ -43,36 +45,25 @@ public class FrameManager {
     this.context = context;
     libYuvConverter = LibYuvConverter.getInstance();
     openCVWrapper = new OpenCVWrapper();
-    //initVisionAPIManager();
     //initGameManager();
-    //initFilterManager();
+    initFilterManager();
     initUlseeManager();
   }
 
-  //private void initFilterManager() {
-  //  filterManager = FilterManager.getInstance(context);
-  //  filterManager.initFrameSizeChangeObs(onFrameSizeChange);
-  //}
-  //
   //private void initGameManager() {
   //  gameManager = GameManager.getInstance(context);
   //  gameManager.initSubscriptions();
   //  gameManager.initFrameSizeChangeObs(onFrameSizeChange);
   //  gameManager.initOnNewFrameObs(onNewFrame);
   //}
-  //
-  //private void initSubscriptions() {
-  //  subscriptions.add(gameManager.onRemoteFrame().onBackpressureDrop().subscribe(onRemoteFrame));
-  //  subscriptions.add(gameManager.onLocalFrame().onBackpressureDrop().subscribe(onLocalFrame));
-  //}
+
+  private void initFilterManager() {
+    filterManager = filterManager.getInstance(context);
+  }
 
   private void initUlseeManager() {
     ulseeManager = UlseeManager.getInstance(context);
   }
-
-  //private void initVisionAPIManager() {
-  //  visionAPIManager = VisionAPIManager.getInstance(context);
-  //}
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
     subscriptions.add(onFrame.onBackpressureDrop()
@@ -84,14 +75,10 @@ public class FrameManager {
               previousWidth != frame1.getWidth() ||
               previousHeight != frame1.getHeight() ||
               previousRotation != frame1.getRotation()) {
-            //argb = new byte[(int) ((frame1.getWidth() * frame1.getHeight() * 4) * SCALE)];
-            //yuvOut = new byte[(int) ((frame1.getWidth() * frame1.getHeight()) * SCALE)];
             argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
             yuvOut = new byte[frame1.getData().length];
 
             frame1.setDataOut(yuvOut);
-            //frame1.setWidth((int) (frame1.getWidth() * SCALE));
-            //frame1.setHeight((int) (frame1.getHeight() * SCALE));
 
             firstFrame = false;
             previousHeight = frame1.getHeight();
@@ -127,7 +114,11 @@ public class FrameManager {
   }
 
   public void initPreviewFrameSubscription(Observable<Frame> onPreviewFrame) {
-    ulseeManager.initFrameSubscription(onPreviewFrame);
+    this.onNewPreviewFrame = onPreviewFrame;
+
+    if (filterManager.getFilter() instanceof FaceMaskFilter) {
+      ulseeManager.initFrameSubscription(onPreviewFrame);
+    }
   }
 
   public void initNewFacesSubscriptions(Observable<Pair<RectF[], int[]>> observable) {
@@ -135,13 +126,17 @@ public class FrameManager {
   }
 
   public void switchFilter() {
-    //filterManager.switchFilter();
+    if (!(filterManager.getFilter() instanceof FaceMaskFilter)) {
+      ulseeManager.dispose();
+    } else if (onNewPreviewFrame != null) {
+      ulseeManager.initFrameSubscription(onNewPreviewFrame);
+    }
   }
 
   public void dispose() {
-    //filterManager.dispose();
-    //gameManager.dispose();
-    //visionAPIManager.dispose();
+    onNewPreviewFrame = null;
+    filterManager.dispose();
+    ulseeManager.dispose();
   }
 
   public void startCapture() {
@@ -152,7 +147,6 @@ public class FrameManager {
     firstFrame = true;
     subscriptions.clear();
     ulseeManager.stopCapture();
-    //visionAPIManager.stopCapture();
   }
 
   public void switchCamera() {

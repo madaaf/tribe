@@ -31,5 +31,7 @@ public class LibYuvConverter {
 
   public native void initPBO(int width, int height);
 
+  public native void releasePBO();
+
   public native void readFromPBO(ByteBuffer buffer, int width, int height);
 }

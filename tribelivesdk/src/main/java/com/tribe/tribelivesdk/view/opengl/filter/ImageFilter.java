@@ -16,8 +16,6 @@ import java.util.HashMap;
 import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
 import static android.opengl.GLES20.GL_TEXTURE0;
@@ -27,7 +25,6 @@ import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES20.glBindTexture;
-import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glDeleteBuffers;
 import static android.opengl.GLES20.glDeleteProgram;
 import static android.opengl.GLES20.glDeleteShader;
@@ -143,6 +140,11 @@ public class ImageFilter extends FilterMask {
     mFragmentShaderSource = fragmentShaderSource;
   }
 
+  public void updateTextureSize(int textureWidth, int textureHeight) {
+    this.textureWidth = textureWidth;
+    this.textureHeight = textureHeight;
+  }
+
   protected static String createTargetShader(@NonNull String shader, final int texTarget) {
     switch (texTarget) {
       case GLES11Ext.GL_TEXTURE_EXTERNAL_OES:
@@ -187,6 +189,10 @@ public class ImageFilter extends FilterMask {
     vertexBufferName = 0;
 
     textureTarget = -1;
+    cacheTexWidth = 0;
+    cacheTexHeight = 0;
+
+    if (fbo != null) fbo.release();
 
     mHandleMap.clear();
     setupCompleted = false;
@@ -196,7 +202,7 @@ public class ImageFilter extends FilterMask {
    * Release the shader program and texture
    */
   public synchronized void release() {
-    if (!setupCompleted || id.equals(IMAGE_FILTER_NONE)) {
+    if (!setupCompleted) {
       return;
     }
 
