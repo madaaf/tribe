@@ -64,6 +64,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private boolean hasShadow = false;
   private boolean hasInd = true;
   private boolean hasHole = true;
+  private boolean isAttached = false;
 
   // RESOURCES
   private int avatarSize;
@@ -119,11 +120,13 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    isAttached = true;
     Glide.get(getContext()).clearMemory();
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
+    isAttached = false;
     Glide.get(getContext()).clearMemory();
   }
 
@@ -247,7 +250,12 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private void loadPlaceholder(boolean hasHole) {
     if (avatarSize == 0) return;
-    new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).hasHole(hasHole).load();
+    if (isAttached) {
+      new GlideUtils.Builder(getContext()).size(avatarSize)
+          .target(imgAvatar)
+          .hasHole(hasHole)
+          .load();
+    }
   }
 
   public float getShadowRatio() {
