@@ -47,6 +47,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.GameChallengesView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -127,7 +128,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
-  // @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
 
   // VARIABLES
   private Live live;
@@ -464,12 +465,20 @@ public class LiveView extends FrameLayout {
           .subscribe(aLong -> refactorNotifyButton()));
     }));
 
-    persistentSubscriptions.add(
-        viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
+    //persistentSubscriptions.add(
+    viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
       displayStartGameNotification(game.getName(), user.getDisplayName());
       restartGame(game);
+      switch (game.getId()) {
+        case Game.GAME_POST_IT:
+          break;
+        case Game.GAME_CHALLENGE:
+          Timber.e("SOEF HAME CHAMLENGE");
+          gameChallengesView.displayView();
+          break;
+      }
     }));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {

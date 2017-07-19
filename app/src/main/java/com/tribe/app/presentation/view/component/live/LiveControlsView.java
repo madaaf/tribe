@@ -550,7 +550,7 @@ public class LiveControlsView extends FrameLayout {
     AnimationUtils.fadeOut(btnFilterOn, DURATION_GAMES_FILTERS);
   }
 
-  private ImageView addGameToView(View viewFrom) {
+  private ImageView addGameToView(View viewFrom) {//SOEF
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(sizeGameFilter, sizeGameFilter);
     params.bottomMargin = screenUtils.dpToPx(5);
     params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;

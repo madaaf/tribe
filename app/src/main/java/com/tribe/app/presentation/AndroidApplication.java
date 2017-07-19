@@ -258,10 +258,13 @@ public class AndroidApplication extends Application {
     filterManager.initFilters(filterList);
   }
 
-  private void initGameManager() {
+  private void initGameManager() {//SOEF
     GameManager gameManager = GameManager.getInstance(this);
     gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
         R.drawable.picto_game_post_it));
+    gameManager.addGame(
+        new GamePostIt(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
+            R.drawable.icon_game_challenge));
   }
 
   private class SampleAppStateListener implements AppStateListener {

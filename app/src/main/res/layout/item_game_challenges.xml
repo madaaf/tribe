@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_marginEnd="30dp"
+    android:layout_marginStart="30dp"
+    android:gravity="center"
+    >
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@drawable/shape_rect_white_corner"
+      >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:paddingLeft="@dimen/horizontal_margin_small"
+        android:paddingRight="@dimen/horizontal_margin_small"
+        >
+      <include layout="@layout/item_user_base" />
+
+    </FrameLayout>
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnAction2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="65dp"
+        android:layout_weight="1"
+        android:background="@drawable/shape_rect_blue_new_bottom_corner"
+        android:gravity="center"
+        android:text="@string/enjoying_tribe_popup_action2"
+        style="@style/Headline.White.2"
+        />
+  </FrameLayout>
+
+</LinearLayout>

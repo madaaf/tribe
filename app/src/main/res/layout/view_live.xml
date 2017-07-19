@@ -39,4 +39,11 @@
       android:layout_marginTop="19.5dp"
       android:background="@null"
       />
+
+  <com.tribe.app.presentation.view.widget.GameChallengesView
+      android:id="@+id/gameChallengesView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="gone"
+    />
 </merge>
