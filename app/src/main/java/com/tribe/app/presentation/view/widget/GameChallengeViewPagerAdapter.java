@@ -9,6 +9,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import timber.log.Timber;
@@ -21,13 +22,11 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
 
   private Context mContext;
   private LayoutInflater mLayoutInflater;
-  private List<String> items;
-  private List<TribeGuest> guestList;
+  private List<String> items = new ArrayList<>();
+  private List<TribeGuest> guestList = new ArrayList<>();
 
-  public GameChallengeViewPagerAdapter(Context context, GameChallenge gameChallenge) {
+  public GameChallengeViewPagerAdapter(Context context) {
     mContext = context;
-    this.items = gameChallenge.getNameList();
-    this.guestList = gameChallenge.getGuestList();
     Timber.e("SOEF GameChallengeViewPagerAdapter items: "
         + items.size()
         + " guest :"
@@ -35,8 +34,13 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
   }
 
+  public void setGameChallenge(GameChallenge gameChallenge) {
+    this.items = gameChallenge.getNameList();
+    this.guestList = gameChallenge.getGuestList();
+  }
+
   @Override public int getCount() {
-    return 3;
+    return items.size();
   }
 
   @Override public boolean isViewFromObject(View view, Object object) {
@@ -44,24 +48,28 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
-    String ok = "";
+    Timber.e("SOEF GET instantiateItem " + getCount());
+    String challenge = "";
     TribeGuest guest = null;
     if (items != null && !items.isEmpty()) {
-      ok = items.get(position);
-      guest = guestList.get(0);
+      challenge = items.get(position);
+      if (!guestList.isEmpty()) guest = guestList.get(0);
     }
 
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
 
-    TextViewFont txt = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
+    TextViewFont txtChallenge = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     TextViewFont txtUsername = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
 
-    txt.setText(ok);
-    txtName.setText(guest.getDisplayName());
+    txtChallenge.setText(challenge);
+    if (guest != null) {
+      txtName.setText(guest.getDisplayName());
+      viewAvatar.load(guest.getPicture());
+    }
     txtUsername.setText("Your turn to be challenged");
-    viewAvatar.load(guest.getPicture());
+
     container.addView(itemView);
     return itemView;
   }

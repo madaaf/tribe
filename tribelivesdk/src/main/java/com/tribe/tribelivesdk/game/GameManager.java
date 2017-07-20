@@ -1,7 +1,6 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
-import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
@@ -79,9 +78,14 @@ import rx.subscriptions.CompositeSubscription;
   public void setCurrentGame(Game game) {
     this.currentGame = game;
 
-    if (currentGame != null && currentGame instanceof GamePostIt) {
-      GamePostIt gamePostIt = (GamePostIt) game;
-      gamePostIt.generateNewName();
+    if (currentGame != null) {
+      if (currentGame instanceof GamePostIt) {
+        GamePostIt gamePostIt = (GamePostIt) game;
+        gamePostIt.generateNewName();
+      } else if (currentGame instanceof GameChallenge) {
+        GameChallenge gameChallenge = (GameChallenge) game;
+        //gameChallenge.generateNewName();
+      }
     }
   }
 

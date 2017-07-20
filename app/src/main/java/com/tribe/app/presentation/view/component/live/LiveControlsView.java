@@ -280,7 +280,7 @@ public class LiveControlsView extends FrameLayout {
               (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
           return new Pair<>(view, game);
         })
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(AndroidSchedulers.mainThread())//SOEF
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
           gameManager.setCurrentGame(pairViewGame.second);

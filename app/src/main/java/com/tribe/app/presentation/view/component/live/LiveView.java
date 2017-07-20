@@ -466,7 +466,6 @@ public class LiveView extends FrameLayout {
           .subscribe(aLong -> refactorNotifyButton()));
     }));
 
-    //persistentSubscriptions.add(
     viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
@@ -474,10 +473,11 @@ public class LiveView extends FrameLayout {
       restartGame(game);
       switch (game.getId()) {
         case Game.GAME_POST_IT:
+          Timber.e("SOEF onStartGame postit");
           break;
         case Game.GAME_CHALLENGE:
-          Timber.e("SOEF HAME CHAMLENGE");
-          //gameChallengesView.displayView();
+          Timber.e("SOEF onStartGame challenge");
+          //gameChallengesView.
           break;
       }
     }));
@@ -506,6 +506,11 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
       onShouldCloseInvites.onNext(null);
     }));
+  }
+
+  public void setNextChallenge() {
+    Timber.e("soef set next challenge ");
+    gameChallengesView.setNextChallenge();
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
@@ -1540,5 +1545,7 @@ public class LiveView extends FrameLayout {
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
   }
+
+
 }
 

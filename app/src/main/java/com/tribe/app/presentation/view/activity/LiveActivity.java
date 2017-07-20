@@ -733,10 +733,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           case Game.GAME_CHALLENGE:
             GameChallenge gameChallenge = (GameChallenge) game;
             if (!gameChallenge.hasNames()) {
-              Timber.e("SOEF START GAME CHALLENGE");
+              Timber.e("soef load data to launchChallengeGame");
               livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
             } else {
-              launchChallengeGame();
+              Timber.e("soef data already exist launchChallengeGame");
+             // launchChallengeGame();
+              viewLive.setNextChallenge();
             }
             break;
         }
@@ -958,6 +960,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {
+    Timber.e("soef onDataChallengesGame launchChallengeGame " + nameList.size());
     List<String> challengeList = new ArrayList<>();
     challengeList.addAll(nameList);
     dataChallengesGames.set(new HashSet<>());
@@ -966,11 +969,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void launchChallengeGame() {
-    Timber.e("launchChallengeGame");
+
     Game game = gameManager.getCurrentGame();
     List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
     List<String> challengeList = new ArrayList<>();
     challengeList.addAll(dataChallengesGames.get());
+    Timber.e("soef launchChallengeGame " + challengeList.size());
 
     if (game != null && game instanceof GameChallenge) {
       GameChallenge gameChallenge = (GameChallenge) game;

@@ -23,6 +23,13 @@
       style="@style/Caption.Two.White40"
       />
 
+  <com.tribe.app.presentation.view.widget.GameChallengesView
+      android:id="@+id/gameChallengesView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="gone"
+      />
+
   <com.tribe.app.presentation.view.component.live.LiveControlsView
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
@@ -40,10 +47,5 @@
       android:background="@null"
       />
 
-  <com.tribe.app.presentation.view.widget.GameChallengesView
-      android:id="@+id/gameChallengesView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="gone"
-    />
+
 </merge>

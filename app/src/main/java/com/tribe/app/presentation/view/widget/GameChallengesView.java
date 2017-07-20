@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -17,7 +18,6 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.tribelivesdk.game.GameChallenge;
-import com.tribe.tribelivesdk.model.TribeGuest;
 import timber.log.Timber;
 
 /**
@@ -52,35 +52,32 @@ public class GameChallengesView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
+    Timber.e("init GameChallengeViewPagerAdapter");
+    adapter = new GameChallengeViewPagerAdapter(context);
+    viewpager.setAdapter(adapter);
 
+    viewpager.setOnTouchListener((v, event) -> true);
     //viewpager.setPageMargin(12);
-    //
-/*    viewpager.setClipToPadding(false);
-   */
-  }
-
-/*
-  public void displayView() {
-    setVisibility(VISIBLE);
-*/
-/*    Animation anim = AnimationUtils.loadAnimation(context, R.anim.slide_right_to_center);
-    startAnimation(anim);*//*
+    // viewpager.setClipToPadding(false);
 
   }
-*/
+
+  private static int pos = 0;
+
+  public void setNextChallenge() {
+    new Handler().post(() -> {
+      pos++;
+      viewpager.setCurrentItem(pos, true);
+      Timber.e("soef set next challenge " + pos);
+    });
+  }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
+    Timber.e("soef setGameChallenge");
     setVisibility(VISIBLE);
-    for (TribeGuest guest : gameChallenge.getGuestList()) {
-      Timber.e("SOEF guest " + guest.getDisplayName());
-    }
-
-    for (String guest : gameChallenge.getNameList()) {
-      Timber.e("SOEF data " + guest);
-    }
     this.gameChallenge = gameChallenge;
-    adapter = new GameChallengeViewPagerAdapter(context, gameChallenge);
-    viewpager.setAdapter(adapter);
+    adapter.setGameChallenge(gameChallenge);
+    adapter.notifyDataSetChanged();
   }
 
   protected void initDependencyInjector() {
