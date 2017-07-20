@@ -477,7 +477,6 @@ public class LiveView extends FrameLayout {
           break;
         case Game.GAME_CHALLENGE:
           Timber.e("SOEF onStartGame challenge");
-          //gameChallengesView.
           break;
       }
     }));

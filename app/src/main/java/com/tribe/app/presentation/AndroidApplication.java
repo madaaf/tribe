@@ -259,7 +259,7 @@ public class AndroidApplication extends Application {
     filterManager.initFilters(filterList);
   }
 
-  private void initGameManager() {//SOEF
+  private void initGameManager() {//TODO TIAGO if I replace icon_game_challenge with picto_game_post_it it work
     GameManager gameManager = GameManager.getInstance(this);
     gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
         R.drawable.picto_game_post_it));

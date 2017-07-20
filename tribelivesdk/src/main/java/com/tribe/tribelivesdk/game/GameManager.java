@@ -77,14 +77,10 @@ import rx.subscriptions.CompositeSubscription;
 
   public void setCurrentGame(Game game) {
     this.currentGame = game;
-
     if (currentGame != null) {
       if (currentGame instanceof GamePostIt) {
         GamePostIt gamePostIt = (GamePostIt) game;
         gamePostIt.generateNewName();
-      } else if (currentGame instanceof GameChallenge) {
-        GameChallenge gameChallenge = (GameChallenge) game;
-        //gameChallenge.generateNewName();
       }
     }
   }
