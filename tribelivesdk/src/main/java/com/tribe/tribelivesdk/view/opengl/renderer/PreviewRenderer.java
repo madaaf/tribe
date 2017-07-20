@@ -8,6 +8,7 @@ import android.opengl.Matrix;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import com.tribe.tribelivesdk.core.MediaConstraints;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
@@ -45,13 +46,13 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @NonNull private final Handler mainHandler;
   private Context context;
   private PreviewTextureInterface previewTexture;
-  private boolean updateSurface = false, shouldUpdateAllocations = true, shouldSkipFrames = false;
+  private boolean updateSurface = false, openGLContextSet = false;
   private UlseeManager ulseeManager;
   private float[] stMatrix = new float[16];
   private CameraInfo cameraInfo;
   private float surfaceWidth = 1, surfaceHeight = 1;
   private int framesSkipped = 0;
-  public static int widthOut = 480, heightOut = 640;
+  public int widthOut = MediaConstraints.MAX_HEIGHT, heightOut = MediaConstraints.MAX_WIDTH;
   private final RendererCallback rendererCallback;
   private ImageFilter filter;
   private FaceMaskFilter maskFilter;
@@ -89,7 +90,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     subscriptions.add(obs.subscribe(integer -> {
-      shouldUpdateAllocations = true;
     }));
   }
 
@@ -97,9 +97,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     Timber.d("updateCameraInfo FrameRotation : " + cameraInfo.getFrameOrientation());
     this.cameraInfo = cameraInfo;
     computeMatrices();
-    //computeSizeOutput();
+    computeSizeOutput();
 
-    //if (filter != null) filter.updateTextureSize(widthOut, heightOut);
+    byteBuffer = ByteBuffer.allocateDirect(widthOut * heightOut * 4);
+    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+    if (openGLContextSet) updateOES();
 
     if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
@@ -145,9 +148,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     libYuvConverter.releasePBO();
 
     maskRender = null;
+
+    openGLContextSet = false;
   }
 
   @Override public void onSurfaceCreated(final EGLConfig config) {
+    openGLContextSet = true;
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     switchFilter(filterManager.getFilter());
@@ -167,21 +173,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   @Override public void onSurfaceChanged(final int width, final int height) {
-    if (!shouldSkipFrames && !shouldUpdateAllocations) {
-      shouldSkipFrames = true;
-      framesSkipped = 0;
-    }
-
     surfaceWidth = width;
     surfaceHeight = height;
 
-    if (shouldUpdateAllocations) {
-      shouldUpdateAllocations = false;
-      libYuvConverter.initPBO(widthOut, heightOut);
-
-      byteBuffer = ByteBuffer.allocateDirect(widthOut * heightOut * 4);
-      byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    }
+    updateOES();
 
     ulsRenderer.ulsSurfaceChanged(null, width, height);
 
@@ -259,42 +254,36 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       }
 
       synchronized (frameListenerLock) {
-        if ((shouldSkipFrames && framesSkipped < FRAMES_SKIP ||
-            (widthOut * heightOut * 4 != byteBuffer.capacity())) && frame != null) {
-          framesSkipped++;
-          onFrameAvailable.onNext(frame);
-          return;
-        } else {
-          filter.getFbo().bind();
-          //long timeStart = System.nanoTime();
-          byteBuffer.rewind();
-          libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
-          byteBuffer.flip();
-          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
 
-          //long timeEndReadPBO = System.nanoTime();
-          //Timber.d("Total time of read PBO frame "
-          //    + " / "
-          //    + (timeEndReadPBO - timeStart) / 1000000.0f
-          //    + " ms");
-          //Timber.d("WidthOut : " + widthOut + " / height out : " + heightOut);
-          frame =
-              new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
-                  cameraInfo.isFrontFacing());
-          onFrameAvailable.onNext(frame);
+        filter.getFbo().bind();
+        //long timeStart = System.nanoTime();
+        byteBuffer.rewind();
+        libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+        byteBuffer.flip();
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-          //ByteBuffer byteBufferBitmap = ByteBuffer.wrap(byteBuffer.array());
-          //Bitmap bitmap = Bitmap.createBitmap(widthOut, heightOut, Bitmap.Config.ARGB_8888);
-          //bitmap.copyPixelsFromBuffer(byteBufferBitmap);
-          //savePNGImageToGallery(bitmap, context, "tribe_test.jpg");
+        //long timeEndReadPBO = System.nanoTime();
+        //Timber.d("Total time of read PBO frame "
+        //    + " / "
+        //    + (timeEndReadPBO - timeStart) / 1000000.0f
+        //    + " ms");
+        //Timber.d("WidthOut : " + widthOut + " / height out : " + heightOut);
+        frame = new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
+            cameraInfo.isFrontFacing());
+        onFrameAvailable.onNext(frame);
 
-          //long timeEndFrame = System.nanoTime();
-          //Timber.d("Total time of end frame "
-          //    + " / "
-          //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
-          //    + " ms");
-        }
+        //ByteBuffer byteBufferBitmap = ByteBuffer.wrap(byteBuffer.array());
+        //Bitmap bitmap = Bitmap.createBitmap(widthOut, heightOut, Bitmap.Config.ARGB_8888);
+        //bitmap.copyPixelsFromBuffer(byteBufferBitmap);
+        //savePNGImageToGallery(bitmap, context, "tribe_test.jpg");
+
+        //long timeEndFrame = System.nanoTime();
+        //Timber.d("Total time of end frame "
+        //    + " / "
+        //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
+        //    + " ms");
       }
     }
   }
@@ -400,6 +389,15 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     widthOut += (widthOut % 2);
     heightOut += (heightOut % 2);
+    widthOut = MediaConstraints.MAX_HEIGHT;
+    heightOut = MediaConstraints.MAX_WIDTH;
+  }
+
+  private void updateOES() {
+    libYuvConverter.releasePBO();
+    libYuvConverter.initPBO(widthOut, heightOut);
+
+    if (filter != null) filter.updateTextureSize(widthOut, heightOut);
   }
 
   private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {
@@ -453,6 +451,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(), cameraInfo.isFrontFacing());
       maskFilter = (FaceMaskFilter) filterMask;
     }
+
+    //filter.updateTextureSize(widthOut, heightOut);
 
     rendererCallback.requestRender();
   }

@@ -6,9 +6,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import com.google.android.gms.vision.face.Face;
 import com.tribe.tribelivesdk.R;
-import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.util.BitmapUtils;
@@ -43,14 +41,12 @@ public class GamePostIt extends Game {
   private ByteBuffer byteBufferYuv;
   private ByteBuffer[] yuvPlanes;
   private int[] yuvStrides;
-  private VisionAPIManager visionAPIManager;
   private float newFaceWidth, currentPostItScale = SCALE_POST_IT;
 
   public GamePostIt(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
-    visionAPIManager = VisionAPIManager.getInstance(context);
     nameList = new ArrayList<>();
     pointLocal = new PointF();
     pointRemote = new PointF();
@@ -59,10 +55,10 @@ public class GamePostIt extends Game {
   }
 
   private void initSubscriptions() {
-    subscriptions.add(visionAPIManager.onFaceWidthChange().subscribe(faceWidth -> {
-      newFaceWidth = faceWidth;
+    //subscriptions.add(visionAPIManager.onFaceWidthChange().subscribe(faceWidth -> {
+    //  newFaceWidth = faceWidth;
       refactorPostItScales();
-    }));
+    //}));
   }
 
   @Override public void apply(Frame originalFrame) {
@@ -71,55 +67,55 @@ public class GamePostIt extends Game {
 
     pointOG = null;
 
-    if (visionAPIManager.getFace() != null) {
-      pointOG = findXYForPostIt(visionAPIManager.getFace());
-    } else if (!visionAPIManager.isFaceTrackerEnabled()) {
-      pointOG = new PointF(originalFrame.getWidth() >> 1, originalFrame.getHeight() >> 1);
-    }
-
-    if (pointOG != null) {
-      if (visionAPIManager.isFaceTrackerEnabled()) {
-        pointLocal = pointOG;
-        pointLocal = computePointLocal(pointLocal, localFrame, bitmapOGLocalPostIt);
-      } else {
-        pointLocal = rotate(pointLocal, localFrame, originalFrame.getRotation());
-        currentPostItScale = 0.5f;
-      }
-
-      openCVWrapper.addPostIt(localFrame.getData(), localFrame.getWidth(), localFrame.getHeight(),
-          localPostIt, bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(),
-          currentPostItScale, pointLocal.x, pointLocal.y, argbOutLocal);
-
-      if (visionAPIManager.isFaceTrackerEnabled()) {
-        pointRemote = pointOG;
-        pointRemote = computePointRemote(pointRemote, remoteFrame, bitmapOGRemotePostIt);
-      } else {
-        pointRemote = pointOG;
-        currentPostItScale = 0.5f;
-      }
-
-      openCVWrapper.addPostIt(remoteFrame.getData(), remoteFrame.getWidth(),
-          remoteFrame.getHeight(), remotePostIt, bitmapRemotePostIt.getWidth(),
-          bitmapRemotePostIt.getHeight(), currentPostItScale, pointRemote.x, pointRemote.y,
-          argbOutRemote);
-    } else {
-      System.arraycopy(localFrame.getData(), 0, argbOutLocal, 0, localFrame.getData().length);
-      System.arraycopy(remoteFrame.getData(), 0, argbOutRemote, 0, remoteFrame.getData().length);
-    }
-
-    libYuvConverter.ARGBToI420(argbOutLocal, localFrame.getWidth(), localFrame.getHeight(),
-        yuvOutLocal);
-    byteBufferYuv.put(yuvOutLocal);
-    byteBufferYuv.flip();
-
-    onLocalFrame.onNext(
-        new TribeI420Frame(localFrame.getWidth(), localFrame.getHeight(), localFrame.getRotation(),
-            yuvStrides, yuvPlanes));
-
-    libYuvConverter.ARGBToYUV(argbOutRemote, remoteFrame.getWidth(), remoteFrame.getHeight(),
-        yuvOutRemote);
-    remoteFrame.setDataOut(yuvOutRemote);
-    onRemoteFrame.onNext(remoteFrame);
+    //if (visionAPIManager.getFace() != null) {
+    //  pointOG = findXYForPostIt(visionAPIManager.getFace());
+    //} else if (!visionAPIManager.isFaceTrackerEnabled()) {
+    //  pointOG = new PointF(originalFrame.getWidth() >> 1, originalFrame.getHeight() >> 1);
+    //}
+    //
+    //if (pointOG != null) {
+    //  if (visionAPIManager.isFaceTrackerEnabled()) {
+    //    pointLocal = pointOG;
+    //    pointLocal = computePointLocal(pointLocal, localFrame, bitmapOGLocalPostIt);
+    //  } else {
+    //    pointLocal = rotate(pointLocal, localFrame, originalFrame.getRotation());
+    //    currentPostItScale = 0.5f;
+    //  }
+    //
+    //  openCVWrapper.addPostIt(localFrame.getData(), localFrame.getWidth(), localFrame.getHeight(),
+    //      localPostIt, bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight(),
+    //      currentPostItScale, pointLocal.x, pointLocal.y, argbOutLocal);
+    //
+    //  if (visionAPIManager.isFaceTrackerEnabled()) {
+    //    pointRemote = pointOG;
+    //    pointRemote = computePointRemote(pointRemote, remoteFrame, bitmapOGRemotePostIt);
+    //  } else {
+    //    pointRemote = pointOG;
+    //    currentPostItScale = 0.5f;
+    //  }
+    //
+    //  openCVWrapper.addPostIt(remoteFrame.getData(), remoteFrame.getWidth(),
+    //      remoteFrame.getHeight(), remotePostIt, bitmapRemotePostIt.getWidth(),
+    //      bitmapRemotePostIt.getHeight(), currentPostItScale, pointRemote.x, pointRemote.y,
+    //      argbOutRemote);
+    //} else {
+    //  System.arraycopy(localFrame.getData(), 0, argbOutLocal, 0, localFrame.getData().length);
+    //  System.arraycopy(remoteFrame.getData(), 0, argbOutRemote, 0, remoteFrame.getData().length);
+    //}
+    //
+    //libYuvConverter.ARGBToI420(argbOutLocal, localFrame.getWidth(), localFrame.getHeight(),
+    //    yuvOutLocal);
+    //byteBufferYuv.put(yuvOutLocal);
+    //byteBufferYuv.flip();
+    //
+    //onLocalFrame.onNext(
+    //    new TribeI420Frame(localFrame.getWidth(), localFrame.getHeight(), localFrame.getRotation(),
+    //        yuvStrides, yuvPlanes));
+    //
+    //libYuvConverter.ARGBToYUV(argbOutRemote, remoteFrame.getWidth(), remoteFrame.getHeight(),
+    //    yuvOutRemote);
+    //remoteFrame.setDataOut(yuvOutRemote);
+    //onRemoteFrame.onNext(remoteFrame);
   }
 
   @Override public void onFrameSizeChange(Frame frame) {
@@ -174,17 +170,17 @@ public class GamePostIt extends Game {
         bitmapRemotePostIt.getWidth(), bitmapRemotePostIt.getHeight());
   }
 
-  public PointF findXYForPostIt(Face face) {
-    PointF leftEye = visionAPIManager.getLeftEye();
-    PointF rightEye = visionAPIManager.getRightEye();
-
-    if (leftEye != null && rightEye != null) {
-      return new PointF((leftEye.x + rightEye.x) / 2, (leftEye.y + rightEye.y) / 2);
-    }
-
-    return new PointF(face.getPosition().x + face.getWidth() / 2,
-        face.getPosition().y + face.getHeight() / 2);
-  }
+  //public PointF findXYForPostIt(Face face) {
+  //  PointF leftEye = visionAPIManager.getLeftEye();
+  //  PointF rightEye = visionAPIManager.getRightEye();
+  //
+  //  if (leftEye != null && rightEye != null) {
+  //    return new PointF((leftEye.x + rightEye.x) / 2, (leftEye.y + rightEye.y) / 2);
+  //  }
+  //
+  //  return new PointF(face.getPosition().x + face.getWidth() / 2,
+  //      face.getPosition().y + face.getHeight() / 2);
+  //}
 
   private PointF computePointLocal(PointF pointF, Frame frame, Bitmap bitmapOverlay) {
     pointF = rotate(pointF, frame, frame.getRotation());

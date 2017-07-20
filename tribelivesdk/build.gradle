@@ -79,7 +79,6 @@ dependencies {
   compile presentationDependencies.webSocket
   compile presentationDependencies.timber
   compile presentationDependencies.guava
-  compile presentationDependencies.googleVision
 
   compile presentationDependencies.butterKnife
   apt presentationDependencies.butterKnifeCompiler

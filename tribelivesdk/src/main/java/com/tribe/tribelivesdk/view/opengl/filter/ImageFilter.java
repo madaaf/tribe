@@ -56,7 +56,7 @@ public class ImageFilter extends FilterMask {
 
   private int textureTarget = -1;
   protected FrameBufferObject fbo;
-  protected int texCache = 0, cacheTexWidth, cacheTexHeight, textureWidth, textureHeight;
+  protected int texCache = 0, cacheTexWidth, cacheTexHeight, textureWidth = 480, textureHeight = 480;
 
   protected static final String DEFAULT_VERTEX_SHADER = "varying vec2 interp_tc;\n" +
       "attribute vec4 " +
@@ -143,6 +143,7 @@ public class ImageFilter extends FilterMask {
   public void updateTextureSize(int textureWidth, int textureHeight) {
     this.textureWidth = textureWidth;
     this.textureHeight = textureHeight;
+    release();
   }
 
   protected static String createTargetShader(@NonNull String shader, final int texTarget) {
@@ -218,9 +219,6 @@ public class ImageFilter extends FilterMask {
     }
 
     if (fbo == null) fbo = new FrameBufferObject();
-
-    textureWidth = PreviewRenderer.widthOut;
-    textureHeight = PreviewRenderer.heightOut;
 
     //Timber.d("Id : " +
     //        getId() +
