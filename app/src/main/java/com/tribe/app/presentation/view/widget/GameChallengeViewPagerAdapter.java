@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -62,6 +63,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     TextViewFont txtUsername = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
+
 
     txtChallenge.setText(challenge);
     if (guest != null) {

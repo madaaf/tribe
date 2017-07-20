@@ -26,8 +26,6 @@ import timber.log.Timber;
 
 public class GameChallengesView extends FrameLayout {
 
-  private static final int NUM_PAGES = 5;
-
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;

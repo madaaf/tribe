@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
@@ -21,7 +22,68 @@
         android:paddingLeft="@dimen/horizontal_margin_small"
         android:paddingRight="@dimen/horizontal_margin_small"
         >
-      <include layout="@layout/item_user_base" />
+
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+          android:id="@+id/viewAvatar"
+          android:layout_width="@dimen/avatar_size_small"
+          android:layout_height="@dimen/avatar_size_small"
+          android:layout_gravity="left|center_vertical"
+          android:background="@null"
+          android:scaleType="centerCrop"
+          app:hasHole="true"
+          app:hasInd="true"
+          app:hasShadow="false"
+          />
+
+      <RelativeLayout
+          android:id="@+id/layoutInfos"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginStart="@dimen/avatar_size_small_margin_start"
+          android:gravity="center_vertical"
+          >
+
+        <LinearLayout
+            android:id="@+id/layoutName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+          <RelativeLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:minHeight="25dp"
+              android:orientation="horizontal"
+              >
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:lines="1"
+                android:singleLine="true"
+                style="@style/Title.2.Black"
+                />
+
+
+          </RelativeLayout>
+        </LinearLayout>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutName"
+            android:singleLine="true"
+            style="@style/Headline.Black.1.2"
+            />
+
+
+      </RelativeLayout>
 
     </FrameLayout>
 
