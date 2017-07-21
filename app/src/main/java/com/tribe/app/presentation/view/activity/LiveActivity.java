@@ -443,7 +443,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         finish();
       }
     }));
-    //livePresenter.fbidUpdated(); SOEF
+    //livePresenter.fbidUpdated();
   }
 
   private void initCallRouletteService() {
@@ -627,15 +627,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           userUnder13List.remove(s);
           if (userUnder13List.isEmpty()) {
             //viewLive.getUsersInLiveRoom().getPeopleInRoom();
-            Timber.e("SOEF unlockedRollTheDice received " + s);//MADA SOEF
             livePresenter.roomAcceptRandom(live.getSessionId());
             diceView.setVisibility(VISIBLE);
             diceView.startDiceAnimation();
-          } else {
-            Timber.e("SOEF USER UNDER 13 LIST NOT EMPTY " + s);//MADA SOEF
-            for (String ok : userUnder13List) {
-              Timber.e("SOEF " + ok);
-            }
           }
         }));
 
