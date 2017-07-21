@@ -27,6 +27,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.CallLevelHelper;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -63,6 +64,7 @@ import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +74,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -160,6 +163,8 @@ public class LiveView extends FrameLayout {
   private Unbinder unbinder;
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
+  private Subscription callDurationSubscription;
+
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<String> onBuzzPopup = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
@@ -259,6 +264,8 @@ public class LiveView extends FrameLayout {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
+
+      endCallLevel();
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
       tagMap.put(TagManagerUtils.SOURCE, live.getSource());
@@ -613,6 +620,7 @@ public class LiveView extends FrameLayout {
 
           refactorShareOverlay();
           refactorNotifyButton();
+          startCallLevel();
 
           LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
           if (row != null) row.guestAppear();
@@ -631,6 +639,10 @@ public class LiveView extends FrameLayout {
 
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
+
+          if (nbOtherUsersInRoom() == 0) {
+            endCallLevel();
+          }
 
           if (shouldLeave()) {
             onLeave.onNext(null);
@@ -696,6 +708,36 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
     room.connect(options);
+  }
+
+  private void startCallLevel() {
+
+    if (callDurationSubscription == null) {
+
+      Date startedAt = new Date();
+
+      callDurationSubscription = Observable
+              .interval(1, TimeUnit.SECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(tick -> {
+
+                String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
+                String duration = CallLevelHelper.getFormattedDuration(startedAt);
+
+                viewStatusName.setStatusText(level, " " + duration);
+              });
+
+      tempSubscriptions.add(callDurationSubscription);
+    }
+  }
+
+  private void endCallLevel() {
+
+    if (callDurationSubscription != null) {
+      tempSubscriptions.remove(callDurationSubscription);
+      callDurationSubscription.unsubscribe();
+      callDurationSubscription = null;
+    }
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {
@@ -913,6 +955,10 @@ public class LiveView extends FrameLayout {
     count += liveInviteMap.getMap().size();
 
     return count + 1;
+  }
+
+  public int nbOtherUsersInRoom() {
+    return liveRowViewMap.getMap().size();
   }
 
   public void setOpenInviteValue(float valueOpenInvite) {

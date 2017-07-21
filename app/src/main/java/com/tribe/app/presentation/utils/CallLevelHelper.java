@@ -21,7 +21,7 @@ public class CallLevelHelper {
         return (int)((new Date().getTime() - startedAt.getTime()) / 1000);
     }
 
-    static String getCurrentLevel(Context context, Date startedAt) {
+    public static String getCurrentLevel(Context context, Date startedAt) {
 
         int timeElapsed = getTimeElapsed(startedAt);
         int resource = 0;
@@ -37,13 +37,13 @@ public class CallLevelHelper {
         return EmojiParser.demojizedText(context.getString(resource));
     }
 
-    static String getFormattedDuration(Date startedAt) {
+    public static String getFormattedDuration(Date startedAt) {
 
         int timeElapsed = getTimeElapsed(startedAt);
 
-        int hours   = timeElapsed / 60;
-        int minutes = timeElapsed % 60;
+        int minutes = timeElapsed / 60;
+        int seconds = timeElapsed % 60;
 
-        return (hours > 9 ? "" : "0" + hours) + ":" + (minutes > 9 ? "" : "0" + minutes);
+        return (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds);
     }
 }
