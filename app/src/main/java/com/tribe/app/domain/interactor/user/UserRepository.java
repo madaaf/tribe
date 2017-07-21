@@ -19,6 +19,8 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
+import java.util.Set;
+
 import rx.Observable;
 
 /**
@@ -97,7 +99,7 @@ public interface UserRepository {
 
   Observable<List<Contact>> contactsInvite();
 
-  Observable<List<Object>> searchLocally(String s);
+  Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos

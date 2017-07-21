@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -207,7 +209,7 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s) {
+  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
     return Observable.combineLatest(userDataStore.userInfos(null)
@@ -236,22 +238,23 @@ import rx.Observable;
           }
 
           for (Contact contact : contactOnAppList) {
-            compute(mapUsersAdded, contact, result);
+            compute(mapUsersAdded, includedUserIds, contact, result);
           }
 
           for (Contact contact : contactInviteList) {
-            compute(mapUsersAdded, contact, result);
+            compute(mapUsersAdded, includedUserIds, contact, result);
           }
 
           return result;
         });
   }
 
-  private void compute(Map<String, User> mapUsersAdded, Contact contact, List<Object> result) {
+  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds, Contact contact, List<Object> result) {
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId())) {
+        if (mapUsersAdded.containsKey(userInList.getId()) &&
+                (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }

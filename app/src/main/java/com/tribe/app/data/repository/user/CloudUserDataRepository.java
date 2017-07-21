@@ -27,6 +27,8 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -135,7 +137,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s) {
+  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     return null;
   }
 
