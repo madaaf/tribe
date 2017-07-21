@@ -273,7 +273,7 @@ public class LiveControlsView extends FrameLayout {
     recyclerViewGames.getRecycledViewPool().setMaxRecycledViews(0, 50);
 
     recyclerViewGames.setTranslationY(screenUtils.getHeightPx() >> 1);
-
+    //SOEF FIRST CLICK
     subscriptions.add(gamesAdapter.onClick()
         .map(view -> {
           Game game =

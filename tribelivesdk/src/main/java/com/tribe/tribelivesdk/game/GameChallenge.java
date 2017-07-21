@@ -15,6 +15,8 @@ public class GameChallenge extends Game {
   private List<String> nameList;
   private List<TribeGuest> guestList;
   private String currentPostItName = "";
+  private String peerId;
+  private String currentChallenge;
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -34,6 +36,22 @@ public class GameChallenge extends Game {
     if (nameList == null || nameList.size() == 0) return;
     currentPostItName = nameList.get(new Random().nextInt(nameList.size()));
   }*/
+
+  public String getCurrentChallenge() {
+    return currentChallenge;
+  }
+
+  public void setCurrentChallenge(String currentChallenge) {
+    this.currentChallenge = currentChallenge;
+  }
+
+  public String getPeerId() {
+    return peerId;
+  }
+
+  public void setPeerId(String peerId) {
+    this.peerId = peerId;
+  }
 
   public void setNameList(List<String> nameList) {
     this.nameList.addAll(nameList);

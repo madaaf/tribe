@@ -149,7 +149,7 @@ public class LiveView extends FrameLayout {
       hasShared = false;
   private View view;
   private List<User> anonymousInLive = new ArrayList<>();
-  private boolean isFirstToJoin = true;
+  private boolean isFirstToJoin = true, isChallengeGameActivated = false;
   private double duration;
   private GameManager gameManager;
   private String fbId;
@@ -471,14 +471,21 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
       displayStartGameNotification(game.getName(), user.getDisplayName());
       restartGame(game);
+
       switch (game.getId()) {
         case Game.GAME_POST_IT:
           Timber.e("SOEF onStartGame postit");
           break;
         case Game.GAME_CHALLENGE:
+          isChallengeGameActivated = true;
           Timber.e("SOEF onStartGame challenge");
           break;
       }
+    }));
+
+    persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
+      resterChallengeGame(gameChallenge.getName(), gameChallenge.getPeerId(),
+          gameChallenge.getCurrentChallenge());
     }));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
@@ -594,8 +601,11 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
+    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> { //SOEF STOP
       Game game = gameManager.getGameById(pairSessionGame.second);
+      if(game.getId().equals(Game.GAME_CHALLENGE)){
+        isChallengeGameActivated = false;
+      }
       if (game != null) {
         String displayName = getDisplayNameFromSession(pairSessionGame.first);
         displayStopGameNotification(game.getName(), displayName);
@@ -1139,6 +1149,17 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
+  public JSONObject getNewChallengePayload(String userId, String peerId, String challengeMessage) {
+    JSONObject obj = new JSONObject();
+    JSONObject challenge = new JSONObject();
+    jsonPut(challenge, "from", userId);
+    jsonPut(challenge, Game.ACTION, Game.NEW_CHALLENGE);
+    jsonPut(challenge, "user", peerId);
+    jsonPut(challenge, Game.CHALLENGE, challengeMessage);
+    jsonPut(obj, Game.GAME_CHALLENGE, challenge);
+    return obj;
+  }
+
   public JSONObject getStopGamePayload(Game game) {
     JSONObject obj = new JSONObject();
     JSONObject gameStop = new JSONObject();
@@ -1388,6 +1409,10 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getNewGamePayload(game), false);
   }
 
+  private void resterChallengeGame(String userId, String peerId, String challenge) {
+    room.sendToPeers(getNewChallengePayload(userId, peerId, challenge), false);
+  }
+
   private void stopGame(boolean isCurrentUserAction) {
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
@@ -1544,7 +1569,5 @@ public class LiveView extends FrameLayout {
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
   }
-
-
 }
 

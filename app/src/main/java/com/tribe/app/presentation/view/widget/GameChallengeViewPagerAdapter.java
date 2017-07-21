@@ -6,13 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.R;
-import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -25,9 +27,13 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private LayoutInflater mLayoutInflater;
   private List<String> items = new ArrayList<>();
   private List<TribeGuest> guestList = new ArrayList<>();
+  private GameChallenge gameChallenge;
+  private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
+  private User user;
 
-  public GameChallengeViewPagerAdapter(Context context) {
+  public GameChallengeViewPagerAdapter(Context context, User user) {
     mContext = context;
+    this.user = user;
     Timber.e("SOEF GameChallengeViewPagerAdapter items: "
         + items.size()
         + " guest :"
@@ -36,6 +42,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
+    this.gameChallenge = gameChallenge;
     this.items = gameChallenge.getNameList();
     this.guestList = gameChallenge.getGuestList();
   }
@@ -64,6 +71,12 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     TextViewFont txtUsername = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
 
+    Timber.e("SOEF message challenge " + challenge);
+    gameChallenge.setCurrentChallenge(challenge);
+    gameChallenge.setPeerId(guest.getId());
+    gameChallenge.setName("message send by  : " + user.getDisplayName() + " " + user.getId());
+
+    onNextChallenge.onNext(gameChallenge);
 
     txtChallenge.setText(challenge);
     if (guest != null) {
@@ -83,5 +96,9 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private static int getRandom(int[] array) {
     int rnd = new Random().nextInt(array.length);
     return array[rnd];
+  }
+
+  public Observable<GameChallenge> onNextChallenge() {
+    return onNextChallenge;
   }
 }

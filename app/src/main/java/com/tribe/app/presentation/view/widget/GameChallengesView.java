@@ -13,11 +13,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.tribelivesdk.game.GameChallenge;
+import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -26,6 +31,8 @@ import timber.log.Timber;
 
 public class GameChallengesView extends FrameLayout {
 
+  @Inject User user;
+
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
@@ -33,6 +40,9 @@ public class GameChallengesView extends FrameLayout {
   private GameChallenge gameChallenge;
 
   @BindView(R.id.pager) ViewPager viewpager;
+
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
@@ -51,10 +61,12 @@ public class GameChallengesView extends FrameLayout {
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
     Timber.e("init GameChallengeViewPagerAdapter");
-    adapter = new GameChallengeViewPagerAdapter(context);
+    adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
     viewpager.setOnTouchListener((v, event) -> true);
+
+    subscriptions.add(adapter.onNextChallenge().subscribe(onNextChallenge));
     //viewpager.setPageMargin(12);
     // viewpager.setClipToPadding(false);
 
@@ -92,5 +104,9 @@ public class GameChallengesView extends FrameLayout {
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) getContext()));
+  }
+
+  public Observable<GameChallenge> onNextChallenge() {
+    return onNextChallenge;
   }
 }
