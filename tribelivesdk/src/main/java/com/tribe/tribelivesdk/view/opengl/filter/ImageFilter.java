@@ -10,7 +10,6 @@ import android.support.annotation.StringRes;
 import com.tribe.tribelivesdk.view.opengl.gles.OpenGLES;
 import com.tribe.tribelivesdk.view.opengl.gles.Texture;
 import com.tribe.tribelivesdk.view.opengl.renderer.FrameBufferObject;
-import com.tribe.tribelivesdk.view.opengl.renderer.PreviewRenderer;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import java.util.HashMap;
 import timber.log.Timber;
@@ -56,7 +55,7 @@ public class ImageFilter extends FilterMask {
 
   private int textureTarget = -1;
   protected FrameBufferObject fbo;
-  protected int texCache = 0, cacheTexWidth, cacheTexHeight, textureWidth = 480, textureHeight = 480;
+  protected int texCache = 0, cacheTexWidth, cacheTexHeight, textureWidth = 0, textureHeight = 0;
 
   protected static final String DEFAULT_VERTEX_SHADER = "varying vec2 interp_tc;\n" +
       "attribute vec4 " +
@@ -141,6 +140,7 @@ public class ImageFilter extends FilterMask {
   }
 
   public void updateTextureSize(int textureWidth, int textureHeight) {
+    if (this.textureHeight == textureHeight && this.textureWidth == textureWidth) return;
     this.textureWidth = textureWidth;
     this.textureHeight = textureHeight;
     release();
@@ -190,6 +190,7 @@ public class ImageFilter extends FilterMask {
     vertexBufferName = 0;
 
     textureTarget = -1;
+    texCache = 0;
     cacheTexWidth = 0;
     cacheTexHeight = 0;
 
@@ -213,6 +214,8 @@ public class ImageFilter extends FilterMask {
   public synchronized void draw(@NonNull Texture texture, final float[] texMatrix,
       final float[] texMatrixFBO, int viewportX, int viewportY, int viewportWidth,
       int viewportHeight) {
+
+    if (textureWidth == 0 || textureHeight == 0) return;
 
     if (textureTarget != texture.getTextureTarget()) {
       setup(texture.getTextureTarget());

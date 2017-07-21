@@ -52,7 +52,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private CameraInfo cameraInfo;
   private float surfaceWidth = 1, surfaceHeight = 1;
   private int framesSkipped = 0;
-  public int widthOut = MediaConstraints.MAX_HEIGHT, heightOut = MediaConstraints.MAX_WIDTH;
+  public int widthOut = MediaConstraints.MAX_HEIGHT, heightOut = MediaConstraints.MAX_WIDTH,
+      previousWidthOut = 0, previousHeightOut = 0;
   private final RendererCallback rendererCallback;
   private ImageFilter filter;
   private FaceMaskFilter maskFilter;
@@ -94,15 +95,20 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
-    Timber.d("updateCameraInfo FrameRotation : " + cameraInfo.getFrameOrientation());
     this.cameraInfo = cameraInfo;
     computeMatrices();
     computeSizeOutput();
 
-    byteBuffer = ByteBuffer.allocateDirect(widthOut * heightOut * 4);
-    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    if (previousWidthOut != widthOut || previousHeightOut != heightOut) {
+      Timber.d("Change of size : %d / %d", widthOut, heightOut);
+      byteBuffer = ByteBuffer.allocateDirect(widthOut * heightOut * 4);
+      byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-    if (openGLContextSet) updateOES();
+      if (openGLContextSet) updateOES();
+
+      previousWidthOut = widthOut;
+      previousHeightOut = heightOut;
+    }
 
     if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
@@ -153,7 +159,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   @Override public void onSurfaceCreated(final EGLConfig config) {
-    openGLContextSet = true;
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     switchFilter(filterManager.getFilter());
@@ -176,7 +181,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     surfaceWidth = width;
     surfaceHeight = height;
 
-    updateOES();
+    if (previousWidthOut != widthOut || previousHeightOut != heightOut || !openGLContextSet) {
+      openGLContextSet = true;
+      updateOES();
+    }
 
     ulsRenderer.ulsSurfaceChanged(null, width, height);
 
@@ -367,7 +375,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   private void computeSizeOutput() {
     int maxWidth = cameraInfo.getCaptureFormat().width;
-    int maxHeight = cameraInfo.getCaptureFormat().width;
+    int maxHeight = cameraInfo.getCaptureFormat().height;
 
     if (maxWidth > 0 && maxWidth > 0) {
       int width = (int) surfaceWidth;
@@ -389,8 +397,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     widthOut += (widthOut % 2);
     heightOut += (heightOut % 2);
-    widthOut = MediaConstraints.MAX_HEIGHT;
-    heightOut = MediaConstraints.MAX_WIDTH;
   }
 
   private void updateOES() {
@@ -452,7 +458,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       maskFilter = (FaceMaskFilter) filterMask;
     }
 
-    //filter.updateTextureSize(widthOut, heightOut);
+    filter.updateTextureSize(widthOut, heightOut);
 
     rendererCallback.requestRender();
   }
