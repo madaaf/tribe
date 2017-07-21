@@ -153,6 +153,11 @@ import rx.Observable;
     return null;
   }
 
+  @Override
+  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+    return null;
+  }
+
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
     return null;
   }

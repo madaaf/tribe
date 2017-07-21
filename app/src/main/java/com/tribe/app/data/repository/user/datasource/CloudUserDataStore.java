@@ -49,6 +49,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -313,6 +314,12 @@ public class CloudUserDataStore implements UserDataStore {
 
       return tribeApi.updateUserMedia(query, body).doOnNext(saveToCacheUpdateUser);
     }
+  }
+
+  @Override
+  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+    return this.tribeApi.incrUserTimeInCall(
+            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall)));
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {

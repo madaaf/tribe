@@ -170,6 +170,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Long> onEndCall = PublishSubject.create();
   private PublishSubject<Void> onLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
@@ -242,12 +243,14 @@ public class LiveView extends FrameLayout {
 
     if (live != null) {
       duration = 0.0D;
+      Long durationInSeconds = 0L;
 
       if (timeStart > 0) {
         timeEnd = System.currentTimeMillis();
         long delta = timeEnd - timeStart;
         duration = (double) delta / 60000.0;
         duration = DoubleUtils.round(duration, 2);
+        durationInSeconds = delta / 1000L;
       }
 
       if (hasJoined && averageCountLive > 1) {
@@ -258,6 +261,9 @@ public class LiveView extends FrameLayout {
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
+
+        onEndCall.onNext(durationInSeconds);
+
       } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) || (
           live.getId().equals(Live.NEW_CALL)
               && (invitedCount > 0 || hasShared))) {
@@ -1552,6 +1558,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShare() {
     return onShare;
+  }
+
+  public Observable<Long> onEndCall() {
+    return onEndCall;
   }
 
   public Observable<Void> onChangeCallRouletteRoom() {

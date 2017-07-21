@@ -89,6 +89,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
+  @Override
+  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+    return null;
+  }
+
   @Override public Observable<List<ContactInterface>> contacts() {
     return contactCache.contacts().map(contactABRealms -> new ArrayList<>(contactABRealms));
   }

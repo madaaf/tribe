@@ -1,7 +1,10 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+
 import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.data.exception.RoomFullException;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
@@ -18,15 +21,20 @@ import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.GetRoomLink;
+import com.tribe.app.domain.interactor.user.IncrUserTimeInCall;
 import com.tribe.app.domain.interactor.user.InviteUserToRoom;
 import com.tribe.app.domain.interactor.user.JoinRoom;
 import com.tribe.app.domain.interactor.user.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.user.ReportUser;
 import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
+import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.view.utils.DoubleUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import timber.log.Timber;
@@ -52,6 +60,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private RandomRoomAssigned randomRoomAssigned;
   private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
+  private IncrUserTimeInCall incrUserTimeInCall;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -61,12 +70,12 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
-      BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite, CreateFriendship createFriendship,
-      GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
-      BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
-      RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated) {
+                               BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
+                               GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
+                               DeclineInvite declineInvite, CreateFriendship createFriendship,
+                               GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
+                               BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
+                               RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, IncrUserTimeInCall incrUserTimeInCall, FbIdUpdated fbIdUpdated) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -82,6 +91,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.roomAcceptRandom = roomAcceptRandom;
     this.randomRoomAssigned = randomRoomAssigned;
     this.reportUser = reportUser;
+    this.incrUserTimeInCall = incrUserTimeInCall;
     this.fbIdUpdated = fbIdUpdated;
   }
 
@@ -101,6 +111,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     roomAcceptRandom.unsubscribe();
     randomRoomAssigned.unsubscribe();
     reportUser.unsubscribe();
+    incrUserTimeInCall.unsubscribe();
     fbIdUpdated.unsubscribe();
     liveMVPView = null;
   }
@@ -227,6 +238,14 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   public void declineInvite(String roomId) {
     declineInvite.prepare(roomId);
     declineInvite.execute(new DefaultSubscriber());
+  }
+
+  public void incrementTimeInCall(Long timeInCall) {
+
+    if (timeInCall != null) {
+      incrUserTimeInCall.prepare(timeInCall);
+      incrUserTimeInCall.execute(new DefaultSubscriber());
+    }
   }
 
   private final class GetRoomLinkSubscriber extends DefaultSubscriber<String> {

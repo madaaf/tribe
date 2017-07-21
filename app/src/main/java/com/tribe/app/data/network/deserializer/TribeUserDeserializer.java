@@ -62,6 +62,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         result.get("username") != null && !result.get("username").isJsonNull() ? result.get(
             "username").getAsString() : null);
     userRealm.setDisplayName(result.get("display_name").getAsString());
+    userRealm.setTimeInCall(result.get("time_in_call").getAsLong());
     userRealm.setProfilePicture(
         result.get("picture") != null && !result.get("picture").isJsonNull() ? result.get("picture")
             .getAsString() : null);

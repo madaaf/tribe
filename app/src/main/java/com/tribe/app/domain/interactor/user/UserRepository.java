@@ -81,6 +81,8 @@ public interface UserRepository {
    */
   Observable<User> updateUser(List<Pair<String, String>> values);
 
+  Observable<Void> incrUserTimeInCall(Long timeInCall);
+
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
    * about the contacts from the AddressBook.

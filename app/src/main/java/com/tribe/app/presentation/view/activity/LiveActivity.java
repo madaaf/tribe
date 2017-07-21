@@ -663,6 +663,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
+    subscriptions.add(viewLive.onEndCall()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(duration -> {
+              livePresenter.incrementTimeInCall(duration);
+            }));
+
     subscriptions.add(notificationContainerView.onFacebookSuccess()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())

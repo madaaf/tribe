@@ -118,6 +118,12 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
+  @Override
+  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.incrUserTimeInCall(timeInCall);
+  }
+
   @Override public Observable<List<Contact>> contacts() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.contacts()

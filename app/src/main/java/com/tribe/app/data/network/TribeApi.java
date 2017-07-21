@@ -43,6 +43,8 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Installation> removeInstall(
       @Field("query") String query);
 
+  @FormUrlEncoded @POST("/graphql") Observable<Void> incrUserTimeInCall(@Field("query") String query);
+
   @FormUrlEncoded @POST("/graphql") Observable<UserRealm> updateUser(@Field("query") String query);
 
   @Multipart @POST("/graphql") Observable<UserRealm> updateUserMedia(

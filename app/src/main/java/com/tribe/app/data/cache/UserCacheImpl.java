@@ -72,6 +72,7 @@ public class UserCacheImpl implements UserCache {
     if (!StringUtils.isEmpty(from.getUsername())) to.setUsername(from.getUsername());
     if (!StringUtils.isEmpty(from.getPhone())) to.setPhone(from.getPhone());
     if (!StringUtils.isEmpty(from.getDisplayName())) to.setDisplayName(from.getDisplayName());
+    if (from.getTimeInCall() > 0) to.setTimeInCall(from.getTimeInCall());
     if (!StringUtils.isEmpty(from.getProfilePicture())) {
       to.setProfilePicture(from.getProfilePicture());
     }
