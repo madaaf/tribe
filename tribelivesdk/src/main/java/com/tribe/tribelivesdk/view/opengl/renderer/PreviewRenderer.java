@@ -374,29 +374,31 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void computeSizeOutput() {
-    int maxWidth = cameraInfo.getCaptureFormat().width;
-    int maxHeight = cameraInfo.getCaptureFormat().height;
+    //int maxWidth = cameraInfo.rotatedWidth();
+    //int maxHeight = cameraInfo.rotatedHeight();
 
-    if (maxWidth > 0 && maxWidth > 0) {
-      int width = (int) surfaceWidth;
-      int height = (int) surfaceHeight;
-      float ratioBitmap = (float) width / (float) height;
-      float ratioMax = (float) maxWidth / (float) maxHeight;
-
-      widthOut = maxWidth;
-      heightOut = maxHeight;
-      if (ratioMax > 1) {
-        widthOut = (int) ((float) maxHeight * ratioBitmap);
-      } else {
-        heightOut = (int) ((float) maxWidth / ratioBitmap);
-      }
-    } else {
-      widthOut = (int) surfaceWidth;
-      heightOut = (int) surfaceHeight;
-    }
-
-    widthOut += (widthOut % 2);
-    heightOut += (heightOut % 2);
+    //if (maxWidth > 0 && maxWidth > 0) {
+    //  int width = (int) surfaceWidth;
+    //  int height = (int) surfaceHeight;
+    //  float ratioBitmap = (float) width / (float) height;
+    //  float ratioMax = (float) maxWidth / (float) maxHeight;
+    //
+    //  widthOut = maxWidth;
+    //  heightOut = maxHeight;
+    //  if (ratioMax > 1) {
+    //    widthOut = (int) ((float) maxHeight * ratioBitmap);
+    //  } else {
+    //    heightOut = (int) ((float) maxWidth / ratioBitmap);
+    //  }
+    //} else {
+    //  widthOut = (int) surfaceWidth;
+    //  heightOut = (int) surfaceHeight;
+    //}
+    //
+    widthOut = cameraInfo.rotatedWidth();
+    heightOut = cameraInfo.rotatedHeight();
+    //widthOut += (widthOut % 2);
+    //heightOut += (heightOut % 2);
   }
 
   private void updateOES() {
@@ -454,7 +456,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       filter = filterManager.getBaseFilter();
 
       FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
-      faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(), cameraInfo.isFrontFacing());
+      faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
+          cameraInfo == null || cameraInfo.isFrontFacing());
       maskFilter = (FaceMaskFilter) filterMask;
     }
 

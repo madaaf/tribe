@@ -71,6 +71,7 @@ public class GlLocalView extends FrameLayout {
   }
 
   public void dispose() {
+    subscriptions.clear();
     glCameraPreview.dispose();
     glCameraPreview = null;
   }
