@@ -240,10 +240,10 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     declineInvite.execute(new DefaultSubscriber());
   }
 
-  public void incrementTimeInCall(Long timeInCall) {
+  public void incrementTimeInCall(String userId, Long timeInCall) {
 
     if (timeInCall != null) {
-      incrUserTimeInCall.prepare(timeInCall);
+      incrUserTimeInCall.prepare(userId, timeInCall);
       incrUserTimeInCall.execute(new DefaultSubscriber());
     }
   }

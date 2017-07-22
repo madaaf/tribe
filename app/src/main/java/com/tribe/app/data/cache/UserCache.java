@@ -23,6 +23,8 @@ import rx.Observable;
 
   void updateCurrentUser(UserRealm userRealm);
 
+  void incrUserTimeInCall(String userId, Long timeInCall);
+
   void put(AccessToken accessToken);
 
   void put(Installation installation);

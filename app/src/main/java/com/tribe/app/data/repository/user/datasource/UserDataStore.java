@@ -80,7 +80,7 @@ public interface UserDataStore {
    */
   Observable<UserRealm> updateUser(List<Pair<String, String>> values);
 
-  Observable<Void> incrUserTimeInCall(Long timeInCall);
+  Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
 
   /**
    * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos

@@ -154,7 +154,7 @@ import rx.Observable;
   }
 
   @Override
-  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return null;
   }
 

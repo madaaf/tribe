@@ -667,7 +667,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(duration -> {
-              livePresenter.incrementTimeInCall(duration);
+              livePresenter.incrementTimeInCall(user.getId(), duration);
             }));
 
     subscriptions.add(notificationContainerView.onFacebookSuccess()

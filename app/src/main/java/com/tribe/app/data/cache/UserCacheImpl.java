@@ -68,6 +68,20 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
+  @Override
+  public void incrUserTimeInCall(String userId, Long timeInCall) {
+    Realm obsRealm = Realm.getDefaultInstance();
+
+    try {
+      obsRealm.executeTransaction(realm1 -> {
+        UserRealm currentUser = realm1.where(UserRealm.class).equalTo("id", userId).findFirst();
+        currentUser.setTimeInCall(currentUser.getTimeInCall() + timeInCall);
+      });
+    } finally {
+      obsRealm.close();
+    }
+  }
+
   private void updateUser(UserRealm from, UserRealm to) {
     if (!StringUtils.isEmpty(from.getUsername())) to.setUsername(from.getUsername());
     if (!StringUtils.isEmpty(from.getPhone())) to.setPhone(from.getPhone());

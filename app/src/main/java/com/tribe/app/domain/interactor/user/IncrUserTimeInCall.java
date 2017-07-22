@@ -20,6 +20,7 @@ import rx.Observable;
 public class IncrUserTimeInCall extends UseCase {
 
     private UserRepository userRepository;
+    private String userId;
     private Long timeInCall;
 
     @Inject
@@ -29,11 +30,12 @@ public class IncrUserTimeInCall extends UseCase {
         this.userRepository = userDataRepository;
     }
 
-    public void prepare(Long timeInCall) {
+    public void prepare(String userId, Long timeInCall) {
         this.timeInCall = timeInCall;
+        this.userId = userId;
     }
 
     @Override protected Observable buildUseCaseObservable() {
-        return this.userRepository.incrUserTimeInCall(timeInCall);
+        return this.userRepository.incrUserTimeInCall(userId, timeInCall);
     }
 }

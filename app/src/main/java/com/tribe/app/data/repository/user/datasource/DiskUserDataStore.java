@@ -90,7 +90,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override
-  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return null;
   }
 

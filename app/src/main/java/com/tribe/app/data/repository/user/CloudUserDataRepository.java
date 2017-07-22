@@ -119,9 +119,9 @@ import rx.Observable;
   }
 
   @Override
-  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.incrUserTimeInCall(timeInCall);
+    return userDataStore.incrUserTimeInCall(userId, timeInCall);
   }
 
   @Override public Observable<List<Contact>> contacts() {

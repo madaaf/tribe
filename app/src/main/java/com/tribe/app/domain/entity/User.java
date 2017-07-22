@@ -334,6 +334,7 @@ public class User implements Serializable, BaseListInterface {
       setInvisibleMode(user.isInvisibleMode());
       setTribeSave(user.isTribeSave());
       setPushNotif(user.isPushNotif());
+      setTimeInCall(user.getTimeInCall());
       if (user.getLocation() != null) setLocation(user.getLocation());
       if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
         setMembershipList(user.getMembershipList());
@@ -356,6 +357,7 @@ public class User implements Serializable, BaseListInterface {
     setFbid(null);
     setInvisibleMode(false);
     setPushNotif(false);
+    setTimeInCall(0);
     setTribeSave(false);
     setLocation(null);
     setMembershipList(null);

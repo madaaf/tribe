@@ -66,6 +66,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Action2;
 import timber.log.Timber;
 
 /**
@@ -317,9 +318,14 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override
-  public Observable<Void> incrUserTimeInCall(Long timeInCall) {
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return this.tribeApi.incrUserTimeInCall(
-            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall)));
+            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall))).doOnNext(aVoid -> {
+
+      if (userCache != null) {
+        userCache.incrUserTimeInCall(userId, timeInCall);
+      }
+    });
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {
