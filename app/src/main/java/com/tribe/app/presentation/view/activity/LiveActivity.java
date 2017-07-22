@@ -693,19 +693,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(
         Observable.merge(viewInviteLive.onInviteLiveClick(), viewLive.onShare()).subscribe(view -> {
-          Bundle bundle = new Bundle();
-          bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
-          bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-          tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-
-          if (StringUtils.isEmpty(live.getLinkId())) {
-            livePresenter.getRoomLink(roomConfiguration.getRoomId());
-            Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
-                .show();
-          } else {
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
-                live.getLinkId(), null, false);
-          }
+          share();
         }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited()
@@ -786,8 +774,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           });
     }));
 
-    subscriptions.add(userInfosNotificationView.onAdd().subscribe(s -> {
-      livePresenter.createFriendship(s);
+    subscriptions.add(userInfosNotificationView.onAdd().subscribe(user -> {
+
+      if (user != null) {
+        if (user.isInvisible()) {
+          DialogFactory.dialog(context(), user.getDisplayName(),
+                  EmojiParser.demojizedText(
+                          context().getString(R.string.add_friend_error_invisible)),
+                  context().getString(R.string.add_friend_error_invisible_invite_android),
+                  context().getString(R.string.add_friend_error_invisible_cancel))
+                  .filter(x -> x == true)
+                  .subscribe(a -> share());
+
+        } else {
+          livePresenter.createFriendship(user.getId());
+        }
+      }
     }));
 
     subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
@@ -808,6 +810,23 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
       reRollTheDiceFromCallRoulette();
     }));
+  }
+
+  private void share() {
+
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+    tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+
+    if (StringUtils.isEmpty(live.getLinkId())) {
+      livePresenter.getRoomLink(roomConfiguration.getRoomId());
+      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
+              .show();
+    } else {
+      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
+              live.getLinkId(), null, false);
+    }
   }
 
   private void reRollTheDiceFromCallRoulette() {

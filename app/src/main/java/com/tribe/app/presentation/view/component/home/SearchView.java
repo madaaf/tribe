@@ -198,7 +198,7 @@ public class SearchView extends FrameLayout implements SearchMVPView {
               DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
                   EmojiParser.demojizedText(
                       getContext().getString(R.string.add_friend_error_invisible)),
-                  context().getString(R.string.add_friend_error_invisible_invite_ios),
+                  context().getString(R.string.add_friend_error_invisible_invite_android),
                   context().getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
                   .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
