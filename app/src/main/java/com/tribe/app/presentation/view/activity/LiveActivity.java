@@ -1000,10 +1000,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
     String roomId = "";
-    if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
-      roomId = viewLive.getRoom().getOptions().getRoomId();
-    }
-    livePresenter.inviteUserToRoom(roomId, userId);
+    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 
   private void ready() {

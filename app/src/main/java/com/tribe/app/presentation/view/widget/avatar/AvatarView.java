@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
@@ -65,8 +64,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private boolean hasShadow = false;
   private boolean hasInd = true;
   private boolean hasHole = true;
-  private boolean isAttached = false;
-  private RequestManager mRequestManager;
 
   // RESOURCES
   private int avatarSize;
@@ -116,20 +113,17 @@ public class AvatarView extends RelativeLayout implements Avatar {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
         changeSize(getMeasuredWidth(), false);
-        mRequestManager = Glide.with(context);
       }
     });
   }
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    isAttached = true;
     Glide.get(getContext()).clearMemory();
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    isAttached = false;
     Glide.get(getContext()).clearMemory();
   }
 
@@ -254,12 +248,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private void loadPlaceholder(boolean hasHole) {
     if (avatarSize == 0) return;
     Runnable r = () -> {
-      if (true) {
-        new GlideUtils.Builder(getContext()).size(avatarSize)
-            .target(imgAvatar)
-            .hasHole(hasHole)
-            .load();
-      }
+      new GlideUtils.Builder(getContext()).size(avatarSize)
+          .target(imgAvatar)
+          .hasHole(hasHole)
+          .load();
     };
     r.run();
   }

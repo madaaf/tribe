@@ -25,8 +25,11 @@
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/EmojiParser.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/EmojiParser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../build.gradle" afterPath="$PROJECT_DIR$/../build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/UIUtils.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/UIUtils.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java" />
     </list>
     <ignored path="app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -61,7 +64,7 @@
       <file leaf-file-name="Room.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
+            <state relative-caret-position="4635">
               <caret line="338" column="3" selection-start-line="338" selection-start-column="3" selection-end-line="338" selection-end-column="3" />
               <folding />
             </state>
@@ -73,33 +76,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="4770">
               <caret line="361" column="51" selection-start-line="361" selection-start-column="51" selection-end-line="361" selection-end-column="51" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#2504#2505#0" expanded="false" />
-                <element signature="e#2536#2537#0" expanded="false" />
-                <element signature="e#12891#12892#0" expanded="false" />
-                <element signature="e#12918#12919#0" expanded="false" />
-                <element signature="e#12971#12972#0" expanded="false" />
-                <element signature="e#13003#13004#0" expanded="false" />
-                <element signature="e#13056#13057#0" expanded="false" />
-                <element signature="e#13084#13085#0" expanded="false" />
-                <element signature="e#13133#13134#0" expanded="false" />
-                <element signature="e#13157#13158#0" expanded="false" />
-                <element signature="e#13208#13209#0" expanded="false" />
-                <element signature="e#13236#13237#0" expanded="false" />
-                <element signature="e#13289#13290#0" expanded="false" />
-                <element signature="e#13327#13328#0" expanded="false" />
-                <element signature="e#13378#13379#0" expanded="false" />
-                <element signature="e#13412#13413#0" expanded="false" />
-                <element signature="e#13465#13466#0" expanded="false" />
-                <element signature="e#13501#13502#0" expanded="false" />
-                <element signature="e#13568#13569#0" expanded="false" />
-                <element signature="e#13608#13609#0" expanded="false" />
-                <element signature="e#13675#13676#0" expanded="false" />
-                <element signature="e#13715#13716#0" expanded="false" />
-                <element signature="e#14240#14241#0" expanded="false" />
-                <element signature="e#14267#14268#0" expanded="false" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -109,15 +86,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1635">
               <caret line="151" column="1" selection-start-line="151" selection-start-column="1" selection-end-line="160" selection-end-column="12" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#9036#9037#0" expanded="false" />
-                <element signature="e#9086#9087#0" expanded="false" />
-                <element signature="e#12479#12480#0" expanded="false" />
-                <element signature="e#12512#12513#0" expanded="false" />
-                <element signature="e#13178#13179#0" expanded="false" />
-                <element signature="e#13199#13200#0" expanded="false" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -125,8 +94,8 @@
       <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="639">
-              <caret line="476" column="3" selection-start-line="470" selection-start-column="30" selection-end-line="476" selection-end-column="3" />
+            <state relative-caret-position="397">
+              <caret line="1014" column="37" selection-start-line="1014" selection-start-column="37" selection-end-line="1014" selection-end-column="37" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -134,103 +103,51 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+      <file leaf-file-name="UIUtils.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/UIUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1875">
-              <caret line="202" column="12" selection-start-line="202" selection-start-column="12" selection-end-line="202" selection-end-column="12" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#8560#8561#0" expanded="false" />
-                <element signature="e#8598#8599#0" expanded="false" />
-                <element signature="e#8630#8631#0" expanded="false" />
-                <element signature="e#8671#8672#0" expanded="false" />
-                <element signature="e#8722#8723#0" expanded="false" />
-                <element signature="e#8760#8761#0" expanded="false" />
-                <element signature="e#8793#8794#0" expanded="false" />
-                <element signature="e#8818#8819#0" expanded="false" />
-                <element signature="e#8885#8886#0" expanded="false" />
-                <element signature="e#8921#8922#0" expanded="false" />
-                <element signature="e#8953#8954#0" expanded="false" />
-                <element signature="e#8994#8995#0" expanded="false" />
-                <element signature="e#9029#9030#0" expanded="false" />
-                <element signature="e#9073#9074#0" expanded="false" />
-                <element signature="e#13359#13360#0" expanded="false" />
-                <element signature="e#13400#13401#0" expanded="false" />
-                <element signature="e#18829#18830#0" expanded="false" />
-                <element signature="e#18864#18865#0" expanded="false" />
-                <element signature="e#28964#28965#0" expanded="false" />
-                <element signature="e#29004#29005#0" expanded="false" />
-                <element signature="e#29033#29034#0" expanded="false" />
-                <element signature="e#29054#29055#0" expanded="false" />
-                <element signature="e#29081#29082#0" expanded="false" />
-                <element signature="e#29102#29103#0" expanded="false" />
-                <element signature="e#31146#31147#0" expanded="false" />
-                <element signature="e#31167#31168#0" expanded="false" />
-                <element signature="e#33282#33283#0" expanded="false" />
-                <element signature="e#33315#33316#0" expanded="false" />
-                <element signature="e#33356#33357#0" expanded="false" />
-                <element signature="e#33398#33399#0" expanded="false" />
-                <element signature="e#48383#48384#0" expanded="false" />
-                <element signature="e#48404#48405#0" expanded="false" />
-                <element signature="e#48452#48453#0" expanded="false" />
-                <element signature="e#48501#48502#0" expanded="false" />
-                <element signature="e#48621#48622#0" expanded="false" />
-                <element signature="e#48650#48651#0" expanded="false" />
-                <element signature="e#48695#48696#0" expanded="false" />
-                <element signature="e#48723#48724#0" expanded="false" />
-                <element signature="e#48771#48772#0" expanded="false" />
-                <element signature="e#48804#48805#0" expanded="false" />
-                <element signature="e#48855#48856#0" expanded="false" />
-                <element signature="e#48889#48890#0" expanded="false" />
-                <element signature="e#48942#48943#0" expanded="false" />
-                <element signature="e#48978#48979#0" expanded="false" />
-                <element signature="e#49025#49026#0" expanded="false" />
-                <element signature="e#49055#49056#0" expanded="false" />
-                <element signature="e#49104#49105#0" expanded="false" />
-                <element signature="e#49129#49130#0" expanded="false" />
-                <element signature="e#49169#49170#0" expanded="false" />
-                <element signature="e#49194#49195#0" expanded="false" />
-                <element signature="e#49347#49348#0" expanded="false" />
-                <element signature="e#49376#49377#0" expanded="false" />
-                <element signature="e#49427#49428#0" expanded="false" />
-                <element signature="e#49460#49461#0" expanded="false" />
-                <element signature="e#49512#49513#0" expanded="false" />
-                <element signature="e#49549#49550#0" expanded="false" />
-                <element signature="e#49723#49724#0" expanded="false" />
-                <element signature="e#49767#49768#0" expanded="false" />
-                <element signature="e#49827#49828#0" expanded="false" />
-                <element signature="e#49870#49871#0" expanded="false" />
-                <element signature="e#49921#49922#0" expanded="false" />
-                <element signature="e#49955#49956#0" expanded="false" />
-                <element signature="e#50244#50245#0" expanded="false" />
-                <element signature="e#50286#50287#0" expanded="false" />
-                <element signature="e#50347#50348#0" expanded="false" />
-                <element signature="e#50389#50390#0" expanded="false" />
-                <element signature="e#50450#50451#0" expanded="false" />
-                <element signature="e#50492#50493#0" expanded="false" />
-                <element signature="e#50763#50764#0" expanded="false" />
-                <element signature="e#50787#50788#0" expanded="false" />
-                <element signature="e#50843#50844#0" expanded="false" />
-                <element signature="e#50884#50885#0" expanded="false" />
-                <element signature="e#50926#50927#0" expanded="false" />
-                <element signature="e#50953#50954#0" expanded="false" />
-                <element signature="e#51004#51005#0" expanded="false" />
-                <element signature="e#51038#51039#0" expanded="false" />
-                <element signature="e#51081#51082#0" expanded="false" />
-                <element signature="e#51109#51110#0" expanded="false" />
-                <element signature="e#51155#51156#0" expanded="false" />
-                <element signature="e#51205#51206#0" expanded="false" />
-              </folding>
+            <state relative-caret-position="451">
+              <caret line="143" column="3" selection-start-line="143" selection-start-column="3" selection-end-line="143" selection-end-column="3" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EmojiParser.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/EmojiParser.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="265">
+              <caret line="115" column="57" selection-start-line="115" selection-start-column="57" selection-end-line="115" selection-end-column="57" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="309">
+              <caret line="994" column="32" selection-start-line="994" selection-start-column="32" selection-end-line="994" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="257">
-              <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+            <state relative-caret-position="525">
+              <caret line="35" column="43" selection-start-line="35" selection-start-column="43" selection-end-line="35" selection-end-column="43" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AvatarView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="424">
+              <caret line="261" column="0" selection-start-line="261" selection-start-column="0" selection-end-line="261" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -6218,8 +6135,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/base/BaseListAdapterDelegate.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/ContactAdapter.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/view_row_live.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/AnimationUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveRowView.java" />
@@ -6234,7 +6149,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/friend/UserListAdapterDelegate.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveLocalView.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/view_live_share_overlay.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/analytics/TagManagerUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/entity/Live.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/FacebookPresenter.java" />
@@ -6260,15 +6174,18 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/CloudUserDataRepository.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/LifeNotification.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/NotificationContainerView.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
         <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveContainer.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/notifications/FBCallRouletteNotificationView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/AvatarsSuperposedLayout.java" />
         <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/back/WebRTCClient.java" />
         <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
         <option value="$PROJECT_DIR$/../build.gradle" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/UIUtils.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/EmojiParser.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
       </list>
     </option>
   </component>
@@ -6304,6 +6221,8 @@
       <pane id="ProjectPane">
         <subPane />
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -6315,13 +6234,11 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Snapper/build.gradle" />
-    <property name="device.picker.selection" value="b5a48a3c e1505890" />
+    <property name="device.picker.selection" value="e1505890" />
     <property name="DEBUGGABLE_DEVICE" value="oneplus-oneplus_a3000-b5a48a3c" />
     <property name="DEBUGGABLE_PROCESS" value="com.tribe.app.debug" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
@@ -6693,15 +6610,14 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.50549453" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41801387" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.41736403" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24847375" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27688786" sideWeight="0.502442" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15689866" sideWeight="0.4439528" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39853558" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21611722" sideWeight="0.47420964" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
@@ -6715,6 +6631,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39853558" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -6823,7 +6740,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>1105</line>
+          <line>1102</line>
           <properties />
           <option name="timeStamp" value="1498" />
         </line-breakpoint>
@@ -6885,7 +6802,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>1037</line>
+          <line>1034</line>
           <properties />
           <option name="timeStamp" value="1557" />
         </line-breakpoint>
@@ -6979,12 +6896,12 @@
         <watch expression="userUnder13" language="JAVA" />
         <watch expression="guest.getDisplayName()" language="JAVA" />
       </configuration>
+      <configuration name="Android Hybrid Debugger (9795)-java">
+        <watch expression="((Friendship) recipient).getFriend()" language="JAVA" />
+      </configuration>
       <configuration name="Android Hybrid Debugger (16144)-java">
         <watch expression="dotsContainer.getWidth()" language="JAVA" />
         <watch expression="txtNext.getWidth()" language="JAVA" />
-      </configuration>
-      <configuration name="Android Hybrid Debugger (9795)-java">
-        <watch expression="((Friendship) recipient).getFriend()" language="JAVA" />
       </configuration>
       <configuration name="Android Hybrid Debugger (23752)-java">
         <watch expression="getUsersInLiveRoom().getTribeGuestList()" language="JAVA" />
@@ -7156,27 +7073,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/group/AddMembersGroupView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="257" column="50" selection-start-line="255" selection-start-column="41" selection-end-line="257" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/service/BroadcastUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="184" column="17" selection-start-line="184" selection-start-column="17" selection-end-line="184" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/BuzzView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
@@ -7489,15 +7385,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1635">
           <caret line="151" column="1" selection-start-line="151" selection-start-column="1" selection-end-line="160" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#9036#9037#0" expanded="false" />
-            <element signature="e#9086#9087#0" expanded="false" />
-            <element signature="e#12479#12480#0" expanded="false" />
-            <element signature="e#12512#12513#0" expanded="false" />
-            <element signature="e#13178#13179#0" expanded="false" />
-            <element signature="e#13199#13200#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7505,148 +7393,64 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4770">
           <caret line="361" column="51" selection-start-line="361" selection-start-column="51" selection-end-line="361" selection-end-column="51" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#2504#2505#0" expanded="false" />
-            <element signature="e#2536#2537#0" expanded="false" />
-            <element signature="e#12891#12892#0" expanded="false" />
-            <element signature="e#12918#12919#0" expanded="false" />
-            <element signature="e#12971#12972#0" expanded="false" />
-            <element signature="e#13003#13004#0" expanded="false" />
-            <element signature="e#13056#13057#0" expanded="false" />
-            <element signature="e#13084#13085#0" expanded="false" />
-            <element signature="e#13133#13134#0" expanded="false" />
-            <element signature="e#13157#13158#0" expanded="false" />
-            <element signature="e#13208#13209#0" expanded="false" />
-            <element signature="e#13236#13237#0" expanded="false" />
-            <element signature="e#13289#13290#0" expanded="false" />
-            <element signature="e#13327#13328#0" expanded="false" />
-            <element signature="e#13378#13379#0" expanded="false" />
-            <element signature="e#13412#13413#0" expanded="false" />
-            <element signature="e#13465#13466#0" expanded="false" />
-            <element signature="e#13501#13502#0" expanded="false" />
-            <element signature="e#13568#13569#0" expanded="false" />
-            <element signature="e#13608#13609#0" expanded="false" />
-            <element signature="e#13675#13676#0" expanded="false" />
-            <element signature="e#13715#13716#0" expanded="false" />
-            <element signature="e#14240#14241#0" expanded="false" />
-            <element signature="e#14267#14268#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1875">
-          <caret line="202" column="12" selection-start-line="202" selection-start-column="12" selection-end-line="202" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#8560#8561#0" expanded="false" />
-            <element signature="e#8598#8599#0" expanded="false" />
-            <element signature="e#8630#8631#0" expanded="false" />
-            <element signature="e#8671#8672#0" expanded="false" />
-            <element signature="e#8722#8723#0" expanded="false" />
-            <element signature="e#8760#8761#0" expanded="false" />
-            <element signature="e#8793#8794#0" expanded="false" />
-            <element signature="e#8818#8819#0" expanded="false" />
-            <element signature="e#8885#8886#0" expanded="false" />
-            <element signature="e#8921#8922#0" expanded="false" />
-            <element signature="e#8953#8954#0" expanded="false" />
-            <element signature="e#8994#8995#0" expanded="false" />
-            <element signature="e#9029#9030#0" expanded="false" />
-            <element signature="e#9073#9074#0" expanded="false" />
-            <element signature="e#13359#13360#0" expanded="false" />
-            <element signature="e#13400#13401#0" expanded="false" />
-            <element signature="e#18829#18830#0" expanded="false" />
-            <element signature="e#18864#18865#0" expanded="false" />
-            <element signature="e#28964#28965#0" expanded="false" />
-            <element signature="e#29004#29005#0" expanded="false" />
-            <element signature="e#29033#29034#0" expanded="false" />
-            <element signature="e#29054#29055#0" expanded="false" />
-            <element signature="e#29081#29082#0" expanded="false" />
-            <element signature="e#29102#29103#0" expanded="false" />
-            <element signature="e#31146#31147#0" expanded="false" />
-            <element signature="e#31167#31168#0" expanded="false" />
-            <element signature="e#33282#33283#0" expanded="false" />
-            <element signature="e#33315#33316#0" expanded="false" />
-            <element signature="e#33356#33357#0" expanded="false" />
-            <element signature="e#33398#33399#0" expanded="false" />
-            <element signature="e#48383#48384#0" expanded="false" />
-            <element signature="e#48404#48405#0" expanded="false" />
-            <element signature="e#48452#48453#0" expanded="false" />
-            <element signature="e#48501#48502#0" expanded="false" />
-            <element signature="e#48621#48622#0" expanded="false" />
-            <element signature="e#48650#48651#0" expanded="false" />
-            <element signature="e#48695#48696#0" expanded="false" />
-            <element signature="e#48723#48724#0" expanded="false" />
-            <element signature="e#48771#48772#0" expanded="false" />
-            <element signature="e#48804#48805#0" expanded="false" />
-            <element signature="e#48855#48856#0" expanded="false" />
-            <element signature="e#48889#48890#0" expanded="false" />
-            <element signature="e#48942#48943#0" expanded="false" />
-            <element signature="e#48978#48979#0" expanded="false" />
-            <element signature="e#49025#49026#0" expanded="false" />
-            <element signature="e#49055#49056#0" expanded="false" />
-            <element signature="e#49104#49105#0" expanded="false" />
-            <element signature="e#49129#49130#0" expanded="false" />
-            <element signature="e#49169#49170#0" expanded="false" />
-            <element signature="e#49194#49195#0" expanded="false" />
-            <element signature="e#49347#49348#0" expanded="false" />
-            <element signature="e#49376#49377#0" expanded="false" />
-            <element signature="e#49427#49428#0" expanded="false" />
-            <element signature="e#49460#49461#0" expanded="false" />
-            <element signature="e#49512#49513#0" expanded="false" />
-            <element signature="e#49549#49550#0" expanded="false" />
-            <element signature="e#49723#49724#0" expanded="false" />
-            <element signature="e#49767#49768#0" expanded="false" />
-            <element signature="e#49827#49828#0" expanded="false" />
-            <element signature="e#49870#49871#0" expanded="false" />
-            <element signature="e#49921#49922#0" expanded="false" />
-            <element signature="e#49955#49956#0" expanded="false" />
-            <element signature="e#50244#50245#0" expanded="false" />
-            <element signature="e#50286#50287#0" expanded="false" />
-            <element signature="e#50347#50348#0" expanded="false" />
-            <element signature="e#50389#50390#0" expanded="false" />
-            <element signature="e#50450#50451#0" expanded="false" />
-            <element signature="e#50492#50493#0" expanded="false" />
-            <element signature="e#50763#50764#0" expanded="false" />
-            <element signature="e#50787#50788#0" expanded="false" />
-            <element signature="e#50843#50844#0" expanded="false" />
-            <element signature="e#50884#50885#0" expanded="false" />
-            <element signature="e#50926#50927#0" expanded="false" />
-            <element signature="e#50953#50954#0" expanded="false" />
-            <element signature="e#51004#51005#0" expanded="false" />
-            <element signature="e#51038#51039#0" expanded="false" />
-            <element signature="e#51081#51082#0" expanded="false" />
-            <element signature="e#51109#51110#0" expanded="false" />
-            <element signature="e#51155#51156#0" expanded="false" />
-            <element signature="e#51205#51206#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
+        <state relative-caret-position="4635">
           <caret line="338" column="3" selection-start-line="338" selection-start-column="3" selection-end-line="338" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="35" column="43" selection-start-line="35" selection-start-column="43" selection-end-line="35" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/avatar/AvatarView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="424">
+          <caret line="261" column="0" selection-start-line="261" selection-start-column="0" selection-end-line="261" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="639">
-          <caret line="476" column="3" selection-start-line="470" selection-start-column="30" selection-end-line="476" selection-end-column="3" />
+        <state relative-caret-position="397">
+          <caret line="1014" column="37" selection-start-line="1014" selection-start-column="37" selection-end-line="1014" selection-end-column="37" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../build.gradle">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/utils/UIUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+        <state relative-caret-position="451">
+          <caret line="143" column="3" selection-start-line="143" selection-start-column="3" selection-end-line="143" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/EmojiParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="265">
+          <caret line="115" column="57" selection-start-line="115" selection-start-column="57" selection-end-line="115" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="309">
+          <caret line="994" column="32" selection-start-line="994" selection-start-column="32" selection-end-line="994" selection-end-column="32" />
           <folding />
         </state>
       </provider>
