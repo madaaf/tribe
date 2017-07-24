@@ -12,11 +12,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NameListPostItGameDeserializer implements JsonDeserializer<List<String>> {
+public class DataGameDeserializer implements JsonDeserializer<List<String>> {
+
+  private static String GAME_POST_IT = "names";
+  private static String GAME_CHALLENGES = "challenges";
 
   private String lang;
 
-  public NameListPostItGameDeserializer(Context context) {
+  public DataGameDeserializer(Context context) {
     this.lang = DeviceUtils.getLanguage(context);
   }
 
@@ -24,7 +27,13 @@ public class NameListPostItGameDeserializer implements JsonDeserializer<List<Str
       JsonDeserializationContext context) throws JsonParseException {
     List<String> nameList = new ArrayList<>();
 
-    JsonObject results = json.getAsJsonObject().getAsJsonObject("names");
+    JsonObject results = null;
+    if (((JsonObject) json).has(GAME_POST_IT)) {
+      results = json.getAsJsonObject().getAsJsonObject(GAME_POST_IT);
+    } else if (((JsonObject) json).has(GAME_CHALLENGES)) {
+      results = json.getAsJsonObject().getAsJsonObject(GAME_CHALLENGES);
+    }
+
     if (results != null) {
       for (JsonElement jsonElement : results.getAsJsonArray("default")) {
         nameList.add(jsonElement.getAsString());

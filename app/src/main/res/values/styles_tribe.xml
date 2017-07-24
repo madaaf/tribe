@@ -274,6 +274,11 @@
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
+
+  <style name="Headline.Black.1.2" parent="@style/Headline.Black.1">
+    <item name="android:textSize">13sp</item>
+  </style>
+
   <style name="Headline.Black.2" parent="@style/Headline.Black">
     <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>

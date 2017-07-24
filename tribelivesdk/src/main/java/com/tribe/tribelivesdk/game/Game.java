@@ -17,14 +17,17 @@ public abstract class Game extends GameFilter {
 
   public static final String ID = "id";
   public static final String ACTION = "action";
+  public static final String CHALLENGE = "challenge";
+  public static final String NEW_CHALLENGE = "newChallenge";
   public static final String START = "start";
   public static final String STOP = "stop";
   public static final String CURRENT_GAME = "currentGame";
 
-  @StringDef({ GAME_POST_IT }) public @interface GameType {
+  @StringDef({ GAME_POST_IT, GAME_CHALLENGE}) public @interface GameType {
   }
 
   public static final String GAME_POST_IT = "post-it";
+  public static final String GAME_CHALLENGE = "challenges";
 
   protected boolean localFrameDifferent = false;
 

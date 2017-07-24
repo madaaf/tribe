@@ -39,6 +39,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -321,6 +322,8 @@ public interface ApplicationComponent {
   @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
 
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
+
+  @DataChallengesGame Preference<Set<String>> dataChallengesGame();
 
   @CallTagsMap Preference<String> callTagsMap();
 

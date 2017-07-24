@@ -47,12 +47,14 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.GameChallengesView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -127,7 +129,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
-  // @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
 
   // VARIABLES
   private Live live;
@@ -147,7 +149,7 @@ public class LiveView extends FrameLayout {
       hasShared = false;
   private View view;
   private List<User> anonymousInLive = new ArrayList<>();
-  private boolean isFirstToJoin = true;
+  private boolean isFirstToJoin = true, isChallengeGameActivated = false;
   private double duration;
   private GameManager gameManager;
   private String fbId;
@@ -464,17 +466,32 @@ public class LiveView extends FrameLayout {
           .subscribe(aLong -> refactorNotifyButton()));
     }));
 
-    persistentSubscriptions.add(
-        viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
+    viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
-      displayStartGameNotification(game.getName(), user.getDisplayName());
-      restartGame(game);
+      switch (game.getId()) {
+        case Game.GAME_POST_IT:
+          Timber.e("SOEF onStartGame postit");
+          displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
+          restartGame(game);
+          break;
+        case Game.GAME_CHALLENGE:
+          displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
+          Timber.e("SOEF onStartGame challenge");
+          restartGame(game);
+          break;
+      }
+    }));
+
+    persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
+      nextChallengeGame(gameChallenge.getName(), gameChallenge.getPeerId(),
+          gameChallenge.getCurrentChallenge());
     }));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       displayReRollGameNotification(user.getDisplayName());
       restartGame(game);
+      setNextChallenge();
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
@@ -484,7 +501,7 @@ public class LiveView extends FrameLayout {
                 displayReRollGameNotification(user.getDisplayName());
                 restartGame(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
-                stopGame(true);
+                stopGame(true, game.getId());
                 displayStopGameNotification(game.getName(), user.getDisplayName());
                 room.sendToPeers(getStopGamePayload(game), false);
               }
@@ -496,6 +513,15 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
       onShouldCloseInvites.onNext(null);
     }));
+  }
+
+  public void setNextChallenge() {
+    Timber.e("soef set next challenge ");
+    gameChallengesView.setNextChallenge();
+  }
+
+  public void setGameChallenge(GameChallenge gameChallenge) {
+    gameChallengesView.setGameChallenge(gameChallenge);
   }
 
   ///////////////////
@@ -576,13 +602,11 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
+    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> { //SOEF STOP
       Game game = gameManager.getGameById(pairSessionGame.second);
-      if (game != null) {
-        String displayName = getDisplayNameFromSession(pairSessionGame.first);
-        displayStopGameNotification(game.getName(), displayName);
-        stopGame(false);
-      }
+      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+      displayStopGameNotification(game.getName(), displayName);
+      stopGame(false, game.getId());
     }));
 
     tempSubscriptions.add(
@@ -959,7 +983,7 @@ public class LiveView extends FrameLayout {
     if (!live.getId().equals(Live.NEW_CALL)) return;
 
     int nbPeople = nbInRoom();
-    if (nbPeople > 1) {
+    if (viewLocalLive != null && nbPeople > 1) {
       viewLocalLive.hideShareOverlay();
     } else {
       viewLocalLive.showShareOverlay(live.getSource());
@@ -1118,6 +1142,17 @@ public class LiveView extends FrameLayout {
     jsonPut(gameStart, Game.ACTION, Game.START);
     jsonPut(gameStart, Game.ID, game.getId());
     jsonPut(obj, Room.MESSAGE_GAME, gameStart);
+    return obj;
+  }
+
+  public JSONObject getNewChallengePayload(String userId, String peerId, String challengeMessage) {
+    JSONObject obj = new JSONObject();
+    JSONObject challenge = new JSONObject();
+    jsonPut(challenge, "from", userId);
+    jsonPut(challenge, Game.ACTION, Game.NEW_CHALLENGE);
+    jsonPut(challenge, "user", peerId);
+    jsonPut(challenge, Game.CHALLENGE, challengeMessage);
+    jsonPut(obj, Game.GAME_CHALLENGE, challenge);
     return obj;
   }
 
@@ -1366,11 +1401,37 @@ public class LiveView extends FrameLayout {
   }
 
   private void restartGame(Game game) {
-    startGame(game, true);
-    room.sendToPeers(getNewGamePayload(game), false);
+    if (game.getId().equals(Game.GAME_CHALLENGE)) {
+      if (true) {
+        //if (!isChallengeGameActivated) {
+        Timber.e("SOEF onStartGame challenge send to peer");
+        startGame(game, true);
+        room.sendToPeers(getNewGamePayload(game), false);
+        isChallengeGameActivated = true;
+      } else {
+        Timber.e("SOEF game challenge already started");
+        GameChallenge gameChallenge = (GameChallenge) game;
+        nextChallengeGame(gameChallenge.getName(), gameChallenge.getPeerId(),
+            gameChallenge.getCurrentChallenge());
+      }
+    } else {
+      startGame(game, true);
+      room.sendToPeers(getNewGamePayload(game), false);
+    }
   }
 
-  private void stopGame(boolean isCurrentUserAction) {
+  private void nextChallengeGame(String userId, String peerId, String challenge) {
+    Timber.e("soef next challenge game");
+    room.sendToPeers(getNewChallengePayload(userId, peerId, challenge), false);
+  }
+
+  private void stopGame(boolean isCurrentUserAction, String gameId) {
+
+    if (gameId.equals(Game.GAME_CHALLENGE)) {
+      isChallengeGameActivated = false;
+      Timber.e("soef challenge game stop");
+    }
+
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {

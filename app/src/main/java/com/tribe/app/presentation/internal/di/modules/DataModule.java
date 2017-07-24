@@ -7,6 +7,7 @@ import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
@@ -133,6 +134,11 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @FullscreenNotificationState
   Preference<Set<String>> provideFullscreenNotificationState(RxSharedPreferences prefs) {
     return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
+  }
+
+  @Provides @Singleton @DataChallengesGame Preference<Set<String>> provideDataChallengesGame(
+      RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesUtils.DATA_CHALLANGES_GAME, new HashSet<>());
   }
 
   @Provides @Singleton @MissedPlayloadNotification
