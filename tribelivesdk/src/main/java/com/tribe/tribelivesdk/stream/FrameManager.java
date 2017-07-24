@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
@@ -24,9 +25,8 @@ public class FrameManager {
 
   // VARIABLES
   private Context context;
-  //private GameManager gameManager;
+  private GameManager gameManager;
   private UlseeManager ulseeManager;
-  //private VisionAPIManager visionAPIManager;
   private LibYuvConverter libYuvConverter;
   private OpenCVWrapper openCVWrapper;
   private FilterManager filterManager;
@@ -38,24 +38,22 @@ public class FrameManager {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Observable<Frame> onNewPreviewFrame;
   private PublishSubject<Frame> onFrameSizeChange = PublishSubject.create();
-  private PublishSubject<Frame> onNewFrame = PublishSubject.create();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
 
   public FrameManager(Context context) {
     this.context = context;
     libYuvConverter = LibYuvConverter.getInstance();
     openCVWrapper = new OpenCVWrapper();
-    //initGameManager();
+    initGameManager();
     initFilterManager();
     initUlseeManager();
   }
 
-  //private void initGameManager() {
-  //  gameManager = GameManager.getInstance(context);
-  //  gameManager.initSubscriptions();
-  //  gameManager.initFrameSizeChangeObs(onFrameSizeChange);
-  //  gameManager.initOnNewFrameObs(onNewFrame);
-  //}
+  private void initGameManager() {
+    gameManager = GameManager.getInstance(context);
+    gameManager.initSubscriptions();
+    gameManager.initFrameSizeChangeObs(onFrameSizeChange);
+  }
 
   private void initFilterManager() {
     filterManager = filterManager.getInstance(context);
@@ -137,6 +135,7 @@ public class FrameManager {
     onNewPreviewFrame = null;
     filterManager.dispose();
     ulseeManager.dispose();
+    gameManager.dispose();
   }
 
   public void startCapture() {
@@ -147,6 +146,7 @@ public class FrameManager {
     firstFrame = true;
     subscriptions.clear();
     ulseeManager.stopCapture();
+    gameManager.stopCapture();
   }
 
   public void switchCamera() {

@@ -4,9 +4,6 @@ import android.content.Context;
 import android.support.annotation.StringDef;
 import com.tribe.tribelivesdk.entity.GameFilter;
 import com.tribe.tribelivesdk.webrtc.Frame;
-import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -30,8 +27,6 @@ public abstract class Game extends GameFilter {
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
-  protected PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
-  protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   public Game(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -40,10 +35,6 @@ public abstract class Game extends GameFilter {
 
   @GameType public String getId() {
     return id;
-  }
-
-  public boolean isLocalFrameDifferent() {
-    return localFrameDifferent;
   }
 
   public abstract void apply(Frame frame);
@@ -61,12 +52,4 @@ public abstract class Game extends GameFilter {
   /////////////////
   // OBSERVABLES //
   /////////////////
-
-  public Observable<Frame> onRemoteFrame() {
-    return onRemoteFrame;
-  }
-
-  public Observable<TribeI420Frame> onLocalFrame() {
-    return onLocalFrame;
-  }
 }
