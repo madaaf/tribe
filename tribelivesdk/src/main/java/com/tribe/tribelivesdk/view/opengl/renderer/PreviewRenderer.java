@@ -262,6 +262,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       }
 
       synchronized (frameListenerLock) {
+        if (filter.getFbo() == null) return;
         if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
 
         filter.getFbo().bind();
@@ -436,6 +437,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       clearImageFilter();
       clearMask();
       filter = filterManager.getBaseFilter();
+      filter.updateTextureSize(widthOut, heightOut);
       return;
     }
 

@@ -2,11 +2,13 @@ package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -31,6 +33,8 @@ import rx.subscriptions.CompositeSubscription;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
+  private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
@@ -41,7 +45,10 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public void initSubscriptions() {
-
+    for (Game game : gameList) {
+      subscriptions.add(game.onLocalFrame().subscribe(onLocalFrame));
+      subscriptions.add(game.onRemoteFrame().subscribe(onRemoteFrame));
+    }
   }
 
   public void initFrameSizeChangeObs(Observable<Frame> obs) {
@@ -50,6 +57,10 @@ import rx.subscriptions.CompositeSubscription;
         game.onFrameSizeChange(frame);
       }
     }));
+  }
+
+  public void initOnNewFrameObs(Observable<Frame> obs) {
+    subscriptions.add(obs.subscribe(frame -> currentGame.apply(frame)));
   }
 
   public List<Game> getGames() {
@@ -99,4 +110,12 @@ import rx.subscriptions.CompositeSubscription;
   /////////////////
   // OBSERVABLES //
   /////////////////
+
+  public Observable<Frame> onRemoteFrame() {
+    return onRemoteFrame;
+  }
+
+  public Observable<TribeI420Frame> onLocalFrame() {
+    return onLocalFrame;
+  }
 }

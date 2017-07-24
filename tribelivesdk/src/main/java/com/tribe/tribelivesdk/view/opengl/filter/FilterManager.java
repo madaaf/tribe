@@ -1,7 +1,6 @@
 package com.tribe.tribelivesdk.view.opengl.filter;
 
 import android.content.Context;
-import android.os.Environment;
 import com.tribe.tribelivesdk.util.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -38,10 +37,7 @@ public class FilterManager {
     this.context = context;
     filterList = new ArrayList<>();
     baseFilter = new ImageFilter(context, ImageFilter.IMAGE_FILTER_NONE, "None", -1);
-    basePath = Environment.getExternalStorageDirectory().toString() +
-        File.separator +
-        "ULSee" +
-        File.separator;
+    basePath = context.getFilesDir().toString() + File.separator;
     maskAndGlassesPath = basePath + "maskAndGlasses" + File.separator;
 
     new Thread(() -> checkFiles()).start();
@@ -97,7 +93,7 @@ public class FilterManager {
       current.release();
     }
 
-    current = filterList.get(3);
+    current = filterList.get(0);
     current.setActivated(true);
   }
 

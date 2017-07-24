@@ -336,6 +336,7 @@ import rx.subscriptions.CompositeSubscription;
         .observeOn(AndroidSchedulers.from(cameraThreadHandler.getLooper()))
         .subscribe(frame -> capturerObserver.onByteBufferFrameCaptured(frame.getDataOut(),
             frame.getWidth(), frame.getHeight(), frame.getRotation(), frame.getTimestamp())));
+    subscriptions.add(frameManager.onLocalFrame().subscribe(onLocalFrame));
   }
 
   @Override public void startCapture(int width, int height, int framerate) {

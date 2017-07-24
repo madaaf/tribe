@@ -9,6 +9,7 @@
       android:layout_marginBottom="10dp"
       android:fadingEdgeLength="0dp"
       android:requiresFadingEdge="none"
+      android:overScrollMode="never"
       />
 
   <android.support.v7.widget.RecyclerView

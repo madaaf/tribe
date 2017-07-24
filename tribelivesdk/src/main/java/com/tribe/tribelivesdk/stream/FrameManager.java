@@ -5,11 +5,13 @@ import android.graphics.RectF;
 import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -37,7 +39,9 @@ public class FrameManager {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Observable<Frame> onNewPreviewFrame;
+  private PublishSubject<Frame> onNewFrame = PublishSubject.create();
   private PublishSubject<Frame> onFrameSizeChange = PublishSubject.create();
+  private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
 
   public FrameManager(Context context) {
@@ -53,6 +57,12 @@ public class FrameManager {
     gameManager = GameManager.getInstance(context);
     gameManager.initSubscriptions();
     gameManager.initFrameSizeChangeObs(onFrameSizeChange);
+    gameManager.initOnNewFrameObs(onNewFrame);
+  }
+
+  private void initSubscriptions() {
+    subscriptions.add(gameManager.onRemoteFrame().onBackpressureDrop().subscribe(onRemoteFrame));
+    subscriptions.add(gameManager.onLocalFrame().onBackpressureDrop().subscribe(onLocalFrame));
   }
 
   private void initFilterManager() {
@@ -114,7 +124,9 @@ public class FrameManager {
   public void initPreviewFrameSubscription(Observable<Frame> onPreviewFrame) {
     this.onNewPreviewFrame = onPreviewFrame;
 
-    if (filterManager.getFilter() instanceof FaceMaskFilter) {
+    if (filterManager.getFilter() instanceof FaceMaskFilter ||
+        (gameManager.getCurrentGame() != null &&
+            gameManager.getCurrentGame() instanceof GamePostIt)) {
       ulseeManager.initFrameSubscription(onPreviewFrame);
     }
   }
@@ -159,5 +171,9 @@ public class FrameManager {
 
   public Observable<Frame> onRemoteFrame() {
     return onRemoteFrame;
+  }
+
+  public Observable<TribeI420Frame> onLocalFrame() {
+    return onLocalFrame;
   }
 }

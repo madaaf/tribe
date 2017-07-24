@@ -30,6 +30,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
+import com.tribe.app.presentation.view.adapter.decorator.DividerHorizontalFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.BitmapUtils;
@@ -131,7 +132,7 @@ public class LiveControlsView extends FrameLayout {
   private GamesFiltersAdapter filtersAdapter;
   private List<GameFilter> gameList;
   private GamesFiltersAdapter gamesAdapter;
-  private int[] btnFilterLocation;
+  private int[] btnFilterLocation, btnNewGameLocation;
   private ImageView currentGameView;
 
   // RESOURCES
@@ -200,6 +201,7 @@ public class LiveControlsView extends FrameLayout {
 
     gameManager = GameManager.getInstance(getContext());
     btnFilterLocation = new int[2];
+    btnNewGameLocation = new int[2];
 
     setBackground(null);
     initResources();
@@ -228,6 +230,14 @@ public class LiveControlsView extends FrameLayout {
             btnFilterOff.getLocationInWindow(btnFilterLocation);
           }
         });
+
+    btnNewGameOff.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            btnNewGameOff.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            btnNewGameOff.getLocationInWindow(btnNewGameLocation);
+          }
+        });
   }
 
   private void initFilters() {
@@ -235,7 +245,10 @@ public class LiveControlsView extends FrameLayout {
 
     filterList = new ArrayList<>();
     filtersLayoutManager = new GamesFiltersLayoutManager(getContext());
+    recyclerViewFilters.setFadingEdgeLength(0);
     recyclerViewFilters.setLayoutManager(filtersLayoutManager);
+    recyclerViewFilters.addItemDecoration(
+        new DividerHorizontalFirstLastItemDecoration(screenUtils.dpToPx(5), screenUtils.dpToPx(5)));
     recyclerViewFilters.setItemAnimator(null);
 
     filtersAdapter = new GamesFiltersAdapter(getContext());
@@ -429,9 +442,13 @@ public class LiveControlsView extends FrameLayout {
     recyclerViewGames.getRecycledViewPool().clear();
     gamesAdapter.notifyDataSetChanged();
 
+    int toX =
+        (screenUtils.getWidthPx() >> 1) - btnNewGameLocation[0] - (layoutGame.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutGame.animate()
+        .translationX(toX)
         .translationY(toY)
         .setDuration(DURATION_GAMES_FILTERS)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
@@ -526,6 +543,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void showView(View view) {
     view.animate()
+        .translationX(0)
         .translationY(0)
         .setDuration(DURATION_GAMES_FILTERS)
         .setInterpolator(new DecelerateInterpolator())
@@ -554,8 +572,9 @@ public class LiveControlsView extends FrameLayout {
 
   private ImageView addGameToView(View viewFrom) {
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(sizeGameFilter, sizeGameFilter);
+    params.gravity = Gravity.BOTTOM | Gravity.LEFT;
     params.bottomMargin = screenUtils.dpToPx(5);
-    params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+    params.leftMargin = btnNewGameLocation[0];
 
     currentGameView = new ImageView(getContext());
     currentGameView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
