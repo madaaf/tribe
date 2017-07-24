@@ -74,7 +74,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     Timber.e("SOEF message challenge " + challenge);
     gameChallenge.setCurrentChallenge(challenge);
     gameChallenge.setPeerId(guest.getId());
-    gameChallenge.setName("message send by  : " + user.getDisplayName() + " " + user.getId());
+    // gameChallenge.setName("message send by  : " + user.getDisplayName() + " " + user.getId());
 
     onNextChallenge.onNext(gameChallenge);
 

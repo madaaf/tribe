@@ -83,7 +83,7 @@ public class GameChallengesView extends FrameLayout {
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
-    Timber.e("soef setGameChallenge");
+    Timber.e("soef setGameChallenge visisble");
     setVisibility(VISIBLE);
     this.gameChallenge = gameChallenge;
     adapter.setGameChallenge(gameChallenge);

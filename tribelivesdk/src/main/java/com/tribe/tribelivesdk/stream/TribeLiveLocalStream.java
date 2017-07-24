@@ -2,7 +2,6 @@ package com.tribe.tribelivesdk.stream;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.webrtc.Camera1Enumerator;
@@ -185,7 +184,7 @@ public class TribeLiveLocalStream {
     Timber.d("Stop video capture");
     stopVideoCapture();
     Timber.d("Disposing video capturer");
-    capturer.dispose();
+    if (capturer != null) capturer.dispose();
     capturer = null;
 
     if (videoSource != null) {

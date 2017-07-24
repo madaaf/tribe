@@ -737,7 +737,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
             } else {
               Timber.e("soef data already exist launchChallengeGame");
-             // launchChallengeGame();
+              // launchChallengeGame();
               viewLive.setNextChallenge();
             }
             break;

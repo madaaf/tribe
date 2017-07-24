@@ -469,28 +469,29 @@ public class LiveView extends FrameLayout {
     viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
-      displayStartGameNotification(game.getName(), user.getDisplayName());
-      restartGame(game);
-
       switch (game.getId()) {
         case Game.GAME_POST_IT:
           Timber.e("SOEF onStartGame postit");
+          displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
+          restartGame(game);
           break;
         case Game.GAME_CHALLENGE:
-          isChallengeGameActivated = true;
+          displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
           Timber.e("SOEF onStartGame challenge");
+          restartGame(game);
           break;
       }
     }));
 
     persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
-      resterChallengeGame(gameChallenge.getName(), gameChallenge.getPeerId(),
+      nextChallengeGame(gameChallenge.getName(), gameChallenge.getPeerId(),
           gameChallenge.getCurrentChallenge());
     }));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       displayReRollGameNotification(user.getDisplayName());
       restartGame(game);
+      setNextChallenge();
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
@@ -500,7 +501,7 @@ public class LiveView extends FrameLayout {
                 displayReRollGameNotification(user.getDisplayName());
                 restartGame(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
-                stopGame(true);
+                stopGame(true, game.getId());
                 displayStopGameNotification(game.getName(), user.getDisplayName());
                 room.sendToPeers(getStopGamePayload(game), false);
               }
@@ -603,14 +604,9 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> { //SOEF STOP
       Game game = gameManager.getGameById(pairSessionGame.second);
-      if(game.getId().equals(Game.GAME_CHALLENGE)){
-        isChallengeGameActivated = false;
-      }
-      if (game != null) {
-        String displayName = getDisplayNameFromSession(pairSessionGame.first);
-        displayStopGameNotification(game.getName(), displayName);
-        stopGame(false);
-      }
+      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+      displayStopGameNotification(game.getName(), displayName);
+      stopGame(false, game.getId());
     }));
 
     tempSubscriptions.add(
@@ -1405,15 +1401,37 @@ public class LiveView extends FrameLayout {
   }
 
   private void restartGame(Game game) {
-    startGame(game, true);
-    room.sendToPeers(getNewGamePayload(game), false);
+    if (game.getId().equals(Game.GAME_CHALLENGE)) {
+      if (true) {
+        //if (!isChallengeGameActivated) {
+        Timber.e("SOEF onStartGame challenge send to peer");
+        startGame(game, true);
+        room.sendToPeers(getNewGamePayload(game), false);
+        isChallengeGameActivated = true;
+      } else {
+        Timber.e("SOEF game challenge already started");
+        GameChallenge gameChallenge = (GameChallenge) game;
+        nextChallengeGame(gameChallenge.getName(), gameChallenge.getPeerId(),
+            gameChallenge.getCurrentChallenge());
+      }
+    } else {
+      startGame(game, true);
+      room.sendToPeers(getNewGamePayload(game), false);
+    }
   }
 
-  private void resterChallengeGame(String userId, String peerId, String challenge) {
+  private void nextChallengeGame(String userId, String peerId, String challenge) {
+    Timber.e("soef next challenge game");
     room.sendToPeers(getNewChallengePayload(userId, peerId, challenge), false);
   }
 
-  private void stopGame(boolean isCurrentUserAction) {
+  private void stopGame(boolean isCurrentUserAction, String gameId) {
+
+    if (gameId.equals(Game.GAME_CHALLENGE)) {
+      isChallengeGameActivated = false;
+      Timber.e("soef challenge game stop");
+    }
+
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {

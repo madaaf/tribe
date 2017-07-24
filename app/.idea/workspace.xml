@@ -25,12 +25,11 @@
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengeViewPagerAdapter.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengeViewPagerAdapter.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/Game.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/Game.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/GameChallenge.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/GameChallenge.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/stream/TribeLiveLocalStream.java" afterPath="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/stream/TribeLiveLocalStream.java" />
     </list>
     <ignored path="app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -65,8 +64,8 @@
       <file leaf-file-name="Room.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1713">
-              <caret line="330" column="44" selection-start-line="330" selection-start-column="44" selection-end-line="330" selection-end-column="44" />
+            <state relative-caret-position="460">
+              <caret line="73" column="34" selection-start-line="73" selection-start-column="34" selection-end-line="73" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -75,8 +74,8 @@
       <file leaf-file-name="JsonToModel.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="234" column="12" selection-start-line="234" selection-start-column="12" selection-end-line="234" selection-end-column="12" />
+            <state relative-caret-position="180">
+              <caret line="224" column="0" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -85,12 +84,12 @@
       <file leaf-file-name="GameChallengesView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
+            <state relative-caret-position="339">
+              <caret line="78" column="12" selection-start-line="78" selection-start-column="12" selection-end-line="78" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3467#3468#0" expanded="true" />
-                <element signature="e#3499#3500#0" expanded="true" />
+                <element signature="e#3476#3477#0" expanded="true" />
+                <element signature="e#3508#3509#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -99,11 +98,13 @@
       <file leaf-file-name="GameChallengeViewPagerAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengeViewPagerAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
-              <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+            <state relative-caret-position="179">
+              <caret line="33" column="26" selection-start-line="33" selection-start-column="26" selection-end-line="33" selection-end-column="26" />
               <folding>
-                <element signature="e#3407#3408#0" expanded="true" />
-                <element signature="e#3439#3440#0" expanded="true" />
+                <element signature="e#1632#1633#0" expanded="true" />
+                <element signature="e#1661#1662#0" expanded="true" />
+                <element signature="e#1734#1735#0" expanded="true" />
+                <element signature="e#1765#1766#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -112,31 +113,41 @@
       <file leaf-file-name="LiveControlsView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="275" column="22" selection-start-line="275" selection-start-column="22" selection-end-line="275" selection-end-column="22" />
+            <state relative-caret-position="415">
+              <caret line="582" column="0" selection-start-line="582" selection-start-column="0" selection-end-line="582" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="LiveView.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="479" column="34" selection-start-line="479" selection-start-column="10" selection-end-line="479" selection-end-column="34" />
+            <state relative-caret-position="405">
+              <caret line="1411" column="33" selection-start-line="1411" selection-start-column="33" selection-end-line="1411" selection-end-column="33" />
               <folding>
-                <element signature="e#52730#52731#0" expanded="true" />
-                <element signature="e#52758#52759#0" expanded="true" />
+                <element signature="e#53522#53523#0" expanded="true" />
+                <element signature="e#53550#53551#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LiveActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="277">
-              <caret line="368" column="7" selection-start-line="368" selection-start-column="7" selection-end-line="368" selection-end-column="7" />
+            <state relative-caret-position="135">
+              <caret line="723" column="38" selection-start-line="723" selection-start-column="38" selection-end-line="723" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TribeLiveLocalStream.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/stream/TribeLiveLocalStream.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="302">
+              <caret line="201" column="13" selection-start-line="201" selection-start-column="13" selection-end-line="201" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -6124,7 +6135,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/datasource/LiveDataStore.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/cache/LiveCacheImpl.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/data/repository/user/DiskUserDataRepository.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/domain/interactor/user/UserRepository.java" />
@@ -6163,7 +6173,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/preferences/PreferencesUtils.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/presenter/LivePresenter.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/view_live.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
         <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/GameManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/gamesfilters/GamesFiltersAdapterDelegate.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java" />
@@ -6171,9 +6180,11 @@
         <option value="$PROJECT_DIR$/src/main/res/layout/item_game_challenges.xml" />
         <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/GameChallenge.java" />
         <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/game/Game.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java" />
+        <option value="$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/stream/TribeLiveLocalStream.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengeViewPagerAdapter.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
       </list>
     </option>
@@ -6220,7 +6231,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Snapper/build.gradle" />
-    <property name="device.picker.selection" value="b5a48a3c e1505890" />
+    <property name="device.picker.selection" value="b5a48a3c" />
     <property name="DEBUGGABLE_DEVICE" value="oneplus-oneplus_a3000-b5a48a3c" />
     <property name="DEBUGGABLE_PROCESS" value="com.tribe.app.debug" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
@@ -6634,7 +6645,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32837528" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22803347" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -6642,8 +6653,7 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41736403" sideWeight="0.50549453" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37343097" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34798536" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.46966526" sideWeight="0.4945055" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294979" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -6651,7 +6661,7 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27688786" sideWeight="0.502442" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21550672" sideWeight="0.4439528" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23535565" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32322174" sideWeight="0.493895" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21611722" sideWeight="0.47420964" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
@@ -6664,6 +6674,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34798536" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -6717,34 +6728,10 @@
           <option name="timeStamp" value="1573" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>963</line>
-          <properties />
-          <option name="timeStamp" value="1593" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>982</line>
-          <properties />
-          <option name="timeStamp" value="1601" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>1391</line>
-          <properties />
-          <option name="timeStamp" value="1604" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>599</line>
+          <line>600</line>
           <properties />
           <option name="timeStamp" value="1605" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
-          <line>1407</line>
-          <properties />
-          <option name="timeStamp" value="1606" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
@@ -6753,29 +6740,22 @@
           <option name="timeStamp" value="1608" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java</url>
-          <line>582</line>
+          <url>file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java</url>
+          <line>224</line>
           <properties />
-          <option name="timeStamp" value="1609" />
+          <option name="timeStamp" value="1620" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java</url>
-          <line>724</line>
+          <url>file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java</url>
+          <line>1387</line>
           <properties />
-          <option name="timeStamp" value="1616" />
+          <option name="timeStamp" value="1623" />
         </line-breakpoint>
-        <breakpoint enabled="true" type="OCSymbolicBreakpointType">
-          <properties>
-            <option name="moduleName" value="libart.so" />
-            <option name="symbolPattern" value="art_sigsegv_fault" />
-          </properties>
-          <option name="timeStamp" value="1615" />
-        </breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="1618" />
+      <option name="time" value="1624" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Android Hybrid Debugger (22990)-java">
@@ -7045,27 +7025,10 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/utils/preferences/DataChallengesGame.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/mvp/view/LiveMVPView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="36" column="7" selection-start-line="36" selection-start-column="7" selection-end-line="36" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/internal/di/modules/DataModule.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
           <caret line="133" column="40" selection-start-line="133" selection-start-column="40" selection-end-line="133" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7083,9 +7046,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="481">
           <caret line="323" column="62" selection-start-line="323" selection-start-column="62" selection-end-line="323" selection-end-column="62" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7117,9 +7077,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="7" column="63" selection-start-line="7" selection-start-column="63" selection-end-line="7" selection-end-column="63" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7127,7 +7084,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="70" column="11" selection-start-line="70" selection-start-column="11" selection-end-line="70" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7135,9 +7091,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="157">
           <caret line="94" column="19" selection-start-line="94" selection-start-column="19" selection-end-line="94" selection-end-column="51" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7145,7 +7098,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="256">
           <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7164,7 +7116,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7190,25 +7141,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="13" column="6" selection-start-line="13" selection-start-column="6" selection-end-line="13" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/drawable-xxxhdpi/icon_game_challenge.webp">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/drawable-xxxhdpi/icon_game_challenge_without_bordure.webp">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/drawable-xxxhdpi/icon_game_challenge.webp" />
+    <entry file="file://$PROJECT_DIR$/src/main/res/drawable-xxxhdpi/icon_game_challenge_without_bordure.webp" />
     <entry file="file://$PROJECT_DIR$/src/main/res/drawable/picto_game_live_transition.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="38" selection-start-line="0" selection-start-column="38" selection-end-line="0" selection-end-column="38" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7266,7 +7207,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
           <caret line="72" column="0" selection-start-line="72" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7279,12 +7219,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="12" column="23" selection-start-line="12" selection-start-column="23" selection-end-line="12" selection-end-column="23" />
-          <folding>
-            <element signature="e#444#445#0" expanded="false" />
-            <element signature="e#468#469#0" expanded="false" />
-            <element signature="e#644#645#0" expanded="false" />
-            <element signature="e#679#680#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7308,12 +7242,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="305">
           <caret line="270" column="41" selection-start-line="270" selection-start-column="41" selection-end-line="270" selection-end-column="41" />
-          <folding>
-            <element signature="e#9379#9380#0" expanded="false" />
-            <element signature="e#9423#9424#0" expanded="false" />
-            <element signature="e#9561#9562#0" expanded="false" />
-            <element signature="e#9586#9587#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -7326,7 +7254,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7353,7 +7280,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
           <caret line="196" column="30" selection-start-line="196" selection-start-column="30" selection-end-line="196" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7373,19 +7299,11 @@
         <state relative-caret-position="135">
           <caret line="48" column="25" selection-start-line="48" selection-start-column="25" selection-end-line="48" selection-end-column="25" />
           <folding>
-            <element signature="e#936#962#0" expanded="true" />
-            <element signature="e#995#1021#0" expanded="true" />
-            <element signature="e#1502#1541#0" expanded="true" />
-            <element signature="e#3401#3439#0" expanded="true" />
+            <element signature="e#936#962#0" expanded="false" />
+            <element signature="e#995#1021#0" expanded="false" />
+            <element signature="e#1502#1541#0" expanded="false" />
+            <element signature="e#3401#3439#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1713">
-          <caret line="330" column="44" selection-start-line="330" selection-start-column="44" selection-end-line="330" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7423,61 +7341,90 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java">
+    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/stream/TribeLiveLocalStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
+        <state relative-caret-position="302">
+          <caret line="201" column="13" selection-start-line="201" selection-start-column="13" selection-end-line="201" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-25/org/json/JSONObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="112" column="11" selection-start-line="112" selection-start-column="11" selection-end-line="112" selection-end-column="11" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3467#3468#0" expanded="true" />
-            <element signature="e#3499#3500#0" expanded="true" />
+            <element signature="e#5095#5096#0" expanded="false" />
+            <element signature="e#5163#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengeViewPagerAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+        <state relative-caret-position="179">
+          <caret line="33" column="26" selection-start-line="33" selection-start-column="26" selection-end-line="33" selection-end-column="26" />
           <folding>
-            <element signature="e#3407#3408#0" expanded="true" />
-            <element signature="e#3439#3440#0" expanded="true" />
+            <element signature="e#1632#1633#0" expanded="true" />
+            <element signature="e#1661#1662#0" expanded="true" />
+            <element signature="e#1734#1735#0" expanded="true" />
+            <element signature="e#1765#1766#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="275" column="22" selection-start-line="275" selection-start-column="22" selection-end-line="275" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/JsonToModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="234" column="12" selection-start-line="234" selection-start-column="12" selection-end-line="234" selection-end-column="12" />
+        <state relative-caret-position="180">
+          <caret line="224" column="0" selection-start-line="224" selection-start-column="0" selection-end-line="224" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveControlsView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="479" column="34" selection-start-line="479" selection-start-column="10" selection-end-line="479" selection-end-column="34" />
-          <folding>
-            <element signature="e#52730#52731#0" expanded="true" />
-            <element signature="e#52758#52759#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="415">
+          <caret line="582" column="0" selection-start-line="582" selection-start-column="0" selection-end-line="582" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="368" column="7" selection-start-line="368" selection-start-column="7" selection-end-line="368" selection-end-column="7" />
+        <state relative-caret-position="135">
+          <caret line="723" column="38" selection-start-line="723" selection-start-column="38" selection-end-line="723" selection-end-column="38" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tribelivesdk/src/main/java/com/tribe/tribelivesdk/core/Room.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="73" column="34" selection-start-line="73" selection-start-column="34" selection-end-line="73" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="339">
+          <caret line="78" column="12" selection-start-line="78" selection-start-column="12" selection-end-line="78" selection-end-column="12" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3476#3477#0" expanded="true" />
+            <element signature="e#3508#3509#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="1411" column="33" selection-start-line="1411" selection-start-column="33" selection-end-line="1411" selection-end-column="33" />
+          <folding>
+            <element signature="e#53522#53523#0" expanded="true" />
+            <element signature="e#53550#53551#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
