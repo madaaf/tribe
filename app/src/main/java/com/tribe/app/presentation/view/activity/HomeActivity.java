@@ -504,7 +504,7 @@ public class HomeActivity extends BaseActivity
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
-          temp.add(new Friendship(Recipient.ID_VIDEO));
+          // temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
@@ -878,6 +878,7 @@ public class HomeActivity extends BaseActivity
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
+    if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
 
     if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {

@@ -144,6 +144,8 @@ public class TopBarView extends FrameLayout {
     initResources();
     initUI();
 
+    reloadUserUI();
+
     super.onFinishInflate();
   }
 
@@ -178,8 +180,6 @@ public class TopBarView extends FrameLayout {
       }
     });
 
-    viewAvatar.load(user.getProfilePicture());
-
     subscriptions.add(RxTextView.textChanges(editTextSearch)
         .map(CharSequence::toString)
         .observeOn(AndroidSchedulers.mainThread())
@@ -187,6 +187,10 @@ public class TopBarView extends FrameLayout {
     if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
       displaySyncBtn();
     }
+  }
+
+  public void reloadUserUI() {
+    viewAvatar.load(user.getProfilePicture());
   }
 
   private void displaySyncBtn() {

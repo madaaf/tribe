@@ -27,6 +27,8 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -116,6 +118,12 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
+  @Override
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.incrUserTimeInCall(userId, timeInCall);
+  }
+
   @Override public Observable<List<Contact>> contacts() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.contacts()
@@ -135,7 +143,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s) {
+  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     return null;
   }
 

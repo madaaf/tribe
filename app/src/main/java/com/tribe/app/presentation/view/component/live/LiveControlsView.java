@@ -427,7 +427,7 @@ public class LiveControlsView extends FrameLayout {
     recyclerViewGames.getRecycledViewPool().clear();
     gamesAdapter.notifyDataSetChanged();
 
-    int toY = -screenUtils.dpToPx(65);
+    int toY = -screenUtils.dpToPx(85);
 
     layoutGame.animate()
         .translationY(toY)

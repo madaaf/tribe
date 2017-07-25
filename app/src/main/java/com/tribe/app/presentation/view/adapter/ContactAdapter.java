@@ -148,9 +148,11 @@ public class ContactAdapter extends RecyclerView.Adapter {
         }
       } else if (obj instanceof User) {
         User u = (User) obj;
-        u.setNewFriend(true);
-        u.setAnimateAdd(true);
-        notifyDataSetChanged();
+        if (u.equals(user)) {
+          u.setAnimateAdd(true);
+          u.setFriend(true);
+          notifyDataSetChanged();
+        }
       }
     }
   }

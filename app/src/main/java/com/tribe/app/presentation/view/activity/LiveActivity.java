@@ -42,6 +42,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
@@ -89,9 +90,11 @@ import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
+import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -278,6 +281,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
   private List<String> userUnder13List = new ArrayList<>();
+  private float initialBrightness = -1;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -298,6 +302,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     manageClickNotification(getIntent());
     initAppState();
     initGameManager();
+    initBrightness();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -354,6 +359,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onDestroy() {
     Timber.d("onDestroy");
+
+    resetBrightness();
 
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -448,6 +455,29 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       }
     }));
     //livePresenter.fbidUpdated();
+  }
+
+  private void initBrightness() {
+
+    int hour = Calendar.getInstance().get(Calendar.HOUR);
+
+    if (hour <= 7 || hour >= 20) {
+      WindowManager.LayoutParams attributes = getWindow().getAttributes();
+      initialBrightness = attributes.screenBrightness;
+      attributes.screenBrightness = 1;
+
+      getWindow().setAttributes(attributes);
+    }
+  }
+
+  private void resetBrightness() {
+
+    WindowManager.LayoutParams attributes = getWindow().getAttributes();
+    if (initialBrightness > 0 && attributes.screenBrightness == 1) {
+
+      attributes.screenBrightness = initialBrightness;
+      getWindow().setAttributes(attributes);
+    }
   }
 
   private void initCallRouletteService() {
@@ -636,6 +666,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
+    subscriptions.add(viewLive.onEndCall()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(duration -> {
+              livePresenter.incrementTimeInCall(user.getId(), duration);
+            }));
+
     subscriptions.add(notificationContainerView.onFacebookSuccess()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
@@ -659,19 +696,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(
         Observable.merge(viewInviteLive.onInviteLiveClick(), viewLive.onShare()).subscribe(view -> {
-          Bundle bundle = new Bundle();
-          bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
-          bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-          tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-
-          if (StringUtils.isEmpty(live.getLinkId())) {
-            livePresenter.getRoomLink(roomConfiguration.getRoomId());
-            Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
-                .show();
-          } else {
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
-                live.getLinkId(), null, false);
-          }
+          share();
         }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited()
@@ -715,7 +740,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
     }));
 
-    subscriptions.add(viewLive.onRoomFull().subscribe(aVoid -> roomFull()));
+    subscriptions.add(viewLive.onRoomError().subscribe(error -> roomError(error)));
 
     subscriptions.add(viewLive.onRemotePeerClick().subscribe(o -> {
       if (o != null) userInfosNotificationView.displayView(o);
@@ -769,8 +794,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           });
     }));
 
-    subscriptions.add(userInfosNotificationView.onAdd().subscribe(s -> {
-      livePresenter.createFriendship(s);
+    subscriptions.add(userInfosNotificationView.onAdd().subscribe(user -> {
+
+      if (user != null) {
+        if (user.isInvisible()) {
+          DialogFactory.dialog(context(), user.getDisplayName(),
+                  EmojiParser.demojizedText(
+                          context().getString(R.string.add_friend_error_invisible)),
+                  context().getString(R.string.add_friend_error_invisible_invite_android),
+                  context().getString(R.string.add_friend_error_invisible_cancel))
+                  .filter(x -> x == true)
+                  .subscribe(a -> share());
+
+        } else {
+          livePresenter.createFriendship(user.getId());
+        }
+      }
     }));
 
     subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
@@ -782,18 +821,42 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(diceView.onNextDiceClick().subscribe(aVoid -> {
       if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        reRollTheDiceFromCallRoulette();
+        reRollTheDiceFromCallRoulette(false);
       } else {
         reRollTheDiceFromLiveRoom();
       }
     }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
-      reRollTheDiceFromCallRoulette();
+      reRollTheDiceFromCallRoulette(true);
     }));
   }
 
-  private void reRollTheDiceFromCallRoulette() {
+  private void share() {
+
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+    tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+
+    if (StringUtils.isEmpty(live.getLinkId())) {
+      livePresenter.getRoomLink(roomConfiguration.getRoomId());
+      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
+              .show();
+    } else {
+      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
+              live.getLinkId(), null, false);
+    }
+  }
+
+  private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
+
+    if (isFromOthers) {
+      Toast.makeText(this,
+              EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
+              Toast.LENGTH_LONG).show();
+    }
+
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
     viewLive.endCall(true);
     viewLive.dispose(true);
@@ -1010,6 +1073,20 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void roomFull() {
     putExtraErrorNotif();
     finish();
+  }
+
+  private void roomError(WebSocketError error) {
+
+    if (error.getId() == WebSocketError.ERROR_ROOM_FULL) {
+      roomFull();
+
+    } else {
+      Toast.makeText(getApplicationContext(),
+              ErrorMessageFactory.create(getBaseContext(), null),
+              Toast.LENGTH_LONG).show();
+
+      finish();
+    }
   }
 
   private void putExtraHomeIntent() {

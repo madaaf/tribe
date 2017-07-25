@@ -46,6 +46,7 @@ import javax.inject.Singleton;
       user.setInvisibleMode(userRealm.isInvisibleMode());
       user.setPhone(userRealm.getPhone());
       user.setFbid(userRealm.getFbid());
+      user.setTimeInCall(userRealm.getTimeInCall());
       if (userRealm.getLocation() != null) {
         user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
       }
@@ -111,6 +112,7 @@ import javax.inject.Singleton;
       userRealm.setPushNotif(user.isPushNotif());
       userRealm.setTribeSave(user.isTribeSave());
       userRealm.setIsOnline(user.isOnline());
+      userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
       if (shouldTransformFriendships) {
         if (user.getMembershipList() != null) {
