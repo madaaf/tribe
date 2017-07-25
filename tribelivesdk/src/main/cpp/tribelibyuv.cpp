@@ -55,7 +55,7 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_YUVToARGB(JNIEnv *env, jobjec
 }
 
 JNIEXPORT jint JNICALL
-Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ARGBToYUV(JNIEnv *env, jobject,
+Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ABGRToYUV(JNIEnv *env, jobject,
                                                              jbyteArray argbArray,
                                                              jint width,
                                                              jint height,
@@ -70,6 +70,34 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ARGBToYUV(JNIEnv *env, jobjec
 
     int r1 = ABGRToARGB(srcDataRGBA, src_stride_rgba, dstDataARGB, dst_stride_argb, width,
                         height);
+
+    const uint8 *srcData = (uint8 *) rgbData;
+    int src_stride_argb = width << 2;
+    uint8 *dst_y = (uint8 *) yuvOut;
+    int dst_stride_y = width;
+    uint8 *dst_vu = dst_y + width * height;
+    int dst_stride_vu = width;
+
+    int r = ARGBToNV21(srcData, src_stride_argb,
+                       dst_y, dst_stride_y,
+                       dst_vu, dst_stride_vu,
+                       width, height);
+
+    env->ReleasePrimitiveArrayCritical(argbArray, rgbData, 0);
+    env->ReleasePrimitiveArrayCritical(yuvOutArray, yuvOut, 0);
+
+    return r;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_ARGBToYUV(JNIEnv *env, jobject,
+                                                             jbyteArray argbArray,
+                                                             jint width,
+                                                             jint height,
+                                                             jbyteArray yuvOutArray) {
+
+    jbyte *rgbData = (jbyte *) env->GetPrimitiveArrayCritical(argbArray, 0);
+    jbyte *yuvOut = (jbyte *) env->GetPrimitiveArrayCritical(yuvOutArray, 0);
 
     const uint8 *srcData = (uint8 *) rgbData;
     int src_stride_argb = width << 2;

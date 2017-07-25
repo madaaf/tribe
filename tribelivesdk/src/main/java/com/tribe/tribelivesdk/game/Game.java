@@ -65,8 +65,4 @@ public abstract class Game extends GameFilter {
   public Observable<Frame> onRemoteFrame() {
     return onRemoteFrame;
   }
-
-  public Observable<TribeI420Frame> onLocalFrame() {
-    return onLocalFrame;
-  }
 }

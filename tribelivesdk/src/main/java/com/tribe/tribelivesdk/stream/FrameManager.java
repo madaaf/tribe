@@ -11,8 +11,8 @@ import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.webrtc.Frame;
-import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -38,16 +38,16 @@ public class FrameManager {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription subscriptionGame;
   private Observable<Frame> onNewPreviewFrame;
   private PublishSubject<Frame> onNewFrame = PublishSubject.create();
   private PublishSubject<Frame> onFrameSizeChange = PublishSubject.create();
-  private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
 
   public FrameManager(Context context) {
     this.context = context;
     libYuvConverter = LibYuvConverter.getInstance();
-    openCVWrapper = new OpenCVWrapper();
+    openCVWrapper = OpenCVWrapper.getInstance();
     initGameManager();
     initFilterManager();
     initUlseeManager();
@@ -62,7 +62,29 @@ public class FrameManager {
 
   private void initSubscriptions() {
     subscriptions.add(gameManager.onRemoteFrame().onBackpressureDrop().subscribe(onRemoteFrame));
-    subscriptions.add(gameManager.onLocalFrame().onBackpressureDrop().subscribe(onLocalFrame));
+    subscriptions.add(gameManager.onGameChange().subscribe(game -> {
+      if (game != null && gameManager.isFacialRecognitionNeeded() && subscriptionGame == null) {
+        subscriptionGame = onNewPreviewFrame.onBackpressureDrop()
+            .filter(frame -> !processing && gameManager.isLocalFrameDifferent())
+            .observeOn(Schedulers.computation())
+            .map(frame1 -> {
+              processing = true;
+
+              processFrame(frame1);
+
+              libYuvConverter.YUVToARGB(frame1.getData(), frame1.getWidth(), frame1.getHeight(),
+                  argb);
+              frame1.setData(argb);
+              frame1.setDataOut(yuvOut);
+              onNewFrame.onNext(frame1);
+
+              return frame1;
+            })
+            .subscribe(frame -> processing = false);
+      } else if (game == null || !gameManager.isFacialRecognitionNeeded()) {
+        clearSubscriptionGame();
+      }
+    }));
   }
 
   private void initFilterManager() {
@@ -75,26 +97,12 @@ public class FrameManager {
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
     subscriptions.add(onFrame.onBackpressureDrop()
-        .filter(frame -> !processing)
+        .filter(frame -> !processing && !gameManager.isLocalFrameDifferent())
         .observeOn(Schedulers.computation())
         .map(frame1 -> {
           processing = true;
-          if (firstFrame ||
-              previousWidth != frame1.getWidth() ||
-              previousHeight != frame1.getHeight() ||
-              previousRotation != frame1.getRotation()) {
-            argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
-            yuvOut = new byte[frame1.getData().length];
 
-            frame1.setDataOut(yuvOut);
-
-            firstFrame = false;
-            previousHeight = frame1.getHeight();
-            previousWidth = frame1.getWidth();
-            previousRotation = frame1.getRotation();
-
-            onFrameSizeChange.onNext(frame1);
-          }
+          processFrame(frame1);
 
           boolean shouldSendRemoteFrame = true;
 
@@ -106,7 +114,7 @@ public class FrameManager {
           //    " / " +
           //    (timeEndFlip - timeStart) / 1000000.0f +
           //    " ms");
-          libYuvConverter.ARGBToYUV(argb, frame1.getWidth(), frame1.getHeight(), yuvOut);
+          libYuvConverter.ABGRToYUV(argb, frame1.getWidth(), frame1.getHeight(), yuvOut);
           frame1.setDataOut(yuvOut);
           long timeEnd = System.nanoTime();
           //Timber.d("Total time of converting frame " +
@@ -123,12 +131,6 @@ public class FrameManager {
 
   public void initPreviewFrameSubscription(Observable<Frame> onPreviewFrame) {
     this.onNewPreviewFrame = onPreviewFrame;
-
-    if (filterManager.getFilter() instanceof FaceMaskFilter ||
-        (gameManager.getCurrentGame() != null &&
-            gameManager.getCurrentGame() instanceof GamePostIt)) {
-      ulseeManager.initFrameSubscription(onPreviewFrame);
-    }
   }
 
   public void initNewFacesSubscriptions(Observable<Pair<RectF[], int[]>> observable) {
@@ -148,21 +150,59 @@ public class FrameManager {
     filterManager.dispose();
     ulseeManager.dispose();
     gameManager.dispose();
+    clearSubscriptionGame();
   }
 
   public void startCapture() {
-    //initSubscriptions();
+    initSubscriptions();
   }
 
   public void stopCapture() {
     firstFrame = true;
     subscriptions.clear();
     ulseeManager.stopCapture();
-    gameManager.stopCapture();
   }
 
   public void switchCamera() {
     firstFrame = true;
+  }
+
+  /////////////
+  // PRIVATE //
+  /////////////
+
+  private void processFrame(Frame frame) {
+    boolean shouldForce = false;
+
+    if (gameManager.getCurrentGame() instanceof GamePostIt) {
+      GamePostIt gamePostIt = (GamePostIt) gameManager.getCurrentGame();
+      shouldForce = gamePostIt.shouldGenerateNewName();
+    }
+
+    if (firstFrame ||
+        previousWidth != frame.getWidth() ||
+        previousHeight != frame.getHeight() ||
+        previousRotation != frame.getRotation() ||
+        shouldForce) {
+      argb = new byte[frame.getWidth() * frame.getHeight() * 4];
+      yuvOut = new byte[frame.getData().length];
+
+      frame.setDataOut(yuvOut);
+
+      firstFrame = false;
+      previousHeight = frame.getHeight();
+      previousWidth = frame.getWidth();
+      previousRotation = frame.getRotation();
+
+      onFrameSizeChange.onNext(frame);
+    }
+  }
+
+  private void clearSubscriptionGame() {
+    if (subscriptionGame != null) {
+      subscriptionGame.unsubscribe();
+      subscriptionGame = null;
+    }
   }
 
   /////////////////
@@ -171,9 +211,5 @@ public class FrameManager {
 
   public Observable<Frame> onRemoteFrame() {
     return onRemoteFrame;
-  }
-
-  public Observable<TribeI420Frame> onLocalFrame() {
-    return onLocalFrame;
   }
 }

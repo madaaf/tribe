@@ -22,6 +22,8 @@ public class LibYuvConverter {
 
   public native int YUVToARGB(byte[] yuv, int width, int height, byte[] argb);
 
+  public native void ABGRToYUV(byte[] argb, int width, int height, byte[] yuvOut);
+
   public native void ARGBToYUV(byte[] argb, int width, int height, byte[] yuvOut);
 
   public native void ARGBToI420(byte[] argb, int width, int height, byte[] yuvOut);

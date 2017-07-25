@@ -2,7 +2,6 @@ package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
 import com.tribe.tribelivesdk.webrtc.Frame;
-import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -34,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
-  private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
+  private PublishSubject<Game> onGameChange = PublishSubject.create();
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
@@ -46,7 +45,6 @@ import rx.subscriptions.CompositeSubscription;
 
   public void initSubscriptions() {
     for (Game game : gameList) {
-      subscriptions.add(game.onLocalFrame().subscribe(onLocalFrame));
       subscriptions.add(game.onRemoteFrame().subscribe(onRemoteFrame));
     }
   }
@@ -60,7 +58,7 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public void initOnNewFrameObs(Observable<Frame> obs) {
-    subscriptions.add(obs.subscribe(frame -> currentGame.apply(frame)));
+    subscriptions.add(obs.onBackpressureDrop().subscribe(frame -> currentGame.apply(frame)));
   }
 
   public List<Game> getGames() {
@@ -82,10 +80,8 @@ import rx.subscriptions.CompositeSubscription;
       GamePostIt gamePostIt = (GamePostIt) game;
       gamePostIt.generateNewName();
     }
-  }
 
-  public void stopCapture() {
-    subscriptions.clear();
+    onGameChange.onNext(currentGame);
   }
 
   public void stop() {
@@ -97,6 +93,10 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public boolean isFacialRecognitionNeeded() {
+    return currentGame != null && currentGame.getId().equals(Game.GAME_POST_IT);
+  }
+
+  public boolean isLocalFrameDifferent() {
     return currentGame != null && currentGame.getId().equals(Game.GAME_POST_IT);
   }
 
@@ -115,7 +115,7 @@ import rx.subscriptions.CompositeSubscription;
     return onRemoteFrame;
   }
 
-  public Observable<TribeI420Frame> onLocalFrame() {
-    return onLocalFrame;
+  public Observable<Game> onGameChange() {
+    return onGameChange;
   }
 }

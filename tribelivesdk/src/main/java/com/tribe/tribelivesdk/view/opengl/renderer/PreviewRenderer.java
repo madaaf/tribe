@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import com.tribe.tribelivesdk.core.MediaConstraints;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
@@ -48,6 +49,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   private PreviewTextureInterface previewTexture;
   private boolean updateSurface = false, openGLContextSet = false;
   private UlseeManager ulseeManager;
+  private GameManager gameManager;
   private float[] stMatrix = new float[16];
   private CameraInfo cameraInfo;
   private float surfaceWidth = 1, surfaceHeight = 1;
@@ -81,6 +83,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     ulseeManager = UlseeManager.getInstance(context);
     filterManager = FilterManager.getInstance(context);
     libYuvConverter = LibYuvConverter.getInstance();
+    gameManager = GameManager.getInstance(context);
   }
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
@@ -261,38 +264,41 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
         }
       }
 
-      synchronized (frameListenerLock) {
-        if (filter.getFbo() == null) return;
-        if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
+      if (!gameManager.isLocalFrameDifferent()) {
+        synchronized (frameListenerLock) {
+          if (filter.getFbo() == null) return;
+          if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
 
-        filter.getFbo().bind();
-        //long timeStart = System.nanoTime();
-        byteBuffer.rewind();
-        libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
-        byteBuffer.flip();
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+          filter.getFbo().bind();
+          //long timeStart = System.nanoTime();
+          byteBuffer.rewind();
+          libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+          byteBuffer.flip();
+          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //long timeEndReadPBO = System.nanoTime();
-        //Timber.d("Total time of read PBO frame "
-        //    + " / "
-        //    + (timeEndReadPBO - timeStart) / 1000000.0f
-        //    + " ms");
-        //Timber.d("WidthOut : " + widthOut + " / height out : " + heightOut);
-        frame = new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
-            cameraInfo.isFrontFacing());
-        onFrameAvailable.onNext(frame);
+          //long timeEndReadPBO = System.nanoTime();
+          //Timber.d("Total time of read PBO frame "
+          //    + " / "
+          //    + (timeEndReadPBO - timeStart) / 1000000.0f
+          //    + " ms");
+          //Timber.d("WidthOut : " + widthOut + " / height out : " + heightOut);
+          frame =
+              new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
+                  cameraInfo.isFrontFacing());
+          onFrameAvailable.onNext(frame);
 
-        //ByteBuffer byteBufferBitmap = ByteBuffer.wrap(byteBuffer.array());
-        //Bitmap bitmap = Bitmap.createBitmap(widthOut, heightOut, Bitmap.Config.ARGB_8888);
-        //bitmap.copyPixelsFromBuffer(byteBufferBitmap);
-        //savePNGImageToGallery(bitmap, context, "tribe_test.jpg");
+          //ByteBuffer byteBufferBitmap = ByteBuffer.wrap(byteBuffer.array());
+          //Bitmap bitmap = Bitmap.createBitmap(widthOut, heightOut, Bitmap.Config.ARGB_8888);
+          //bitmap.copyPixelsFromBuffer(byteBufferBitmap);
+          //savePNGImageToGallery(bitmap, context, "tribe_test.jpg");
 
-        //long timeEndFrame = System.nanoTime();
-        //Timber.d("Total time of end frame "
-        //    + " / "
-        //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
-        //    + " ms");
+          //long timeEndFrame = System.nanoTime();
+          //Timber.d("Total time of end frame "
+          //    + " / "
+          //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
+          //    + " ms");
+        }
       }
     }
   }
