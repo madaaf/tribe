@@ -801,14 +801,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(diceView.onNextDiceClick().subscribe(aVoid -> {
       if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        reRollTheDiceFromCallRoulette();
+        reRollTheDiceFromCallRoulette(false);
       } else {
         reRollTheDiceFromLiveRoom();
       }
     }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().subscribe(aVoid -> {
-      reRollTheDiceFromCallRoulette();
+      reRollTheDiceFromCallRoulette(true);
     }));
   }
 
@@ -829,11 +829,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
-  private void reRollTheDiceFromCallRoulette() {
+  private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
 
-    Toast.makeText(this,
-            EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
-            Toast.LENGTH_LONG).show();
+    if (isFromOthers) {
+      Toast.makeText(this,
+              EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
+              Toast.LENGTH_LONG).show();
+    }
 
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
     viewLive.endCall(true);
