@@ -114,7 +114,7 @@ public class SearchPresenter implements Presenter {
     addedUserIds.add(userId);
 
     createFriendshipSubscriber = new CreateFriendshipSubscriber();
-    createFriendship.setUserId(userId);
+    createFriendship.configure(userId, 1500);
     createFriendship.execute(createFriendshipSubscriber);
   }
 
