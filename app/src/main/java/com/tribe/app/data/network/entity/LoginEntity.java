@@ -17,7 +17,7 @@ public class LoginEntity implements Serializable {
   private String countryCode;
   private String nationalNumber;
   private String call;
-  private AccessToken fbAccessToken;
+  private transient AccessToken fbAccessToken;
 
   public LoginEntity(String to, boolean shouldCall) {
     this.to = to;
