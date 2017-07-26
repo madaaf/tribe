@@ -52,6 +52,7 @@ public class LabelType implements Serializable {
 
   public static final String LOGIN = "login";
   public static final String LOGIN_ALTERNATIVE = "loginAlternative";
+  public static final String LOGIN_CALL = "loginCall";
   public static final String FORCE_LOGOUT = "forceLogout";
 
   public static final String INVITE_SMS = "inviteSMS";

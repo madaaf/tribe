@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
@@ -56,7 +57,6 @@ import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVPView, ViewTreeObserver.OnGlobalLayoutListener {
-  private static String MOCKED_PHONE_NUMBER = "+15556787676";
   private static String DEEP_LINK = "DEEP_LINK";
 
   public static Intent getCallingIntent(Context context, Uri deepLink) {
@@ -95,7 +95,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     initUi();
     initDependencyInjector();
     initRessource();
-    deepLink = getIntent().getData();
+    loginFromDeepLink();
     Timber.d("KPI_Onboarding_Start");
   }
 
@@ -120,22 +120,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   //  PRIVATE   //
   ////////////////
 
-  private void loginUser(String phoneNumber, AccessToken fbAccessToken) {
-    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
-      Timber.d("login from deeplink " + deepLink + ", phoneNumber :" + phoneNumber);
-      loginEntity = authPresenter.login(null, null, null, null);
-    } else if (phoneNumber != null) {
-      if (phoneNumber.equals(MOCKED_PHONE_NUMBER)) {
-        Timber.w("login with " + phoneNumber);
-        digitAuth();
-        return;
-      }
-      Timber.d("login with phoneNumber " + phoneNumber);
-      loginEntity = authPresenter.login(phoneNumber, null, null, null);
+  private void loginFromDeepLink() {
 
-    } else if (fbAccessToken != null) {
-      Timber.d("login with fbAccessToken " + fbAccessToken);
-      loginEntity = authPresenter.login(null, null, null, fbAccessToken);
+    deepLink = getIntent().getData();
+    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
+      Timber.d("login from deeplink " + deepLink);
+      loginEntity = authPresenter.login(null, null, null, null);
     }
   }
 
@@ -147,9 +137,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
       @Override public void success(DigitsSession session, String phoneNumber) {
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
         Timber.d("KPI_Onboarding_PinSucceeded");
-        userPhoneNumber.set(phoneNumber);
         Timber.d("digit login success " + phoneNumber);
-        loginUser(phoneNumber, null);
+        userPhoneNumber.set(phoneNumber);
+        loginEntity = authPresenter.login(phoneNumber, null, null, null);
       }
 
       @Override public void failure(DigitsException error) {
@@ -166,6 +156,19 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     Digits.authenticate(authConfig);
   }
 
+  private void alternativeAuth(boolean shouldCall) {
+
+    subscriptions.add(DialogFactory.numberPadDialog(this,
+            getString(R.string.onboarding_step_phone),
+            getString(R.string.action_start),
+            getString(R.string.action_cancel),
+            InputType.TYPE_CLASS_PHONE).subscribe(phoneNumber -> {
+
+      userPhoneNumber.set(phoneNumber);
+      authPresenter.requestCode(phoneNumber, shouldCall);
+    }));
+  }
+
   @OnLongClick(R.id.btnPhoneNumber) boolean menuPhoneNumber() {
     subscriptions.add(DialogFactory.showBottomSheetForPhoneNumberAuth(this).subscribe(type -> {
 
@@ -177,7 +180,11 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
             break;
 
           case LabelType.LOGIN_ALTERNATIVE:
-            // TODO : Show a popup.
+            alternativeAuth(false);
+            break;
+
+          case LabelType.LOGIN_CALL:
+            alternativeAuth(true);
             break;
         }
       }
@@ -298,6 +305,16 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
 
   @Override public void goToCode(Pin pin) {
     Timber.d("goToCode");
+
+    subscriptions.add(DialogFactory.numberPadDialog(context(),
+            getString(R.string.onboarding_step_code),
+            getString(R.string.action_enter),
+            getString(R.string.action_cancel),
+            InputType.TYPE_CLASS_NUMBER).subscribe(code -> {
+
+      Timber.d("login with phoneNumber (alternative) " + userPhoneNumber.get());
+      loginEntity = authPresenter.login(userPhoneNumber.get(), code, pin.getPinId(), null);
+    }));
   }
 
   @Override public void goToConnected(User user) {
@@ -345,7 +362,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     Timber.d("KPI_Onboarding_PinSucceeded");
     userPhoneNumber.set(null);
     Timber.d("facebook login success " + FacebookUtils.accessToken().getToken());
-    loginUser(null, FacebookUtils.accessToken());
+    loginEntity = authPresenter.login(null, null, null, FacebookUtils.accessToken());
   }
 
   /////////////////
