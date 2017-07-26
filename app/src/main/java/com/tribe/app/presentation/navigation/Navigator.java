@@ -445,9 +445,4 @@ public class Navigator {
     String text = EmojiParser.demojizedText(activity.getString(R.string.share_live, roomLink));
     shareGenericText(text, activity);
   }
-
-  public void navigateToSandbox(AuthActivity authActivity) {
-    Intent i = new Intent(authActivity, SendboxActivity.class);
-    authActivity.startActivity(i);
-  }
 }

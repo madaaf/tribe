@@ -35,8 +35,8 @@ public class FacebookPresenter extends UpdateUserPresenter {
     profileInfoView = (FBInfoMVPView) v;
   }
 
-  public void loginFacebook(boolean forceReauth) {
-    if (!FacebookUtils.isLoggedIn() || forceReauth) {
+  public void loginFacebook() {
+    if (!FacebookUtils.isLoggedIn()) {
       subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
         if (FacebookUtils.isLoggedIn()) {
           profileInfoView.successFacebookLogin();

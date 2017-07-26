@@ -201,6 +201,34 @@ public final class DialogFactory {
     return followTypes;
   }
 
+  public static Observable<LabelType> showBottomSheetForFacebookAuth(Context context) {
+    return createBottomSheet(context, generateLabelsForFacebookAuth(context));
+  }
+
+  private static List<LabelType> generateLabelsForFacebookAuth(Context context) {
+    List<LabelType> followTypes = new ArrayList<>();
+
+    followTypes.add(
+            new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(
+            new LabelType("Force logout", LabelType.FORCE_LOGOUT));
+    return followTypes;
+  }
+
+  public static Observable<LabelType> showBottomSheetForPhoneNumberAuth(Context context) {
+    return createBottomSheet(context, generateLabelsForPhoneNumberAuth(context));
+  }
+
+  private static List<LabelType> generateLabelsForPhoneNumberAuth(Context context) {
+    List<LabelType> followTypes = new ArrayList<>();
+
+    followTypes.add(
+            new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(
+            new LabelType("Login (alternative)", LabelType.LOGIN_ALTERNATIVE));
+    return followTypes;
+  }
+
   public static Observable<LabelType> showBottomSheetForInvites(Context context) {
     return createBottomSheet(context, generateLabelsForInvites(context));
   }

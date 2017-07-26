@@ -65,6 +65,8 @@
           android:layout_width="match_parent"
           android:layout_height="60dp"
           android:layout_marginBottom="@dimen/vertical_margin_small"
+          android:longClickable="true"
+          android:clickable="true"
           android:elevation="5dp">
 
         <ImageView
@@ -89,6 +91,8 @@
           android:layout_width="match_parent"
           android:layout_height="60dp"
           android:id="@+id/btnFacebook"
+          android:longClickable="true"
+          android:clickable="true"
           android:elevation="5dp">
 
         <ImageView

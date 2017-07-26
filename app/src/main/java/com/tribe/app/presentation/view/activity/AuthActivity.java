@@ -28,6 +28,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.ErrorLogin;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -41,6 +42,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ShakeDetector;
@@ -49,6 +51,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -84,9 +87,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
 
   // VARIABLES
   private LoginEntity loginEntity;
-  private ShakeDetector shakeDetector;
-  private SensorManager sensorManager;
-  private Sensor accelerometer;
   private Uri deepLink = null;
   private AuthCallback authCallback;
 
@@ -94,7 +94,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     super.onCreate(savedInstanceState);
     initUi();
     initDependencyInjector();
-    setSandboxBehavior();
     initRessource();
     deepLink = getIntent().getData();
     Timber.d("KPI_Onboarding_Start");
@@ -167,24 +166,57 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     Digits.authenticate(authConfig);
   }
 
+  @OnLongClick(R.id.btnPhoneNumber) boolean menuPhoneNumber() {
+    subscriptions.add(DialogFactory.showBottomSheetForPhoneNumberAuth(this).subscribe(type -> {
+
+      if (type != null) {
+        switch (type.getTypeDef()) {
+
+          case LabelType.LOGIN:
+            digitAuth();
+            break;
+
+          case LabelType.LOGIN_ALTERNATIVE:
+            // TODO : Show a popup.
+            break;
+        }
+      }
+    }));
+
+    return true;
+  }
+
+  @OnLongClick(R.id.btnFacebook) boolean menuFacebook() {
+    subscriptions.add(DialogFactory.showBottomSheetForFacebookAuth(this).subscribe(type -> {
+
+      if (type != null) {
+        switch (type.getTypeDef()) {
+
+          case LabelType.LOGIN:
+            facebookAuth();
+            break;
+
+          case LabelType.FORCE_LOGOUT:
+            FacebookUtils.logout();
+            facebookAuth();
+            break;
+        }
+      }
+    }));
+
+    return true;
+  }
+
   @OnClick(R.id.btnFacebook) void facebookAuth() {
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     Timber.d("KPI_Onboarding_Start");
 
-    facebookPresenter.loginFacebook(true);
+    facebookPresenter.loginFacebook();
   }
 
   private void logout() {
     navigator.navigateToLogout(this);
     Timber.d("logout");
-  }
-
-  private void setSandboxBehavior() {
-    sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-    accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    shakeDetector = new ShakeDetector(() -> {
-      navigator.navigateToSandbox(this);
-    });
   }
 
   private void initUi() {
@@ -194,13 +226,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     logoView.getViewTreeObserver().addOnGlobalLayoutListener(this);
   }
 
-
-
   private void initRessource() {
     authPresenter.onViewAttached(this);
     facebookPresenter.onViewAttached(this);
-    sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_UI);
-
   }
 
   private void connectUser(User user) {
@@ -256,7 +284,6 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   @Override protected void onDestroy() {
     authPresenter.onViewDetached();
     facebookPresenter.onViewDetached();
-    sensorManager.unregisterListener(shakeDetector);
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
   }
