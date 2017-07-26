@@ -18,6 +18,8 @@ public class User implements Serializable, BaseListInterface {
 
 
   public static final String ID = "id";
+  public static final String FBID = "fbid";
+  public static final String USERNAME = "username";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
 

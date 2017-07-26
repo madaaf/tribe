@@ -38,7 +38,7 @@ public interface UserDataStore {
    *
    * @param loginEntity the infos for the log in
    */
-  Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity);
+  Observable<AccessToken> login(LoginEntity loginEntity);
 
   /**
    * Get an {@link Observable} which will emit an Access Token.

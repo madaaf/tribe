@@ -204,6 +204,10 @@
 	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
 	
 	<!-- Onboarding Phone -->
+	<string name="onboarding_baseline">Have fun, together.</string>
+	<string name="onboarding_enter_options">Enter with</string>
+	<string name="onboarding_option_facebook">Facebook</string>
+	<string name="onboarding_option_phone_number">Phone number</string>
 	<string name="onboarding_step_phone">Use your phone number to connect</string>
 	<string name="onboarding_phone_disclaimer">By registering, I agree to the Terms of Service &amp; Privacy Policy</string>
 	<string name="onboarding_step_code">We just texted a code for you to verify.</string>
@@ -229,8 +233,10 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
 	<string name="onboarding_user_alert_call_link_title">Looks great. Pick your best friends to try it out now! :metal:</string>
 	<string name="onboarding_user_alert_call_link_msg">Small tip: Text the friends you\'d like to video call at once.</string>
+	<string name="onboarding_user_alert_call_link_msg_facebook">Small tip: Message the friends you\'d like to video call at once.</string>
 	<string name="onboarding_user_alert_call_link_sms">Enter &amp; open SMS</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Enter &amp; open iMessage!</string>
+	<string name="onboarding_user_alert_call_link_facebook">Enter &amp; open Facebook!</string>
 	<string name="onboarding_user_alert_call_link_content">Guys, can you try with me real quick? It\'s now on %1$s</string>
 	<string name="onboarding_user_alert_call_link_metadata_title">Join %1$s now!</string>
 	<string name="onboarding_user_alert_call_link_metadata_description">%1$s invited you in a video call.</string>
@@ -585,8 +591,20 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Put on the next challenge!</string>
 	<string name="game_challenges_next_impossible">Only others can next your challenge!</string>
-	<string name="game_challenges_turn_prefix"></string>
-	<string name="game_challenges_turn_suffix">\'s turn to...</string>
+	<string name="game_challenges_turn">is challenged</string>
+	<string name="game_challenges_your_turn">Your turn to be challenged</string>
+	<string name="game_challenges_menu_re_roll">Change the challenge</string>
+	<string name="game_challenges_re_roll_notification">%1$s put on a new challenge!</string>
+	<string name="game_scream">Scream!</string>
+	<string name="game_scream_rule">Scream to reach the top!</string>
+	<string name="game_draw">Draw</string>
+	<string name="game_draw_rule">Put on the next draw!</string>
+	<string name="game_draw_my_turn">Your turn</string>
+	<string name="game_draw_other_is_drawing">is drawing</string>
+	<string name="game_draw_re_roll_notification">%1$s put on a new draw!</string>
+	<string name="game_draw_word_to_draw">Word to draw :pencil2:</string>
+	<string name="game_draw_word_to_guess">Guess what it is :spy:</string>
+	<string name="game_draw_timer_instructions">Next in :hourglass:</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>

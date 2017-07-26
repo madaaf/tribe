@@ -74,7 +74,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   ///////////////////
 
   @OnClick(R.id.btnAction) void onClickUnlockWithFb() {
-    facebookPresenter.loginFacebook();
+    facebookPresenter.loginFacebook(false);
   }
 
   ///////////////////

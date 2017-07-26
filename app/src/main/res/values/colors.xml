@@ -51,6 +51,7 @@
   <color name="grey.rating">#F1F3F5</color>
   <color name="grey.new.contacts">#757575</color>
   <color name="grey.share">#E8EBEE</color>
+  <color name="grey.onboarding.phone_number">#F9F9F9</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>

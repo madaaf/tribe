@@ -204,6 +204,10 @@
 	<string name="onboarding_new_version_popup_done">C\'est parti !</string>
 	
 	<!-- Onboarding Phone -->
+	<string name="onboarding_baseline">Have fun, together.</string>
+	<string name="onboarding_enter_options">Entrer avec</string>
+	<string name="onboarding_option_facebook">Facebook</string>
+	<string name="onboarding_option_phone_number">Numéro de téléphone</string>
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
 	<string name="onboarding_phone_disclaimer">En vous enregistrant, vous acceptez les CGU et la Politique de confidentialité</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
@@ -229,8 +233,10 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
 	<string name="onboarding_user_alert_call_link_title">Parfait. Sélectionnez vos meilleurs amis pour essayer ! :metal:</string>
 	<string name="onboarding_user_alert_call_link_msg">Petit conseil: Envoyez un SMS aux amis que vous souhaitez appeler en même temps.</string>
+	<string name="onboarding_user_alert_call_link_msg_facebook">Petit conseil: Envoyez un message aux amis que vous souhaitez appeler en même temps.</string>
 	<string name="onboarding_user_alert_call_link_sms">Entrez et ouvrez SMS !</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Entrez et ouvrez iMessage !</string>
+	<string name="onboarding_user_alert_call_link_facebook">Entrez et ouvrez Facebook !</string>
 	<string name="onboarding_user_alert_call_link_content">Hey ! Vous pouvez essayer avec moi rapidement ? Ca se passe ici %1$s</string>
 	<string name="onboarding_user_alert_call_link_metadata_title">Rejoins %1$s maintenant!</string>
 	<string name="onboarding_user_alert_call_link_metadata_description">%1$s vous a invité dans un appel vidéo.</string>
@@ -585,8 +591,20 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Lance le prochain challenge !</string>
 	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
-	<string name="game_challenges_turn_prefix">À</string>
-	<string name="game_challenges_turn_suffix">de...</string>
+	<string name="game_challenges_turn">est challengé</string>
+	<string name="game_challenges_your_turn">A ton tour d\'être challengé</string>
+	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
+	<string name="game_challenges_re_roll_notification">%1$s a changé de challenge!</string>
+	<string name="game_scream">Scream !</string>
+	<string name="game_scream_rule">Criez pour atteindre les sommets !</string>
+	<string name="game_draw">Dessin</string>
+	<string name="game_draw_rule">Lance le prochain dessin !</string>
+	<string name="game_draw_my_turn">A ton tour de dessiner</string>
+	<string name="game_draw_other_is_drawing">Est en train de dessiner</string>
+	<string name="game_draw_re_roll_notification">%1$s a changé de dessin!</string>
+	<string name="game_draw_word_to_draw">Dessin à réaliser :pencil2:</string>
+	<string name="game_draw_word_to_guess">Devinez ce que c\'est :spy:</string>
+	<string name="game_draw_timer_instructions">Prochain dans :hourglass:</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
