@@ -172,7 +172,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
-  private PublishSubject<GameChallenge> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
@@ -485,14 +485,12 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
-      Timber.e("soef onNextChallenge subscription "
-          + gameChallenge.getName()
-          + " "
-          + gameChallenge.getPeerId()
+      Timber.e("soef sendNextChallengeGameToPeers , onNextChallenge subscription "
+          + gameChallenge.getCurrentChallengerId()
           + " "
           + gameChallenge.getCurrentChallenge());
 
-      sendNextChallengeGameToPeers(user.getId(), gameChallenge.getPeerId(),
+      sendNextChallengeGameToPeers(user.getId(), gameChallenge.getCurrentChallengerId(),
           gameChallenge.getCurrentChallenge());
     }));
 
@@ -501,9 +499,11 @@ public class LiveView extends FrameLayout {
       displayReRollGameNotification(user.getDisplayName());
       if (game instanceof GameChallenge) {
         GameChallenge challenge = (GameChallenge) game;
-        setNextChallengePager();
-       /* sendNextChallengeGameToPeers(user.getId(), challenge.getPeerId(),
-            challenge.getCurrentChallenge());  //SOEF*/
+        if (challenge.getCurrentChallengerId().equals(user.getId())) {
+          Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE");
+          return;
+        }
+        setNextChallengePager(null, null);
       }
       if (!game.getId().equals(Game.GAME_CHALLENGE)) {
         restartGame(game);
@@ -531,9 +531,9 @@ public class LiveView extends FrameLayout {
     }));
   }
 
-  public void setNextChallengePager() {
+  public void setNextChallengePager(String challenge, TribeGuest guestChallenged) {
     Timber.e("soef set next challenge PAGER ");
-    gameChallengesView.setNextChallenge();
+    gameChallengesView.setNextChallenge(challenge, guestChallenged);
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
@@ -603,7 +603,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onRoomFull().subscribe(onRoomFull));
 
-    tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {
+    tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {//OEF
       Game currentGame = gameManager.getCurrentGame();
       Game game = gameManager.getGameById(pairSessionGame.second);
       if (game != null) {
@@ -1405,6 +1405,7 @@ public class LiveView extends FrameLayout {
   private void startGame(Game game, boolean isUserAction) {
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
+    game.setUserAction(isUserAction);
     onStartGame.onNext(game);
     gameManager.setCurrentGame(game);
     viewLocalLive.startGame(game);
@@ -1429,8 +1430,8 @@ public class LiveView extends FrameLayout {
       } else {
         Timber.e("SOEF restartGame : game challenge already started");
         GameChallenge gameChallenge = (GameChallenge) game;
-        setNextChallengePager();
-      /*  sendNextChallengeGameToPeers(gameChallenge.getName(), gameChallenge.getPeerId(),
+        setNextChallengePager(null, null);
+      /*  sendNextChallengeGameToPeers(gameChallenge.getName(), gameChallenge.getCurrentChallengerId(),
             gameChallenge.getCurrentChallenge());*/
       }
     } else {
@@ -1502,7 +1503,7 @@ public class LiveView extends FrameLayout {
     return onShouldJoinRoom;
   }
 
-  public Observable<GameChallenge> onNewChallenge() {
+  public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
   }
 

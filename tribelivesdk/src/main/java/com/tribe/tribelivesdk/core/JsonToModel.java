@@ -43,7 +43,7 @@ public class JsonToModel {
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
-  private PublishSubject<GameChallenge> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -209,19 +209,21 @@ public class JsonToModel {
         } else if (message.has("challenges")) {
           JSONObject challenges = message.getJSONObject("challenges");
           String action = challenges.get("action").toString();
-   /*       if (action.equals("newChallenge")) {
+          if (action.equals("newChallenge")) {
             if (challenges.has("user")) {
               String userId = challenges.get("user").toString();
               String challenge = challenges.get("challenge").toString();
               Timber.e("OK " + userId + " " + challenge);
-              GameChallenge gameChallenge = new GameChallenge();
-              gameChallenge.setCurrentChallenge(challenge);
-              gameChallenge.setPeerId(userId);
-              onNewChallengeReceived.onNext(gameChallenge);
+   /*           gameChallenge.setCurrentChallenge(challenge);
+              gameChallenge.setPeerId(userId);*/
+              List<String> datas = new ArrayList<>();
+              datas.add(challenge);
+              datas.add(userId);
+              onNewChallengeReceived.onNext(datas);
             } else {
               Timber.e("SOEF  No value for user");
             }
-          }*/
+          }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
 
           Timber.d("Receiving media configuration");
@@ -338,7 +340,7 @@ public class JsonToModel {
     return onError;
   }
 
-  public Observable<GameChallenge> onNewChallengeReceived() {
+  public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
   }
 

@@ -581,16 +581,23 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) joinRoom();
     }));
 
-/*    subscriptions.add(viewLive.onNewChallenge()
+    subscriptions.add(viewLive.onNewChallengeReceived()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(gameChallenge -> {//SOEF MADA LOOPER
-          Timber.e("SOEF ON NEW CHALLENGE RECEIVED peerId :"
-              + gameChallenge.getPeerId()
-              + " userId :  "
-              + user.getId());
-          // viewLive.setNextChallengePager();
-        }));*/
+        .subscribe(datas -> {//SOEF MADA LOOPER
+          Timber.e("SOEF ON NEW CHALLENGE RECEIVED challenfe :"
+              + datas.get(0)
+              + " peetId :  "
+              + datas.get(1));
+          List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+          TribeGuest guestChallenged = new TribeGuest(datas.get(1));
+          for (TribeGuest guest : guests) {
+            if (guest.getId().equals(datas.get(1))) {
+              guestChallenged = guest;
+            }
+          }
+          viewLive.setNextChallengePager(datas.get(0), guestChallenged);
+        }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
     }));
@@ -746,13 +753,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               case Game.GAME_CHALLENGE:
                 GameChallenge gameChallenge = (GameChallenge) game;
                 if (!gameChallenge.hasNames()) {
-                  Timber.e("soef load data to launchChallengeGame");
+                  gameManager.setCurrentGame(game);
                   livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+                  Timber.e("soef load data to launchChallengeGame "
+                      + gameChallenge.getCurrentChallenge());
                 } else {
                   Timber.e("soef data already exist launchChallengeGame");
                   // launchChallengeGame();
                   //viewLive.setNextChallengePager();
                 }
+
+                Timber.e("soef llaunchChallengeGame "
+                    + gameChallenge.getCurrentChallengerId()
+                    + " "
+                    + user.getId()
+                    + " game.isUserAction() "
+                    + game.isUserAction());
                 launchChallengeGame();
                 break;
             }
@@ -991,7 +1007,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       GameChallenge gameChallenge = (GameChallenge) game;
       gameChallenge.setNameList(challengeList);
       gameChallenge.setGuestList(guestList);
-      Timber.e("soef launchChallengeGame " + challengeList.size() + " " + guestList.size());
+      Timber.e("soef launchChallengeGame "
+          + gameChallenge.getCurrentChallenge()
+          + " "
+          + challengeList.size()
+          + " "
+          + guestList.size());
       viewLive.setGameChallenge(gameChallenge);
     }
   }

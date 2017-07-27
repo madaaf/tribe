@@ -38,8 +38,6 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
-    //  Timber.e("SOEF GET instantiateItem " +         getCount());
-
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
 
     TextViewFont txtChallenge = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
@@ -47,19 +45,17 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     TextViewFont txtUsername = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
 
-    //Timber.e("SOEF message challenge " + challenge);
-    //gameChallenge.setCurrentChallenge(challenge);
-    // gameChallenge.setName("message send by  : " + user.getDisplayName() + " " + user.getId());
-
-    //onNextChallenge.onNext(gameChallenge);
-
     txtChallenge.setText(challenge);
+
     if (guest != null) {
       txtName.setText(guest.getDisplayName());
       viewAvatar.load(guest.getPicture());
-      // gameChallenge.setPeerId(guest.getId());
+      txtUsername.setText("is challenged");
+    } else {
+      txtName.setText(user.getDisplayName());
+      viewAvatar.load(user.getProfilePicture());
+      txtUsername.setText("Your turn to be challenged");
     }
-    txtUsername.setText("Your turn to be challenged");
 
     container.addView(itemView);
     return itemView;

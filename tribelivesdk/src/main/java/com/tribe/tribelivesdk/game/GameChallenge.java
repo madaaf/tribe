@@ -18,6 +18,7 @@ public class GameChallenge extends Game {
   private String peerId;
   private String currentChallenge;
 
+
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
     nameList = new ArrayList<>();
@@ -31,11 +32,6 @@ public class GameChallenge extends Game {
   @Override public void onFrameSizeChange(Frame frame) {
 
   }
-/*
-  public void generateNewName() {
-    if (nameList == null || nameList.size() == 0) return;
-    currentPostItName = nameList.get(new Random().nextInt(nameList.size()));
-  }*/
 
   public String getCurrentChallenge() {
     return currentChallenge;
@@ -45,7 +41,7 @@ public class GameChallenge extends Game {
     this.currentChallenge = currentChallenge;
   }
 
-  public String getPeerId() {
+  public String getCurrentChallengerId() {
     return peerId;
   }
 

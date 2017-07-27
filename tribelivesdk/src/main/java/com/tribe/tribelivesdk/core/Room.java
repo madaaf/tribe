@@ -100,7 +100,8 @@ public class Room {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
-  private PublishSubject<GameChallenge> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<String> test = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onRoomFull = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
@@ -150,6 +151,7 @@ public class Room {
     }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+
 
     persistentSubscriptions.add(jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
 
@@ -550,11 +552,15 @@ public class Room {
     return onRoomStateChanged;
   }
 
+  public Observable<String> test() {
+    return test;
+  }
+
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
   }
 
-  public Observable<GameChallenge> onNewChallengeReceived() {
+  public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
   }
 
