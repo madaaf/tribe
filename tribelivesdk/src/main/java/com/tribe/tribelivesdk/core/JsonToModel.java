@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.core;
 import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -42,6 +43,7 @@ public class JsonToModel {
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
+  private PublishSubject<GameChallenge> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -178,15 +180,12 @@ public class JsonToModel {
           if (app.has(Room.MESSAGE_UNLOCK_ROLL_DICE)) {
             Timber.d("Receiving unlock roll the dice");
             unlockRollTheDice.onNext(tribeSession.getUserId());
-
           } else if (app.has(Room.MESSAGE_UNLOCKED_ROLL_DICE)) {
             Timber.d("Receiving unlocked roll the dice");
             unlockedRollTheDice.onNext(tribeSession.getUserId());
-
           } else if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {
             Timber.d("Receiving roll the dice");
             onRollTheDiceReceived.onNext(null);
-
           } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
@@ -207,6 +206,22 @@ public class JsonToModel {
             }
             onRemovedTribeGuestList.onNext(guestRemovedList);
           }
+        } else if (message.has("challenges")) {
+          JSONObject challenges = message.getJSONObject("challenges");
+          String action = challenges.get("action").toString();
+   /*       if (action.equals("newChallenge")) {
+            if (challenges.has("user")) {
+              String userId = challenges.get("user").toString();
+              String challenge = challenges.get("challenge").toString();
+              Timber.e("OK " + userId + " " + challenge);
+              GameChallenge gameChallenge = new GameChallenge();
+              gameChallenge.setCurrentChallenge(challenge);
+              gameChallenge.setPeerId(userId);
+              onNewChallengeReceived.onNext(gameChallenge);
+            } else {
+              Timber.e("SOEF  No value for user");
+            }
+          }*/
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
 
           Timber.d("Receiving media configuration");
@@ -321,6 +336,10 @@ public class JsonToModel {
 
   public Observable<WebSocketError> onError() {
     return onError;
+  }
+
+  public Observable<GameChallenge> onNewChallengeReceived() {
+    return onNewChallengeReceived;
   }
 
   public Observable<TribeSession> onLeaveRoom() {
