@@ -130,7 +130,7 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     if (loginEntity.getFbAccessToken() != null) {
-      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken().getToken(), loginEntity).doOnNext(saveToCacheAccessToken);
+      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken()).doOnNext(saveToCacheAccessToken);
 
     } else if (loginEntity.getPhoneNumber() == null) {
       return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
@@ -156,11 +156,11 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
     registerEntity.setPhoneNumber(
-        loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), ""));
+            loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), "") : null);
     registerEntity.setPinId(loginEntity.getPinId());
 
     if (loginEntity.getFbAccessToken() != null) {
-      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken().getToken(), registerEntity).doOnNext(saveToCacheAccessToken);
+      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity).doOnNext(saveToCacheAccessToken);
 
     } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();

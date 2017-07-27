@@ -17,14 +17,14 @@ public class LoginEntity implements Serializable {
   private String countryCode;
   private String nationalNumber;
   private String call;
-  private transient AccessToken fbAccessToken;
+  private String fbAccessToken;
 
   public LoginEntity(String to, boolean shouldCall) {
     this.to = to;
     this.call = shouldCall ? "1" : "0";
   }
 
-  public LoginEntity(String phoneNumber, String code, String pinId, AccessToken fbAccessToken) {
+  public LoginEntity(String phoneNumber, String code, String pinId, String fbAccessToken) {
     this.username = phoneNumber;
     this.phoneNumber = phoneNumber;
     this.password = code;
@@ -76,11 +76,11 @@ public class LoginEntity implements Serializable {
     return phoneNumber;
   }
 
-  public AccessToken getFbAccessToken() {
+  public String getFbAccessToken() {
     return fbAccessToken;
   }
 
-  public void setFbAccessToken(AccessToken fbAccessToken) {
+  public void setFbAccessToken(String fbAccessToken) {
     this.fbAccessToken = fbAccessToken;
   }
 }

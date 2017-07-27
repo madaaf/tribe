@@ -56,7 +56,7 @@ public class AuthPresenter implements Presenter {
   }
 
   public LoginEntity login(String phoneNumber, String code, String pinId, com.facebook.AccessToken fbAccessToken) {
-    LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId, fbAccessToken);
+    LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId, fbAccessToken.getToken());
 
     showViewLoading();
 

@@ -24,7 +24,7 @@ public interface LoginApi {
 
   @POST("/anonToken") Observable<AccessToken> loginWithAnonymous();
 
-  @POST("/token") Observable<AccessToken> loginWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken, @Body LoginEntity loginEntity);
+  @POST("/token") Observable<AccessToken> loginWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken);
 
   @POST("/token") Observable<AccessToken> loginWithUsername(@Header(X_VERIFY) String xVerify,
       @Header(X_AUTH) String xAuth, @Body LoginEntity loginEntity);
