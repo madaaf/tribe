@@ -320,7 +320,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
     String linkId = StringUtils.generateLinkId();
-    if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
+
+    if (loginEntity.getFbAccessToken() != null) {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCallFacebook);
+      subscriptions.add(DialogFactory.dialog(this,
+              EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
+              getString(R.string.onboarding_user_alert_call_link_msg_facebook),
+              getString(R.string.onboarding_user_alert_call_link_facebook), null)
+              .filter(x -> x == true)
+              .subscribe(
+                      a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId, true)));
+
+    } else if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCalliMessage);
       subscriptions.add(DialogFactory.dialog(this,
           EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
@@ -328,9 +339,9 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           getString(R.string.onboarding_user_alert_call_link_sms), null)
           .filter(x -> x == true)
           .subscribe(
-              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId)));
+              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId, false)));
     } else {
-      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null);
+      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, false);
     }
   }
 

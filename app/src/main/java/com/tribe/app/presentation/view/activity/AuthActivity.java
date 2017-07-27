@@ -261,7 +261,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
       Timber.d("goToConnected from " + user.getDisplayName());
-      navigator.navigateToHomeFromLogin(this, countryCode, null);
+      navigator.navigateToHomeFromLogin(this, countryCode, null, loginEntity.getFbAccessToken() != null);
     }
   }
 

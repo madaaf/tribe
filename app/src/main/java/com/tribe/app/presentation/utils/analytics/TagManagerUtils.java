@@ -20,7 +20,9 @@ public class TagManagerUtils {
   public static final String KPI_Onboarding_AuthenticationError =
       "KPI_Onboarding_AuthenticationError";
   public static final String KPI_Onboarding_OpenNewCalliMessage =
-      "KPI_Onboarding_OpenNewCalliMessage";
+          "KPI_Onboarding_OpenNewCalliMessage";
+  public static final String KPI_Onboarding_OpenNewCallFacebook =
+          "KPI_Onboarding_OpenNewCallFacebook";
   public static final String KPI_Onboarding_SystemNotifications =
       "KPI_Onboarding_SystemNotifications";
   public static final String KPI_Onboarding_VideoSkipped = "KPI_Onboarding_VideoSkipped";
