@@ -206,6 +206,11 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     if (intent != null && intent.hasExtra(LOGIN_ENTITY)) {
       loginEntity = phoneUtils.prepareLoginForRegister(
           (LoginEntity) intent.getSerializableExtra(LOGIN_ENTITY));
+
+      if (FacebookUtils.isLoggedIn()) {
+        facebookView.setVisibility(View.INVISIBLE);
+        getInfoFromFacebook();
+      }
     }
 
     manageDeepLink(intent);

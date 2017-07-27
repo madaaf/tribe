@@ -9,7 +9,7 @@ public class FacebookEntity implements Serializable {
 
   private String id;
   private String profilePicture;
-  private String username;
+  private String email;
   private String name;
 
   public void setProfilePicture(String profilePicture) {
@@ -20,8 +20,8 @@ public class FacebookEntity implements Serializable {
     this.name = name;
   }
 
-  public void setUsername(String username) {
-    this.username = username;
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public String getProfilePicture() {
@@ -32,8 +32,8 @@ public class FacebookEntity implements Serializable {
     return name;
   }
 
-  public String getUsername() {
-    return username;
+  public String getEmail() {
+    return email;
   }
 
   public String getId() {

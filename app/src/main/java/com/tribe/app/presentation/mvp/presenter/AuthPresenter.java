@@ -61,9 +61,7 @@ public class AuthPresenter implements Presenter {
     showViewLoading();
 
     cloudLoginUseCase.prepare(loginEntity);
-    if (fbAccessToken != null) {
-      cloudLoginUseCase.execute(new FacebookLoginSubscriber());
-    } else if (phoneNumber == null) {
+    if (phoneNumber == null && fbAccessToken == null) {
       cloudLoginUseCase.execute(new UnknownSubscriber());
     } else {
       cloudLoginUseCase.execute(new LoginSubscriber());
@@ -122,20 +120,6 @@ public class AuthPresenter implements Presenter {
           introView.showError(introView.context().getString(R.string.error_technical));
         }
       }
-    }
-  }
-
-  private final class FacebookLoginSubscriber extends DefaultSubscriber<AccessToken> {
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-      hideViewLoading();
-    }
-
-    @Override public void onNext(AccessToken accessToken) {
-      getUserInfo();
     }
   }
 

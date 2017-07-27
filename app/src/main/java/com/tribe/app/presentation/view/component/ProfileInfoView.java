@@ -285,7 +285,10 @@ public class ProfileInfoView extends LinearLayout {
         });
 
     editDisplayName.setText(facebookEntity.getName());
-    editUsername.setText(facebookEntity.getUsername());
+
+    if ((editUsername.getText() == null || editUsername.getText().length() == 0) && facebookEntity.getEmail() != null) {
+      editUsername.setText(StringUtils.usernameFromEmail(facebookEntity.getEmail()));
+    }
   }
 
   public void setUsernameValid(boolean valid) {
