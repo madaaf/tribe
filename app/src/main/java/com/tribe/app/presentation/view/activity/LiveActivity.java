@@ -1006,7 +1006,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onAddError() {
-
+    Toast.makeText(context(), EmojiParser.demojizedText(
+            context().getString(R.string.add_friend_error_invisible)), Toast.LENGTH_SHORT).show();
   }
 
   @Override public void onAddSuccess(Friendship friendship) {

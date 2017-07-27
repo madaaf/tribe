@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -562,6 +564,8 @@ public class SearchView extends FrameLayout implements SearchMVPView {
   }
 
   @Override public void onAddError() {
+    Toast.makeText(context(), EmojiParser.demojizedText(
+            context().getString(R.string.add_friend_error_invisible)), Toast.LENGTH_SHORT).show();
     updateSearch();
   }
 
