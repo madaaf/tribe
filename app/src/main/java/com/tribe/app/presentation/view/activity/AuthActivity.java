@@ -76,6 +76,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
 
   @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
 
+  @BindView(R.id.btnPhoneNumber) View btnPhoneNumber;
+  @BindView(R.id.btnFacebook) View btnFacebook;
   @BindView(R.id.logoView) View logoView;
   @BindView(R.id.buttonsView) View buttonsView;
   @BindView(R.id.imgLogo) View imgLogo;
@@ -370,6 +372,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
 
   private void animate() {
 
+    float buttonsViewHeight = buttonsView.getHeight();
+    buttonsView.setTranslationY(buttonsViewHeight);
+
+    btnFacebook.setTranslationY(btnFacebook.getHeight() * 6);
+    btnPhoneNumber.setTranslationY(btnPhoneNumber.getHeight() * 3);
+
     SpringSystem springSystem = SpringSystem.create();
     SpringConfig config = SpringConfig.fromBouncinessAndSpeed(0f, 5f);
 
@@ -398,12 +406,12 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
       @Override
       public void onSpringUpdate(Spring spring) {
 
-        buttonsView.setTranslationY(0 * (float)spring.getCurrentValue());
-        logoView.setTranslationY(-buttonsView.getHeight() / 2 * (float)spring.getCurrentValue());
+        buttonsView.setTranslationY(buttonsViewHeight * (1 - (float)spring.getCurrentValue()));
+        logoView.setTranslationY(-buttonsViewHeight / 2 * (float)spring.getCurrentValue());
+        btnFacebook.setTranslationY((btnFacebook.getHeight() * 6) * (1 - (float)spring.getCurrentValue()));
+        btnPhoneNumber.setTranslationY((btnPhoneNumber.getHeight() * 3) * (1 - (float)spring.getCurrentValue()));
       }
     });
-
-    buttonsView.setTranslationY(buttonsView.getHeight());
 
     baseline.animate()
             .alpha(1)
