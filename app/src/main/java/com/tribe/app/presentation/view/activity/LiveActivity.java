@@ -459,7 +459,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initBrightness() {
 
-    int hour = Calendar.getInstance().get(Calendar.HOUR);
+    int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
     if (hour <= 7 || hour >= 20) {
       WindowManager.LayoutParams attributes = getWindow().getAttributes();
