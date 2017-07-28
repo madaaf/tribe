@@ -1091,7 +1091,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void putExtraHomeIntent() {
-    putExtraRatingNotif();
+    // putExtraRatingNotif();
     putExtraDisplayGrpNotif();
     setResult(Activity.RESULT_OK, returnIntent);
   }
