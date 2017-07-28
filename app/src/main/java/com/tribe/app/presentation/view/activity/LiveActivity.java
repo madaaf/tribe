@@ -1154,7 +1154,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void randomRoomAssignedSubscriber(String roomId) {
     Timber.d("random room assigned " + roomId);
     viewLiveContainer.blockOpenInviteView(false);
-    live.setSessionId(roomId);
+    live.setCallRouletteSessionId(roomId);
     joinRoom();
   }
 
