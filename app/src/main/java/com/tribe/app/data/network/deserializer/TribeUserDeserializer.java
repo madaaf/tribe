@@ -72,6 +72,11 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     try {
       userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    try {
       userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
     } catch (ParseException e) {
       e.printStackTrace();
