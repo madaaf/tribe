@@ -242,6 +242,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     this.currentUser.copy(user);
     Bundle properties = new Bundle();
     properties.putString(TagManagerUtils.TYPE, "signup");
+    properties.putString(TagManagerUtils.PLATFORM, loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK : TagManagerUtils.PLATFORM_PHONE);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
     Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
@@ -350,19 +351,17 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   }
 
   @Override public void errorFacebookLogin() {
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
-    Timber.d("KPI_Onboarding_PinFailed");
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) { }
 
   @Override
   public void successFacebookLogin() {
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
-    Timber.d("KPI_Onboarding_PinSucceeded");
     userPhoneNumber.set(null);
-    Timber.d("facebook login success " + FacebookUtils.accessToken().getToken());
-    loginEntity = authPresenter.login(null, null, null, FacebookUtils.accessToken());
+
+    String token = FacebookUtils.accessToken().getToken();
+    Timber.d("facebook login success " + token);
+    loginEntity = authPresenter.login(null, null, null, token);
   }
 
   /////////////////

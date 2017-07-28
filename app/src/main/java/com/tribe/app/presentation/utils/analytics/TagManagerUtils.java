@@ -92,6 +92,9 @@ public class TagManagerUtils {
   public static final String DURATION = "duration";
   public static final String IS_CALL_ROULETTE = "is_call_roulette";
   public static final String TYPE = "type";
+  public static final String PLATFORM = "platform";
+  public static final String PLATFORM_FACEBOOK = "facebook";
+  public static final String PLATFORM_PHONE = "phone";
   public static final String DIRECT = "direct";
   public static final String AVERAGE_MEMBERS_COUNT = "average_members_count";
   public static final String STATE = "state";

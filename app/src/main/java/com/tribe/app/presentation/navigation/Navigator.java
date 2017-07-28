@@ -455,7 +455,7 @@ public class Navigator {
       AppInviteContent content = new AppInviteContent.Builder()
               .setApplinkUrl(url)
               .setPreviewImageUrl(Constants.OPEN_GRAPH_IMAGE)
-              .setDestination(AppInviteContent.Builder.Destination.MESSENGER)
+              .setDestination(AppInviteContent.Builder.Destination.FACEBOOK)
               .build();
 
       AppInviteDialog.show(activity, content);

@@ -55,8 +55,8 @@ public class AuthPresenter implements Presenter {
     cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
   }
 
-  public LoginEntity login(String phoneNumber, String code, String pinId, com.facebook.AccessToken fbAccessToken) {
-    LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId, fbAccessToken.getToken());
+  public LoginEntity login(String phoneNumber, String code, String pinId, String fbAccessToken) {
+    LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId, fbAccessToken);
 
     showViewLoading();
 
