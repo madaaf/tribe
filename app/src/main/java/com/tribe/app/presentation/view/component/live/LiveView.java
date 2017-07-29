@@ -192,6 +192,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationGameStopped = PublishSubject.create();
   private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
   private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
+  private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -495,17 +496,14 @@ public class LiveView extends FrameLayout {
           gameChallenge.getCurrentChallenge());
     }));
 
+    persistentSubscriptions.add(gameChallengesView.onItemsChallengeEmpty().subscribe(onItemsChallengeEmpty));
+
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       Timber.e("soef onRestartGame subscription");
       if (game instanceof GameChallenge) {
         GameChallenge challenge = (GameChallenge) game;
         if (challenge.getCurrentChallengerId().equals(user.getId())) {
-          Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE "
-              + challenge.getCurrentChallenge()
-              + " "
-              + challenge.getCurrentChallengerId()
-              + " "
-              + user.getId());
+          Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE ");
           return;
         }
         setNextChallengePager(null, null);
@@ -1623,6 +1621,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onChallengePopup() {
     return viewControlsLive.onChallengePopup();
+  }
+
+  public Observable<Void> onItemsChallengeEmpty() {
+    return onItemsChallengeEmpty;
   }
 }
 

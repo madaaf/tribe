@@ -49,6 +49,7 @@ public class GameChallengesView extends FrameLayout {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
+  private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
@@ -116,16 +117,21 @@ public class GameChallengesView extends FrameLayout {
         challenge = getRandom(items);
         if (!guestList.isEmpty()) {
           guest = getRandomGuest(guestList);
+          gameChallenge.setCurrentChallengerId(guest.getId());
+          gameChallenge.setCurrentChallenge(challenge);
+          if (nextChallenge) onNextChallenge.onNext(gameChallenge);
+          Timber.w("FIND RANDOM CHALLANGE : " + challenge);
+          Timber.w(" user challenged " + guest.getId() + " " + guest.getDisplayName());
+          Timber.w(" me=" + user.getId());
+          gameManager.setCurrentChallengerId(guest.getId());
+          adapter.setChallenge(challenge, guest);
+        } else {
+          Timber.e("guestList empty");
         }
+      } else {
+        Timber.e("items empty");
+        onItemsChallengeEmpty.onNext(null);
       }
-      gameChallenge.setCurrentChallengerId(guest.getId());
-      gameChallenge.setCurrentChallenge(challenge);
-      if (nextChallenge) onNextChallenge.onNext(gameChallenge);
-      Timber.w("FIND RANDOM CHALLANGE : " + challenge);
-      Timber.w(" user challenged " + guest.getId() + " " + guest.getDisplayName());
-      Timber.w(" me=" + user.getId());
-      gameManager.setCurrentChallengerId(guest.getId());
-      adapter.setChallenge(challenge, guest);
     }
     adapter.notifyDataSetChanged();
   }
@@ -158,5 +164,9 @@ public class GameChallengesView extends FrameLayout {
 
   public Observable<GameChallenge> onNextChallenge() {
     return onNextChallenge;
+  }
+
+  public Observable<Void> onItemsChallengeEmpty() {
+    return onItemsChallengeEmpty;
   }
 }

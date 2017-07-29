@@ -50,11 +50,11 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
 
     if (guest != null) {
       if (guest.getId().equals(user.getId())) {
-        txtName.setText(user.getUsername());
+        txtName.setText(user.getDisplayName());
         viewAvatar.load(user.getProfilePicture());
         txtUsername.setText("Your turn to be challenged");
       } else {
-        txtName.setText(guest.getUserName());
+        txtName.setText(guest.getDisplayName());
         viewAvatar.load(guest.getPicture());
         txtUsername.setText("is challenged");
       }
