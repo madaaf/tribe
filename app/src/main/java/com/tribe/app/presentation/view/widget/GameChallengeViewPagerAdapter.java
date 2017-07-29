@@ -9,6 +9,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 19/07/2017.
@@ -48,12 +49,39 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     txtChallenge.setText(challenge);
 
     if (guest != null) {
-      txtName.setText(guest.getDisplayName());
-      viewAvatar.load(guest.getPicture());
-      txtUsername.setText("is challenged");
+      if (guest.getId().equals(user.getId())) {
+        txtName.setText(user.getUsername());
+        viewAvatar.load(user.getProfilePicture());
+        txtUsername.setText("Your turn to be challenged");
+      } else {
+        txtName.setText(guest.getUserName());
+        viewAvatar.load(guest.getPicture());
+        txtUsername.setText("is challenged");
+      }
+      Timber.i("SOEF  1: "
+          + guest.getDisplayName()
+          + " "
+          + guest.getId()
+          + " "
+          + user.getId()
+          + " "
+          + user.getDisplayName()
+          + " "
+          + challenge);
     } else {
       txtName.setText(user.getDisplayName());
       viewAvatar.load(user.getProfilePicture());
+
+      Timber.i("SOEF  2: "
+          + guest.getDisplayName()
+          + " "
+          + guest.getId()
+          + " "
+          + user.getId()
+          + " "
+          + user.getDisplayName()
+          + " "
+          + challenge);
       txtUsername.setText("Your turn to be challenged");
     }
 
@@ -66,6 +94,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   public void setChallenge(String challenge, TribeGuest guest) {
+    Timber.i("SET CHALLENGE " + guest.getDisplayName());
     this.challenge = challenge;
     this.guest = guest;
   }

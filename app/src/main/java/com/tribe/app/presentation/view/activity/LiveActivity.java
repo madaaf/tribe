@@ -769,7 +769,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                     + user.getId()
                     + " game.isUserAction() "
                     + game.isUserAction());
-                launchChallengeGame();
+                if (game.isUserAction()) launchChallengeGame();
                 break;
             }
           }

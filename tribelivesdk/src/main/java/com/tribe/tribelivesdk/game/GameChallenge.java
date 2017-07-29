@@ -15,9 +15,8 @@ public class GameChallenge extends Game {
   private List<String> nameList;
   private List<TribeGuest> guestList;
   private String currentPostItName = "";
-  private String peerId;
+  private String challengerId;
   private String currentChallenge;
-
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -42,11 +41,11 @@ public class GameChallenge extends Game {
   }
 
   public String getCurrentChallengerId() {
-    return peerId;
+    return challengerId;
   }
 
-  public void setPeerId(String peerId) {
-    this.peerId = peerId;
+  public void setCurrentChallengerId(String challengerId) {
+    this.challengerId = challengerId;
   }
 
   public void setNameList(List<String> nameList) {

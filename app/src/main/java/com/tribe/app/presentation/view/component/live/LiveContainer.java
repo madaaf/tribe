@@ -245,6 +245,11 @@ public class LiveContainer extends FrameLayout {
       //}
     }));
 
+    subscriptions.add(viewLive.onChallengePopup().subscribe(view -> {
+      Timber.e("SOEF DISPLAU POPUP");
+      nativeDialogsView.displayPopup(view, PopupContainerView.DISPLAY_CHALLENGE_POPUP, null);
+    }));
+
     subscriptions.add(viewLive.onGameUIActive().subscribe(viewGameUI -> {
       if (stateManager.shouldDisplay(StateManager.GAME_POST_IT_POPUP)) {
         stateManager.addTutorialKey(StateManager.GAME_POST_IT_POPUP);

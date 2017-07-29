@@ -163,6 +163,7 @@ public class LiveView extends FrameLayout {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<String> onBuzzPopup = PublishSubject.create();
+  private PublishSubject<String> onChallengePopup = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
@@ -496,11 +497,15 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       Timber.e("soef onRestartGame subscription");
-      displayReRollGameNotification(user.getDisplayName());
       if (game instanceof GameChallenge) {
         GameChallenge challenge = (GameChallenge) game;
         if (challenge.getCurrentChallengerId().equals(user.getId())) {
-          Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE");
+          Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE "
+              + challenge.getCurrentChallenge()
+              + " "
+              + challenge.getCurrentChallengerId()
+              + " "
+              + user.getId());
           return;
         }
         setNextChallengePager(null, null);
@@ -508,6 +513,7 @@ public class LiveView extends FrameLayout {
       if (!game.getId().equals(Game.GAME_CHALLENGE)) {
         restartGame(game);
       }
+      displayReRollGameNotification(user.getDisplayName());
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
@@ -906,6 +912,12 @@ public class LiveView extends FrameLayout {
       onBuzzPopup.onNext(displayName);
     }
   }
+
+  /*
+  public void displayChallengePopup(String displayName) {
+    onChallengePopup.onNext(onGameUIActive);
+  }
+  */
 
   public void addTribeGuest(TribeGuest trg) {
     if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
@@ -1430,9 +1442,7 @@ public class LiveView extends FrameLayout {
       } else {
         Timber.e("SOEF restartGame : game challenge already started");
         GameChallenge gameChallenge = (GameChallenge) game;
-        setNextChallengePager(null, null);
-      /*  sendNextChallengeGameToPeers(gameChallenge.getName(), gameChallenge.getCurrentChallengerId(),
-            gameChallenge.getCurrentChallenge());*/
+        //setNextChallengePager(null, null); MADA
       }
     } else {
       startGame(game, true);
@@ -1609,6 +1619,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
+  }
+
+  public Observable<View> onChallengePopup() {
+    return viewControlsLive.onChallengePopup();
   }
 }
 

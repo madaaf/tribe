@@ -80,7 +80,7 @@ public class GameChallengesView extends FrameLayout {
   private List<TribeGuest> guestList = new ArrayList<>();
 
   public void setGameChallenge(GameChallenge gameChallenge) {
-    Timber.e("soef setGameChallenge visisble");
+    Timber.e("soef setGameChallenge");
     setVisibility(VISIBLE);
     this.gameChallenge = gameChallenge;
     items = gameChallenge.getNameList();
@@ -89,14 +89,7 @@ public class GameChallengesView extends FrameLayout {
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
             null, false, user.getUsername());
     guestList.add(me);
-
- /*   gameChallenge.setPeerId(gameChallenge.getCurrentChallengerId());
-    gameChallenge.setCurrentChallenge(gameChallenge.getCurrentChallenge());
-    if (gameChallenge.isUserAction()) onNextChallenge.onNext(gameChallenge);
-    adapter.setChallenge(gameChallenge.getCurrentChallenge(), null);
-    gameManager.setCurrentGame(gameChallenge);*/
-
-    ok(null, null, gameChallenge.isUserAction());
+    if (gameChallenge.isUserAction()) ok(null, null, gameChallenge.isUserAction());
   }
 
   public void setNextChallenge(String challenge, TribeGuest guestChallenged) {
@@ -111,31 +104,27 @@ public class GameChallengesView extends FrameLayout {
 
   private void ok(String challenge, TribeGuest guestChallenged, boolean nextChallenge) {
     if (challenge != null && guestChallenged != null) {
-      Timber.e("soef ok challenge != null " + challenge);
-      gameChallenge.setPeerId(guestChallenged.getId());
-      gameChallenge.setCurrentChallenge(challenge);
-      //onNextChallenge.onNext(gameChallenge);
+      Timber.w(" CHALLANGE RECEIVED : " + challenge);
+      Timber.w(
+          "user challenged " + guestChallenged.getId() + " " + guestChallenged.getDisplayName());
+      Timber.w(" me=" + user.getId());
+      gameManager.setCurrentChallengerId(guestChallenged.getId());
       adapter.setChallenge(challenge, guestChallenged);
     } else {
       TribeGuest guest = null;
       if (items != null && !items.isEmpty()) {
         challenge = getRandom(items);
         if (!guestList.isEmpty()) {
-          for (TribeGuest guestUser : guestList) {
-            Timber.e("SOEF USER IN ROOM : "
-                + guestUser.getId()
-                + " "
-                + guestUser.getDisplayName()
-                + " me: "
-                + user.getId());
-          }
           guest = getRandomGuest(guestList);
         }
       }
-      gameChallenge.setPeerId(guest.getId());
+      gameChallenge.setCurrentChallengerId(guest.getId());
       gameChallenge.setCurrentChallenge(challenge);
       if (nextChallenge) onNextChallenge.onNext(gameChallenge);
-      Timber.e("soef find random challenge" + challenge);
+      Timber.w("FIND RANDOM CHALLANGE : " + challenge);
+      Timber.w(" user challenged " + guest.getId() + " " + guest.getDisplayName());
+      Timber.w(" me=" + user.getId());
+      gameManager.setCurrentChallengerId(guest.getId());
       adapter.setChallenge(challenge, guest);
     }
     adapter.notifyDataSetChanged();
