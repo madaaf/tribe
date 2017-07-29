@@ -1,5 +1,9 @@
 package com.tribe.app.presentation.view.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -8,10 +12,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -27,7 +36,6 @@ import java.util.Random;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -35,19 +43,24 @@ import timber.log.Timber;
  */
 
 public class GameChallengesView extends FrameLayout {
+  private static int DURATION_EXIT_POPUP = 300;
 
   @Inject User user;
 
+  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.popupChallenge) FrameLayout popup;
+
+  private static int pos = 0;
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
   private GameChallengeViewPagerAdapter adapter;
   private GameChallenge gameChallenge;
   private GameManager gameManager;
+  private List<String> items = new ArrayList<>();
+  private List<TribeGuest> guestList = new ArrayList<>();
+  private boolean popupDisplayed = false;
 
-  @BindView(R.id.pager) ViewPager viewpager;
-
-  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
 
@@ -73,12 +86,12 @@ public class GameChallengesView extends FrameLayout {
     adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
-    viewpager.setOnTouchListener((v, event) -> true);
+    //viewpager.setOnTouchListener((v, event) -> true);
+    viewpager.setOnTouchListener((v, event) -> {
+      if (popupDisplayed) hidePopup();
+      return true;
+    });
   }
-
-  private static int pos = 0;
-  private List<String> items = new ArrayList<>();
-  private List<TribeGuest> guestList = new ArrayList<>();
 
   public void setGameChallenge(GameChallenge gameChallenge) {
     Timber.e("soef setGameChallenge");
@@ -95,6 +108,7 @@ public class GameChallengesView extends FrameLayout {
 
   public void setNextChallenge(String challenge, TribeGuest guestChallenged) {
     setVisibility(VISIBLE); // MAYBE call setGameChallenge
+    if (popupDisplayed) hidePopup();
     new Handler().post(() -> {
       pos++;
       viewpager.setCurrentItem(pos, true);
@@ -134,6 +148,48 @@ public class GameChallengesView extends FrameLayout {
       }
     }
     adapter.notifyDataSetChanged();
+  }
+
+  private void hidePopup() {
+    popupDisplayed = false;
+    ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(popup, "scaleX", 0f);
+    ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(popup, "scaleY", 0f);
+    scaleDownX.setDuration(DURATION_EXIT_POPUP);
+    scaleDownY.setDuration(DURATION_EXIT_POPUP);
+
+    AnimatorSet scaleDown = new AnimatorSet();
+    scaleDown.play(scaleDownX).with(scaleDownY);
+    scaleDownX.addUpdateListener(valueAnimator -> {
+      float value = (float) valueAnimator.getAnimatedValue();
+      popup.setAlpha(value);
+    });
+
+    scaleDownX.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+        popup.setVisibility(View.INVISIBLE);
+      }
+    });
+    scaleDown.start();
+  }
+
+  public void displayPopup() {
+    popup.setVisibility(VISIBLE);
+    popup.setAlpha(1);
+    popupDisplayed = true;
+    SpringSystem springSystem = SpringSystem.create();
+    Spring spring = springSystem.createSpring();
+    SpringConfig config = new SpringConfig(400, 20);
+    spring.setSpringConfig(config);
+
+    spring.addListener(new SimpleSpringListener() {
+      @Override public void onSpringUpdate(Spring spring) {
+        float value = (float) spring.getCurrentValue();
+        popup.setScaleX(value);
+        popup.setScaleY(value);
+      }
+    });
+    spring.setEndValue(1);
   }
 
   private static String getRandom(List<String> array) {

@@ -163,7 +163,6 @@ public class LiveView extends FrameLayout {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<String> onBuzzPopup = PublishSubject.create();
-  private PublishSubject<String> onChallengePopup = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
@@ -496,13 +495,15 @@ public class LiveView extends FrameLayout {
           gameChallenge.getCurrentChallenge());
     }));
 
-    persistentSubscriptions.add(gameChallengesView.onItemsChallengeEmpty().subscribe(onItemsChallengeEmpty));
+    persistentSubscriptions.add(
+        gameChallengesView.onItemsChallengeEmpty().subscribe(onItemsChallengeEmpty));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       Timber.e("soef onRestartGame subscription");
       if (game instanceof GameChallenge) {
         GameChallenge challenge = (GameChallenge) game;
         if (challenge.getCurrentChallengerId().equals(user.getId())) {
+          gameChallengesView.displayPopup();
           Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE ");
           return;
         }
@@ -910,12 +911,6 @@ public class LiveView extends FrameLayout {
       onBuzzPopup.onNext(displayName);
     }
   }
-
-  /*
-  public void displayChallengePopup(String displayName) {
-    onChallengePopup.onNext(onGameUIActive);
-  }
-  */
 
   public void addTribeGuest(TribeGuest trg) {
     if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
@@ -1457,6 +1452,7 @@ public class LiveView extends FrameLayout {
     if (gameId.equals(Game.GAME_CHALLENGE)) {
       isChallengeGameActivated = false;
       Timber.e("soef challenge game stop");
+      gameChallengesView.setVisibility(GONE);
     }
 
     viewControlsLive.stopGame();
@@ -1617,10 +1613,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
-  }
-
-  public Observable<View> onChallengePopup() {
-    return viewControlsLive.onChallengePopup();
   }
 
   public Observable<Void> onItemsChallengeEmpty() {

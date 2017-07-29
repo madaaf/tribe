@@ -7,4 +7,16 @@
       android:layout_height="match_parent"
       />
 
+
+  <FrameLayout
+      android:id="@+id/popupChallenge"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center"
+      android:layout_marginBottom="70dp"
+      android:visibility="invisible"
+      >
+    <include layout="@layout/popup_challenge_view" />
+  </FrameLayout>
+
 </merge>

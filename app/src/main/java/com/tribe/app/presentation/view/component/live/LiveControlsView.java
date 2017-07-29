@@ -153,7 +153,6 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onGameOptions = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
-  private PublishSubject<View> onChallengePopup = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -581,8 +580,7 @@ public class LiveControlsView extends FrameLayout {
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
           new OvershootInterpolator(OVERSHOOT_LIGHT));
-      onChallengePopup.onNext(v);
-      onRestartGame.onNext(gameManager.getCurrentGame());
+      onRestartGame.onNext(gameManager.getCurrentGame());//MADA
     });
     layoutContainerParamLive.addView(currentGameView, params);
     return currentGameView;
@@ -715,6 +713,9 @@ public class LiveControlsView extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+  public ImageView getCurrentGameView() {
+    return currentGameView;
+  }
 
   public void dispose() {
     btnNotify.clearAnimation();
@@ -837,9 +838,5 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return onGameUIActive;
-  }
-
-  public Observable<View> onChallengePopup() {
-    return onChallengePopup;
   }
 }

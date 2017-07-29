@@ -39,7 +39,7 @@ public class PopupContainerView extends FrameLayout {
 
   @StringDef({
       DISPLAY_BUZZ_POPUP, DISPLAY_DRAGING_FRIEND_POPUP, DISPLAY_INVITE_POPUP,
-      DISPLAY_NEW_CALL_POPUP, DISPLAY_PROFILE_POPUP, DISPLAY_POST_IT_GAME, DISPLAY_CHALLENGE_POPUP
+      DISPLAY_NEW_CALL_POPUP, DISPLAY_PROFILE_POPUP, DISPLAY_POST_IT_GAME
   }) public @interface PopupType {
   }
 
@@ -49,7 +49,6 @@ public class PopupContainerView extends FrameLayout {
   public static final String DISPLAY_INVITE_POPUP = "DISPLAY_INVITE_POPUP";
   public static final String DISPLAY_PROFILE_POPUP = "DISPLAY_PROFILE_POPUP";
   public static final String DISPLAY_POST_IT_GAME = "DISPLAY_POST_IT_GAME";
-  public static final String DISPLAY_CHALLENGE_POPUP = "DISPLAY_CHALLENGE_POPUP";
 
   private static int DURATION_EXIT_POPUP = 300;
   private static double TENSION = 400;
@@ -115,8 +114,7 @@ public class PopupContainerView extends FrameLayout {
             if (type.equals(DISPLAY_INVITE_POPUP)
                 || type.equals(DISPLAY_NEW_CALL_POPUP)
                 || type.equals(DISPLAY_PROFILE_POPUP)
-                || type.equals(DISPLAY_POST_IT_GAME)
-                || type.equals(DISPLAY_CHALLENGE_POPUP)) {
+                || type.equals(DISPLAY_POST_IT_GAME)) {
 
               if (type.equals(DISPLAY_INVITE_POPUP)) {
                 isInRight = true;
@@ -189,8 +187,6 @@ public class PopupContainerView extends FrameLayout {
         return R.layout.profile_popup_view;
       case DISPLAY_POST_IT_GAME:
         return R.layout.post_it_popup;
-      case DISPLAY_CHALLENGE_POPUP:
-        return R.layout.popup_challenge_view;
     }
     return 0;
   }
@@ -274,7 +270,7 @@ public class PopupContainerView extends FrameLayout {
           if (v != null && v.getParent() != null) {
             ((ViewGroup) v.getParent()).removeView(v);
           }
-          // setVisibility(View.GONE);
+          setVisibility(View.GONE);
         }
       });
       scaleDown.start();

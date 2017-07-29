@@ -68,23 +68,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
           + user.getDisplayName()
           + " "
           + challenge);
-    } else {
-      txtName.setText(user.getDisplayName());
-      viewAvatar.load(user.getProfilePicture());
-
-      Timber.i("SOEF  2: "
-          + guest.getDisplayName()
-          + " "
-          + guest.getId()
-          + " "
-          + user.getId()
-          + " "
-          + user.getDisplayName()
-          + " "
-          + challenge);
-      txtUsername.setText("Your turn to be challenged");
     }
-
     container.addView(itemView);
     return itemView;
   }

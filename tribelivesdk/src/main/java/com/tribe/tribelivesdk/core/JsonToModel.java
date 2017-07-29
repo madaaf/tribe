@@ -213,9 +213,6 @@ public class JsonToModel {
             if (challenges.has("user")) {
               String userId = challenges.get("user").toString();
               String challenge = challenges.get("challenge").toString();
-              Timber.e("OK " + userId + " " + challenge);
-   /*           gameChallenge.setCurrentChallenge(challenge);
-              gameChallenge.setCurrentChallengerId(userId);*/
               List<String> datas = new ArrayList<>();
               datas.add(challenge);
               datas.add(userId);
