@@ -192,6 +192,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
   private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
   private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -497,6 +498,8 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(
         gameChallengesView.onItemsChallengeEmpty().subscribe(onItemsChallengeEmpty));
+
+    persistentSubscriptions.add(gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       Timber.e("soef onRestartGame subscription");
@@ -1488,7 +1491,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void blockOpenInviteView(boolean b) {
-    viewControlsLive.blockOpenInviteView(b);
+    viewControlsLive.blockOpenInviteViewBtn(b);
   }
 
   //////////////////////
@@ -1617,6 +1620,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onItemsChallengeEmpty() {
     return onItemsChallengeEmpty;
+  }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
   }
 }
 

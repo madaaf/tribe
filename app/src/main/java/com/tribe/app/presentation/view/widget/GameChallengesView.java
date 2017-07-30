@@ -36,6 +36,7 @@ import java.util.Random;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -61,8 +62,10 @@ public class GameChallengesView extends FrameLayout {
   private List<TribeGuest> guestList = new ArrayList<>();
   private boolean popupDisplayed = false;
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
@@ -91,6 +94,8 @@ public class GameChallengesView extends FrameLayout {
       if (popupDisplayed) hidePopup();
       return true;
     });
+
+    subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
@@ -224,5 +229,9 @@ public class GameChallengesView extends FrameLayout {
 
   public Observable<Void> onItemsChallengeEmpty() {
     return onItemsChallengeEmpty;
+  }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
   }
 }

@@ -599,6 +599,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           viewLive.setNextChallengePager(datas.get(0), guestChallenged);
         }));
 
+    subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
+      viewLiveContainer.blockOpenInviteView(blockInviteView);
+    }));
+
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
     }));
 

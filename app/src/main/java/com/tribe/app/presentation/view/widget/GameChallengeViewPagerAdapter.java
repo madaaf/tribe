@@ -2,13 +2,18 @@ package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.MoveViewTouchListener;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -23,6 +28,10 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private User user;
   private String challenge;
   private TribeGuest guest;
+
+
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public GameChallengeViewPagerAdapter(Context context, User user) {
     mContext = context;
@@ -45,6 +54,13 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     TextViewFont txtUsername = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
+    CardView card = (CardView) itemView.findViewById(R.id.cardview);
+
+    MoveViewTouchListener moveListener = new MoveViewTouchListener(card);
+    card.setOnTouchListener(moveListener);
+    subscriptions.add(moveListener.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+
+    //card.setOnTouchListener(new MoveViewTouchListener(card));
 
     txtChallenge.setText(challenge);
 
@@ -81,5 +97,9 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     Timber.i("SET CHALLENGE " + guest.getDisplayName());
     this.challenge = challenge;
     this.guest = guest;
+  }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
   }
 }
