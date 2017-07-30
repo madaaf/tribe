@@ -13,7 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.BounceInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -92,7 +92,6 @@ public class GameChallengesView extends FrameLayout {
     adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
-    //viewpager.setOnTouchListener((v, event) -> true);
     viewpager.setOnTouchListener((v, event) -> {
       if (popupDisplayed) hidePopup();
       return true;
@@ -108,7 +107,7 @@ public class GameChallengesView extends FrameLayout {
       mScroller = ViewPager.class.getDeclaredField("mScroller");
       mScroller.setAccessible(true);
       ViewPagerScroller scroller =
-          new ViewPagerScroller(viewpager.getContext(), new BounceInterpolator());
+          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f));
       mScroller.set(viewpager, scroller);
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
@@ -251,4 +250,19 @@ public class GameChallengesView extends FrameLayout {
   public Observable<Boolean> onBlockOpenInviteView() {
     return onBlockOpenInviteView;
   }
+
+  /*public class CustomBounceInterpolator implements android.view.animation.Interpolator {
+
+    double mAmplitude = 1;
+    double mFrequency = 10;
+
+    public CustomBounceInterpolator(double amplitude, double frequency) {
+      mAmplitude = amplitude;
+      mFrequency = frequency;
+    }
+
+    public float getInterpolation(float time) {
+      return (float) (-1 * Math.pow(Math.E, -time / mAmplitude) * Math.cos(mFrequency * time) + 1);
+    }
+  }*/
 }

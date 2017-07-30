@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.utils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
@@ -25,22 +26,15 @@ public class MoveViewTouchListener implements View.OnTouchListener {
   @Override public boolean onTouch(View v, MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_UP) {
       Timber.e("SOEF ON ACTION UP");
-      v.animate().translationX(0).translationY(0).setDuration(300).start();
+      v.animate()
+          .translationX(0)
+          .translationY(0)
+          .setDuration(300)
+          .setInterpolator(new OvershootInterpolator(1.3f))
+          .start();
       onBlockOpenInviteView.onNext(false);
     }
     return mGestureDetector.onTouchEvent(event);
-  }
-
-  private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
-    float boundedDragPercent = Math.min(1f, Math.abs(100));
-    float extraOS = Math.abs(scrollDist) - totalDragDistance;
-    float slingshotDist = totalDragDistance;
-    float tensionSlingshotPercent =
-        Math.max(0, Math.min(extraOS, slingshotDist * 2) / slingshotDist);
-    float tensionPercent =
-        (float) ((tensionSlingshotPercent / 4) - Math.pow((tensionSlingshotPercent / 4), 2)) * 2f;
-    float extraMove = (slingshotDist) * tensionPercent / 2;
-    return (int) ((slingshotDist * boundedDragPercent) + extraMove);
   }
 
   private GestureDetector.OnGestureListener mGestureListener =

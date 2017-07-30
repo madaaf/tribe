@@ -29,7 +29,6 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private String challenge;
   private TribeGuest guest;
 
-
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
@@ -60,8 +59,6 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     card.setOnTouchListener(moveListener);
     subscriptions.add(moveListener.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
-    //card.setOnTouchListener(new MoveViewTouchListener(card));
-
     txtChallenge.setText(challenge);
 
     if (guest != null) {
@@ -84,6 +81,8 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
           + user.getDisplayName()
           + " "
           + challenge);
+    } else {
+      Timber.e("SOEF guest = null");
     }
     container.addView(itemView);
     return itemView;
