@@ -18,18 +18,20 @@ public abstract class Game extends GameFilter {
   public static final String ID = "id";
   public static final String ACTION = "action";
   public static final String CHALLENGE = "challenge";
+  public static final String CHALLENGES = "challenges";
   public static final String NEW_CHALLENGE = "newChallenge";
   public static final String START = "start";
   public static final String STOP = "stop";
   public static final String CURRENT_GAME = "currentGame";
 
-  @StringDef({ GAME_POST_IT, GAME_CHALLENGE}) public @interface GameType {
+  @StringDef({ GAME_POST_IT, GAME_CHALLENGE }) public @interface GameType {
   }
 
   public static final String GAME_POST_IT = "post-it";
   public static final String GAME_CHALLENGE = "challenges";
 
   protected boolean localFrameDifferent = false;
+  private boolean isUserAction = false;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -52,6 +54,14 @@ public abstract class Game extends GameFilter {
   public abstract void apply(Frame frame);
 
   public abstract void onFrameSizeChange(Frame frame);
+
+  public void setUserAction(boolean isUserAction) {
+    this.isUserAction = isUserAction;
+  }
+
+  public boolean isUserAction() {
+    return isUserAction;
+  }
 
   public int getDrawableRes() {
     return drawableRes;

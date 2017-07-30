@@ -85,6 +85,12 @@ import rx.subscriptions.CompositeSubscription;
     }
   }
 
+  public void setCurrentChallengerId(String challengerId) {
+    if (currentGame instanceof GameChallenge) {
+      ((GameChallenge) currentGame).setCurrentChallengerId(challengerId);
+    }
+  }
+
   public void stop() {
     this.currentGame = null;
   }
