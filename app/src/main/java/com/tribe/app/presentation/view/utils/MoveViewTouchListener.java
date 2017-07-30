@@ -31,6 +31,18 @@ public class MoveViewTouchListener implements View.OnTouchListener {
     return mGestureDetector.onTouchEvent(event);
   }
 
+  private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
+    float boundedDragPercent = Math.min(1f, Math.abs(100));
+    float extraOS = Math.abs(scrollDist) - totalDragDistance;
+    float slingshotDist = totalDragDistance;
+    float tensionSlingshotPercent =
+        Math.max(0, Math.min(extraOS, slingshotDist * 2) / slingshotDist);
+    float tensionPercent =
+        (float) ((tensionSlingshotPercent / 4) - Math.pow((tensionSlingshotPercent / 4), 2)) * 2f;
+    float extraMove = (slingshotDist) * tensionPercent / 2;
+    return (int) ((slingshotDist * boundedDragPercent) + extraMove);
+  }
+
   private GestureDetector.OnGestureListener mGestureListener =
       new GestureDetector.SimpleOnGestureListener() {
         private float mMotionDownX, mMotionDownY;

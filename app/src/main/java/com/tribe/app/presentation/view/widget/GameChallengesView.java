@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,9 +28,11 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -94,8 +97,22 @@ public class GameChallengesView extends FrameLayout {
       if (popupDisplayed) hidePopup();
       return true;
     });
+    changePagerScroller();
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+  }
+
+  private void changePagerScroller() {
+    try {
+      Field mScroller = null;
+      mScroller = ViewPager.class.getDeclaredField("mScroller");
+      mScroller.setAccessible(true);
+      ViewPagerScroller scroller =
+          new ViewPagerScroller(viewpager.getContext(), new BounceInterpolator());
+      mScroller.set(viewpager, scroller);
+    } catch (Exception e) {
+      Timber.e("error of change scroller " + e);
+    }
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
