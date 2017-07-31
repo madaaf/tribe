@@ -130,12 +130,12 @@ public class GameChallengesView extends FrameLayout {
   public void setNextChallenge(String challenge, TribeGuest guestChallenged) {
     setVisibility(VISIBLE); // MAYBE call setGameChallenge
     if (popupDisplayed) hidePopup();
+    ok(challenge, guestChallenged, true);
     new Handler().post(() -> {
       pos++;
       viewpager.setCurrentItem(pos, true);
       Timber.e("soef set next challenge " + pos);
     });
-    ok(challenge, guestChallenged, true);
   }
 
   private void ok(String challenge, TribeGuest guestChallenged, boolean nextChallenge) {
