@@ -268,7 +268,6 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-
       } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) || (
           live.getId().equals(Live.NEW_CALL)
               && (invitedCount > 0 || hasShared))) {
@@ -486,7 +485,10 @@ public class LiveView extends FrameLayout {
     viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
-      switch (game.getId()) {
+      displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
+      Timber.e("SOEF onStartGame challenge");
+      restartGame(game);
+/*      switch (game.getId()) {
         case Game.GAME_POST_IT:
           Timber.e("SOEF onStartGame postit");
           displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
@@ -497,7 +499,8 @@ public class LiveView extends FrameLayout {
           Timber.e("SOEF onStartGame challenge");
           restartGame(game);
           break;
-      }
+        case Game.GAME_DRAW;
+      }*/
     }));
 
     persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
@@ -513,7 +516,8 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(
         gameChallengesView.onItemsChallengeEmpty().subscribe(onItemsChallengeEmpty));
 
-    persistentSubscriptions.add(gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+    persistentSubscriptions.add(
+        gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       Timber.e("soef onRestartGame subscription");
@@ -772,16 +776,15 @@ public class LiveView extends FrameLayout {
 
       Date startedAt = new Date();
 
-      callDurationSubscription = Observable
-              .interval(1, TimeUnit.SECONDS)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(tick -> {
+      callDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(tick -> {
 
-                String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
-                String duration = CallLevelHelper.getFormattedDuration(startedAt);
+            String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
+            String duration = CallLevelHelper.getFormattedDuration(startedAt);
 
-                viewStatusName.setStatusText(level, " " + duration);
-              });
+            viewStatusName.setStatusText(level, " " + duration);
+          });
 
       tempSubscriptions.add(callDurationSubscription);
     }

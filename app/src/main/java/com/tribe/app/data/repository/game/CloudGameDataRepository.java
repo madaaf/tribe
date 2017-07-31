@@ -3,7 +3,6 @@ package com.tribe.app.data.repository.game;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
 import com.tribe.app.domain.interactor.game.GameRepository;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,5 +24,10 @@ import rx.Observable;
   @Override public Observable<List<String>> getDataForChallengeGame(String lang) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getDataForChallengeGame();
+  }
+
+  @Override public Observable<List<String>> getNamesForDrawGame(String lang) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getNamesForDrawGame();
   }
 }

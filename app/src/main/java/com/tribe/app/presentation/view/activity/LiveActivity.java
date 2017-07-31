@@ -86,6 +86,7 @@ import com.tribe.app.presentation.view.widget.notifications.SharingCardNotificat
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -688,11 +689,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
 
     subscriptions.add(viewLive.onEndCall()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(duration -> {
-              livePresenter.incrementTimeInCall(user.getId(), duration);
-            }));
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(duration -> {
+          livePresenter.incrementTimeInCall(user.getId(), duration);
+        }));
 
     subscriptions.add(notificationContainerView.onFacebookSuccess()
         .subscribeOn(Schedulers.newThread())
@@ -783,6 +784,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                   livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
                 }
                 break;
+
+              case Game.GAME_DRAW:
+                GameDraw gameDraw = (GameDraw) game;
+                if (!gameDraw.hasNames()) {
+                  livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+                }
+                break;
               case Game.GAME_CHALLENGE:
                 GameChallenge gameChallenge = (GameChallenge) game;
                 if (!gameChallenge.hasNames()) {
@@ -837,13 +845,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (user != null) {
         if (user.isInvisible()) {
           DialogFactory.dialog(context(), user.getDisplayName(),
-                  EmojiParser.demojizedText(
-                          context().getString(R.string.add_friend_error_invisible)),
-                  context().getString(R.string.add_friend_error_invisible_invite_android),
-                  context().getString(R.string.add_friend_error_invisible_cancel))
-                  .filter(x -> x == true)
-                  .subscribe(a -> share());
-
+              EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+              context().getString(R.string.add_friend_error_invisible_invite_android),
+              context().getString(R.string.add_friend_error_invisible_cancel))
+              .filter(x -> x == true)
+              .subscribe(a -> share());
         } else {
           livePresenter.createFriendship(user.getId());
         }
@@ -879,11 +885,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (StringUtils.isEmpty(live.getLinkId())) {
       livePresenter.getRoomLink(roomConfiguration.getRoomId());
-      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
-              .show();
+      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG).show();
     } else {
-      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
-              live.getLinkId(), null, false);
+      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getLinkId(),
+          null, false);
     }
   }
 
@@ -891,8 +896,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (isFromOthers) {
       Toast.makeText(this,
-              EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
-              Toast.LENGTH_LONG).show();
+          EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
+          Toast.LENGTH_LONG).show();
     }
 
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
@@ -1044,8 +1049,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onAddError() {
-    Toast.makeText(context(), EmojiParser.demojizedText(
-            context().getString(R.string.add_friend_error_invisible)), Toast.LENGTH_SHORT).show();
+    Toast.makeText(context(),
+        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+        Toast.LENGTH_SHORT).show();
   }
 
   @Override public void onAddSuccess(Friendship friendship) {
@@ -1058,6 +1064,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     if (game != null && game instanceof GamePostIt) {
       GamePostIt gamePostIt = (GamePostIt) game;
       gamePostIt.setNameList(nameList);
+    }
+  }
+
+  @Override public void onNamesDrawGame(List<String> nameList) {
+    for (String name : nameList) {
+      Timber.e("SOEF " + name);
     }
   }
 
@@ -1121,11 +1133,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (error.getId() == WebSocketError.ERROR_ROOM_FULL) {
       roomFull();
-
     } else {
-      Toast.makeText(getApplicationContext(),
-              ErrorMessageFactory.create(getBaseContext(), null),
-              Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(), ErrorMessageFactory.create(getBaseContext(), null),
+          Toast.LENGTH_LONG).show();
 
       finish();
     }

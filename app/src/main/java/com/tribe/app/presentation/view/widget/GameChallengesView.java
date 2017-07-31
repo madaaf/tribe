@@ -250,6 +250,4 @@ public class GameChallengesView extends FrameLayout {
   public Observable<Boolean> onBlockOpenInviteView() {
     return onBlockOpenInviteView;
   }
-
-
 }

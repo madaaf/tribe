@@ -157,8 +157,12 @@
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/textViewFont2"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_alignParentEnd="true"
+          android:drawablePadding="10dp"
+          android:drawableStart="@drawable/picto_clear"
           android:gravity="end|bottom"
           android:singleLine="true"
           tools:text="Clear"
