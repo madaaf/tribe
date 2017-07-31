@@ -48,6 +48,7 @@ import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragm
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.GameChallengesView;
+import com.tribe.app.presentation.view.widget.GameDrawView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
@@ -82,6 +83,8 @@ import dagger.Component;
   void inject(NotificationContainerView notificationContainerView);
 
   void inject(ScreenshotView screenshotView);
+
+  void inject(GameDrawView gameDrawView);
 
   void inject(CreateGroupNotificationView createGroupNotificationView);
 

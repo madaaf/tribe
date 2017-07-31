@@ -68,6 +68,7 @@
   <!-- YELLOWS -->
   <color name="yellow">#FEBE00</color>
   <color name="yellow.opacity.40">#66FEBE00</color>
+  <color name="yellow.draw">#F9AD25</color>
 
   <!-- GREENS -->
   <color name="green.status">#2ECC4C</color>
