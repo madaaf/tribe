@@ -580,7 +580,7 @@ public class LiveControlsView extends FrameLayout {
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
           new OvershootInterpolator(OVERSHOOT_LIGHT));
-      onRestartGame.onNext(gameManager.getCurrentGame());
+      onRestartGame.onNext(gameManager.getCurrentGame());//MADA
     });
     layoutContainerParamLive.addView(currentGameView, params);
     return currentGameView;
@@ -713,13 +713,16 @@ public class LiveControlsView extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+  public ImageView getCurrentGameView() {
+    return currentGameView;
+  }
 
   public void dispose() {
     btnNotify.clearAnimation();
     btnNotify.animate().setListener(null);
   }
 
-  public void blockOpenInviteView(boolean block) {
+  public void blockOpenInviteViewBtn(boolean block) {
     btnInviteLive.setEnabled(!block);
     if (block) {
       btnInviteLive.setAlpha(0.4f);

@@ -611,8 +611,29 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) joinRoom();
     }));
 
-    subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
+    subscriptions.add(viewLive.onNewChallengeReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(datas -> {//SOEF MADA LOOPER
+          Timber.e("SOEF ON NEW CHALLENGE RECEIVED challenfe :"
+              + datas.get(0)
+              + " peetId :  "
+              + datas.get(1));
+          List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+          TribeGuest guestChallenged = new TribeGuest(datas.get(1));
+          for (TribeGuest guest : guests) {
+            if (guest.getId().equals(datas.get(1))) {
+              guestChallenged = guest;
+            }
+          }
+          viewLive.setNextChallengePager(datas.get(0), guestChallenged);
+        }));
 
+    subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
+      viewLiveContainer.blockOpenInviteView(blockInviteView);
+    }));
+
+    subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
@@ -746,29 +767,46 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (o != null) userInfosNotificationView.displayView(o);
     }));
 
-    subscriptions.add(viewLive.onStartGame().subscribe(game -> {
-      if (game != null) {
-        switch (game.getId()) {
-          case Game.GAME_POST_IT:
-            GamePostIt gamePostIt = (GamePostIt) game;
-            if (!gamePostIt.hasNames()) {
-              livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
-            }
-            break;
-          case Game.GAME_CHALLENGE:
-            GameChallenge gameChallenge = (GameChallenge) game;
-            if (!gameChallenge.hasNames()) {
-              Timber.e("soef load data to launchChallengeGame");
-              livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
-            } else {
-              Timber.e("soef data already exist launchChallengeGame");
-              // launchChallengeGame();
-              viewLive.setNextChallenge();
-            }
-            break;
-        }
-      }
+    subscriptions.add(viewLive.onItemsChallengeEmpty().subscribe(aVoid -> {
+      launchChallengeGame();
     }));
+
+    subscriptions.add(viewLive.onStartGame()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(game -> {
+          if (game != null) {
+            switch (game.getId()) {
+              case Game.GAME_POST_IT:
+                GamePostIt gamePostIt = (GamePostIt) game;
+                if (!gamePostIt.hasNames()) {
+                  livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
+                }
+                break;
+              case Game.GAME_CHALLENGE:
+                GameChallenge gameChallenge = (GameChallenge) game;
+                if (!gameChallenge.hasNames()) {
+                  gameManager.setCurrentGame(game);
+                  livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+                  Timber.e("soef load data to launchChallengeGame "
+                      + gameChallenge.getCurrentChallenge());
+                } else {
+                  Timber.e("soef data already exist launchChallengeGame");
+                  // launchChallengeGame();
+                  //viewLive.setNextChallengePager();
+                }
+
+                Timber.e("soef llaunchChallengeGame "
+                    + gameChallenge.getCurrentChallengerId()
+                    + " "
+                    + user.getId()
+                    + " game.isUserAction() "
+                    + game.isUserAction());
+                if (game.isUserAction()) launchChallengeGame();
+                break;
+            }
+          }
+        }));
 
     subscriptions.add(userInfosNotificationView.onClickInvite().subscribe(contact -> {
       Bundle bundle = new Bundle();
@@ -1024,26 +1062,29 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {
-    Timber.e("soef onDataChallengesGame launchChallengeGame " + nameList.size());
+    Timber.e("soefonDataChallengesGame set data on preference   " + nameList.size());
     List<String> challengeList = new ArrayList<>();
     challengeList.addAll(nameList);
     dataChallengesGames.set(new HashSet<>());
     PreferencesUtils.addListToSet(dataChallengesGames, nameList);
-    launchChallengeGame();
   }
 
   private void launchChallengeGame() {
-
     Game game = gameManager.getCurrentGame();
     List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
     List<String> challengeList = new ArrayList<>();
     challengeList.addAll(dataChallengesGames.get());
-    Timber.e("soef launchChallengeGame " + challengeList.size());
 
     if (game != null && game instanceof GameChallenge) {
       GameChallenge gameChallenge = (GameChallenge) game;
-      gameChallenge.setNameList(challengeList); //SOEF
-      gameChallenge.setGuestList(guestList); //SOEF
+      gameChallenge.setNameList(challengeList);
+      gameChallenge.setGuestList(guestList);
+      Timber.e("soef launchChallengeGame "
+          + gameChallenge.getCurrentChallenge()
+          + " "
+          + challengeList.size()
+          + " "
+          + guestList.size());
       viewLive.setGameChallenge(gameChallenge);
     }
   }

@@ -7,6 +7,7 @@ import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -99,6 +100,8 @@ public class Room {
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> test = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
@@ -148,6 +151,9 @@ public class Room {
     }).subscribe());
 
     persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+
+
+    persistentSubscriptions.add(jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
 
     persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
@@ -546,8 +552,16 @@ public class Room {
     return onRoomStateChanged;
   }
 
+  public Observable<String> test() {
+    return test;
+  }
+
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
+  }
+
+  public Observable<List<String>> onNewChallengeReceived() {
+    return onNewChallengeReceived;
   }
 
   public Observable<String> unlockedRollTheDice() {

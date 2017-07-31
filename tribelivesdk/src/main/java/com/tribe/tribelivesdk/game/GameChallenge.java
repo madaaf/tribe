@@ -15,7 +15,7 @@ public class GameChallenge extends Game {
   private List<String> nameList;
   private List<TribeGuest> guestList;
   private String currentPostItName = "";
-  private String peerId;
+  private String challengerId;
   private String currentChallenge;
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
@@ -31,11 +31,6 @@ public class GameChallenge extends Game {
   @Override public void onFrameSizeChange(Frame frame) {
 
   }
-/*
-  public void generateNewName() {
-    if (nameList == null || nameList.size() == 0) return;
-    currentPostItName = nameList.get(new Random().nextInt(nameList.size()));
-  }*/
 
   public String getCurrentChallenge() {
     return currentChallenge;
@@ -45,12 +40,12 @@ public class GameChallenge extends Game {
     this.currentChallenge = currentChallenge;
   }
 
-  public String getPeerId() {
-    return peerId;
+  public String getCurrentChallengerId() {
+    return challengerId;
   }
 
-  public void setPeerId(String peerId) {
-    this.peerId = peerId;
+  public void setCurrentChallengerId(String challengerId) {
+    this.challengerId = challengerId;
   }
 
   public void setNameList(List<String> nameList) {
