@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,15 +28,18 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -61,8 +65,10 @@ public class GameChallengesView extends FrameLayout {
   private List<TribeGuest> guestList = new ArrayList<>();
   private boolean popupDisplayed = false;
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
@@ -86,11 +92,26 @@ public class GameChallengesView extends FrameLayout {
     adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
-    //viewpager.setOnTouchListener((v, event) -> true);
     viewpager.setOnTouchListener((v, event) -> {
       if (popupDisplayed) hidePopup();
       return true;
     });
+    changePagerScroller();
+
+    subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+  }
+
+  private void changePagerScroller() {
+    try {
+      Field mScroller = null;
+      mScroller = ViewPager.class.getDeclaredField("mScroller");
+      mScroller.setAccessible(true);
+      ViewPagerScroller scroller =
+          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f));
+      mScroller.set(viewpager, scroller);
+    } catch (Exception e) {
+      Timber.e("error of change scroller " + e);
+    }
   }
 
   public void setGameChallenge(GameChallenge gameChallenge) {
@@ -109,12 +130,12 @@ public class GameChallengesView extends FrameLayout {
   public void setNextChallenge(String challenge, TribeGuest guestChallenged) {
     setVisibility(VISIBLE); // MAYBE call setGameChallenge
     if (popupDisplayed) hidePopup();
+    ok(challenge, guestChallenged, true);
     new Handler().post(() -> {
       pos++;
       viewpager.setCurrentItem(pos, true);
       Timber.e("soef set next challenge " + pos);
     });
-    ok(challenge, guestChallenged, true);
   }
 
   private void ok(String challenge, TribeGuest guestChallenged, boolean nextChallenge) {
@@ -225,4 +246,23 @@ public class GameChallengesView extends FrameLayout {
   public Observable<Void> onItemsChallengeEmpty() {
     return onItemsChallengeEmpty;
   }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
+  }
+
+  /*public class CustomBounceInterpolator implements android.view.animation.Interpolator {
+
+    double mAmplitude = 1;
+    double mFrequency = 10;
+
+    public CustomBounceInterpolator(double amplitude, double frequency) {
+      mAmplitude = amplitude;
+      mFrequency = frequency;
+    }
+
+    public float getInterpolation(float time) {
+      return (float) (-1 * Math.pow(Math.E, -time / mAmplitude) * Math.cos(mFrequency * time) + 1);
+    }
+  }*/
 }

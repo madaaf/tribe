@@ -722,7 +722,7 @@ public class LiveControlsView extends FrameLayout {
     btnNotify.animate().setListener(null);
   }
 
-  public void blockOpenInviteView(boolean block) {
+  public void blockOpenInviteViewBtn(boolean block) {
     btnInviteLive.setEnabled(!block);
     if (block) {
       btnInviteLive.setAlpha(0.4f);
