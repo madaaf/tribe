@@ -59,6 +59,10 @@ public class ProfileView extends ScrollView {
 
   @BindView(R.id.viewActionRateUs) ActionView viewActionRateUs;
 
+  @BindView(R.id.viewActionChangePhoneNumber) ActionView viewActionChangePhoneNumber;
+
+  @BindView(R.id.viewActionFacebookAccount) ActionView viewActionFacebookAccount;
+
   @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
   @BindView(R.id.viewActionVisible) ActionView viewActionVisible;
@@ -220,6 +224,14 @@ public class ProfileView extends ScrollView {
 
   public Observable<Void> onRateClick() {
     return viewActionRateUs.onClick();
+  }
+
+  public Observable<Void> onChangePhoneNumberClick() {
+    return viewActionChangePhoneNumber.onClick();
+  }
+
+  public Observable<Void> onFacebookAccountClick() {
+    return viewActionFacebookAccount.onClick();
   }
 
   public Observable<Void> onLogoutClick() {

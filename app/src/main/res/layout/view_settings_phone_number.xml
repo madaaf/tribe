@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/horizontal_margin_small"
+    tools:context=".presentation.view.activity.ProfileActivity">
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/phoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Title.2.Black"
+            tools:text="Phone number" />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_below="@+id/phoneNumber"
+            android:id="@+id/country"
+            android:layout_marginTop="@dimen/horizontal_margin_xsmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Body.One.Blue.New"
+            tools:text="Country" />
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/changePhoneNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/picto_change_phone_number"
+            />
+
+</com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView>
