@@ -26,7 +26,7 @@ import timber.log.Timber;
  */
 
 public class GameDrawViewPagerAdapter extends PagerAdapter {
-  private static int nbrPage = 1;
+
   private static int COUNTER = 30;
   private Context context;
   private LayoutInflater mLayoutInflater;
@@ -35,10 +35,9 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   private String challenge;
   private TribeGuest guest;
   private GameManager gameManager;
-  private CountDownTimer countDownTimer;
-
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
+  private View mCurrentView;
 
   public GameDrawViewPagerAdapter(Context context, User user) {
     this.context = context;
@@ -62,7 +61,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
     TextViewFont gameName = (TextViewFont) itemView.findViewById(R.id.gameName);
     TextViewFont nextInLabel = (TextViewFont) itemView.findViewById(R.id.nextInLabel);
-    TextViewFont counter = (TextViewFont) itemView.findViewById(R.id.counter);
+
     TextViewFont drawDesc = (TextViewFont) itemView.findViewById(R.id.drawDesc);
     TextViewFont turn = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
@@ -91,9 +90,12 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       hand.setVisibility(View.INVISIBLE);
     }
     String displayName = guest != null ? guest.getDisplayName() : "";
-    Timber.w("instangiate item " + draw.getCurrentDrawName() + displayName);
-
-    setCounter(counter);
+    Timber.w("instangiate item "
+        + draw.getCurrentDrawName()
+        + " "
+        + displayName
+        + " position "
+        + position);
 
     container.addView(itemView);
     return itemView;
@@ -104,28 +106,35 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   }
 
   private void setCounter(TextViewFont counter) {
-    // if (countDownTimer != null) countDownTimer.cancel();
-    countDownTimer = new CountDownTimer(COUNTER * 1000, 1000) {
+    CountDownTimer countDownTimer = new CountDownTimer(COUNTER * 1000, 1000) {
       public void onTick(long millisUntilFinished) {
         counter.setText("" + millisUntilFinished / 1000);
       }
 
       public void onFinish() {
-        counter.setText("0");
+        if (counter != null) counter.setText("0");
       }
-    }.start();
+    };
+
+    countDownTimer.cancel();
+    countDownTimer.start();
   }
 
   private void animateDiagonalPan(View v) {
     AnimatorSet animSetXY = new AnimatorSet();
 
     ObjectAnimator y = ObjectAnimator.ofFloat(v, "translationY", v.getY(), v.getY() + 200);
-
     ObjectAnimator x = ObjectAnimator.ofFloat(v, "translationX", v.getX(), v.getX() + 200);
 
     animSetXY.playTogether(x, y);
     animSetXY.setInterpolator(new LinearInterpolator());
     animSetXY.setDuration(300);
     animSetXY.start();
+  }
+
+  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
+    mCurrentView = (View) object;
+    TextViewFont counter = (TextViewFont) mCurrentView.findViewById(R.id.counter);
+    setCounter(counter);
   }
 }

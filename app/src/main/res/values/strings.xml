@@ -672,4 +672,7 @@
 	<string name="linked_friends_notifications_disable_fb_alert_title">Downgrading Experience :warning:</string>
 	<string name="linked_friends_notifications_disable_fb_alert_msg">You\'re about to disable Facebook.</string>
 	<string name="linked_friends_notifications_disable_fb_alert_disable">Disable</string>
+	<string name="linked_friends_error_unable_to_unlink">You can\'t unlink all your accounts (Facebook and phone) from Tribe.</string>
+	<string name="linked_friends_success_phone">You successfully unlinked your phone account</string>
+	<string name="linked_friends_success_fb">You successfully unlinked your Facebook account</string>
 </resources>

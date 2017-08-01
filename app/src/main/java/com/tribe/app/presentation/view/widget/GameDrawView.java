@@ -66,6 +66,7 @@ public class GameDrawView extends FrameLayout {
     viewpager.setOnTouchListener((v, event) -> {
       return true;
     });
+
     changePagerScroller();
   }
 
