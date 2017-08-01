@@ -46,7 +46,7 @@ public class EmojiParser {
     IEmojiMap.put(":wave:", "\uD83D\uDC4B");
     IEmojiMap.put(":heart:", "\u2764");
     IEmojiMap.put(":broken_heart:", "\uD83D\uDC94");
-    IEmojiMap.put(":pencil2:", "\u270F");
+    IEmojiMap.put(":pencil2:", "\u270E");
     IEmojiMap.put(":ghost:", "\uD83D\uDC7B");
     IEmojiMap.put(":star2:", "\uD83C\uDF1F");
     IEmojiMap.put(":metal:",

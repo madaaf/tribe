@@ -1,13 +1,12 @@
 package com.tribe.app.presentation.view.widget;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.CountDownTimer;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import com.tribe.app.R;
@@ -64,9 +63,10 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
     TextViewFont drawDesc = (TextViewFont) itemView.findViewById(R.id.drawDesc);
     TextViewFont turn = (TextViewFont) itemView.findViewById(R.id.txtUsername);
-    ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
+
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
+    ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
 
     TribeGuest guest = draw.getCurrentGuest();
     if (guest != null) {
@@ -82,12 +82,11 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       drawDesc.setText(
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_draw)));
       turn.setText(context.getString(R.string.game_draw_my_turn));
-      animateDiagonalPan(hand);
     } else {
       drawDesc.setText(
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
       turn.setText(context.getString(R.string.game_draw_other_is_drawing));
-      hand.setVisibility(View.INVISIBLE);
+      //  hand.setVisibility(View.INVISIBLE);
     }
     String displayName = guest != null ? guest.getDisplayName() : "";
     Timber.w("instangiate item "
@@ -121,20 +120,33 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   }
 
   private void animateDiagonalPan(View v) {
-    AnimatorSet animSetXY = new AnimatorSet();
-
-    ObjectAnimator y = ObjectAnimator.ofFloat(v, "translationY", v.getY(), v.getY() + 200);
-    ObjectAnimator x = ObjectAnimator.ofFloat(v, "translationX", v.getX(), v.getX() + 200);
-
-    animSetXY.playTogether(x, y);
-    animSetXY.setInterpolator(new LinearInterpolator());
-    animSetXY.setDuration(300);
-    animSetXY.start();
+    int duration = 1000;
+    int translation = 80;
+    v.animate()
+        .translationX(-translation)
+        .translationY(-translation)
+        .setInterpolator(new LinearInterpolator())
+        .setDuration(duration)
+        .withEndAction(() -> {
+          v.animate()
+              .setInterpolator(new DecelerateInterpolator())
+              .translationX(translation)
+              .translationY(translation)
+              .setDuration(duration)
+              .withEndAction(() -> {
+                animateDiagonalPan(v);
+              })
+              .start();
+        })
+        .start();
   }
 
   @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
     mCurrentView = (View) object;
     TextViewFont counter = (TextViewFont) mCurrentView.findViewById(R.id.counter);
+    ImageView hand = (ImageView) mCurrentView.findViewById(R.id.iconHand);
+
+    animateDiagonalPan(hand);
     setCounter(counter);
   }
 }
