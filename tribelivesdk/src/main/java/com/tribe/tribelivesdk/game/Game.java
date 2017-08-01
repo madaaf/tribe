@@ -24,11 +24,11 @@ public abstract class Game extends GameFilter {
   public static final String STOP = "stop";
   public static final String CURRENT_GAME = "currentGame";
 
-  @StringDef({ GAME_POST_IT, GAME_CHALLENGE,GAME_DRAW }) public @interface GameType {
+  @StringDef({ GAME_POST_IT, GAME_CHALLENGE, GAME_DRAW }) public @interface GameType {
   }
 
   public static final String GAME_POST_IT = "post-it";
-  public static final String GAME_DRAW = "post-GAME_DRAW";
+  public static final String GAME_DRAW = "draw";
   public static final String GAME_CHALLENGE = "challenges";
 
   protected boolean localFrameDifferent = false;

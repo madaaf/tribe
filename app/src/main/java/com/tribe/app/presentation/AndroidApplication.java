@@ -267,8 +267,7 @@ public class AndroidApplication extends Application {
     gameManager.addGame(
         new GameChallenge(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
             R.drawable.icon_game_challenge));
-    gameManager.addGame(new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_post_it),
-        R.drawable.icon_game_draw));
+    gameManager.addGame(new GameDraw(this, Game.GAME_DRAW, "Draw ! ", R.drawable.icon_game_draw));
   }
 
   private class SampleAppStateListener implements AppStateListener {

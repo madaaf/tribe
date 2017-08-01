@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 23/05/2017.
@@ -78,9 +79,15 @@ import rx.subscriptions.CompositeSubscription;
   public void setCurrentGame(Game game) {
     this.currentGame = game;
     if (currentGame != null) {
+      Timber.e("SOEF Set current game  : " + currentGame.getId());
       if (currentGame instanceof GamePostIt) {
         GamePostIt gamePostIt = (GamePostIt) game;
         gamePostIt.generateNewName();
+      }
+
+      if (currentGame instanceof GameDraw) {
+        GameDraw gameDraw = (GameDraw) game;
+        gameDraw.generateNewDatas();
       }
     }
   }

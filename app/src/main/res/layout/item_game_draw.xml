@@ -5,14 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="30dp"
-    android:background="@drawable/shape_rect_black70_corner"
-    android:padding="20dp"
+
     >
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:layout_marginBottom="90dp"
+      android:layout_marginEnd="35dp"
+      android:layout_marginStart="35dp"
+      android:layout_marginTop="90dp"
+      android:background="@drawable/shape_rect_black70_corner"
       android:orientation="vertical"
+      android:padding="20dp"
       >
     <FrameLayout
         android:layout_width="match_parent"
@@ -99,6 +103,7 @@
         >
 
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/drawDesc"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:singleLine="true"
@@ -108,6 +113,7 @@
 
 
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/nextInLabel"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="end"
@@ -121,10 +127,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         >
 
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/gameName"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:singleLine="true"
@@ -135,6 +142,7 @@
 
 
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/counter"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="end"
@@ -149,6 +157,7 @@
         android:layout_height="match_parent"
         >
       <ImageView
+          android:id="@+id/iconHand"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerInParent="true"
@@ -165,6 +174,7 @@
           android:drawableStart="@drawable/picto_clear"
           android:gravity="end|bottom"
           android:singleLine="true"
+          android:text="@string/game_draw_clear"
           tools:text="Clear"
           style="@style/Title.2.White"
           />

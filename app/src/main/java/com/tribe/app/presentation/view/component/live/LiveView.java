@@ -49,6 +49,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.GameChallengesView;
+import com.tribe.app.presentation.view.widget.GameDrawView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
@@ -134,6 +135,8 @@ public class LiveView extends FrameLayout {
   @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
   @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
+
+  @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
 
   // VARIABLES
   private Live live;
@@ -486,21 +489,8 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
       displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
-      Timber.e("SOEF onStartGame challenge");
+      Timber.e("SOEF onStartGame " + game.getName());
       restartGame(game);
-/*      switch (game.getId()) {
-        case Game.GAME_POST_IT:
-          Timber.e("SOEF onStartGame postit");
-          displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
-          restartGame(game);
-          break;
-        case Game.GAME_CHALLENGE:
-          displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
-          Timber.e("SOEF onStartGame challenge");
-          restartGame(game);
-          break;
-        case Game.GAME_DRAW;
-      }*/
     }));
 
     persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
@@ -1467,6 +1457,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void startGame(Game game, boolean isUserAction) {
+    Timber.e("SOEF START GAME");
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
     game.setUserAction(isUserAction);
@@ -1485,7 +1476,6 @@ public class LiveView extends FrameLayout {
 
   private void restartGame(Game game) {
     if (game.getId().equals(Game.GAME_CHALLENGE)) {
-      //if (true) {
       if (!isChallengeGameActivated) {
         Timber.e("SOEF onStartGame challenge send to peer");
         startGame(game, true);
@@ -1507,11 +1497,15 @@ public class LiveView extends FrameLayout {
   }
 
   private void stopGame(boolean isCurrentUserAction, String gameId) {
-
-    if (gameId.equals(Game.GAME_CHALLENGE)) {
-      isChallengeGameActivated = false;
-      Timber.e("soef challenge game stop");
-      gameChallengesView.setVisibility(GONE);
+    switch (gameId) {
+      case Game.GAME_CHALLENGE:
+        Timber.e("soef challenge game stop");
+        isChallengeGameActivated = false;
+        gameChallengesView.setVisibility(GONE);
+        break;
+      case Game.GAME_DRAW:
+        gameDrawView.setVisibility(GONE);
+        break;
     }
 
     viewControlsLive.stopGame();

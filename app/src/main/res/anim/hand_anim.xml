@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="true">
+  <translate
+      android:duration="500"
+      android:fromXDelta="40%p"
+      android:fromYDelta="10%p"
+      android:startOffset="0"
+      android:toXDelta="90%p"
+      android:toYDelta="40%p" />
+  <translate
+      android:duration="500"
+      android:fromXDelta="90%p"
+      android:fromYDelta="40%p"
+      android:startOffset="500"
+      android:toXDelta="40%p"
+      android:toYDelta="90%p" />
+  <translate
+      android:duration="500"
+      android:fromXDelta="40%p"
+      android:fromYDelta="90%p"
+      android:startOffset="1000"
+      android:toXDelta="10%p"
+      android:toYDelta="40%p" />
+  <translate
+      android:duration="500"
+      android:fromXDelta="10%p"
+      android:fromYDelta="40%p"
+      android:startOffset="1500"
+      android:toXDelta="40%p"
+      android:toYDelta="10%p" />
+</set>

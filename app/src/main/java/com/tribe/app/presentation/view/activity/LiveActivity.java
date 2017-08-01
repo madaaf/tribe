@@ -76,6 +76,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
+import com.tribe.app.presentation.view.widget.GameDrawView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
@@ -261,6 +262,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
 
   @BindView(R.id.blockView) FrameLayout blockView;
+
+  @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -786,10 +789,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                 break;
 
               case Game.GAME_DRAW:
+                Timber.e("soef onStartGame DRAW");
                 GameDraw gameDraw = (GameDraw) game;
                 if (!gameDraw.hasNames()) {
                   livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
                 }
+                gameDrawView.setNextGame();
                 break;
               case Game.GAME_CHALLENGE:
                 GameChallenge gameChallenge = (GameChallenge) game;
@@ -1058,6 +1063,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     userInfosNotificationView.update(friendship);
   }
 
+  /***
+   *
+   *  GENERATE DATA FOR GAMES
+   */
+
   @Override public void onNamesPostItGame(List<String> nameList) {
     Game game = gameManager.getCurrentGame();
 
@@ -1068,8 +1078,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onNamesDrawGame(List<String> nameList) {
-    for (String name : nameList) {
-      Timber.e("SOEF " + name);
+    Game game = gameManager.getCurrentGame();
+
+    if (game != null && game instanceof GameDraw) {
+      GameDraw gameDraw = (GameDraw) game;
+      List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+      TribeGuest me =
+          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
+              false, null, false, null);
+      guestList.add(me);
+      gameDraw.setNewDatas(nameList, guestList);
     }
   }
 
