@@ -41,7 +41,7 @@ public interface UserRepository {
    *
    * @param loginEntity infos needed to login.
    */
-  Observable<AccessToken> loginWithPhoneNumber(final LoginEntity loginEntity);
+  Observable<AccessToken> login(final LoginEntity loginEntity);
 
   /**
    * Get an {@link Observable} which will emit an Access Token.

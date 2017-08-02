@@ -56,7 +56,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     return null;
   }
 

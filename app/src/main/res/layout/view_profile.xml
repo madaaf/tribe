@@ -137,6 +137,28 @@
     <include layout="@layout/view_separator_simple"/>
 
     <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionChangePhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_change_phone"
+        app:actionType="hierarchy"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionFacebookAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_facebook_account"
+        app:actionType="hierarchy"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionRateUs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

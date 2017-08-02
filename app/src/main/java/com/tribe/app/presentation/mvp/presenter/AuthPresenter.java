@@ -55,13 +55,13 @@ public class AuthPresenter implements Presenter {
     cloudGetRequestCodeUseCase.execute(new RequestCodeSubscriber());
   }
 
-  public LoginEntity login(String phoneNumber, String code, String pinId) {
-    LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId);
+  public LoginEntity login(String phoneNumber, String code, String pinId, String fbAccessToken) {
+    LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId, fbAccessToken);
 
     showViewLoading();
 
     cloudLoginUseCase.prepare(loginEntity);
-    if (phoneNumber == null) {
+    if (phoneNumber == null && fbAccessToken == null) {
       cloudLoginUseCase.execute(new UnknownSubscriber());
     } else {
       cloudLoginUseCase.execute(new LoginSubscriber());

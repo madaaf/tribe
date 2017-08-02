@@ -1283,6 +1283,8 @@ public class LiveView extends FrameLayout {
 
     JSONObject userJson = new JSONObject();
     jsonPut(userJson, User.ID, user.getId());
+    jsonPut(userJson, User.FBID, user.getFbid());
+    jsonPut(userJson, User.USERNAME, user.getUsername());
     jsonPut(userJson, User.DISPLAY_NAME, user.getDisplayName());
     jsonPut(userJson, User.PICTURE, user.getProfilePicture());
 

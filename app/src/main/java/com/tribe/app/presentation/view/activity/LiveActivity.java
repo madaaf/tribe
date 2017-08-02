@@ -466,7 +466,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initBrightness() {
 
-    int hour = Calendar.getInstance().get(Calendar.HOUR);
+    int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
     if (hour <= 7 || hour >= 20) {
       WindowManager.LayoutParams attributes = getWindow().getAttributes();
@@ -1189,7 +1189,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void putExtraHomeIntent() {
-    putExtraRatingNotif();
+    // putExtraRatingNotif();
     putExtraDisplayGrpNotif();
     setResult(Activity.RESULT_OK, returnIntent);
   }
@@ -1252,7 +1252,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void randomRoomAssignedSubscriber(String roomId) {
     Timber.d("random room assigned " + roomId);
     viewLiveContainer.blockOpenInviteView(false);
-    live.setSessionId(roomId);
+    live.setCallRouletteSessionId(roomId);
     joinRoom();
   }
 

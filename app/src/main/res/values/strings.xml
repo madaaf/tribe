@@ -414,11 +414,13 @@
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Phone number</string>
 	<string name="profile_change_phone_already_in_use">This phone number is already in use on another account.</string>
+
 	
 	<!-- Profile Facebook Account -->
 	<string name="profile_facebook_account_title">Facebook profile</string>
 	<string name="profile_facebook_account_status_connected">Connected</string>
 	<string name="profile_facebook_account_already_in_use">This Facebook profile is already in use on another account.</string>
+
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>

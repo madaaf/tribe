@@ -129,6 +129,12 @@ public class Live implements Serializable {
     this.sessionId = sessionId;
   }
 
+  public void setCallRouletteSessionId(String sessionId) {
+    setSessionId(sessionId);
+    setLinkId(null);
+    setUrl(null);
+  }
+
   public int getColor() {
     return color;
   }
