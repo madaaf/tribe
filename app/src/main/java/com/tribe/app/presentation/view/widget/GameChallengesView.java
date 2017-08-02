@@ -67,7 +67,6 @@ public class GameChallengesView extends FrameLayout {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
-  private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
@@ -165,7 +164,6 @@ public class GameChallengesView extends FrameLayout {
         }
       } else {
         Timber.e("items empty");
-        onItemsChallengeEmpty.onNext(null);
       }
     }
     adapter.notifyDataSetChanged();
@@ -241,10 +239,6 @@ public class GameChallengesView extends FrameLayout {
 
   public Observable<GameChallenge> onNextChallenge() {
     return onNextChallenge;
-  }
-
-  public Observable<Void> onItemsChallengeEmpty() {
-    return onItemsChallengeEmpty;
   }
 
   public Observable<Boolean> onBlockOpenInviteView() {

@@ -18,7 +18,6 @@ public abstract class Game extends GameFilter {
   public static final String ID = "id";
   public static final String ACTION = "action";
   public static final String CHALLENGE = "challenge";
-  public static final String CHALLENGES = "challenges";
   public static final String NEW_CHALLENGE = "newChallenge";
   public static final String START = "start";
   public static final String STOP = "stop";

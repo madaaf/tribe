@@ -20,6 +20,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.lang.reflect.Field;
 import javax.inject.Inject;
@@ -48,6 +49,7 @@ public class GameDrawView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
+  private PublishSubject<Game> onCurrentGame = PublishSubject.create();
 
   public GameDrawView(@NonNull Context context) {
     super(context);
@@ -70,10 +72,11 @@ public class GameDrawView extends FrameLayout {
     adapter = new GameDrawViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
-    //changePagerScroller();
+    changePagerScroller();
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
     subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
+    subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
 
     viewpager.setOnTouchListener((v, event) -> true);
   }
@@ -122,5 +125,9 @@ public class GameDrawView extends FrameLayout {
 
   public Observable<Boolean> onNextDraw() {
     return onNextDraw;
+  }
+
+  public Observable<Game> onCurrentGame() {
+    return onCurrentGame;
   }
 }

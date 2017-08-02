@@ -57,6 +57,7 @@ import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -201,7 +202,6 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationGameStopped = PublishSubject.create();
   private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
   private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
-  private PublishSubject<Void> onItemsChallengeEmpty = PublishSubject.create();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public LiveView(Context context) {
@@ -504,9 +504,6 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(
-        gameChallengesView.onItemsChallengeEmpty().subscribe(onItemsChallengeEmpty));
-
-    persistentSubscriptions.add(
         gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
     persistentSubscriptions.add(
@@ -519,6 +516,14 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(gameDrawView.onNextDraw().subscribe(aVoid -> {
       Timber.e(" soef onNextDraw");
       onRestartGame(gameManager.getCurrentGame());
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onCurrentGame().subscribe(game -> {
+      Timber.e(
+          "******************          SOEF ON CURRENT GAME           *************************");
+      GameDraw draw = (GameDraw) game;
+      room.sendToPeers(getNewDrawPayload(user.getId(), draw.getCurrentGuest().getId(),
+          draw.getCurrentDrawName()), false);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
@@ -1223,6 +1228,17 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
+  public JSONObject getNewDrawPayload(String userId, String peerId, String draw) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    jsonPut(game, "from", userId);
+    jsonPut(game, Game.ACTION, "newDraw");
+    jsonPut(game, "user", peerId);
+    jsonPut(game, "draw", draw);
+    jsonPut(obj, "draw", game);
+    return obj;
+  }
+
   public JSONObject getStopGamePayload(Game game) {
     JSONObject obj = new JSONObject();
     JSONObject gameStop = new JSONObject();
@@ -1508,6 +1524,10 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getNewChallengePayload(userId, peerId, challenge), false);
   }
 
+  private void sendNextDrawGameToPeers(String userId, String peerId, String draw) {
+    room.sendToPeers(getNewDrawPayload(userId, peerId, draw), false);
+  }
+
   private void stopGame(boolean isCurrentUserAction, String gameId) {
     switch (gameId) {
       case Game.GAME_CHALLENGE:
@@ -1682,10 +1702,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
-  }
-
-  public Observable<Void> onItemsChallengeEmpty() {
-    return onItemsChallengeEmpty;
   }
 
   public Observable<Boolean> onBlockOpenInviteView() {

@@ -20,6 +20,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -48,6 +49,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
+  private PublishSubject<Game> onCurrentGame = PublishSubject.create();
 
   public GameDrawViewPagerAdapter(Context context, User user) {
     this.context = context;
@@ -122,8 +124,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         Timber.v("SOEF ON FINISH " + position + " " + currentPosition);
         if (counter != null) counter.setText("0");
         if (position == currentPosition) {
-          //isCurrentPosition;
-          onNextDraw.onNext(true);
+          // onNextDraw.onNext(true); // SOEF TODO DECOMMENT
         }
       }
     };
@@ -185,6 +186,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         + " "
         + currentPosition);
 
+    onCurrentGame.onNext(draw);
     setCounter(counter, position);
   }
 
@@ -195,6 +197,11 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   public Observable<Boolean> onNextDraw() {
     return onNextDraw;
   }
+
+  public Observable<Game> onCurrentGame() {
+    return onCurrentGame;
+  }
+
 
   private class DrawingView extends View {
 
