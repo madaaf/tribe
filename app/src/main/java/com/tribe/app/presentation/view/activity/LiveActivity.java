@@ -633,6 +633,31 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           viewLive.setNextChallengePager(datas.get(0), guestChallenged);
         }));
 
+    subscriptions.add(viewLive.onNewDrawReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(datas -> {
+          Timber.e("SOEF onNewDrawReceived");
+          Timber.e("SOEF ON NEW DRAW RECEIVED :" + datas.get(0) + " peetId :  " + datas.get(1));
+          List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+          TribeGuest guestChallenged = new TribeGuest(datas.get(1));
+          for (TribeGuest guest : guests) {
+            if (guest.getId().equals(datas.get(1))) {
+              guestChallenged = guest;
+            }
+          }
+          gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
+          GameDraw gameDraw = (GameDraw) gameManager.getCurrentGame();
+          Timber.e(
+              "SOEF onNewDrawReceived check " + gameDraw.getCurrentDrawer().getId() + " " + gameDraw
+                  .getCurrentDrawName());
+          if (!gameDraw.hasNames()) {
+            livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+          } else {
+            setNextDrawGame();
+          }
+        }));
+
     subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
       Timber.e("SOEF BLOCK INVITE VIEW " + blockInviteView);
       viewLiveContainer.blockOpenInviteView(blockInviteView);
@@ -786,12 +811,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                 break;
 
               case Game.GAME_DRAW:
-                Timber.e("soef onStartGame DRAW");
+                Timber.e("soef onStartGame DRAW : isUserAction " + game.isUserAction());
                 GameDraw gameDraw = (GameDraw) game;
-                if (!gameDraw.hasNames()) {
-                  livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+                if (game.isUserAction()) {
+                  if (!gameDraw.hasNames()) {
+                    livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+                  } else {
+                    setNextDrawGame();
+                  }
                 } else {
-                  setNextDrawGame();
+                  Timber.e("not my action");
                 }
                 break;
               case Game.GAME_CHALLENGE:
@@ -1087,7 +1116,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
               false, null, false, null);
       guestList.add(me);
-      gameDraw.setNewDatas(nameList, guestList);
+      if (game.isUserAction()) gameDraw.setNewDatas(nameList, guestList);
     }
 
     setNextDrawGame();

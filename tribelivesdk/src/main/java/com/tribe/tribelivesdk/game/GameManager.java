@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
@@ -92,9 +93,9 @@ import timber.log.Timber;
     }
   }
 
-  public void setCurrentChallengerId(String challengerId) {
+  public void setCurrentChallengerId(String id) {
     if (currentGame instanceof GameChallenge) {
-      ((GameChallenge) currentGame).setCurrentChallengerId(challengerId);
+      ((GameChallenge) currentGame).setCurrentChallengerId(id);
     }
   }
 
@@ -127,5 +128,13 @@ import timber.log.Timber;
 
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
+  }
+
+  public void setCurrentDataGame(String name, TribeGuest currentPlayer) {
+    if (currentGame.getId().equals(Game.GAME_DRAW)) {
+      Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
+      ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
+      ((GameDraw) currentGame).setCurrentDrawName(name);
+    }
   }
 }

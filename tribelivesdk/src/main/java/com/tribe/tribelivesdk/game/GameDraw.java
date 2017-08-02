@@ -17,7 +17,7 @@ public class GameDraw extends Game {
   private List<TribeGuest> guestList;
 
   private String currentDrawName = "";
-  private TribeGuest currentGuest = null;
+  private TribeGuest currentDrawer = null;
   private boolean myTurn = true;
 
   public GameDraw(Context context, @GameType String id, String name, int drawableRes) {
@@ -54,8 +54,16 @@ public class GameDraw extends Game {
     return currentDrawName;
   }
 
-  public TribeGuest getCurrentGuest() {
-    return currentGuest;
+  public TribeGuest getCurrentDrawer() {
+    return currentDrawer;
+  }
+
+  public void setCurrentDrawer(TribeGuest currentDrawer) {
+    this.currentDrawer = currentDrawer;
+  }
+
+  public void setCurrentDrawName(String currentDrawName) {
+    this.currentDrawName = currentDrawName;
   }
 
   public void generateNewDatas() {
@@ -70,8 +78,8 @@ public class GameDraw extends Game {
       Timber.i("SOEF guestList  empty ");
       return;
     }
-    currentGuest = getRandomGuest(guestList);
-    Timber.i("SOEF set current Guest : " + currentGuest.getDisplayName());
+    currentDrawer = getRandomGuest(guestList);
+    Timber.i("SOEF set current Guest : " + currentDrawer.getDisplayName());
   }
 
   public boolean hasNames() {

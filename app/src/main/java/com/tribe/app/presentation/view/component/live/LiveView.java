@@ -184,6 +184,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
@@ -522,7 +523,7 @@ public class LiveView extends FrameLayout {
       Timber.e(
           "******************          SOEF ON CURRENT GAME           *************************");
       GameDraw draw = (GameDraw) game;
-      room.sendToPeers(getNewDrawPayload(user.getId(), draw.getCurrentGuest().getId(),
+      room.sendToPeers(getNewDrawPayload(user.getId(), draw.getCurrentDrawer().getId(),
           draw.getCurrentDrawName()), false);
     }));
 
@@ -610,6 +611,8 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
 
     tempSubscriptions.add(room.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+
+    tempSubscriptions.add(room.onNewDrawReceived().subscribe(onNewDrawReceived));
 
     tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
@@ -1489,8 +1492,8 @@ public class LiveView extends FrameLayout {
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
     game.setUserAction(isUserAction);
-    onStartGame.onNext(game);
     gameManager.setCurrentGame(game);
+    onStartGame.onNext(game);
     viewLocalLive.startGame(game);
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
       AnimationUtils.animateBottomMargin(viewControlsLive, tooltipFirstGameHeight, DURATION);
@@ -1594,6 +1597,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
+  }
+
+  public Observable<List<String>> onNewDrawReceived() {
+    return onNewDrawReceived;
   }
 
   public Observable<String> unlockRollTheDice() {

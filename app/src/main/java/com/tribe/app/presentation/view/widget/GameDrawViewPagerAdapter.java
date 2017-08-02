@@ -78,7 +78,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
 
-    TribeGuest guest = draw.getCurrentGuest();
+    TribeGuest guest = draw.getCurrentDrawer();
     if (guest != null) {
       viewAvatar.load(guest.getPicture());
       txtName.setText(guest.getDisplayName());
@@ -97,14 +97,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
       turn.setText(context.getString(R.string.game_draw_other_is_drawing));
     }
-
-    String displayName = guest != null ? guest.getDisplayName() : "";
-  /*  Timber.w("SOEF instangiate item "
-        + draw.getCurrentDrawName()
-        + " "
-        + displayName
-        + " position "
-        + position);*/
 
     container.addView(itemView);
     return itemView;
@@ -184,9 +176,12 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         + " position "
         + position
         + " "
-        + currentPosition);
+        + draw.isUserAction());
 
-    onCurrentGame.onNext(draw);
+    if (draw.isUserAction()) {
+      onCurrentGame.onNext(draw);
+    }
+
     setCounter(counter, position);
   }
 
@@ -201,7 +196,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   public Observable<Game> onCurrentGame() {
     return onCurrentGame;
   }
-
 
   private class DrawingView extends View {
 
