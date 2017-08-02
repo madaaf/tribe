@@ -47,6 +47,7 @@ public class GameDrawView extends FrameLayout {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
+  private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
 
   public GameDrawView(@NonNull Context context) {
     super(context);
@@ -76,15 +77,15 @@ public class GameDrawView extends FrameLayout {
     changePagerScroller();
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
-    subscriptions.add(adapter.onNextDraw().subscribe());
+    subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
   }
 
   public void setNextGame() {
     setVisibility(VISIBLE); // MAYBE
     new Handler().post(() -> {
       pos++;
+      Timber.e("soef set next game view " + viewpager.getCurrentItem() + 1);
       viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
-      Timber.e("soef set next game view " + pos);
     });
   }
 
@@ -119,5 +120,9 @@ public class GameDrawView extends FrameLayout {
 
   public Observable<Boolean> onBlockOpenInviteView() {
     return onBlockOpenInviteView;
+  }
+
+  public Observable<Boolean> onNextDraw() {
+    return onNextDraw;
   }
 }

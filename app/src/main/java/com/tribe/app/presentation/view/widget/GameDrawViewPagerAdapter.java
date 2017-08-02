@@ -36,6 +36,8 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   private static int COUNTER = 30;
   private Context context;
   private LayoutInflater mLayoutInflater;
+  private int currentPosition;
+  private boolean isCurrentPosition = false;
 
   private User user;
   private TribeGuest guest;
@@ -99,12 +101,12 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       //  hand.setVisibility(View.INVISIBLE);
     }
     String displayName = guest != null ? guest.getDisplayName() : "";
-    Timber.w("SOEF instangiate item "
+  /*  Timber.w("SOEF instangiate item "
         + draw.getCurrentDrawName()
         + " "
         + displayName
         + " position "
-        + position);
+        + position);*/
 
     container.addView(itemView);
     return itemView;
@@ -114,15 +116,19 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     container.removeView((View) view);
   }
 
-  private void setCounter(TextViewFont counter) {
+  private void setCounter(TextViewFont counter, int position) {
     CountDownTimer countDownTimer = new CountDownTimer(COUNTER * 1000, 1000) {
       public void onTick(long millisUntilFinished) {
         counter.setText("" + millisUntilFinished / 1000);
       }
 
       public void onFinish() {
+        Timber.v("SOEF ON FINISH " + position + " " + currentPosition);
         if (counter != null) counter.setText("0");
-        onNextDraw.onNext(true);
+        if (position == currentPosition) {
+          //isCurrentPosition;
+          onNextDraw.onNext(true);
+        }
       }
     };
 
@@ -154,6 +160,9 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
   @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
     mCurrentView = (View) object;
+    if (position == currentPosition) return;
+    currentPosition = position;
+
     TextViewFont counter = (TextViewFont) mCurrentView.findViewById(R.id.counter);
     TextViewFont clearBtn = (TextViewFont) mCurrentView.findViewById(R.id.clearBtn);
     ImageView hand = (ImageView) mCurrentView.findViewById(R.id.iconHand);
@@ -171,11 +180,18 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     mPaint.setStrokeWidth(12);
 
     animateDiagonalPan(hand);
-    setCounter(counter);
 
+    //primaryItemPosition = position;
     GameDraw draw = (GameDraw) gameManager.getCurrentGame();
-    Timber.w(
-        "SOEF setPrimaryItem item " + draw.getCurrentDrawName() + " " + " position " + position);
+    Timber.w("SOEF setPrimaryItem item "
+        + draw.getCurrentDrawName()
+        + " "
+        + " position "
+        + position
+        + " "
+        + currentPosition);
+
+    setCounter(counter, position);
   }
 
   public Observable<Boolean> onBlockOpenInviteView() {

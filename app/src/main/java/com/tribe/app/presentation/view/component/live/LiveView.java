@@ -513,20 +513,12 @@ public class LiveView extends FrameLayout {
         gameDrawView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
-      Timber.e("soef onRestartGame subscription");
-      if (game instanceof GameChallenge) {
-        GameChallenge challenge = (GameChallenge) game;
-        if (challenge.getCurrentChallengerId().equals(user.getId())) {
-          gameChallengesView.displayPopup();
-          Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE ");
-          return;
-        }
-        setNextChallengePager(null, null);
-      }
-      if (!game.getId().equals(Game.GAME_CHALLENGE)) {
-        restartGame(game);
-      }
-      displayReRollGameNotification(user.getDisplayName());
+      onRestartGame(game);
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onNextDraw().subscribe(aVoid -> {
+      Timber.e(" soef onNextDraw");
+      onRestartGame(gameManager.getCurrentGame());
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
@@ -1457,6 +1449,23 @@ public class LiveView extends FrameLayout {
     }
 
     return null;
+  }
+
+  private void onRestartGame(Game game) {
+    Timber.e("soef onRestartGame subscription");
+    if (game instanceof GameChallenge) {
+      GameChallenge challenge = (GameChallenge) game;
+      if (challenge.getCurrentChallengerId().equals(user.getId())) {
+        gameChallengesView.displayPopup();
+        Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE ");
+        return;
+      }
+      setNextChallengePager(null, null);
+    }
+    if (!game.getId().equals(Game.GAME_CHALLENGE)) {
+      restartGame(game);
+    }
+    displayReRollGameNotification(user.getDisplayName());
   }
 
   private void startGame(Game game, boolean isUserAction) {
