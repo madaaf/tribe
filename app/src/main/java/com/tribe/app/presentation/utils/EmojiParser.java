@@ -46,7 +46,7 @@ public class EmojiParser {
     IEmojiMap.put(":wave:", "\uD83D\uDC4B");
     IEmojiMap.put(":heart:", "\u2764");
     IEmojiMap.put(":broken_heart:", "\uD83D\uDC94");
-    IEmojiMap.put(":pencil2:", "\u270F");
+    IEmojiMap.put(":pencil2:", "\u270E");
     IEmojiMap.put(":ghost:", "\uD83D\uDC7B");
     IEmojiMap.put(":star2:", "\uD83C\uDF1F");
     IEmojiMap.put(":metal:",
@@ -105,6 +105,8 @@ public class EmojiParser {
     IEmojiMap.put(":no_mobile_phones:", "\uD83D\uDCF5");
     IEmojiMap.put(":busts_in_silhouette:", "\uD83D\uDC65");
     IEmojiMap.put(":video_game:", "\uD83C\uDFAE");
+    IEmojiMap.put(":hourglass:", "\u23F3");
+    IEmojiMap.put(":spy:", "\uD83D\uDD75");
   }
 
   /**

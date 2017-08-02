@@ -11,4 +11,6 @@ public interface GameDataStore {
   Observable<List<String>> getNamesForPostItGame();
 
   Observable<List<String>> getDataForChallengeGame();
+
+  Observable<List<String>> getNamesForDrawGame();
 }

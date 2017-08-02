@@ -19,4 +19,8 @@ public class CloudGameDataStore implements GameDataStore {
   @Override public Observable<List<String>> getDataForChallengeGame() {
     return fileApi.getDataForChallengesGame();
   }
+
+  @Override public Observable<List<String>> getNamesForDrawGame() {
+    return fileApi.getNamesForDrawGame();
+  }
 }

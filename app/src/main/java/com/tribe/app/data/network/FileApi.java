@@ -15,4 +15,6 @@ public interface FileApi {
   @GET("/games/post-it.json") Observable<List<String>> getNamesForPostItGame();
 
   @GET("/games/challenges.json") Observable<List<String>> getDataForChallengesGame();
+
+  @GET("/games/draw.json") Observable<List<String>> getNamesForDrawGame();
 }

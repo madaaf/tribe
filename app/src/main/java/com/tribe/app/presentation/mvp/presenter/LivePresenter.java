@@ -1,10 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.util.Pair;
-
 import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.data.exception.RoomFullException;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
@@ -12,6 +9,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetDataChallengesGame;
+import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.BuzzRoom;
@@ -29,13 +27,9 @@ import com.tribe.app.domain.interactor.user.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.user.ReportUser;
 import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
-import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
-import com.tribe.app.presentation.view.utils.DoubleUtils;
-
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import timber.log.Timber;
@@ -56,6 +50,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
+  private GetNamesDrawGame getNamesDrawGame;
   private GetDataChallengesGame getDataChallengesGame;
   private BookRoomLink bookRoomLink;
   private RoomAcceptRandom roomAcceptRandom;
@@ -78,7 +73,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
       RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
-      GetDataChallengesGame getDataChallengesGame, IncrUserTimeInCall incrUserTimeInCall) {
+      GetDataChallengesGame getDataChallengesGame, IncrUserTimeInCall incrUserTimeInCall,
+      GetNamesDrawGame getNamesDrawGame) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.joinRoom = joinRoom;
@@ -97,6 +93,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.incrUserTimeInCall = incrUserTimeInCall;
     this.fbIdUpdated = fbIdUpdated;
     this.getDataChallengesGame = getDataChallengesGame;
+    this.getNamesDrawGame = getNamesDrawGame;
   }
 
   @Override public void onViewDetached() {
@@ -118,6 +115,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     incrUserTimeInCall.unsubscribe();
     fbIdUpdated.unsubscribe();
     getDataChallengesGame.unsubscribe();
+    getNamesDrawGame.unsubscribe();
     liveMVPView = null;
   }
 
@@ -297,6 +295,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
   }
 
+  public void getNamesDrawGame(String lang) {
+    getNamesDrawGame.setup(lang);
+    getNamesDrawGame.execute(new GetNamesDrawGameSubscriber());
+  }
+
   public void getDataChallengesGame(String lang) {
     getDataChallengesGame.setup(lang);
     getDataChallengesGame.execute(new GetDataChallengesGameSubscriber());
@@ -327,6 +330,20 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
 
     @Override public void onNext(List<String> nameList) {
       liveMVPView.onNamesPostItGame(nameList);
+    }
+  }
+
+  private final class GetNamesDrawGameSubscriber extends DefaultSubscriber<List<String>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(List<String> nameList) {
+      liveMVPView.onNamesDrawGame(nameList);
     }
   }
 

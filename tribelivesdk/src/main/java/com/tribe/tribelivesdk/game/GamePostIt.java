@@ -273,4 +273,5 @@ public class GamePostIt extends Game {
   private void refactorPostItScales() {
     currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, SCALE_POST_IT);
   }
+
 }

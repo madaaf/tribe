@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 23/05/2017.
@@ -78,16 +80,20 @@ import rx.subscriptions.CompositeSubscription;
   public void setCurrentGame(Game game) {
     this.currentGame = game;
     if (currentGame != null) {
+      Timber.e("SOEF Set current game  : " + currentGame.getId());
       if (currentGame instanceof GamePostIt) {
         GamePostIt gamePostIt = (GamePostIt) game;
         gamePostIt.generateNewName();
       }
-    }
-  }
 
-  public void setCurrentChallengerId(String challengerId) {
-    if (currentGame instanceof GameChallenge) {
-      ((GameChallenge) currentGame).setCurrentChallengerId(challengerId);
+      if (currentGame instanceof GameDraw) {
+        GameDraw gameDraw = (GameDraw) game;
+        gameDraw.generateNewDatas();
+      }
+      if (currentGame instanceof GameChallenge) {
+        GameChallenge gameChallenge = (GameChallenge) game;
+        gameChallenge.generateNewDatas();
+      }
     }
   }
 
@@ -120,5 +126,17 @@ import rx.subscriptions.CompositeSubscription;
 
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
+  }
+
+  public void setCurrentDataGame(String name, TribeGuest currentPlayer) {
+    if (currentGame.getId().equals(Game.GAME_DRAW)) {
+      Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
+      ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
+      ((GameDraw) currentGame).setCurrentDrawName(name);
+    } else if (currentGame.getId().equals(Game.GAME_CHALLENGE)) {
+      Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
+      ((GameChallenge) currentGame).setCurrentChallenger(currentPlayer);
+      ((GameChallenge) currentGame).setCurrentChallenge(name);
+    }
   }
 }
