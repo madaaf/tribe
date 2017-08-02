@@ -29,6 +29,7 @@ import rx.subscriptions.CompositeSubscription;
   // VARIABLES
   private List<Game> gameList;
   private Game currentGame = null;
+  private Game previousGame = null;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -51,14 +52,14 @@ import rx.subscriptions.CompositeSubscription;
 
   public void initFrameSizeChangeObs(Observable<Frame> obs) {
     subscriptions.add(obs.subscribe(frame -> {
-      for (Game game : gameList) {
-        game.onFrameSizeChange(frame);
+      if (currentGame != null) {
+        currentGame.onFrameSizeChange(frame);
       }
     }));
   }
 
   public void initOnNewFrameObs(Observable<Frame> obs) {
-    subscriptions.add(obs.onBackpressureDrop().subscribe(frame -> currentGame.apply(frame)));
+    subscriptions.add(obs.onBackpressureDrop().filter(frame -> currentGame != null).subscribe(frame -> currentGame.apply(frame)));
   }
 
   public List<Game> getGames() {
@@ -74,14 +75,15 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public void setCurrentGame(Game game) {
-    this.currentGame = game;
+    previousGame = currentGame;
+    currentGame = game;
 
     if (currentGame != null && currentGame instanceof GamePostIt) {
       GamePostIt gamePostIt = (GamePostIt) game;
       gamePostIt.generateNewName();
     }
 
-    onGameChange.onNext(currentGame);
+    if (previousGame != currentGame) onGameChange.onNext(currentGame);
   }
 
   public void stop() {
@@ -105,6 +107,9 @@ import rx.subscriptions.CompositeSubscription;
     for (Game game : gameList) {
       game.dispose();
     }
+
+    currentGame = null;
+    previousGame = null;
   }
 
   /////////////////

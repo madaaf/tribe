@@ -81,14 +81,21 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     rendererCallback = callback;
     mainHandler = new Handler(context.getMainLooper());
     ulseeManager = UlseeManager.getInstance(context);
-    filterManager = FilterManager.getInstance(context);
     libYuvConverter = LibYuvConverter.getInstance();
     gameManager = GameManager.getInstance(context);
+    initFilterManager();
+  }
+
+  public void initFilterManager() {
+    filterManager = FilterManager.getInstance(context);
+    subscriptions.add(filterManager.onFilterChange().subscribe(filterMask -> {
+      switchFilter(filterMask);
+    }));
   }
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
     subscriptions.add(obs.subscribe(filterMask -> {
-      switchFilter(filterMask);
+      //switchFilter(filterMask);
     }));
   }
 

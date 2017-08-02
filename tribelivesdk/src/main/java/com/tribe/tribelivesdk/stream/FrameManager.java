@@ -10,6 +10,7 @@ import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.HeadsUpMaskFilter;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import rx.Observable;
 import rx.Subscription;
@@ -61,9 +62,15 @@ public class FrameManager {
   }
 
   private void initSubscriptions() {
+    subscriptions.add(filterManager.onFilterChange().subscribe(filterMask -> switchFilter()));
     subscriptions.add(gameManager.onRemoteFrame().onBackpressureDrop().subscribe(onRemoteFrame));
     subscriptions.add(gameManager.onGameChange().subscribe(game -> {
       if (game != null && gameManager.isFacialRecognitionNeeded() && subscriptionGame == null) {
+        if (game instanceof GamePostIt) {
+          filterManager.setCurrentFilter(
+              new HeadsUpMaskFilter(context, FaceMaskFilter.FACE_MASK_HEADS_UP, "", -1));
+        }
+
         subscriptionGame = onNewPreviewFrame.onBackpressureDrop()
             .filter(frame -> !processing && gameManager.isLocalFrameDifferent())
             .observeOn(Schedulers.computation())
@@ -82,6 +89,7 @@ public class FrameManager {
             })
             .subscribe(frame -> processing = false);
       } else if (game == null || !gameManager.isFacialRecognitionNeeded()) {
+        if (filterManager.getFilter() instanceof HeadsUpMaskFilter) filterManager.setToPrevious();
         clearSubscriptionGame();
       }
     }));

@@ -11,7 +11,13 @@ import com.tribe.tribelivesdk.libyuv.LibYuvConverter;
 import com.tribe.tribelivesdk.opencv.OpenCVWrapper;
 import com.tribe.tribelivesdk.util.BitmapUtils;
 import com.tribe.tribelivesdk.util.ByteBuffers;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
+import com.tribe.tribelivesdk.view.opengl.filter.mask.HeadsUpMaskFilter;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +39,7 @@ public class GamePostIt extends Game {
   private UlseeManager ulseeManager;
   private OpenCVWrapper openCVWrapper;
   private LibYuvConverter libYuvConverter;
+  private FilterManager filterManager;
   private Frame remoteFrame;
   private Bitmap bitmapOGLocalPostIt, bitmapOGRemotePostIt, bitmapLocalPostIt, bitmapRemotePostIt;
   private Rect frameRect;
@@ -50,6 +57,7 @@ public class GamePostIt extends Game {
     ulseeManager = UlseeManager.getInstance(context);
     openCVWrapper = OpenCVWrapper.getInstance();
     libYuvConverter = LibYuvConverter.getInstance();
+    filterManager = FilterManager.getInstance(context);
     nameList = new ArrayList<>();
 
     initSubscriptions();
@@ -114,17 +122,15 @@ public class GamePostIt extends Game {
     bitmapOGLocalPostIt = BitmapUtils.generateNewPostIt(context, "?",
         context.getResources().getDimensionPixelSize(R.dimen.textsize_post_it), Color.WHITE,
         R.drawable.bg_post_it);
-    Matrix localMatrix = new Matrix();
-    if (frame.isFrontCamera()) {
-      localMatrix.postScale(-1, 1);
-    }
-    localMatrix.postRotate(-frame.getRotation());
     bitmapLocalPostIt =
         Bitmap.createBitmap(bitmapOGLocalPostIt, 0, 0, bitmapOGLocalPostIt.getWidth(),
-            bitmapOGLocalPostIt.getHeight(), localMatrix, true);
+            bitmapOGLocalPostIt.getHeight());
     localPostIt = new int[bitmapLocalPostIt.getWidth() * bitmapLocalPostIt.getHeight()];
     bitmapLocalPostIt.getPixels(localPostIt, 0, bitmapLocalPostIt.getWidth(), 0, 0,
         bitmapLocalPostIt.getWidth(), bitmapLocalPostIt.getHeight());
+
+    new Thread(() -> savePNGImageToGallery(bitmapLocalPostIt,
+        filterManager.getMaskAndGlassesPath() + HeadsUpMaskFilter.HEADS_UP_FILE)).start();
 
     // REMOTE POST-IT
     bitmapOGRemotePostIt = BitmapUtils.generateNewPostIt(context, currentPostItName,
@@ -166,5 +172,20 @@ public class GamePostIt extends Game {
 
   private void refactorPostItScales() {
     currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, SCALE_POST_IT);
+  }
+
+  protected void savePNGImageToGallery(Bitmap bmp, String path) {
+    try {
+      File file = new File(path);
+
+      if (file.exists()) file.delete();
+
+      OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+      bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+      out.flush();
+      out.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -297,7 +297,6 @@ public class LiveControlsView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
-          gameManager.setCurrentGame(pairViewGame.second);
           onStartGame.onNext(pairViewGame.second);
         })
         .delay(400, TimeUnit.MILLISECONDS)
@@ -596,7 +595,7 @@ public class LiveControlsView extends FrameLayout {
     currentGameView.setClickable(true);
     currentGameView.setOnLongClickListener(v -> {
       onGameOptions.onNext(gameManager.getCurrentGame());
-      return false;
+      return true;
     });
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
@@ -794,7 +793,7 @@ public class LiveControlsView extends FrameLayout {
       currentGameView = null;
     }
 
-    gameManager.stop();
+    gameManager.setCurrentGame(null);
     showGameControls();
   }
 

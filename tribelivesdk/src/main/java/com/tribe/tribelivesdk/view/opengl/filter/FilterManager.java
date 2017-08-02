@@ -5,6 +5,8 @@ import com.tribe.tribelivesdk.util.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -27,11 +29,13 @@ public class FilterManager {
   private Context context;
   private List<FilterMask> filterList;
   private FilterMask current;
+  private FilterMask previous;
   private ImageFilter baseFilter;
   private String basePath, maskAndGlassesPath;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<FilterMask> onFilterChange = PublishSubject.create();
 
   public FilterManager(Context context) {
     this.context = context;
@@ -68,11 +72,27 @@ public class FilterManager {
   }
 
   public void setCurrentFilter(FilterMask filter) {
+    previous = current;
+
+    deactivate(previous);
+
     if (filter == current) {
-      this.current = null;
+      deactivate(current);
+      current = null;
     } else {
-      this.current = filter;
+      current = filter;
+      activate(current);
     }
+
+    onFilterChange.onNext(current);
+  }
+
+  private void deactivate(FilterMask mask) {
+    if (mask != null) mask.setActivated(false);
+  }
+
+  private void activate(FilterMask mask) {
+    if (mask != null) mask.setActivated(true);
   }
 
   public List<FilterMask> getFilterList() {
@@ -95,6 +115,13 @@ public class FilterManager {
 
     current = filterList.get(0);
     current.setActivated(true);
+
+    onFilterChange.onNext(current);
+  }
+
+  public void setToPrevious() {
+    current = previous;
+    current.setActivated(true);
   }
 
   public ImageFilter getBaseFilter() {
@@ -103,5 +130,13 @@ public class FilterManager {
 
   public void dispose() {
     if (subscriptions != null) subscriptions.clear();
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<FilterMask> onFilterChange() {
+    return onFilterChange;
   }
 }

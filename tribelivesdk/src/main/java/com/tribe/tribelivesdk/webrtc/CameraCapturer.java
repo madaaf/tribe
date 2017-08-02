@@ -423,7 +423,7 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   @Override public void switchFilter() {
-    frameManager.switchFilter();
+
   }
 
   @Override public boolean isScreencast() {
