@@ -157,7 +157,7 @@ public class LiveView extends FrameLayout {
       hasShared = false;
   private View view;
   private List<User> anonymousInLive = new ArrayList<>();
-  private boolean isFirstToJoin = true, isChallengeGameActivated = false;
+  private boolean isFirstToJoin = true;
   private double duration;
   private GameManager gameManager;
   private String fbId;
@@ -494,16 +494,6 @@ public class LiveView extends FrameLayout {
       restartGame(game);
     }));
 
-    persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
-      Timber.e("soef sendNextChallengeGameToPeers , onNextChallenge subscription "
-          + gameChallenge.getCurrentChallengerId()
-          + " "
-          + gameChallenge.getCurrentChallenge());
-
-      sendNextChallengeGameToPeers(user.getId(), gameChallenge.getCurrentChallengerId(),
-          gameChallenge.getCurrentChallenge());
-    }));
-
     persistentSubscriptions.add(
         gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
@@ -514,6 +504,11 @@ public class LiveView extends FrameLayout {
       onRestartGame(game);
     }));
 
+    persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
+      Timber.e(" soef onNextChallenge");
+      onRestartGame(gameManager.getCurrentGame());
+    }));
+
     persistentSubscriptions.add(gameDrawView.onNextDraw().subscribe(aVoid -> {
       Timber.e(" soef onNextDraw");
       onRestartGame(gameManager.getCurrentGame());
@@ -521,10 +516,18 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(gameDrawView.onCurrentGame().subscribe(game -> {
       Timber.e(
-          "******************          SOEF ON CURRENT GAME           *************************");
+          "******************          SOEF ON CURRENT GAME   DRAW       *************************");
       GameDraw draw = (GameDraw) game;
       room.sendToPeers(getNewDrawPayload(user.getId(), draw.getCurrentDrawer().getId(),
           draw.getCurrentDrawName()), false);
+    }));
+
+    persistentSubscriptions.add(gameChallengesView.onCurrentGame().subscribe(game -> {
+      Timber.e(
+          "******************          SOEF ON CURRENT GAME CHALLENGE           *************************");
+      GameChallenge draw = (GameChallenge) game;
+      room.sendToPeers(getNewChallengePayload(user.getId(), draw.getCurrentChallenger().getId(),
+          draw.getCurrentChallenge()), false);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
@@ -546,15 +549,6 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
       onShouldCloseInvites.onNext(null);
     }));
-  }
-
-  public void setNextChallengePager(String challenge, TribeGuest guestChallenged) {
-    Timber.e("soef set next challenge PAGER ");
-    gameChallengesView.setNextChallenge(challenge, guestChallenged);
-  }
-
-  public void setGameChallenge(GameChallenge gameChallenge) {
-    gameChallengesView.setGameChallenge(gameChallenge);
   }
 
   ///////////////////
@@ -1474,16 +1468,13 @@ public class LiveView extends FrameLayout {
     Timber.e("soef onRestartGame subscription");
     if (game instanceof GameChallenge) {
       GameChallenge challenge = (GameChallenge) game;
-      if (challenge.getCurrentChallengerId().equals(user.getId())) {
+      if (challenge.getCurrentChallenger().getId().equals(user.getId())) {
         gameChallengesView.displayPopup();
         Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE ");
         return;
       }
-      setNextChallengePager(null, null);
     }
-    if (!game.getId().equals(Game.GAME_CHALLENGE)) {
-      restartGame(game);
-    }
+    restartGame(game);
     displayReRollGameNotification(user.getDisplayName());
   }
 
@@ -1506,36 +1497,13 @@ public class LiveView extends FrameLayout {
   }
 
   private void restartGame(Game game) {
-    if (game.getId().equals(Game.GAME_CHALLENGE)) {
-      if (!isChallengeGameActivated) {
-        Timber.e("SOEF onStartGame challenge send to peer");
-        startGame(game, true);
-        room.sendToPeers(getNewGamePayload(game), false);
-        isChallengeGameActivated = true;
-      } else {
-        Timber.e("SOEF restartGame : game challenge already started");
-        GameChallenge gameChallenge = (GameChallenge) game;
-        //setNextChallengePager(null, null); MADA
-      }
-    } else {
-      startGame(game, true);
-      room.sendToPeers(getNewGamePayload(game), false);
-    }
-  }
-
-  private void sendNextChallengeGameToPeers(String userId, String peerId, String challenge) {
-    room.sendToPeers(getNewChallengePayload(userId, peerId, challenge), false);
-  }
-
-  private void sendNextDrawGameToPeers(String userId, String peerId, String draw) {
-    room.sendToPeers(getNewDrawPayload(userId, peerId, draw), false);
+    startGame(game, true);
+    room.sendToPeers(getNewGamePayload(game), false);
   }
 
   private void stopGame(boolean isCurrentUserAction, String gameId) {
     switch (gameId) {
       case Game.GAME_CHALLENGE:
-        Timber.e("soef challenge game stop");
-        isChallengeGameActivated = false;
         gameChallengesView.setVisibility(GONE);
         break;
       case Game.GAME_DRAW:

@@ -42,13 +42,6 @@ public class GameDraw extends Game {
     generateNewDatas();
   }
 
-  public boolean isMyTurn() {
-    return myTurn;
-  }
-
-  public void setMyTurn(boolean myTurn) {
-    this.myTurn = myTurn;
-  }
 
   public String getCurrentDrawName() {
     return currentDrawName;

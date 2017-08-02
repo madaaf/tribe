@@ -90,12 +90,10 @@ import timber.log.Timber;
         GameDraw gameDraw = (GameDraw) game;
         gameDraw.generateNewDatas();
       }
-    }
-  }
-
-  public void setCurrentChallengerId(String id) {
-    if (currentGame instanceof GameChallenge) {
-      ((GameChallenge) currentGame).setCurrentChallengerId(id);
+      if (currentGame instanceof GameChallenge) {
+        GameChallenge gameChallenge = (GameChallenge) game;
+        gameChallenge.generateNewDatas();
+      }
     }
   }
 
@@ -135,6 +133,10 @@ import timber.log.Timber;
       Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
       ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
       ((GameDraw) currentGame).setCurrentDrawName(name);
+    } else if (currentGame.getId().equals(Game.GAME_CHALLENGE)) {
+      Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
+      ((GameChallenge) currentGame).setCurrentChallenger(currentPlayer);
+      ((GameChallenge) currentGame).setCurrentChallenge(name);
     }
   }
 }

@@ -34,8 +34,6 @@ import timber.log.Timber;
  */
 
 public class GameDrawView extends FrameLayout {
-  private static int pos = 0;
-
   @Inject User user;
 
   private LayoutInflater inflater;
@@ -84,7 +82,6 @@ public class GameDrawView extends FrameLayout {
   public void setNextGame() {
     setVisibility(VISIBLE); // MAYBE
     new Handler().post(() -> {
-      pos++;
       Timber.e("soef set next game view " + viewpager.getCurrentItem() + 1);
       viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
     });

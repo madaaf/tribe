@@ -40,7 +40,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   private int currentPosition;
 
   private User user;
-  private TribeGuest guest;
   private GameManager gameManager;
   private View mCurrentView;
 
@@ -77,25 +76,26 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     TextViewFont turn = (TextViewFont) itemView.findViewById(R.id.txtUsername);
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
+    ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
 
     TribeGuest guest = draw.getCurrentDrawer();
-    if (guest != null) {
-      viewAvatar.load(guest.getPicture());
-      txtName.setText(guest.getDisplayName());
-    }
 
+    viewAvatar.load(guest.getPicture());
     nextInLabel.setText(
         EmojiParser.demojizedText(context.getString(R.string.game_draw_timer_instructions)));
 
-    if (draw.isMyTurn()) {
+    if (guest.getId().equals(user.getId())) {
+      txtName.setText(user.getDisplayName());
       gameName.setText(draw.getCurrentDrawName());
       drawDesc.setText(
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_draw)));
       turn.setText(context.getString(R.string.game_draw_my_turn));
     } else {
+      txtName.setText(guest.getDisplayName());
       drawDesc.setText(
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
       turn.setText(context.getString(R.string.game_draw_other_is_drawing));
+      hand.setVisibility(View.INVISIBLE);
     }
 
     container.addView(itemView);
@@ -116,7 +116,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         Timber.v("SOEF ON FINISH " + position + " " + currentPosition);
         if (counter != null) counter.setText("0");
         if (position == currentPosition) {
-          // onNextDraw.onNext(true); // SOEF TODO DECOMMENT
+          onNextDraw.onNext(true);
         }
       }
     };

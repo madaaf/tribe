@@ -29,13 +29,13 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -47,6 +47,7 @@ import timber.log.Timber;
  */
 
 public class GameChallengesView extends FrameLayout {
+
   private static int DURATION_EXIT_POPUP = 300;
 
   @Inject User user;
@@ -54,7 +55,6 @@ public class GameChallengesView extends FrameLayout {
   @BindView(R.id.pager) ViewPager viewpager;
   @BindView(R.id.popupChallenge) FrameLayout popup;
 
-  private static int pos = 0;
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
@@ -68,6 +68,7 @@ public class GameChallengesView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
+  private PublishSubject<Game> onCurrentGame = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
@@ -98,6 +99,16 @@ public class GameChallengesView extends FrameLayout {
     changePagerScroller();
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+    subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
+  }
+
+  public void setNextChallenge() {
+    setVisibility(VISIBLE); // MAYBE call setGameChallenge
+    if (popupDisplayed) hidePopup();
+    new Handler().post(() -> {
+      viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
+      Timber.e("soef set next challenge " + viewpager.getCurrentItem() + 1);
+    });
   }
 
   private void changePagerScroller() {
@@ -111,62 +122,6 @@ public class GameChallengesView extends FrameLayout {
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
     }
-  }
-
-  public void setGameChallenge(GameChallenge gameChallenge) {
-    Timber.e("soef setGameChallenge");
-    setVisibility(VISIBLE);
-    this.gameChallenge = gameChallenge;
-    items = gameChallenge.getNameList();
-    guestList = gameChallenge.getGuestList();
-    TribeGuest me =
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
-            null, false, user.getUsername());
-    guestList.add(me);
-    if (gameChallenge.isUserAction()) ok(null, null, gameChallenge.isUserAction());
-  }
-
-  public void setNextChallenge(String challenge, TribeGuest guestChallenged) {
-    setVisibility(VISIBLE); // MAYBE call setGameChallenge
-    if (popupDisplayed) hidePopup();
-    ok(challenge, guestChallenged, true);
-    new Handler().post(() -> {
-      pos++;
-      viewpager.setCurrentItem(pos, true);
-      Timber.e("soef set next challenge " + pos);
-    });
-  }
-
-  private void ok(String challenge, TribeGuest guestChallenged, boolean nextChallenge) {
-    if (challenge != null && guestChallenged != null) {
-      Timber.w(" CHALLANGE RECEIVED : " + challenge);
-      Timber.w(
-          "user challenged " + guestChallenged.getId() + " " + guestChallenged.getDisplayName());
-      Timber.w(" me=" + user.getId());
-      gameManager.setCurrentChallengerId(guestChallenged.getId());
-      adapter.setChallenge(challenge, guestChallenged);
-    } else {
-      TribeGuest guest = null;
-      if (items != null && !items.isEmpty()) {
-        challenge = getRandom(items);
-        if (!guestList.isEmpty()) {
-          guest = getRandomGuest(guestList);
-          gameChallenge.setCurrentChallengerId(guest.getId());
-          gameChallenge.setCurrentChallenge(challenge);
-          if (nextChallenge) onNextChallenge.onNext(gameChallenge);
-          Timber.w("FIND RANDOM CHALLANGE : " + challenge);
-          Timber.w(" user challenged " + guest.getId() + " " + guest.getDisplayName());
-          Timber.w(" me=" + user.getId());
-          gameManager.setCurrentChallengerId(guest.getId());
-          adapter.setChallenge(challenge, guest);
-        } else {
-          Timber.e("guestList empty");
-        }
-      } else {
-        Timber.e("items empty");
-      }
-    }
-    adapter.notifyDataSetChanged();
   }
 
   private void hidePopup() {
@@ -211,16 +166,6 @@ public class GameChallengesView extends FrameLayout {
     spring.setEndValue(1);
   }
 
-  private static String getRandom(List<String> array) {
-    int rnd = new Random().nextInt(array.size());
-    return array.get(rnd);
-  }
-
-  private static TribeGuest getRandomGuest(List<TribeGuest> array) {
-    int rnd = new Random().nextInt(array.size());
-    return array.get(rnd);
-  }
-
   protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
@@ -243,5 +188,9 @@ public class GameChallengesView extends FrameLayout {
 
   public Observable<Boolean> onBlockOpenInviteView() {
     return onBlockOpenInviteView;
+  }
+
+  public Observable<Game> onCurrentGame() {
+    return onCurrentGame;
   }
 }
