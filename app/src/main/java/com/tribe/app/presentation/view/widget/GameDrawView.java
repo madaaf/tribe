@@ -70,14 +70,12 @@ public class GameDrawView extends FrameLayout {
     adapter = new GameDrawViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
-    viewpager.setOnTouchListener((v, event) -> {
-      return true;
-    });
-
-    changePagerScroller();
+    //changePagerScroller();
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
     subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
+
+    viewpager.setOnTouchListener((v, event) -> true);
   }
 
   public void setNextGame() {

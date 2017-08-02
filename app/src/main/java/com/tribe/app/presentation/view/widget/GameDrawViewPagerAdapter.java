@@ -37,7 +37,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   private Context context;
   private LayoutInflater mLayoutInflater;
   private int currentPosition;
-  private boolean isCurrentPosition = false;
 
   private User user;
   private TribeGuest guest;
@@ -72,13 +71,10 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
     TextViewFont gameName = (TextViewFont) itemView.findViewById(R.id.gameName);
     TextViewFont nextInLabel = (TextViewFont) itemView.findViewById(R.id.nextInLabel);
-
     TextViewFont drawDesc = (TextViewFont) itemView.findViewById(R.id.drawDesc);
     TextViewFont turn = (TextViewFont) itemView.findViewById(R.id.txtUsername);
-
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
-    ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
 
     TribeGuest guest = draw.getCurrentGuest();
     if (guest != null) {
@@ -98,8 +94,8 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       drawDesc.setText(
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
       turn.setText(context.getString(R.string.game_draw_other_is_drawing));
-      //  hand.setVisibility(View.INVISIBLE);
     }
+
     String displayName = guest != null ? guest.getDisplayName() : "";
   /*  Timber.w("SOEF instangiate item "
         + draw.getCurrentDrawName()
@@ -178,10 +174,8 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     mPaint.setStrokeJoin(Paint.Join.ROUND);
     mPaint.setStrokeCap(Paint.Cap.ROUND);
     mPaint.setStrokeWidth(12);
-
     animateDiagonalPan(hand);
 
-    //primaryItemPosition = position;
     GameDraw draw = (GameDraw) gameManager.getCurrentGame();
     Timber.w("SOEF setPrimaryItem item "
         + draw.getCurrentDrawName()
@@ -247,7 +241,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     }
 
     private float mX, mY;
-    private static final float TOUCH_TOLERANCE = 10;
+    private static final float TOUCH_TOLERANCE = 20;
 
     private void touch_start(float x, float y) {
       Timber.e("MADA touch_start " + x + " " + y);
