@@ -156,6 +156,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+
       <ImageView
           android:id="@+id/iconHand"
           android:layout_width="wrap_content"
@@ -164,8 +165,15 @@
           android:src="@drawable/picto_draw_hand"
           />
 
+      <RelativeLayout
+          android:id="@+id/drawContainer"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_above="@+id/clearBtn"
+          />
+
       <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/textViewFont2"
+          android:id="@+id/clearBtn"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentBottom="true"
@@ -173,6 +181,7 @@
           android:drawablePadding="10dp"
           android:drawableStart="@drawable/picto_clear"
           android:gravity="end|bottom"
+          android:paddingTop="10dp"
           android:singleLine="true"
           android:text="@string/game_draw_clear"
           tools:text="Clear"

@@ -634,6 +634,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
 
     subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
+      Timber.e("SOEF BLOCK INVITE VIEW " + blockInviteView);
       viewLiveContainer.blockOpenInviteView(blockInviteView);
     }));
 
@@ -793,8 +794,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                 GameDraw gameDraw = (GameDraw) game;
                 if (!gameDraw.hasNames()) {
                   livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+                } else {
+                  setNextDrawGame();
                 }
-                gameDrawView.setNextGame();
                 break;
               case Game.GAME_CHALLENGE:
                 GameChallenge gameChallenge = (GameChallenge) game;
@@ -1063,6 +1065,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     userInfosNotificationView.update(friendship);
   }
 
+  private void setNextDrawGame() {
+    gameDrawView.setNextGame();
+  }
+
   /***
    *
    *  GENERATE DATA FOR GAMES
@@ -1089,6 +1095,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       guestList.add(me);
       gameDraw.setNewDatas(nameList, guestList);
     }
+
+    setNextDrawGame();
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {

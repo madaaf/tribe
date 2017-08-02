@@ -509,6 +509,9 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(
         gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
+    persistentSubscriptions.add(
+        gameDrawView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
       Timber.e("soef onRestartGame subscription");
       if (game instanceof GameChallenge) {

@@ -23,6 +23,9 @@ import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.lang.reflect.Field;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -41,6 +44,9 @@ public class GameDrawView extends FrameLayout {
   private GameDrawViewPagerAdapter adapter;
 
   @BindView(R.id.pager) ViewPager viewpager;
+
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public GameDrawView(@NonNull Context context) {
     super(context);
@@ -68,6 +74,9 @@ public class GameDrawView extends FrameLayout {
     });
 
     changePagerScroller();
+
+    subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+    subscriptions.add(adapter.onNextDraw().subscribe());
   }
 
   public void setNextGame() {
@@ -106,5 +115,9 @@ public class GameDrawView extends FrameLayout {
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) getContext()));
+  }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
   }
 }

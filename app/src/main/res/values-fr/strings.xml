@@ -672,7 +672,9 @@
 	<string name="linked_friends_notifications_disable_fb_alert_title">Downgrading Experience :warning:</string>
 	<string name="linked_friends_notifications_disable_fb_alert_msg">Attention, vous êtes sur le point de désactiver Facebook.</string>
 	<string name="linked_friends_notifications_disable_fb_alert_disable">Désactiver</string>
-	<string name="linked_friends_error_unable_to_unlink">Vous ne pouvez pas vous déconnecter de tous vos comptes (Facebook et téléphone) de Tribe.</string>
-	<string name="linked_friends_success_phone">Votre numéro de téléphone a été déconnecté.</string>
-	<string name="linked_friends_success_fb">Votre compte Facebook a été déconnecté.</string>
+	<string name="linked_friends_unlink_error_unable_to_unlink">Vous ne pouvez pas vous déconnecter de tous vos comptes (Facebook et téléphone) de Tribe.</string>
+	<string name="linked_friends_unlink_success_phone">Votre numéro de téléphone a été déconnecté.</string>
+	<string name="linked_friends_unlink_success_fb">Votre compte Facebook a été déconnecté.</string>
+	<string name="linked_friends_link_success_phone">Votre numéro de téléphone a été connecté.</string>
+	<string name="linked_friends_link_success_fb">Votre compte Facebook a été connecté.</string>
 </resources>

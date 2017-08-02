@@ -59,10 +59,17 @@ public class GameDraw extends Game {
   }
 
   public void generateNewDatas() {
-    if (nameList == null || nameList.size() == 0) return;
+    if (nameList == null || nameList.size() == 0) {
+      Timber.i("SOEF nameList  empty ");
+      return;
+    }
     currentDrawName = nameList.get(new Random().nextInt(nameList.size()));
     Timber.i("SOEF Set current game name  : " + currentDrawName);
-    if (guestList == null || guestList.size() == 0) return;
+
+    if (guestList == null || guestList.size() == 0) {
+      Timber.i("SOEF guestList  empty ");
+      return;
+    }
     currentGuest = getRandomGuest(guestList);
     Timber.i("SOEF set current Guest : " + currentGuest.getDisplayName());
   }
