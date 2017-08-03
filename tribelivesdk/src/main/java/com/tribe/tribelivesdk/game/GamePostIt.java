@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
@@ -41,6 +42,7 @@ public class GamePostIt extends Game {
   private LibYuvConverter libYuvConverter;
   private FilterManager filterManager;
   private Frame remoteFrame;
+  private PointF pointRemote;
   private Bitmap bitmapOGLocalPostIt, bitmapOGRemotePostIt, bitmapLocalPostIt, bitmapRemotePostIt;
   private Rect frameRect;
   private Matrix transform;
@@ -82,14 +84,20 @@ public class GamePostIt extends Game {
       realX = originalFrame.getWidth() >> 1;
       realY = originalFrame.getHeight() >> 1;
     } else {
-      realX = 2.0f * (1 - this.shape[2 * 91] / remoteFrame.getHeight()) - 1.0f;
-      realY = 2.0f * this.shape[2 * 91 + 1] / remoteFrame.getWidth() - 1.0f;
+      realX = this.shape[2 * 91];
+      realY = this.shape[2 * 91 + 1];
       currentPostItScale = 0.5f;
     }
 
+    pointRemote = new PointF(realX, realY);
+    pointRemote = computePointRemote(pointRemote, remoteFrame, bitmapRemotePostIt);
+
+    //Timber.d("Real X : " + realX);
+    //Timber.d("Real Y : " + realY);
+
     openCVWrapper.addPostIt(remoteFrame.getData(), remoteFrame.getWidth(), remoteFrame.getHeight(),
         remotePostIt, bitmapRemotePostIt.getWidth(), bitmapRemotePostIt.getHeight(),
-        currentPostItScale, realX, realY, argbOutRemote);
+        currentPostItScale, pointRemote.x, pointRemote.y, argbOutRemote);
 
     libYuvConverter.ARGBToYUV(argbOutRemote, remoteFrame.getWidth(), remoteFrame.getHeight(),
         yuvOutRemote);
@@ -174,7 +182,7 @@ public class GamePostIt extends Game {
     currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, SCALE_POST_IT);
   }
 
-  protected void savePNGImageToGallery(Bitmap bmp, String path) {
+  private void savePNGImageToGallery(Bitmap bmp, String path) {
     try {
       File file = new File(path);
 
@@ -187,5 +195,11 @@ public class GamePostIt extends Game {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private PointF computePointRemote(PointF pointF, Frame frame, Bitmap bitmapOverlay) {
+    pointF.x = pointF.x - ((bitmapOverlay.getWidth() >> 1) * currentPostItScale);
+    pointF.y = pointF.y - ((bitmapOverlay.getHeight() >> 1) * currentPostItScale);
+    return pointF;
   }
 }

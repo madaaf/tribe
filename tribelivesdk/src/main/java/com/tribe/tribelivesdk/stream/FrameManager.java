@@ -33,7 +33,8 @@ public class FrameManager {
   private LibYuvConverter libYuvConverter;
   private OpenCVWrapper openCVWrapper;
   private FilterManager filterManager;
-  private byte[] argb, yuvOut;
+  private byte[] previewData, argb, yuvOut;
+  private Frame gameFrame;
   private boolean firstFrame, processing = false;
   private int previousWidth = 0, previousHeight = 0, previousRotation = 0;
 
@@ -79,13 +80,15 @@ public class FrameManager {
 
               processFrame(frame1);
 
-              libYuvConverter.YUVToARGB(frame1.getData(), frame1.getWidth(), frame1.getHeight(),
-                  argb);
-              frame1.setData(argb);
-              frame1.setDataOut(yuvOut);
-              onNewFrame.onNext(frame1);
+              gameFrame = frame1.copy(previewData);
 
-              return frame1;
+              libYuvConverter.YUVToARGB(gameFrame.getData(), gameFrame.getWidth(), gameFrame.getHeight(),
+                  argb);
+              gameFrame.setData(argb);
+              gameFrame.setDataOut(yuvOut);
+              onNewFrame.onNext(gameFrame);
+
+              return gameFrame;
             })
             .subscribe(frame -> processing = false);
       } else if (game == null || !gameManager.isFacialRecognitionNeeded()) {
@@ -194,6 +197,7 @@ public class FrameManager {
         shouldForce) {
       argb = new byte[frame.getWidth() * frame.getHeight() * 4];
       yuvOut = new byte[frame.getData().length];
+      previewData = new byte[frame.getData().length];
 
       frame.setDataOut(yuvOut);
 

@@ -79,8 +79,8 @@ public class Frame {
     this.frontCamera = frontCamera;
   }
 
-  public Frame copy(byte[] argbIn) {
-    System.arraycopy(data, 0, argbIn, 0, data.length);
-    return new Frame(argbIn, width, height, rotation, timestamp, frontCamera);
+  public Frame copy(byte[] dataNew) {
+    System.arraycopy(data, 0, dataNew, 0, data.length);
+    return new Frame(dataNew, width, height, rotation, timestamp, frontCamera);
   }
 }

@@ -108,20 +108,11 @@ public class FilterManager {
   }
 
   public void setToDefault() {
-    if (current != null) {
-      current.setActivated(false);
-      current.release();
-    }
-
-    current = filterList.get(0);
-    current.setActivated(true);
-
-    onFilterChange.onNext(current);
+    setCurrentFilter(filterList.get(0));
   }
 
   public void setToPrevious() {
-    current = previous;
-    current.setActivated(true);
+    setCurrentFilter(previous);
   }
 
   public ImageFilter getBaseFilter() {
