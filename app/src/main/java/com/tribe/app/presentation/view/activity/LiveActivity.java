@@ -669,6 +669,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
+    subscriptions.add(viewLive.onClearDrawReceived().subscribe(aVoid -> {
+      Timber.e("SOEF ON CLEAR DRAW REVEIVED");
+    }));
+
     subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
       Timber.e("SOEF BLOCK INVITE VIEW " + blockInviteView);
       viewLiveContainer.blockOpenInviteView(blockInviteView);

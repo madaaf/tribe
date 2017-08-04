@@ -24,6 +24,9 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
@@ -49,6 +52,8 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
   private PublishSubject<Game> onCurrentGame = PublishSubject.create();
+  private PublishSubject<Void> onClearDraw = PublishSubject.create();
+  private PublishSubject<List<Float[]>> onDrawing = PublishSubject.create();
 
   public GameDrawViewPagerAdapter(Context context, User user) {
     this.context = context;
@@ -197,6 +202,14 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     return onCurrentGame;
   }
 
+  public Observable<Void> onClearDraw() {
+    return onClearDraw;
+  }
+
+  public Observable< List<Float[]>> onDrawing() {
+    return onDrawing;
+  }
+
   private class DrawingView extends View {
 
     public int width;
@@ -238,6 +251,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         onSizeChanged(width, height, width, height);
         invalidate();
         setDrawingCacheEnabled(true);
+        onClearDraw.onNext(null);
       });
     }
 
@@ -245,15 +259,15 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     private static final float TOUCH_TOLERANCE = 20;
 
     private void touch_start(float x, float y) {
-      Timber.e("MADA touch_start " + x + " " + y);
       mPath.reset();
       mPath.moveTo(x, y);
       mX = x;
       mY = y;
     }
 
+    List<Float[]> point = new ArrayList<>();
+
     private void touch_move(float x, float y) {
-      // Timber.e("MADA touch_move " + x + " " + y);
       float dx = Math.abs(x - mX);
       float dy = Math.abs(y - mY);
       if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
@@ -261,10 +275,17 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         mX = x;
         mY = y;
       }
+      Timber.e("touch_move " + mX + " " + mY);
+      if (point.size() < 10) {
+        point.add(new Float[] { mX, mY });
+      } else {
+        onDrawing.onNext(point);
+        point.clear();
+        point.add(new Float[] { mX, mY });
+      }
     }
 
     private void touch_up() {
-      Timber.e("MADA touch_up ");
       mPath.lineTo(mX, mY);
       // commit the path to our offscreen
       mCanvas.drawPath(mPath, mPaint);

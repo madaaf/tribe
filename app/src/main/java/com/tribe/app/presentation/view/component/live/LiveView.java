@@ -185,6 +185,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
+  private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
@@ -530,6 +531,16 @@ public class LiveView extends FrameLayout {
           draw.getCurrentChallenge()), false);
     }));
 
+    persistentSubscriptions.add(gameDrawView.onClearDraw().subscribe(aVoid -> {
+      Timber.e("SOEF CLEAR DRAW ? ?? ");
+      room.sendToPeers(getDrawClearPayload(), false);
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onDrawing().subscribe(points -> {
+      Timber.e("SOEF  DRAW  POINT " + points.get(0) + " " + points.get(1));
+      room.sendToPeers(getDrawPointPayload(points), false);
+    }));
+
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
         .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
             ((game, labelType) -> {
@@ -607,6 +618,8 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(room.onNewChallengeReceived().subscribe(onNewChallengeReceived));
 
     tempSubscriptions.add(room.onNewDrawReceived().subscribe(onNewDrawReceived));
+
+    tempSubscriptions.add(room.onClearDrawReceived().subscribe(onClearDrawReceived));
 
     tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
@@ -1236,6 +1249,39 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
+  public JSONObject getDrawClearPayload() {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    jsonPut(game, "action", "clear");
+    jsonPut(obj, "draw", game);
+    return obj;
+  }
+
+  public JSONObject getDrawPointPayload(List<Float[]> map) {
+    JSONObject game = new JSONObject();
+    JSONObject path = new JSONObject();
+
+    JSONArray array = new JSONArray();
+
+    for (Float[] value : map) {
+      JSONObject coord = new JSONObject();
+      jsonPut(coord, value[0].toString(), value[1].toString());
+      array.put(coord);
+    }
+
+    jsonPut(path, "hexColor", "F9AD25");
+    jsonPut(path, "lineWidth", "6.0");
+    jsonPut(path, "id", "test");
+    jsonPut(path, "points", array);
+
+    JSONObject gameObject = new JSONObject();
+    jsonPut(gameObject, "action", "drawPath");
+    jsonPut(gameObject, "path", path);
+
+    jsonPut(game, "draw", gameObject);
+    return game;
+  }
+
   public JSONObject getStopGamePayload(Game game) {
     JSONObject obj = new JSONObject();
     JSONObject gameStop = new JSONObject();
@@ -1571,6 +1617,9 @@ public class LiveView extends FrameLayout {
 
   public Observable<List<String>> onNewDrawReceived() {
     return onNewDrawReceived;
+  }
+  public Observable<Void> onClearDrawReceived() {
+    return onClearDrawReceived;
   }
 
   public Observable<String> unlockRollTheDice() {

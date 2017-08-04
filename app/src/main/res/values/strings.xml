@@ -152,9 +152,9 @@
 	<string name="grid_tutorial_invite">Invite your best friends to\nmake group video calls!</string>
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
 	<string name="grid_tutorial_profile">Manage your account,\nfriendships and more!</string>
-	<string name="grid_syncing_contacts_banner">Syncing contacts...</string>
+	<string name="grid_syncing_contacts_banner">Syncing friends...</string>
 	<string name="grid_sync_failed_contacts_banner">Synchronization failed</string>
-	<string name="grid_synced_contacts_banner">Contacts synced!</string>
+	<string name="grid_synced_contacts_banner">Friends synced!</string>
 	<string name="grid_syncing_address_book_banner">Syncing Address Book contacts...</string>
 	<string name="grid_syncing_facebook_banner">Syncing Facebook friends...</string>
 	<string name="grid_sync_failed_address_book_banner">Address Book contacts sync. failed!</string>
@@ -414,13 +414,12 @@
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Phone number</string>
 	<string name="profile_change_phone_already_in_use">This phone number is already in use on another account.</string>
-
 	
 	<!-- Profile Facebook Account -->
 	<string name="profile_facebook_account_title">Facebook profile</string>
 	<string name="profile_facebook_account_status_connected">Connected</string>
+	<string name="profile_facebook_account_status_disconnected">Not connected</string>
 	<string name="profile_facebook_account_already_in_use">This Facebook profile is already in use on another account.</string>
-
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>
@@ -679,4 +678,5 @@
 	<string name="linked_friends_unlink_success_fb">You successfully unlinked your Facebook account</string>
 	<string name="linked_friends_link_success_phone">You successfully linked your phone account</string>
 	<string name="linked_friends_link_success_fb">You successfully linked your Facebook account</string>
+	<string name="linked_friends_loading">Loading...</string>
 </resources>

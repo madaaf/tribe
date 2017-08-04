@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.lang.reflect.Field;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -48,6 +49,8 @@ public class GameDrawView extends FrameLayout {
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
   private PublishSubject<Game> onCurrentGame = PublishSubject.create();
+  private PublishSubject<Void> onClearDraw = PublishSubject.create();
+  private PublishSubject<List<Float[]>> onDrawing = PublishSubject.create();
 
   public GameDrawView(@NonNull Context context) {
     super(context);
@@ -75,6 +78,8 @@ public class GameDrawView extends FrameLayout {
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
     subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
     subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
+    subscriptions.add(adapter.onClearDraw().subscribe(onClearDraw));
+    subscriptions.add(adapter.onDrawing().subscribe(onDrawing));
 
     viewpager.setOnTouchListener((v, event) -> true);
   }
@@ -126,5 +131,13 @@ public class GameDrawView extends FrameLayout {
 
   public Observable<Game> onCurrentGame() {
     return onCurrentGame;
+  }
+
+  public Observable<Void> onClearDraw() {
+    return onClearDraw;
+  }
+
+  public Observable<List<Float[]>> onDrawing() {
+    return onDrawing;
   }
 }

@@ -152,9 +152,9 @@
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
-	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
+	<string name="grid_syncing_contacts_banner">Synchronisation des amis...</string>
 	<string name="grid_sync_failed_contacts_banner">Synchronisation echouée</string>
-	<string name="grid_synced_contacts_banner">Contacts synchronisés !</string>
+	<string name="grid_synced_contacts_banner">Amis synchronisés !</string>
 	<string name="grid_syncing_address_book_banner">Synchronisation des contacts...</string>
 	<string name="grid_syncing_facebook_banner">Synchronisation de Facebook...</string>
 	<string name="grid_sync_failed_address_book_banner">Synchronisation echouée</string>
@@ -414,10 +414,12 @@
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Numéro de téléphone</string>
 	<string name="profile_change_phone_already_in_use">Ce numéro de téléphone est déjà utilisé sur un autre compte.</string>
-		<!-- Profile Facebook Account -->
+	
+	<!-- Profile Facebook Account -->
 	<string name="profile_facebook_account_title">Profil Facebook</string>
 	<string name="profile_facebook_account_status_connected">Connecté</string>
-
+	<string name="profile_facebook_account_status_disconnected">Non connecté</string>
+	<string name="profile_facebook_account_already_in_use">Ce profil Facebook est déjà utilisé sur un autre compte.</string>
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Supprimer ou bloquer</string>
@@ -676,4 +678,5 @@
 	<string name="linked_friends_unlink_success_fb">Votre compte Facebook a été déconnecté.</string>
 	<string name="linked_friends_link_success_phone">Votre numéro de téléphone a été connecté.</string>
 	<string name="linked_friends_link_success_fb">Votre compte Facebook a été connecté.</string>
+	<string name="linked_friends_loading">Chargement...</string>
 </resources>

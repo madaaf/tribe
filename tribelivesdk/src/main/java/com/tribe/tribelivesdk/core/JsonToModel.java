@@ -44,6 +44,7 @@ public class JsonToModel {
   private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
+  private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -235,6 +236,12 @@ public class JsonToModel {
             } else {
               Timber.e("SOEF  No value for user");
             }
+          } else if (action.equals("drawPath")) {
+            JSONObject path = draw.getJSONObject("path");
+            JSONArray points = path.getJSONArray("points");
+            Timber.e("soef receive draw " + points.toString());
+          } else if (action.equals("clear")) {
+            onClearDrawReceived.onNext(null);
           }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
 
@@ -374,6 +381,10 @@ public class JsonToModel {
 
   public Observable<String> unlockedRollTheDice() {
     return unlockedRollTheDice;
+  }
+
+  public Observable<Void> onClearDrawReceived() {
+    return onClearDrawReceived;
   }
 
   public Observable<List<TribeGuest>> onInvitedTribeGuestList() {
