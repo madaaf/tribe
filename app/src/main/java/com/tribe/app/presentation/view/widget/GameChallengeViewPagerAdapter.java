@@ -31,6 +31,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private User user;
   private GameManager gameManager;
   private int currentPosition;
+  private View currentView;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
@@ -53,9 +54,25 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
-
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
+    container.addView(itemView);
+    // itemView.setVisibility(View.INVISIBLE);
+    return itemView;
+  }
 
+  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
+    currentView = (View) object;
+    if (position == currentPosition) return;
+    currentPosition = position;
+    populateView(currentView);
+    //  currentView.setVisibility(View.VISIBLE);
+    GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
+    if (challenge.isUserAction()) {
+      onCurrentGame.onNext(challenge);
+    }
+  }
+
+  private void populateView(View itemView) {
     GameChallenge game = (GameChallenge) gameManager.getCurrentGame();
 
     TextViewFont txtChallenge = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
@@ -83,40 +100,18 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
         viewAvatar.load(guest.getPicture());
         txtUsername.setText("is challenged");
       }
-      Timber.i("SOEF  1: "
-          + guest.getDisplayName()
-          + " "
-          + guest.getId()
-          + " "
-          + user.getId()
-          + " "
-          + user.getDisplayName()
-          + " "
-          + challenge);
+      Timber.i("SOEF  1: " + challenge);
     } else {
       Timber.e("SOEF guest = null");
     }
-
-    container.addView(itemView);
-    return itemView;
-  }
-
-  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
-    if (position == currentPosition) return;
-    currentPosition = position;
-
-    GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
-    if (challenge.isUserAction()) {
-      onCurrentGame.onNext(challenge);
-    }
-  }
-
-  public Observable<Game> onCurrentGame() {
-    return onCurrentGame;
   }
 
   @Override public void destroyItem(ViewGroup container, int position, Object view) {
     container.removeView((View) view);
+  }
+
+  public Observable<Game> onCurrentGame() {
+    return onCurrentGame;
   }
 
   public Observable<Boolean> onBlockOpenInviteView() {

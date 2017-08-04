@@ -662,21 +662,21 @@
 	<string name="unlock_roll_the_dice_decline_action">No, I don\'t want to meet new people</string>
 	
 	<!-- Linked Friends -->
-	<string name="linked_friends_title">Linked friends! :electric_plug:</string>
+	<string name="linked_friends_title">Synchronized friends! :electric_plug:</string>
 	<string name="linked_friends_facebook">Facebook friends</string>
 	<string name="linked_friends_address_book">Address book contacts</string>
 	<string name="linked_friends_status_linked">Linked</string>
 	<string name="linked_friends_status_not_linked">Not linked yet</string>
 	<string name="linked_friends_notifications_disable_phone_alert_title">Downgrading Experience :warning:</string>
-	<string name="linked_friends_notifications_disable_phone_alert_msg">You\'re about to disable Phone.</string>
+	<string name="linked_friends_notifications_disable_phone_alert_msg">You\'re about to unsync your Address Book from your account. It means that you won\'t be able to find friends from your Contacts on Tribe anymore.</string>
 	<string name="linked_friends_notifications_disable_phone_alert_disable">Disable</string>
 	<string name="linked_friends_notifications_disable_fb_alert_title">Downgrading Experience :warning:</string>
-	<string name="linked_friends_notifications_disable_fb_alert_msg">You\'re about to disable Facebook.</string>
+	<string name="linked_friends_notifications_disable_fb_alert_msg">You\'re about to unsync Facebook from your account. It means that you won\'t be able to find friends from Facebook on Tribe anymore.</string>
 	<string name="linked_friends_notifications_disable_fb_alert_disable">Disable</string>
-	<string name="linked_friends_unlink_error_unable_to_unlink">You can\'t unlink all your accounts (Facebook and phone) from Tribe.</string>
-	<string name="linked_friends_unlink_success_phone">You successfully unlinked your phone account</string>
-	<string name="linked_friends_unlink_success_fb">You successfully unlinked your Facebook account</string>
-	<string name="linked_friends_link_success_phone">You successfully linked your phone account</string>
-	<string name="linked_friends_link_success_fb">You successfully linked your Facebook account</string>
+	<string name="linked_friends_unlink_error_unable_to_unlink">At least Facebook or Address Book has to be connected</string>
+	<string name="linked_friends_unlink_success_phone">Address Book unsynced</string>
+	<string name="linked_friends_unlink_success_fb">Facebook unsynced</string>
+	<string name="linked_friends_link_success_phone">Address Book linked</string>
+	<string name="linked_friends_link_success_fb">Facebook linked</string>
 	<string name="linked_friends_loading">Loading...</string>
 </resources>

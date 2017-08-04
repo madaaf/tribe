@@ -9,7 +9,7 @@ import android.widget.Scroller;
  */
 public class ViewPagerScroller extends Scroller {
 
-  private int mScrollDuration = 3000;
+  private int mScrollDuration = 1000;
 
   public ViewPagerScroller(Context context) {
     super(context);

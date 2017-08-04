@@ -56,8 +56,8 @@ public class GameChallengesView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private GameChallengeViewPagerAdapter adapter;
+  private boolean popupDisplayed = false;
   private GameManager gameManager;
-  private boolean popupDisplayed = false, gameClosed = false;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
@@ -80,9 +80,8 @@ public class GameChallengesView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
-    gameManager = GameManager.getInstance(getContext());
+    gameManager = GameManager.getInstance(context);
 
-    Timber.e("init GameChallengeViewPagerAdapter");
     adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
@@ -97,26 +96,16 @@ public class GameChallengesView extends FrameLayout {
   }
 
   public void close() {
-    gameClosed = true;
+    adapter = null;
   }
 
   public void setNextChallenge() {
+    if (adapter == null) initView(context);
     if (popupDisplayed) hidePopup();
     new Handler().post(() -> {
-      setVisibility(VISIBLE);
-      int currentItem;
-      if (gameClosed) {
-        currentItem = viewpager.getCurrentItem();
-        GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
-        if (challenge.isUserAction()) {
-          onCurrentGame.onNext(challenge);
-        }
-        gameClosed = false;
-      } else {
-        currentItem = (viewpager.getCurrentItem() + 1);
-      }
-      Timber.w("soef set next game challenge " + currentItem);
+      int currentItem = (viewpager.getCurrentItem() + 1);
       viewpager.setCurrentItem(currentItem);
+      setVisibility(VISIBLE);
     });
   }
 

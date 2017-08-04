@@ -1228,6 +1228,7 @@ public class LiveView extends FrameLayout {
   }
 
   public JSONObject getNewChallengePayload(String userId, String peerId, String challengeMessage) {
+    JSONObject app = new JSONObject();
     JSONObject obj = new JSONObject();
     JSONObject challenge = new JSONObject();
     jsonPut(challenge, "from", userId);
@@ -1235,7 +1236,8 @@ public class LiveView extends FrameLayout {
     jsonPut(challenge, "user", peerId);
     jsonPut(challenge, Game.CHALLENGE, challengeMessage);
     jsonPut(obj, Game.GAME_CHALLENGE, challenge);
-    return obj;
+    jsonPut(app, "app", obj);
+    return app;
   }
 
   public JSONObject getNewDrawPayload(String userId, String peerId, String draw) {

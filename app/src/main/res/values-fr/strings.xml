@@ -392,7 +392,7 @@
 	<string name="profile_video_demo_subtitle">Apprenez Tribe en 30 secondes !</string>
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Dégradation de l\'expérience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
@@ -667,16 +667,16 @@
 	<string name="linked_friends_address_book">Contacts du carnet d\'adresses</string>
 	<string name="linked_friends_status_linked">Synchronisé</string>
 	<string name="linked_friends_status_not_linked">Non synchronisé</string>
-	<string name="linked_friends_notifications_disable_phone_alert_title">Downgrading Experience :warning:</string>
-	<string name="linked_friends_notifications_disable_phone_alert_msg">Attention, vous êtes sur le point de désactiver votre téléphone.</string>
+	<string name="linked_friends_notifications_disable_phone_alert_title">Dégradation de l\'expérience :warning:</string>
+	<string name="linked_friends_notifications_disable_phone_alert_msg">Vous êtes sur le point de désynchorniser votre Carnet d\'Adresses de votre compte. Cela signifie que vous ne serez plus capable de trouver vos Contacts sur Tribe.</string>
 	<string name="linked_friends_notifications_disable_phone_alert_disable">Désactiver</string>
-	<string name="linked_friends_notifications_disable_fb_alert_title">Downgrading Experience :warning:</string>
-	<string name="linked_friends_notifications_disable_fb_alert_msg">Attention, vous êtes sur le point de désactiver Facebook.</string>
+	<string name="linked_friends_notifications_disable_fb_alert_title">Dégradation de l\'expérience :warning:</string>
+	<string name="linked_friends_notifications_disable_fb_alert_msg">Vous êtes sur le point de désynchroniser Facebook de votre compte. Cela signifie que vous ne serez plus capable de trouver vos amis Facebook sur Tribe.</string>
 	<string name="linked_friends_notifications_disable_fb_alert_disable">Désactiver</string>
-	<string name="linked_friends_unlink_error_unable_to_unlink">Vous ne pouvez pas vous déconnecter de tous vos comptes (Facebook et téléphone) de Tribe.</string>
-	<string name="linked_friends_unlink_success_phone">Votre numéro de téléphone a été déconnecté.</string>
-	<string name="linked_friends_unlink_success_fb">Votre compte Facebook a été déconnecté.</string>
-	<string name="linked_friends_link_success_phone">Votre numéro de téléphone a été connecté.</string>
-	<string name="linked_friends_link_success_fb">Votre compte Facebook a été connecté.</string>
+	<string name="linked_friends_unlink_error_unable_to_unlink">Facebook ou Carnet d\'Addresse doit être connecté</string>
+	<string name="linked_friends_unlink_success_phone">Carnet d\'Adresses déconnecté</string>
+	<string name="linked_friends_unlink_success_fb">Facebook déconnecté</string>
+	<string name="linked_friends_link_success_phone">Carnet d\'Adresses connecté</string>
+	<string name="linked_friends_link_success_fb">Facebook connecté</string>
 	<string name="linked_friends_loading">Chargement...</string>
 </resources>

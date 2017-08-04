@@ -207,41 +207,42 @@ public class JsonToModel {
             }
             onRemovedTribeGuestList.onNext(guestRemovedList);
           }
-        } else if (message.has("challenges")) {
-          JSONObject challenges = message.getJSONObject("challenges");
-          String action = challenges.get("action").toString();
-          if (action.equals("newChallenge")) {
-            if (challenges.has("user")) {
-              String userId = challenges.get("user").toString();
-              String challenge = challenges.get("challenge").toString();
-              List<String> datas = new ArrayList<>();
-              datas.add(challenge);
-              datas.add(userId);
-              onNewChallengeReceived.onNext(datas);
-            } else {
-              Timber.e("SOEF  No value for user");
+          if (app.has("challenges")) {
+            JSONObject challenges = app.getJSONObject("challenges");
+            String action = challenges.get("action").toString();
+            if (action.equals("newChallenge")) {
+              if (challenges.has("user")) {
+                String userId = challenges.get("user").toString();
+                String challenge = challenges.get("challenge").toString();
+                List<String> datas = new ArrayList<>();
+                datas.add(challenge);
+                datas.add(userId);
+                onNewChallengeReceived.onNext(datas);
+              } else {
+                Timber.e("SOEF  No value for user");
+              }
             }
-          }
-        } else if (message.has("draw")) {
-          JSONObject draw = message.getJSONObject("draw");
-          String action = draw.get("action").toString();
-          if (action.equals("newDraw")) {
-            if (draw.has("user")) {
-              String userId = draw.get("user").toString();
-              String name = draw.get("draw").toString();
-              List<String> datas = new ArrayList<>();
-              datas.add(name);
-              datas.add(userId);
-              onNewDrawReceived.onNext(datas);
-            } else {
-              Timber.e("SOEF  No value for user");
+          } else if (app.has("draw")) {
+            JSONObject draw = app.getJSONObject("draw");
+            String action = draw.get("action").toString();
+            if (action.equals("newDraw")) {
+              if (draw.has("user")) {
+                String userId = draw.get("user").toString();
+                String name = draw.get("draw").toString();
+                List<String> datas = new ArrayList<>();
+                datas.add(name);
+                datas.add(userId);
+                onNewDrawReceived.onNext(datas);
+              } else {
+                Timber.e("SOEF  No value for user");
+              }
+            } else if (action.equals("drawPath")) {
+              JSONObject path = draw.getJSONObject("path");
+              JSONArray points = path.getJSONArray("points");
+              Timber.e("soef receive draw " + points.toString());
+            } else if (action.equals("clear")) {
+              onClearDrawReceived.onNext(null);
             }
-          } else if (action.equals("drawPath")) {
-            JSONObject path = draw.getJSONObject("path");
-            JSONArray points = path.getJSONArray("points");
-            Timber.e("soef receive draw " + points.toString());
-          } else if (action.equals("clear")) {
-            onClearDrawReceived.onNext(null);
           }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
 
