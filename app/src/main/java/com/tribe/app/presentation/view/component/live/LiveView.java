@@ -1528,6 +1528,7 @@ public class LiveView extends FrameLayout {
 
   private void startGame(Game game, boolean isUserAction) {
     Timber.e("SOEF START GAME");
+    if (game == null) return;
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
     game.setUserAction(isUserAction);
@@ -1553,12 +1554,14 @@ public class LiveView extends FrameLayout {
     switch (gameId) {
       case Game.GAME_CHALLENGE:
         gameChallengesView.setVisibility(GONE);
+        gameChallengesView.close();
         break;
       case Game.GAME_DRAW:
         gameDrawView.setVisibility(GONE);
+        gameDrawView.close();
         break;
     }
-
+    gameManager.setCurrentGame(null);
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
@@ -1618,6 +1621,7 @@ public class LiveView extends FrameLayout {
   public Observable<List<String>> onNewDrawReceived() {
     return onNewDrawReceived;
   }
+
   public Observable<Void> onClearDrawReceived() {
     return onClearDrawReceived;
   }

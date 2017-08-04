@@ -35,6 +35,7 @@ import timber.log.Timber;
  */
 
 public class GameDrawView extends FrameLayout {
+
   @Inject User user;
 
   private LayoutInflater inflater;
@@ -42,6 +43,7 @@ public class GameDrawView extends FrameLayout {
   private Context context;
   private GameManager gameManager;
   private GameDrawViewPagerAdapter adapter;
+  private boolean gameClosed = false;
 
   @BindView(R.id.pager) ViewPager viewpager;
 
@@ -84,11 +86,22 @@ public class GameDrawView extends FrameLayout {
     viewpager.setOnTouchListener((v, event) -> true);
   }
 
+  public void close() {
+    gameClosed = true;
+  }
+
   public void setNextGame() {
-    setVisibility(VISIBLE); // MAYBE
     new Handler().post(() -> {
-      Timber.e("soef set next game view " + viewpager.getCurrentItem() + 1);
-      viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
+      setVisibility(VISIBLE); // MAYBE
+      int currentItem;
+      if (gameClosed) {
+        currentItem = viewpager.getCurrentItem();
+        gameClosed = false;
+      } else {
+        currentItem = (viewpager.getCurrentItem() + 1);
+      }
+      Timber.w("soef set next game view " + currentItem);
+      viewpager.setCurrentItem(currentItem);
     });
   }
 

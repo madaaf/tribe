@@ -32,10 +32,7 @@ import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.model.TribeGuest;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -59,11 +56,8 @@ public class GameChallengesView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private GameChallengeViewPagerAdapter adapter;
-  private GameChallenge gameChallenge;
   private GameManager gameManager;
-  private List<String> items = new ArrayList<>();
-  private List<TribeGuest> guestList = new ArrayList<>();
-  private boolean popupDisplayed = false;
+  private boolean popupDisplayed = false, gameClosed = false;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
@@ -102,12 +96,23 @@ public class GameChallengesView extends FrameLayout {
     subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
   }
 
+  public void close() {
+    gameClosed = true;
+  }
+
   public void setNextChallenge() {
-    setVisibility(VISIBLE); // MAYBE call setGameChallenge
     if (popupDisplayed) hidePopup();
     new Handler().post(() -> {
-      viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
-      Timber.e("soef set next challenge " + viewpager.getCurrentItem() + 1);
+      setVisibility(VISIBLE); // MAYBE call setGameChallenge
+      int currentItem;
+      if (gameClosed) {
+        currentItem = viewpager.getCurrentItem();
+        gameClosed = false;
+      } else {
+        currentItem = (viewpager.getCurrentItem() + 1);
+      }
+      Timber.w("soef set next game challenge " + currentItem);
+      viewpager.setCurrentItem(currentItem);
     });
   }
 
