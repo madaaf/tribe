@@ -609,7 +609,7 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Put on the next challenge!</string>
 	<string name="game_challenges_next_impossible">Only others can next your challenge!</string>
-	<string name="game_challenges_turn">is challenged</string>
+	<string name="game_challenges_turn">Your turn to be challenged</string>
 	<string name="game_challenges_your_turn">Your turn to be challenged</string>
 	<string name="game_challenges_menu_re_roll">Change the challenge</string>
 	<string name="game_challenges_re_roll_notification">%1$s put on a new challenge!</string>

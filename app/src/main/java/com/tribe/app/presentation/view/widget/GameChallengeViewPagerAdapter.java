@@ -56,7 +56,6 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   @Override public Object instantiateItem(ViewGroup container, int position) {
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
     container.addView(itemView);
-    // itemView.setVisibility(View.INVISIBLE);
     return itemView;
   }
 
@@ -65,7 +64,6 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     if (position == currentPosition) return;
     currentPosition = position;
     populateView(currentView);
-    //  currentView.setVisibility(View.VISIBLE);
     GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
     if (challenge.isUserAction()) {
       onCurrentGame.onNext(challenge);

@@ -1241,6 +1241,7 @@ public class LiveView extends FrameLayout {
   }
 
   public JSONObject getNewDrawPayload(String userId, String peerId, String draw) {
+    JSONObject app = new JSONObject();
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
     jsonPut(game, "from", userId);
@@ -1248,7 +1249,8 @@ public class LiveView extends FrameLayout {
     jsonPut(game, "user", peerId);
     jsonPut(game, "draw", draw);
     jsonPut(obj, "draw", game);
-    return obj;
+    jsonPut(app, "app", obj);
+    return app;
   }
 
   public JSONObject getDrawClearPayload() {
@@ -1266,13 +1268,14 @@ public class LiveView extends FrameLayout {
     JSONArray array = new JSONArray();
 
     for (Float[] value : map) {
-      JSONObject coord = new JSONObject();
-      jsonPut(coord, value[0].toString(), value[1].toString());
+      JSONArray coord = new JSONArray();
+      coord.put(value[0]);
+      coord.put(value[1]);
       array.put(coord);
     }
 
     jsonPut(path, "hexColor", "F9AD25");
-    jsonPut(path, "lineWidth", "6.0");
+    jsonPut(path, "lineWidth", 6.0);
     jsonPut(path, "id", "test");
     jsonPut(path, "points", array);
 
