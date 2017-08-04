@@ -21,6 +21,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -96,6 +97,10 @@ public class GameDrawView extends FrameLayout {
       int currentItem;
       if (gameClosed) {
         currentItem = viewpager.getCurrentItem();
+        GameDraw gameDraw = (GameDraw) gameManager.getCurrentGame();
+        if (gameDraw.isUserAction()) {
+          onCurrentGame.onNext(gameDraw);
+        }
         gameClosed = false;
       } else {
         currentItem = (viewpager.getCurrentItem() + 1);

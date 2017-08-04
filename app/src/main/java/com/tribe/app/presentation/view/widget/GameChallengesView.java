@@ -103,10 +103,14 @@ public class GameChallengesView extends FrameLayout {
   public void setNextChallenge() {
     if (popupDisplayed) hidePopup();
     new Handler().post(() -> {
-      setVisibility(VISIBLE); // MAYBE call setGameChallenge
+      setVisibility(VISIBLE);
       int currentItem;
       if (gameClosed) {
         currentItem = viewpager.getCurrentItem();
+        GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
+        if (challenge.isUserAction()) {
+          onCurrentGame.onNext(challenge);
+        }
         gameClosed = false;
       } else {
         currentItem = (viewpager.getCurrentItem() + 1);
