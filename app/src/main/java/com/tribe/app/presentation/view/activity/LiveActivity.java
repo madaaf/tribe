@@ -76,6 +76,8 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
+import com.tribe.app.presentation.view.widget.GameChallengesView;
+import com.tribe.app.presentation.view.widget.GameDrawView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
@@ -86,6 +88,7 @@ import com.tribe.app.presentation.view.widget.notifications.SharingCardNotificat
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -260,6 +263,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
 
   @BindView(R.id.blockView) FrameLayout blockView;
+
+  @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
+
+  @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -615,10 +622,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(datas -> {//SOEF MADA LOOPER
-          Timber.e("SOEF ON NEW CHALLENGE RECEIVED challenfe :"
-              + datas.get(0)
-              + " peetId :  "
-              + datas.get(1));
+          Timber.e("SOEF onNewDrawReceived");
+          Timber.e("SOEF ON NEW DRAW RECEIVED :" + datas.get(0) + " peetId :  " + datas.get(1));
           List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
           TribeGuest guestChallenged = new TribeGuest(datas.get(1));
           for (TribeGuest guest : guests) {
@@ -626,10 +631,46 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               guestChallenged = guest;
             }
           }
-          viewLive.setNextChallengePager(datas.get(0), guestChallenged);
+          gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
+          GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
+          Timber.e("SOEF onNewDrawReceived check "
+              + gameChallenge.getCurrentChallenger().getId()
+              + " "
+              + gameChallenge.getCurrentChallenge());
+          if (!gameChallenge.hasNames()) {
+            livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+          } else {
+            setNextChallengeGame();
+          }
+        }));
+
+    subscriptions.add(viewLive.onNewDrawReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(datas -> {
+          Timber.e("SOEF onNewDrawReceived");
+          Timber.e("SOEF ON NEW DRAW RECEIVED :" + datas.get(0) + " peetId :  " + datas.get(1));
+          List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+          TribeGuest guestChallenged = new TribeGuest(datas.get(1));
+          for (TribeGuest guest : guests) {
+            if (guest.getId().equals(datas.get(1))) {
+              guestChallenged = guest;
+            }
+          }
+          gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
+          GameDraw gameDraw = (GameDraw) gameManager.getCurrentGame();
+          Timber.e(
+              "SOEF onNewDrawReceived check " + gameDraw.getCurrentDrawer().getId() + " " + gameDraw
+                  .getCurrentDrawName());
+          if (!gameDraw.hasNames()) {
+            livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+          } else {
+            setNextDrawGame();
+          }
         }));
 
     subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
+      Timber.e("SOEF BLOCK INVITE VIEW " + blockInviteView);
       viewLiveContainer.blockOpenInviteView(blockInviteView);
     }));
 
@@ -688,11 +729,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         }));
 
     subscriptions.add(viewLive.onEndCall()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(duration -> {
-              livePresenter.incrementTimeInCall(user.getId(), duration);
-            }));
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(duration -> {
+          livePresenter.incrementTimeInCall(user.getId(), duration);
+        }));
 
     subscriptions.add(notificationContainerView.onFacebookSuccess()
         .subscribeOn(Schedulers.newThread())
@@ -767,10 +808,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (o != null) userInfosNotificationView.displayView(o);
     }));
 
-    subscriptions.add(viewLive.onItemsChallengeEmpty().subscribe(aVoid -> {
-      launchChallengeGame();
-    }));
-
     subscriptions.add(viewLive.onStartGame()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
@@ -783,26 +820,32 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
                   livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
                 }
                 break;
-              case Game.GAME_CHALLENGE:
-                GameChallenge gameChallenge = (GameChallenge) game;
-                if (!gameChallenge.hasNames()) {
-                  gameManager.setCurrentGame(game);
-                  livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
-                  Timber.e("soef load data to launchChallengeGame "
-                      + gameChallenge.getCurrentChallenge());
-                } else {
-                  Timber.e("soef data already exist launchChallengeGame");
-                  // launchChallengeGame();
-                  //viewLive.setNextChallengePager();
-                }
 
-                Timber.e("soef llaunchChallengeGame "
-                    + gameChallenge.getCurrentChallengerId()
-                    + " "
-                    + user.getId()
-                    + " game.isUserAction() "
-                    + game.isUserAction());
-                if (game.isUserAction()) launchChallengeGame();
+              case Game.GAME_DRAW:
+                Timber.e("soef onStartGame DRAW : isUserAction " + game.isUserAction());
+                GameDraw gameDraw = (GameDraw) game;
+                if (game.isUserAction()) {
+                  if (!gameDraw.hasNames()) {
+                    livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+                  } else {
+                    setNextDrawGame();
+                  }
+                } else {
+                  Timber.e("not my action");
+                }
+                break;
+              case Game.GAME_CHALLENGE:
+                Timber.e("soef onStartGame CHALLENGE : isUserAction " + game.isUserAction());
+                GameChallenge gameChallenge = (GameChallenge) game;
+                if (game.isUserAction()) {
+                  if (!gameChallenge.hasNames()) {
+                    livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+                  } else {
+                    setNextChallengeGame();
+                  }
+                } else {
+                  Timber.e("not my action");
+                }
                 break;
             }
           }
@@ -837,13 +880,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (user != null) {
         if (user.isInvisible()) {
           DialogFactory.dialog(context(), user.getDisplayName(),
-                  EmojiParser.demojizedText(
-                          context().getString(R.string.add_friend_error_invisible)),
-                  context().getString(R.string.add_friend_error_invisible_invite_android),
-                  context().getString(R.string.add_friend_error_invisible_cancel))
-                  .filter(x -> x == true)
-                  .subscribe(a -> share());
-
+              EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+              context().getString(R.string.add_friend_error_invisible_invite_android),
+              context().getString(R.string.add_friend_error_invisible_cancel))
+              .filter(x -> x == true)
+              .subscribe(a -> share());
         } else {
           livePresenter.createFriendship(user.getId());
         }
@@ -879,11 +920,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (StringUtils.isEmpty(live.getLinkId())) {
       livePresenter.getRoomLink(roomConfiguration.getRoomId());
-      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG)
-              .show();
+      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG).show();
     } else {
-      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL,
-              live.getLinkId(), null, false);
+      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getLinkId(),
+          null, false);
     }
   }
 
@@ -891,8 +931,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (isFromOthers) {
       Toast.makeText(this,
-              EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
-              Toast.LENGTH_LONG).show();
+          EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
+          Toast.LENGTH_LONG).show();
     }
 
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
@@ -1044,13 +1084,27 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onAddError() {
-    Toast.makeText(context(), EmojiParser.demojizedText(
-            context().getString(R.string.add_friend_error_invisible)), Toast.LENGTH_SHORT).show();
+    Toast.makeText(context(),
+        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+        Toast.LENGTH_SHORT).show();
   }
 
   @Override public void onAddSuccess(Friendship friendship) {
     userInfosNotificationView.update(friendship);
   }
+
+  private void setNextDrawGame() {
+    gameDrawView.setNextGame(); // TODO MADA
+  }
+
+  private void setNextChallengeGame() {
+    gameChallengesView.setNextChallenge(); // TODO MADA
+  }
+
+  /***
+   *
+   *  GENERATE DATA FOR GAMES
+   */
 
   @Override public void onNamesPostItGame(List<String> nameList) {
     Game game = gameManager.getCurrentGame();
@@ -1061,32 +1115,37 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
   }
 
-  @Override public void onDataChallengesGame(List<String> nameList) {
-    Timber.e("soefonDataChallengesGame set data on preference   " + nameList.size());
-    List<String> challengeList = new ArrayList<>();
-    challengeList.addAll(nameList);
-    dataChallengesGames.set(new HashSet<>());
-    PreferencesUtils.addListToSet(dataChallengesGames, nameList);
+  @Override public void onNamesDrawGame(List<String> nameList) {
+    Game game = gameManager.getCurrentGame();
+
+    if (game != null && game instanceof GameDraw) {
+      GameDraw gameDraw = (GameDraw) game;
+      List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+      TribeGuest me =
+          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
+              false, null, false, null);
+      guestList.add(me);
+      if (game.isUserAction()) gameDraw.setNewDatas(nameList, guestList);
+    }
+
+    setNextDrawGame();
   }
 
-  private void launchChallengeGame() {
+  @Override public void onDataChallengesGame(List<String> nameList) {
+    Timber.e("soefonDataChallengesGame set data on preference   " + nameList.size());
     Game game = gameManager.getCurrentGame();
-    List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
-    List<String> challengeList = new ArrayList<>();
-    challengeList.addAll(dataChallengesGames.get());
 
     if (game != null && game instanceof GameChallenge) {
       GameChallenge gameChallenge = (GameChallenge) game;
-      gameChallenge.setNameList(challengeList);
-      gameChallenge.setGuestList(guestList);
-      Timber.e("soef launchChallengeGame "
-          + gameChallenge.getCurrentChallenge()
-          + " "
-          + challengeList.size()
-          + " "
-          + guestList.size());
-      viewLive.setGameChallenge(gameChallenge);
+      List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+      TribeGuest me =
+          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
+              false, null, false, null);
+      guestList.add(me);
+      if (game.isUserAction()) gameChallenge.setNewDatas(nameList, guestList);
     }
+
+    setNextChallengeGame();
   }
 
   private void displayNotification(String txt) {
@@ -1121,11 +1180,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (error.getId() == WebSocketError.ERROR_ROOM_FULL) {
       roomFull();
-
     } else {
-      Toast.makeText(getApplicationContext(),
-              ErrorMessageFactory.create(getBaseContext(), null),
-              Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(), ErrorMessageFactory.create(getBaseContext(), null),
+          Toast.LENGTH_LONG).show();
 
       finish();
     }

@@ -30,6 +30,14 @@
       android:visibility="gone"
       />
 
+  <com.tribe.app.presentation.view.widget.GameDrawView
+      android:id="@+id/gameDrawView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="gone"
+      />
+
+
   <com.tribe.app.presentation.view.component.live.LiveControlsView
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"

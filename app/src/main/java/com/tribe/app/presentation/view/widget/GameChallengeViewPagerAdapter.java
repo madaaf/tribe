@@ -10,6 +10,9 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MoveViewTouchListener;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -21,21 +24,24 @@ import timber.log.Timber;
  */
 
 public class GameChallengeViewPagerAdapter extends PagerAdapter {
-  private static int nbrPage = 1;
-  private Context mContext;
+
+  private Context context;
   private LayoutInflater mLayoutInflater;
 
   private User user;
-  private String challenge;
-  private TribeGuest guest;
+  private GameManager gameManager;
+  private int currentPosition;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
+  private PublishSubject<Game> onCurrentGame = PublishSubject.create();
 
   public GameChallengeViewPagerAdapter(Context context, User user) {
-    mContext = context;
+    this.context = context;
     this.user = user;
-    mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    mLayoutInflater =
+        (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    gameManager = GameManager.getInstance(context);
   }
 
   @Override public int getCount() {
@@ -47,7 +53,10 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
+
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
+
+    GameChallenge game = (GameChallenge) gameManager.getCurrentGame();
 
     TextViewFont txtChallenge = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
@@ -58,6 +67,9 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     MoveViewTouchListener moveListener = new MoveViewTouchListener(card);
     card.setOnTouchListener(moveListener);
     subscriptions.add(moveListener.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+
+    TribeGuest guest = game.getCurrentChallenger();
+    String challenge = game.getCurrentChallenge();
 
     txtChallenge.setText(challenge);
 
@@ -84,18 +96,27 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
     } else {
       Timber.e("SOEF guest = null");
     }
+
     container.addView(itemView);
     return itemView;
   }
 
-  @Override public void destroyItem(ViewGroup container, int position, Object view) {
-    container.removeView((View) view);
+  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
+    if (position == currentPosition) return;
+    currentPosition = position;
+
+    GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
+    if (challenge.isUserAction()) {
+      onCurrentGame.onNext(challenge);
+    }
   }
 
-  public void setChallenge(String challenge, TribeGuest guest) {
-    Timber.i("SET CHALLENGE " + guest.getDisplayName());
-    this.challenge = challenge;
-    this.guest = guest;
+  public Observable<Game> onCurrentGame() {
+    return onCurrentGame;
+  }
+
+  @Override public void destroyItem(ViewGroup container, int position, Object view) {
+    container.removeView((View) view);
   }
 
   public Observable<Boolean> onBlockOpenInviteView() {

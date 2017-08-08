@@ -3,7 +3,6 @@ package com.tribe.tribelivesdk.core;
 import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -44,6 +43,7 @@ public class JsonToModel {
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<String> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -221,6 +221,21 @@ public class JsonToModel {
               Timber.e("SOEF  No value for user");
             }
           }
+        } else if (message.has("draw")) {
+          JSONObject draw = message.getJSONObject("draw");
+          String action = draw.get("action").toString();
+          if (action.equals("newDraw")) {
+            if (draw.has("user")) {
+              String userId = draw.get("user").toString();
+              String name = draw.get("draw").toString();
+              List<String> datas = new ArrayList<>();
+              datas.add(name);
+              datas.add(userId);
+              onNewDrawReceived.onNext(datas);
+            } else {
+              Timber.e("SOEF  No value for user");
+            }
+          }
         } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
 
           Timber.d("Receiving media configuration");
@@ -339,6 +354,10 @@ public class JsonToModel {
 
   public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
+  }
+
+  public Observable<List<String>> onNewDrawReceived() {
+    return onNewDrawReceived;
   }
 
   public Observable<TribeSession> onLeaveRoom() {
