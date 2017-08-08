@@ -308,7 +308,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
     subscriptions.add(viewProfile.onChangePhoneNumberClick().subscribe(aVoid -> {
 
-      if (!StringUtils.isEmpty(getCurrentUser().getPhone())) {
+      if (viewProfile.canOpenPhoneNumberView()) {
         setupPhoneNumberView();
       } else {
         changeMyPhoneNumber();
@@ -317,10 +317,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
     subscriptions.add(viewProfile.onFacebookAccountClick().subscribe(aVoid -> {
 
-      if (FacebookUtils.isLoggedIn()) {
+      if (viewProfile.canOpenFacebookView()) {
         setupFacebookAccountView();
       } else {
-        profilePresenter.connectToFacebook();
+        profilePresenter.loginFacebook();
       }
     }));
 
@@ -381,15 +381,17 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     builder.withAuthCallBack(new AuthCallback() {
 
       @Override public void success(DigitsSession session, String phoneNumber) {
-
+        profilePresenter.updatePhoneNumber(getCurrentUser().getId(), session);
       }
 
       @Override public void failure(DigitsException error) {
-
+        showError(error.getMessage());
       }
     });
 
     AuthConfig authConfig = builder.build();
+
+    Digits.logout(); // Force logout
     Digits.authenticate(authConfig);
   }
 
@@ -530,7 +532,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void successFacebookLogin() {
-
+    profilePresenter.connectToFacebook(getCurrentUser().getId(), FacebookUtils.accessToken().getToken());
   }
 
   @Override public void errorFacebookLogin() {
@@ -553,6 +555,28 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void hideLoading() {
     txtAction.setVisibility(View.VISIBLE);
     progressView.setVisibility(GONE);
+  }
+
+  @Override
+  public void successUpdateFacebook(User user) {
+    viewProfile.reloadUserUI();
+
+    if (viewSettingsFacebookAccount != null) {
+      viewSettingsFacebookAccount.reloadUserUI();
+    }
+  }
+
+  @Override
+  public void successUpdatePhoneNumber(User user) {
+    viewProfile.reloadUserUI();
+
+    if (viewSettingsPhoneNumber != null) {
+      viewSettingsPhoneNumber.reloadUserUI();
+    }
+
+    if (StringUtils.isEmpty(user.getPhone())) {
+      onBackPressed();
+    }
   }
 
   @Override public void showError(String message) {

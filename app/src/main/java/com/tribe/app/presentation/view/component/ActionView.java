@@ -56,6 +56,8 @@ public class ActionView extends FrameLayout {
 
   @Nullable @BindView(R.id.viewSwitch) SwitchCompat viewSwitch;
 
+  @Nullable @BindView(R.id.imgWarning) ImageView imgWarning;
+
   // VARIABLES
   private Unbinder unbinder;
   private int type;
@@ -167,6 +169,12 @@ public class ActionView extends FrameLayout {
   public void setImage(String url) {
     imageUrl = url;
     computeImageView();
+  }
+
+  public void setWarning(boolean warning) {
+    if (imgWarning != null) {
+      imgWarning.setVisibility(warning ? View.VISIBLE : View.GONE);
+    }
   }
 
   public void setImage(int drawable) {

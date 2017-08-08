@@ -42,7 +42,7 @@ public class SettingsFacebookAccountView extends FrameLayout {
 
         initDependencyInjector();
         initSubscriptions();
-        initUI();
+        reloadUserUI();
     }
 
     @Override protected void onAttachedToWindow() {
@@ -61,7 +61,7 @@ public class SettingsFacebookAccountView extends FrameLayout {
         subscriptions = new CompositeSubscription();
     }
 
-    private void initUI() {
+    public void reloadUserUI() {
     }
 
     protected ApplicationComponent getApplicationComponent() {

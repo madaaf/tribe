@@ -1,6 +1,8 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -150,6 +152,16 @@ import rx.Observable;
   }
 
   @Override public Observable<User> updateUser(List<Pair<String, String>> values) {
+    return null;
+  }
+
+  @Override
+  public Observable<User> updateUserFacebook(String userId, String accessToken) {
+    return null;
+  }
+
+  @Override
+  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
     return null;
   }
 

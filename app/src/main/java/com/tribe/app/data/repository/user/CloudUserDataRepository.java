@@ -1,6 +1,8 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -116,6 +118,22 @@ import rx.Observable;
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUser(values)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+  }
+
+  @Override
+  public Observable<User> updateUserFacebook(String userId, String accessToken) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.updateUserFacebook(accessToken)
+            .flatMap(aVoid -> userDataStore.userInfos(userId)
+            .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
+  }
+
+  @Override
+  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.updateUserPhoneNumber(digitsSession)
+            .flatMap(aVoid -> userDataStore.userInfos(userId)
+            .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
 
   @Override

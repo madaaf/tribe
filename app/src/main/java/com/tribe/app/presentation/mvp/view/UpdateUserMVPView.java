@@ -9,6 +9,10 @@ public interface UpdateUserMVPView extends LoadDataMVPView {
 
   void successUpdateUser(User user);
 
+  void successUpdatePhoneNumber(User user);
+
+  void successUpdateFacebook(User user);
+
   void successFacebookLogin();
 
   void errorFacebookLogin();

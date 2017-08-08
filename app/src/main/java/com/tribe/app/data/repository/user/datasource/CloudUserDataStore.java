@@ -7,6 +7,7 @@ import android.telephony.TelephonyManager;
 import android.util.Pair;
 import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsOAuthSigning;
+import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
@@ -18,6 +19,7 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
+import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.LookupHolder;
@@ -322,6 +324,33 @@ public class CloudUserDataStore implements UserDataStore {
       body = MultipartBody.Part.createFormData("user_pic", "user_pic.jpg", requestFile);
 
       return tribeApi.updateUserMedia(query, body).doOnNext(saveToCacheUpdateUser);
+    }
+  }
+
+  @Override
+  public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
+    return accessToken != null ?
+            this.loginApi.linkFacebook(accessToken)
+            : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
+  }
+
+  @Override
+  public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
+
+    if (digitsSession != null) {
+      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
+      TwitterAuthToken authToken = digitsSession.getAuthToken();
+      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
+      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
+
+      String phoneNumber = digitsSession.getPhoneNumber();
+      String countryCode = "+" + phoneUtils.getCountryCode(phoneNumber);
+
+      return this.loginApi.linkPhoneNumber(authHeaders.get(LoginApi.X_VERIFY),
+              authHeaders.get(LoginApi.X_AUTH), countryCode, phoneNumber.replace(countryCode, ""));
+
+    } else {
+      return this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_PHONE_NUMBER);
     }
   }
 

@@ -367,6 +367,16 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     }
   }
 
+  @Override
+  public void successUpdateFacebook(User user) {
+
+  }
+
+  @Override
+  public void successUpdatePhoneNumber(User user) {
+
+  }
+
   @Override public void onRegisterFail() {
     this.accessToken = null;
   }
