@@ -669,9 +669,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
-    subscriptions.add(viewLive.onClearDrawReceived().subscribe(aVoid -> {
-      Timber.e("SOEF ON CLEAR DRAW REVEIVED");
-    }));
+    subscriptions.add(viewLive.onClearDrawReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          Timber.e("SOEF ON CLEAR DRAW REVEIVED");
+          gameDrawView.onClearDrawReceived();
+        }));
 
     subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
       Timber.e("SOEF BLOCK INVITE VIEW " + blockInviteView);
@@ -812,9 +816,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (o != null) userInfosNotificationView.displayView(o);
     }));
 
-    subscriptions.add(viewLive.onPointsDrawReceived().subscribe(points -> {
-      gameDrawView.setPointsReceived(points);
-    }));
+    subscriptions.add(viewLive.onPointsDrawReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(points -> {//SOEF MADA
+          gameDrawView.onPointsDrawReceived(points);
+        }));
 
     subscriptions.add(viewLive.onStartGame()
         .subscribeOn(Schedulers.newThread())

@@ -538,7 +538,6 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(gameDrawView.onDrawing().subscribe(points -> {
-      Timber.e("SOEF  DRAW  POINT " + points.get(0) + " " + points.get(1));
       room.sendToPeers(getDrawPointPayload(points), false);
     }));
 
@@ -1257,17 +1256,19 @@ public class LiveView extends FrameLayout {
   }
 
   public JSONObject getDrawClearPayload() {
+    JSONObject app = new JSONObject();
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
     jsonPut(game, "action", "clear");
     jsonPut(obj, "draw", game);
-    return obj;
+    jsonPut(app, "app", obj);
+    return app;
   }
 
   public JSONObject getDrawPointPayload(List<Float[]> map) {
+    JSONObject app = new JSONObject();
     JSONObject game = new JSONObject();
     JSONObject path = new JSONObject();
-
     JSONArray array = new JSONArray();
 
     for (Float[] value : map) {
@@ -1287,7 +1288,8 @@ public class LiveView extends FrameLayout {
     jsonPut(gameObject, "path", path);
 
     jsonPut(game, "draw", gameObject);
-    return game;
+    jsonPut(app, "app", game);
+    return app;
   }
 
   public JSONObject getStopGamePayload(Game game) {

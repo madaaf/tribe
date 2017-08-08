@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -45,7 +46,7 @@ public class GameDrawView extends FrameLayout {
   private GameDrawViewPagerAdapter adapter;
   private boolean gameClosed = false;
 
-  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.pager) GameDrawViewPager viewpager;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
@@ -82,8 +83,6 @@ public class GameDrawView extends FrameLayout {
     subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
     subscriptions.add(adapter.onClearDraw().subscribe(onClearDraw));
     subscriptions.add(adapter.onDrawing().subscribe(onDrawing));
-
-    viewpager.setOnTouchListener((v, event) -> true);
   }
 
   public void close() {
@@ -118,8 +117,15 @@ public class GameDrawView extends FrameLayout {
     }
   }
 
-  public void setPointsReceived(String pointsReceived) {
-    Timber.e("RECEIVED " + pointsReceived);
+  public void onPointsDrawReceived(String pointsReceived) {
+    Gson gson = new Gson();
+    Float[][] str = gson.fromJson(pointsReceived, Float[][].class);
+    Timber.e("SOEF POINT OMAR" + str[0][0] + " " + +str[0][1]);
+    adapter.onPointsDrawReceived(str);
+  }
+
+  public void onClearDrawReceived() {
+    adapter.onClearDrawReceived();
   }
 
   protected void initDependencyInjector() {
