@@ -1,11 +1,14 @@
 package com.tribe.app.presentation.mvp.view;
 
+import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
 
 /**
  * Created by horatiothomas on 8/31/16.
  */
 public interface UpdateUserMVPView extends LoadDataMVPView {
+
+  void loadFacebookInfos(FacebookEntity facebookEntity);
 
   void successUpdateUser(User user);
 

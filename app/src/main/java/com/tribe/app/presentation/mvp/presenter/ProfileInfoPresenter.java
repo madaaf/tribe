@@ -76,10 +76,6 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
     return profileInfoView;
   }
 
-  public void loadFacebookInfos() {
-    subscriptions.add(rxFacebook.requestInfos().subscribe(new FacebookInfosSubscriber()));
-  }
-
   public void register(String displayName, String username, LoginEntity loginEntity) {
     profileInfoView.showLoading();
 
@@ -95,20 +91,6 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
 
     userInfoSubscriber = new UserInfoSubscriber();
     cloudUserInfos.execute(new UserInfoSubscriber());
-  }
-
-  private class FacebookInfosSubscriber extends DefaultSubscriber<FacebookEntity> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(FacebookEntity facebookEntity) {
-      if (facebookEntity != null) profileInfoView.loadFacebookInfos(facebookEntity);
-    }
   }
 
   private class RegisterSubscriber extends DefaultSubscriber<AccessToken> {

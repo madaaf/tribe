@@ -40,13 +40,14 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private static final float SHADOW_RATIO = 0.22f;
 
-  @IntDef({ LIVE, ONLINE, REGULAR, PHONE }) public @interface AvatarType {
+  @IntDef({ LIVE, ONLINE, REGULAR, PHONE, FACEBOOK }) public @interface AvatarType {
   }
 
   public static final int LIVE = 0;
   public static final int ONLINE = 1;
   public static final int REGULAR = 2;
   public static final int PHONE = 3;
+  public static final int FACEBOOK = 4;
 
   @Inject ScreenUtils screenUtils;
 
@@ -277,7 +278,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   }
 
   private boolean isOnlineOrLive() {
-    return type == LIVE || type == ONLINE || type == PHONE;
+    return type == LIVE || type == ONLINE || type == PHONE || type == FACEBOOK;
   }
 
   public void setType(@AvatarType int type) {
@@ -288,6 +289,9 @@ public class AvatarView extends RelativeLayout implements Avatar {
     if (type == PHONE) {
       imgInd.setVisibility(View.VISIBLE);
       imgInd.setImageResource(R.drawable.picto_call);
+    } else if (type == FACEBOOK) {
+      imgInd.setVisibility(View.VISIBLE);
+      imgInd.setImageResource(R.drawable.picto_avatar_facebook);
     } else if (type == LIVE && hasInd) {
       imgInd.setVisibility(View.VISIBLE);
       imgInd.setImageResource(R.drawable.picto_live);

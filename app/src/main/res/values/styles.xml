@@ -12,6 +12,10 @@
     <item name="android:colorForeground">@color/grey.action.tint</item>
   </style>
 
+  <style name="ColorSwitchFacebookStyle" parent="ColorSwitchStyle">
+    <item name="colorControlActivated">@color/blue.facebook.dark.hard</item>
+  </style>
+
   <style name="ColorSwitchFriendshipStyle">
     <item name="android:thumb">@drawable/switch_friendship_thumb</item>
     <item name="trackTint">@color/switch_friendship_color</item>

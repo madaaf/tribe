@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.LookupUsername;
@@ -207,6 +208,24 @@ public abstract class UpdateUserPresenter implements Presenter {
     @Override public void onNext(User user) {
       if (getUpdateUserView() != null) getUpdateUserView().successUpdateFacebook(user);
       unsubscribe();
+    }
+  }
+
+  public void loadFacebookInfos() {
+    subscriptions.add(rxFacebook.requestInfos().subscribe(new FacebookInfosSubscriber()));
+  }
+
+  private class FacebookInfosSubscriber extends DefaultSubscriber<FacebookEntity> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(FacebookEntity facebookEntity) {
+      if (facebookEntity != null) getUpdateUserView().loadFacebookInfos(facebookEntity);
     }
   }
 }

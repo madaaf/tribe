@@ -33,6 +33,7 @@ import com.solera.defrag.ViewStack;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
@@ -397,7 +398,18 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   private void setupFacebookAccountView() {
     viewSettingsFacebookAccount = (SettingsFacebookAccountView) viewStack.push(R.layout.view_settings_facebook_account);
+    profilePresenter.loadFacebookInfos();
 
+    subscriptions.add(viewSettingsFacebookAccount.onChecked().subscribe(aBool -> {
+
+      if (!aBool) {
+        FacebookUtils.logout();
+        profilePresenter.disconnectFromFacebook(getCurrentUser().getId());
+
+      } else {
+        profilePresenter.loginFacebook();
+      }
+    }));
   }
 
   private void setupBlockedFriendsView() {
@@ -531,8 +543,17 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     this.clickBack();
   }
 
+  @Override
+  public void loadFacebookInfos(FacebookEntity facebookEntity) {
+
+    if (viewSettingsFacebookAccount != null) {
+      viewSettingsFacebookAccount.reloadUserUI(facebookEntity);
+    }
+  }
+
   @Override public void successFacebookLogin() {
     profilePresenter.connectToFacebook(getCurrentUser().getId(), FacebookUtils.accessToken().getToken());
+    profilePresenter.loadFacebookInfos();
   }
 
   @Override public void errorFacebookLogin() {
@@ -562,7 +583,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewProfile.reloadUserUI();
 
     if (viewSettingsFacebookAccount != null) {
-      viewSettingsFacebookAccount.reloadUserUI();
+      if (FacebookUtils.isLoggedIn()) {
+        profilePresenter.loadFacebookInfos();
+      } else {
+        viewSettingsFacebookAccount.reloadUserUI(null);
+      }
     }
   }
 
