@@ -118,6 +118,10 @@ public class GameDrawView extends FrameLayout {
     }
   }
 
+  public void setPointsReceived(String pointsReceived) {
+    Timber.e("RECEIVED " + pointsReceived);
+  }
+
   protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())

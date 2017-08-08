@@ -28,7 +28,7 @@
 	<string name="action_sms">iMessage</string>
 	<string name="action_messenger">Messenger</string>
 	<string name="action_report">Signaler</string>
-	<string name="action_user_reported">Utilisateur signalé !</string>
+	<string name="action_user_reported">Signalé!</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -354,6 +354,7 @@
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
 	<string name="live_join_impossible">:lock: 8 amis max. en même temps !</string>
+	<string name="live_mask_unavailable">:lock: Ce masque n\'est pas disponible pendant ce jeu.</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
@@ -609,8 +610,8 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Lance le prochain challenge !</string>
 	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
-	<string name="game_challenges_turn">À votre tour d\'être challengé</string>
-	<string name="game_challenges_your_turn">A ton tour d\'être challengé</string>
+	<string name="game_challenges_turn">est challengé!</string>
+	<string name="game_challenges_your_turn">A ton tour d\'être challengé!</string>
 	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
 	<string name="game_challenges_re_roll_notification">%1$s a changé de challenge!</string>
 	<string name="game_scream">Scream !</string>

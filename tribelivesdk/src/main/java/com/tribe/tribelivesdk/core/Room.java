@@ -101,6 +101,7 @@ public class Room {
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> onPointsDrawReceived = PublishSubject.create();
   private PublishSubject<String> test = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
@@ -162,6 +163,8 @@ public class Room {
     persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
     persistentSubscriptions.add(jsonToModel.onClearDrawReceived().subscribe(onClearDrawReceived));
+
+    persistentSubscriptions.add(jsonToModel.onPointsDrawReceived().subscribe(onPointsDrawReceived));
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -565,7 +568,9 @@ public class Room {
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
   }
-
+  public Observable<String> onPointsDrawReceived() {
+    return onPointsDrawReceived;
+  }
   public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
   }

@@ -812,6 +812,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (o != null) userInfosNotificationView.displayView(o);
     }));
 
+    subscriptions.add(viewLive.onPointsDrawReceived().subscribe(points -> {
+      gameDrawView.setPointsReceived(points);
+    }));
+
     subscriptions.add(viewLive.onStartGame()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())

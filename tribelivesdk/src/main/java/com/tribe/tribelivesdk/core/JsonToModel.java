@@ -45,6 +45,7 @@ public class JsonToModel {
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
   private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
+  private PublishSubject<String> onPointsDrawReceived = PublishSubject.create();
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<TribePeerMediaConfiguration> onTribeMediaPeerConfiguration =
       PublishSubject.create();
@@ -240,6 +241,7 @@ public class JsonToModel {
               JSONObject path = draw.getJSONObject("path");
               JSONArray points = path.getJSONArray("points");
               Timber.e("soef receive draw " + points.toString());
+              onPointsDrawReceived.onNext(points.toString());
             } else if (action.equals("clear")) {
               onClearDrawReceived.onNext(null);
             }
@@ -386,6 +388,9 @@ public class JsonToModel {
 
   public Observable<Void> onClearDrawReceived() {
     return onClearDrawReceived;
+  }
+  public Observable<String> onPointsDrawReceived() {
+    return onPointsDrawReceived;
   }
 
   public Observable<List<TribeGuest>> onInvitedTribeGuestList() {

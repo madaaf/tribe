@@ -183,6 +183,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> onPointsDrawReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
   private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
@@ -545,7 +546,7 @@ public class LiveView extends FrameLayout {
         .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
             ((game, labelType) -> {
               if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
-                displayReRollGameNotification(user.getDisplayName());
+                displayReRollGameNotification(game.getId(), user.getDisplayName());
                 restartGame(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
                 stopGame(true, game.getId());
@@ -615,6 +616,8 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
 
+    tempSubscriptions.add(room.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+
     tempSubscriptions.add(room.onNewChallengeReceived().subscribe(onNewChallengeReceived));
 
     tempSubscriptions.add(room.onNewDrawReceived().subscribe(onNewDrawReceived));
@@ -639,7 +642,7 @@ public class LiveView extends FrameLayout {
         if (currentGame == null) {
           displayStartGameNotification(game.getName(), displayName);
         } else {
-          displayReRollGameNotification(displayName);
+          displayReRollGameNotification(game.getId(), displayName);
         }
 
         startGame(game, false);
@@ -1522,13 +1525,12 @@ public class LiveView extends FrameLayout {
     if (game instanceof GameChallenge) {
       GameChallenge challenge = (GameChallenge) game;
       if (challenge.getCurrentChallenger().getId().equals(user.getId())) {
-        gameChallengesView.displayPopup();
-        Timber.e("SOEF YOU CAN'T NEXT A CHALLANGE IS IT IS YOUR CHALLENGE ");
+        gameChallengesView.displayPopup(txtTooltipFirstGame.getTranslationY());
         return;
       }
     }
     restartGame(game);
-    displayReRollGameNotification(user.getDisplayName());
+    displayReRollGameNotification(game.getId(), user.getDisplayName());
   }
 
   private void startGame(Game game, boolean isUserAction) {
@@ -1585,9 +1587,17 @@ public class LiveView extends FrameLayout {
         getResources().getString(R.string.game_event_started, userDisplayName, gameName)));
   }
 
-  private void displayReRollGameNotification(String userDisplayName) {
-    onNotificationGameRestart.onNext(EmojiParser.demojizedText(
-        getResources().getString(R.string.game_event_post_it_re_roll, userDisplayName)));
+  private void displayReRollGameNotification(String gameId, String userDisplayName) {
+    String comment = "";
+    if (gameId.equals(Game.GAME_POST_IT)) {
+      comment = getResources().getString(R.string.game_event_post_it_re_roll, userDisplayName);
+    } else if (gameId.equals(Game.GAME_CHALLENGE)) {
+      comment =
+          getResources().getString(R.string.game_challenges_re_roll_notification, userDisplayName);
+    } else if (gameId.equals(Game.GAME_DRAW)) {
+      comment = getResources().getString(R.string.game_draw_re_roll_notification, userDisplayName);
+    }
+    onNotificationGameRestart.onNext(EmojiParser.demojizedText(comment));
   }
 
   private void displayStopGameNotification(String gameName, String userDisplayName) {
@@ -1633,6 +1643,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
+  }
+
+  public Observable<String> onPointsDrawReceived() {
+    return onPointsDrawReceived;
   }
 
   public Observable<String> unlockedRollTheDice() {

@@ -28,6 +28,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
@@ -48,6 +49,7 @@ public class GameChallengesView extends FrameLayout {
   private static int DURATION_EXIT_POPUP = 300;
 
   @Inject User user;
+  @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.pager) ViewPager viewpager;
   @BindView(R.id.popupChallenge) FrameLayout popup;
@@ -145,7 +147,15 @@ public class GameChallengesView extends FrameLayout {
     scaleDown.start();
   }
 
-  public void displayPopup() {
+  public void displayPopup(float translationY) {
+    if (translationY == 0) {
+      popup.setTranslationY(
+          -context.getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height)
+              + screenUtils.dpToPx(-82));
+    } else {
+      popup.setTranslationY(screenUtils.dpToPx(-82));
+    }
+
     popup.setVisibility(VISIBLE);
     popup.setAlpha(1);
     popupDisplayed = true;
