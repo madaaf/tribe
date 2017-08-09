@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.v4.widget.TextViewCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,10 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
+
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -46,20 +51,20 @@ public class LoadFriendsView extends LinearLayout {
 
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
-  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+  @BindView(R.id.txtStatus) TextViewFont txtStatus;
 
-  @BindView(R.id.imgIcon) ImageView imgIcon;
-
-  @BindView(R.id.layoutBG) ViewGroup layoutBG;
+  @BindView(R.id.viewSwitch) SwitchCompat viewSwitch;
 
   @BindView(R.id.progressView) CircularProgressView progressView;
+
+  // OBSERVABLES
+  private PublishSubject<Boolean> onChecked = PublishSubject.create();
 
   // VARIABLES
   private Unbinder unbinder;
   private int type;
-  private String imageUrl;
-  private int iconId;
   private String title;
+  private String status;
 
   public LoadFriendsView(Context context) {
     super(context);
@@ -89,28 +94,16 @@ public class LoadFriendsView extends LinearLayout {
 
     if (a.hasValue(R.styleable.LoadFriendsView_loadTitle)) {
       setTitle(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadTitle,
-          R.string.search_add_addressbook_title)));
-    }
-
-    if (a.hasValue(R.styleable.LoadFriendsView_loadIcon)) {
-      setIcon(a.getResourceId(R.styleable.LoadFriendsView_loadIcon, 0));
-    }
-
-    if (a.hasValue(R.styleable.LoadFriendsView_loadBG)) {
-      setLayoutBG(a.getResourceId(R.styleable.LoadFriendsView_loadBG, 0));
+              R.string.linked_friends_address_book)));
+      setStatus(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadStatus,
+              R.string.linked_friends_status_not_linked)));
     }
 
     a.recycle();
 
-    setClickable(true);
-    setOrientation(HORIZONTAL);
-    setMinimumHeight(screenUtils.dpToPx(72.5f));
-  }
+    viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
 
-  @Override
-  protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    super.onLayout(changed, l, t, r, b);
-    setImage(user.getProfilePicture());
+    setClickable(true);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -136,37 +129,27 @@ public class LoadFriendsView extends LinearLayout {
   public void setTitle(String str) {
     title = str;
     computeTitle();
-
-    if (type == FB) {
-      TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_FB);
-    } else {
-      TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_AddressBook);
-    }
-    txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
   }
 
-  public void setImage(String url) {
-    imageUrl = url;
-    computeImageView();
+  public void setStatus(String str) {
+    status = str;
+    computeStatus();
   }
 
-  public void setIcon(@DrawableRes int iconId) {
-    this.iconId = iconId;
-    imgIcon.setImageResource(iconId);
-  }
-
-  public void setLayoutBG(@DrawableRes int bgId) {
-    layoutBG.setBackgroundResource(bgId);
+  public void setChecked(boolean checked) {
+    viewSwitch.setChecked(checked);
+    setStatus(checked ? getContext().getString(R.string.linked_friends_status_linked)
+            : getContext().getString(R.string.linked_friends_status_not_linked));
   }
 
   public void showLoading() {
-    imgIcon.setVisibility(View.GONE);
+    viewSwitch.setVisibility(View.GONE);
     progressView.setVisibility(View.VISIBLE);
   }
 
   public void hideLoading() {
     progressView.setVisibility(View.GONE);
-    imgIcon.setVisibility(View.VISIBLE);
+    viewSwitch.setVisibility(View.VISIBLE);
   }
 
   private void computeTitle() {
@@ -175,9 +158,15 @@ public class LoadFriendsView extends LinearLayout {
     }
   }
 
-  private void computeImageView() {
-    if (viewAvatar != null && !StringUtils.isEmpty(imageUrl)) {
-      viewAvatar.load(imageUrl);
+  private void computeStatus() {
+    if (txtStatus != null && !StringUtils.isEmpty(status)) {
+      txtStatus.setText(status);
     }
+  }
+
+  // OBSERVABLES
+
+  public Observable<Boolean> onChecked() {
+    return onChecked;
   }
 }
