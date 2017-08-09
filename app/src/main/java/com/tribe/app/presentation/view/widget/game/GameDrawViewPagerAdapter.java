@@ -37,7 +37,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   private Context context;
   private LayoutInflater mLayoutInflater;
   private int currentPosition;
-
+  private TrackablePath.Point lastPoint;
   private User user;
   private GameManager gameManager;
   private View mCurrentView;
@@ -169,7 +169,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
         points.add(new Float[] { p.x, p.y });
       }
       onDrawing.onNext(points);
-    });
+    }, 10);
 
     if (!guest.getId().equals(user.getId())) {
       dv.setOnTouchListener((v, event) -> true);
@@ -205,12 +205,27 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     return onDrawing;
   }
 
-  public void onPointsDrawReceived(Float[][] str) {
-    TrackablePath path = new TrackablePath();
-    path.moveTo(str[0][0], str[0][1]);
+  public void onPointsDrawReceived(Float[][] points) {
+    int width = dv.getWidth();
+    int height = dv.getHeight();
 
-    for (int i = 1; i < str.length; i++) {
-      path.lineTo(str[i][0], str[i][1]);
+    TrackablePath path = new TrackablePath();
+
+    if (lastPoint != null && lastPoint.x == points[0][0] && lastPoint.y == points[0][1]) {
+      path.lineTo(points[0][0] * width, points[0][1] * height);
+    } else {
+      path.moveTo(points[0][0] * width, points[0][1] * height);
+    }
+
+    for (int i = 1; i < points.length; i++) {
+      path.lineTo(points[i][0] * width, points[i][1] * height);
+    }
+
+    if (points.length == 10) {
+      lastPoint =
+          new TrackablePath.Point(points[points.length - 1][0], points[points.length - 1][1]);
+    } else {
+      lastPoint = null;
     }
 
     dv.draw(path);

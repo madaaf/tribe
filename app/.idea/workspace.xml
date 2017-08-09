@@ -24,20 +24,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9cdec95e-0350-474c-b324-ef877185d1ca" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DrawerView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengeViewPagerAdapter.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengeViewPagerAdapter.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameChallengesView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengesView.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameDrawView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawView.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameDrawViewPager.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameViewPager.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameDrawViewPagerAdapter.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/internal/di/components/UserComponent.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/internal/di/components/UserComponent.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/activity/LiveActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/component/live/LiveView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_game_challenges.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_game_challenges.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_game_draw.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_game_draw.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/view_live.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/view_live.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java" afterPath="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java" />
     </list>
     <ignored path="app.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -69,21 +58,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="GameDrawViewPagerAdapter.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="GameDrawViewPagerAdapter.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
+            <state relative-caret-position="20">
+              <caret line="207" column="54" selection-start-line="207" selection-start-column="54" selection-end-line="207" selection-end-column="54" />
+              <folding>
+                <element signature="docComment;class#GameDrawViewPagerAdapter#0" expanded="false" />
+                <element signature="method#GameDrawViewPagerAdapter#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+                <element signature="method#instantiateItem#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+                <element signature="method#destroyItem#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+                <element signature="method#setCounter#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+                <element signature="class#4443:4857" expanded="false" />
+                <element signature="method#onTick#0;class#4443:4857" expanded="false" />
+                <element signature="method#onFinish#0;class#4443:4857" expanded="false" />
+                <element signature="method#animateDiagonalPan#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+                <element signature="method#setPrimaryItem#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TrackablePath.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/TrackablePath.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="510">
+              <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3425#3481#0" expanded="true" />
-                <element signature="e#3689#3739#0" expanded="true" />
-                <element signature="e#3762#3807#0" expanded="true" />
-                <element signature="e#3930#3981#0" expanded="true" />
-                <element signature="e#4004#4058#0" expanded="true" />
-                <element signature="method#animateDiagonalPan#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
-                <element signature="e#7213#7214#0" expanded="true" />
-                <element signature="e#7239#7240#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -96,8 +98,6 @@
               <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#4371#4372#0" expanded="true" />
-                <element signature="e#4410#4411#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -113,27 +113,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="view_game_draw.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_game_draw.xml">
-          <provider editor-type-id="android-designer2">
-            <state />
-          </provider>
+      <file leaf-file-name="GamesFiltersAdapter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/GamesFiltersAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="2" selection-start-line="3" selection-start-column="2" selection-end-line="3" selection-end-column="60" />
+            <state relative-caret-position="-390">
+              <caret line="30" column="53" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="53" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameChallengeViewPagerAdapter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengeViewPagerAdapter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="40" column="28" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="28" />
-              <folding>
-                <element signature="method#populateView#0;class#GameChallengeViewPagerAdapter#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -141,22 +126,8 @@
       <file leaf-file-name="DrawerView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2852#2853#0" expanded="true" />
-                <element signature="e#2880#2881#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameChallengesView.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengesView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
+            <state relative-caret-position="447">
+              <caret line="118" column="22" selection-start-line="118" selection-start-column="22" selection-end-line="118" selection-end-column="22" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -164,39 +135,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="view_game_challenges.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_game_challenges.xml">
-          <provider editor-type-id="android-designer2">
-            <state />
-          </provider>
+      <file leaf-file-name="FilterAdapterDelegate.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/gamesfilters/FilterAdapterDelegate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="34" selection-start-line="15" selection-start-column="34" selection-end-line="15" selection-end-column="34" />
+            <state relative-caret-position="255">
+              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AndroidApplication.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="271" column="3" selection-start-line="271" selection-start-column="3" selection-end-line="271" selection-end-column="3" />
-              <folding>
-                <element signature="e#8984#9016#0" expanded="true" />
-                <element signature="e#9137#9172#0" expanded="true" />
-              </folding>
-            </state>
+      <file leaf-file-name="item_filter.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/res/layout/item_filter.xml">
+          <provider editor-type-id="android-designer2">
+            <state />
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TrackablePath.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/TrackablePath.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
+            <state relative-caret-position="-59">
+              <caret line="10" column="34" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="34" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#439#474#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -6322,7 +6280,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/res/layout/view_live.xml" />
         <option value="$PROJECT_DIR$/src/main/res/drawable/shape_rect_black70_corner.xml" />
         <option value="$PROJECT_DIR$/src/main/res/values/styles_tribe.xml" />
         <option value="$PROJECT_DIR$/src/main/res/values/colors.xml" />
@@ -6361,7 +6318,6 @@
         <option value="$PROJECT_DIR$/src/main/res/layout/view_game_draw.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameDrawViewPager.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/item_game_draw.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/TrackablePath.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/OmarDraw.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameDrawView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/DrawView.java" />
@@ -6369,10 +6325,12 @@
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/GameDrawViewPagerAdapter.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameViewPager.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengesView.java" />
         <option value="$PROJECT_DIR$/src/main/res/layout/view_game_challenges.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/TrackablePath.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java" />
       </list>
     </option>
   </component>
@@ -6991,7 +6949,7 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5596234" sideWeight="0.50793654" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30549198" sideWeight="0.4920635" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33752862" sideWeight="0.4920635" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1904762" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32740587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45881006" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -7442,17 +7400,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/gamesfilters/FilterAdapterDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="23" column="24" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="24" />
-          <folding>
-            <element signature="e#453#454#0" expanded="false" />
-            <element signature="e#477#478#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_detail_calls.xml">
       <provider editor-type-id="android-designer2">
         <state />
@@ -7497,13 +7444,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/GamesFiltersAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/drawable/shape_oval_white.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -7536,17 +7476,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/gamesfilters/GameAdapterDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="23" column="20" selection-start-line="23" selection-start-column="20" selection-end-line="23" selection-end-column="20" />
-          <folding>
-            <element signature="e#644#645#0" expanded="false" />
-            <element signature="e#679#680#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/drawable/selectable_button_oval.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -7558,16 +7487,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="25" selection-start-line="3" selection-start-column="19" selection-end-line="3" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/layout/item_filter.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="28" column="31" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -7648,6 +7568,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="23" column="8" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
+          <folding>
+            <element signature="e#780#781#0" expanded="false" />
+            <element signature="e#808#809#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -7747,30 +7671,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/TrackablePath.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/drawable-xxxhdpi/icon_game_draw.webp">
       <provider selected="true" editor-type-id="images">
         <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="271" column="3" selection-start-line="271" selection-start-column="3" selection-end-line="271" selection-end-column="3" />
-          <folding>
-            <element signature="e#8984#9016#0" expanded="true" />
-            <element signature="e#9137#9172#0" expanded="true" />
-          </folding>
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game.java">
@@ -7781,53 +7684,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengesView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
+        <state relative-caret-position="255">
+          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3425#3481#0" expanded="true" />
-            <element signature="e#3689#3739#0" expanded="true" />
-            <element signature="e#3762#3807#0" expanded="true" />
-            <element signature="e#3930#3981#0" expanded="true" />
-            <element signature="e#4004#4058#0" expanded="true" />
-            <element signature="method#animateDiagonalPan#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
-            <element signature="e#7213#7214#0" expanded="true" />
-            <element signature="e#7239#7240#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengeViewPagerAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
+        <state relative-caret-position="265">
+          <caret line="40" column="28" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="28" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2852#2853#0" expanded="true" />
-            <element signature="e#2880#2881#0" expanded="true" />
+            <element signature="method#populateView#0;class#GameChallengeViewPagerAdapter#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#4371#4372#0" expanded="true" />
-            <element signature="e#4410#4411#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameViewPager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -7842,16 +7715,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengeViewPagerAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="40" column="28" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="28" />
-          <folding>
-            <element signature="method#populateView#0;class#GameChallengeViewPagerAdapter#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/res/layout/view_game_challenges.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
@@ -7863,12 +7726,107 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameChallengesView.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/AndroidApplication.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
+        <state relative-caret-position="276">
+          <caret line="271" column="3" selection-start-line="271" selection-start-column="3" selection-end-line="271" selection-end-column="3" />
+          <folding>
+            <element signature="e#8984#9016#0" expanded="true" />
+            <element signature="e#9137#9172#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/gamesfilters/GameAdapterDelegate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/layout/item_filter.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-59">
+          <caret line="10" column="34" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="34" />
+          <folding>
+            <element signature="e#439#474#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/GamesFiltersAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-390">
+          <caret line="30" column="53" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/adapter/delegate/gamesfilters/FilterAdapterDelegate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/DrawerView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="447">
+          <caret line="118" column="22" selection-start-line="118" selection-start-column="22" selection-end-line="118" selection-end-column="22" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/TrackablePath.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="36" column="36" selection-start-line="36" selection-start-column="36" selection-end-line="36" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameViewPager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/tribe/app/presentation/view/widget/game/GameDrawViewPagerAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="207" column="54" selection-start-line="207" selection-start-column="54" selection-end-line="207" selection-end-column="54" />
+          <folding>
+            <element signature="docComment;class#GameDrawViewPagerAdapter#0" expanded="false" />
+            <element signature="method#GameDrawViewPagerAdapter#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+            <element signature="method#instantiateItem#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+            <element signature="method#destroyItem#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+            <element signature="method#setCounter#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+            <element signature="class#4443:4857" expanded="false" />
+            <element signature="method#onTick#0;class#4443:4857" expanded="false" />
+            <element signature="method#onFinish#0;class#4443:4857" expanded="false" />
+            <element signature="method#animateDiagonalPan#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
+            <element signature="method#setPrimaryItem#0;class#GameDrawViewPagerAdapter#0" expanded="false" />
           </folding>
         </state>
       </provider>
