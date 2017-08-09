@@ -263,11 +263,11 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
         for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
           glViewport(0, 0, widthOut, heightOut);
           filter.getFbo().bind();
-          draw(i, rotation);
+          draw(i, rotation, widthOut, heightOut);
           glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
           GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
           //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-          draw(i, rotation);
+          draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
         }
       }
 
@@ -330,8 +330,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     }
   }
 
-  private void draw(int index, int rotation) {
-    float ratioH = (surfaceWidth / surfaceHeight);
+  private void draw(int index, int rotation, float widthOut, float heightOut) {
+    float ratioH = widthOut < heightOut ? (widthOut / heightOut) : (heightOut / widthOut);
     int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
     float[][] shape = ulseeManager.getShape();
     float[][] pose = ulseeManager.getPose();
@@ -423,7 +423,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void flipFaceShape(float[] flippedFaceShape, float[] oriFaceShape) {
-    int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
+    int width = (int) surfaceWidth, height = (int) surfaceHeight;
 
     if (oriFaceShape == null) return;
     for (int i = 0; i < 99; i++) {

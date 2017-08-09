@@ -242,8 +242,8 @@ public class UlsRenderer {
                 float realX;
                 float realY;
 
-                //float ratioCameraReal = (float) cameraInfo.getCaptureFormat().width / (float) cameraInfo.getCaptureFormat().height;
-                float ratioCameraReal = 1.78f;
+                float ratioCameraReal = (float) cameraInfo.getCaptureFormat().width /
+                    (float) cameraInfo.getCaptureFormat().height;
 
                 if (isFront) {
                   realX = (2.0f * shape[2 * obj.pointIndex] / width - 1.0f) * ratioCameraReal;

@@ -21,8 +21,8 @@ public class HeadsUpMaskFilter extends FaceMaskFilter {
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
       String headsUp = path + HEADS_UP_FILE;
-      UlsFaceAR.insertAnimationObjectAtIndex(1, headsUp, 91, true, 1f, isFrontFacing);
-      UlsFaceAR.cleanAnimationObjectAtIndex(2);
+      UlsFaceAR.insertAnimationObjectAtIndex(0, headsUp, 91, true, 1f, isFrontFacing);
+      UlsFaceAR.cleanAnimationObjectAtIndex(1);
     }).start();
   }
 }

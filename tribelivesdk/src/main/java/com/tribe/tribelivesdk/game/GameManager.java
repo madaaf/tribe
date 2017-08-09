@@ -59,7 +59,9 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public void initOnNewFrameObs(Observable<Frame> obs) {
-    subscriptions.add(obs.onBackpressureDrop().filter(frame -> currentGame != null).subscribe(frame -> currentGame.apply(frame)));
+    subscriptions.add(obs.onBackpressureDrop()
+        .filter(frame -> currentGame != null)
+        .subscribe(frame -> currentGame.apply(frame)));
   }
 
   public List<Game> getGames() {

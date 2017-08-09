@@ -19,9 +19,9 @@ public class RoundSunglassesFaceMaskFilter extends FaceMaskFilter {
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
       String glasses = path + "round_sunglasses_sunglasses.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, glasses, 27, true, 0.7f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(0, glasses, 27, true, 0.7f, isFrontFacing);
 
-      UlsFaceAR.cleanAnimationObjectAtIndex(2);
+      UlsFaceAR.cleanAnimationObjectAtIndex(1);
     }).start();
   }
 }

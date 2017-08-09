@@ -18,16 +18,16 @@ public class OrangeSunglassesFaceMaskFilter extends FaceMaskFilter {
 
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
-      String tattoo = path + "orange_sunglasses_tattoo.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, tattoo, 41, true, 1.5f, isFrontFacing);
+      String tattooFace = path + "orange_sunglasses_tattoo_mask.png";
+      UlsFaceAR.setMask(context, tattooFace);
 
       String glasses = path + "orange_sunglasses_sunglasses.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(2, glasses, 27, true, 1.5f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(0, glasses, 27, true, 1.2f, isFrontFacing);
 
       String noseRing = path + "orange_sunglasses_nose_ring.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(3, noseRing, 33, true, 1.5f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(1, noseRing, 33, true, 1.2f, isFrontFacing);
 
-      UlsFaceAR.cleanAnimationObjectAtIndex(4);
+      UlsFaceAR.cleanAnimationObjectAtIndex(2);
     }).start();
   }
 }

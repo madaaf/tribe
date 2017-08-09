@@ -144,6 +144,13 @@ public class UlseeManager {
           if (alive > 0) {
             for (int k = 0; k < MAX_TRACKER; k++) {
               shape[k] = ulsTracker.getShape(k);
+
+              //if (shape[k] != null) {
+              //  for (int i = 0; i < shape[k].length; i++) {
+              //    shape[k][i] = shape[k][i] + 100;
+              //  }
+              //}
+
               confidence[k] = ulsTracker.getConfidence(k);
               float[] xy = ulsTracker.getTranslationInImage(k);
               if (xy != null) {
