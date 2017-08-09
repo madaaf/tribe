@@ -42,6 +42,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -403,8 +404,27 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     subscriptions.add(viewSettingsFacebookAccount.onChecked().subscribe(aBool -> {
 
       if (!aBool) {
-        FacebookUtils.logout();
-        profilePresenter.disconnectFromFacebook(getCurrentUser().getId());
+        if (viewProfile.canOpenPhoneNumberView()) {
+          subscriptions.add(DialogFactory.dialog(this, EmojiParser.demojizedText(getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
+                  getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
+                  getString(R.string.action_cancel),
+                  getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(shouldCancel -> {
+
+                    if (shouldCancel) {
+                      viewSettingsFacebookAccount.recheck();
+
+                    } else {
+                      FacebookUtils.logout();
+                      profilePresenter.disconnectFromFacebook(getCurrentUser().getId());
+                    }
+                  }));
+
+        } else {
+          showToastMessage(getString(R.string.linked_friends_unlink_error_unable_to_unlink));
+          viewSettingsFacebookAccount.recheck();
+        }
 
       } else {
         profilePresenter.loginFacebook();
@@ -585,8 +605,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (viewSettingsFacebookAccount != null) {
       if (FacebookUtils.isLoggedIn()) {
         profilePresenter.loadFacebookInfos();
+        showToastMessage(getString(R.string.linked_friends_link_success_fb));
+
       } else {
         viewSettingsFacebookAccount.reloadUserUI(null);
+        showToastMessage(getString(R.string.linked_friends_unlink_success_fb));
       }
     }
   }
@@ -598,6 +621,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (viewSettingsPhoneNumber != null) {
       viewSettingsPhoneNumber.reloadUserUI();
     }
+
+    showToastMessage(getString(R.string.linked_friends_link_success_phone));
 
     if (StringUtils.isEmpty(user.getPhone())) {
       onBackPressed();

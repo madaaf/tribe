@@ -71,6 +71,10 @@ public class SettingsFacebookAccountView extends RelativeLayout {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     }
 
+    public void recheck() {
+        viewSwitch.setChecked(true);
+    }
+
     private void initSubscriptions() {
         subscriptions = new CompositeSubscription();
     }
