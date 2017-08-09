@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 /**
  * Created by madaaflak on 08/08/2017.
@@ -12,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.TrackablePath;
 import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;

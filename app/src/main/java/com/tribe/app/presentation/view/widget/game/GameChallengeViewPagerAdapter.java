@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MoveViewTouchListener;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;

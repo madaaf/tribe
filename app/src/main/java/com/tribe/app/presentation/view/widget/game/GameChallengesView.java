@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -51,7 +51,7 @@ public class GameChallengesView extends FrameLayout {
   @Inject User user;
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.pager) GameViewPager viewpager;
   @BindView(R.id.popupChallenge) FrameLayout popup;
 
   private LayoutInflater inflater;

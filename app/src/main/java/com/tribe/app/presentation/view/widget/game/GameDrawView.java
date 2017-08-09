@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.app.Activity;
 import android.content.Context;
@@ -46,7 +46,7 @@ public class GameDrawView extends FrameLayout {
   private GameDrawViewPagerAdapter adapter;
   private boolean gameClosed = false;
 
-  @BindView(R.id.pager) GameDrawViewPager viewpager;
+  @BindView(R.id.pager) GameViewPager viewpager;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();

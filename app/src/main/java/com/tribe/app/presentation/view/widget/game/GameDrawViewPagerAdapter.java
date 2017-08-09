@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.content.Context;
 import android.os.CountDownTimer;
@@ -13,6 +13,8 @@ import android.widget.RelativeLayout;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.TrackablePath;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameDraw;
@@ -77,6 +79,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
     RelativeLayout drawContainer = (RelativeLayout) itemView.findViewById(R.id.drawContainer);
     TribeGuest guest = draw.getCurrentDrawer();
+    hand.setVisibility(View.VISIBLE);
 
     viewAvatar.load(guest.getPicture());
     nextInLabel.setText(
@@ -94,7 +97,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
       turn.setText(context.getString(R.string.game_draw_other_is_drawing));
       hand.setVisibility(View.INVISIBLE);
-      drawContainer.setOnTouchListener((v, event) -> true);
     }
 
     container.addView(itemView);
@@ -168,6 +170,10 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       }
       onDrawing.onNext(points);
     });
+
+    if (!guest.getId().equals(user.getId())) {
+      dv.setOnTouchListener((v, event) -> true);
+    }
 
     drawContainer.addView(dv);
     animateDiagonalPan(hand);

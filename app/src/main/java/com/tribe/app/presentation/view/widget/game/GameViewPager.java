@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -9,12 +9,12 @@ import android.view.MotionEvent;
  * Created by madaaflak on 09/08/2017.
  */
 
-public class GameDrawViewPager extends ViewPager {
-  public GameDrawViewPager(Context context) {
+public class GameViewPager extends ViewPager {
+  public GameViewPager(Context context) {
     super(context);
   }
 
-  public GameDrawViewPager(Context context, AttributeSet attrs) {
+  public GameViewPager(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
 
