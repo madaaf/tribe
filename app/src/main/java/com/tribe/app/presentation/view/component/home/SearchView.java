@@ -24,12 +24,19 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import com.digits.sdk.android.AuthCallback;
+import com.digits.sdk.android.AuthConfig;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsException;
+import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
+import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -65,6 +72,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -380,6 +388,18 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     this.contactAdapter.updateSearch(searchResult, filteredContactList);
   }
 
+  public void refactorWarning(boolean open) {
+    boolean permissionsFB = FacebookUtils.isLoggedIn();
+    boolean permissionsContact =
+            PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();
+
+    if ((!permissionsContact || !permissionsFB) && !open) {
+      imgWarning.setVisibility(View.VISIBLE);
+    } else {
+      imgWarning.setVisibility(View.GONE);
+    }
+  }
+
   public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
     boolean permissionsContact =
@@ -398,11 +418,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
       searchPresenter.loadContacts(search);
     }
 
-    if (!permissionsContact || !permissionsFB) {
-      imgWarning.setVisibility(View.VISIBLE);
-    } else {
-      imgWarning.setVisibility(View.GONE);
-    }
+    refactorWarning(isContactsViewOpen());
 
     viewFriendsAddressBookLoad.setChecked(permissionsContact);
     viewFriendsFBLoad.setChecked(permissionsFB);
@@ -419,8 +435,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     subscriptions.add(viewFriendsAddressBookLoad.onChecked().subscribe(checked -> {
 
       if (checked) {
-        lookupContacts();
-        viewFriendsAddressBookLoad.showLoading();
+        changeMyPhoneNumber();
       } else {
         disableLookupContacts();
       }
@@ -456,6 +471,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
       imgToggle.setRotation(rotation);
       layoutBottom.setTranslationY(translation);
     }
+
+    refactorWarning(open);
   }
 
   @Override
@@ -476,14 +493,60 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     txtTitle.setText(EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_title)));
   }
 
+  protected void showToastMessage(String message) {
+    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+  }
+
   private void disableLookupFacebook() {
-    FacebookUtils.logout();
-    refactorActions();
+
+    if (StringUtils.isEmpty(user.getPhone())) {
+      showToastMessage(getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
+      viewFriendsFBLoad.setChecked(true);
+
+    } else {
+      subscriptions.add(DialogFactory.dialog(getContext(), EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
+              getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
+              getContext().getString(R.string.action_cancel),
+              getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(shouldCancel -> {
+
+                if (shouldCancel) {
+                  viewFriendsFBLoad.setChecked(true);
+
+                } else {
+                  FacebookUtils.logout();
+                  refactorActions();
+                  searchPresenter.disconnectFromFacebook(user.getId());
+                }
+              }));
+    }
   }
 
   private void disableLookupContacts() {
-    addressBook.set(false);
-    refactorActions();
+
+    if (!FacebookUtils.isLoggedIn()) {
+      showToastMessage(getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
+      viewFriendsAddressBookLoad.setChecked(true);
+
+    } else {
+      subscriptions.add(DialogFactory.dialog(getContext(), EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_disable)),
+              getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_msg),
+              getContext().getString(R.string.action_cancel),
+              getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_disable))
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(shouldCancel -> {
+
+                if (shouldCancel) {
+                  viewFriendsAddressBookLoad.setChecked(true);
+
+                } else {
+                  addressBook.set(false);
+                  refactorActions();
+                  searchPresenter.updatePhoneNumber(user.getId(), null);
+                }
+              }));
+    }
   }
 
   private void lookupContacts() {
@@ -625,7 +688,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   @Override public void successFacebookLogin() {
     sync();
     viewFriendsFBLoad.showLoading();
-    searchPresenter.updateUser(FacebookUtils.accessToken().getUserId());
+    searchPresenter.connectToFacebook(user.getId(), FacebookUtils.accessToken().getToken());
   }
 
   @Override public void errorFacebookLogin() {
@@ -653,6 +716,63 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     this.originalContactList.addAll(contactList);
     refactorContacts(contactList);
     showContactList();
+  }
+
+  @Override
+  public void loadFacebookInfos(FacebookEntity facebookEntity) {
+
+  }
+
+  @Override
+  public void successUpdateFacebook(User user) {
+    if (FacebookUtils.isLoggedIn()) {
+      showToastMessage(getContext().getString(R.string.linked_friends_link_success_fb));
+    } else {
+      showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_fb));
+    }
+  }
+
+  private void changeMyPhoneNumber() {
+
+    AuthConfig.Builder builder = new AuthConfig.Builder();
+    builder.withAuthCallBack(new AuthCallback() {
+
+      @Override public void success(DigitsSession session, String phoneNumber) {
+        searchPresenter.updatePhoneNumber(user.getId(), session);
+        viewFriendsAddressBookLoad.showLoading();
+      }
+
+      @Override public void failure(DigitsException error) {
+        viewFriendsAddressBookLoad.setChecked(false);
+        showError(error.getMessage());
+      }
+    });
+
+    AuthConfig authConfig = builder.build();
+
+    Digits.logout(); // Force logout
+    Digits.authenticate(authConfig);
+  }
+
+  @Override
+  public void successUpdatePhoneNumber(User user) {
+    if (!StringUtils.isEmpty(user.getPhone())) {
+      showToastMessage(getContext().getString(R.string.linked_friends_link_success_phone));
+      lookupContacts();
+
+    } else {
+      showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_phone));
+    }
+  }
+
+  @Override
+  public void usernameResult(Boolean available) {
+
+  }
+
+  @Override
+  public void successUpdateUser(User user) {
+
   }
 
   @Override public void showLoading() {

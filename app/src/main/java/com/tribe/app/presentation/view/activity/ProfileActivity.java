@@ -413,7 +413,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
                   .subscribe(shouldCancel -> {
 
                     if (shouldCancel) {
-                      viewSettingsFacebookAccount.recheck();
+                      viewSettingsFacebookAccount.setChecked(true);
 
                     } else {
                       FacebookUtils.logout();
@@ -423,7 +423,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
         } else {
           showToastMessage(getString(R.string.linked_friends_unlink_error_unable_to_unlink));
-          viewSettingsFacebookAccount.recheck();
+          viewSettingsFacebookAccount.setChecked(true);
         }
 
       } else {

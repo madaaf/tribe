@@ -44,6 +44,7 @@
       android:id="@+id/progressView"
       android:layout_width="22dp"
       android:layout_height="22dp"
+      android:visibility="gone"
       android:layout_gravity="center"
       app:cpv_animAutostart="true"
       app:cpv_color="@android:color/black"

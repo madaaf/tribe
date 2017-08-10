@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -442,6 +443,9 @@ public class CloudUserDataStore implements UserDataStore {
       }
 
       String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
+      if (StringUtils.isEmpty(regionCode)) {
+        regionCode = Locale.getDefault().getCountry();
+      }
 
       String fbRequests = buffer.toString();
       String reqLookup = context.getString(R.string.lookup, buffer.toString(),

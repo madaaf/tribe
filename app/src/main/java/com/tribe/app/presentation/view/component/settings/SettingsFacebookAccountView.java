@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -31,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by remy on 31/07/2017.
  */
 
-public class SettingsFacebookAccountView extends RelativeLayout {
+public class SettingsFacebookAccountView extends RelativeLayout implements CompoundButton.OnCheckedChangeListener {
 
     @Inject
     Navigator navigator;
@@ -56,7 +57,12 @@ public class SettingsFacebookAccountView extends RelativeLayout {
         initDependencyInjector();
         initSubscriptions();
 
-        viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
+        viewSwitch.setOnCheckedChangeListener(this);
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        onChecked.onNext(b);
     }
 
     @Override protected void onAttachedToWindow() {
@@ -71,8 +77,10 @@ public class SettingsFacebookAccountView extends RelativeLayout {
         if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     }
 
-    public void recheck() {
-        viewSwitch.setChecked(true);
+    public void setChecked(boolean checked) {
+        viewSwitch.setOnCheckedChangeListener(null);
+        viewSwitch.setChecked(checked);
+        viewSwitch.setOnCheckedChangeListener(this);
     }
 
     private void initSubscriptions() {

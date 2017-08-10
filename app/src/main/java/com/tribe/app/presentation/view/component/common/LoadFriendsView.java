@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -37,7 +38,7 @@ import javax.inject.Inject;
 /**
  * Created by tiago on 12/14/16.
  */
-public class LoadFriendsView extends LinearLayout {
+public class LoadFriendsView extends LinearLayout implements CompoundButton.OnCheckedChangeListener {
 
   public static final int FB = 0;
   public static final int ADDRESSBOOK = 1;
@@ -101,9 +102,14 @@ public class LoadFriendsView extends LinearLayout {
 
     a.recycle();
 
-    viewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onChecked.onNext(isChecked));
+    viewSwitch.setOnCheckedChangeListener(this);
 
     setClickable(true);
+  }
+
+  @Override
+  public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+    onChecked.onNext(b);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -137,9 +143,12 @@ public class LoadFriendsView extends LinearLayout {
   }
 
   public void setChecked(boolean checked) {
+    viewSwitch.setOnCheckedChangeListener(null);
     viewSwitch.setChecked(checked);
-    setStatus(checked ? getContext().getString(R.string.linked_friends_status_linked)
-            : getContext().getString(R.string.linked_friends_status_not_linked));
+    viewSwitch.setOnCheckedChangeListener(this);
+
+    setStatus(checked ? getContext().getString(R.string.linked_friends_status_linked) : getContext().getString(R.string.linked_friends_status_not_linked));
+    TextViewCompat.setTextAppearance(txtStatus, checked ? R.style.Body_One_Blue_New : R.style.Body_One_Warning);
   }
 
   public void showLoading() {

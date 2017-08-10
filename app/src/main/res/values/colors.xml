@@ -199,6 +199,9 @@
   <!-- Pulses -->
   <color name="live">#BE38B0</color>
 
+  <!-- Warning -->
+  <color name="warning">#FF6F00</color>
+
   <!-- Stars -->
   <color name="star_red">#F65352</color>
   <color name="star_orange">#FF6F00</color>
