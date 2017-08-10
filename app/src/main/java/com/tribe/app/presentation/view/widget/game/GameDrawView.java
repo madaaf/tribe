@@ -44,7 +44,6 @@ public class GameDrawView extends FrameLayout {
   private Context context;
   private GameManager gameManager;
   private GameDrawViewPagerAdapter adapter;
-  private boolean gameClosed = false;
 
   @BindView(R.id.pager) GameViewPager viewpager;
 
@@ -86,18 +85,13 @@ public class GameDrawView extends FrameLayout {
   }
 
   public void close() {
-    gameClosed = true;
+    adapter = null;
   }
 
   public void setNextGame() {
+    if (adapter == null) initView(context);
     new Handler().post(() -> {
-      int currentItem;
-      if (gameClosed) {
-        currentItem = viewpager.getCurrentItem();
-        gameClosed = false;
-      } else {
-        currentItem = (viewpager.getCurrentItem() + 1);
-      }
+      int currentItem = (viewpager.getCurrentItem() + 1);
       Timber.w("soef set next game view " + currentItem);
       viewpager.setCurrentItem(currentItem);
       setVisibility(VISIBLE); // MAYBE

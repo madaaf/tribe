@@ -14,7 +14,6 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.TrackablePath;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameDraw;
@@ -33,11 +32,12 @@ import timber.log.Timber;
 
 public class GameDrawViewPagerAdapter extends PagerAdapter {
 
-  private static int COUNTER = 300;
+  private static int COUNTER = 45;
+  public static int LENGTH_POINTS_PACKAGE = 10;
+
   private Context context;
   private LayoutInflater mLayoutInflater;
   private int currentPosition;
-  private TrackablePath.Point lastPoint;
   private User user;
   private GameManager gameManager;
   private View mCurrentView;
@@ -68,37 +68,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
     View itemView = mLayoutInflater.inflate(R.layout.item_game_draw, container, false);
-    GameDraw draw = (GameDraw) gameManager.getCurrentGame();
-
-    TextViewFont gameName = (TextViewFont) itemView.findViewById(R.id.gameName);
-    TextViewFont nextInLabel = (TextViewFont) itemView.findViewById(R.id.nextInLabel);
-    TextViewFont drawDesc = (TextViewFont) itemView.findViewById(R.id.drawDesc);
-    TextViewFont turn = (TextViewFont) itemView.findViewById(R.id.txtUsername);
-    TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
-    AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
-    ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
-    RelativeLayout drawContainer = (RelativeLayout) itemView.findViewById(R.id.drawContainer);
-    TribeGuest guest = draw.getCurrentDrawer();
-    hand.setVisibility(View.VISIBLE);
-
-    viewAvatar.load(guest.getPicture());
-    nextInLabel.setText(
-        EmojiParser.demojizedText(context.getString(R.string.game_draw_timer_instructions)));
-
-    if (guest.getId().equals(user.getId())) {
-      txtName.setText(user.getDisplayName());
-      gameName.setText(draw.getCurrentDrawName());
-      drawDesc.setText(
-          EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_draw)));
-      turn.setText(context.getString(R.string.game_draw_my_turn));
-    } else {
-      txtName.setText(guest.getDisplayName());
-      drawDesc.setText(
-          EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
-      turn.setText(context.getString(R.string.game_draw_other_is_drawing));
-      hand.setVisibility(View.INVISIBLE);
-    }
-
     container.addView(itemView);
     return itemView;
   }
@@ -153,35 +122,63 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     if (position == currentPosition) return;
     currentPosition = position;
 
-    TextViewFont counter = (TextViewFont) mCurrentView.findViewById(R.id.counter);
-    TextViewFont clearBtn = (TextViewFont) mCurrentView.findViewById(R.id.clearBtn);
-    ImageView hand = (ImageView) mCurrentView.findViewById(R.id.iconHand);
-    RelativeLayout drawContainer = (RelativeLayout) mCurrentView.findViewById(R.id.drawContainer);
-
     GameDraw draw = (GameDraw) gameManager.getCurrentGame();
     TribeGuest guest = draw.getCurrentDrawer();
 
+    TextViewFont counter = (TextViewFont) mCurrentView.findViewById(R.id.counter);
+    TextViewFont clearBtn = (TextViewFont) mCurrentView.findViewById(R.id.clearBtn);
+    TextViewFont gameName = (TextViewFont) mCurrentView.findViewById(R.id.gameName);
+    TextViewFont nextInLabel = (TextViewFont) mCurrentView.findViewById(R.id.nextInLabel);
+    TextViewFont drawDesc = (TextViewFont) mCurrentView.findViewById(R.id.drawDesc);
+    TextViewFont turn = (TextViewFont) mCurrentView.findViewById(R.id.txtUsername);
+    TextViewFont txtName = (TextViewFont) mCurrentView.findViewById(R.id.txtName);
+    AvatarView viewAvatar = (AvatarView) mCurrentView.findViewById(R.id.viewAvatar);
+    ImageView hand = (ImageView) mCurrentView.findViewById(R.id.iconHand);
+    RelativeLayout drawContainer = (RelativeLayout) mCurrentView.findViewById(R.id.drawContainer);
+
+    boolean userIsDrawer = guest.getId().equals(user.getId());
+
+    hand.setVisibility(View.VISIBLE);
+    viewAvatar.load(guest.getPicture());
+    nextInLabel.setText(
+        EmojiParser.demojizedText(context.getString(R.string.game_draw_timer_instructions)));
+
+    if (userIsDrawer) {
+      txtName.setText(user.getDisplayName());
+      gameName.setText(draw.getCurrentDrawName());
+      drawDesc.setText(
+          EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_draw)));
+      turn.setText(context.getString(R.string.game_draw_my_turn));
+      Timber.e("SOEF POPULATE " + user.getDisplayName() + " " + userIsDrawer + " Your turn");
+    } else {
+      txtName.setText(guest.getDisplayName());
+      drawDesc.setText(
+          EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_guess)));
+      turn.setText(context.getString(R.string.game_draw_other_is_drawing));
+      hand.setVisibility(View.INVISIBLE);
+      clearBtn.setVisibility(View.INVISIBLE);
+      Timber.e("SOEF POPULATE " + guest.getDisplayName() + " " + userIsDrawer + " is drawing");
+    }
+
     dv = new DrawerView(context, hand, clearBtn);
-    onBlockOpenInviteView.onNext(true);
     dv.setOnDrawerListener(path -> {
       List<Float[]> points = new ArrayList<>();
       for (TrackablePath.Point p : path.getPathData()) {
         points.add(new Float[] { p.x, p.y });
       }
       onDrawing.onNext(points);
-    }, 10);
+    }, LENGTH_POINTS_PACKAGE);
 
-    if (!guest.getId().equals(user.getId())) {
+    if (!userIsDrawer) {
       dv.setOnTouchListener((v, event) -> true);
     }
 
     drawContainer.addView(dv);
-    animateDiagonalPan(hand);
     subscriptions.add(dv.onClearDraw().subscribe(onClearDraw));
-    if (draw.isUserAction()) {
-      onCurrentGame.onNext(draw);
-    }
+    subscriptions.add(dv.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
 
+    animateDiagonalPan(hand);
+    if (draw.isUserAction()) onCurrentGame.onNext(draw);
     setCounter(counter, position);
   }
 
@@ -208,24 +205,16 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   public void onPointsDrawReceived(Float[][] points) {
     int width = dv.getWidth();
     int height = dv.getHeight();
-
     TrackablePath path = new TrackablePath();
 
-    if (lastPoint != null && lastPoint.x == points[0][0] && lastPoint.y == points[0][1]) {
-      path.lineTo(points[0][0] * width, points[0][1] * height);
+    if (points.length == 1) {
+      path.moveTo(points[0][0] * width, points[0][1] * height);
+      path.lineTo(points[0][0] * width + 1, points[0][1] * height);
     } else {
       path.moveTo(points[0][0] * width, points[0][1] * height);
-    }
-
-    for (int i = 1; i < points.length; i++) {
-      path.lineTo(points[i][0] * width, points[i][1] * height);
-    }
-
-    if (points.length == 10) {
-      lastPoint =
-          new TrackablePath.Point(points[points.length - 1][0], points[points.length - 1][1]);
-    } else {
-      lastPoint = null;
+      for (int i = 1; i < points.length; i++) {
+        path.lineTo(points[i][0] * width, points[i][1] * height);
+      }
     }
 
     dv.draw(path);
@@ -233,7 +222,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
 
   public void onClearDrawReceived() {
     Timber.e("SOEF onClearDrawReceived");
-    dv.clear();
-    dv.invalidate();
+    if (dv != null) dv.clear();
   }
 }

@@ -76,10 +76,10 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
-import com.tribe.app.presentation.view.widget.game.GameChallengesView;
-import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.game.GameChallengesView;
+import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
@@ -1109,6 +1109,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void setNextDrawGame() {
+    Game game = gameManager.getCurrentGame();
+    if (game != null && game instanceof GameDraw) {
+      GameDraw gameDraw = (GameDraw) game;
+      if (game.isUserAction()) gameDraw.setGuestList(getListGamer());
+    }
+
     gameDrawView.setNextGame(); // TODO MADA
   }
 
@@ -1135,15 +1141,19 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     if (game != null && game instanceof GameDraw) {
       GameDraw gameDraw = (GameDraw) game;
-      List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
-      TribeGuest me =
-          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
-              false, null, false, null);
-      guestList.add(me);
-      if (game.isUserAction()) gameDraw.setNewDatas(nameList, guestList);
+      if (game.isUserAction()) gameDraw.setNewDatas(nameList, getListGamer());
     }
 
     setNextDrawGame();
+  }
+
+  private List<TribeGuest> getListGamer() {
+    List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
+    TribeGuest me =
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+            null, false, null);
+    guestList.add(me);
+    return guestList;
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {

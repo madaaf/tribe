@@ -18,7 +18,6 @@ public class GameDraw extends Game {
 
   private String currentDrawName = "";
   private TribeGuest currentDrawer = null;
-  private boolean myTurn = true;
 
   public GameDraw(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -34,6 +33,10 @@ public class GameDraw extends Game {
 
   }
 
+  public void setGuestList(List<TribeGuest> guestList) {
+    this.guestList = guestList;
+  }
+
   public void setNewDatas(List<String> nameList, List<TribeGuest> peopleInRoom) {
     this.nameList.clear();
     this.guestList.clear();
@@ -41,7 +44,6 @@ public class GameDraw extends Game {
     this.guestList.addAll(peopleInRoom);
     generateNewDatas();
   }
-
 
   public String getCurrentDrawName() {
     return currentDrawName;

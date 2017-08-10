@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.ImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.TrackablePath;
 import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
@@ -25,22 +24,19 @@ public class DrawerView extends View {
   private TrackablePath path, tmpPath;
   private List<TrackablePath> paths;
   private ImageView hand;
-  private TextViewFont clearBtn;
   private OnDrawerListener onDrawerListener;
   private int maxDataSetSize, counter;
   private int width, height;
 
   private PublishSubject<Void> onClearDraw = PublishSubject.create();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public DrawerView(Context context, ImageView hand, TextViewFont clearBtn) {
     super(context);
     this.hand = hand;
-    this.clearBtn = clearBtn;
-    post(new Runnable() {
-      @Override public void run() {
-        width = getWidth();
-        height = getHeight();
-      }
+    post(() -> {
+      width = getWidth();
+      height = getHeight();
     });
 
     paint = new Paint();
@@ -67,6 +63,7 @@ public class DrawerView extends View {
   public void clear() {
     paths = new ArrayList<>();
     path = new TrackablePath();
+    paths.add(path);
     invalidate();
   }
 
@@ -94,6 +91,7 @@ public class DrawerView extends View {
 
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
+        onBlockOpenInviteView.onNext(true);
         hand.setVisibility(GONE);
         path.moveTo(eventX, eventY);
         tmpPath.moveTo(eventX / width, eventY / height);
@@ -104,7 +102,7 @@ public class DrawerView extends View {
 
         if (onDrawerListener != null) {
           counter++;
-          if (counter == maxDataSetSize) {
+          if (counter == maxDataSetSize - 1) {
             onDrawerListener.onTrackablePath(tmpPath);
             tmpPath = new TrackablePath();
             counter = 0;
@@ -113,6 +111,10 @@ public class DrawerView extends View {
         }
         break;
       case MotionEvent.ACTION_UP:
+        path.lineTo(eventX + 1, eventY); // one point
+        invalidate();
+
+        onBlockOpenInviteView.onNext(false);
         if (onDrawerListener != null) {
           onDrawerListener.onTrackablePath(tmpPath);
           tmpPath = new TrackablePath();
@@ -132,6 +134,10 @@ public class DrawerView extends View {
 
   public Observable<Void> onClearDraw() {
     return onClearDraw;
+  }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
   }
 
   public interface OnDrawerListener {
