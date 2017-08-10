@@ -30,14 +30,14 @@ public class FileUtils {
         OutputStream out;
         try {
           File targetFile = new File(toPath + file);
-          if (!targetFile.exists()) {
-            in = assetManager.open(fromPath + "/" + file);
-            out = new FileOutputStream(toPath + file);
-            copyFile(in, out);
-            in.close();
-            out.flush();
-            out.close();
-          }
+          if (targetFile.exists()) targetFile.delete();
+
+          in = assetManager.open(fromPath + "/" + file);
+          out = new FileOutputStream(toPath + file);
+          copyFile(in, out);
+          in.close();
+          out.flush();
+          out.close();
         } catch (Exception e) {
           Log.e("copy ulsdata ERROR", e.toString());
           e.printStackTrace();

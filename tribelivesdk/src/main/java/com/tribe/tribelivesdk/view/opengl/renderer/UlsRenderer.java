@@ -242,6 +242,8 @@ public class UlsRenderer {
                 float realX;
                 float realY;
 
+                // TODO TASK_FORCE
+                // Same as the ratioH in PreviewRenderer
                 float ratioCameraReal = (float) cameraInfo.getCaptureFormat().width /
                     (float) cameraInfo.getCaptureFormat().height;
 

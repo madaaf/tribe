@@ -19,10 +19,10 @@ public class RabbitFaceMaskFilter extends FaceMaskFilter {
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
       String rabbitEars = path + "rabbit_ears.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(0, rabbitEars, 91, true, 1f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(0, rabbitEars, 91, true, 1.2f, isFrontFacing);
 
       String rabbitCosmetics = path + "rabbit_cosmetics.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, rabbitCosmetics, 29, true, 1f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(1, rabbitCosmetics, 29, true, 1.2f, isFrontFacing);
 
       UlsFaceAR.cleanAnimationObjectAtIndex(2);
     }).start();

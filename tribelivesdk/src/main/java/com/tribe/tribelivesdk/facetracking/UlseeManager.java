@@ -147,7 +147,7 @@ public class UlseeManager {
 
               //if (shape[k] != null) {
               //  for (int i = 0; i < shape[k].length; i++) {
-              //    shape[k][i] = shape[k][i] + 100;
+              //    shape[k][i] = shape[k][i] * 1.15f;
               //  }
               //}
 

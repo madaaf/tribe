@@ -19,13 +19,13 @@ public class BearFaceMaskFilter extends FaceMaskFilter {
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
       String bearEars = path + "bear_ears.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(0, bearEars, 91, true, 0.75f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(0, bearEars, 91, true, 1.2f, isFrontFacing);
 
       String glasses = path + "bear_glasses.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, glasses, 27, true, 0.75f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(1, glasses, 27, true, 1.2f, isFrontFacing);
 
       String nose = path + "bear_nose.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(2, nose, 30, true, 0.75f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(2, nose, 30, true, 1.2f, isFrontFacing);
 
       UlsFaceAR.cleanAnimationObjectAtIndex(3);
     }).start();

@@ -20,6 +20,7 @@ import com.tribe.tribelivesdk.view.opengl.filter.ImageFilter;
 import com.tribe.tribelivesdk.view.opengl.gles.GlSurfaceTexture;
 import com.tribe.tribelivesdk.view.opengl.gles.PreviewTextureInterface;
 import com.tribe.tribelivesdk.webrtc.Frame;
+import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import com.uls.renderer.GLRenderMask;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -28,7 +29,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
-import org.webrtc.RendererCommon;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -217,22 +217,16 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
     if (previewTexture != null && byteBuffer != null) {
-      float[] texMatrix = com.tribe.tribelivesdk.webrtc.RendererCommon.rotateTextureMatrix(stMatrix,
-          cameraInfo.getFrameOrientation());
+      // TODO TASK_FORCE
+      // The part of the code that constructs the openGL matrix that
+      // will be used to display the camera preview
+      float[] texMatrix =
+          RendererCommon.rotateTextureMatrix(stMatrix, cameraInfo.getFrameOrientation());
       float[] drawMatrix;
       synchronized (this.layoutLock) {
         float[] layoutMatrix;
-        if (this.layoutAspectRatio > 0.0F) {
-          float videoAspectRatio =
-              (float) cameraInfo.rotatedWidth() / (float) cameraInfo.rotatedHeight();
-          layoutMatrix =
-              RendererCommon.getLayoutMatrix(cameraInfo.isFrontFacing(), videoAspectRatio,
-                  this.layoutAspectRatio);
-        } else {
-          layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
-              : RendererCommon.identityMatrix();
-        }
-
+        layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
+            : RendererCommon.identityMatrix();
         drawMatrix = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
       }
 
@@ -277,34 +271,15 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
           if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
 
           filter.getFbo().bind();
-          //long timeStart = System.nanoTime();
           byteBuffer.rewind();
           libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
           byteBuffer.flip();
           GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-          //long timeEndReadPBO = System.nanoTime();
-          //Timber.d("Total time of read PBO frame "
-          //    + " / "
-          //    + (timeEndReadPBO - timeStart) / 1000000.0f
-          //    + " ms");
-          //Timber.d("WidthOut : " + widthOut + " / height out : " + heightOut);
           frame =
               new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
                   cameraInfo.isFrontFacing());
           onFrameAvailable.onNext(frame);
-
-          //ByteBuffer byteBufferBitmap = ByteBuffer.wrap(byteBuffer.array());
-          //Bitmap bitmap = Bitmap.createBitmap(widthOut, heightOut, Bitmap.Config.ARGB_8888);
-          //bitmap.copyPixelsFromBuffer(byteBufferBitmap);
-          //savePNGImageToGallery(bitmap, context, "tribe_test.jpg");
-
-          //long timeEndFrame = System.nanoTime();
-          //Timber.d("Total time of end frame "
-          //    + " / "
-          //    + (timeEndFrame - timeEndReadPBO) / 1000000.0f
-          //    + " ms");
         }
       }
     }
@@ -331,9 +306,14 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void draw(int index, int rotation, float widthOut, float heightOut) {
-    float ratioH = widthOut < heightOut ? (widthOut / heightOut) : (heightOut / widthOut);
+    // TODO TASK_FORCE
+    // The ratioH determines how the mask will expand vertically,
+    // there might be something to change here too
+    float ratioH =
+        (float) cameraInfo.getCaptureFormat().height / (float) cameraInfo.getCaptureFormat().width;
     int width = cameraInfo.getCaptureFormat().width, height = cameraInfo.getCaptureFormat().height;
     float[][] shape = ulseeManager.getShape();
+    float[][] shapeAdapted = new float[shape.length][];
     float[][] pose = ulseeManager.getPose();
     float[][] confidence = ulseeManager.getConfidence();
     float[] poseQuality = ulseeManager.getPoseQuality();
@@ -346,15 +326,44 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       ulsRenderer.setTrackParamNoFace(isFrontFacing);
       ulsRenderer.ulsDrawFrame(null, index, ratioH, false);
     } else {
+      float[][] shapeFinal = shape;
+      // TODO TASK_FORCE
+      // Trying here to change the coordinates based on a ratio that was determined earlier
+      // by the drawMatrix (I put 0.83f because it is the one given for New Call on my Nexus 6P)
+      // Results not concluent so far
+
+      //finalArray = shapeAdapted;
+      //for (int k = 0; k < UlseeManager.MAX_TRACKER; k++) {
+      //  if (shape[k] != null) {
+      //    shapeAdapted[k] = new float[shape[k].length];
+      //    for (int i = 0; i < (shape[k].length / 2); i++) {
+      //      if (shape[k][i * 2] != 0 || shape[k][i * 2 + 1] != 0) {
+      //        android.graphics.Matrix matrix = new android.graphics.Matrix();
+      //        matrix.setScale(0.83f, 1f, 0f, 0f);
+      //        float[] oldPoints = new float[] { shape[k][i * 2], shape[k][i * 2 + 1] };
+      //        float[] newPoints = new float[2];
+      //        matrix.mapPoints(newPoints, oldPoints);
+      //        shapeAdapted[k][i * 2] = newPoints[0];
+      //        shapeAdapted[k][i * 2 + 1] = newPoints[1];
+      //        Timber.d("Old Points : " +
+      //            Arrays.toString(oldPoints) +
+      //            " / new points : " +
+      //            Arrays.toString(newPoints));
+      //      }
+      //    }
+      //  }
+      //}
+
       if (pose != null && poseQuality[index] > 0.0f) {
-        maskRender.drawMask(shape[index], confidence[index], 5.0f, rotation, width, height,
+        maskRender.drawMask(shapeFinal[index], confidence[index], 5.0f, rotation, width, height,
             ulsRenderer.getMaskFile(), isFrontFacing);
         if (isFrontFacing) {
-          ulsRenderer.setTrackParam(width, height, shape[index], confidence[index], pupils[index],
-              gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation, ratioH);
+          ulsRenderer.setTrackParam(width, height, shapeFinal[index], confidence[index],
+              pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
+              cameraRotation, ratioH);
         } else {
           float[] flippedFaceShape = new float[99 * 2];
-          flipFaceShape(flippedFaceShape, shape[index]);
+          flipFaceShape(flippedFaceShape, shapeFinal[index]);
 
           ulsRenderer.setTrackParam(width, height, flippedFaceShape, confidence[index],
               pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
@@ -365,11 +374,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       }
 
       if (isFrontFacing) {
-        ulsRenderer.setTrackParam(width, height, shape[index], confidence[index], pupils[index],
-            gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation, ratioH);
+        ulsRenderer.setTrackParam(width, height, shapeFinal[index], confidence[index],
+            pupils[index], gaze[index], pose[index], poseQuality[index], isFrontFacing,
+            cameraRotation, ratioH);
       } else {
         float[] flippedFaceShape = new float[99 * 2];
-        flipFaceShape(flippedFaceShape, shape[index]);
+        flipFaceShape(flippedFaceShape, shapeFinal[index]);
 
         ulsRenderer.setTrackParam(width, height, flippedFaceShape, confidence[index], pupils[index],
             gaze[index], pose[index], poseQuality[index], isFrontFacing, cameraRotation, ratioH);
