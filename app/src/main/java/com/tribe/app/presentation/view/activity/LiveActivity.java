@@ -1115,11 +1115,17 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       if (game.isUserAction()) gameDraw.setGuestList(getListGamer());
     }
 
-    gameDrawView.setNextGame(); // TODO MADA
+    gameDrawView.setNextGame();
   }
 
   private void setNextChallengeGame() {
-    gameChallengesView.setNextChallenge(); // TODO MADA
+    Game game = gameManager.getCurrentGame();
+    if (game != null && game instanceof GameChallenge) {
+      GameChallenge gameChallenge = (GameChallenge) game;
+      if (game.isUserAction()) gameChallenge.setGuestList(getListGamer());
+    }
+
+    gameChallengesView.setNextChallenge();
   }
 
   /***

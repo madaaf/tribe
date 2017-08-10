@@ -766,7 +766,7 @@ public class LiveControlsView extends FrameLayout {
       currentGameView = addGameToView(viewFrom);
       currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
           BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
-          screenUtils.dpToPx(5)));
+          screenUtils.dpToPx(10)));
     }
   }
 

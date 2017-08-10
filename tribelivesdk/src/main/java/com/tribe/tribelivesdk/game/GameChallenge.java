@@ -34,6 +34,10 @@ public class GameChallenge extends Game {
     generateNewDatas();
   }
 
+  public void setGuestList(List<TribeGuest> guestList) {
+    this.guestList = guestList;
+  }
+
   public void generateNewDatas() {
     if (nameList == null || nameList.size() == 0) {
       Timber.i("SOEF nameList  empty ");
@@ -82,4 +86,5 @@ public class GameChallenge extends Game {
     int rnd = new Random().nextInt(array.size());
     return array.get(rnd);
   }
+
 }
