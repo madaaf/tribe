@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -28,14 +28,12 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.model.TribeGuest;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -51,19 +49,17 @@ public class GameChallengesView extends FrameLayout {
   private static int DURATION_EXIT_POPUP = 300;
 
   @Inject User user;
+  @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.pager) GameViewPager viewpager;
   @BindView(R.id.popupChallenge) FrameLayout popup;
 
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
   private GameChallengeViewPagerAdapter adapter;
-  private GameChallenge gameChallenge;
-  private GameManager gameManager;
-  private List<String> items = new ArrayList<>();
-  private List<TribeGuest> guestList = new ArrayList<>();
   private boolean popupDisplayed = false;
+  private GameManager gameManager;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
@@ -86,9 +82,8 @@ public class GameChallengesView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
-    gameManager = GameManager.getInstance(getContext());
+    gameManager = GameManager.getInstance(context);
 
-    Timber.e("init GameChallengeViewPagerAdapter");
     adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
 
@@ -102,12 +97,17 @@ public class GameChallengesView extends FrameLayout {
     subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
   }
 
+  public void close() {
+    adapter = null;
+  }
+
   public void setNextChallenge() {
-    setVisibility(VISIBLE); // MAYBE call setGameChallenge
+    if (adapter == null) initView(context);
     if (popupDisplayed) hidePopup();
     new Handler().post(() -> {
-      viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
-      Timber.e("soef set next challenge " + viewpager.getCurrentItem() + 1);
+      int currentItem = (viewpager.getCurrentItem() + 1);
+      viewpager.setCurrentItem(currentItem);
+      setVisibility(VISIBLE);
     });
   }
 
@@ -147,7 +147,15 @@ public class GameChallengesView extends FrameLayout {
     scaleDown.start();
   }
 
-  public void displayPopup() {
+  public void displayPopup(float translationY) {
+    if (translationY == 0) {
+      popup.setTranslationY(
+          -context.getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height)
+              + screenUtils.dpToPx(-82));
+    } else {
+      popup.setTranslationY(screenUtils.dpToPx(-82));
+    }
+
     popup.setVisibility(VISIBLE);
     popup.setAlpha(1);
     popupDisplayed = true;

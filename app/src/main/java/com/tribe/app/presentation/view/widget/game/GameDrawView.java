@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -23,6 +24,7 @@ import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.lang.reflect.Field;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -34,6 +36,7 @@ import timber.log.Timber;
  */
 
 public class GameDrawView extends FrameLayout {
+
   @Inject User user;
 
   private LayoutInflater inflater;
@@ -41,13 +44,16 @@ public class GameDrawView extends FrameLayout {
   private Context context;
   private GameManager gameManager;
   private GameDrawViewPagerAdapter adapter;
+  private boolean gameClosed = false;
 
-  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.pager) GameViewPager viewpager;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
   private PublishSubject<Game> onCurrentGame = PublishSubject.create();
+  private PublishSubject<Void> onClearDraw = PublishSubject.create();
+  private PublishSubject<List<Float[]>> onDrawing = PublishSubject.create();
 
   public GameDrawView(@NonNull Context context) {
     super(context);
@@ -75,15 +81,26 @@ public class GameDrawView extends FrameLayout {
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
     subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
     subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
+    subscriptions.add(adapter.onClearDraw().subscribe(onClearDraw));
+    subscriptions.add(adapter.onDrawing().subscribe(onDrawing));
+  }
 
-    viewpager.setOnTouchListener((v, event) -> true);
+  public void close() {
+    gameClosed = true;
   }
 
   public void setNextGame() {
-    setVisibility(VISIBLE); // MAYBE
     new Handler().post(() -> {
-      Timber.e("soef set next game view " + viewpager.getCurrentItem() + 1);
-      viewpager.setCurrentItem(viewpager.getCurrentItem() + 1);
+      int currentItem;
+      if (gameClosed) {
+        currentItem = viewpager.getCurrentItem();
+        gameClosed = false;
+      } else {
+        currentItem = (viewpager.getCurrentItem() + 1);
+      }
+      Timber.w("soef set next game view " + currentItem);
+      viewpager.setCurrentItem(currentItem);
+      setVisibility(VISIBLE); // MAYBE
     });
   }
 
@@ -98,6 +115,17 @@ public class GameDrawView extends FrameLayout {
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
     }
+  }
+
+  public void onPointsDrawReceived(String pointsReceived) {
+    Gson gson = new Gson();
+    Float[][] str = gson.fromJson(pointsReceived, Float[][].class);
+    Timber.e("SOEF POINT OMAR" + str[0][0] + " " + +str[0][1]);
+    adapter.onPointsDrawReceived(str);
+  }
+
+  public void onClearDrawReceived() {
+    adapter.onClearDrawReceived();
   }
 
   protected void initDependencyInjector() {
@@ -126,5 +154,13 @@ public class GameDrawView extends FrameLayout {
 
   public Observable<Game> onCurrentGame() {
     return onCurrentGame;
+  }
+
+  public Observable<Void> onClearDraw() {
+    return onClearDraw;
+  }
+
+  public Observable<List<Float[]>> onDrawing() {
+    return onDrawing;
   }
 }

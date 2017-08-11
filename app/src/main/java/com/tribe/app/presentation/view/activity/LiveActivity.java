@@ -76,8 +76,8 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
-import com.tribe.app.presentation.view.widget.GameChallengesView;
-import com.tribe.app.presentation.view.widget.GameDrawView;
+import com.tribe.app.presentation.view.widget.game.GameChallengesView;
+import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
@@ -669,6 +669,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           }
         }));
 
+    subscriptions.add(viewLive.onClearDrawReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> {
+          Timber.e("SOEF ON CLEAR DRAW REVEIVED");
+          gameDrawView.onClearDrawReceived();
+        }));
+
     subscriptions.add(viewLive.onBlockOpenInviteView().subscribe(blockInviteView -> {
       Timber.e("SOEF BLOCK INVITE VIEW " + blockInviteView);
       viewLiveContainer.blockOpenInviteView(blockInviteView);
@@ -807,6 +815,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onRemotePeerClick().subscribe(o -> {
       if (o != null) userInfosNotificationView.displayView(o);
     }));
+
+    subscriptions.add(viewLive.onPointsDrawReceived()
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(points -> {//SOEF MADA
+          gameDrawView.onPointsDrawReceived(points);
+        }));
 
     subscriptions.add(viewLive.onStartGame()
         .subscribeOn(Schedulers.newThread())

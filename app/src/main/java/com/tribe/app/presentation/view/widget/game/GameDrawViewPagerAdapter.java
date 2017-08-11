@@ -1,15 +1,9 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.CountDownTimer;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -19,13 +13,18 @@ import android.widget.RelativeLayout;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.TrackablePath;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
+import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -34,21 +33,22 @@ import timber.log.Timber;
 
 public class GameDrawViewPagerAdapter extends PagerAdapter {
 
-  private static int COUNTER = 30;
+  private static int COUNTER = 300;
   private Context context;
   private LayoutInflater mLayoutInflater;
   private int currentPosition;
-
+  private TrackablePath.Point lastPoint;
   private User user;
   private GameManager gameManager;
   private View mCurrentView;
+  private DrawerView dv;
 
-  private DrawingView dv;
-  private Paint mPaint;
-
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
   private PublishSubject<Game> onCurrentGame = PublishSubject.create();
+  private PublishSubject<Void> onClearDraw = PublishSubject.create();
+  private PublishSubject<List<Float[]>> onDrawing = PublishSubject.create();
 
   public GameDrawViewPagerAdapter(Context context, User user) {
     this.context = context;
@@ -77,8 +77,9 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
     AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
     ImageView hand = (ImageView) itemView.findViewById(R.id.iconHand);
-
+    RelativeLayout drawContainer = (RelativeLayout) itemView.findViewById(R.id.drawContainer);
     TribeGuest guest = draw.getCurrentDrawer();
+    hand.setVisibility(View.VISIBLE);
 
     viewAvatar.load(guest.getPicture());
     nextInLabel.setText(
@@ -157,27 +158,26 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     ImageView hand = (ImageView) mCurrentView.findViewById(R.id.iconHand);
     RelativeLayout drawContainer = (RelativeLayout) mCurrentView.findViewById(R.id.drawContainer);
 
-    dv = new DrawingView(context, hand, clearBtn);
-    drawContainer.addView(dv);
-    mPaint = new Paint();
-    mPaint.setAntiAlias(true);
-    mPaint.setDither(true);
-    mPaint.setColor(ContextCompat.getColor(context, R.color.yellow_draw));
-    mPaint.setStyle(Paint.Style.STROKE);
-    mPaint.setStrokeJoin(Paint.Join.ROUND);
-    mPaint.setStrokeCap(Paint.Cap.ROUND);
-    mPaint.setStrokeWidth(12);
-    animateDiagonalPan(hand);
-
     GameDraw draw = (GameDraw) gameManager.getCurrentGame();
-    Timber.w("SOEF setPrimaryItem item "
-        + draw.getCurrentDrawName()
-        + " "
-        + " position "
-        + position
-        + " "
-        + draw.isUserAction());
+    TribeGuest guest = draw.getCurrentDrawer();
 
+    dv = new DrawerView(context, hand, clearBtn);
+    onBlockOpenInviteView.onNext(true);
+    dv.setOnDrawerListener(path -> {
+      List<Float[]> points = new ArrayList<>();
+      for (TrackablePath.Point p : path.getPathData()) {
+        points.add(new Float[] { p.x, p.y });
+      }
+      onDrawing.onNext(points);
+    }, 10);
+
+    if (!guest.getId().equals(user.getId())) {
+      dv.setOnTouchListener((v, event) -> true);
+    }
+
+    drawContainer.addView(dv);
+    animateDiagonalPan(hand);
+    subscriptions.add(dv.onClearDraw().subscribe(onClearDraw));
     if (draw.isUserAction()) {
       onCurrentGame.onNext(draw);
     }
@@ -197,103 +197,43 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     return onCurrentGame;
   }
 
-  private class DrawingView extends View {
+  public Observable<Void> onClearDraw() {
+    return onClearDraw;
+  }
 
-    public int width;
-    public int height;
-    private Bitmap mBitmap;
-    private Canvas mCanvas;
-    private Path mPath;
-    private Paint mBitmapPaint;
-    private Context context;
-    private ImageView hand;
-    private TextViewFont clearBtn;
+  public Observable<List<Float[]>> onDrawing() {
+    return onDrawing;
+  }
 
-    public DrawingView(Context c, ImageView hand, TextViewFont clearBtn) {
-      super(c);
-      this.hand = hand;
-      this.clearBtn = clearBtn;
-      context = c;
-      mPath = new Path();
-      mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+  public void onPointsDrawReceived(Float[][] points) {
+    int width = dv.getWidth();
+    int height = dv.getHeight();
+
+    TrackablePath path = new TrackablePath();
+
+    if (lastPoint != null && lastPoint.x == points[0][0] && lastPoint.y == points[0][1]) {
+      path.lineTo(points[0][0] * width, points[0][1] * height);
+    } else {
+      path.moveTo(points[0][0] * width, points[0][1] * height);
     }
 
-    @Override protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-      super.onSizeChanged(w, h, oldw, oldh);
-      width = w;
-      height = h;
-
-      mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-      mCanvas = new Canvas(mBitmap);
+    for (int i = 1; i < points.length; i++) {
+      path.lineTo(points[i][0] * width, points[i][1] * height);
     }
 
-    @Override protected void onDraw(Canvas canvas) {
-      super.onDraw(canvas);
-
-      canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
-      canvas.drawPath(mPath, mPaint);
-
-      clearBtn.setOnClickListener(v -> {
-        setDrawingCacheEnabled(false);
-        onSizeChanged(width, height, width, height);
-        invalidate();
-        setDrawingCacheEnabled(true);
-      });
+    if (points.length == 10) {
+      lastPoint =
+          new TrackablePath.Point(points[points.length - 1][0], points[points.length - 1][1]);
+    } else {
+      lastPoint = null;
     }
 
-    private float mX, mY;
-    private static final float TOUCH_TOLERANCE = 20;
+    dv.draw(path);
+  }
 
-    private void touch_start(float x, float y) {
-      Timber.e("MADA touch_start " + x + " " + y);
-      mPath.reset();
-      mPath.moveTo(x, y);
-      mX = x;
-      mY = y;
-    }
-
-    private void touch_move(float x, float y) {
-      // Timber.e("MADA touch_move " + x + " " + y);
-      float dx = Math.abs(x - mX);
-      float dy = Math.abs(y - mY);
-      if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-        mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-        mX = x;
-        mY = y;
-      }
-    }
-
-    private void touch_up() {
-      Timber.e("MADA touch_up ");
-      mPath.lineTo(mX, mY);
-      // commit the path to our offscreen
-      mCanvas.drawPath(mPath, mPaint);
-      // kill this so we don't double draw
-      mPath.reset();
-    }
-
-    @Override public boolean onTouchEvent(MotionEvent event) {
-      float x = event.getX();
-      float y = event.getY();
-
-      switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-          hand.setVisibility(GONE);
-          onBlockOpenInviteView.onNext(true);
-          touch_start(x, y);
-          invalidate();
-          break;
-        case MotionEvent.ACTION_MOVE:
-          touch_move(x, y);
-          invalidate();
-          break;
-        case MotionEvent.ACTION_UP:
-          //onBlockOpenInviteView.onNext(false);
-          touch_up();
-          // invalidate();
-          break;
-      }
-      return true;
-    }
+  public void onClearDrawReceived() {
+    Timber.e("SOEF onClearDrawReceived");
+    dv.clear();
+    dv.invalidate();
   }
 }

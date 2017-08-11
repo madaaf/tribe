@@ -2,26 +2,24 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:gravity="center"
     >
 
-  <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:card_view="http://schemas.android.com/apk/res-auto"
+  <android.support.v7.widget.CardView
       android:id="@+id/cardview"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginEnd="25dp"
       android:layout_marginStart="25dp"
       android:layout_marginTop="3dp"
-      card_view:cardCornerRadius="7dp"
-      card_view:cardElevation="15dp"
-      card_view:cardMaxElevation="15dp"
-      card_view:cardPreventCornerOverlap="false"
-      card_view:cardUseCompatPadding="true"
+      app:cardCornerRadius="7dp"
+      app:cardElevation="15dp"
+      app:cardMaxElevation="15dp"
+      app:cardPreventCornerOverlap="false"
+      app:cardUseCompatPadding="true"
       >
 
     <FrameLayout
@@ -106,13 +104,15 @@
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/txtChallenge"
           android:layout_width="match_parent"
-          android:layout_height="100dp"
+          android:layout_height="wrap_content"
           android:layout_gravity="bottom"
           android:layout_marginTop="65dp"
           android:background="@drawable/shape_rect_blue_new_bottom_corner"
           android:gravity="center"
+          android:paddingBottom="35dp"
           android:paddingEnd="15dp"
           android:paddingStart="15dp"
+          android:paddingTop="35dp"
           android:text="@string/enjoying_tribe_popup_action2"
           style="@style/Headline.White.2"
           />
