@@ -53,7 +53,34 @@ public class LocalPeerView extends FrameLayout {
 
   private void initGlLocalView() {
     glLocalView = new GlLocalView(getContext());
-    addView(glLocalView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    addView(glLocalView);
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    super.onLayout(changed, left, top, right, bottom);
+
+    if (changed) {
+
+      ViewGroup.LayoutParams params = glLocalView.getLayoutParams();
+
+      if (getHeight() > getWidth()) {
+        params.width  = getHeight() * 3 / 4; // The ratio
+        params.height = getHeight();
+
+        glLocalView.setTranslationX((getWidth() - params.width) / 2);
+        glLocalView.setTranslationY(0);
+
+      } else {
+        params.width  = getWidth();
+        params.height = getWidth() * 3 / 4; // The ratio
+
+        glLocalView.setTranslationX(0);
+        glLocalView.setTranslationY((getHeight() - params.height) / 2);
+      }
+
+      glLocalView.setLayoutParams(params);
+    }
   }
 
   //////////////
