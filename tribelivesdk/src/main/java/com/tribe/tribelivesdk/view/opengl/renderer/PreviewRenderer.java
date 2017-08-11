@@ -124,7 +124,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   public void setLayoutAspectRatio(float layoutAspectRatio) {
-    Timber.d("setLayoutAspectRatio: " + layoutAspectRatio);
     synchronized (this.layoutLock) {
       this.layoutAspectRatio = layoutAspectRatio;
     }
