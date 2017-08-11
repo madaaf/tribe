@@ -701,7 +701,7 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void successFacebookLogin() {
-    homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
+    homeGridPresenter.updateUserFacebook(getCurrentUser().getId(), AccessToken.getCurrentAccessToken().getToken());
     syncContacts();
   }
 

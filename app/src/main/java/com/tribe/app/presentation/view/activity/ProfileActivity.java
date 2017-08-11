@@ -186,9 +186,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     txtAction.setOnClickListener(v -> {
       if (viewStack.getTopView() instanceof SettingsProfileView) {
         screenUtils.hideKeyboard(this);
-        profilePresenter.updateUser(viewSettingsProfile.getUsername(),
+        profilePresenter.updateUser(getCurrentUser().getId(), viewSettingsProfile.getUsername(),
             viewSettingsProfile.getDisplayName(), viewSettingsProfile.getImgUri(),
-            getCurrentUser().getFbid());
+            FacebookUtils.accessToken());
       }
     });
   }

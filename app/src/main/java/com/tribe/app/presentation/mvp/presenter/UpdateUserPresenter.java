@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.util.Pair;
 
 import com.digits.sdk.android.DigitsSession;
+import com.facebook.AccessToken;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
@@ -52,7 +53,20 @@ public abstract class UpdateUserPresenter implements Presenter {
     if (updateUserSubscriber != null) updateUserSubscriber.unsubscribe();
   }
 
-  public void updateUser(String username, String displayName, String pictureUri, String fbid) {
+  public void updateUser(String userId, String username, String displayName, String pictureUri, AccessToken fbAccessToken) {
+
+    if (getUpdateUserView() != null) getUpdateUserView().showLoading();
+
+    if (fbAccessToken != null) {
+      updateUserFacebook.prepare(userId, fbAccessToken.getToken());
+      updateUserFacebook.execute(new UpdateFacebookSubscriber(userId, username, displayName, pictureUri));
+
+    } else {
+      updateUser(userId, username, displayName, pictureUri);
+    }
+  }
+
+  public void updateUser(String userId, String username, String displayName, String pictureUri) {
     if (updateUserSubscriber != null) updateUserSubscriber.unsubscribe();
 
     List<Pair<String, String>> values = new ArrayList<>();
@@ -61,7 +75,6 @@ public abstract class UpdateUserPresenter implements Presenter {
     if (!StringUtils.isEmpty(pictureUri)) {
       values.add(new Pair<>(UserRealm.PROFILE_PICTURE, pictureUri));
     }
-    values.add(new Pair<>(UserRealm.FBID, fbid));
 
     if (getUpdateUserView() != null) getUpdateUserView().showLoading();
 
@@ -70,30 +83,9 @@ public abstract class UpdateUserPresenter implements Presenter {
     updateUser.execute(updateUserSubscriber);
   }
 
-  public void updateUserTribeSave(boolean tribeSave) {
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(UserRealm.TRIBE_SAVE, String.valueOf(tribeSave)));
-    updateUser.prepare(values);
-    updateUser.execute(new UpdateUserSubscriber());
-  }
-
-  public void updateUserNotifications(boolean notifications) {
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(UserRealm.PUSH_NOTIF, String.valueOf(notifications)));
-    updateUser.prepare(values);
-    updateUser.execute(new UpdateUserSubscriber());
-  }
-
   public void updateUserInvisibleMode(boolean tribeSave) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(UserRealm.INVISIBLE_MODE, String.valueOf(tribeSave)));
-    updateUser.prepare(values);
-    updateUser.execute(new UpdateUserSubscriber());
-  }
-
-  public void updateUserFacebook(String fbid) {
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(UserRealm.FBID, String.valueOf(fbid)));
     updateUser.prepare(values);
     updateUser.execute(new UpdateUserSubscriber());
   }
@@ -195,6 +187,33 @@ public abstract class UpdateUserPresenter implements Presenter {
   public void connectToFacebook(String userId, String accessToken) {
     updateUserFacebook.prepare(userId, accessToken);
     updateUserFacebook.execute(new ConnectToFacebookSubscriber());
+  }
+
+  private class UpdateFacebookSubscriber extends DefaultSubscriber<User> {
+
+    private String userId;
+    private String username;
+    private String displayName;
+    private String pictureUri;
+
+    UpdateFacebookSubscriber(String userId, String username, String displayName, String pictureUri) {
+      this.userId = userId;
+      this.username = username;
+      this.displayName = displayName;
+      this.pictureUri = pictureUri;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      updateUser(userId, username, displayName, pictureUri);
+    }
+
+    @Override public void onNext(User user) {
+      updateUser(userId, username, displayName, pictureUri);
+      unsubscribe();
+    }
   }
 
   private class ConnectToFacebookSubscriber extends DefaultSubscriber<User> {

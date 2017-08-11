@@ -291,10 +291,9 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       profileInfoPresenter.getUserInfo();
     } else if (!StringUtils.isEmpty(user.getId())) {
       showLoading();
-      profileInfoPresenter.updateUser(profileInfoView.getUsername(),
+      profileInfoPresenter.updateUser(user.getId(), profileInfoView.getUsername(),
           profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
-          facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())
-              ? facebookEntity.getId() : null);
+          FacebookUtils.accessToken());
     }
   }
 
@@ -311,10 +310,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     tagManager.setUserId(this.user.getId());
     tagManager.updateUser(this.user);
 
-    profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(),
-        profileInfoView.getImgUri(),
-        facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())
-            ? facebookEntity.getId() : null);
+    profileInfoPresenter.updateUser(user.getId(), user.getUsername(), user.getDisplayName(),
+        profileInfoView.getImgUri(), FacebookUtils.accessToken());
   }
 
   @Override public void successUpdateUser(User user) {
