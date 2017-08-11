@@ -92,9 +92,8 @@ public class GameDrawView extends FrameLayout {
     if (adapter == null) initView(context);
     new Handler().post(() -> {
       int currentItem = (viewpager.getCurrentItem() + 1);
-      Timber.w("soef set next game view " + currentItem);
       viewpager.setCurrentItem(currentItem);
-      setVisibility(VISIBLE); // MAYBE
+      setVisibility(VISIBLE);
     });
   }
 
@@ -114,7 +113,6 @@ public class GameDrawView extends FrameLayout {
   public void onPointsDrawReceived(String pointsReceived) {
     Gson gson = new Gson();
     Float[][] str = gson.fromJson(pointsReceived, Float[][].class);
-    Timber.e("SOEF POINT OMAR" + str[0][0] + " " + +str[0][1]);
     adapter.onPointsDrawReceived(str);
   }
 

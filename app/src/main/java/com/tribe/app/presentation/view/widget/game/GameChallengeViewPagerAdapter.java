@@ -93,15 +93,14 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
       if (guest.getId().equals(user.getId())) {
         txtName.setText(user.getDisplayName());
         viewAvatar.load(user.getProfilePicture());
-        txtUsername.setText("Your turn to be challenged");
+        txtUsername.setText(context.getString(R.string.game_challenges_your_turn));
       } else {
         txtName.setText(guest.getDisplayName());
         viewAvatar.load(guest.getPicture());
-        txtUsername.setText("is challenged");
+        txtUsername.setText(context.getString(R.string.game_challenges_turn));
       }
-      Timber.i("SOEF  1: " + challenge);
     } else {
-      Timber.e("SOEF guest = null");
+      Timber.e("guest null");
     }
   }
 

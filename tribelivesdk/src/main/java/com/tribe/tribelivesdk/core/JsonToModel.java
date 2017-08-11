@@ -219,8 +219,6 @@ public class JsonToModel {
                 datas.add(challenge);
                 datas.add(userId);
                 onNewChallengeReceived.onNext(datas);
-              } else {
-                Timber.e("SOEF  No value for user");
               }
             }
           } else if (app.has("draw")) {
@@ -234,13 +232,10 @@ public class JsonToModel {
                 datas.add(name);
                 datas.add(userId);
                 onNewDrawReceived.onNext(datas);
-              } else {
-                Timber.e("SOEF  No value for user");
               }
             } else if (action.equals("drawPath")) {
               JSONObject path = draw.getJSONObject("path");
               JSONArray points = path.getJSONArray("points");
-              Timber.e("soef receive draw " + points.toString());
               onPointsDrawReceived.onNext(points.toString());
             } else if (action.equals("clear")) {
               onClearDrawReceived.onNext(null);
@@ -389,6 +384,7 @@ public class JsonToModel {
   public Observable<Void> onClearDrawReceived() {
     return onClearDrawReceived;
   }
+
   public Observable<String> onPointsDrawReceived() {
     return onPointsDrawReceived;
   }

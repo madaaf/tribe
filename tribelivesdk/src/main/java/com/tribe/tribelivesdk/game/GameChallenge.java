@@ -20,7 +20,7 @@ public class GameChallenge extends Game {
 
   private String currentChallenge;
   private TribeGuest currentChallenger;
-  private String previousIdChoose = null;
+  private String previousGuestId = null;
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -42,19 +42,17 @@ public class GameChallenge extends Game {
 
   public void generateNewDatas() {
     if (nameList == null || nameList.size() == 0) {
-      Timber.i("SOEF nameList  empty ");
       return;
     }
     currentChallenge = nameList.get(new Random().nextInt(nameList.size()));
-    Timber.i("SOEF Set current game name  : " + currentChallenge);
+    Timber.d("set current game name  : " + currentChallenge);
 
     if (guestList == null || guestList.size() == 0) {
-      Timber.i("SOEF guestList  empty ");
       return;
     }
 
-    currentChallenger = getSortedGuest(guestList);
-    Timber.i("SOEF set current Guest : " + currentChallenger.getDisplayName());
+    currentChallenger = getNextGamer(guestList);
+    Timber.d("set current gamer : " + currentChallenger.getDisplayName());
   }
 
   @Override public void apply(Frame frame) {
@@ -85,24 +83,28 @@ public class GameChallenge extends Game {
     return nameList != null && nameList.size() > 0;
   }
 
-  private TribeGuest getSortedGuest(List<TribeGuest> array) {
-    TribeGuest guestChoose = null;
-    if (previousIdChoose == null) {
-      int rnd = new Random().nextInt(array.size());
-      guestChoose = array.get(rnd);
-      previousIdChoose = guestChoose.getId();
-      return guestChoose;
-    }
+  private TribeGuest getNextGamer(List<TribeGuest> array) {
+    Collections.sort(array, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+    TribeGuest tribeGuest;
 
-    List<String> ids = new ArrayList<>();
-    for (TribeGuest guest : array) {
-      ids.add(guest.getId());
+    if (previousGuestId == null) {
+      tribeGuest = array.get(new Random().nextInt(array.size()));
+      previousGuestId = tribeGuest.getId();
+      return tribeGuest;
+    } else {
+      int index = 0;
+      for (int i = 0; i < array.size(); i++) {
+        if (array.get(i).getId().equals(previousGuestId)) {
+          index = i + 1;
+          break;
+        }
+      }
+
+      if (index >= array.size()) index = 0;
+
+      tribeGuest = array.get(index);
+      previousGuestId = tribeGuest.getId();
+      return tribeGuest;
     }
-    Collections.sort(ids);
-    int i = ids.indexOf(previousIdChoose) + 1;
-    if (i >= array.size()) i = 0;
-    guestChoose = array.get(i);
-    previousIdChoose = guestChoose.getId();
-    return guestChoose;
   }
 }

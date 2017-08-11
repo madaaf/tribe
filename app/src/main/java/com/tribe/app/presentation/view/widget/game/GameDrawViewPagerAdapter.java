@@ -83,7 +83,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       }
 
       public void onFinish() {
-        Timber.v("SOEF ON FINISH " + position + " " + currentPosition);
         if (counter != null) counter.setText("0");
         if (position == currentPosition) {
           onNextDraw.onNext(true);
@@ -149,7 +148,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       drawDesc.setText(
           EmojiParser.demojizedText(context.getString(R.string.game_draw_word_to_draw)));
       turn.setText(context.getString(R.string.game_draw_my_turn));
-      Timber.e("SOEF POPULATE " + user.getDisplayName() + " " + userIsDrawer + " Your turn");
     } else {
       txtName.setText(guest.getDisplayName());
       drawDesc.setText(
@@ -157,7 +155,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       turn.setText(context.getString(R.string.game_draw_other_is_drawing));
       hand.setVisibility(View.INVISIBLE);
       clearBtn.setVisibility(View.INVISIBLE);
-      Timber.e("SOEF POPULATE " + guest.getDisplayName() + " " + userIsDrawer + " is drawing");
     }
 
     dv = new DrawerView(context, hand, clearBtn);
@@ -228,7 +225,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
       x[i] = points[i][0];
       y[i] = points[i][1];
     }
-    Timber.e("SOEF SIMILAR" + (isEquals(x) && isEquals(y)));
     return (isEquals(x) && isEquals(y));
   }
 
@@ -242,7 +238,6 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   }
 
   public void onClearDrawReceived() {
-    Timber.e("SOEF onClearDrawReceived");
     if (dv != null) dv.clear();
   }
 }

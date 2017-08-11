@@ -491,8 +491,7 @@ public class LiveView extends FrameLayout {
     viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
-      displayStartGameNotification(game.getName(), user.getDisplayName());//SOEF MADA
-      Timber.e("SOEF onStartGame " + game.getName());
+      displayStartGameNotification(game.getName(), user.getDisplayName());
       restartGame(game);
     }));
 
@@ -507,33 +506,26 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
-      Timber.e(" soef onNextChallenge");
       onRestartGame(gameManager.getCurrentGame());
     }));
 
     persistentSubscriptions.add(gameDrawView.onNextDraw().subscribe(aVoid -> {
-      Timber.e(" soef onNextDraw");
       onRestartGame(gameManager.getCurrentGame());
     }));
 
     persistentSubscriptions.add(gameDrawView.onCurrentGame().subscribe(game -> {
-      Timber.e(
-          "******************          SOEF ON CURRENT GAME   DRAW       *************************");
       GameDraw draw = (GameDraw) game;
       room.sendToPeers(getNewDrawPayload(user.getId(), draw.getCurrentDrawer().getId(),
           draw.getCurrentDrawName()), false);
     }));
 
     persistentSubscriptions.add(gameChallengesView.onCurrentGame().subscribe(game -> {
-      Timber.e(
-          "******************          SOEF ON CURRENT GAME CHALLENGE           *************************");
       GameChallenge draw = (GameChallenge) game;
       room.sendToPeers(getNewChallengePayload(user.getId(), draw.getCurrentChallenger().getId(),
           draw.getCurrentChallenge()), false);
     }));
 
     persistentSubscriptions.add(gameDrawView.onClearDraw().subscribe(aVoid -> {
-      Timber.e("SOEF CLEAR DRAW ? ?? ");
       room.sendToPeers(getDrawClearPayload(), false);
     }));
 
@@ -648,7 +640,7 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> { //SOEF STOP
+    tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
       Game game = gameManager.getGameById(pairSessionGame.second);
       String displayName = getDisplayNameFromSession(pairSessionGame.first);
       displayStopGameNotification(game.getName(), displayName);
@@ -1523,7 +1515,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void onRestartGame(Game game) {
-    Timber.e("soef onRestartGame subscription");
     if (game instanceof GameChallenge) {
       GameChallenge challenge = (GameChallenge) game;
       if (challenge.getCurrentChallenger().getId().equals(user.getId())) {
@@ -1536,7 +1527,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void startGame(Game game, boolean isUserAction) {
-    Timber.e("SOEF START GAME");
     if (game == null) return;
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;

@@ -273,14 +273,14 @@ public class LiveControlsView extends FrameLayout {
     recyclerViewGames.getRecycledViewPool().setMaxRecycledViews(0, 50);
 
     recyclerViewGames.setTranslationY(screenUtils.getHeightPx() >> 1);
-    //SOEF FIRST CLICK
+
     subscriptions.add(gamesAdapter.onClick()
         .map(view -> {
           Game game =
               (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
           return new Pair<>(view, game);
         })
-        .observeOn(AndroidSchedulers.mainThread())//SOEF
+        .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
           gameManager.setCurrentGame(pairViewGame.second);
@@ -550,7 +550,7 @@ public class LiveControlsView extends FrameLayout {
     AnimationUtils.fadeOut(btnFilterOn, DURATION_GAMES_FILTERS);
   }
 
-  private ImageView addGameToView(View viewFrom) {//SOEF
+  private ImageView addGameToView(View viewFrom) {
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(sizeGameFilter, sizeGameFilter);
     params.bottomMargin = screenUtils.dpToPx(5);
     params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
