@@ -732,10 +732,11 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     }
   }
 
+  private AuthCallback authCallback;
+
   private void changeMyPhoneNumber() {
 
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(new AuthCallback() {
+    authCallback = new AuthCallback() {
 
       @Override public void success(DigitsSession session, String phoneNumber) {
         searchPresenter.updatePhoneNumber(user.getId(), session);
@@ -746,7 +747,10 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
         viewFriendsAddressBookLoad.setChecked(false);
         showError(error.getMessage());
       }
-    });
+    };
+
+    AuthConfig.Builder builder = new AuthConfig.Builder();
+    builder.withAuthCallBack(authCallback);
 
     AuthConfig authConfig = builder.build();
 

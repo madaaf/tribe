@@ -625,6 +625,7 @@
 	<string name="game_draw_word_to_guess">Guess what it is :spy:</string>
 	<string name="game_draw_timer_instructions">Next in :hourglass:</string>
 	<string name="game_draw_clear">Clear</string>
+	<string name="game_draw_instructions_my_turn">Your turn to draw!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
