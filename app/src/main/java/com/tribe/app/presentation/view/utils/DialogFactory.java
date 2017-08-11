@@ -9,15 +9,19 @@ import android.os.Build;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
@@ -87,6 +91,42 @@ public final class DialogFactory {
             subscriber.onCompleted();
           })
           .create();
+
+      subscriber.add(Subscriptions.create(ad::dismiss));
+      ad.show();
+    });
+  }
+
+  public static Observable<String> numberPadDialog(Context context, String title, String positiveMessage, String negativeMessage, int inputType) {
+    return Observable.create((Subscriber<? super String> subscriber) -> {
+
+      ContextThemeWrapper themedContext;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        themedContext = new ContextThemeWrapper(context,
+                android.R.style.Theme_Material_Light_Dialog_NoActionBar);
+      } else {
+        themedContext =
+                new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+      }
+
+      final EditText et = new EditText(themedContext);
+      et.setInputType(inputType);
+
+      final AlertDialog ad = new AlertDialog.Builder(themedContext)
+              .setTitle(title)
+              .setPositiveButton(positiveMessage, (dialog, which) -> {
+
+                if (et.getText() != null) {
+                  subscriber.onNext(et.getText().toString());
+                }
+
+                subscriber.onCompleted();
+              })
+              .setNegativeButton(negativeMessage, (dialog, which) -> {
+                subscriber.onCompleted();
+              })
+              .setView(et)
+              .create();
 
       subscriber.add(Subscriptions.create(ad::dismiss));
       ad.show();
@@ -198,6 +238,36 @@ public final class DialogFactory {
         new LabelType(context.getString(R.string.settings_follow_instagram), LabelType.INSTAGRAM));
     followTypes.add(
         new LabelType(context.getString(R.string.settings_follow_snapchat), LabelType.SNAPCHAT));
+    return followTypes;
+  }
+
+  public static Observable<LabelType> showBottomSheetForFacebookAuth(Context context) {
+    return createBottomSheet(context, generateLabelsForFacebookAuth(context));
+  }
+
+  private static List<LabelType> generateLabelsForFacebookAuth(Context context) {
+    List<LabelType> followTypes = new ArrayList<>();
+
+    followTypes.add(
+            new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(
+            new LabelType("Force logout", LabelType.FORCE_LOGOUT));
+    return followTypes;
+  }
+
+  public static Observable<LabelType> showBottomSheetForPhoneNumberAuth(Context context) {
+    return createBottomSheet(context, generateLabelsForPhoneNumberAuth(context));
+  }
+
+  private static List<LabelType> generateLabelsForPhoneNumberAuth(Context context) {
+    List<LabelType> followTypes = new ArrayList<>();
+
+    followTypes.add(
+            new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(
+            new LabelType("Login (alternative)", LabelType.LOGIN_ALTERNATIVE));
+    followTypes.add(
+            new LabelType("Login (call)", LabelType.LOGIN_CALL));
     return followTypes;
   }
 

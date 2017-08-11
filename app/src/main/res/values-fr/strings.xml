@@ -28,7 +28,7 @@
 	<string name="action_sms">iMessage</string>
 	<string name="action_messenger">Messenger</string>
 	<string name="action_report">Signaler</string>
-	<string name="action_user_reported">Utilisateur signalé !</string>
+	<string name="action_user_reported">Signalé!</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -152,9 +152,9 @@
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
-	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
+	<string name="grid_syncing_contacts_banner">Synchronisation des amis...</string>
 	<string name="grid_sync_failed_contacts_banner">Synchronisation echouée</string>
-	<string name="grid_synced_contacts_banner">Contacts synchronisés !</string>
+	<string name="grid_synced_contacts_banner">Amis synchronisés !</string>
 	<string name="grid_syncing_address_book_banner">Synchronisation des contacts...</string>
 	<string name="grid_syncing_facebook_banner">Synchronisation de Facebook...</string>
 	<string name="grid_sync_failed_address_book_banner">Synchronisation echouée</string>
@@ -354,6 +354,7 @@
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
 	<string name="live_join_impossible">:lock: 8 amis max. en même temps !</string>
+	<string name="live_mask_unavailable">:lock: Ce masque n\'est pas disponible pendant ce jeu.</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
@@ -392,7 +393,7 @@
 	<string name="profile_video_demo_subtitle">Apprenez Tribe en 30 secondes !</string>
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Dégradation de l\'expérience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
@@ -418,6 +419,7 @@
 	<!-- Profile Facebook Account -->
 	<string name="profile_facebook_account_title">Profil Facebook</string>
 	<string name="profile_facebook_account_status_connected">Connecté</string>
+	<string name="profile_facebook_account_status_disconnected">Non connecté</string>
 	<string name="profile_facebook_account_already_in_use">Ce profil Facebook est déjà utilisé sur un autre compte.</string>
 	
 	<!-- Manage friendships -->
@@ -608,8 +610,8 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Lance le prochain challenge !</string>
 	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
-	<string name="game_challenges_turn">est challengé</string>
-	<string name="game_challenges_your_turn">A ton tour d\'être challengé</string>
+	<string name="game_challenges_turn">est challengé!</string>
+	<string name="game_challenges_your_turn">A ton tour d\'être challengé!</string>
 	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
 	<string name="game_challenges_re_roll_notification">%1$s a changé de challenge!</string>
 	<string name="game_scream">Scream !</string>
@@ -666,15 +668,16 @@
 	<string name="linked_friends_address_book">Contacts du carnet d\'adresses</string>
 	<string name="linked_friends_status_linked">Synchronisé</string>
 	<string name="linked_friends_status_not_linked">Non synchronisé</string>
-	<string name="linked_friends_notifications_disable_phone_alert_title">Downgrading Experience :warning:</string>
-	<string name="linked_friends_notifications_disable_phone_alert_msg">Attention, vous êtes sur le point de désactiver votre téléphone.</string>
+	<string name="linked_friends_notifications_disable_phone_alert_title">Dégradation de l\'expérience :warning:</string>
+	<string name="linked_friends_notifications_disable_phone_alert_msg">Vous êtes sur le point de désynchorniser votre Carnet d\'Adresses de votre compte. Cela signifie que vous ne serez plus capable de trouver vos Contacts sur Tribe.</string>
 	<string name="linked_friends_notifications_disable_phone_alert_disable">Désactiver</string>
-	<string name="linked_friends_notifications_disable_fb_alert_title">Downgrading Experience :warning:</string>
-	<string name="linked_friends_notifications_disable_fb_alert_msg">Attention, vous êtes sur le point de désactiver Facebook.</string>
+	<string name="linked_friends_notifications_disable_fb_alert_title">Dégradation de l\'expérience :warning:</string>
+	<string name="linked_friends_notifications_disable_fb_alert_msg">Vous êtes sur le point de désynchroniser Facebook de votre compte. Cela signifie que vous ne serez plus capable de trouver vos amis Facebook sur Tribe.</string>
 	<string name="linked_friends_notifications_disable_fb_alert_disable">Désactiver</string>
-	<string name="linked_friends_unlink_error_unable_to_unlink">Vous ne pouvez pas vous déconnecter de tous vos comptes (Facebook et téléphone) de Tribe.</string>
-	<string name="linked_friends_unlink_success_phone">Votre numéro de téléphone a été déconnecté.</string>
-	<string name="linked_friends_unlink_success_fb">Votre compte Facebook a été déconnecté.</string>
-	<string name="linked_friends_link_success_phone">Votre numéro de téléphone a été connecté.</string>
-	<string name="linked_friends_link_success_fb">Votre compte Facebook a été connecté.</string>
+	<string name="linked_friends_unlink_error_unable_to_unlink">Facebook ou Carnet d\'Addresse doit être connecté</string>
+	<string name="linked_friends_unlink_success_phone">Carnet d\'Adresses déconnecté</string>
+	<string name="linked_friends_unlink_success_fb">Facebook déconnecté</string>
+	<string name="linked_friends_link_success_phone">Carnet d\'Adresses connecté</string>
+	<string name="linked_friends_link_success_fb">Facebook connecté</string>
+	<string name="linked_friends_loading">Chargement...</string>
 </resources>

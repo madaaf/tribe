@@ -25,7 +25,6 @@ public class MoveViewTouchListener implements View.OnTouchListener {
 
   @Override public boolean onTouch(View v, MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_UP) {
-      Timber.e("SOEF ON ACTION UP");
       v.animate()
           .translationX(0)
           .translationY(0)
@@ -44,7 +43,6 @@ public class MoveViewTouchListener implements View.OnTouchListener {
         @Override public boolean onDown(MotionEvent e) {
           mMotionDownX = e.getRawX() - mView.getTranslationX();
           mMotionDownY = e.getRawY() - mView.getTranslationY();
-          Timber.d("SOEF MOVE " + mMotionDownX + " " + mMotionDownY);
           onBlockOpenInviteView.onNext(true);
           return true;
         }
@@ -53,8 +51,6 @@ public class MoveViewTouchListener implements View.OnTouchListener {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
           mView.setTranslationX(e2.getRawX() - mMotionDownX);
           mView.setTranslationY(e2.getRawY() - mMotionDownY);
-          Timber.d("SOEF ON SCROLL " + (e2.getRawX() - mMotionDownX) + " " + (e2.getRawY()
-              - mMotionDownY));
           return true;
         }
       };

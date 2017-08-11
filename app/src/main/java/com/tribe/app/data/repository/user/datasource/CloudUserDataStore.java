@@ -128,16 +128,21 @@ public class CloudUserDataStore implements UserDataStore {
     return this.loginApi.requestCode(new LoginEntity(phoneNumber, shouldCall));
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
-    if (loginEntity.getPhoneNumber() == null) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
+    if (loginEntity.getFbAccessToken() != null) {
+      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken()).doOnNext(saveToCacheAccessToken);
+
+    } else if (loginEntity.getPhoneNumber() == null) {
       return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
+
     } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
       Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
       return loginApi.loginWithUsername(authHeaders.get(LoginApi.X_VERIFY),
-          authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
+              authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
+
     } else {
       return loginApi.loginWithUsername(loginEntity).doOnNext(saveToCacheAccessToken);
     }
@@ -151,10 +156,13 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
     registerEntity.setPhoneNumber(
-        loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), ""));
+            loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), "") : null);
     registerEntity.setPinId(loginEntity.getPinId());
 
-    if (Digits.getActiveSession() != null) {
+    if (loginEntity.getFbAccessToken() != null) {
+      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity).doOnNext(saveToCacheAccessToken);
+
+    } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);

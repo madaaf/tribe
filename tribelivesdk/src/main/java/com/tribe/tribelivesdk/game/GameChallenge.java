@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import timber.log.Timber;
@@ -19,6 +20,7 @@ public class GameChallenge extends Game {
 
   private String currentChallenge;
   private TribeGuest currentChallenger;
+  private String previousGuestId = null;
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -34,20 +36,23 @@ public class GameChallenge extends Game {
     generateNewDatas();
   }
 
+  public void setGuestList(List<TribeGuest> guestList) {
+    this.guestList = guestList;
+  }
+
   public void generateNewDatas() {
     if (nameList == null || nameList.size() == 0) {
-      Timber.i("SOEF nameList  empty ");
       return;
     }
     currentChallenge = nameList.get(new Random().nextInt(nameList.size()));
-    Timber.i("SOEF Set current game name  : " + currentChallenge);
+    Timber.d("set current game name  : " + currentChallenge);
 
     if (guestList == null || guestList.size() == 0) {
-      Timber.i("SOEF guestList  empty ");
       return;
     }
-    currentChallenger = getRandomGuest(guestList);
-    Timber.i("SOEF set current Guest : " + currentChallenger.getDisplayName());
+
+    currentChallenger = getNextGamer(guestList);
+    Timber.d("set current gamer : " + currentChallenger.getDisplayName());
   }
 
   @Override public void apply(Frame frame) {
@@ -78,8 +83,28 @@ public class GameChallenge extends Game {
     return nameList != null && nameList.size() > 0;
   }
 
-  private static TribeGuest getRandomGuest(List<TribeGuest> array) {
-    int rnd = new Random().nextInt(array.size());
-    return array.get(rnd);
+  private TribeGuest getNextGamer(List<TribeGuest> array) {
+    Collections.sort(array, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+    TribeGuest tribeGuest;
+
+    if (previousGuestId == null) {
+      tribeGuest = array.get(new Random().nextInt(array.size()));
+      previousGuestId = tribeGuest.getId();
+      return tribeGuest;
+    } else {
+      int index = 0;
+      for (int i = 0; i < array.size(); i++) {
+        if (array.get(i).getId().equals(previousGuestId)) {
+          index = i + 1;
+          break;
+        }
+      }
+
+      if (index >= array.size()) index = 0;
+
+      tribeGuest = array.get(index);
+      previousGuestId = tribeGuest.getId();
+      return tribeGuest;
+    }
   }
 }

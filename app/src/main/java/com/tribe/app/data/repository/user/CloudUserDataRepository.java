@@ -73,9 +73,9 @@ import rx.Observable;
         .map(pin -> pinRealmDataMapper.transform(pin));
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.loginWithPhoneNumber(loginEntity);
+    return userDataStore.login(loginEntity);
   }
 
   @Override public Observable<AccessToken> register(String displayName, String username,

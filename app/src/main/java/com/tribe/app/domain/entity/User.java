@@ -18,6 +18,8 @@ public class User implements Serializable, BaseListInterface {
 
 
   public static final String ID = "id";
+  public static final String FBID = "fbid";
+  public static final String USERNAME = "username";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
 
@@ -228,8 +230,7 @@ public class User implements Serializable, BaseListInterface {
     if (last_seen_at == null) return false;
 
     // We consider that somebody that was online less than fifteen minutes ago is still online
-    long fifteenMinutesAgo = System.currentTimeMillis() - FIFTEEN_MINUTES;
-    return last_seen_at.getTime() > fifteenMinutesAgo;
+    return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
   }
 
   public void setIsOnline(boolean isOnline) {
@@ -335,6 +336,7 @@ public class User implements Serializable, BaseListInterface {
       setTribeSave(user.isTribeSave());
       setPushNotif(user.isPushNotif());
       setTimeInCall(user.getTimeInCall());
+      setLastSeenAt(user.getLastSeenAt());
       if (user.getLocation() != null) setLocation(user.getLocation());
       if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
         setMembershipList(user.getMembershipList());
@@ -358,6 +360,7 @@ public class User implements Serializable, BaseListInterface {
     setInvisibleMode(false);
     setPushNotif(false);
     setTimeInCall(0);
+    setLastSeenAt(null);
     setTribeSave(false);
     setLocation(null);
     setMembershipList(null);

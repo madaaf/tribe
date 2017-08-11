@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget;
+package com.tribe.app.presentation.view.widget.game;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.MoveViewTouchListener;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
@@ -31,6 +32,7 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private User user;
   private GameManager gameManager;
   private int currentPosition;
+  private View currentView;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
@@ -53,9 +55,23 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
-
     View itemView = mLayoutInflater.inflate(R.layout.item_game_challenges, container, false);
+    container.addView(itemView);
+    return itemView;
+  }
 
+  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
+    currentView = (View) object;
+    if (position == currentPosition) return;
+    currentPosition = position;
+    populateView(currentView);
+    GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
+    if (challenge.isUserAction()) {
+      onCurrentGame.onNext(challenge);
+    }
+  }
+
+  private void populateView(View itemView) {
     GameChallenge game = (GameChallenge) gameManager.getCurrentGame();
 
     TextViewFont txtChallenge = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
@@ -77,46 +93,23 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
       if (guest.getId().equals(user.getId())) {
         txtName.setText(user.getDisplayName());
         viewAvatar.load(user.getProfilePicture());
-        txtUsername.setText("Your turn to be challenged");
+        txtUsername.setText(context.getString(R.string.game_challenges_your_turn));
       } else {
         txtName.setText(guest.getDisplayName());
         viewAvatar.load(guest.getPicture());
-        txtUsername.setText("is challenged");
+        txtUsername.setText(context.getString(R.string.game_challenges_turn));
       }
-      Timber.i("SOEF  1: "
-          + guest.getDisplayName()
-          + " "
-          + guest.getId()
-          + " "
-          + user.getId()
-          + " "
-          + user.getDisplayName()
-          + " "
-          + challenge);
     } else {
-      Timber.e("SOEF guest = null");
+      Timber.e("guest null");
     }
-
-    container.addView(itemView);
-    return itemView;
-  }
-
-  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
-    if (position == currentPosition) return;
-    currentPosition = position;
-
-    GameChallenge challenge = (GameChallenge) gameManager.getCurrentGame();
-    if (challenge.isUserAction()) {
-      onCurrentGame.onNext(challenge);
-    }
-  }
-
-  public Observable<Game> onCurrentGame() {
-    return onCurrentGame;
   }
 
   @Override public void destroyItem(ViewGroup container, int position, Object view) {
     container.removeView((View) view);
+  }
+
+  public Observable<Game> onCurrentGame() {
+    return onCurrentGame;
   }
 
   public Observable<Boolean> onBlockOpenInviteView() {

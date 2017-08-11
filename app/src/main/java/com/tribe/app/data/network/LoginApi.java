@@ -14,6 +14,7 @@ import rx.Observable;
 
 public interface LoginApi {
 
+  public static final String FACEBOOK_TOKEN = "facebook-token";
   public static final String X_VERIFY = "X-Verify-Credentials-Authorization";
   public static final String X_AUTH = "X-Auth-Service-Provider";
 
@@ -23,6 +24,8 @@ public interface LoginApi {
 
   @POST("/anonToken") Observable<AccessToken> loginWithAnonymous();
 
+  @POST("/token") Observable<AccessToken> loginWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken);
+
   @POST("/token") Observable<AccessToken> loginWithUsername(@Header(X_VERIFY) String xVerify,
       @Header(X_AUTH) String xAuth, @Body LoginEntity loginEntity);
 
@@ -30,8 +33,10 @@ public interface LoginApi {
 
   @POST("/register") Observable<AccessToken> register(@Body RegisterEntity registerEntity);
 
+  @POST("/register") Observable<AccessToken> registerWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken, @Body RegisterEntity registerEntity);
+
   @POST("/register") Observable<AccessToken> register(@Header(X_VERIFY) String xVerify,
-      @Header(X_AUTH) String xAuth, @Body RegisterEntity registerEntity);
+                                                      @Header(X_AUTH) String xAuth, @Body RegisterEntity registerEntity);
 
   @POST("/username") Observable<Boolean> lookupUsername(@Body UsernameEntity usernameEntity);
 }

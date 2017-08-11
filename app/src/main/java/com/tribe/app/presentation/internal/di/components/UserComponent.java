@@ -42,13 +42,15 @@ import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
 import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
+import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
 import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
+import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
-import com.tribe.app.presentation.view.widget.GameChallengesView;
-import com.tribe.app.presentation.view.widget.GameDrawView;
+import com.tribe.app.presentation.view.widget.game.GameChallengesView;
+import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
@@ -115,6 +117,10 @@ import dagger.Component;
   void inject(SettingsPresenter settingsPresenter);
 
   void inject(SettingsProfileView settingsProfileView);
+
+  void inject(SettingsPhoneNumberView settingsPhoneNumberView);
+
+  void inject(SettingsFacebookAccountView settingsFacebookAccountView);
 
   void inject(ProfileActivity profileActivity);
 

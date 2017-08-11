@@ -70,7 +70,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     return null;
   }
 
