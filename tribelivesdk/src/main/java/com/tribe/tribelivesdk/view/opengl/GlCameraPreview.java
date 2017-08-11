@@ -13,10 +13,10 @@ import com.tribe.tribelivesdk.view.opengl.gles.DefaultContextFactory;
 import com.tribe.tribelivesdk.view.opengl.gles.GlTextureView;
 import com.tribe.tribelivesdk.view.opengl.renderer.PreviewRenderer;
 import com.tribe.tribelivesdk.webrtc.Frame;
-import com.tribe.tribelivesdk.webrtc.RendererCommon;
 import org.webrtc.ThreadUtils;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static android.opengl.GLES20.GL_MAX_RENDERBUFFER_SIZE;
 import static android.opengl.GLES20.GL_MAX_TEXTURE_SIZE;
@@ -28,9 +28,8 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   private int maxTextureSize;
   private int maxRenderBufferSize;
   private boolean isInitialized = false;
-  private final RendererCommon.VideoLayoutMeasure videoLayoutMeasure =
-      new RendererCommon.VideoLayoutMeasure();
   private final Object layoutLock = new Object();
+  private CameraInfo cameraInfo;
 
   // OBSERVABLE
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -42,7 +41,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   public GlCameraPreview(@NonNull final Context context, final AttributeSet attrs) {
     super(context, attrs);
 
-    setScaleType(CENTER_CROP);
+    setScaleType(CENTER_CROP_FILL);
     setEGLConfigChooser(
         new DefaultConfigChooser(8, 8, 8, 8, EGL14.EGL_OPENGL_ES2_BIT, EGL14.EGL_PBUFFER_BIT,
             EGL14.EGL_NONE));
@@ -50,7 +49,6 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
 
     renderer = new PreviewRenderer(context, this);
 
-    videoLayoutMeasure.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL);
     setRenderer(renderer);
     setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
@@ -62,6 +60,18 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   @Override public void onSurfaceChanged(int width, int height) {
+    if (cameraInfo != null) {
+      Timber.d("height * ((float) cameraInfo.rotatedWidth() / cameraInfo.rotatedHeight() : " +
+          height * cameraInfo.rotatedRatio());
+
+      if (height > cameraInfo.rotatedHeight() && height * cameraInfo.rotatedRatio() > width) {
+        Timber.d("CENTER_CROP_FILL");
+        setScaleType(CENTER_CROP_FILL);
+      } else {
+        Timber.d("CENTER_CROP");
+        setScaleType(CENTER_CROP);
+      }
+    }
     updateTextureViewSize();
   }
 
@@ -79,6 +89,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   public void updateCameraInfo(CameraInfo cameraInfo) {
+    this.cameraInfo = cameraInfo;
     setContentWidth(cameraInfo.rotatedWidth());
     setContentHeight(cameraInfo.rotatedHeight());
     updateTextureViewSize();

@@ -14,8 +14,8 @@ public class CameraInfo {
   private int frameOrientationUlsee;
   private Camera.CameraInfo cameraInfo;
 
-  public CameraInfo(CameraEnumerationAndroid.CaptureFormat captureFormat, int frameOrientation, int frameOrientationUlsee,
-      Camera.CameraInfo cameraInfo) {
+  public CameraInfo(CameraEnumerationAndroid.CaptureFormat captureFormat, int frameOrientation,
+      int frameOrientationUlsee, Camera.CameraInfo cameraInfo) {
     this.captureFormat = captureFormat;
     this.frameOrientation = frameOrientation;
     this.frameOrientationUlsee = frameOrientationUlsee;
@@ -56,5 +56,9 @@ public class CameraInfo {
 
   public int rotatedHeight() {
     return this.frameOrientation % 180 == 0 ? this.captureFormat.height : this.captureFormat.width;
+  }
+
+  public float rotatedRatio() {
+    return (float) rotatedWidth() / (float) rotatedHeight();
   }
 }

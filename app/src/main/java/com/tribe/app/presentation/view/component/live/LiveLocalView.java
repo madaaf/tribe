@@ -252,6 +252,10 @@ public class LiveLocalView extends FrameLayout {
     viewShareOverlay.show(source);
   }
 
+  public void updateLayout(int nbInRoom) {
+    viewPeerLocal.updateLayout(nbInRoom);
+  }
+
   public void dispose() {
     if (subscriptions != null) subscriptions.unsubscribe();
     viewPeerLocal.dispose();

@@ -105,6 +105,10 @@ public class LocalPeerView extends FrameLayout {
     glLocalView.initOnNewCameraInfo(obs);
   }
 
+  public void updateLayout(int nbInRoom) {
+    glLocalView.updateLayout(nbInRoom);
+  }
+
   public TribePeerMediaConfiguration getMediaConfiguration() {
     return mediaConfiguration;
   }

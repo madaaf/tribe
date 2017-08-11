@@ -3,12 +3,9 @@ package com.tribe.tribelivesdk.view;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.tribe.tribelivesdk.R;
 import com.tribe.tribelivesdk.entity.CameraInfo;
 import com.tribe.tribelivesdk.view.opengl.GlCameraPreview;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
@@ -68,6 +65,11 @@ public class GlLocalView extends FrameLayout {
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
     glCameraPreview.initInviteOpenSubscription(obs);
+  }
+
+  public void updateLayout(int nbInRoom) {
+    glCameraPreview.setScaleType(nbInRoom > 1 ? ScalableTextureView.CENTER_CROP : ScalableTextureView.CENTER_CROP_FILL);
+    glCameraPreview.updateTextureViewSize();
   }
 
   public void dispose() {

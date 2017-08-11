@@ -924,6 +924,8 @@ public class LiveView extends FrameLayout {
       if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
       onShouldJoinRoom.onNext(null);
     }
+
+    viewLocalLive.updateLayout(nbInRoom());
   }
 
   private void onJoining() {
