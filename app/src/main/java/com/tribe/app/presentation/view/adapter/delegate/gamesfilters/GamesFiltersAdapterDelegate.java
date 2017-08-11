@@ -18,6 +18,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.entity.GameFilter;
 import java.util.List;
 import javax.inject.Inject;
@@ -79,6 +80,8 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
       scale(vh, false);
     }
 
+    vh.name.setText(gameFilter.getName());
+
     new GlideUtils.Builder(context).hasPlaceholder(false)
         .rounded(false)
         .resourceId(gameFilter.getDrawableRes())
@@ -107,6 +110,7 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
 
     @BindView(R.id.image) ImageView image;
     @BindView(R.id.bgSelected) View bgSelected;
+    @BindView(R.id.name) TextViewFont name;
 
     public GameFilterViewHolder(View itemView) {
       super(itemView);

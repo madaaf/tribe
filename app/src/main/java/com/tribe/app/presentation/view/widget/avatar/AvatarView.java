@@ -247,7 +247,13 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private void loadPlaceholder(boolean hasHole) {
     if (avatarSize == 0) return;
-    new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).hasHole(hasHole).load();
+    Runnable r = () -> {
+      new GlideUtils.Builder(getContext()).size(avatarSize)
+          .target(imgAvatar)
+          .hasHole(hasHole)
+          .load();
+    };
+    r.run();
   }
 
   public float getShadowRatio() {

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
@@ -245,6 +246,10 @@ import static android.R.attr.id;
     jsonPut(obj, "isAudioEnabled", mediaConfiguration.isAudioEnabled());
     jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
     jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
+    JSONArray games = new JSONArray();
+    games.put(Game.GAME_POST_IT);
+    games.put(Game.GAME_CHALLENGE);
+    jsonPut(obj, "canPlayGames", games);
     return obj;
   }
 
@@ -252,9 +257,10 @@ import static android.R.attr.id;
     Timber.d("Disposing subscriptions");
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
 
+    Collection<TribePeerConnection> peerConnectionsValueList = peerConnections.values();
     if (peerConnections != null && peerConnections.size() > 0) {
       Timber.d("Iterating peer subscriptions");
-      for (TribePeerConnection tribePeerConnection : peerConnections.values()) {
+      for (TribePeerConnection tribePeerConnection : peerConnectionsValueList) {
         tribePeerConnection.dispose();
       }
 

@@ -226,6 +226,10 @@ public class TopBarContainer extends FrameLayout {
     }
   }
 
+  public void reloadUserUI() {
+    topBarView.reloadUserUI();
+  }
+
   ///////////////////////
   //    TOUCH EVENTS   //
   ///////////////////////

@@ -28,7 +28,7 @@
 	<string name="action_sms">iMessage</string>
 	<string name="action_messenger">Messenger</string>
 	<string name="action_report">Report</string>
-	<string name="action_user_reported">User reported!</string>
+	<string name="action_user_reported">Reported!</string>
 	
 	<!-- Group -->
 	<string name="group_member">member</string>
@@ -152,9 +152,15 @@
 	<string name="grid_tutorial_invite">Invite your best friends to\nmake group video calls!</string>
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
 	<string name="grid_tutorial_profile">Manage your account,\nfriendships and more!</string>
-	<string name="grid_syncing_contacts_banner">Syncing contacts...</string>
+	<string name="grid_syncing_contacts_banner">Syncing friends...</string>
 	<string name="grid_sync_failed_contacts_banner">Synchronization failed</string>
-	<string name="grid_synced_contacts_banner">Contacts synced!</string>
+	<string name="grid_synced_contacts_banner">Friends synced!</string>
+	<string name="grid_syncing_address_book_banner">Syncing Address Book contacts...</string>
+	<string name="grid_syncing_facebook_banner">Syncing Facebook friends...</string>
+	<string name="grid_sync_failed_address_book_banner">Address Book contacts sync. failed!</string>
+	<string name="grid_sync_failed_facebook_banner">Facebook friends sync. failed!</string>
+	<string name="grid_synced_address_book_banner">Address Book contacts synced!</string>
+	<string name="grid_synced_facebook_banner">Facebook friends synced!</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Group name</string>
@@ -233,8 +239,10 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommended route, it\'s quick &amp; easy!</string>
 	<string name="onboarding_user_alert_call_link_title">Looks great. Pick your best friends to try it out now! :metal:</string>
 	<string name="onboarding_user_alert_call_link_msg">Small tip: Text the friends you\'d like to video call at once.</string>
+	<string name="onboarding_user_alert_call_link_msg_facebook">Small tip: Message the friends you\'d like to video call at once.</string>
 	<string name="onboarding_user_alert_call_link_sms">Enter &amp; open SMS</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Enter &amp; open iMessage!</string>
+	<string name="onboarding_user_alert_call_link_facebook">Enter &amp; open Facebook!</string>
 	<string name="onboarding_user_alert_call_link_content">Guys, can you try with me real quick? It\'s now on %1$s</string>
 	<string name="onboarding_user_alert_call_link_metadata_title">Join %1$s now!</string>
 	<string name="onboarding_user_alert_call_link_metadata_description">%1$s invited you in a video call.</string>
@@ -346,6 +354,7 @@
 	<string name="live_drop_friend">Drop here to add your friend</string>
 	<string name="live_drop_friend_impossible">Only %1$d friends at the same time!</string>
 	<string name="live_join_impossible">:lock: Only 8 friends at the same time!</string>
+	<string name="live_mask_unavailable">:lock: This mask isn\'t available while playing this game.</string>
 	<string name="live_dismiss_invitation_title">Remove guest :skull:</string>
 	<string name="live_dismiss_invitation_message">You\'ll be able to invite him\nagain at anytime</string>
 	<string name="live_dismiss_invitation_cancel">Never mind</string>
@@ -400,6 +409,18 @@
 	<string name="profile_calls_length_suffix">\ncalling friends on tribe!</string>
 	<string name="profile_calls_length_mins">%1$d mins</string>
 	<string name="profile_calls_length_min">%1$d min</string>
+	<string name="profile_change_phone">Change phone number :telephone:</string>
+	<string name="profile_facebook_account">Facebook profile :bust_in_silhouette:</string>
+	
+	<!-- Profile Phone Number -->
+	<string name="profile_change_phone_title">Phone number</string>
+	<string name="profile_change_phone_already_in_use">This phone number is already in use on another account.</string>
+	
+	<!-- Profile Facebook Account -->
+	<string name="profile_facebook_account_title">Facebook profile</string>
+	<string name="profile_facebook_account_status_connected">Connected</string>
+	<string name="profile_facebook_account_status_disconnected">Not connected</string>
+	<string name="profile_facebook_account_already_in_use">This Facebook profile is already in use on another account.</string>
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Mute, delete or block</string>
@@ -589,12 +610,21 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Put on the next challenge!</string>
 	<string name="game_challenges_next_impossible">Only others can next your challenge!</string>
-	<string name="game_challenges_turn">is challenged</string>
-	<string name="game_challenges_your_turn">Your turn to be challenged</string>
+	<string name="game_challenges_turn">is challenged!</string>
+	<string name="game_challenges_your_turn">Your turn to be challenged!</string>
 	<string name="game_challenges_menu_re_roll">Change the challenge</string>
 	<string name="game_challenges_re_roll_notification">%1$s put on a new challenge!</string>
 	<string name="game_scream">Scream!</string>
 	<string name="game_scream_rule">Scream to reach the top!</string>
+	<string name="game_draw">Draw</string>
+	<string name="game_draw_rule">Put on the next draw!</string>
+	<string name="game_draw_my_turn">Your turn</string>
+	<string name="game_draw_other_is_drawing">is drawing</string>
+	<string name="game_draw_re_roll_notification">%1$s put on a new draw!</string>
+	<string name="game_draw_word_to_draw">Word to draw :pencil2:</string>
+	<string name="game_draw_word_to_guess">Guess what it is :spy:</string>
+	<string name="game_draw_timer_instructions">Next in :hourglass:</string>
+	<string name="game_draw_clear">Clear</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -631,4 +661,23 @@
 	<string name="unlock_roll_the_dice_impossible_popup_action">Good to know</string>
 	<string name="unlock_roll_the_dice_disclaimer">We don\'t post anything on Facebook</string>
 	<string name="unlock_roll_the_dice_decline_action">No, I don\'t want to meet new people</string>
+	
+	<!-- Linked Friends -->
+	<string name="linked_friends_title">Synchronized friends! :electric_plug:</string>
+	<string name="linked_friends_facebook">Facebook friends</string>
+	<string name="linked_friends_address_book">Address book contacts</string>
+	<string name="linked_friends_status_linked">Linked</string>
+	<string name="linked_friends_status_not_linked">Not linked yet</string>
+	<string name="linked_friends_notifications_disable_phone_alert_title">Downgrading Experience :warning:</string>
+	<string name="linked_friends_notifications_disable_phone_alert_msg">You\'re about to unsync your Address Book from your account. It means that you won\'t be able to find friends from your Contacts on Tribe anymore.</string>
+	<string name="linked_friends_notifications_disable_phone_alert_disable">Disable</string>
+	<string name="linked_friends_notifications_disable_fb_alert_title">Downgrading Experience :warning:</string>
+	<string name="linked_friends_notifications_disable_fb_alert_msg">You\'re about to unsync Facebook from your account. It means that you won\'t be able to find friends from Facebook on Tribe anymore.</string>
+	<string name="linked_friends_notifications_disable_fb_alert_disable">Disable</string>
+	<string name="linked_friends_unlink_error_unable_to_unlink">At least Facebook or Address Book has to be connected</string>
+	<string name="linked_friends_unlink_success_phone">Address Book unsynced</string>
+	<string name="linked_friends_unlink_success_fb">Facebook unsynced</string>
+	<string name="linked_friends_link_success_phone">Address Book linked</string>
+	<string name="linked_friends_link_success_fb">Facebook linked</string>
+	<string name="linked_friends_loading">Loading...</string>
 </resources>

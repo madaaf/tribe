@@ -7,6 +7,7 @@ import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -65,6 +66,8 @@ public class Room {
   public static final String MESSAGE_REMOTE_SWITCH_MODE = "eventSetRemoteAudioVideoMode";
   public static final String MESSAGE_NONE = "none";
   public static final String MESSAGE_APP = "app";
+  public static final String MESSAGE_UNLOCK_ROLL_DICE = "unlockRollTheDice";
+  public static final String MESSAGE_UNLOCKED_ROLL_DICE = "unlockedRollTheDice";
   public static final String MESSAGE_MEDIA_CONFIGURATION = "isVideoEnabled";
   public static final String MESSAGE_INVITE_ADDED = "invited_guests";
   public static final String MESSAGE_INVITE_REMOVED = "removed_invited_guest";
@@ -96,7 +99,12 @@ public class Room {
   private PublishSubject<List<TribeGuest>> onRemovedTribeGuestList = PublishSubject.create();
   private PublishSubject<WebSocketError> onError = PublishSubject.create();
   private PublishSubject<Void> onShouldLeaveRoom = PublishSubject.create();
-  private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> test = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
+  private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
+  private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
 
@@ -143,6 +151,15 @@ public class Room {
       onRollTheDiceReceived.onNext(null);
     }).subscribe());
 
+    persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+
+
+    persistentSubscriptions.add(jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+
+    persistentSubscriptions.add(jsonToModel.onNewDrawReceived().subscribe(onNewDrawReceived));
+
+    persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
             tribeOffer.getSessionDescription())));
@@ -158,7 +175,7 @@ public class Room {
 
     persistentSubscriptions.add(
         jsonToModel.onError().observeOn(AndroidSchedulers.mainThread()).subscribe(error -> {
-          if (error.getId() == WebSocketError.ERROR_ROOM_FULL) onRoomFull.onNext(null);
+          onRoomError.onNext(error);
         }));
 
     persistentSubscriptions.add(
@@ -182,8 +199,10 @@ public class Room {
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
 
-    persistentSubscriptions.add(
-        jsonToModel.onNewGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onNewGame));
+    persistentSubscriptions.add(jsonToModel.onNewGame()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(onNewGame));
 
     persistentSubscriptions.add(
         jsonToModel.onStopGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onStopGame));
@@ -312,7 +331,7 @@ public class Room {
     if (tempSubscriptions.hasSubscriptions()) tempSubscriptions.clear();
 
     options = null;
-    webSocketConnection.disconnect(false);
+    if (webSocketConnection != null) webSocketConnection.disconnect(false);
     webSocketConnection = null;
     webRTCClient.dispose(shouldDisposeLocal);
   }
@@ -346,11 +365,25 @@ public class Room {
     webSocketConnection.send(getSendFreeze().toString());
   }
 
+  public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
+
+    for (TribePeerConnection tpc : webRTCClient.getPeers()) {
+      if (tpc != null
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(userId)) {
+
+        webSocketConnection.send(
+            getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
+      }
+    }
+  }
+
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null &&
-        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }
@@ -522,6 +555,25 @@ public class Room {
     return onRoomStateChanged;
   }
 
+  public Observable<String> test() {
+    return test;
+  }
+
+  public Observable<String> unlockRollTheDice() {
+    return unlockRollTheDice;
+  }
+
+  public Observable<List<String>> onNewChallengeReceived() {
+    return onNewChallengeReceived;
+  }
+  public Observable<List<String>> onNewDrawReceived() {
+    return onNewDrawReceived;
+  }
+
+  public Observable<String> unlockedRollTheDice() {
+    return unlockedRollTheDice;
+  }
+
   public Observable<RemotePeer> onRemotePeerAdded() {
     return onRemotePeerAdded;
   }
@@ -550,8 +602,8 @@ public class Room {
     return onShouldLeaveRoom;
   }
 
-  public Observable<Void> onRoomFull() {
-    return onRoomFull;
+  public Observable<WebSocketError> onRoomError() {
+    return onRoomError;
   }
 
   public Observable<Pair<TribeSession, String>> onNewGame() {

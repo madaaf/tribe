@@ -425,7 +425,9 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+              false);
       homeGridPresenter.bookRoomLink(linkId);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
@@ -504,7 +506,7 @@ public class HomeActivity extends BaseActivity
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
-          temp.add(new Friendship(Recipient.ID_VIDEO));
+          // temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
@@ -572,7 +574,9 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+              false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -606,7 +610,9 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+              false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -625,7 +631,8 @@ public class HomeActivity extends BaseActivity
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
       String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null, contact.getPhone(), false);
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null,
+              contact.getPhone(), false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -740,7 +747,8 @@ public class HomeActivity extends BaseActivity
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
         String linkId =
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null, null, true);
+            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null,
+                null, true);
         homeGridPresenter.bookRoomLink(linkId);
       }
     }
@@ -878,6 +886,7 @@ public class HomeActivity extends BaseActivity
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
+    if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
 
     if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {

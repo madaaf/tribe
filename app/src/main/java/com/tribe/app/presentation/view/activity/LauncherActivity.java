@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.mixpanel.android.mpmetrics.TribeGCMReceiver;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -36,8 +38,12 @@ public class LauncherActivity extends BaseActivity {
     this.getApplicationComponent().inject(this);
 
     deepLink = getIntent().getData();
+    String action = getIntent().getStringExtra(TribeGCMReceiver.EXTRA_ACTION);
+
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
       navigator.navigateToLogin(this, deepLink);
+    } else if (TribeGCMReceiver.ACTION_CALLROULETTE.equals(action)) {
+      navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE);
     } else {
       Bundle properties = new Bundle();
       properties.putString(TagManagerUtils.TYPE, "login");

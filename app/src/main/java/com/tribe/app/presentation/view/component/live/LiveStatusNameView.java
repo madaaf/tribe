@@ -47,6 +47,7 @@ public class LiveStatusNameView extends FrameLayout {
   @BindView(R.id.txtName) TextViewFont txtName;
 
   @BindView(R.id.txtStatus1) TextViewFont txtStatus1;
+  @BindView(R.id.txtStatus2) TextViewFont txtStatus2;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -137,7 +138,8 @@ public class LiveStatusNameView extends FrameLayout {
         txtName.setText(getContext().getString(R.string.live_new_call_title_alone));
       }
 
-      txtStatus1.setVisibility(View.GONE);
+      setStatusText(null, null);
+
     } else {
       if (live.isGroup()) {
         txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0,
@@ -160,18 +162,23 @@ public class LiveStatusNameView extends FrameLayout {
     }
   }
 
+  public void setStatusText(String status1, String status2) {
+    txtStatus1.setText(status1);
+    txtStatus2.setText(status2);
+  }
+
   public void setStatus(@StatusType int status) {
     if (this.status == DONE || !StringUtils.isEmpty(live.getLinkId())) return;
 
     this.status = status;
 
     if (status == DONE) {
-      txtStatus1.setVisibility(View.GONE);
+      setStatusText(null, null);
       return;
     }
 
-    txtStatus1.setText(
-        EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())));
+    setStatusText(
+        EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())), null);
   }
 
   public @LiveStatusNameView.StatusType int getStatus() {

@@ -115,6 +115,7 @@ public class PopupContainerView extends FrameLayout {
                 || type.equals(DISPLAY_NEW_CALL_POPUP)
                 || type.equals(DISPLAY_PROFILE_POPUP)
                 || type.equals(DISPLAY_POST_IT_GAME)) {
+
               if (type.equals(DISPLAY_INVITE_POPUP)) {
                 isInRight = true;
                 marginTop = viewPositionInScreen[1] + v.getHeight();

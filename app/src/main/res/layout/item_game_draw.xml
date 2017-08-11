@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="90dp"
+      android:layout_marginEnd="35dp"
+      android:layout_marginStart="35dp"
+      android:layout_marginTop="90dp"
+      android:background="@drawable/shape_rect_black70_corner"
+      android:orientation="vertical"
+      android:padding="20dp"
+      >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:paddingLeft="@dimen/horizontal_margin_small"
+        android:paddingRight="@dimen/horizontal_margin_small"
+        >
+
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+          android:id="@+id/viewAvatar"
+          android:layout_width="@dimen/avatar_size_small"
+          android:layout_height="@dimen/avatar_size_small"
+          android:layout_gravity="left|center_vertical"
+          android:background="@null"
+          android:scaleType="centerCrop"
+          app:hasHole="true"
+          app:hasInd="true"
+          app:hasShadow="false"
+          />
+
+      <RelativeLayout
+          android:id="@+id/layoutInfos"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginStart="@dimen/avatar_size_small_margin_start"
+          android:gravity="center_vertical"
+          >
+
+        <LinearLayout
+            android:id="@+id/layoutName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+          <RelativeLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:minHeight="25dp"
+              android:orientation="horizontal"
+              >
+
+            <com.tribe.app.presentation.view.widget.TextViewFont
+                android:id="@+id/txtName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:lines="1"
+                android:singleLine="true"
+                tools:text="Alice Campbell"
+                style="@style/Title.2.White"
+                />
+
+
+          </RelativeLayout>
+        </LinearLayout>
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutName"
+            android:singleLine="true"
+            tools:text="is drawing"
+            style="@style/Headline.White.1.2"
+            />
+
+      </RelativeLayout>
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:background="@color/white.opacity.10"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/drawDesc"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:singleLine="true"
+          tools:text="Word to draw"
+          style="@style/Body.One.White40"
+          />
+
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/nextInLabel"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="end"
+          android:singleLine="true"
+          tools:text="Next in"
+          style="@style/Body.One.White40"
+          />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/gameName"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:singleLine="true"
+          android:textColor="@color/yellow.draw"
+          tools:text="Elephant"
+          style="@style/Headline.Black.2"
+          />
+
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/counter"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="end"
+          android:singleLine="true"
+          tools:text="32"
+          style="@style/Headline.White.2"
+          />
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+      <ImageView
+          android:id="@+id/iconHand"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"
+          android:src="@drawable/picto_draw_hand"
+          />
+
+      <RelativeLayout
+          android:id="@+id/drawContainer"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_above="@+id/clearBtn"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/clearBtn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_alignParentEnd="true"
+          android:drawablePadding="10dp"
+          android:drawableStart="@drawable/picto_clear"
+          android:gravity="end|bottom"
+          android:paddingTop="10dp"
+          android:singleLine="true"
+          android:text="@string/game_draw_clear"
+          tools:text="Clear"
+          style="@style/Title.2.White"
+          />
+
+    </RelativeLayout>
+
+  </LinearLayout>
+
+</LinearLayout>

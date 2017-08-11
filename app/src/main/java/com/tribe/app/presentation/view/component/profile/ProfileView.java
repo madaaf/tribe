@@ -68,6 +68,7 @@ public class ProfileView extends ScrollView {
   @BindView(R.id.viewActionBlocked) ActionView viewActionBlocked;
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
+  @BindView(R.id.txtTimeInCall) TextViewFont txtTimeInCall;
 
   @BindView(R.id.imgLogo) ImageView imgLogo;
 
@@ -88,6 +89,8 @@ public class ProfileView extends ScrollView {
     initDependencyInjector();
     initUI();
     initSubscriptions();
+
+    reloadUserUI();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -102,14 +105,21 @@ public class ProfileView extends ScrollView {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
 
+  public void reloadUserUI() {
+
+    txtName.setText(user.getDisplayName());
+    txtUsername.setText("@" + user.getUsername());
+    viewAvatar.load(user.getProfilePicture());
+
+    long minutes = Math.round(user.getTimeInCall() / 60.0f);
+    txtTimeInCall.setText(" " + getContext().getString(minutes > 1 ? R.string.profile_calls_length_mins : R.string.profile_calls_length_min, minutes));
+  }
+
   /////////////
   // PRIVATE //
   /////////////
 
   private void initUI() {
-    txtName.setText(user.getDisplayName());
-    txtUsername.setText("@" + user.getUsername());
-    viewAvatar.load(user.getProfilePicture());
 
     viewActionVisible.setValue(!user.isInvisibleMode());
     viewActionPhoneIntegration.setValue(fullScreenNotifications.get());

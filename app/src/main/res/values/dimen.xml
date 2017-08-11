@@ -43,7 +43,7 @@
   <dimen name="top_bar_height_small">50dp</dimen>
   <dimen name="top_bar_notification_height_small">35dp</dimen>
   <dimen name="top_bar_height">65dp</dimen>
-  <dimen name="top_bar_height_expend">143dp</dimen>
+  <dimen name="top_bar_height_expend">148dp</dimen>
   <dimen name="bottom_bar_height">60dp</dimen>
   <dimen name="onboarding_choose_name_height">64dp</dimen>
   <dimen name="group_members_height">70dp</dimen>
@@ -59,7 +59,7 @@
   <dimen name="view_profile_info_height">146dp</dimen>
   <dimen name="authentication_dialog_width">300dp</dimen>
   <dimen name="filters_list_height">60dp</dimen>
-  <dimen name="games_list_height">60dp</dimen>
+  <dimen name="games_list_height">80dp</dimen>
   <dimen name="game_tooltip_first_height">40dp</dimen>
   <dimen name="dice_size">100dp</dimen>
 

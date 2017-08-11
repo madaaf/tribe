@@ -49,6 +49,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -65,6 +66,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Action2;
 import timber.log.Timber;
 
 /**
@@ -313,6 +315,17 @@ public class CloudUserDataStore implements UserDataStore {
 
       return tribeApi.updateUserMedia(query, body).doOnNext(saveToCacheUpdateUser);
     }
+  }
+
+  @Override
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+    return this.tribeApi.incrUserTimeInCall(
+            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall))).doOnNext(aVoid -> {
+
+      if (userCache != null) {
+        userCache.incrUserTimeInCall(userId, timeInCall);
+      }
+    });
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {
@@ -614,6 +627,7 @@ public class CloudUserDataStore implements UserDataStore {
       this.accessToken.setRefreshToken(accessToken.getRefreshToken());
       this.accessToken.setTokenType(accessToken.getTokenType());
       this.accessToken.setUserId(accessToken.getUserId());
+      this.accessToken.setAccessExpiresAt(accessToken.getAccessExpiresAt());
 
       CloudUserDataStore.this.userCache.put(accessToken);
     }

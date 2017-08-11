@@ -10,4 +10,8 @@ import rx.Observable;
 public interface GameRepository {
 
   Observable<List<String>> getNamesForPostItGame(String lang);
+
+  Observable<List<String>> getDataForChallengeGame(String lang);
+
+  Observable<List<String>> getNamesForDrawGame(String lang);
 }

@@ -26,6 +26,7 @@ public class UserRealm extends RealmObject {
   public static final String TRIBE_SAVE = "tribe_save";
   public static final String UPDATED_AT = "updated_at";
   public static final String PUSH_NOTIF = "push_notif";
+  public static final String TIME_IN_CALL = "time_in_call";
 
   @PrimaryKey private String id;
 
@@ -43,6 +44,7 @@ public class UserRealm extends RealmObject {
   private boolean invisible_mode;
   private boolean push_notif = true;
   private Date last_seen_at;
+  private long time_in_call = 0;
 
   @Ignore private RealmList<GroupRealm> groups;
   @Ignore private List<Invite> invites;
@@ -198,6 +200,14 @@ public class UserRealm extends RealmObject {
 
   public void setLastSeenAt(Date lastSeenAt) {
     this.last_seen_at = lastSeenAt;
+  }
+
+  public long getTimeInCall() {
+    return time_in_call;
+  }
+
+  public void setTimeInCall(long time_in_call) {
+    this.time_in_call = time_in_call;
   }
 
   public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {

@@ -287,14 +287,14 @@ public class LiveControlsView extends FrameLayout {
     recyclerViewGames.getRecycledViewPool().setMaxRecycledViews(0, 50);
 
     recyclerViewGames.setTranslationY(screenUtils.getHeightPx() >> 1);
-
+    //SOEF FIRST CLICK
     subscriptions.add(gamesAdapter.onClick()
         .map(view -> {
           Game game =
               (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
           return new Pair<>(view, game);
         })
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(AndroidSchedulers.mainThread())//SOEF
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
           onStartGame.onNext(pairViewGame.second);
@@ -444,7 +444,8 @@ public class LiveControlsView extends FrameLayout {
     int toX =
         (screenUtils.getWidthPx() >> 1) - btnNewGameLocation[0] - (layoutGame.getWidth() >> 1) +
             screenUtils.dpToPx(2.5f);
-    int toY = -screenUtils.dpToPx(65);
+
+    int toY = -screenUtils.dpToPx(85);
 
     layoutGame.animate()
         .translationX(toX)
@@ -569,7 +570,7 @@ public class LiveControlsView extends FrameLayout {
     AnimationUtils.fadeOut(btnFilterOn, DURATION_GAMES_FILTERS);
   }
 
-  private ImageView addGameToView(View viewFrom) {
+  private ImageView addGameToView(View viewFrom) {//SOEF
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(sizeGameFilter, sizeGameFilter);
     params.gravity = Gravity.BOTTOM | Gravity.LEFT;
     params.bottomMargin = screenUtils.dpToPx(5);
@@ -600,7 +601,7 @@ public class LiveControlsView extends FrameLayout {
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
           new OvershootInterpolator(OVERSHOOT_LIGHT));
-      onRestartGame.onNext(gameManager.getCurrentGame());
+      onRestartGame.onNext(gameManager.getCurrentGame());//MADA
     });
     layoutContainerParamLive.addView(currentGameView, params);
     return currentGameView;
@@ -733,13 +734,16 @@ public class LiveControlsView extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+  public ImageView getCurrentGameView() {
+    return currentGameView;
+  }
 
   public void dispose() {
     btnNotify.clearAnimation();
     btnNotify.animate().setListener(null);
   }
 
-  public void blockOpenInviteView(boolean block) {
+  public void blockOpenInviteViewBtn(boolean block) {
     btnInviteLive.setEnabled(!block);
     if (block) {
       btnInviteLive.setAlpha(0.4f);

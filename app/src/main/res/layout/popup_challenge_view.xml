@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="70dp"
+    android:background="@drawable/bg_popup_buzz"
+    android:orientation="vertical"
+    >
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/nativeDialogsTxt"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:padding="20dp"
+      android:text="@string/game_challenges_next_impossible"
+      style="@style/Title.2.Black"
+      />
+
+</FrameLayout>

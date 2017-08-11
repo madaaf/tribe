@@ -46,6 +46,7 @@ public class Navigator {
 
   public static int REQUEST_COUNTRY = 1000;
   public static int FROM_LIVE = 1001;
+  public static int FROM_PROFILE = 1002;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -139,7 +140,7 @@ public class Navigator {
   public void navigateToProfile(Activity activity) {
     if (activity != null) {
       Intent intent = ProfileActivity.getCallingIntent(activity);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, FROM_PROFILE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }

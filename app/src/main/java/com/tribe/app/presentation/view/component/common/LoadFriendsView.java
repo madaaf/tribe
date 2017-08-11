@@ -102,10 +102,15 @@ public class LoadFriendsView extends LinearLayout {
 
     a.recycle();
 
-    setImage(user.getProfilePicture());
     setClickable(true);
     setOrientation(HORIZONTAL);
     setMinimumHeight(screenUtils.dpToPx(72.5f));
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    super.onLayout(changed, l, t, r, b);
+    setImage(user.getProfilePicture());
   }
 
   protected ApplicationComponent getApplicationComponent() {

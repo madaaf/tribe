@@ -45,6 +45,8 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.view.opengl.filter.FaceMaskFilter;
@@ -300,6 +302,10 @@ public class AndroidApplication extends Application {
     GameManager gameManager = GameManager.getInstance(this);
     gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
         R.drawable.picto_game_post_it));
+    gameManager.addGame(
+        new GameChallenge(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
+            R.drawable.icon_game_challenge));
+    gameManager.addGame(new GameDraw(this, Game.GAME_DRAW, "Draw ! ", R.drawable.icon_game_draw));
   }
 
   private class SampleAppStateListener implements AppStateListener {

@@ -51,6 +51,7 @@ public class LiveInviteView extends FrameLayout {
   private LiveInviteLayoutManager layoutManager;
   private boolean dragging = false;
   private List<Recipient> friendshipList;
+  private @LiveActivity.Source String source;
 
   // RESOURCES
 
@@ -159,6 +160,7 @@ public class LiveInviteView extends FrameLayout {
 
   public void renderFriendshipList(List<Friendship> friendshipList,
       @LiveActivity.Source String source) {
+    this.source = source;
     this.friendshipList.clear();
     this.friendshipList.addAll(friendshipList);
     if (!dragging) adapter.setItems(this.friendshipList, source);
@@ -170,6 +172,15 @@ public class LiveInviteView extends FrameLayout {
 
   public void diceDragued() {
     adapter.diceDragued();
+    List<Recipient> friendships = friendshipList;
+    List<Friendship> friendRend = new ArrayList<>();
+    for (Recipient fr : friendships) {
+      if (fr instanceof Friendship) {
+        friendRend.add((Friendship) fr);
+      }
+    }
+    renderFriendshipList(friendRend, source);
+    adapter.notifyDataSetChanged();
   }
 
   public void setDragging(boolean dragging) {

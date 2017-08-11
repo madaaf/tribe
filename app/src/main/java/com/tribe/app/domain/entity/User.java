@@ -44,6 +44,7 @@ public class User implements Serializable, BaseListInterface {
   private boolean invisible_mode;
   private boolean push_notif;
   private boolean is_online = false;
+  private long time_in_call = 0;
   private Date last_seen_at;
 
   private boolean isNewFriend = false;
@@ -137,6 +138,14 @@ public class User implements Serializable, BaseListInterface {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public long getTimeInCall() {
+    return time_in_call;
+  }
+
+  public void setTimeInCall(long time_in_call) {
+    this.time_in_call = time_in_call;
   }
 
   public void setFriendships(List<Friendship> friendships) {
@@ -325,6 +334,7 @@ public class User implements Serializable, BaseListInterface {
       setInvisibleMode(user.isInvisibleMode());
       setTribeSave(user.isTribeSave());
       setPushNotif(user.isPushNotif());
+      setTimeInCall(user.getTimeInCall());
       if (user.getLocation() != null) setLocation(user.getLocation());
       if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
         setMembershipList(user.getMembershipList());
@@ -347,6 +357,7 @@ public class User implements Serializable, BaseListInterface {
     setFbid(null);
     setInvisibleMode(false);
     setPushNotif(false);
+    setTimeInCall(0);
     setTribeSave(false);
     setLocation(null);
     setMembershipList(null);

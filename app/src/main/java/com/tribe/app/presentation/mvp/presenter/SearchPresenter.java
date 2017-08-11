@@ -20,7 +20,10 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -28,6 +31,8 @@ public class SearchPresenter implements Presenter {
 
   // VIEW ATTACHED
   private SearchMVPView searchView;
+
+  private Set<String> addedUserIds = new HashSet<>();
 
   // USECASES
   private JobManager jobManager;
@@ -106,8 +111,10 @@ public class SearchPresenter implements Presenter {
   public void createFriendship(String userId) {
     if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
 
+    addedUserIds.add(userId);
+
     createFriendshipSubscriber = new CreateFriendshipSubscriber();
-    createFriendship.setUserId(userId);
+    createFriendship.configure(userId, 1500);
     createFriendship.execute(createFriendshipSubscriber);
   }
 
@@ -135,7 +142,7 @@ public class SearchPresenter implements Presenter {
     }
 
     contactListSubscriber = new ContactListSubscriber();
-    searchLocally.setup(s);
+    searchLocally.setup(s, addedUserIds);
     searchLocally.execute(contactListSubscriber);
   }
 

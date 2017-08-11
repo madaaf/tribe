@@ -19,6 +19,8 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
+import java.util.Set;
+
 import rx.Observable;
 
 /**
@@ -79,6 +81,8 @@ public interface UserRepository {
    */
   Observable<User> updateUser(List<Pair<String, String>> values);
 
+  Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
+
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
    * about the contacts from the AddressBook.
@@ -97,7 +101,7 @@ public interface UserRepository {
 
   Observable<List<Contact>> contactsInvite();
 
-  Observable<List<Object>> searchLocally(String s);
+  Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos
@@ -184,6 +188,8 @@ public interface UserRepository {
   Observable<Void> roomAcceptRandom(String roomId);
 
   Observable<String> randomRoomAssigned();
+
+  Observable<User> getFbIdUpdated();
 
   Observable<Boolean> reportUser(String userId);
 

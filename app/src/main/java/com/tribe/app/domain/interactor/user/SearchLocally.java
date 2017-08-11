@@ -3,6 +3,9 @@ package com.tribe.app.domain.interactor.user;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
+
+import java.util.Set;
+
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -13,6 +16,7 @@ public class SearchLocally extends UseCaseDisk {
 
   private UserRepository userRepository;
   private String constraint;
+  private Set<String> includedUserIds;
 
   @Inject public SearchLocally(DiskUserDataRepository userRepository,
       PostExecutionThread postExecutionThread) {
@@ -20,11 +24,12 @@ public class SearchLocally extends UseCaseDisk {
     this.userRepository = userRepository;
   }
 
-  public void setup(String constraint) {
+  public void setup(String constraint, Set<String> includedUserIds) {
     this.constraint = constraint;
+    this.includedUserIds = includedUserIds;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.searchLocally(constraint);
+    return this.userRepository.searchLocally(constraint, includedUserIds);
   }
 }

@@ -188,7 +188,7 @@ public class TribeLiveLocalStream {
     Timber.d("Stop video capture");
     stopVideoCapture();
     Timber.d("Disposing video capturer");
-    capturer.dispose();
+    if (capturer != null) capturer.dispose();
     capturer = null;
 
     if (videoSource != null) {

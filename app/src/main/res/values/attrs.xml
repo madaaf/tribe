@@ -8,6 +8,10 @@
     <attr format="boolean" name="onboardingAutoStart" />
   </declare-styleable>
 
+  <declare-styleable name="TooltipVideoView">
+    <attr format="boolean" name="tooltipAutoStart" />
+  </declare-styleable>
+
   <declare-styleable name="AvatarView">
     <attr format="enum" name="avatarType">
       <enum name="live" value="0" />
