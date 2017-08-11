@@ -249,6 +249,7 @@ import static android.R.attr.id;
     JSONArray games = new JSONArray();
     games.put(Game.GAME_POST_IT);
     games.put(Game.GAME_CHALLENGE);
+    games.put(Game.GAME_DRAW);
     jsonPut(obj, "canPlayGames", games);
     return obj;
   }

@@ -207,7 +207,7 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     int height = dv.getHeight();
     TrackablePath path = new TrackablePath();
 
-    if (points.length == 1) {
+    if (isAllEqual(points)) {
       path.moveTo(points[0][0] * width, points[0][1] * height);
       path.lineTo(points[0][0] * width + 1, points[0][1] * height);
     } else {
@@ -218,6 +218,27 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
     }
 
     dv.draw(path);
+  }
+
+  public boolean isAllEqual(Float[][] points) {
+    Float[] x = new Float[points.length];
+    Float[] y = new Float[points.length];
+
+    for (int i = 0; i < points.length; i++) {
+      x[i] = points[i][0];
+      y[i] = points[i][1];
+    }
+    Timber.e("SOEF SIMILAR" + (isEquals(x) && isEquals(y)));
+    return (isEquals(x) && isEquals(y));
+  }
+
+  private boolean isEquals(Float[] a) {
+    for (int i = 1; i < a.length; i++) {
+      if (!a[0].equals(a[i])) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public void onClearDrawReceived() {

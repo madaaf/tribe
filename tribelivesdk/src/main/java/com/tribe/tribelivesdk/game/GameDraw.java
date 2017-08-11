@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import timber.log.Timber;
@@ -18,6 +19,7 @@ public class GameDraw extends Game {
 
   private String currentDrawName = "";
   private TribeGuest currentDrawer = null;
+  private String previousIdChoose = null;
 
   public GameDraw(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -81,8 +83,24 @@ public class GameDraw extends Game {
     return nameList != null && nameList.size() > 0;
   }
 
-  private static TribeGuest getRandomGuest(List<TribeGuest> array) {
-    int rnd = new Random().nextInt(array.size());
-    return array.get(rnd);
+  private TribeGuest getRandomGuest(List<TribeGuest> array) {
+    TribeGuest guestChoose = null;
+    if (previousIdChoose == null) {
+      int rnd = new Random().nextInt(array.size());
+      guestChoose = array.get(rnd);
+      previousIdChoose = guestChoose.getId();
+      return guestChoose;
+    }
+
+    List<String> ids = new ArrayList<>();
+    for (TribeGuest guest : array) {
+      ids.add(guest.getId());
+    }
+    Collections.sort(ids);
+    int i = ids.indexOf(previousIdChoose) + 1;
+    if (i >= array.size()) i = 0;
+    guestChoose = array.get(i);
+    previousIdChoose = guestChoose.getId();
+    return guestChoose;
   }
 }

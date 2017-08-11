@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import timber.log.Timber;
@@ -19,6 +20,7 @@ public class GameChallenge extends Game {
 
   private String currentChallenge;
   private TribeGuest currentChallenger;
+  private String previousIdChoose = null;
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
     super(context, id, name, drawableRes);
@@ -50,7 +52,8 @@ public class GameChallenge extends Game {
       Timber.i("SOEF guestList  empty ");
       return;
     }
-    currentChallenger = getRandomGuest(guestList);
+
+    currentChallenger = getSortedGuest(guestList);
     Timber.i("SOEF set current Guest : " + currentChallenger.getDisplayName());
   }
 
@@ -82,9 +85,24 @@ public class GameChallenge extends Game {
     return nameList != null && nameList.size() > 0;
   }
 
-  private static TribeGuest getRandomGuest(List<TribeGuest> array) {
-    int rnd = new Random().nextInt(array.size());
-    return array.get(rnd);
-  }
+  private TribeGuest getSortedGuest(List<TribeGuest> array) {
+    TribeGuest guestChoose = null;
+    if (previousIdChoose == null) {
+      int rnd = new Random().nextInt(array.size());
+      guestChoose = array.get(rnd);
+      previousIdChoose = guestChoose.getId();
+      return guestChoose;
+    }
 
+    List<String> ids = new ArrayList<>();
+    for (TribeGuest guest : array) {
+      ids.add(guest.getId());
+    }
+    Collections.sort(ids);
+    int i = ids.indexOf(previousIdChoose) + 1;
+    if (i >= array.size()) i = 0;
+    guestChoose = array.get(i);
+    previousIdChoose = guestChoose.getId();
+    return guestChoose;
+  }
 }
