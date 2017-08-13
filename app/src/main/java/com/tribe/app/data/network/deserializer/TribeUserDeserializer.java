@@ -53,7 +53,9 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     }
 
     userRealm.setId(result.get("id").getAsString());
-    userRealm.setPhone(result.get("phone").getAsString());
+    userRealm.setPhone(
+            result.get("phone") != null && !result.get("phone").isJsonNull() ? result.get("phone")
+                    .getAsString() : "");
     userRealm.setFbid(
         result.get("fbid") != null && !result.get("fbid").isJsonNull() ? result.get("fbid")
             .getAsString() : "");
@@ -70,6 +72,11 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     try {
       userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    try {
       userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
     } catch (ParseException e) {
       e.printStackTrace();

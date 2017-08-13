@@ -6,37 +6,39 @@
     android:background="@null"
     >
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="@dimen/filter_game_size_container"
-        android:layout_height="@dimen/filter_game_size_container">
-        <View
-            android:id="@+id/bgSelected"
-            android:layout_width="@dimen/filter_game_size"
-            android:layout_height="@dimen/filter_game_size"
-            android:layout_gravity="center"
-            android:background="@drawable/shape_rect_rounded_5_white"
-            android:elevation="5dp"
-            />
+  <FrameLayout
+      android:id="@+id/frameLayout"
+      android:layout_width="@dimen/filter_game_size_container"
+      android:layout_height="@dimen/filter_game_size_container"
+      >
+    <View
+        android:id="@+id/bgSelected"
+        android:layout_width="@dimen/filter_game_size"
+        android:layout_height="@dimen/filter_game_size"
+        android:layout_gravity="center"
+        android:background="@drawable/shape_rect_rounded_5_white"
+        android:elevation="5dp"
+        />
 
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="@dimen/filter_game_size"
-            android:layout_height="@dimen/filter_game_size"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:elevation="5dp"
-            android:foreground="@drawable/selectable_button_oval"
-            android:scaleType="centerCrop"
-            />
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="@dimen/filter_game_size"
+        android:layout_height="@dimen/filter_game_size"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:elevation="5dp"
+        android:foreground="@drawable/selectable_button_oval"
+        android:scaleType="centerCrop"
+        />
+  </FrameLayout>
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/frameLayout"
-        android:gravity="center"
-        style="@style/Caption.Two.White" />
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/name"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/frameLayout"
+      android:gravity="center"
+      style="@style/Caption.Two.White"
+      />
 
 </RelativeLayout>

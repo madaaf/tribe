@@ -10,6 +10,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import com.digits.sdk.android.Digits;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -34,6 +36,8 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.SendboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
+import com.tribe.app.presentation.view.utils.Constants;
+
 import java.util.List;
 import javax.inject.Inject;
 
@@ -119,10 +123,11 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId) {
+  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId, boolean isFromFacebook) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
+      intent.putExtra(Extras.IS_FROM_FACEBOOK, isFromFacebook);
       if (linkRoomId != null) {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
@@ -380,6 +385,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
+    } else if (activity.getIntent() != null && activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+      openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);
     }
@@ -441,13 +448,22 @@ public class Navigator {
     activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
   }
 
+  public void openFacebookAppInvites(Activity activity, String url) {
+
+    if (AppInviteDialog.canShow()) {
+
+      AppInviteContent content = new AppInviteContent.Builder()
+              .setApplinkUrl(url)
+              .setPreviewImageUrl(Constants.OPEN_GRAPH_IMAGE)
+              .setDestination(AppInviteContent.Builder.Destination.FACEBOOK)
+              .build();
+
+      AppInviteDialog.show(activity, content);
+    }
+  }
+
   public void inviteToRoom(Activity activity, String roomLink) {
     String text = EmojiParser.demojizedText(activity.getString(R.string.share_live, roomLink));
     shareGenericText(text, activity);
-  }
-
-  public void navigateToSandbox(AuthActivity authActivity) {
-    Intent i = new Intent(authActivity, SendboxActivity.class);
-    authActivity.startActivity(i);
   }
 }

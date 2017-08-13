@@ -30,4 +30,7 @@ public class Constants {
   // NOTIFICATIONS
   public static final String NOTIFICATION_HOME = "home";
   public static final String NOTIFICATION_LIVE = "live";
+
+  // PREVIEW IMAGE
+  public static final String OPEN_GRAPH_IMAGE = "https://tribe.pm/static/images/opengraph.jpg";
 }

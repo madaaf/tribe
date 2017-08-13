@@ -65,7 +65,7 @@ public class FacebookHiddenActivity extends BaseActivity {
         }
       });
       LoginManager.getInstance()
-          .logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+          .logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends", "email"));
     }
   }
 

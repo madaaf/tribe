@@ -16,6 +16,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import com.digits.sdk.android.AuthCallback;
+import com.digits.sdk.android.AuthConfig;
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsException;
+import com.digits.sdk.android.DigitsSession;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -35,10 +41,14 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
+import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
 import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
+import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -55,6 +65,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 
@@ -86,6 +97,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   // VIEWS
   private ProfileView viewProfile;
   private SettingsProfileView viewSettingsProfile;
+  private SettingsPhoneNumberView viewSettingsPhoneNumber;
+  private SettingsFacebookAccountView viewSettingsFacebookAccount;
   private SettingsBlockedFriendsView viewSettingsBlockedFriends;
   private SettingsManageFriendshipsView viewSettingsManageFriendships;
 
@@ -146,6 +159,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     if (viewSettingsProfile != null) viewSettingsProfile.onDestroy();
+    if (viewSettingsPhoneNumber != null) viewSettingsPhoneNumber.onDestroy();
+    if (viewSettingsFacebookAccount != null) viewSettingsFacebookAccount.onDestroy();
     if (viewSettingsBlockedFriends != null) viewSettingsBlockedFriends.onDestroy();
     if (viewSettingsManageFriendships != null) viewSettingsManageFriendships.onDestroy();
     if (viewProfile != null) viewProfile.onDestroy();
@@ -291,6 +306,24 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
     subscriptions.add(viewProfile.onRateClick().subscribe(aVoid -> navigator.rateApp(this)));
 
+    subscriptions.add(viewProfile.onChangePhoneNumberClick().subscribe(aVoid -> {
+
+      if (!StringUtils.isEmpty(getCurrentUser().getPhone())) {
+        setupPhoneNumberView();
+      } else {
+        changeMyPhoneNumber();
+      }
+    }));
+
+    subscriptions.add(viewProfile.onFacebookAccountClick().subscribe(aVoid -> {
+
+      if (FacebookUtils.isLoggedIn()) {
+        setupFacebookAccountView();
+      } else {
+        profilePresenter.connectToFacebook();
+      }
+    }));
+
     subscriptions.add(viewProfile.onLogoutClick()
         .flatMap(aVoid -> DialogFactory.dialog(this, getString(R.string.settings_logout_title),
             getString(R.string.settings_logout_confirm_message),
@@ -329,9 +362,40 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsProfile = (SettingsProfileView) viewStack.push(R.layout.view_settings_profile);
 
     subscriptions.add(
-        viewSettingsProfile.onUsernameInput().subscribe(s -> profilePresenter.lookupUsername(s)));
+            viewSettingsProfile.onUsernameInput().subscribe(s -> profilePresenter.lookupUsername(s)));
 
     subscriptions.add(viewSettingsProfile.onInfoValid().subscribe(b -> txtAction.setEnabled(b)));
+  }
+
+  private void setupPhoneNumberView() {
+    viewSettingsPhoneNumber = (SettingsPhoneNumberView) viewStack.push(R.layout.view_settings_phone_number);
+
+    subscriptions.add(viewSettingsPhoneNumber.onChangePhoneNumberClick().subscribe(aVoid -> {
+      changeMyPhoneNumber();
+    }));
+  }
+
+  private void changeMyPhoneNumber() {
+
+    AuthConfig.Builder builder = new AuthConfig.Builder();
+    builder.withAuthCallBack(new AuthCallback() {
+
+      @Override public void success(DigitsSession session, String phoneNumber) {
+
+      }
+
+      @Override public void failure(DigitsException error) {
+
+      }
+    });
+
+    AuthConfig authConfig = builder.build();
+    Digits.authenticate(authConfig);
+  }
+
+  private void setupFacebookAccountView() {
+    viewSettingsFacebookAccount = (SettingsFacebookAccountView) viewStack.push(R.layout.view_settings_facebook_account);
+
   }
 
   private void setupBlockedFriendsView() {
@@ -395,6 +459,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       txtAction.setVisibility(GONE);
     } else if (to instanceof SettingsManageFriendshipsView) {
       setupTitle(getString(R.string.manage_friendships_title), forward);
+      txtAction.setVisibility(View.GONE);
+    } else if (to instanceof SettingsPhoneNumberView) {
+      setupTitle(getString(R.string.profile_change_phone_title), forward);
+      txtAction.setVisibility(View.GONE);
+    } else if (to instanceof SettingsFacebookAccountView) {
+      setupTitle(getString(R.string.profile_facebook_account_title), forward);
       txtAction.setVisibility(View.GONE);
     }
   }

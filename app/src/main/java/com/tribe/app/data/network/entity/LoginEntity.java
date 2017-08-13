@@ -1,5 +1,7 @@
 package com.tribe.app.data.network.entity;
 
+import com.facebook.AccessToken;
+
 import java.io.Serializable;
 
 /**
@@ -15,17 +17,19 @@ public class LoginEntity implements Serializable {
   private String countryCode;
   private String nationalNumber;
   private String call;
+  private String fbAccessToken;
 
   public LoginEntity(String to, boolean shouldCall) {
     this.to = to;
     this.call = shouldCall ? "1" : "0";
   }
 
-  public LoginEntity(String phoneNumber, String code, String pinId) {
+  public LoginEntity(String phoneNumber, String code, String pinId, String fbAccessToken) {
     this.username = phoneNumber;
     this.phoneNumber = phoneNumber;
     this.password = code;
     this.pinId = pinId;
+    this.fbAccessToken = fbAccessToken;
   }
 
   public String getUsername() {
@@ -70,5 +74,13 @@ public class LoginEntity implements Serializable {
 
   public String getPhoneNumber() {
     return phoneNumber;
+  }
+
+  public String getFbAccessToken() {
+    return fbAccessToken;
+  }
+
+  public void setFbAccessToken(String fbAccessToken) {
+    this.fbAccessToken = fbAccessToken;
   }
 }

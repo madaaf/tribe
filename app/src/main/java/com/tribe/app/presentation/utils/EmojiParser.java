@@ -107,6 +107,8 @@ public class EmojiParser {
     IEmojiMap.put(":video_game:", "\uD83C\uDFAE");
     IEmojiMap.put(":hourglass:", "\u23F3");
     IEmojiMap.put(":spy:", "\uD83D\uDD75");
+    IEmojiMap.put(":telephone:", "\uD83D\u260E");
+    IEmojiMap.put(":bust_in_silhouette:", "\uD83D\uDC64");
   }
 
   /**

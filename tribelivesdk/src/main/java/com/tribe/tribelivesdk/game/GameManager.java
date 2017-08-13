@@ -84,7 +84,6 @@ import timber.log.Timber;
     currentGame = game;
 
     if (currentGame != null) {
-      Timber.e("SOEF Set current game  : " + currentGame.getId());
       if (currentGame instanceof GamePostIt) {
         GamePostIt gamePostIt = (GamePostIt) game;
         gamePostIt.generateNewName();
@@ -140,11 +139,9 @@ import timber.log.Timber;
 
   public void setCurrentDataGame(String name, TribeGuest currentPlayer) {
     if (currentGame.getId().equals(Game.GAME_DRAW)) {
-      Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
       ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
       ((GameDraw) currentGame).setCurrentDrawName(name);
     } else if (currentGame.getId().equals(Game.GAME_CHALLENGE)) {
-      Timber.e("soef set current data game " + name + " " + currentPlayer.getId());
       ((GameChallenge) currentGame).setCurrentChallenger(currentPlayer);
       ((GameChallenge) currentGame).setCurrentChallenge(name);
     }

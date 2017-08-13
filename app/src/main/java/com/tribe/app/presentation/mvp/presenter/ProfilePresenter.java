@@ -134,6 +134,14 @@ public class ProfilePresenter extends UpdateUserPresenter {
     declineInvite.execute(new DefaultSubscriber());
   }
 
+  public void disconnectFromFacebook() {
+
+  }
+
+  public void connectToFacebook() {
+
+  }
+
   public void loadUnblockedFriendshipList() {
     if (getUnblockedFriendshipListSubscriber != null) {
       getUnblockedFriendshipListSubscriber.unsubscribe();
