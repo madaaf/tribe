@@ -21,3 +21,6 @@
 -keep class com.google.**
 -dontwarn com.google.**
 -dontwarn sun.misc.**
+
+-keep class org.opencv.** {public *;}
+-keep class com.uls.** {public *;}

@@ -21,8 +21,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -117,6 +119,17 @@ public class ProfileView extends ScrollView {
 
     long minutes = Math.round(user.getTimeInCall() / 60.0f);
     txtTimeInCall.setText(" " + getContext().getString(minutes > 1 ? R.string.profile_calls_length_mins : R.string.profile_calls_length_min, minutes));
+
+    viewActionChangePhoneNumber.setWarning(!canOpenPhoneNumberView());
+    viewActionFacebookAccount.setWarning(!canOpenFacebookView());
+  }
+
+  public boolean canOpenFacebookView() {
+    return FacebookUtils.isLoggedIn();
+  }
+
+  public boolean canOpenPhoneNumberView() {
+    return !StringUtils.isEmpty(user.getPhone());
   }
 
   /////////////

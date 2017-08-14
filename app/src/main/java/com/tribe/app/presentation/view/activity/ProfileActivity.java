@@ -33,6 +33,7 @@ import com.solera.defrag.ViewStack;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
@@ -41,6 +42,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -184,9 +186,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     txtAction.setOnClickListener(v -> {
       if (viewStack.getTopView() instanceof SettingsProfileView) {
         screenUtils.hideKeyboard(this);
-        profilePresenter.updateUser(viewSettingsProfile.getUsername(),
+        profilePresenter.updateUser(getCurrentUser().getId(), viewSettingsProfile.getUsername(),
             viewSettingsProfile.getDisplayName(), viewSettingsProfile.getImgUri(),
-            getCurrentUser().getFbid());
+            FacebookUtils.accessToken());
       }
     });
   }
@@ -308,7 +310,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
     subscriptions.add(viewProfile.onChangePhoneNumberClick().subscribe(aVoid -> {
 
-      if (!StringUtils.isEmpty(getCurrentUser().getPhone())) {
+      if (viewProfile.canOpenPhoneNumberView()) {
         setupPhoneNumberView();
       } else {
         changeMyPhoneNumber();
@@ -317,10 +319,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
     subscriptions.add(viewProfile.onFacebookAccountClick().subscribe(aVoid -> {
 
-      if (FacebookUtils.isLoggedIn()) {
+      if (viewProfile.canOpenFacebookView()) {
         setupFacebookAccountView();
       } else {
-        profilePresenter.connectToFacebook();
+        profilePresenter.loginFacebook();
       }
     }));
 
@@ -381,21 +383,53 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     builder.withAuthCallBack(new AuthCallback() {
 
       @Override public void success(DigitsSession session, String phoneNumber) {
-
+        profilePresenter.updatePhoneNumber(getCurrentUser().getId(), session);
       }
 
       @Override public void failure(DigitsException error) {
-
+        showError(error.getMessage());
       }
     });
 
     AuthConfig authConfig = builder.build();
+
+    Digits.logout(); // Force logout
     Digits.authenticate(authConfig);
   }
 
   private void setupFacebookAccountView() {
     viewSettingsFacebookAccount = (SettingsFacebookAccountView) viewStack.push(R.layout.view_settings_facebook_account);
+    profilePresenter.loadFacebookInfos();
 
+    subscriptions.add(viewSettingsFacebookAccount.onChecked().subscribe(aBool -> {
+
+      if (!aBool) {
+        if (viewProfile.canOpenPhoneNumberView()) {
+          subscriptions.add(DialogFactory.dialog(this, EmojiParser.demojizedText(getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
+                  getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
+                  getString(R.string.action_cancel),
+                  getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(shouldCancel -> {
+
+                    if (shouldCancel) {
+                      viewSettingsFacebookAccount.setChecked(true);
+
+                    } else {
+                      FacebookUtils.logout();
+                      profilePresenter.disconnectFromFacebook(getCurrentUser().getId());
+                    }
+                  }));
+
+        } else {
+          showToastMessage(getString(R.string.linked_friends_unlink_error_unable_to_unlink));
+          viewSettingsFacebookAccount.setChecked(true);
+        }
+
+      } else {
+        profilePresenter.loginFacebook();
+      }
+    }));
   }
 
   private void setupBlockedFriendsView() {
@@ -529,8 +563,17 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     this.clickBack();
   }
 
-  @Override public void successFacebookLogin() {
+  @Override
+  public void loadFacebookInfos(FacebookEntity facebookEntity) {
 
+    if (viewSettingsFacebookAccount != null) {
+      viewSettingsFacebookAccount.reloadUserUI(facebookEntity);
+    }
+  }
+
+  @Override public void successFacebookLogin() {
+    profilePresenter.connectToFacebook(getCurrentUser().getId(), FacebookUtils.accessToken().getToken());
+    profilePresenter.loadFacebookInfos();
   }
 
   @Override public void errorFacebookLogin() {
@@ -553,6 +596,37 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void hideLoading() {
     txtAction.setVisibility(View.VISIBLE);
     progressView.setVisibility(GONE);
+  }
+
+  @Override
+  public void successUpdateFacebook(User user) {
+    viewProfile.reloadUserUI();
+
+    if (viewSettingsFacebookAccount != null) {
+      if (FacebookUtils.isLoggedIn()) {
+        profilePresenter.loadFacebookInfos();
+        showToastMessage(getString(R.string.linked_friends_link_success_fb));
+
+      } else {
+        viewSettingsFacebookAccount.reloadUserUI(null);
+        showToastMessage(getString(R.string.linked_friends_unlink_success_fb));
+      }
+    }
+  }
+
+  @Override
+  public void successUpdatePhoneNumber(User user) {
+    viewProfile.reloadUserUI();
+
+    if (viewSettingsPhoneNumber != null) {
+      viewSettingsPhoneNumber.reloadUserUI();
+    }
+
+    showToastMessage(getString(R.string.linked_friends_link_success_phone));
+
+    if (StringUtils.isEmpty(user.getPhone())) {
+      onBackPressed();
+    }
   }
 
   @Override public void showError(String message) {

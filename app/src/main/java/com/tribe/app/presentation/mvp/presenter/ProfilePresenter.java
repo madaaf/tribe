@@ -1,6 +1,10 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
+
+import com.digits.sdk.android.Digits;
+import com.digits.sdk.android.DigitsSession;
+import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
@@ -13,6 +17,8 @@ import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
+import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
@@ -43,8 +49,8 @@ public class ProfilePresenter extends UpdateUserPresenter {
       RxFacebook rxFacebook, RemoveInstall removeInstall,
       GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
       DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList,
-      BookRoomLink bookRoomLink) {
-    super(updateUser, lookupUsername, rxFacebook);
+      BookRoomLink bookRoomLink, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;
     this.updateFriendship = updateFriendship;
@@ -132,14 +138,6 @@ public class ProfilePresenter extends UpdateUserPresenter {
   public void declineInvite(String roomId) {
     declineInvite.prepare(roomId);
     declineInvite.execute(new DefaultSubscriber());
-  }
-
-  public void disconnectFromFacebook() {
-
-  }
-
-  public void connectToFacebook() {
-
   }
 
   public void loadUnblockedFriendshipList() {
