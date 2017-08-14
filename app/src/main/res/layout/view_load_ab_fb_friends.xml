@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     >
 
+  <RelativeLayout
+      android:id="@+id/viewOpenClose"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/linked_friends_title"
+        android:padding="@dimen/horizontal_margin_small"
+        style="@style/Title.2.Black" />
+
+    <ImageView
+        android:id="@+id/imgToggle"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:scaleType="center"
+        android:src="@drawable/picto_toggle"
+        />
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/imgWarning"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:scaleType="center"
+        android:src="@drawable/picto_warning"
+        />
+
+  </RelativeLayout>
+
   <View
-      android:id="@+id/viewSeparatorAddressBook"
       android:layout_width="match_parent"
       android:layout_height="@dimen/divider_size"
       android:background="@color/grey.light"
@@ -13,18 +52,15 @@
   <com.tribe.app.presentation.view.component.common.LoadFriendsView
       android:id="@+id/viewFriendsAddressBookLoad"
       android:layout_width="match_parent"
-      android:layout_height="@dimen/load_friends_height"
-      android:background="@android:color/white"
+      android:layout_height="wrap_content"
       android:clickable="true"
       android:foreground="@drawable/selectable_button"
-      app:loadBG="@drawable/bg_addressbook_load"
-      app:loadIcon="@drawable/picto_addressbook_load"
-      app:loadTitle="@string/search_add_addressbook_title"
+      app:loadTitle="@string/linked_friends_address_book"
+      app:loadStatus="@string/linked_friends_status_not_linked"
       app:loadType="addressbook"
       />
 
   <View
-      android:id="@+id/viewSeparatorFBTop"
       android:layout_width="match_parent"
       android:layout_height="@dimen/divider_size"
       android:background="@color/grey.light"
@@ -33,21 +69,17 @@
   <com.tribe.app.presentation.view.component.common.LoadFriendsView
       android:id="@+id/viewFriendsFBLoad"
       android:layout_width="match_parent"
-      android:layout_height="@dimen/load_friends_height"
-      android:background="@android:color/white"
+      android:layout_height="wrap_content"
       android:clickable="true"
       android:foreground="@drawable/selectable_button"
-      app:loadBG="@drawable/bg_facebook_load"
-      app:loadIcon="@drawable/picto_facebook_load"
-      app:loadTitle="@string/search_add_facebook_title"
+      app:loadTitle="@string/linked_friends_facebook"
+      app:loadStatus="@string/linked_friends_status_not_linked"
       app:loadType="fb"
       />
 
   <View
-      android:id="@+id/viewSeparatorFBBottom"
       android:layout_width="match_parent"
-      android:layout_height="@dimen/divider_size"
-      android:background="@color/grey.light"
+      android:layout_height="15dp"
       />
 
-</merge>
+</LinearLayout>

@@ -1,71 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/horizontal_margin_small"
     >
-
-  <FrameLayout
-      android:layout_width="@dimen/load_friends_height"
-      android:layout_height="match_parent"
-      android:background="@null"
-      >
-
-    <com.tribe.app.presentation.view.widget.avatar.AvatarView
-        android:id="@+id/viewAvatar"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_margin="@dimen/horizontal_margin_small"
-        android:background="@drawable/shape_oval_black40"
-        app:hasHole="false"
-        app:hasInd="false"
-        app:hasShadow="false"
-        />
-
-    <LinearLayout
-        android:id="@+id/layoutBG"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_gravity="right|bottom"
-        android:layout_marginBottom="@dimen/horizontal_margin_smaller"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:gravity="center"
-        >
-
-      <ImageView
-          android:id="@+id/imgIcon"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:scaleType="centerInside"
-          />
-
-      <com.github.rahatarmanahmed.cpv.CircularProgressView
-          android:id="@+id/progressView"
-          android:layout_width="12.5dp"
-          android:layout_height="12.5dp"
-          android:layout_gravity="center"
-          android:visibility="gone"
-          app:cpv_animAutostart="true"
-          app:cpv_color="@android:color/white"
-          app:cpv_indeterminate="true"
-          app:cpv_thickness="@dimen/progress_bar_thickness_small"
-          />
-
-    </LinearLayout>
-  </FrameLayout>
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center_vertical"
+      android:layout_height="wrap_content"
       android:orientation="vertical"
-      android:paddingRight="@dimen/horizontal_margin_small"
-      >
+      android:layout_centerVertical="true">
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Title.2.AddressBook"
+        style="@style/Title.2.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtStatus"
+        android:paddingTop="@dimen/horizontal_margin_xsmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Body.One.Blue.New"
         />
 
   </LinearLayout>
-</merge>
+
+  <android.support.v7.widget.SwitchCompat
+      android:id="@+id/viewSwitch"
+      android:layout_width="45dp"
+      android:layout_height="32dp"
+      android:theme="@style/ColorSwitchStyle"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true" />
+
+  <com.github.rahatarmanahmed.cpv.CircularProgressView
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:id="@+id/progressView"
+      android:layout_width="22dp"
+      android:layout_height="22dp"
+      android:visibility="gone"
+      android:layout_gravity="center"
+      app:cpv_animAutostart="true"
+      app:cpv_color="@android:color/black"
+      app:cpv_indeterminate="true"
+      app:cpv_thickness="@dimen/progress_bar_thickness_normal"
+      />
+
+</RelativeLayout>

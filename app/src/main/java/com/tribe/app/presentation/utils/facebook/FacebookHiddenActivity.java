@@ -55,6 +55,7 @@ public class FacebookHiddenActivity extends BaseActivity {
         }
 
         @Override public void onCancel() {
+          rxFacebook.onLogin(null);
           finish();
         }
 

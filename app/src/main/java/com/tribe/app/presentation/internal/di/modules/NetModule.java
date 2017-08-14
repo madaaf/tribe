@@ -522,13 +522,21 @@ import timber.log.Timber;
       Request original = chain.request();
 
       Request.Builder requestBuilder =
-          original.newBuilder().header("Content-type", "application/json");
+          original.newBuilder().header("Content-type", "application/json").removeHeader("@");
 
-      byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
-          tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
-      String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+      List<String> customAnnotations = original.headers("@");
+      if (customAnnotations.contains("UseUserToken")) {
+        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
+                + " " + tribeAuthorizer.getAccessToken().getAccessToken());
 
-      requestBuilder.header("Authorization", "Basic " + base64);
+      } else {
+        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
+                tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+
+        requestBuilder.header("Authorization", "Basic " + base64);
+      }
+
       TribeApiUtils.appendUserAgent(context, requestBuilder);
       requestBuilder.method(original.method(), original.body());
 

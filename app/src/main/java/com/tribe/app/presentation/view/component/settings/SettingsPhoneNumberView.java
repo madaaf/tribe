@@ -14,6 +14,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
@@ -66,7 +67,7 @@ public class SettingsPhoneNumberView extends RelativeLayout {
 
         initDependencyInjector();
         initSubscriptions();
-        initUI();
+        reloadUserUI();
     }
 
     @Override protected void onAttachedToWindow() {
@@ -85,9 +86,9 @@ public class SettingsPhoneNumberView extends RelativeLayout {
         subscriptions = new CompositeSubscription();
     }
 
-    private void initUI() {
+    public void reloadUserUI() {
 
-        if (user.getPhone() != null) {
+        if (!StringUtils.isEmpty(user.getPhone())) {
 
             String countryCode = phoneUtils.getRegionCodeForNumber(user.getPhone());
 

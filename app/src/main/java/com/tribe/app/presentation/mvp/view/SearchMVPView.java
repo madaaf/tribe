@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by tiago on 12/02/2016.
  */
-public interface SearchMVPView extends LoadDataMVPView {
+public interface SearchMVPView extends UpdateUserMVPView {
 
   void renderSearchResult(SearchResult searchResult);
 
@@ -18,8 +18,4 @@ public interface SearchMVPView extends LoadDataMVPView {
   void onAddError();
 
   void syncDone();
-
-  void successFacebookLogin();
-
-  void errorFacebookLogin();
 }

@@ -27,6 +27,7 @@ import com.tribe.app.domain.interactor.user.SendInvitations;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -52,7 +53,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
   private GetHeadDeepLink getHeadDeepLink;
   private CreateMembership createMembership;
   private UseCase cloudUserInfos;
-  private UpdateUser updateUser;
+  private UpdateUserFacebook updateUserFacebook;
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
@@ -71,7 +72,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos, LeaveGroup leaveGroup,
       RemoveGroup removeGroup, @Named("sendToken") SendToken sendToken,
       GetHeadDeepLink getHeadDeepLink, CreateMembership createMembership,
-      @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUser updateUser, RxFacebook rxFacebook,
+      @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
       GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateFriendship createFriendship, BookRoomLink bookRoomLink,
@@ -85,7 +86,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     this.getHeadDeepLink = getHeadDeepLink;
     this.createMembership = createMembership;
     this.cloudUserInfos = cloudUserInfos;
-    this.updateUser = updateUser;
+    this.updateUserFacebook = updateUserFacebook;
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
@@ -102,7 +103,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     getHeadDeepLink.unsubscribe();
     createMembership.unsubscribe();
     cloudUserInfos.unsubscribe();
-    updateUser.unsubscribe();
+    updateUserFacebook.unsubscribe();
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
@@ -296,11 +297,10 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     }
   }
 
-  public void updateUserFacebook(String fbid) {
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(UserRealm.FBID, String.valueOf(fbid)));
-    updateUser.prepare(values);
-    updateUser.execute(new DefaultSubscriber() {
+  public void updateUserFacebook(String userId, String accessToken) {
+
+    updateUserFacebook.prepare(userId, accessToken);
+    updateUserFacebook.execute(new DefaultSubscriber() {
       @Override public void onError(Throwable e) {
         super.onError(e);
         System.out.println("ON ERROR" + e.getMessage());

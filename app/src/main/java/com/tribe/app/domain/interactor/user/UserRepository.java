@@ -5,6 +5,8 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
@@ -80,6 +82,10 @@ public interface UserRepository {
    * about the user updated.
    */
   Observable<User> updateUser(List<Pair<String, String>> values);
+
+  Observable<User> updateUserFacebook(String userId, String accessToken);
+
+  Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession);
 
   Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
 

@@ -105,10 +105,10 @@ public class EmojiParser {
     IEmojiMap.put(":no_mobile_phones:", "\uD83D\uDCF5");
     IEmojiMap.put(":busts_in_silhouette:", "\uD83D\uDC65");
     IEmojiMap.put(":video_game:", "\uD83C\uDFAE");
-    IEmojiMap.put(":hourglass:", "\u23F3");
-    IEmojiMap.put(":spy:", "\uD83D\uDD75");
     IEmojiMap.put(":telephone:", "\uD83D\u260E");
     IEmojiMap.put(":bust_in_silhouette:", "\uD83D\uDC64");
+    IEmojiMap.put(":hourglass:", "\u23F3");
+    IEmojiMap.put(":spy:", "\uD83D\uDD75");
   }
 
   /**
