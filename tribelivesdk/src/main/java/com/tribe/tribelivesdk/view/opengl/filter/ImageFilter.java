@@ -9,7 +9,6 @@ import android.support.annotation.StringDef;
 import android.support.annotation.StringRes;
 import com.tribe.tribelivesdk.view.opengl.gles.OpenGLES;
 import com.tribe.tribelivesdk.view.opengl.gles.Texture;
-import com.tribe.tribelivesdk.view.opengl.renderer.FrameBufferObject;
 import com.tribe.tribelivesdk.view.opengl.utils.ImgSdk;
 import java.util.HashMap;
 import timber.log.Timber;
@@ -26,7 +25,6 @@ import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glDeleteBuffers;
 import static android.opengl.GLES20.glDeleteProgram;
-import static android.opengl.GLES20.glDeleteShader;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
@@ -54,7 +52,7 @@ public class ImageFilter extends FilterMask {
   private final OpenGLES openGLES = OpenGLES.getInstance();
 
   private int textureTarget = -1;
-  protected FrameBufferObject fbo;
+  //protected FrameBufferObject fbo;
   protected int texCache = 0, cacheTexWidth, cacheTexHeight, textureWidth = 0, textureHeight = 0;
 
   protected static final String DEFAULT_VERTEX_SHADER = "varying vec2 interp_tc;\n" +
@@ -180,13 +178,21 @@ public class ImageFilter extends FilterMask {
       return;
     }
 
+    Timber.d("glDeleteProgram : " + program);
     glDeleteProgram(program);
+    //checkGlError("glDeleteProgram");
     program = 0;
-    glDeleteShader(vertexShader);
+    //Timber.d("glDeleteShader : " + vertexShader);
+    //glDeleteShader(vertexShader);
+    //checkGlError("glDeleteShader");
     vertexShader = 0;
-    glDeleteShader(fragmentShader);
+    //Timber.d("glDeleteShader : " + fragmentShader);
+    //glDeleteShader(fragmentShader);
+    //checkGlError("glDeleteShader");
     fragmentShader = 0;
-    glDeleteBuffers(1, new int[] { vertexBufferName }, 0);
+    //glDeleteBuffers(1, new int[] { vertexBufferName }, 0);
+    //Timber.d("glDeleteBuffers : " + vertexBufferName);
+    //checkGlError("glDeleteBuffers");
     vertexBufferName = 0;
 
     textureTarget = -1;
@@ -194,7 +200,7 @@ public class ImageFilter extends FilterMask {
     cacheTexWidth = 0;
     cacheTexHeight = 0;
 
-    if (fbo != null) fbo.release();
+    //if (fbo != null) fbo.release();
 
     mHandleMap.clear();
     setupCompleted = false;
@@ -221,16 +227,16 @@ public class ImageFilter extends FilterMask {
       setup(texture.getTextureTarget());
     }
 
-    if (fbo == null) fbo = new FrameBufferObject();
+    //if (fbo == null) fbo = new FrameBufferObject();
 
     //Timber.d("Id : " +
     //        getId() +
     //        "/ " +
     //        "texCache == %d | cacheTexWidth == %d | textureWidth == %d | cacheTexHeight == %d | textureHeight == %d",
     //    texCache, cacheTexWidth, textureWidth, cacheTexHeight, textureHeight);
-    if (texCache == 0 || cacheTexWidth != textureWidth || cacheTexHeight != textureHeight) {
-      resetCacheTexture();
-    }
+    //if (texCache == 0 || cacheTexWidth != textureWidth || cacheTexHeight != textureHeight) {
+    //  resetCacheTexture();
+    //}
 
     useProgram();
 
@@ -250,14 +256,14 @@ public class ImageFilter extends FilterMask {
     glVertexAttribPointer(getHandle(DEFAULT_ATTRIB_TEXTURE_COORDINATE), VERTICES_DATA_UV_SIZE,
         GL_FLOAT, false, VERTICES_DATA_STRIDE_BYTES, VERTICES_DATA_UV_OFFSET);
 
-    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrixFBO, 0);
-
-    fbo.bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(texture.getTextureTarget(), texture.getTextureId());
-    glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
-
-    onDraw(viewportX, viewportY, cacheTexWidth, cacheTexHeight);
+    //glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrixFBO, 0);
+    //
+    //fbo.bind();
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(texture.getTextureTarget(), texture.getTextureId());
+    //glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
+    //
+    //onDraw(viewportX, viewportY, cacheTexWidth, cacheTexHeight);
 
     glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrix, 0);
 
@@ -323,10 +329,18 @@ public class ImageFilter extends FilterMask {
     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
     GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
-    fbo.bindTexture(texCache);
+    //fbo.bindTexture(texCache);
   }
 
-  public FrameBufferObject getFbo() {
-    return fbo;
+  //public FrameBufferObject getFbo() {
+  //  return fbo;
+  //}
+
+  protected void checkGlError(String op) {
+    int error;
+    while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+      Timber.e(op + ": glError " + error);
+      throw new RuntimeException(op + ": glError " + error);
+    }
   }
 }

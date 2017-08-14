@@ -119,6 +119,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   public void dispose() {
+
     renderer.dispose();
   }
 

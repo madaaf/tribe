@@ -120,7 +120,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       previousHeightOut = heightOut;
     }
 
-    if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
+    //if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
 
   public void setLayoutAspectRatio(float layoutAspectRatio) {
@@ -155,12 +155,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     filter.release();
     filter = null;
 
-    if (maskFilter != null) {
-      maskFilter.release();
-      maskFilter = null;
-    }
+    //if (maskFilter != null) {
+    //  maskFilter.release();
+    //  maskFilter = null;
+    //}
 
-    libYuvConverter.releasePBO();
+    //libYuvConverter.releasePBO();
 
     maskRender = null;
 
@@ -178,10 +178,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       updateSurface = false;
     }
 
-    maskRender = new GLRenderMask(context);
-    ulsRenderer = UlsRenderer.getInstance(context);
-    ulsRenderer.ulsSurfaceCreated(null, null);
-    if (cameraInfo != null) ulsRenderer.updateCameraInfo(cameraInfo);
+    //maskRender = new GLRenderMask(context);
+    //ulsRenderer = UlsRenderer.getInstance(context);
+    //ulsRenderer.ulsSurfaceCreated(null, null);
+    //if (cameraInfo != null) ulsRenderer.updateCameraInfo(cameraInfo);
 
     mainHandler.post(() -> rendererCallback.onRendererInitialized());
   }
@@ -195,7 +195,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       updateOES();
     }
 
-    ulsRenderer.ulsSurfaceChanged(null, width, height);
+    //ulsRenderer.ulsSurfaceChanged(null, width, height);
 
     if (rendererCallback != null) {
       mainHandler.post(() -> rendererCallback.onSurfaceChanged(width, height));
@@ -229,58 +229,57 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
         drawMatrix = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
       }
 
-      float[] drawMatrixFBO;
-      synchronized (this.layoutLock) {
-        float[] layoutMatrix;
-        if (this.layoutAspectRatio > 0.0F) {
-          float videoAspectRatio =
-              (float) cameraInfo.rotatedWidth() / (float) cameraInfo.rotatedHeight();
-          layoutMatrix =
-              RendererCommon.getLayoutMatrix(cameraInfo.isFrontFacing(), videoAspectRatio,
-                  (float) widthOut / (float) heightOut);
-        } else {
-          layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
-              : RendererCommon.identityMatrix();
-        }
+      //float[] drawMatrixFBO;
+      //synchronized (this.layoutLock) {
+      //  float[] layoutMatrix;
+      //  if (this.layoutAspectRatio > 0.0F) {
+      //    float videoAspectRatio =
+      //        (float) cameraInfo.rotatedWidth() / (float) cameraInfo.rotatedHeight();
+      //    layoutMatrix =
+      //        RendererCommon.getLayoutMatrix(cameraInfo.isFrontFacing(), videoAspectRatio,
+      //            (float) widthOut / (float) heightOut);
+      //  } else {
+      //    layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
+      //        : RendererCommon.identityMatrix();
+      //  }
+      //
+      //  drawMatrixFBO = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
+      //}
 
-        drawMatrixFBO = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
-      }
+      Timber.d("Draw");
+      filter.draw(previewTexture, drawMatrix, null, 0, 0, (int) surfaceWidth, (int) surfaceHeight);
 
-      filter.draw(previewTexture, drawMatrix, drawMatrixFBO, 0, 0, (int) surfaceWidth,
-          (int) surfaceHeight);
+      //if (maskFilter != null) {
+      //  int rotation = ulseeManager.getCameraRotation();
+      //  if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
+      //
+      //  for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
+      //    //glViewport(0, 0, widthOut, heightOut);
+      //    //filter.getFbo().bind();
+      //    //draw(i, rotation, widthOut, heightOut);
+      //    glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
+      //    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+      //    draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
+      //  }
+      //}
 
-      if (maskFilter != null) {
-        int rotation = ulseeManager.getCameraRotation();
-        if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
-
-        for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
-          glViewport(0, 0, widthOut, heightOut);
-          filter.getFbo().bind();
-          draw(i, rotation, widthOut, heightOut);
-          glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
-          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-          draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
-        }
-      }
-
-      if (!gameManager.isLocalFrameDifferent()) {
-        synchronized (frameListenerLock) {
-          if (filter.getFbo() == null) return;
-          if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
-
-          filter.getFbo().bind();
-          byteBuffer.rewind();
-          libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
-          byteBuffer.flip();
-          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-
-          frame =
-              new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
-                  cameraInfo.isFrontFacing());
-          onFrameAvailable.onNext(frame);
-        }
-      }
+      //if (!gameManager.isLocalFrameDifferent()) {
+      //  synchronized (frameListenerLock) {
+      //    if (filter.getFbo() == null) return;
+      //    if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
+      //
+      //    filter.getFbo().bind();
+      //    byteBuffer.rewind();
+      //    libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+      //    byteBuffer.flip();
+      //    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+      //
+      //    frame =
+      //        new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
+      //            cameraInfo.isFrontFacing());
+      //    onFrameAvailable.onNext(frame);
+      //  }
+      //}
     }
   }
 
@@ -425,8 +424,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void updateOES() {
-    libYuvConverter.releasePBO();
-    libYuvConverter.initPBO(widthOut, heightOut);
+    //libYuvConverter.releasePBO();
+    //libYuvConverter.initPBO(widthOut, heightOut);
 
     if (filter != null) filter.updateTextureSize(widthOut, heightOut);
   }
@@ -442,10 +441,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void clearMask() {
-    if (maskFilter != null) {
-      maskFilter.release();
-      maskFilter = null;
-    }
+    //if (maskFilter != null) {
+    //  maskFilter.release();
+    //  maskFilter = null;
+    //}
   }
 
   private void clearImageFilter() {
