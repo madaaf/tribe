@@ -389,9 +389,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initMissedCall() {
-    if (missedCallManager != null
-        && missedCallManager.getNotificationPayloadList() != null
-        && missedCallManager.getNbrOfMissedCall() > 0) {
+    if (missedCallManager != null &&
+        missedCallManager.getNotificationPayloadList() != null &&
+        missedCallManager.getNbrOfMissedCall() > 0) {
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
           missedCallManager.buildNotificationBuilderFromMissedCallList());
@@ -453,8 +453,8 @@ public class HomeActivity extends BaseActivity
           }
         }, ((recipient, labelType) -> {
           if (labelType != null) {
-            if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                .equals(LabelType.BLOCK_HIDE)) {
+            if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
               Friendship friendship = (Friendship) recipient;
               homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                   labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -586,6 +586,7 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
             layoutManager.setScrollEnabled(false);
             searchViewDisplayed = true;
+            searchView.refactorActions();
             searchView.show();
           } else {
             if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
@@ -701,7 +702,8 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void successFacebookLogin() {
-    homeGridPresenter.updateUserFacebook(getCurrentUser().getId(), AccessToken.getCurrentAccessToken().getToken());
+    homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
+        AccessToken.getCurrentAccessToken().getToken());
     syncContacts();
   }
 
@@ -851,8 +853,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
-        && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
+        !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(

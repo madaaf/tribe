@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.hardware.camera2.params.Face;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -17,14 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
@@ -64,7 +60,6 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.CustomFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -103,8 +98,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   @BindView(R.id.layoutContent) ViewGroup layoutContent;
 
   @BindView(R.id.layoutBottom) ViewGroup layoutBottom;
-
-  @BindView(R.id.layoutTop) ViewGroup layoutTop;
 
   private LoadFriendsView viewFriendsFBLoad;
   private LoadFriendsView viewFriendsAddressBookLoad;
@@ -219,8 +212,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
                   .filter(x -> x == true)
                   .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
             } else if (searchResult.getFriendship() == null) {
-              if (searchResult.getUsername() != null && !searchResult.getUsername()
-                  .equals(user.getUsername())) {
+              if (searchResult.getUsername() != null &&
+                  !searchResult.getUsername().equals(user.getUsername())) {
                 searchPresenter.createFriendship(searchResult.getId());
               }
             } else {
@@ -309,18 +302,17 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
       boolean shouldAdd = false;
       if (obj instanceof Contact) {
         Contact contact = (Contact) obj;
-        if (!StringUtils.isEmpty(contact.getName()) && contact.getName()
-            .toLowerCase()
-            .startsWith(search)) {
+        if (!StringUtils.isEmpty(contact.getName()) &&
+            contact.getName().toLowerCase().startsWith(search)) {
           shouldAdd = true;
         }
       } else if (obj instanceof Recipient) {
         Recipient recipient = (Recipient) obj;
-        if (!StringUtils.isEmpty(search) && ((!StringUtils.isEmpty(recipient.getDisplayName())
-            && recipient.getDisplayName().toLowerCase().startsWith(search))
-            || (recipient.getUsername() != null && recipient.getUsername()
-            .toLowerCase()
-            .startsWith(search)))) {
+        if (!StringUtils.isEmpty(search) &&
+            ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
+                recipient.getDisplayName().toLowerCase().startsWith(search)) ||
+                (recipient.getUsername() != null &&
+                    recipient.getUsername().toLowerCase().startsWith(search)))) {
           shouldAdd = true;
         }
       }
@@ -391,7 +383,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   public void refactorWarning(boolean open) {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
     boolean permissionsContact =
-            PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();
+        PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();
 
     if ((!permissionsContact || !permissionsFB) && !open) {
       imgWarning.setVisibility(View.VISIBLE);
@@ -406,13 +398,13 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
         PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();
 
     layoutBottom.removeAllViews();
-    layoutTop.removeAllViews();
+
+    initLoadView(inflater.inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
 
     layoutContent.setVisibility(View.VISIBLE);
     layoutBottom.setVisibility(View.VISIBLE);
     recyclerViewContacts.setPadding(0, 0, 0,
-            getResources().getDimensionPixelSize(R.dimen.load_friends_height));
-    initLoadView(inflater.inflate(R.layout.view_load_ab_fb_friends, layoutBottom));
+        getResources().getDimensionPixelSize(R.dimen.load_friends_height));
 
     if (permissionsContact || permissionsFB) {
       searchPresenter.loadContacts(search);
@@ -461,12 +453,14 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   private void openCloseContactsView(boolean open, boolean animate) {
 
     int rotation = open ? 180 : 0;
-    int translation = open ? 0 : (viewFriendsFBLoad.getHeight() + viewFriendsAddressBookLoad.getHeight());
+    int translation = open ? 0 : (viewFriendsFBLoad.getHeight() +
+        viewFriendsAddressBookLoad.getHeight() +
+        screenUtils.dpToPx(1));
+    // + 1 because of the dividers 2 * 0.5dp
 
     if (animate) {
       imgToggle.animate().rotation(rotation).start();
       layoutBottom.animate().translationY(translation).start();
-
     } else {
       imgToggle.setRotation(rotation);
       layoutBottom.setTranslationY(translation);
@@ -475,8 +469,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     refactorWarning(open);
   }
 
-  @Override
-  protected void onFirstLayout() {
+  @Override protected void onFirstLayout() {
     super.onFirstLayout();
 
     openCloseContactsView(false, false);
@@ -490,7 +483,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     imgToggle = ButterKnife.findById(v, R.id.imgToggle);
     txtTitle = ButterKnife.findById(v, R.id.txtTitle);
 
-    txtTitle.setText(EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_title)));
+    txtTitle.setText(
+        EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_title)));
   }
 
   protected void showToastMessage(String message) {
@@ -500,52 +494,53 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   private void disableLookupFacebook() {
 
     if (StringUtils.isEmpty(user.getPhone())) {
-      showToastMessage(getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
+      showToastMessage(
+          getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
       viewFriendsFBLoad.setChecked(true);
-
     } else {
-      subscriptions.add(DialogFactory.dialog(getContext(), EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
-              getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
-              getContext().getString(R.string.action_cancel),
-              getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(shouldCancel -> {
+      subscriptions.add(DialogFactory.dialog(getContext(), EmojiParser.demojizedText(
+          getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
+          getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
+          getContext().getString(R.string.action_cancel),
+          getContext().getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(shouldCancel -> {
 
-                if (shouldCancel) {
-                  viewFriendsFBLoad.setChecked(true);
-
-                } else {
-                  FacebookUtils.logout();
-                  refactorActions();
-                  searchPresenter.disconnectFromFacebook(user.getId());
-                }
-              }));
+            if (shouldCancel) {
+              viewFriendsFBLoad.setChecked(true);
+            } else {
+              FacebookUtils.logout();
+              refactorActions();
+              searchPresenter.disconnectFromFacebook(user.getId());
+            }
+          }));
     }
   }
 
   private void disableLookupContacts() {
 
     if (!FacebookUtils.isLoggedIn()) {
-      showToastMessage(getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
+      showToastMessage(
+          getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
       viewFriendsAddressBookLoad.setChecked(true);
-
     } else {
-      subscriptions.add(DialogFactory.dialog(getContext(), EmojiParser.demojizedText(getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_disable)),
-              getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_msg),
-              getContext().getString(R.string.action_cancel),
-              getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_disable))
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(shouldCancel -> {
+      subscriptions.add(DialogFactory.dialog(getContext(), EmojiParser.demojizedText(
+          getContext().getString(
+              R.string.linked_friends_notifications_disable_phone_alert_disable)),
+          getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_msg),
+          getContext().getString(R.string.action_cancel),
+          getContext().getString(R.string.linked_friends_notifications_disable_phone_alert_disable))
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(shouldCancel -> {
 
-                if (shouldCancel) {
-                  viewFriendsAddressBookLoad.setChecked(true);
-
-                } else {
-                  addressBook.set(false);
-                  refactorActions();
-                  searchPresenter.updatePhoneNumber(user.getId(), null);
-                }
-              }));
+            if (shouldCancel) {
+              viewFriendsAddressBookLoad.setChecked(true);
+            } else {
+              addressBook.set(false);
+              refactorActions();
+              searchPresenter.updatePhoneNumber(user.getId(), null);
+            }
+          }));
     }
   }
 
@@ -680,8 +675,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   @Override public void onAddError() {
-    Toast.makeText(context(), EmojiParser.demojizedText(
-            context().getString(R.string.add_friend_error_invisible)), Toast.LENGTH_SHORT).show();
+    Toast.makeText(context(),
+        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+        Toast.LENGTH_SHORT).show();
     updateSearch();
   }
 
@@ -705,8 +701,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     if (isSearchMode) {
       searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
       this.searchResult = searchResult;
-      this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
-          .equals(user.getUsername()));
+      this.searchResult.setMyself(searchResult.getUsername() != null &&
+          searchResult.getUsername().equals(user.getUsername()));
       updateSearch();
     }
   }
@@ -718,13 +714,11 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     showContactList();
   }
 
-  @Override
-  public void loadFacebookInfos(FacebookEntity facebookEntity) {
+  @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
 
   }
 
-  @Override
-  public void successUpdateFacebook(User user) {
+  @Override public void successUpdateFacebook(User user) {
     if (FacebookUtils.isLoggedIn()) {
       showToastMessage(getContext().getString(R.string.linked_friends_link_success_fb));
     } else {
@@ -758,24 +752,20 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     Digits.authenticate(authConfig);
   }
 
-  @Override
-  public void successUpdatePhoneNumber(User user) {
+  @Override public void successUpdatePhoneNumber(User user) {
     if (!StringUtils.isEmpty(user.getPhone())) {
       showToastMessage(getContext().getString(R.string.linked_friends_link_success_phone));
       lookupContacts();
-
     } else {
       showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_phone));
     }
   }
 
-  @Override
-  public void usernameResult(Boolean available) {
+  @Override public void usernameResult(Boolean available) {
 
   }
 
-  @Override
-  public void successUpdateUser(User user) {
+  @Override public void successUpdateUser(User user) {
 
   }
 
