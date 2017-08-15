@@ -18,14 +18,13 @@ public class FlowerCrownFaceMaskFilter extends FaceMaskFilter {
 
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
+      String cosmeticsMask = path + "flower_crown_mask.png";
+      UlsFaceAR.setMask(context, cosmeticsMask);
+
       String flowerCrown = path + "flower_crown_crown.png";
       UlsFaceAR.insertAnimationObjectAtIndex(0, flowerCrown, 91, true, 1.2f, isFrontFacing);
 
-      String flowerCrownCosmetics = path + "flower_crown_cosmetics.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, flowerCrownCosmetics, 29, true, 1.2f,
-          isFrontFacing);
-
-      UlsFaceAR.cleanAnimationObjectAtIndex(2);
+      UlsFaceAR.cleanAnimationObjectAtIndex(1);
     }).start();
   }
 }

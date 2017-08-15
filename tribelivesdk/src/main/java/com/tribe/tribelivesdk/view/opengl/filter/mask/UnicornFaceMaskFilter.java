@@ -18,16 +18,16 @@ public class UnicornFaceMaskFilter extends FaceMaskFilter {
 
   public void computeMask(String path, boolean isFrontFacing) {
     new Thread(() -> {
+      String cosmeticsMask = path + "unicorn_mask.png";
+      UlsFaceAR.setMask(context, cosmeticsMask);
+
       String unicornHorn = path + "unicorn_horn.png";
       UlsFaceAR.insertAnimationObjectAtIndex(0, unicornHorn, 91, true, 1.2f, isFrontFacing);
 
-      String cosmetics = path + "unicorn_cosmetics.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(1, cosmetics, 29, true, 1.2f, isFrontFacing);
-
       String nose = path + "unicorn_nose.png";
-      UlsFaceAR.insertAnimationObjectAtIndex(2, nose, 30, true, 1.2f, isFrontFacing);
+      UlsFaceAR.insertAnimationObjectAtIndex(1, nose, 30, true, 1.2f, isFrontFacing);
 
-      UlsFaceAR.cleanAnimationObjectAtIndex(3);
+      UlsFaceAR.cleanAnimationObjectAtIndex(2);
     }).start();
   }
 }

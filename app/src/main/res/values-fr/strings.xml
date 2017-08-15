@@ -614,6 +614,8 @@
 	<string name="game_challenges_your_turn">A ton tour d\'être challengé!</string>
 	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
 	<string name="game_challenges_re_roll_notification">%1$s a changé de challenge!</string>
+	<string name="game_challenges_fail_button">:poop: Échec.</string>
+	<string name="game_challenges_success_button">:crown: Succès!</string>
 	<string name="game_scream">Scream !</string>
 	<string name="game_scream_rule">Criez pour atteindre les sommets !</string>
 	<string name="game_draw">Dessin</string>
