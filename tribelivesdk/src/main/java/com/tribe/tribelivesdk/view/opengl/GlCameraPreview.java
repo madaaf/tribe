@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import com.tribe.tribelivesdk.entity.CameraInfo;
+import com.tribe.tribelivesdk.view.opengl.filter.FilterManager;
 import com.tribe.tribelivesdk.view.opengl.filter.FilterMask;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultConfigChooser;
 import com.tribe.tribelivesdk.view.opengl.gles.DefaultContextFactory;
@@ -30,6 +31,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   private boolean isInitialized = false;
   private final Object layoutLock = new Object();
   private CameraInfo cameraInfo;
+  private FilterManager filterManager;
 
   // OBSERVABLE
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -53,10 +55,23 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
     setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
     initSubscriptions();
+    initFilterManager();
   }
 
   private void initSubscriptions() {
 
+  }
+
+  public void initFilterManager() {
+    filterManager = FilterManager.getInstance(getContext());
+    subscriptions.add(filterManager.onFilterChange().subscribe(filterMask -> {
+      queueEvent(() -> renderer.switchFilter(filterMask));
+    }));
+  }
+
+  @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+    super.onSurfaceTextureAvailable(surface, width, height);
+    queueEvent(() -> renderer.switchFilter(filterManager.getFilter()));
   }
 
   @Override public void onSurfaceChanged(int width, int height) {
@@ -119,6 +134,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   public void dispose() {
+    queueEvent(() -> renderer.disposeFilter());
     renderer.dispose();
   }
 
