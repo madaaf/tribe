@@ -88,15 +88,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   public void initFilterManager() {
     filterManager = FilterManager.getInstance(context);
-    subscriptions.add(filterManager.onFilterChange().subscribe(filterMask -> {
-      switchFilter(filterMask);
-    }));
   }
 
   public void initSwitchFilterSubscription(Observable<FilterMask> obs) {
-    subscriptions.add(obs.subscribe(filterMask -> {
-      //switchFilter(filterMask);
-    }));
+
   }
 
   public void initInviteOpenSubscription(Observable<Integer> obs) {
@@ -141,6 +136,47 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     previewTexture.setup();
   }
 
+  public void switchFilter(FilterMask filterMask) {
+    if (filterMask == null || filterMask.equals(filter) || filterMask.equals(maskFilter)) {
+      clearImageFilter();
+      clearMask();
+      filter = filterManager.getBaseFilter();
+      filter.updateTextureSize(widthOut, heightOut);
+      return;
+    }
+
+    if (filterMask instanceof ImageFilter) {
+      clearMask();
+
+      ImageFilter shader = (ImageFilter) filterMask;
+      if (shader == null || shader.equals(filter)) {
+        shader = filterManager.getBaseFilter();
+      }
+
+      clearImageFilter();
+
+      this.filter = shader;
+    } else {
+      clearMask();
+      clearImageFilter();
+      filter = filterManager.getBaseFilter();
+
+      FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
+      faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
+          cameraInfo == null || cameraInfo.isFrontFacing());
+      maskFilter = (FaceMaskFilter) filterMask;
+    }
+
+    filter.updateTextureSize(widthOut, heightOut);
+
+    rendererCallback.requestRender();
+  }
+
+  public void disposeFilter() {
+    filter.release();
+    filter = null;
+  }
+
   public void dispose() {
     subscriptions.clear();
 
@@ -151,9 +187,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     previewTexture.release();
     previewTexture = null;
-
-    filter.release();
-    filter = null;
 
     //if (maskFilter != null) {
     //  maskFilter.release();
@@ -169,8 +202,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
   @Override public void onSurfaceCreated(final EGLConfig config) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    switchFilter(filterManager.getFilter());
 
     resetMatrix();
 
@@ -246,7 +277,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       //  drawMatrixFBO = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
       //}
 
-      Timber.d("Draw");
       filter.draw(previewTexture, drawMatrix, null, 0, 0, (int) surfaceWidth, (int) surfaceHeight);
 
       //if (maskFilter != null) {
@@ -451,42 +481,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     if (filter != null) {
       filter.release();
     }
-  }
-
-  private void switchFilter(FilterMask filterMask) {
-    if (filterMask == null || filterMask.equals(filter) || filterMask.equals(maskFilter)) {
-      clearImageFilter();
-      clearMask();
-      filter = filterManager.getBaseFilter();
-      filter.updateTextureSize(widthOut, heightOut);
-      return;
-    }
-
-    if (filterMask instanceof ImageFilter) {
-      clearMask();
-
-      ImageFilter shader = (ImageFilter) filterMask;
-      if (shader == null || shader.equals(filter)) {
-        shader = filterManager.getBaseFilter();
-      }
-
-      clearImageFilter();
-
-      this.filter = shader;
-    } else {
-      clearMask();
-      clearImageFilter();
-      filter = filterManager.getBaseFilter();
-
-      FaceMaskFilter faceMaskFilter = (FaceMaskFilter) filterMask;
-      faceMaskFilter.computeMask(filterManager.getMaskAndGlassesPath(),
-          cameraInfo == null || cameraInfo.isFrontFacing());
-      maskFilter = (FaceMaskFilter) filterMask;
-    }
-
-    filter.updateTextureSize(widthOut, heightOut);
-
-    rendererCallback.requestRender();
   }
 
   @Override

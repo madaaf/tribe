@@ -21,10 +21,10 @@ import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindBuffer;
-import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glDeleteBuffers;
 import static android.opengl.GLES20.glDeleteProgram;
+import static android.opengl.GLES20.glDeleteShader;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
@@ -164,6 +164,8 @@ public class ImageFilter extends FilterMask {
       releaseProgram();
     }
 
+    Timber.d("setup : " + getName());
+
     String targetFragmentShader = createTargetShader(mFragmentShaderSource, textureTarget);
 
     vertexShader = openGLES.generateShader(mVertexShaderSource, GL_VERTEX_SHADER);
@@ -180,25 +182,20 @@ public class ImageFilter extends FilterMask {
 
     Timber.d("glDeleteProgram : " + program);
     glDeleteProgram(program);
-    //checkGlError("glDeleteProgram");
+    checkGlError("glDeleteProgram");
     program = 0;
-    //Timber.d("glDeleteShader : " + vertexShader);
-    //glDeleteShader(vertexShader);
-    //checkGlError("glDeleteShader");
+    Timber.d("glDeleteShader : " + vertexShader);
+    glDeleteShader(vertexShader);
+    checkGlError("glDeleteShader");
     vertexShader = 0;
-    //Timber.d("glDeleteShader : " + fragmentShader);
-    //glDeleteShader(fragmentShader);
-    //checkGlError("glDeleteShader");
+    Timber.d("glDeleteShader : " + fragmentShader);
+    glDeleteShader(fragmentShader);
+    checkGlError("glDeleteShader");
     fragmentShader = 0;
-    //glDeleteBuffers(1, new int[] { vertexBufferName }, 0);
-    //Timber.d("glDeleteBuffers : " + vertexBufferName);
-    //checkGlError("glDeleteBuffers");
+    glDeleteBuffers(1, new int[] { vertexBufferName }, 0);
+    Timber.d("glDeleteBuffers : " + vertexBufferName);
+    checkGlError("glDeleteBuffers");
     vertexBufferName = 0;
-
-    textureTarget = -1;
-    texCache = 0;
-    cacheTexWidth = 0;
-    cacheTexHeight = 0;
 
     //if (fbo != null) fbo.release();
 
@@ -214,14 +211,19 @@ public class ImageFilter extends FilterMask {
       return;
     }
 
+    Timber.d("Release : " + Thread.currentThread());
+
+    textureTarget = -1;
+    texCache = 0;
+    cacheTexWidth = 0;
+    cacheTexHeight = 0;
     releaseProgram();
   }
 
   public synchronized void draw(@NonNull Texture texture, final float[] texMatrix,
       final float[] texMatrixFBO, int viewportX, int viewportY, int viewportWidth,
       int viewportHeight) {
-
-    if (textureWidth == 0 || textureHeight == 0) return;
+    Timber.d("onDraw ImageFilter");
 
     if (textureTarget != texture.getTextureTarget()) {
       setup(texture.getTextureTarget());
@@ -239,6 +241,8 @@ public class ImageFilter extends FilterMask {
     //}
 
     useProgram();
+
+    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrix, 0);
 
     internalDraw(texture, texMatrix, texMatrixFBO, viewportX, viewportY, viewportWidth,
         viewportHeight);
@@ -265,19 +269,17 @@ public class ImageFilter extends FilterMask {
     //
     //onDraw(viewportX, viewportY, cacheTexWidth, cacheTexHeight);
 
-    glUniformMatrix4fv(getHandle("texMatrix"), 1, false, texMatrix, 0);
-
-    glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    //glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texCache);
+    glBindTexture(texture.getTextureTarget(), texture.getTextureId());
     glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
 
     onDraw(viewportX, viewportY, viewportWidth, viewportHeight);
 
     glDisableVertexAttribArray(getHandle(DEFAULT_ATTRIB_POSITION));
     glDisableVertexAttribArray(getHandle(DEFAULT_ATTRIB_TEXTURE_COORDINATE));
-    glBindTexture(texture.getTextureTarget(), 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 
