@@ -173,8 +173,17 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   public void disposeFilter() {
-    filter.release();
-    filter = null;
+    if (filter != null) {
+      filter.release();
+      filter = null;
+    }
+
+    if (maskFilter != null) {
+      maskFilter.release();
+      maskFilter = null;
+    }
+
+    libYuvConverter.releasePBO();
   }
 
   public void dispose() {
@@ -187,13 +196,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     previewTexture.release();
     previewTexture = null;
-
-    //if (maskFilter != null) {
-    //  maskFilter.release();
-    //  maskFilter = null;
-    //}
-
-    //libYuvConverter.releasePBO();
 
     maskRender = null;
 
@@ -260,38 +262,39 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
         drawMatrix = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
       }
 
-      //float[] drawMatrixFBO;
-      //synchronized (this.layoutLock) {
-      //  float[] layoutMatrix;
-      //  if (this.layoutAspectRatio > 0.0F) {
-      //    float videoAspectRatio =
-      //        (float) cameraInfo.rotatedWidth() / (float) cameraInfo.rotatedHeight();
-      //    layoutMatrix =
-      //        RendererCommon.getLayoutMatrix(cameraInfo.isFrontFacing(), videoAspectRatio,
-      //            (float) widthOut / (float) heightOut);
-      //  } else {
-      //    layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
-      //        : RendererCommon.identityMatrix();
-      //  }
-      //
-      //  drawMatrixFBO = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
-      //}
+      float[] drawMatrixFBO;
+      synchronized (this.layoutLock) {
+        float[] layoutMatrix;
+        if (this.layoutAspectRatio > 0.0F) {
+          float videoAspectRatio =
+              (float) cameraInfo.rotatedWidth() / (float) cameraInfo.rotatedHeight();
+          layoutMatrix =
+              RendererCommon.getLayoutMatrix(cameraInfo.isFrontFacing(), videoAspectRatio,
+                  (float) widthOut / (float) heightOut);
+        } else {
+          layoutMatrix = cameraInfo.isFrontFacing() ? RendererCommon.horizontalFlipMatrix()
+              : RendererCommon.identityMatrix();
+        }
 
-      filter.draw(previewTexture, drawMatrix, null, 0, 0, (int) surfaceWidth, (int) surfaceHeight);
+        drawMatrixFBO = RendererCommon.multiplyMatrices(texMatrix, layoutMatrix);
+      }
 
-      //if (maskFilter != null) {
-      //  int rotation = ulseeManager.getCameraRotation();
-      //  if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
-      //
-      //  for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
-      //    //glViewport(0, 0, widthOut, heightOut);
-      //    //filter.getFbo().bind();
-      //    //draw(i, rotation, widthOut, heightOut);
-      //    glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
-      //    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-      //    draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
-      //  }
-      //}
+      filter.draw(previewTexture, drawMatrix, drawMatrixFBO, 0, 0, (int) surfaceWidth,
+          (int) surfaceHeight);
+
+      if (maskFilter != null) {
+        int rotation = ulseeManager.getCameraRotation();
+        if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
+
+        for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
+          //glViewport(0, 0, widthOut, heightOut);
+          //filter.getFbo().bind();
+          //draw(i, rotation, widthOut, heightOut);
+          glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
+          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+          draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
+        }
+      }
 
       //if (!gameManager.isLocalFrameDifferent()) {
       //  synchronized (frameListenerLock) {
