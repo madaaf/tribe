@@ -109,7 +109,6 @@ public class FilterManager {
 
   public void setToDefault() {
     setCurrentFilter(filterList.get(0));
-    //setCurrentFilter(baseFilter);
   }
 
   public void setToPrevious() {

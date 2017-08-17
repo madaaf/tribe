@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.view.opengl;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -43,7 +44,9 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
     super(context, attrs);
 
     setScaleType(CENTER_CROP_FILL);
-    setEGLConfigChooser(new DefaultConfigChooser(false, 2));
+    setEGLConfigChooser(
+        new DefaultConfigChooser(8, 8, 8, 8, EGL14.EGL_OPENGL_ES2_BIT, EGL14.EGL_PBUFFER_BIT,
+            EGL14.EGL_NONE));
     setEGLContextFactory(new DefaultContextFactory(2));
 
     renderer = new PreviewRenderer(context, this);
@@ -104,7 +107,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
     setContentWidth(cameraInfo.rotatedWidth());
     setContentHeight(cameraInfo.rotatedHeight());
     updateTextureViewSize();
-    renderer.updateCameraInfo(cameraInfo);
+    queueEvent(() -> renderer.updateCameraInfo(cameraInfo));
   }
 
   public synchronized void startPreview() {
@@ -130,7 +133,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   public void dispose() {
-    queueEvent(() -> renderer.disposeFilter());
+    queueEvent(() -> renderer.disposeGl());
     renderer.dispose();
   }
 

@@ -682,5 +682,6 @@
 	<string name="linked_friends_unlink_success_fb">Facebook unsynced</string>
 	<string name="linked_friends_link_success_phone">Address Book linked</string>
 	<string name="linked_friends_link_success_fb">Facebook linked</string>
+	<string name="linked_friends_link_error_phone">Address Book already linked to another account</string>
 	<string name="linked_friends_loading">Loading...</string>
 </resources>

@@ -199,7 +199,7 @@ public class ImageFilter extends FilterMask {
     checkGlError("glDeleteBuffers");
     vertexBufferName = 0;
 
-    //if (fbo != null) fbo.release();
+    if (fbo != null) fbo.release();
 
     mHandleMap.clear();
     setupCompleted = false;
@@ -225,8 +225,7 @@ public class ImageFilter extends FilterMask {
   public synchronized void draw(@NonNull Texture texture, final float[] texMatrix,
       final float[] texMatrixFBO, int viewportX, int viewportY, int viewportWidth,
       int viewportHeight) {
-    Timber.d("onDraw ImageFilter");
-
+    
     if (textureWidth == 0 || textureHeight == 0) return;
 
     if (textureTarget != texture.getTextureTarget()) {
@@ -339,9 +338,9 @@ public class ImageFilter extends FilterMask {
     fbo.bindTexture(texCache);
   }
 
-  //public FrameBufferObject getFbo() {
-  //  return fbo;
-  //}
+  public FrameBufferObject getFbo() {
+    return fbo;
+  }
 
   protected void checkGlError(String op) {
     int error;

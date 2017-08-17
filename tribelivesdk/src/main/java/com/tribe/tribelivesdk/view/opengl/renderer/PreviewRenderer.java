@@ -115,7 +115,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       previousHeightOut = heightOut;
     }
 
-    //if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
+    if (ulsRenderer != null) ulsRenderer.updateCameraInfo(cameraInfo);
   }
 
   public void setLayoutAspectRatio(float layoutAspectRatio) {
@@ -132,6 +132,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       previewTexture.setOnFrameAvailableListener(this);
       previewTexture.onSurfaceTextureReady().subscribe(onSurfaceTextureReady);
     }
+
+    Timber.d("onStartPreview : " + Thread.currentThread().getName());
 
     previewTexture.setup();
   }
@@ -172,7 +174,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     rendererCallback.requestRender();
   }
 
-  public void disposeFilter() {
+  public void disposeGl() {
+    if (previewTexture != null) {
+      previewTexture.release();
+      previewTexture = null;
+    }
+
     if (filter != null) {
       filter.release();
       filter = null;
@@ -194,9 +201,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       byteBuffer = null;
     }
 
-    previewTexture.release();
-    previewTexture = null;
-
     maskRender = null;
 
     openGLContextSet = false;
@@ -211,10 +215,12 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       updateSurface = false;
     }
 
-    //maskRender = new GLRenderMask(context);
-    //ulsRenderer = UlsRenderer.getInstance(context);
-    //ulsRenderer.ulsSurfaceCreated(null, null);
-    //if (cameraInfo != null) ulsRenderer.updateCameraInfo(cameraInfo);
+    Timber.d("Thread : " + Thread.currentThread().getName());
+
+    maskRender = new GLRenderMask(context);
+    ulsRenderer = UlsRenderer.getInstance(context);
+    ulsRenderer.ulsSurfaceCreated(null, null);
+    if (cameraInfo != null) ulsRenderer.updateCameraInfo(cameraInfo);
 
     mainHandler.post(() -> rendererCallback.onRendererInitialized());
   }
@@ -228,7 +234,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       updateOES();
     }
 
-    //ulsRenderer.ulsSurfaceChanged(null, width, height);
+    ulsRenderer.ulsSurfaceChanged(null, width, height);
 
     if (rendererCallback != null) {
       mainHandler.post(() -> rendererCallback.onSurfaceChanged(width, height));
@@ -287,32 +293,32 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
         if (rotation != 90 && rotation != 270) rotation = 180 - ulseeManager.getCameraRotation();
 
         for (int i = 0; i < UlseeManager.MAX_TRACKER; i++) {
-          //glViewport(0, 0, widthOut, heightOut);
-          //filter.getFbo().bind();
-          //draw(i, rotation, widthOut, heightOut);
+          glViewport(0, 0, widthOut, heightOut);
+          filter.getFbo().bind();
+          draw(i, rotation, widthOut, heightOut);
           glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
           GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
           draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
         }
       }
 
-      //if (!gameManager.isLocalFrameDifferent()) {
-      //  synchronized (frameListenerLock) {
-      //    if (filter.getFbo() == null) return;
-      //    if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
-      //
-      //    filter.getFbo().bind();
-      //    byteBuffer.rewind();
-      //    libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
-      //    byteBuffer.flip();
-      //    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-      //
-      //    frame =
-      //        new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
-      //            cameraInfo.isFrontFacing());
-      //    onFrameAvailable.onNext(frame);
-      //  }
-      //}
+      if (!gameManager.isLocalFrameDifferent()) {
+        synchronized (frameListenerLock) {
+          if (filter.getFbo() == null) return;
+          if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
+
+          filter.getFbo().bind();
+          byteBuffer.rewind();
+          libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+          byteBuffer.flip();
+          GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+
+          frame =
+              new Frame(byteBuffer.array(), widthOut, heightOut, 0, previewTexture.getTimestamp(),
+                  cameraInfo.isFrontFacing());
+          onFrameAvailable.onNext(frame);
+        }
+      }
     }
   }
 
@@ -358,32 +364,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       ulsRenderer.ulsDrawFrame(null, index, ratioH, false);
     } else {
       float[][] shapeFinal = shape;
-      // TODO TASK_FORCE
-      // Trying here to change the coordinates based on a ratio that was determined earlier
-      // by the drawMatrix (I put 0.83f because it is the one given for New Call on my Nexus 6P)
-      // Results not concluent so far
-
-      //finalArray = shapeAdapted;
-      //for (int k = 0; k < UlseeManager.MAX_TRACKER; k++) {
-      //  if (shape[k] != null) {
-      //    shapeAdapted[k] = new float[shape[k].length];
-      //    for (int i = 0; i < (shape[k].length / 2); i++) {
-      //      if (shape[k][i * 2] != 0 || shape[k][i * 2 + 1] != 0) {
-      //        android.graphics.Matrix matrix = new android.graphics.Matrix();
-      //        matrix.setScale(0.83f, 1f, 0f, 0f);
-      //        float[] oldPoints = new float[] { shape[k][i * 2], shape[k][i * 2 + 1] };
-      //        float[] newPoints = new float[2];
-      //        matrix.mapPoints(newPoints, oldPoints);
-      //        shapeAdapted[k][i * 2] = newPoints[0];
-      //        shapeAdapted[k][i * 2 + 1] = newPoints[1];
-      //        Timber.d("Old Points : " +
-      //            Arrays.toString(oldPoints) +
-      //            " / new points : " +
-      //            Arrays.toString(newPoints));
-      //      }
-      //    }
-      //  }
-      //}
 
       if (pose != null && poseQuality[index] > 0.0f) {
         maskRender.drawMask(shapeFinal[index], confidence[index], 5.0f, rotation, width, height,
@@ -457,8 +437,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void updateOES() {
-    //libYuvConverter.releasePBO();
-    //libYuvConverter.initPBO(widthOut, heightOut);
+    libYuvConverter.releasePBO();
+    libYuvConverter.initPBO(widthOut, heightOut);
 
     if (filter != null) filter.updateTextureSize(widthOut, heightOut);
   }
@@ -474,10 +454,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void clearMask() {
-    //if (maskFilter != null) {
-    //  maskFilter.release();
-    //  maskFilter = null;
-    //}
+    if (maskFilter != null) {
+      maskFilter.release();
+      maskFilter = null;
+    }
   }
 
   private void clearImageFilter() {
