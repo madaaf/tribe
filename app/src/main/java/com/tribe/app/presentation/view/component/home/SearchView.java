@@ -394,8 +394,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
-    boolean permissionsContact =
-        PermissionUtils.hasPermissionsContact(rxPermissions) && addressBook.get();
+    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions) &&
+        addressBook.get() &&
+        !StringUtils.isEmpty(user.getPhone());
 
     layoutBottom.removeAllViews();
 
@@ -492,7 +493,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   private void disableLookupFacebook() {
-
     if (StringUtils.isEmpty(user.getPhone())) {
       showToastMessage(
           getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
@@ -518,7 +518,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   private void disableLookupContacts() {
-
     if (!FacebookUtils.isLoggedIn()) {
       showToastMessage(
           getContext().getString(R.string.linked_friends_unlink_error_unable_to_unlink));
@@ -750,6 +749,11 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
     Digits.logout(); // Force logout
     Digits.authenticate(authConfig);
+  }
+
+  @Override public void errorUpdatePhoneNumber() {
+    refactorActions();
+    showToastMessage(getContext().getString(R.string.linked_friends_link_error_phone));
   }
 
   @Override public void successUpdatePhoneNumber(User user) {

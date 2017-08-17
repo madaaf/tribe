@@ -682,5 +682,6 @@
 	<string name="linked_friends_unlink_success_fb">Facebook déconnecté</string>
 	<string name="linked_friends_link_success_phone">Carnet d\'Adresses connecté</string>
 	<string name="linked_friends_link_success_fb">Facebook connecté</string>
+	<string name="linked_friends_link_error_phone">Carnet d\'Adresses déjà connecté à un autre compte</string>
 	<string name="linked_friends_loading">Chargement...</string>
 </resources>

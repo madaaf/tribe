@@ -16,7 +16,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-
 import com.digits.sdk.android.AuthCallback;
 import com.digits.sdk.android.AuthConfig;
 import com.digits.sdk.android.Digits;
@@ -67,7 +66,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 import static android.view.View.GONE;
 
@@ -110,6 +108,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered;
   private FirebaseRemoteConfig firebaseRemoteConfig;
+  private AuthCallback authCallback;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -364,13 +363,14 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsProfile = (SettingsProfileView) viewStack.push(R.layout.view_settings_profile);
 
     subscriptions.add(
-            viewSettingsProfile.onUsernameInput().subscribe(s -> profilePresenter.lookupUsername(s)));
+        viewSettingsProfile.onUsernameInput().subscribe(s -> profilePresenter.lookupUsername(s)));
 
     subscriptions.add(viewSettingsProfile.onInfoValid().subscribe(b -> txtAction.setEnabled(b)));
   }
 
   private void setupPhoneNumberView() {
-    viewSettingsPhoneNumber = (SettingsPhoneNumberView) viewStack.push(R.layout.view_settings_phone_number);
+    viewSettingsPhoneNumber =
+        (SettingsPhoneNumberView) viewStack.push(R.layout.view_settings_phone_number);
 
     subscriptions.add(viewSettingsPhoneNumber.onChangePhoneNumberClick().subscribe(aVoid -> {
       changeMyPhoneNumber();
@@ -378,9 +378,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   private void changeMyPhoneNumber() {
-
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(new AuthCallback() {
+    authCallback = new AuthCallback() {
 
       @Override public void success(DigitsSession session, String phoneNumber) {
         profilePresenter.updatePhoneNumber(getCurrentUser().getId(), session);
@@ -389,7 +387,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       @Override public void failure(DigitsException error) {
         showError(error.getMessage());
       }
-    });
+    };
+
+    AuthConfig.Builder builder = new AuthConfig.Builder();
+    builder.withAuthCallBack(authCallback);
 
     AuthConfig authConfig = builder.build();
 
@@ -398,34 +399,33 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   private void setupFacebookAccountView() {
-    viewSettingsFacebookAccount = (SettingsFacebookAccountView) viewStack.push(R.layout.view_settings_facebook_account);
+    viewSettingsFacebookAccount =
+        (SettingsFacebookAccountView) viewStack.push(R.layout.view_settings_facebook_account);
     profilePresenter.loadFacebookInfos();
 
     subscriptions.add(viewSettingsFacebookAccount.onChecked().subscribe(aBool -> {
 
       if (!aBool) {
         if (viewProfile.canOpenPhoneNumberView()) {
-          subscriptions.add(DialogFactory.dialog(this, EmojiParser.demojizedText(getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
-                  getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
-                  getString(R.string.action_cancel),
-                  getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(shouldCancel -> {
+          subscriptions.add(DialogFactory.dialog(this, EmojiParser.demojizedText(
+              getString(R.string.linked_friends_notifications_disable_fb_alert_title)),
+              getString(R.string.linked_friends_notifications_disable_fb_alert_msg),
+              getString(R.string.action_cancel),
+              getString(R.string.linked_friends_notifications_disable_fb_alert_disable))
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(shouldCancel -> {
 
-                    if (shouldCancel) {
-                      viewSettingsFacebookAccount.setChecked(true);
-
-                    } else {
-                      FacebookUtils.logout();
-                      profilePresenter.disconnectFromFacebook(getCurrentUser().getId());
-                    }
-                  }));
-
+                if (shouldCancel) {
+                  viewSettingsFacebookAccount.setChecked(true);
+                } else {
+                  FacebookUtils.logout();
+                  profilePresenter.disconnectFromFacebook(getCurrentUser().getId());
+                }
+              }));
         } else {
           showToastMessage(getString(R.string.linked_friends_unlink_error_unable_to_unlink));
           viewSettingsFacebookAccount.setChecked(true);
         }
-
       } else {
         profilePresenter.loginFacebook();
       }
@@ -458,8 +458,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
                   Friendship friendship = (Friendship) recipient;
                   profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -563,8 +563,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     this.clickBack();
   }
 
-  @Override
-  public void loadFacebookInfos(FacebookEntity facebookEntity) {
+  @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
 
     if (viewSettingsFacebookAccount != null) {
       viewSettingsFacebookAccount.reloadUserUI(facebookEntity);
@@ -572,7 +571,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void successFacebookLogin() {
-    profilePresenter.connectToFacebook(getCurrentUser().getId(), FacebookUtils.accessToken().getToken());
+    profilePresenter.connectToFacebook(getCurrentUser().getId(),
+        FacebookUtils.accessToken().getToken());
     profilePresenter.loadFacebookInfos();
   }
 
@@ -583,8 +583,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
-          .equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid ||
+          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
     }
   }
 
@@ -598,15 +598,13 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     progressView.setVisibility(GONE);
   }
 
-  @Override
-  public void successUpdateFacebook(User user) {
+  @Override public void successUpdateFacebook(User user) {
     viewProfile.reloadUserUI();
 
     if (viewSettingsFacebookAccount != null) {
       if (FacebookUtils.isLoggedIn()) {
         profilePresenter.loadFacebookInfos();
         showToastMessage(getString(R.string.linked_friends_link_success_fb));
-
       } else {
         viewSettingsFacebookAccount.reloadUserUI(null);
         showToastMessage(getString(R.string.linked_friends_unlink_success_fb));
@@ -614,8 +612,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     }
   }
 
-  @Override
-  public void successUpdatePhoneNumber(User user) {
+  @Override public void successUpdatePhoneNumber(User user) {
     viewProfile.reloadUserUI();
 
     if (viewSettingsPhoneNumber != null) {
@@ -627,6 +624,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (StringUtils.isEmpty(user.getPhone())) {
       onBackPressed();
     }
+  }
+
+  @Override public void errorUpdatePhoneNumber() {
+    showToastMessage(getString(R.string.linked_friends_link_error_phone));
   }
 
   @Override public void showError(String message) {
