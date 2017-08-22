@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.view.opengl.renderer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
+import android.opengl.GLES10;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Environment;
@@ -36,6 +37,7 @@ import timber.log.Timber;
 
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glGetString;
 import static android.opengl.GLES20.glViewport;
 
 public class PreviewRenderer extends GlFrameBufferObjectRenderer
@@ -47,7 +49,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @NonNull private final Handler mainHandler;
   private Context context;
   private PreviewTextureInterface previewTexture;
-  private boolean updateSurface = false, openGLContextSet = false;
+  private boolean updateSurface = false, openGLContextSet = false, openGL3Compat = true;
   private UlseeManager ulseeManager;
   private GameManager gameManager;
   private float[] stMatrix = new float[16];
@@ -190,7 +192,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       maskFilter = null;
     }
 
-    libYuvConverter.releasePBO();
+    if (openGL3Compat) libYuvConverter.releasePBO();
   }
 
   public void dispose() {
@@ -211,11 +213,14 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
     resetMatrix();
 
+    String version = glGetString(GLES10.GL_VERSION);
+    if (version.contains("2.0") || version.contains("1.0")) {
+      openGL3Compat = false;
+    }
+
     synchronized (this) {
       updateSurface = false;
     }
-
-    Timber.d("Thread : " + Thread.currentThread().getName());
 
     maskRender = new GLRenderMask(context);
     ulsRenderer = UlsRenderer.getInstance(context);
@@ -309,7 +314,13 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
 
           filter.getFbo().bind();
           byteBuffer.rewind();
-          libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+
+          if (openGL3Compat) {
+            libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+          } else {
+            libYuvConverter.readFromFBO(byteBuffer, widthOut, heightOut);
+          }
+
           byteBuffer.flip();
           GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
@@ -437,8 +448,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void updateOES() {
-    libYuvConverter.releasePBO();
-    libYuvConverter.initPBO(widthOut, heightOut);
+    if (openGL3Compat) {
+      libYuvConverter.releasePBO();
+      libYuvConverter.initPBO(widthOut, heightOut);
+    }
 
     if (filter != null) filter.updateTextureSize(widthOut, heightOut);
   }

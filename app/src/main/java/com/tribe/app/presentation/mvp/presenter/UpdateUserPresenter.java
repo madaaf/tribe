@@ -1,10 +1,8 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-
 import com.digits.sdk.android.DigitsSession;
 import com.facebook.AccessToken;
-import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
@@ -36,7 +34,8 @@ public abstract class UpdateUserPresenter implements Presenter {
   private UpdateUserSubscriber updateUserSubscriber;
   private LookupUsernameSubscriber lookupUsernameSubscriber;
 
-  UpdateUserPresenter(UpdateUser updateUser, LookupUsername lookupUsername, RxFacebook rxFacebook, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+  UpdateUserPresenter(UpdateUser updateUser, LookupUsername lookupUsername, RxFacebook rxFacebook,
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
     this.lookupUsername = lookupUsername;
     this.updateUser = updateUser;
     this.rxFacebook = rxFacebook;
@@ -53,14 +52,15 @@ public abstract class UpdateUserPresenter implements Presenter {
     if (updateUserSubscriber != null) updateUserSubscriber.unsubscribe();
   }
 
-  public void updateUser(String userId, String username, String displayName, String pictureUri, AccessToken fbAccessToken) {
+  public void updateUser(String userId, String username, String displayName, String pictureUri,
+      AccessToken fbAccessToken) {
 
     if (getUpdateUserView() != null) getUpdateUserView().showLoading();
 
     if (fbAccessToken != null) {
       updateUserFacebook.prepare(userId, fbAccessToken.getToken());
-      updateUserFacebook.execute(new UpdateFacebookSubscriber(userId, username, displayName, pictureUri));
-
+      updateUserFacebook.execute(
+          new UpdateFacebookSubscriber(userId, username, displayName, pictureUri));
     } else {
       updateUser(userId, username, displayName, pictureUri);
     }
@@ -94,13 +94,13 @@ public abstract class UpdateUserPresenter implements Presenter {
     if (!FacebookUtils.isLoggedIn()) {
       rxFacebook.requestLogin().subscribe(loginResult -> {
         if (FacebookUtils.isLoggedIn()) {
-          if (getUpdateUserView() != null)  getUpdateUserView().successFacebookLogin();
+          if (getUpdateUserView() != null) getUpdateUserView().successFacebookLogin();
         } else {
-          if (getUpdateUserView() != null)  getUpdateUserView().errorFacebookLogin();
+          if (getUpdateUserView() != null) getUpdateUserView().errorFacebookLogin();
         }
       });
     } else {
-      if (getUpdateUserView() != null)  getUpdateUserView().successFacebookLogin();
+      if (getUpdateUserView() != null) getUpdateUserView().successFacebookLogin();
     }
   }
 
@@ -122,12 +122,12 @@ public abstract class UpdateUserPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
-      if (getUpdateUserView() != null)  getUpdateUserView().hideLoading();
+      if (getUpdateUserView() != null) getUpdateUserView().hideLoading();
     }
 
     @Override public void onNext(User user) {
-      if (getUpdateUserView() != null)  getUpdateUserView().hideLoading();
-      if (getUpdateUserView() != null)  getUpdateUserView().successUpdateUser(user);
+      if (getUpdateUserView() != null) getUpdateUserView().hideLoading();
+      if (getUpdateUserView() != null) getUpdateUserView().successUpdateUser(user);
     }
   }
 
@@ -157,6 +157,7 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      if (getUpdateUserView() != null) getUpdateUserView().errorUpdatePhoneNumber();
     }
 
     @Override public void onNext(User user) {
@@ -196,7 +197,8 @@ public abstract class UpdateUserPresenter implements Presenter {
     private String displayName;
     private String pictureUri;
 
-    UpdateFacebookSubscriber(String userId, String username, String displayName, String pictureUri) {
+    UpdateFacebookSubscriber(String userId, String username, String displayName,
+        String pictureUri) {
       this.userId = userId;
       this.username = username;
       this.displayName = displayName;

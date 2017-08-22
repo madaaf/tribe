@@ -684,4 +684,12 @@
 	<string name="linked_friends_link_success_fb">Facebook linked</string>
 	<string name="linked_friends_link_error_phone">Address Book already linked to another account</string>
 	<string name="linked_friends_loading">Loading...</string>
+	
+	<!-- Home -->
+	<string name="home_section_ongoing">Ongoing</string>
+	<string name="home_section_online">Online</string>
+	<string name="home_section_recent">Recent</string>
+	<string name="home_action_join_live">Swipe left to join</string>
+	<string name="home_action_read_chat">Swipe right to read</string>
+	<string name="home_action_new_chat">New chat</string>
 </resources>

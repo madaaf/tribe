@@ -241,5 +241,14 @@ Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_readFromPBO(JNIEnv *jni, jcla
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
+JNIEXPORT void JNICALL
+Java_com_tribe_tribelivesdk_libyuv_LibYuvConverter_readFromFBO(JNIEnv *jni, jclass, jobject buffer,
+                                                               jint width,
+                                                               jint height) {
+    uint8_t *dst =
+            reinterpret_cast<uint8_t *>(jni->GetDirectBufferAddress(buffer));
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, dst);
+}
+
 } // extern "C"
 
