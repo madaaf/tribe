@@ -110,6 +110,8 @@ public class EmojiParser {
     IEmojiMap.put(":hourglass:", "\u23F3");
     IEmojiMap.put(":spy:", "\uD83D\uDD75");
     IEmojiMap.put(":boom:", "\uD83D\uDCA5");
+    IEmojiMap.put(":poop:", "\uD83D\uDCA9");
+    IEmojiMap.put(":crown:", "\uD83D\uDC51");
   }
 
   /**

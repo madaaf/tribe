@@ -59,7 +59,6 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   private void initSubscriptions() {
-
   }
 
   public void initFilterManager() {
@@ -108,7 +107,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
     setContentWidth(cameraInfo.rotatedWidth());
     setContentHeight(cameraInfo.rotatedHeight());
     updateTextureViewSize();
-    renderer.updateCameraInfo(cameraInfo);
+    queueEvent(() -> renderer.updateCameraInfo(cameraInfo));
   }
 
   public synchronized void startPreview() {
@@ -134,7 +133,7 @@ public class GlCameraPreview extends GlTextureView implements PreviewRenderer.Re
   }
 
   public void dispose() {
-    queueEvent(() -> renderer.disposeFilter());
+    queueEvent(() -> renderer.disposeGl());
     renderer.dispose();
   }
 

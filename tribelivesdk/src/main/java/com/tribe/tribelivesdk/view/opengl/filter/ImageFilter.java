@@ -166,6 +166,8 @@ public class ImageFilter extends FilterMask {
       releaseProgram();
     }
 
+    Timber.d("setup : " + getName());
+
     String targetFragmentShader = createTargetShader(mFragmentShaderSource, textureTarget);
 
     vertexShader = openGLES.generateShader(mVertexShaderSource, GL_VERTEX_SHADER);
@@ -180,19 +182,22 @@ public class ImageFilter extends FilterMask {
       return;
     }
 
+    Timber.d("glDeleteProgram : " + program);
     glDeleteProgram(program);
+    checkGlError("glDeleteProgram");
     program = 0;
+    Timber.d("glDeleteShader : " + vertexShader);
     glDeleteShader(vertexShader);
+    checkGlError("glDeleteShader");
     vertexShader = 0;
+    Timber.d("glDeleteShader : " + fragmentShader);
     glDeleteShader(fragmentShader);
+    checkGlError("glDeleteShader");
     fragmentShader = 0;
     glDeleteBuffers(1, new int[] { vertexBufferName }, 0);
+    Timber.d("glDeleteBuffers : " + vertexBufferName);
+    checkGlError("glDeleteBuffers");
     vertexBufferName = 0;
-
-    textureTarget = -1;
-    texCache = 0;
-    cacheTexWidth = 0;
-    cacheTexHeight = 0;
 
     if (fbo != null) fbo.release();
 
@@ -208,13 +213,19 @@ public class ImageFilter extends FilterMask {
       return;
     }
 
+    Timber.d("Release : " + Thread.currentThread());
+
+    textureTarget = -1;
+    texCache = 0;
+    cacheTexWidth = 0;
+    cacheTexHeight = 0;
     releaseProgram();
   }
 
   public synchronized void draw(@NonNull Texture texture, final float[] texMatrix,
       final float[] texMatrixFBO, int viewportX, int viewportY, int viewportWidth,
       int viewportHeight) {
-
+    
     if (textureWidth == 0 || textureHeight == 0) return;
 
     if (textureTarget != texture.getTextureTarget()) {
@@ -272,6 +283,7 @@ public class ImageFilter extends FilterMask {
     glDisableVertexAttribArray(getHandle(DEFAULT_ATTRIB_POSITION));
     glDisableVertexAttribArray(getHandle(DEFAULT_ATTRIB_TEXTURE_COORDINATE));
     glBindTexture(texture.getTextureTarget(), 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 
@@ -328,5 +340,13 @@ public class ImageFilter extends FilterMask {
 
   public FrameBufferObject getFbo() {
     return fbo;
+  }
+
+  protected void checkGlError(String op) {
+    int error;
+    while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+      Timber.e(op + ": glError " + error);
+      throw new RuntimeException(op + ": glError " + error);
+    }
   }
 }

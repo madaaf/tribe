@@ -150,13 +150,13 @@
         }
     </string>
 
-    <string name="install.remove" translatable="false">
+  <string name="install.remove" translatable="false">
         mutation {
             removeInstall(id: \"%1$s\")
         }
     </string>
 
-    <string name="user.incrUserTimeInCall" translatable="false">
+  <string name="user.incrUserTimeInCall" translatable="false">
         mutation {
             incrUserTimeInCall(duration: %1$s)
         }

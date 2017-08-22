@@ -374,6 +374,10 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   }
 
+  @Override public void errorUpdatePhoneNumber() {
+
+  }
+
   @Override public void onRegisterFail() {
     this.accessToken = null;
   }

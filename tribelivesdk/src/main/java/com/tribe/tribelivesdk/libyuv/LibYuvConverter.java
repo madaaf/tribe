@@ -1,7 +1,5 @@
 package com.tribe.tribelivesdk.libyuv;
 
-import android.content.Context;
-import com.tribe.tribelivesdk.game.GameManager;
 import java.nio.ByteBuffer;
 
 public class LibYuvConverter {
@@ -36,4 +34,6 @@ public class LibYuvConverter {
   public native void releasePBO();
 
   public native void readFromPBO(ByteBuffer buffer, int width, int height);
+
+  public native void readFromFBO(ByteBuffer buffer, int width, int height);
 }

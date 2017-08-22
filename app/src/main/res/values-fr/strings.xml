@@ -682,5 +682,14 @@
 	<string name="linked_friends_unlink_success_fb">Facebook déconnecté</string>
 	<string name="linked_friends_link_success_phone">Carnet d\'Adresses connecté</string>
 	<string name="linked_friends_link_success_fb">Facebook connecté</string>
+	<string name="linked_friends_link_error_phone">Carnet d\'Adresses déjà connecté à un autre compte</string>
 	<string name="linked_friends_loading">Chargement...</string>
+	
+	<!-- Home -->
+	<string name="home_section_ongoing">En cours</string>
+	<string name="home_section_online">En ligne</string>
+	<string name="home_section_recent">Récents</string>
+	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
+	<string name="home_action_read_chat">Swipe droite pour lire</string>
+	<string name="home_action_new_chat">Nouveau chat</string>
 </resources>

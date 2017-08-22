@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk.view.opengl.renderer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
+import android.opengl.GLES10;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Environment;
@@ -36,6 +37,7 @@ import timber.log.Timber;
 
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glGetString;
 import static android.opengl.GLES20.glViewport;
 
 public class PreviewRenderer extends GlFrameBufferObjectRenderer
@@ -47,7 +49,7 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   @NonNull private final Handler mainHandler;
   private Context context;
   private PreviewTextureInterface previewTexture;
-  private boolean updateSurface = false, openGLContextSet = false;
+  private boolean updateSurface = false, openGLContextSet = false, openGL3Compat = true;
   private UlseeManager ulseeManager;
   private GameManager gameManager;
   private float[] stMatrix = new float[16];
@@ -133,6 +135,8 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       previewTexture.onSurfaceTextureReady().subscribe(onSurfaceTextureReady);
     }
 
+    Timber.d("onStartPreview : " + Thread.currentThread().getName());
+
     previewTexture.setup();
   }
 
@@ -172,9 +176,23 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     rendererCallback.requestRender();
   }
 
-  public void disposeFilter() {
-    filter.release();
-    filter = null;
+  public void disposeGl() {
+    if (previewTexture != null) {
+      previewTexture.release();
+      previewTexture = null;
+    }
+
+    if (filter != null) {
+      filter.release();
+      filter = null;
+    }
+
+    if (maskFilter != null) {
+      maskFilter.release();
+      maskFilter = null;
+    }
+
+    if (openGL3Compat) libYuvConverter.releasePBO();
   }
 
   public void dispose() {
@@ -185,16 +203,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       byteBuffer = null;
     }
 
-    previewTexture.release();
-    previewTexture = null;
-
-    if (maskFilter != null) {
-      maskFilter.release();
-      maskFilter = null;
-    }
-
-    libYuvConverter.releasePBO();
-
     maskRender = null;
 
     openGLContextSet = false;
@@ -204,6 +212,11 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     resetMatrix();
+
+    String version = glGetString(GLES10.GL_VERSION);
+    if (version.contains("2.0") || version.contains("1.0")) {
+      openGL3Compat = false;
+    }
 
     synchronized (this) {
       updateSurface = false;
@@ -290,19 +303,24 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
           draw(i, rotation, widthOut, heightOut);
           glViewport(0, 0, (int) surfaceWidth, (int) surfaceHeight);
           GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
           draw(i, rotation, (int) surfaceWidth, (int) surfaceHeight);
         }
       }
 
-      if (!gameManager.isLocalFrameDifferent()) {
+      if (!gameManager.isLocalFrameDifferent() && byteBuffer != null) {
         synchronized (frameListenerLock) {
           if (filter.getFbo() == null) return;
           if (widthOut * heightOut * 4 != byteBuffer.capacity()) return;
 
           filter.getFbo().bind();
           byteBuffer.rewind();
-          libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+
+          if (openGL3Compat) {
+            libYuvConverter.readFromPBO(byteBuffer, widthOut, heightOut);
+          } else {
+            libYuvConverter.readFromFBO(byteBuffer, widthOut, heightOut);
+          }
+
           byteBuffer.flip();
           GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
@@ -357,32 +375,6 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
       ulsRenderer.ulsDrawFrame(null, index, ratioH, false);
     } else {
       float[][] shapeFinal = shape;
-      // TODO TASK_FORCE
-      // Trying here to change the coordinates based on a ratio that was determined earlier
-      // by the drawMatrix (I put 0.83f because it is the one given for New Call on my Nexus 6P)
-      // Results not concluent so far
-
-      //finalArray = shapeAdapted;
-      //for (int k = 0; k < UlseeManager.MAX_TRACKER; k++) {
-      //  if (shape[k] != null) {
-      //    shapeAdapted[k] = new float[shape[k].length];
-      //    for (int i = 0; i < (shape[k].length / 2); i++) {
-      //      if (shape[k][i * 2] != 0 || shape[k][i * 2 + 1] != 0) {
-      //        android.graphics.Matrix matrix = new android.graphics.Matrix();
-      //        matrix.setScale(0.83f, 1f, 0f, 0f);
-      //        float[] oldPoints = new float[] { shape[k][i * 2], shape[k][i * 2 + 1] };
-      //        float[] newPoints = new float[2];
-      //        matrix.mapPoints(newPoints, oldPoints);
-      //        shapeAdapted[k][i * 2] = newPoints[0];
-      //        shapeAdapted[k][i * 2 + 1] = newPoints[1];
-      //        Timber.d("Old Points : " +
-      //            Arrays.toString(oldPoints) +
-      //            " / new points : " +
-      //            Arrays.toString(newPoints));
-      //      }
-      //    }
-      //  }
-      //}
 
       if (pose != null && poseQuality[index] > 0.0f) {
         maskRender.drawMask(shapeFinal[index], confidence[index], 5.0f, rotation, width, height,
@@ -456,8 +448,10 @@ public class PreviewRenderer extends GlFrameBufferObjectRenderer
   }
 
   private void updateOES() {
-    libYuvConverter.releasePBO();
-    libYuvConverter.initPBO(widthOut, heightOut);
+    if (openGL3Compat) {
+      libYuvConverter.releasePBO();
+      libYuvConverter.initPBO(widthOut, heightOut);
+    }
 
     if (filter != null) filter.updateTextureSize(widthOut, heightOut);
   }
