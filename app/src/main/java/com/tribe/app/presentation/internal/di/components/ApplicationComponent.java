@@ -63,9 +63,7 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.friend.FriendMemberAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.ManageFriendshipListAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.friend.MemberListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
@@ -77,9 +75,6 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
-import com.tribe.app.presentation.view.component.group.AddMembersGroupView;
-import com.tribe.app.presentation.view.component.group.GroupDetailsView;
-import com.tribe.app.presentation.view.component.group.UpdateGroupView;
 import com.tribe.app.presentation.view.component.home.NewCallView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -160,15 +155,7 @@ public interface ApplicationComponent {
 
   void inject(TileView tileView);
 
-  void inject(AddMembersGroupView addMembersGroupView);
-
   void inject(ActionView actionView);
-
-  void inject(UpdateGroupView updateGroupView);
-
-  void inject(GroupDetailsView groupDetailsView);
-
-  void inject(MemberListAdapterDelegate memberListAdapterDelegate);
 
   void inject(SyncView syncView);
 
@@ -189,8 +176,6 @@ public interface ApplicationComponent {
   void inject(LiveRowView liveRowView);
 
   void inject(RecipientListAdapterDelegate recipientListAdapterDelegate);
-
-  void inject(FriendMemberAdapterDelegate friendMemberAdapterDelegate);
 
   void inject(LiveNotificationView liveNotificationView);
 

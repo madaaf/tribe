@@ -53,11 +53,11 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public void putInvite(Invite invite) {
-    this.inviteMap.put(invite.getRoomId(), invite);
+    this.inviteMap.put(invite.getId(), invite);
   }
 
   @Override public void removeInvite(Invite invite) {
-    this.inviteMap.remove(invite.getRoomId());
+    this.inviteMap.remove(invite.getId());
   }
 
   @Override public void removeInviteFromRoomId(String roomId) {

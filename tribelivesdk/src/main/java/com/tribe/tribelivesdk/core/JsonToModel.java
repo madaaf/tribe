@@ -196,7 +196,7 @@ public class JsonToModel {
               JSONObject guest = arrayInvited.getJSONObject(i);
               String userName = guest.has("username") ? guest.getString("username") : null;
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                  guest.getString("picture"), false, false, null, true, userName));
+                  guest.getString("picture"), false, null, true, userName));
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {

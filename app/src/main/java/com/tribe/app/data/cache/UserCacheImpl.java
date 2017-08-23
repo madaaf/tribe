@@ -3,10 +3,7 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupMemberRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
@@ -46,7 +43,6 @@ public class UserCacheImpl implements UserCache {
     try {
       obsRealm.executeTransaction(realm1 -> {
         realm1.delete(FriendshipRealm.class);
-        realm1.delete(MembershipRealm.class);
         realm1.insertOrUpdate(userRealm);
       });
     } finally {
@@ -68,8 +64,7 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  @Override
-  public void incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public void incrUserTimeInCall(String userId, Long timeInCall) {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
@@ -93,16 +88,16 @@ public class UserCacheImpl implements UserCache {
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) {
       to.setFbid(from.getFbid());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.TRIBE_SAVE)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) {
       to.setTribeSave(from.isTribeSave());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.INVISIBLE_MODE)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) {
       to.setInvisibleMode(from.isInvisibleMode());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.PUSH_NOTIF)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());
@@ -167,16 +162,6 @@ public class UserCacheImpl implements UserCache {
     return results;
   }
 
-  @Override public MembershipRealm membershipForGroupId(String groupId) {
-    Realm obsRealm = Realm.getDefaultInstance();
-    MembershipRealm membershipRealm =
-        obsRealm.where(MembershipRealm.class).equalTo("group.id", groupId).findFirst();
-    final MembershipRealm results =
-        membershipRealm == null ? null : obsRealm.copyFromRealm(membershipRealm);
-    obsRealm.close();
-    return results;
-  }
-
   @Override public FriendshipRealm friendshipForUserId(String userId) {
     Realm otherRealm = Realm.getDefaultInstance();
     FriendshipRealm friendshipRealm =
@@ -201,194 +186,6 @@ public class UserCacheImpl implements UserCache {
       ex.printStackTrace();
     } finally {
       otherRealm.close();
-    }
-  }
-
-  @Override public void insertGroup(GroupRealm groupRealm) {
-    Realm realm = Realm.getDefaultInstance();
-    try {
-      realm.beginTransaction();
-      realm.copyToRealmOrUpdate(groupRealm);
-      realm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      ex.printStackTrace();
-      if (realm.isInTransaction()) realm.cancelTransaction();
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void updateGroup(GroupRealm groupRealm, boolean isFull) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.executeTransaction(realm1 -> {
-        if (isFull) {
-          realm1.insertOrUpdate(groupRealm);
-        } else {
-          GroupRealm groupRealmDB =
-              realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-          updateGroup(realm1, groupRealm, groupRealmDB);
-        }
-      });
-    } finally {
-      realm.close();
-    }
-  }
-
-  private void updateGroup(Realm otherRealm, GroupRealm from, GroupRealm to) {
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(GroupRealm.NAME)) {
-      to.setName(from.getName());
-    }
-
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(GroupRealm.PICTURE)) {
-      to.setPicture(from.getPicture());
-    }
-
-    if (from.getMembers() != null && from.getMembers().size() > 0) {
-      RealmList<GroupMemberRealm> groupMemberRealmList = new RealmList<>();
-
-      for (GroupMemberRealm gmr : from.getMembers()) {
-        GroupMemberRealm gmrDB =
-            otherRealm.where(GroupMemberRealm.class).equalTo("id", gmr.getId()).findFirst();
-
-        if (gmrDB == null) {
-          otherRealm.insert(gmr);
-          gmrDB = otherRealm.where(GroupMemberRealm.class).equalTo("id", gmr.getId()).findFirst();
-        } else {
-          updateGroupMember(gmr, gmrDB);
-        }
-
-        groupMemberRealmList.add(gmrDB);
-      }
-
-      to.setMembers(groupMemberRealmList);
-    }
-  }
-
-  private void updateGroupMember(GroupMemberRealm from, GroupMemberRealm to) {
-    to.setDisplayName(from.getDisplayName());
-    to.setInvisibleMode(from.isInvisibleMode());
-    to.setProfilePicture(from.getProfilePicture());
-    to.setUsername(from.getUsername());
-    to.setUpdatedAt(from.getUpdatedAt());
-  }
-
-  @Override public void addMembersToGroup(String groupId, List<String> memberIds) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.executeTransaction(realm1 -> {
-        GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-
-        for (String memberId : memberIds) {
-          UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", memberId).findFirst();
-          groupRealm.getMembers().add(new GroupMemberRealm(userRealm));
-        }
-      });
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void removeMembersFromGroup(String groupId, List<String> memberIds) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.beginTransaction();
-      RealmList<UserRealm> usersToRemove = new RealmList<>();
-
-      for (String memberId : memberIds) {
-        usersToRemove.add(realm.where(UserRealm.class).equalTo("id", memberId).findFirst());
-      }
-
-      GroupRealm groupRealm = realm.where(GroupRealm.class).equalTo("id", groupId).findFirst();
-      for (UserRealm user : usersToRemove) {
-        groupRealm.getMembers().remove(user);
-      }
-
-      realm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      ex.printStackTrace();
-      if (realm.isInTransaction()) realm.cancelTransaction();
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void removeGroup(String groupId) {
-    Realm realm = Realm.getDefaultInstance();
-    try {
-      realm.beginTransaction();
-      MembershipRealm membershipRealm =
-          realm.where(MembershipRealm.class).equalTo("group.id", groupId).findFirst();
-      if (membershipRealm != null) membershipRealm.deleteFromRealm();
-      realm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      ex.printStackTrace();
-      if (realm.isInTransaction()) realm.cancelTransaction();
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void removeGroupFromMembership(String membershipId) {
-    Realm realm = Realm.getDefaultInstance();
-    try {
-      realm.beginTransaction();
-      MembershipRealm membershipRealm =
-          realm.where(MembershipRealm.class).equalTo("id", membershipId).findFirst();
-      if (membershipRealm != null) membershipRealm.deleteFromRealm();
-      realm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      ex.printStackTrace();
-      if (realm.isInTransaction()) realm.cancelTransaction();
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void insertMembership(String userId, MembershipRealm membershipRealm) {
-    Realm realm = Realm.getDefaultInstance();
-    try {
-      realm.beginTransaction();
-
-      MembershipRealm membershipRealmDB = realm.copyToRealmOrUpdate(membershipRealm);
-      UserRealm user = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
-
-      boolean found = false;
-
-      if (user.getMemberships() != null) {
-        for (MembershipRealm dbMembership : user.getMemberships()) {
-          if (dbMembership.getGroup().getId().equals(membershipRealm.getGroup().getId())) {
-            found = true;
-          }
-        }
-      }
-
-      if (!found) user.getMemberships().add(membershipRealmDB);
-
-      realm.commitTransaction();
-    } catch (IllegalStateException ex) {
-      ex.printStackTrace();
-      if (realm.isInTransaction()) realm.cancelTransaction();
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void updateMembership(MembershipRealm membershipRealm) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.executeTransaction(realm1 -> {
-        MembershipRealm membershipRealmDB =
-            realm1.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
-        membershipRealmDB.setMute(membershipRealm.isMute());
-      });
-    } finally {
-      realm.close();
     }
   }
 
@@ -434,16 +231,6 @@ public class UserCacheImpl implements UserCache {
     return null;
   }
 
-  @Override public MembershipRealm membershipInfos(String membershipId) {
-    Realm obsRealm = Realm.getDefaultInstance();
-    MembershipRealm membershipRealm =
-        obsRealm.where(MembershipRealm.class).equalTo("id", membershipId).findFirst();
-    final MembershipRealm result =
-        membershipRealm == null ? null : obsRealm.copyFromRealm(membershipRealm);
-    obsRealm.close();
-    return result;
-  }
-
   @Override public void updateUserRealmList(List<UserRealm> userRealmList) {
     Realm realm = Realm.getDefaultInstance();
 
@@ -453,22 +240,6 @@ public class UserCacheImpl implements UserCache {
           UserRealm userDB =
               realm1.where(UserRealm.class).equalTo("id", userRealm.getId()).findFirst();
           if (userDB != null) updateUser(userRealm, userDB);
-        }
-      });
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void updateGroupRealmList(List<GroupRealm> groupRealmList) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.executeTransaction(realm1 -> {
-        for (GroupRealm groupRealm : groupRealmList) {
-          GroupRealm groupRealmDB =
-              realm1.where(GroupRealm.class).equalTo("id", groupRealm.getId()).findFirst();
-          if (groupRealmDB != null) updateGroup(realm1, groupRealm, groupRealmDB);
         }
       });
     } finally {
@@ -517,53 +288,6 @@ public class UserCacheImpl implements UserCache {
         }
 
         userRealmDB.setFriendships(newFriendships);
-      });
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void addMembership(final MembershipRealm membershipRealm) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.executeTransaction(realm1 -> {
-        UserRealm userRealmDB =
-            realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        MembershipRealm membershipRealmDB =
-            realm1.where(MembershipRealm.class).equalTo("id", membershipRealm.getId()).findFirst();
-        if (membershipRealmDB == null) {
-          realm1.insertOrUpdate(membershipRealm);
-          membershipRealmDB = realm1.where(MembershipRealm.class)
-              .equalTo("id", membershipRealm.getId())
-              .findFirst();
-          userRealmDB.getMemberships().add(membershipRealm);
-        }
-      });
-    } finally {
-      realm.close();
-    }
-  }
-
-  @Override public void removeMembership(String id) {
-    Realm realm = Realm.getDefaultInstance();
-
-    try {
-      realm.executeTransaction(realm1 -> {
-        UserRealm userRealmDB =
-            realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        MembershipRealm membershipRealmDB =
-            realm1.where(MembershipRealm.class).equalTo("id", id).findFirst();
-        if (membershipRealmDB != null) membershipRealmDB.deleteFromRealm();
-
-        RealmList<MembershipRealm> newMemberships = new RealmList<>();
-        for (MembershipRealm membershipLoop : userRealmDB.getMemberships()) {
-          if (!membershipLoop.getId().equals(id)) {
-            newMemberships.add(membershipLoop);
-          }
-        }
-
-        userRealmDB.setMemberships(newMemberships);
       });
     } finally {
       realm.close();

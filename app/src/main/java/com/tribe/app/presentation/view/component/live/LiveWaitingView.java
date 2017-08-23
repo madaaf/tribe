@@ -28,7 +28,6 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -555,12 +554,7 @@ public class LiveWaitingView extends FrameLayout implements View.OnClickListener
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
     if (guest != null) {
-      if (guest.isGroup() && (StringUtils.isEmpty(guest.getPicture())
-          || guest.getMemberPics() != null)) {
-        viewAvatar.loadGroupAvatar(guest.getPicture(), null, guest.getId(), guest.getMemberPics());
-      } else {
-        viewAvatar.load(guest.getPicture());
-      }
+      viewAvatar.load(guest.getPicture());
     }
   }
 

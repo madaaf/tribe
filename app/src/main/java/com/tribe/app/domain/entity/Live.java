@@ -21,7 +21,6 @@ public class Live implements Serializable {
   private String userName;
   private String picture;
   private List<User> memberList;
-  private boolean isGroup;
   private boolean isInvite;
   private String sessionId;
   private String linkId;
@@ -38,7 +37,6 @@ public class Live implements Serializable {
     this.displayName = builder.displayName;
     this.picture = builder.picture;
     this.memberList = builder.memberList;
-    this.isGroup = builder.isGroup;
     this.isInvite = builder.isInvite;
     this.sessionId = builder.sessionId;
     this.color = builder.color;
@@ -103,14 +101,6 @@ public class Live implements Serializable {
 
   public void setMembers(List<User> members) {
     this.memberList = members;
-  }
-
-  public boolean isGroup() {
-    return isGroup;
-  }
-
-  public void setGroup(boolean group) {
-    isGroup = group;
   }
 
   public void setInvite(boolean invite) {
@@ -256,7 +246,6 @@ public class Live implements Serializable {
       return this;
     }
 
-
     public Builder userName(String userName) {
       this.userName = userName;
       return this;
@@ -269,11 +258,6 @@ public class Live implements Serializable {
 
     public Builder memberList(List<User> memberList) {
       this.memberList = memberList;
-      return this;
-    }
-
-    public Builder isGroup(boolean isGroup) {
-      this.isGroup = isGroup;
       return this;
     }
 

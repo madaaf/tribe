@@ -40,13 +40,11 @@ public class UserRealm extends RealmObject {
   private LocationRealm location;
   private boolean tribe_save = false;
   private RealmList<FriendshipRealm> friendships;
-  private RealmList<MembershipRealm> memberships;
   private boolean invisible_mode;
   private boolean push_notif = true;
   private Date last_seen_at;
   private long time_in_call = 0;
 
-  @Ignore private RealmList<GroupRealm> groups;
   @Ignore private List<Invite> invites;
 
   @Ignore private JsonObject jsonPayloadUpdate;
@@ -54,8 +52,7 @@ public class UserRealm extends RealmObject {
   @Ignore private boolean is_online = false;
 
   public UserRealm() {
-    memberships = new RealmList<>();
-    groups = new RealmList<>();
+
   }
 
   public String getId() {
@@ -152,22 +149,6 @@ public class UserRealm extends RealmObject {
 
   public void setTribeSave(boolean tribeSave) {
     this.tribe_save = tribeSave;
-  }
-
-  public RealmList<MembershipRealm> getMemberships() {
-    return memberships;
-  }
-
-  public void setMemberships(RealmList<MembershipRealm> memberships) {
-    this.memberships = memberships;
-  }
-
-  public RealmList<GroupRealm> getGroups() {
-    return groups;
-  }
-
-  public void setGroups(RealmList<GroupRealm> groups) {
-    this.groups = groups;
   }
 
   public void setInvites(List<Invite> invites) {

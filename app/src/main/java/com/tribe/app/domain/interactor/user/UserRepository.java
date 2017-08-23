@@ -5,24 +5,19 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import android.util.Pair;
-
 import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupEntity;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import java.util.Set;
-
 import rx.Observable;
 
 /**
@@ -146,26 +141,6 @@ public interface UserRepository {
    */
   Observable<Void> notifyFBFriends();
 
-  Observable<Group> getGroupMembers(String groupId);
-
-  Observable<Group> getGroupInfos(String groupId);
-
-  Observable<Membership> getMembershipInfos(String membershipId);
-
-  Observable<Membership> createGroup(GroupEntity groupEntity);
-
-  Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values);
-
-  Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values);
-
-  Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
-
-  Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds);
-
-  Observable<Void> removeGroup(String groupId);
-
-  Observable<Void> leaveGroup(String membershipId);
-
   Observable<Friendship> updateFriendship(final String friendshipId,
       List<Pair<String, String>> values);
 
@@ -173,11 +148,9 @@ public interface UserRepository {
 
   Observable<String> getHeadDeepLink(String url);
 
-  Observable<Membership> createMembership(String groupId);
+  Observable<Recipient> getRecipientInfos(String recipientId);
 
-  Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
-
-  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId);
+  Observable<Room> getRoom(String roomId);
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 

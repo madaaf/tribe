@@ -13,9 +13,7 @@ import com.tribe.app.data.network.deserializer.JsonToModel;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -39,12 +37,9 @@ import timber.log.Timber;
   public static final String CALL_ROULETTE_TYPE = "CALL_ROULETTE_TYPE";
 
   public static final String USER_SUFFIX = "___u";
-  public static final String GROUP_SUFFIX = "___g";
   public static final String FRIENDSHIP_CREATED_SUFFIX = "___fc";
   public static final String FRIENDSHIP_UDPATED_SUFFIX = "___fu";
   public static final String FRIENDSHIP_REMOVED_SUFFIX = "___fr";
-  public static final String MEMBERSHIP_CREATED_SUFFIX = "___mc";
-  public static final String MEMBERSHIP_REMOVED_SUFFIX = "___mr";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
   public static final String RANDOM_ROOM_ASSIGNED = "___ra";
@@ -112,13 +107,15 @@ import timber.log.Timber;
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
-    if (intent != null && intent.getStringExtra(TYPE) != null && intent.getStringExtra(TYPE)
-        .equals(CALL_ROULETTE_TYPE)) {
+    if (intent != null &&
+        intent.getStringExtra(TYPE) != null &&
+        intent.getStringExtra(TYPE).equals(CALL_ROULETTE_TYPE)) {
       subscribeChatRoulette();
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -141,8 +138,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() || StringUtils.isEmpty(accessToken.getTokenType()) || StringUtils.isEmpty(
-        accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
       webSocketConnection.setShouldReconnect(false);
     } else {
       headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
@@ -190,7 +188,7 @@ import timber.log.Timber;
   private void initModel() {
     persistentSubscriptions.add(jsonToModel.onInviteCreated()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .filter(invite -> !liveCache.getInviteMap().containsKey(invite.getRoomId()))
+        .filter(invite -> !liveCache.getInviteMap().containsKey(invite.getId()))
         .flatMap(invite -> this.tribeApi.invites(
             getApplicationContext().getString(R.string.invites_infos,
                 getApplicationContext().getString(R.string.userfragment_infos),
@@ -200,15 +198,6 @@ import timber.log.Timber;
               if (invites != null) {
                 for (Invite newInvite : invites) {
                   boolean shouldAdd = true;
-                  if (newInvite.getFriendships() != null) {
-                    for (Friendship friendship : newInvite.getFriendships()) {
-                      if (friendship != null
-                          && friendship.getFriend() != null
-                          && friendship.getFriend().equals(user)) {
-                        shouldAdd = false;
-                      }
-                    }
-                  }
 
                   if (shouldAdd) {
                     if (!StringUtils.isEmpty(invite.getRoomName())) {
@@ -260,10 +249,6 @@ import timber.log.Timber;
       userCache.updateUserRealmList(userRealmList);
     }));
 
-    persistentSubscriptions.add(jsonToModel.onGroupListUpdated().subscribe(groupRealmList -> {
-      userCache.updateGroupRealmList(groupRealmList);
-    }));
-
     persistentSubscriptions.add(jsonToModel.onCreatedFriendship()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .flatMap(friendshipId -> {
@@ -278,27 +263,8 @@ import timber.log.Timber;
           userCache.addFriendship(userRealmInfos.getFriendships().first());
         }));
 
-    persistentSubscriptions.add(jsonToModel.onCreatedMembership()
-        .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .flatMap(membershipId -> {
-          String ids = "\"" + membershipId + "\"";
-          final String requestMembershipInfos =
-              getApplicationContext().getString(R.string.membership_infos, ids,
-                  getApplicationContext().getString(R.string.membershipfragment_info),
-                  getApplicationContext().getString(R.string.groupfragment_info_members),
-                  getApplicationContext().getString(R.string.userfragment_infos));
-          return this.tribeApi.getUserInfos(requestMembershipInfos);
-        }, (s, userRealmInfos) -> userRealmInfos)
-        .subscribe(userRealmInfos -> {
-          userCache.addMembership(userRealmInfos.getMemberships().first());
-        }));
-
     persistentSubscriptions.add(jsonToModel.onRemovedFriendship().subscribe(friendshipRealm -> {
       userCache.removeFriendship(friendshipRealm);
-    }));
-
-    persistentSubscriptions.add(jsonToModel.onRemovedMembership().subscribe(membershipRealm -> {
-      userCache.removeMembership(membershipRealm);
     }));
   }
 
@@ -317,14 +283,6 @@ import timber.log.Timber;
             hash + FRIENDSHIP_REMOVED_SUFFIX));
 
     append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_membershipCreated,
-            hash + MEMBERSHIP_CREATED_SUFFIX));
-
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_membershipRemoved,
-            hash + MEMBERSHIP_REMOVED_SUFFIX));
-
-    append(subscriptionsBuffer,
         getApplicationContext().getString(R.string.subscription_inviteCreated,
             hash + INVITE_CREATED_SUFFIX));
 
@@ -332,50 +290,38 @@ import timber.log.Timber;
         getApplicationContext().getString(R.string.subscription_inviteRemoved,
             hash + INVITE_REMOVED_SUFFIX));
 
-    tempSubscriptions.add(
-        Observable.zip(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
-          int count = 0;
+    tempSubscriptions.add(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
+      int count = 0;
 
-          for (FriendshipRealm friendshipRealm : friendshipList) {
-            if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-              append(subscriptionsBuffer,
-                  getApplicationContext().getString(R.string.subscription_userUpdated,
-                      hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
+      for (FriendshipRealm friendshipRealm : friendshipList) {
+        if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
+          append(subscriptionsBuffer,
+              getApplicationContext().getString(R.string.subscription_userUpdated,
+                  hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
 
-              append(subscriptionsBuffer,
-                  getApplicationContext().getString(R.string.subscription_friendshipUpdated,
-                      hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
+          append(subscriptionsBuffer,
+              getApplicationContext().getString(R.string.subscription_friendshipUpdated,
+                  hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
 
-              count++;
-            }
-          }
-        }), Observable.just(userRealm.getMemberships()).doOnNext(membershipList -> {
-          int count = 0;
+          count++;
+        }
+      }
+    }).subscribe(stringBuffer -> {
+      String body = subscriptionsBuffer.toString();
 
-          for (MembershipRealm membershipRealm : membershipList) {
-            append(subscriptionsBuffer,
-                getApplicationContext().getString(R.string.subscription_groupUpdated,
-                    hash + GROUP_SUFFIX + count, membershipRealm.getGroup().getId()));
+      String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+          getApplicationContext().getString(R.string.userfragment_infos) : "");
 
-            count++;
-          }
-        }), (friendshipRealmRealmList, membershipRealms) -> subscriptionsBuffer)
-            .subscribe(stringBuffer -> {
-              String body = subscriptionsBuffer.toString();
+      String groupInfosFragment = (body.contains("GroupInfos") ? "\n" +
+          getApplicationContext().getString(R.string.groupfragment_info_members) : "");
 
-              String userInfosFragment =
-                  (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-                      R.string.userfragment_infos) : "");
+      String req =
+          getApplicationContext().getString(R.string.subscription, subscriptionsBuffer.toString()) +
+              userInfosFragment +
+              groupInfosFragment;
 
-              String groupInfosFragment =
-                  (body.contains("GroupInfos") ? "\n" + getApplicationContext().getString(
-                      R.string.groupfragment_info_members) : "");
-
-              String req = getApplicationContext().getString(R.string.subscription,
-                  subscriptionsBuffer.toString()) + userInfosFragment + groupInfosFragment;
-
-              webSocketConnection.send(req);
-            }));
+      webSocketConnection.send(req);
+    }));
   }
 
   private void append(StringBuffer buffer, String str) {

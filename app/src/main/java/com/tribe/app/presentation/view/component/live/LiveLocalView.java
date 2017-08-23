@@ -130,7 +130,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initStopGameSubscription(onStopGame);
 
     viewPeerOverlay.setGuest(
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
             null, false, user.getUsername()));
 
     initSubscriptions();

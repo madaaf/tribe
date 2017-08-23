@@ -3,7 +3,6 @@ package com.tribe.app.presentation.internal.di.components;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
-import com.tribe.app.presentation.mvp.presenter.GroupPresenter;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
@@ -12,7 +11,6 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
@@ -49,10 +47,9 @@ import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
+import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
-import com.tribe.app.presentation.view.widget.PopupContainerView;
-import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
@@ -88,8 +85,6 @@ import dagger.Component;
 
   void inject(GameDrawView gameDrawView);
 
-  void inject(CreateGroupNotificationView createGroupNotificationView);
-
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
   void inject(CountryActivity countryActivity);
@@ -102,15 +97,11 @@ import dagger.Component;
 
   void inject(GameChallengesView gameChallengesView);
 
-  void inject(GroupPresenter groupPresenter);
-
   void inject(MediaHiddenActivity mediaHiddenActivity);
 
   void inject(AuthenticationDialogFragment authenticationDialogFragment);
 
   void inject(SurpriseDialogFragment surpriseDialogFragment);
-
-  void inject(GroupActivity groupActivity);
 
   void inject(SearchPresenter searchPresenter);
 

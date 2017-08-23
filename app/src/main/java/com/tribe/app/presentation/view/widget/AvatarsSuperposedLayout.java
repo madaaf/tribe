@@ -100,7 +100,7 @@ public class AvatarsSuperposedLayout extends LinearLayout {
 
     // add myself
     members.add(0,
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
             null, false, user.getUsername()));
 
     int maxAvatar = members.size() > MAX_AVATAR ? MAX_AVATAR : members.size();

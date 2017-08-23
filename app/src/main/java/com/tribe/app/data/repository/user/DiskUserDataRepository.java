@@ -1,17 +1,14 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
-
 import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
-import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.datasource.DiskUserDataStore;
@@ -19,12 +16,9 @@ import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupEntity;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -35,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -49,7 +42,6 @@ import rx.Observable;
   private final UserRealmDataMapper userRealmDataMapper;
   private final ContactRealmDataMapper contactRealmDataMapper;
   private final SearchResultRealmDataMapper searchResultRealmDataMapper;
-  private final MembershipRealmDataMapper membershipRealmDataMapper;
 
   /**
    * Constructs a {@link UserRepository}.
@@ -58,14 +50,12 @@ import rx.Observable;
    * @param realmDataMapper {@link UserRealmDataMapper}.
    */
   @Inject public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
-      UserRealmDataMapper realmDataMapper, ContactRealmDataMapper contactRealmDataMapper,
-      MembershipRealmDataMapper membershipRealmDataMapper) {
+      UserRealmDataMapper realmDataMapper, ContactRealmDataMapper contactRealmDataMapper) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
     this.searchResultRealmDataMapper =
         new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
-    this.membershipRealmDataMapper = membershipRealmDataMapper;
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -92,9 +82,6 @@ import rx.Observable;
           if (userRealm != null && userRealm.getFriendships() != null) {
             userRealm.setFriendships(
                 updateOnlineLiveFriendship(userRealm.getFriendships(), onlineMap, liveMap, true));
-            for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
-              membershipRealm.getGroup().setIsLive(liveMap.containsKey(membershipRealm.getSubId()));
-            }
           }
 
           User user = userRealmDataMapper.transform(userRealm, true);
@@ -140,8 +127,9 @@ import rx.Observable;
     RealmList<FriendshipRealm> result = new RealmList<>();
 
     for (FriendshipRealm fr : friendships) {
-      if (!excludeBlocked || (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
-          .equals(FriendshipRealm.DEFAULT))) {
+      if (!excludeBlocked ||
+          (!StringUtils.isEmpty(fr.getStatus()) &&
+              fr.getStatus().equals(FriendshipRealm.DEFAULT))) {
         fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
         fr.setLive(liveMap.containsKey(fr.getId()));
 
@@ -155,8 +143,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override
-  public Observable<User> updateUserFacebook(String userId, String accessToken) {
+  @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     return null;
   }
 
@@ -165,8 +152,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override
-  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return null;
   }
 
@@ -246,9 +232,6 @@ import rx.Observable;
               mapUsersAdded.put(fr.getSubId(), fr.getFriend());
               fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
               fr.setIsLive(liveMap.containsKey(fr.getId()));
-            } else if (recipient instanceof Membership) {
-              Membership me = (Membership) recipient;
-              me.getGroup().setIsLive(liveMap.containsKey(me.getSubId()));
             }
 
             result.add(recipient);
@@ -266,12 +249,13 @@ import rx.Observable;
         });
   }
 
-  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds, Contact contact, List<Object> result) {
+  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds,
+      Contact contact, List<Object> result) {
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
         if (mapUsersAdded.containsKey(userInList.getId()) &&
-                (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
+            (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }
@@ -325,50 +309,6 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Group> getGroupMembers(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Group> getGroupInfos(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Membership> getMembershipInfos(String membershipId) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.getMembershipInfos(membershipId)
-        .map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
-  }
-
-  public Observable<Membership> createGroup(GroupEntity groupEntity) {
-    return null;
-  }
-
-  @Override
-  public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<Membership> updateMembership(String membershipId,
-      List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeGroup(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Void> leaveGroup(String groupId) {
-    return null;
-  }
-
   @Override public Observable<Friendship> updateFriendship(String friendshipId,
       List<Pair<String, String>> values) {
     return null;
@@ -385,8 +325,8 @@ import rx.Observable;
           RealmList<FriendshipRealm> result = new RealmList<>();
 
           for (FriendshipRealm fr : userRealm.getFriendships()) {
-            if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus()
-                .equals(FriendshipRealm.DEFAULT)) {
+            if (!StringUtils.isEmpty(fr.getStatus()) &&
+                !fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
               result.add(fr);
             }
           }
@@ -401,26 +341,16 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Membership> createMembership(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
+  @Override public Observable<Recipient> getRecipientInfos(String recipientId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
 
-    return userDataStore.getRecipientInfos(recipientId, isToGroup).map(recipientRealmInterface -> {
-      if (recipientRealmInterface instanceof MembershipRealm) {
-        return userRealmDataMapper.getMembershipRealmDataMapper()
-            .transform((MembershipRealm) recipientRealmInterface);
-      } else {
-        return userRealmDataMapper.getFriendshipRealmDataMapper()
-            .transform((FriendshipRealm) recipientRealmInterface);
-      }
+    return userDataStore.getRecipientInfos(recipientId).map(recipientRealmInterface -> {
+      return userRealmDataMapper.getFriendshipRealmDataMapper()
+          .transform((FriendshipRealm) recipientRealmInterface);
     });
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
-      String linkId) {
+  @Override public Observable<Room> getRoom(String roomId) {
     return null;
   }
 
@@ -463,8 +393,8 @@ import rx.Observable;
           RealmList<FriendshipRealm> result = new RealmList<>();
 
           for (FriendshipRealm fr : userRealm.getFriendships()) {
-            if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
-                .equals(FriendshipRealm.DEFAULT)) {
+            if (!StringUtils.isEmpty(fr.getStatus()) &&
+                fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
               result.add(fr);
             }
           }

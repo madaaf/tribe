@@ -8,25 +8,24 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by horatiothomas on 9/14/16.
+ * Created by tiago on 04/05/2016.
  */
-public class GetGroupMembers extends UseCase {
+public class GetRoom extends UseCase {
 
+  private String roomId;
   private UserRepository userRepository;
-  private String groupId;
 
-  @Inject
-  public GetGroupMembers(CloudUserDataRepository userDataRepository, ThreadExecutor threadExecutor,
+  @Inject public GetRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userDataRepository;
+    this.userRepository = userRepository;
   }
 
-  public void prepare(String groupId) {
-    this.groupId = groupId;
+  public void setup(String roomId) {
+    this.roomId = roomId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.getGroupMembers(groupId);
+    return this.userRepository.getRoom(roomId);
   }
 }

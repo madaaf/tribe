@@ -31,19 +31,15 @@ import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -51,7 +47,6 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
-import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -69,7 +64,6 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
-import rx.functions.Action2;
 import timber.log.Timber;
 
 /**
@@ -133,19 +127,17 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     if (loginEntity.getFbAccessToken() != null) {
-      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken()).doOnNext(saveToCacheAccessToken);
-
+      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken())
+          .doOnNext(saveToCacheAccessToken);
     } else if (loginEntity.getPhoneNumber() == null) {
       return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
-
     } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
       Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
       return loginApi.loginWithUsername(authHeaders.get(LoginApi.X_VERIFY),
-              authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
-
+          authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
     } else {
       return loginApi.loginWithUsername(loginEntity).doOnNext(saveToCacheAccessToken);
     }
@@ -159,12 +151,13 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
     registerEntity.setPhoneNumber(
-            loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), "") : null);
+        loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber()
+            .replace(loginEntity.getCountryCode(), "") : null);
     registerEntity.setPinId(loginEntity.getPinId());
 
     if (loginEntity.getFbAccessToken() != null) {
-      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity).doOnNext(saveToCacheAccessToken);
-
+      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity)
+          .doOnNext(saveToCacheAccessToken);
     } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
@@ -249,8 +242,9 @@ public class CloudUserDataStore implements UserDataStore {
       this.installation.setId("");
       return createOrUpdateInstall(token);
     }).flatMap(installationRecent -> {
-      if (installationRecent == null && this.installation != null && !StringUtils.isEmpty(
-          this.installation.getId())) {
+      if (installationRecent == null &&
+          this.installation != null &&
+          !StringUtils.isEmpty(this.installation.getId())) {
         this.installation.setToken("");
         this.installation.setId("");
         return createInstallation(token, this.installation);
@@ -270,13 +264,13 @@ public class CloudUserDataStore implements UserDataStore {
     StringBuilder userInputBuilder = new StringBuilder();
 
     for (Pair<String, String> value : values) {
-      if (value.first.equals(UserRealm.TRIBE_SAVE)
-          || value.first.equals(UserRealm.INVISIBLE_MODE)
-          || value.first.equals(UserRealm.PUSH_NOTIF)) {
+      if (value.first.equals(UserRealm.TRIBE_SAVE) ||
+          value.first.equals(UserRealm.INVISIBLE_MODE) ||
+          value.first.equals(UserRealm.PUSH_NOTIF)) {
         userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         userInputBuilder.append(",");
-      } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second)
-          && !value.second.equals("null"))) {
+      } else if (!value.first.equals(UserRealm.FBID) ||
+          (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
         userInputBuilder.append(value.first + ": \"" + value.second + "\"");
         userInputBuilder.append(",");
       }
@@ -328,15 +322,12 @@ public class CloudUserDataStore implements UserDataStore {
     }
   }
 
-  @Override
-  public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
-    return accessToken != null ?
-            this.loginApi.linkFacebook(accessToken)
-            : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
+  @Override public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
+    return accessToken != null ? this.loginApi.linkFacebook(accessToken)
+        : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
   }
 
-  @Override
-  public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
+  @Override public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
 
     if (digitsSession != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
@@ -348,22 +339,21 @@ public class CloudUserDataStore implements UserDataStore {
       String countryCode = "+" + phoneUtils.getCountryCode(phoneNumber);
 
       return this.loginApi.linkPhoneNumber(authHeaders.get(LoginApi.X_VERIFY),
-              authHeaders.get(LoginApi.X_AUTH), countryCode, phoneNumber.replace(countryCode, ""));
-
+          authHeaders.get(LoginApi.X_AUTH), countryCode, phoneNumber.replace(countryCode, ""));
     } else {
       return this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_PHONE_NUMBER);
     }
   }
 
-  @Override
-  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return this.tribeApi.incrUserTimeInCall(
-            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall))).doOnNext(aVoid -> {
+        context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall)))
+        .doOnNext(aVoid -> {
 
-      if (userCache != null) {
-        userCache.incrUserTimeInCall(userId, timeInCall);
-      }
-    });
+          if (userCache != null) {
+            userCache.incrUserTimeInCall(userId, timeInCall);
+          }
+        });
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {
@@ -595,9 +585,9 @@ public class CloudUserDataStore implements UserDataStore {
         .map(createFriendshipEntity -> {
           FriendshipRealm friendshipRealm = null;
 
-          if (createFriendshipEntity != null
-              && createFriendshipEntity.getNewFriendshipList() != null
-              && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+          if (createFriendshipEntity != null &&
+              createFriendshipEntity.getNewFriendshipList() != null &&
+              createFriendshipEntity.getNewFriendshipList().size() > 0) {
             friendshipRealm = createFriendshipEntity.getNewFriendshipList().get(0);
             userCache.addFriendship(friendshipRealm);
           }
@@ -631,9 +621,9 @@ public class CloudUserDataStore implements UserDataStore {
         : tribeApi.createFriendship(mutationCreateFriendship)).onErrorResumeNext(
         Observable.just(null)).doOnNext(createFriendshipEntity -> {
 
-      if (createFriendshipEntity != null
-          && createFriendshipEntity.getNewFriendshipList() != null
-          && createFriendshipEntity.getNewFriendshipList().size() > 0) {
+      if (createFriendshipEntity != null &&
+          createFriendshipEntity.getNewFriendshipList() != null &&
+          createFriendshipEntity.getNewFriendshipList().size() > 0) {
         for (FriendshipRealm fr : createFriendshipEntity.getNewFriendshipList()) {
           userCache.addFriendship(fr);
         }
@@ -678,16 +668,6 @@ public class CloudUserDataStore implements UserDataStore {
     if (userRealm != null) {
       CloudUserDataStore.this.userCache.put(userRealm);
 
-      if (userRealm.getMemberships() != null) {
-        for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
-          if (membershipRealm.getGroup().isLive()) {
-            liveCache.putLive(membershipRealm.getSubId());
-          } else {
-            liveCache.removeLive(membershipRealm.getSubId());
-          }
-        }
-      }
-
       if (userRealm.getFriendships() != null) {
         for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
           if (friendshipRealm.isLive()) {
@@ -701,14 +681,6 @@ public class CloudUserDataStore implements UserDataStore {
       if (userRealm.getInvites() != null) {
         for (Invite newInvite : userRealm.getInvites()) {
           boolean shouldAdd = true;
-
-          if (newInvite.getFriendships() != null) {
-            for (Friendship friendship : newInvite.getFriendships()) {
-              if (friendship.getSubId().equals(accessToken.getUserId())) {
-                shouldAdd = false;
-              }
-            }
-          }
 
           if (shouldAdd) {
             if (!StringUtils.isEmpty(newInvite.getRoomName())) {
@@ -763,213 +735,6 @@ public class CloudUserDataStore implements UserDataStore {
       userCache.updateCurrentUser(userRealm);
     }
   };
-
-  @Override public Observable<GroupRealm> getGroupMembers(String groupId) {
-    String request = context.getString(R.string.get_group_members, groupId,
-        context.getString(R.string.userfragment_infos),
-        context.getString(R.string.groupfragment_info));
-    return this.tribeApi.getGroupMembers(request).doOnNext(groupRealm -> {
-      List<MembershipRealm> dbMemberships =
-          userCache.userInfosNoObs(accessToken.getUserId()).getMemberships();
-      GroupRealm dbGroup = null;
-
-      for (MembershipRealm membershipRealm : dbMemberships) {
-        if (membershipRealm.getGroup().getId().equals(groupId)) {
-          dbGroup = membershipRealm.getGroup();
-        }
-      }
-
-      dbGroup.setMembers(groupRealm.getMembers());
-    });
-  }
-
-  @Override public Observable<GroupRealm> getGroupInfos(String groupId) {
-    String request = context.getString(R.string.get_group_infos, groupId,
-        context.getString(R.string.groupfragment_info_members),
-        context.getString(R.string.userfragment_infos));
-
-    return this.tribeApi.getGroupInfos(request)
-        .doOnNext(groupRealm -> userCache.updateGroup(groupRealm, true));
-  }
-
-  @Override public Observable<MembershipRealm> getMembershipInfos(String membershipId) {
-    return null;
-  }
-
-  @Override public Observable<MembershipRealm> createGroup(GroupEntity groupEntity) {
-    String idList = listToJson(groupEntity.getMembersId());
-
-    String members = "";
-
-    if (groupEntity.getMembersId() != null && groupEntity.getMembersId().size() > 0) {
-      members = context.getString(R.string.create_group_members, idList);
-    }
-
-    final String request = context.getString(R.string.create_group, groupEntity.getName(),
-        !StringUtils.isEmpty(members) ? members : "",
-        context.getString(R.string.groupfragment_info));
-
-    if (groupEntity.getImgPath() == null) {
-      return this.tribeApi.createGroup(request)
-          .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-          .flatMap(groupRealm -> createMembership(groupRealm.getId()),
-              (groupRealm, newMembership) -> newMembership);
-    } else {
-      RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
-
-      File file = new File(Uri.parse(groupEntity.getImgPath()).getPath());
-
-      if (!(file != null && file.exists() && file.length() > 0)) {
-        InputStream inputStream = null;
-        file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
-        try {
-          inputStream =
-              context.getContentResolver().openInputStream(Uri.parse(groupEntity.getImgPath()));
-          FileUtils.copyInputStreamToFile(inputStream, file);
-        } catch (FileNotFoundException e) {
-          e.printStackTrace();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-
-      RequestBody requestFile = null;
-      MultipartBody.Part body = null;
-
-      requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-      body = MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
-
-      return this.tribeApi.createGroupMedia(query, body)
-          .doOnNext(groupRealm -> userCache.insertGroup(groupRealm))
-          .flatMap(groupRealm -> createMembership(groupRealm.getId()),
-              (groupRealm, newMembership) -> newMembership);
-    }
-  }
-
-  @Override
-  public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
-    String pictureUri = "";
-    StringBuilder groupInputBuilder = new StringBuilder();
-
-    for (Pair<String, String> value : values) {
-      if (value.first.equals(GroupRealm.PICTURE)) {
-        pictureUri = value.second;
-      } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
-        groupInputBuilder.append(value.first + ": \"" + value.second + "\"");
-        groupInputBuilder.append(",");
-      }
-    }
-
-    String groupInput = groupInputBuilder.length() > 0 ? groupInputBuilder.substring(0,
-        groupInputBuilder.length() - 1) : "";
-
-    String request = context.getString(R.string.update_group, groupId, groupInput,
-        context.getString(R.string.groupfragment_info));
-
-    if (StringUtils.isEmpty(pictureUri)) {
-      if (!StringUtils.isEmpty(groupInput)) {
-        return this.tribeApi.updateGroup(request)
-            .doOnNext(groupRealm -> userCache.updateGroup(groupRealm, false));
-      } else {
-        return Observable.empty();
-      }
-    } else {
-      RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
-
-      File file = new File(Uri.parse(pictureUri).getPath());
-
-      if (!(file != null && file.exists() && file.length() > 0)) {
-        InputStream inputStream = null;
-        file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
-        try {
-          inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
-          FileUtils.copyInputStreamToFile(inputStream, file);
-        } catch (FileNotFoundException e) {
-          e.printStackTrace();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-
-      RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-      MultipartBody.Part body =
-          MultipartBody.Part.createFormData("group_pic", "group_pic.jpg", requestFile);
-
-      return tribeApi.updateGroupMedia(query, body)
-          .doOnNext(groupRealm -> userCache.updateGroup(groupRealm, false));
-    }
-  }
-
-  @Override public Observable<MembershipRealm> updateMembership(String membershipId,
-      List<Pair<String, String>> values) {
-    StringBuilder membershipInputBuilder = new StringBuilder();
-
-    for (Pair<String, String> value : values) {
-      if (value.first.equals(MembershipRealm.MUTE)) {
-        membershipInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
-        membershipInputBuilder.append(",");
-      } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
-        membershipInputBuilder.append(value.first + ": \"" + value.second + "\"");
-        membershipInputBuilder.append(",");
-      }
-    }
-
-    String membershipInput =
-        membershipInputBuilder.length() > 0 ? membershipInputBuilder.substring(0,
-            membershipInputBuilder.length() - 1) : "";
-
-    String request = context.getString(R.string.update_membership, membershipId, membershipInput,
-        context.getString(R.string.membershipfragment_info_light));
-
-    if (!StringUtils.isEmpty(membershipInput)) {
-      return this.tribeApi.updateMembership(request)
-          .doOnNext(membershipRealm -> userCache.updateMembership(membershipRealm));
-    } else {
-      return Observable.empty();
-    }
-  }
-
-  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    StringBuffer buffer = new StringBuffer();
-    String mutationCreateMembership = null;
-
-    int count = 0;
-    for (String id : memberIds) {
-      buffer.append(context.getString(R.string.create_membership_user, count, groupId, id));
-      count++;
-    }
-
-    mutationCreateMembership = context.getString(R.string.mutation, buffer.toString());
-
-    return (StringUtils.isEmpty(mutationCreateMembership) ? Observable.empty()
-        : tribeApi.createMembershipsForUsers(mutationCreateMembership)
-            .doOnNext(aVoid -> userCache.addMembersToGroup(groupId, memberIds))
-            .doOnNext(aVoid -> clearGroupAvatar(groupId)));
-  }
-
-  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-    String memberIdsJson = listToArrayReq(memberIds);
-    String request = context.getString(R.string.remove_members_group, groupId, memberIdsJson);
-
-    return this.tribeApi.removeMembersFromGroup(request)
-        .doOnNext(aVoid -> userCache.removeMembersFromGroup(groupId, memberIds))
-        .doOnNext(aVoid -> clearGroupAvatar(groupId));
-  }
-
-  @Override public Observable<Void> removeGroup(String groupId) {
-    String request = context.getString(R.string.remove_group, groupId);
-
-    return this.tribeApi.removeGroup(request)
-        .doOnError(throwable -> throwable.printStackTrace())
-        .doOnNext(aVoid -> userCache.removeGroup(groupId))
-        .doOnNext(aVoid -> clearGroupAvatar(groupId));
-  }
-
-  @Override public Observable<Void> leaveGroup(String membershipId) {
-    String request = context.getString(R.string.leave_group, membershipId);
-    return this.tribeApi.leaveGroup(request)
-        .doOnNext(aVoid -> userCache.removeGroupFromMembership(membershipId));
-  }
 
   public String listToJson(List<String> list) {
     String json = "\"";
@@ -1028,11 +793,11 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {
-      if (response != null
-          && response.raw() != null
-          && response.raw().priorResponse() != null
-          && response.raw().priorResponse().networkResponse() != null
-          && response.raw().priorResponse().networkResponse().request() != null) {
+      if (response != null &&
+          response.raw() != null &&
+          response.raw().priorResponse() != null &&
+          response.raw().priorResponse().networkResponse() != null &&
+          response.raw().priorResponse().networkResponse().request() != null) {
         String result = response.raw().priorResponse().networkResponse().request().url().toString();
         return Observable.just(result);
       }
@@ -1041,18 +806,7 @@ public class CloudUserDataStore implements UserDataStore {
     });
   }
 
-  @Override public Observable<MembershipRealm> createMembership(String groupId) {
-    final String requestCreateMembership = context.getString(R.string.create_membership, groupId,
-        context.getString(R.string.membershipfragment_info),
-        context.getString(R.string.groupfragment_info_members),
-        context.getString(R.string.userfragment_infos));
-    return this.tribeApi.createMembership(requestCreateMembership)
-        .doOnNext(membershipRealm -> userCache.insertMembership(accessToken.getUserId(),
-            membershipRealm));
-  }
-
-  @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId,
-      boolean isToGroup) {
+  @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId) {
     return null;
   }
 
@@ -1061,22 +815,16 @@ public class CloudUserDataStore implements UserDataStore {
     if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
-      String linkId) {
-    String body;
+  @Override public Observable<Room> getRoom(String roomId) {
+    String body = context.getString(R.string.getRoom, roomId);
 
-    if (!StringUtils.isEmpty(roomId)) {
-      body = context.getString(R.string.joinRoomWithRoomId, roomId);
-    } else if (!StringUtils.isEmpty(linkId)) {
-      body = context.getString(R.string.joinRoomWithLinkId, linkId);
-    } else {
-      body = context.getString(isGroup ? R.string.joinRoomGroup : R.string.joinRoomFriendship, id);
-    }
+    final String request = context.getString(R.string.query, body) +
+        "\n" +
+        context.getString(R.string.roomFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
 
-    final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
-        R.string.roomFragment_infos);
-
-    return this.tribeApi.joinRoom(request);
+    return this.tribeApi.room(request);
   }
 
   @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {

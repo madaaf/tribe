@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -139,15 +138,8 @@ public class LiveStatusNameView extends FrameLayout {
       }
 
       setStatusText(null, null);
-
     } else {
-      if (live.isGroup()) {
-        txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0,
-            0);
-      } else {
-        txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-      }
-
+      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
       txtName.setText(live.getDisplayName());
 
       setStatus(INITIATING);
@@ -177,8 +169,8 @@ public class LiveStatusNameView extends FrameLayout {
       return;
     }
 
-    setStatusText(
-        EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())), null);
+    setStatusText(EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())),
+        null);
   }
 
   public @LiveStatusNameView.StatusType int getStatus() {

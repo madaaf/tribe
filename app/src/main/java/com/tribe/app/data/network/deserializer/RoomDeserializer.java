@@ -8,31 +8,30 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.tribe.app.data.exception.BlockedException;
-import com.tribe.app.data.exception.Constants;
-import com.tribe.app.data.exception.RoomFullException;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import java.lang.reflect.Type;
 
-public class RoomConfigurationDeserializer implements JsonDeserializer<RoomConfiguration> {
+public class RoomDeserializer implements JsonDeserializer<Room> {
 
-  @Override public RoomConfiguration deserialize(JsonElement je, Type typeOfT,
-      JsonDeserializationContext context) throws JsonParseException {
+  @Override
+  public Room deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
     JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
 
     if (results == null || results.get("getRoomParameters") instanceof JsonNull) {
       JsonArray errors = je.getAsJsonObject().getAsJsonArray("errors");
       JsonElement jsonElement = errors.get(0);
       String message = jsonElement.getAsJsonObject().get("message").getAsString();
-      RoomConfiguration roomConfiguration = new RoomConfiguration();
+      Room room = new Room();
 
-      if (message.equals(Constants.USER_BLOCKED)) {
-        roomConfiguration.setException(new BlockedException());
-      } else if (message.equals(Constants.ROOM_FULL)) {
-        roomConfiguration.setException(new RoomFullException());
-      }
+      // TODO what about errors?
+      //if (message.equals(Constants.USER_BLOCKED)) {
+      //  roomConfiguration.setException(new BlockedException());
+      //} else if (message.equals(Constants.ROOM_FULL)) {
+      //  roomConfiguration.setException(new RoomFullException());
+      //}
 
-      return roomConfiguration;
+      return room;
     } else {
       JsonElement toParse = results.getAsJsonObject("getRoomParameters");
       return new Gson().fromJson(toParse, typeOfT);

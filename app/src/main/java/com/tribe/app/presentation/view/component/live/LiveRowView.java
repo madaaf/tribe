@@ -105,8 +105,8 @@ public class LiveRowView extends FrameLayout {
     for (Friendship friendship : user.getFriendships()) {
       User friend = friendship.getFriend();
       if (guest.getId().endsWith(friend.getId())) {
-        if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) || friendship.getStatus()
-            .equals(FriendshipRealm.BLOCKED)) {
+        if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) ||
+            friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
           guest.setFriend(false);
         } else {
           guest.setFriend(true);
@@ -205,10 +205,6 @@ public class LiveRowView extends FrameLayout {
 
   public boolean isWaiting() {
     return isWaiting;
-  }
-
-  public boolean isGroup() {
-    return guest.isGroup();
   }
 
   public boolean isInvite() {

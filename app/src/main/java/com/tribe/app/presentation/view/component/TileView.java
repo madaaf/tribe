@@ -28,7 +28,6 @@ import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -235,8 +234,8 @@ public class TileView extends SquareCardView {
   @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-    if (isGrid() && (getHeight() != 0 && viewBG.getHeight() != getHeight()) || (getWidth() != 0
-        && viewBG.getWidth() != getWidth())) {
+    if (isGrid() && (getHeight() != 0 && viewBG.getHeight() != getHeight()) ||
+        (getWidth() != 0 && viewBG.getWidth() != getWidth())) {
       UIUtils.changeWidthHeightOfView(viewBG, getWidth(), getHeight());
     }
   }
@@ -322,8 +321,10 @@ public class TileView extends SquareCardView {
       screenSize = screenUtils.getWidthPx();
     }
 
-    sizeAvatar = isGrid() ? (int) ((screenSize / getResources().getInteger(R.integer.columnNumber))
-        * RATIO_AVATAR_TILE) : (int) (screenUtils.dpToPx(LiveInviteView.WIDTH) * RATIO_AVATAR_TILE);
+    sizeAvatar =
+        isGrid() ? (int) ((screenSize / getResources().getInteger(R.integer.columnNumber)) *
+            RATIO_AVATAR_TILE)
+            : (int) (screenUtils.dpToPx(LiveInviteView.WIDTH) * RATIO_AVATAR_TILE);
     sizeAvatarScaled = (int) (sizeAvatar * SCALE_FACTOR);
     diffSizeAvatar = sizeAvatarScaled - sizeAvatar;
 
@@ -332,8 +333,8 @@ public class TileView extends SquareCardView {
     if (isGrid()) {
       int sizeTile = screenSize / getResources().getInteger(R.integer.columnNumber);
       int sizeLayoutName =
-          (int) ((sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio())))
-              * RATIO_AVATAR_TILE);
+          (int) ((sizeTile - (sizeAvatar - (int) (sizeAvatar * avatar.getShadowRatio()))) *
+              RATIO_AVATAR_TILE);
       int sizeStatus = sizeLayoutName;
       UIUtils.changeHeightOfView(layoutName, sizeLayoutName);
       UIUtils.changeHeightOfView(layoutStatus, sizeStatus);
@@ -443,13 +444,9 @@ public class TileView extends SquareCardView {
   }
 
   public void setName() {
-    if (recipient instanceof Membership) {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small, 0, 0, 0);
-    } else {
-      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-      if (txtWithGuests != null) {
-        txtWithGuests.setVisibility(recipient instanceof Invite ? View.VISIBLE : View.GONE);
-      }
+    txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+    if (txtWithGuests != null) {
+      txtWithGuests.setVisibility(recipient instanceof Invite ? View.VISIBLE : View.GONE);
     }
 
     txtName.setText(recipient.getDisplayName());

@@ -1,13 +1,10 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
@@ -16,17 +13,13 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.BookRoomLink;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
-import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
-import com.tribe.app.domain.interactor.user.LeaveGroup;
-import com.tribe.app.domain.interactor.user.RemoveGroup;
 import com.tribe.app.domain.interactor.user.SendInvitations;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
-import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
@@ -34,7 +27,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,11 +39,8 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
   // USECASES
   private JobManager jobManager;
   private GetDiskUserInfos diskUserInfosUsecase;
-  private LeaveGroup leaveGroup;
-  private RemoveGroup removeGroup;
   private SendToken sendTokenUseCase;
   private GetHeadDeepLink getHeadDeepLink;
-  private CreateMembership createMembership;
   private UseCase cloudUserInfos;
   private UpdateUserFacebook updateUserFacebook;
   private RxFacebook rxFacebook;
@@ -69,22 +58,18 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
   private ContactsOnAppSubscriber contactsOnAppSubscriber;
 
   @Inject public HomeGridPresenter(JobManager jobManager,
-      @Named("diskUserInfos") GetDiskUserInfos diskUserInfos, LeaveGroup leaveGroup,
-      RemoveGroup removeGroup, @Named("sendToken") SendToken sendToken,
-      GetHeadDeepLink getHeadDeepLink, CreateMembership createMembership,
-      @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
-      @Named("synchroContactList") UseCase synchroContactList,
+      @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
+      @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
+      @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUserFacebook updateUserFacebook,
+      RxFacebook rxFacebook, @Named("synchroContactList") UseCase synchroContactList,
       GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateFriendship createFriendship, BookRoomLink bookRoomLink,
       UpdateFriendship updateFriendship) {
     this.updateFriendship = updateFriendship;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
-    this.leaveGroup = leaveGroup;
-    this.removeGroup = removeGroup;
     this.sendTokenUseCase = sendToken;
     this.getHeadDeepLink = getHeadDeepLink;
-    this.createMembership = createMembership;
     this.cloudUserInfos = cloudUserInfos;
     this.updateUserFacebook = updateUserFacebook;
     this.rxFacebook = rxFacebook;
@@ -98,10 +83,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
 
   @Override public void onViewDetached() {
     super.onViewDetached();
-    leaveGroup.unsubscribe();
-    removeGroup.unsubscribe();
     getHeadDeepLink.unsubscribe();
-    createMembership.unsubscribe();
     cloudUserInfos.unsubscribe();
     updateUserFacebook.unsubscribe();
     diskUserInfosUsecase.unsubscribe();
@@ -148,24 +130,9 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     this.homeGridView.renderRecipientList(recipientList);
   }
 
-  public void leaveGroup(String membershipId) {
-    leaveGroup.prepare(membershipId);
-    leaveGroup.execute(new LeaveGroupSubscriber());
-  }
-
-  public void removeGroup(String groupId) {
-    removeGroup.prepare(groupId);
-    removeGroup.execute(new RemoveGroupSubscriber());
-  }
-
   public void getHeadDeepLink(String url) {
     getHeadDeepLink.prepare(url);
     getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
-  }
-
-  public void createMembership(String groupId) {
-    createMembership.setGroupId(groupId);
-    createMembership.execute(new CreateMembershipSubscriber());
   }
 
   public void sendToken(String token) {
@@ -217,32 +184,6 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     }
   }
 
-  private final class LeaveGroupSubscriber extends DefaultSubscriber<Void> {
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(Void aVoid) {
-      homeGridView.refreshGrid();
-    }
-  }
-
-  private final class RemoveGroupSubscriber extends DefaultSubscriber<Void> {
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(Void aVoid) {
-      homeGridView.refreshGrid();
-    }
-  }
-
   private final class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
 
     @Override public void onCompleted() {
@@ -268,20 +209,6 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
 
     @Override public void onNext(String url) {
       if (!StringUtils.isEmpty(url)) homeGridView.onDeepLink(url);
-    }
-  }
-
-  private final class CreateMembershipSubscriber extends DefaultSubscriber<Membership> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(Membership membership) {
-      homeGridView.onMembershipCreated(membership);
     }
   }
 

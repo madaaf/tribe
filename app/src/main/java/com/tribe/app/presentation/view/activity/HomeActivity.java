@@ -40,7 +40,6 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -444,13 +443,7 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .flatMap(recipient -> {
-          if (recipient instanceof Membership) {
-            Membership membership = (Membership) recipient;
-            navigator.navigateToGroupDetails(this, membership);
-            return Observable.empty();
-          } else {
-            return DialogFactory.showBottomSheetForRecipient(this, recipient);
-          }
+          return DialogFactory.showBottomSheetForRecipient(this, recipient);
         }, ((recipient, labelType) -> {
           if (labelType != null) {
             if (labelType.getTypeDef().equals(LabelType.HIDE) ||
@@ -467,14 +460,9 @@ public class HomeActivity extends BaseActivity
               Friendship friendship = (Friendship) recipient;
               friendship.setMute(false);
               homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
-              Membership membership = (Membership) recipient;
-              navigator.navigateToGroupDetails(this, membership);
-            } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
-              homeGridPresenter.leaveGroup(recipient.getId());
             } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
               Invite invite = (Invite) recipient;
-              homeGridPresenter.declineInvite(invite.getRoomId());
+              homeGridPresenter.declineInvite(invite.getId());
             }
           }
 
@@ -675,8 +663,6 @@ public class HomeActivity extends BaseActivity
       if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
         if (uri.getPath().startsWith("/u/")) {
           searchView.show();
-        } else if (uri.getPath().startsWith("/g/")) {
-          homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
         }
       }
     }
@@ -686,7 +672,6 @@ public class HomeActivity extends BaseActivity
     if (recipientList != null) {
       Bundle bundle = new Bundle();
       bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
-      bundle.putInt(TagManagerUtils.USER_GROUPS_COUNT, getCurrentUser().getMembershipList().size());
       tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
@@ -708,10 +693,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void errorFacebookLogin() {
-  }
-
-  @Override public void onMembershipCreated(Membership membership) {
-
   }
 
   private void initRegistrationToken() {

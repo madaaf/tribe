@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.util.Pair;
-
 import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
@@ -12,16 +11,13 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,8 +96,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override
-  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return null;
   }
 
@@ -146,48 +141,6 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<GroupRealm> getGroupMembers(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<GroupRealm> getGroupInfos(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<MembershipRealm> getMembershipInfos(String membershipId) {
-    return Observable.just(userCache.membershipInfos(membershipId));
-  }
-
-  @Override public Observable<MembershipRealm> createGroup(GroupEntity groupEntity) {
-    return null;
-  }
-
-  @Override
-  public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<MembershipRealm> updateMembership(String membershipId,
-      List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeGroup(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Void> leaveGroup(String groupId) {
-    return null;
-  }
-
   @Override public Observable<FriendshipRealm> updateFriendship(String friendshipId,
       List<Pair<String, String>> values) {
     return null;
@@ -197,14 +150,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<MembershipRealm> createMembership(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId,
-      boolean isToGroup) {
-    return Observable.just(isToGroup ? userCache.membershipForGroupId(recipientId)
-        : userCache.friendshipForUserId(recipientId));
+  @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId) {
+    return Observable.just(userCache.friendshipForUserId(recipientId));
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
@@ -223,8 +170,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.getFbIdUpdated();
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
-      String linkId) {
+  @Override public Observable<Room> getRoom(String roomId) {
     return null;
   }
 
