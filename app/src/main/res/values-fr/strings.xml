@@ -598,11 +598,11 @@
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
 	<string name="game_song_pop_menu_re_roll">Renouveler les morceaux</string>
-	<string name="game_song_pop_status_pick_playlist">Choisis une playlist ! :musical_note:</string>
-	<string name="game_song_pop_status_guess">Devine le morceau en premier ! :musical_note:</string>
-	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau ! :hear_no_evil:</string>
-	<string name="game_song_pop_status_no_winner">Personne n\'a deviné ! :metal:</string>
-	<string name="game_song_pop_status_winner">%1$s a deviné ! :metal:</string>
+	<string name="game_song_pop_status_pick_playlist">Choisis une playlist !</string>
+	<string name="game_song_pop_status_guess">Devine le morceau !</string>
+	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau !</string>
+	<string name="game_song_pop_status_no_winner">Personne n\'a deviné !</string>
+	<string name="game_song_pop_status_winner">%1$s a deviné !</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renouveler les noms</string>
 	<string name="game_post_it_menu_stop">Arreter ce jeu</string>
@@ -684,4 +684,12 @@
 	<string name="linked_friends_link_success_fb">Facebook connecté</string>
 	<string name="linked_friends_link_error_phone">Carnet d\'Adresses déjà connecté à un autre compte</string>
 	<string name="linked_friends_loading">Chargement...</string>
+	
+	<!-- Home -->
+	<string name="home_section_ongoing">En cours</string>
+	<string name="home_section_online">En ligne</string>
+	<string name="home_section_recent">Récents</string>
+	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
+	<string name="home_action_read_chat">Swipe droite pour lire</string>
+	<string name="home_action_new_chat">Nouveau chat</string>
 </resources>
