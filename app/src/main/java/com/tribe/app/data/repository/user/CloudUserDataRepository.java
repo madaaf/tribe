@@ -219,56 +219,10 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoom(roomId);
-  }
-
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.inviteUserToRoom(roomId, userId);
-  }
-
-  @Override public Observable<Boolean> buzzRoom(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.buzzRoom(roomId);
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.declineInvite(roomId);
-  }
-
   @Override public Observable<Void> sendInvitations() {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.sendInvitations();
-  }
-
-  @Override public Observable<String> getRoomLink(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoomLink(roomId);
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.bookRoomLink(linkId);
-  }
-
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.roomAcceptRandom(roomId);
-  }
-
-  @Override public Observable<String> randomRoomAssigned() {
-    return null;
   }
 
   @Override public Observable<User> getFbIdUpdated() {

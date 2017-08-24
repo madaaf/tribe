@@ -1,0 +1,77 @@
+package com.tribe.app.data.repository.live.datasource;
+
+import com.tribe.app.data.cache.LiveCache;
+import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.User;
+import java.util.Map;
+import rx.Observable;
+
+public class DiskLiveDataStore
+    implements LiveDataStore, com.tribe.app.data.repository.user.datasource.LiveDataStore {
+  private final LiveCache liveCache;
+
+  public DiskLiveDataStore(LiveCache liveCache) {
+    this.liveCache = liveCache;
+  }
+
+  @Override public Observable<Room> getRoom(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<Room> createRoom(String name, String[] userIds) {
+    return null;
+  }
+
+  @Override public Observable<Void> deleteRoom(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> buzzRoom(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<Void> declineInvite(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<String> getRoomLink(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> bookRoomLink(String linkId) {
+    return null;
+  }
+
+  @Override public Observable<Void> roomAcceptRandom(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<String> randomRoomAssigned() {
+    return null;
+  }
+
+  @Override public Observable<String> callRouletteMap() {
+    return liveCache.getRandomRoomAssignedValue();
+  }
+
+  @Override public Observable<Map<String, Boolean>> onlineMap() {
+    return null;
+  }
+
+  @Override public Observable<Map<String, Boolean>> liveMap() {
+    return null;
+  }
+
+  @Override public Observable<Map<String, Invite>> inviteMap() {
+    return null;
+  }
+
+  @Override public Observable<User> getFbIdUpdated() {
+    return null;
+  }
+}

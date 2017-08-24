@@ -100,13 +100,12 @@ public class AvatarsSuperposedLayout extends LinearLayout {
 
     // add myself
     members.add(0,
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
-            null, false, user.getUsername()));
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, null,
+            false, user.getUsername()));
 
     int maxAvatar = members.size() > MAX_AVATAR ? MAX_AVATAR : members.size();
 
     for (int i = 0; i < maxAvatar; i++) {
-
       TribeGuest tribeGuest = members.get(i);
       AvatarView avatarView = new AvatarView(getContext());
 
@@ -121,12 +120,15 @@ public class AvatarsSuperposedLayout extends LinearLayout {
 
       layoutParams.width = screenUtils.dpToPx(avatarSize);
       layoutParams.height = screenUtils.dpToPx(avatarSize);
+
       if (i != 0) {
         layoutParams.setMargins(screenUtils.dpToPx(-20), 0, 0, 0);
       }
+
       avatarView.setLayoutParams(layoutParams);
       layout.addView(avatarView);
     }
+
     avatarsContainer.addView(layout);
   }
 }

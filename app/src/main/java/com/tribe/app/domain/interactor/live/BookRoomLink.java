@@ -1,6 +1,6 @@
-package com.tribe.app.domain.interactor.user;
+package com.tribe.app.domain.interactor.live;
 
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -12,14 +12,14 @@ import rx.Observable;
  */
 public class BookRoomLink extends UseCase {
 
-  private UserRepository userRepository;
+  private LiveRepository liveRepository;
 
   private String linkId;
 
-  @Inject public BookRoomLink(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  @Inject public BookRoomLink(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userRepository;
+    this.liveRepository = liveRepository;
   }
 
   public void setLinkId(String linkId) {
@@ -27,6 +27,6 @@ public class BookRoomLink extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.bookRoomLink(linkId);
+    return this.liveRepository.bookRoomLink(linkId);
   }
 }

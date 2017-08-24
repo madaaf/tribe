@@ -148,7 +148,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live.Builder builder = new Live.Builder(recipient.getId(), recipient.getSubId()).color(color)
+    Live.Builder builder = new Live.Builder().color(color)
         .displayName(recipient.getDisplayName())
         .userName(recipient.getUsername())
         .countdown(!recipient.isLive())
@@ -156,8 +156,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .source(source);
 
     if (recipient instanceof Friendship) {
-      String fbId = ((Friendship) recipient).getFriend().getFbid();
-      builder.fbId(fbId);
+      Friendship fr = (Friendship) recipient;
+      builder.fbId(fr.getFriend().getFbid());
+      builder.userIds(fr.getSubId());
     }
 
     if (recipient instanceof Invite) {
@@ -171,21 +172,24 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, String recipientId, boolean isGroup,
-      String picture, String name, String sessionId, @Source String source) {
+  public static Intent getCallingIntent(Context context, String recipientId, String picture,
+      String name, String sessionId, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    if (StringUtils.isEmpty(recipientId)) recipientId = Live.WEB;
-
-    Live live = new Live.Builder(recipientId, recipientId).displayName(name)
+    Live.Builder builder = new Live.Builder().displayName(name)
         .picture(picture)
         .countdown(StringUtils.isEmpty(sessionId))
         .sessionId(sessionId)
         .intent(true)
-        .source(source)
-        .build();
+        .source(source);
 
-    intent.putExtra(EXTRA_LIVE, live);
+    if (StringUtils.isEmpty(recipientId)) {
+      builder.type(Live.WEB);
+    } else {
+      builder.userIds(recipientId);
+    }
+
+    intent.putExtra(EXTRA_LIVE, builder.build());
 
     return intent;
   }
@@ -194,7 +198,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder(Live.WEB, Live.WEB).linkId(linkId).url(url).source(source).build();
+    Live live = new Live.Builder().type(Live.WEB).linkId(linkId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -207,10 +211,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     String linkId = StringUtils.generateLinkId();
     String url = StringUtils.getUrlFromLinkId(context, linkId);
 
-    Live live = new Live.Builder(Live.NEW_CALL, Live.NEW_CALL).linkId(linkId)
-        .url(url)
-        .source(source)
-        .build();
+    Live live =
+        new Live.Builder().type(Live.NEW_CALL).linkId(linkId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -441,11 +443,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           viewLive.start(live);
           ready();
         } else {
-          if (live.isIntent()) {
-            livePresenter.loadRecipient(live);
-          } else {
-            viewLive.start(live);
-          }
+          // TODO rethink
+          //if (live.isIntent()) {
+          //livePresenter.loadRecipient(live);
+          //} else {
+          viewLive.start(live);
+          //}
         }
       } else {
         finish();
@@ -582,15 +585,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           if (live.getMembers() != null) {
             for (Friendship fr : friendshipList) {
               if (!live.isGroupMember(fr.getFriend().getId()) &&
-                  !fr.getFriend().getId().equals(live.getSubId()) &&
                   !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
           } else {
             for (Friendship fr : friendshipList) {
-              if (!live.getSubId().equals(fr.getFriend().getId()) &&
-                  !idsToFilter.contains(fr.getFriend().getId())) {
+              if (!idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
             }
@@ -1151,7 +1152,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void invite(String userId) {
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
-    String roomId = "";
     livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
   }
 
@@ -1165,7 +1165,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void roomError(WebSocketError error) {
-
     if (error.getId() == WebSocketError.ERROR_ROOM_FULL) {
       roomFull();
     } else {
@@ -1222,12 +1221,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRecipientInfos(Recipient recipient) {
-    if (recipient instanceof Friendship) {
-      live.setId(recipient.getId());
-      viewLive.start(live);
-    }
-
-    ready();
+    //if (recipient instanceof Friendship) {
+    //  live.setId(recipient.getId());
+    //  viewLive.start(live);
+    //}
+    //
+    //ready();
   }
 
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
@@ -1249,8 +1248,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.room = room;
     viewLive.joinRoom(this.room);
 
-    if (!live.isSessionOrLink()) {
-      livePresenter.inviteUserToRoom(this.room.getId(), live.getSubId());
+    if (!live.isSessionOrLink() && live.hasUserIds()) {
+      for (String userId : live.getUserIds()) {
+        livePresenter.inviteUserToRoom(this.room.getId(), userId);
+      }
     }
 
     live.setSessionId(room.getId());
@@ -1277,8 +1278,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRoomInfosError(String message) {
-    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    finish();
+    /**
+     * TODO handle better the error cases based on the backend solutions
+     * for now, if there is an error, we just create the room
+     */
+
+    //livePresenter.getRoomInfos(live);
+
+    //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    //finish();
   }
 
   @Override public Context context() {
@@ -1311,24 +1319,24 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (live.getSubId().equals(notificationPayload.getUserId()) ||
-          live.getSubId().equals(notificationPayload.getGroupId()) ||
-          (live.getSessionId() != null &&
-              live.getSessionId().equals(notificationPayload.getSessionId()))) {
-
-        if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
-          displayNotification(EmojiParser.demojizedText(
-              context.getString(R.string.live_notification_guest_declined,
-                  notificationPayload.getUserDisplayName())));
-          if (viewLive.getRowsInLive() < 3) {
-            finishActivityAfterCallDeclined(notificationPayload);
-          } else {
-            viewLive.removeUserFromGrid(notificationPayload.getUserId());
-          }
-        }
-
-        return;
-      }
+      // TODO handle later
+      //if (live.getSubId().equals(notificationPayload.getUserId()) ||
+      //    (live.getSessionId() != null &&
+      //        live.getSessionId().equals(notificationPayload.getSessionId()))) {
+      //
+      //  if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+      //    displayNotification(EmojiParser.demojizedText(
+      //        context.getString(R.string.live_notification_guest_declined,
+      //            notificationPayload.getUserDisplayName())));
+      //    if (viewLive.getRowsInLive() < 3) {
+      //      finishActivityAfterCallDeclined(notificationPayload);
+      //    } else {
+      //      viewLive.removeUserFromGrid(notificationPayload.getUserId());
+      //    }
+      //  }
+      //
+      //  return;
+      //}
 
       LiveNotificationView liveNotificationView =
           NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,

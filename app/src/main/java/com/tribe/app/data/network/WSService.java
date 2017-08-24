@@ -192,8 +192,7 @@ import timber.log.Timber;
         .flatMap(invite -> this.tribeApi.invites(
             getApplicationContext().getString(R.string.invites_infos,
                 getApplicationContext().getString(R.string.userfragment_infos),
-                getApplicationContext().getString(R.string.groupfragment_info_members),
-                getApplicationContext().getString(R.string.friendshipfragment_info))),
+                getApplicationContext().getString(R.string.roomFragment_infos))),
             (invite, invites) -> {
               if (invites != null) {
                 for (Invite newInvite : invites) {

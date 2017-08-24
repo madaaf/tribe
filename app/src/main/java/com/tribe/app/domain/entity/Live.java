@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import android.support.annotation.StringDef;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.io.Serializable;
@@ -12,11 +13,14 @@ import java.util.List;
 
 public class Live implements Serializable {
 
+  @StringDef({ NEW_CALL, WEB }) public @interface LiveType {
+  }
+
   public static final String NEW_CALL = "NEW_CALL";
   public static final String WEB = "WEB";
 
-  private String id;
-  private String subId;
+  private @LiveType String type;
+  private String[] userIds;
   private String displayName;
   private String userName;
   private String picture;
@@ -33,14 +37,14 @@ public class Live implements Serializable {
   private String fbId;
 
   private Live(Builder builder) {
-    this.id = builder.id;
+    this.userIds = builder.userIds;
+    this.type = builder.type;
     this.displayName = builder.displayName;
     this.picture = builder.picture;
     this.memberList = builder.memberList;
     this.isInvite = builder.isInvite;
     this.sessionId = builder.sessionId;
     this.color = builder.color;
-    this.subId = builder.subId;
     this.countdown = builder.countdown;
     this.intent = builder.intent;
     this.userName = builder.userName;
@@ -51,12 +55,24 @@ public class Live implements Serializable {
     this.fbId = builder.fbId;
   }
 
-  public String getId() {
-    return id;
+  public String getType() {
+    return type;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public String[] getUserIds() {
+    return userIds;
+  }
+
+  public boolean hasUserIds() {
+    return userIds != null && userIds.length > 0;
+  }
+
+  public void setUserIds(String[] userIds) {
+    this.userIds = userIds;
   }
 
   public String getDisplayName() {
@@ -133,14 +149,6 @@ public class Live implements Serializable {
     this.color = color;
   }
 
-  public String getSubId() {
-    return subId;
-  }
-
-  public void setSubId(String subId) {
-    this.subId = subId;
-  }
-
   public boolean isCountdown() {
     return countdown;
   }
@@ -213,8 +221,8 @@ public class Live implements Serializable {
 
   public static class Builder {
 
-    private String id;
-    private String subId;
+    private @LiveType String type;
+    private String[] userIds;
     private String displayName;
     private String picture;
     private List<User> memberList;
@@ -231,9 +239,17 @@ public class Live implements Serializable {
     private @LiveActivity.Source String source;
     private String fbId;
 
-    public Builder(String id, String subId) {
-      this.id = id;
-      this.subId = subId;
+    public Builder() {
+    }
+
+    public Builder type(@LiveType String type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder userIds(String... userIds) {
+      this.userIds = userIds;
+      return this;
     }
 
     public Builder displayName(String displayName) {

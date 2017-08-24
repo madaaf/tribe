@@ -1,6 +1,6 @@
-package com.tribe.app.domain.interactor.user;
+package com.tribe.app.domain.interactor.live;
 
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -10,15 +10,15 @@ import rx.Observable;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class GetRoom extends UseCase {
+public class BuzzRoom extends UseCase {
 
   private String roomId;
-  private UserRepository userRepository;
+  private LiveRepository liveRepository;
 
-  @Inject public GetRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  @Inject public BuzzRoom(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userRepository;
+    this.liveRepository = liveRepository;
   }
 
   public void setup(String roomId) {
@@ -26,6 +26,6 @@ public class GetRoom extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.getRoom(roomId);
+    return this.liveRepository.buzzRoom(roomId);
   }
 }

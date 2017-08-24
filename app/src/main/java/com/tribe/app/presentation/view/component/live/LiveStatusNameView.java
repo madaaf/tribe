@@ -126,14 +126,14 @@ public class LiveStatusNameView extends FrameLayout {
     this.live = live;
 
     if (!StringUtils.isEmpty(live.getLinkId())) {
-      if (live.getId().equals(Live.WEB)) {
+      if (live.getType().equals(Live.WEB)) {
         if (user.getDisplayName() == null) {
           txtName.setText("");
         } else {
           txtName.setText(
               getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
         }
-      } else if (live.getId().equals(Live.NEW_CALL)) {
+      } else if (live.getType().equals(Live.NEW_CALL)) {
         txtName.setText(getContext().getString(R.string.live_new_call_title_alone));
       }
 
@@ -147,7 +147,7 @@ public class LiveStatusNameView extends FrameLayout {
   }
 
   public void refactorTitle() {
-    if (!live.getId().equals(Live.NEW_CALL)) return;
+    if (!live.getType().equals(Live.NEW_CALL)) return;
     if (user.getDisplayName() != null) {
       txtName.setText(
           getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));

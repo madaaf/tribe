@@ -10,28 +10,27 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetDataChallengesGame;
 import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
-import com.tribe.app.domain.interactor.user.BookRoomLink;
-import com.tribe.app.domain.interactor.user.BuzzRoom;
+import com.tribe.app.domain.interactor.live.BookRoomLink;
+import com.tribe.app.domain.interactor.live.BuzzRoom;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.live.GetRoom;
+import com.tribe.app.domain.interactor.live.GetRoomLink;
+import com.tribe.app.domain.interactor.live.InviteUserToRoom;
+import com.tribe.app.domain.interactor.live.RandomRoomAssigned;
+import com.tribe.app.domain.interactor.live.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
-import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
-import com.tribe.app.domain.interactor.user.GetRoom;
-import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.IncrUserTimeInCall;
-import com.tribe.app.domain.interactor.user.InviteUserToRoom;
-import com.tribe.app.domain.interactor.user.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.user.ReportUser;
-import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 public class LivePresenter extends FriendshipPresenter implements Presenter {
 
@@ -146,10 +145,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
   }
 
-  public void loadRecipient(Live live) {
-    getRecipientInfos.prepare(live.getId());
-    getRecipientInfos.execute(new RecipientInfosSubscriber());
-  }
+  // TODO rethink
+  //public void loadRecipient(Live live) {
+  //  getRecipientInfos.prepare(live.getId());
+  //  getRecipientInfos.execute(new RecipientInfosSubscriber());
+  //}
 
   private final class RecipientInfosSubscriber extends DefaultSubscriber<Recipient> {
 
@@ -166,8 +166,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void getRoomInfos(Live live) {
-    Timber.d("joinRoom");
-    getRoom.setup(live.getId());
+    getRoom.setup(live.getLinkId());
     getRoom.execute(new GetRoomSubscriber());
   }
 
@@ -379,6 +378,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     if (randomRoomAssignedSubscriber != null) {
       randomRoomAssignedSubscriber.unsubscribe();
     }
+
     randomRoomAssignedSubscriber = new RandomRoomAssignedSubscriber();
     randomRoomAssigned.execute(randomRoomAssignedSubscriber);
   }

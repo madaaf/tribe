@@ -2,15 +2,12 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
 
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsSession;
-import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.BookRoomLink;
-import com.tribe.app.domain.interactor.user.DeclineInvite;
+import com.tribe.app.domain.interactor.live.BookRoomLink;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetDiskUnblockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;

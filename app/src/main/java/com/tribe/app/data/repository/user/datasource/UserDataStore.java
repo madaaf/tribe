@@ -143,21 +143,7 @@ public interface UserDataStore {
 
   Observable<RecipientRealmInterface> getRecipientInfos(String recipientId);
 
-  Observable<Room> getRoom(String roomId);
-
-  Observable<Boolean> inviteUserToRoom(String roomId, String userId);
-
-  Observable<Boolean> buzzRoom(String roomId);
-
-  Observable<Void> declineInvite(String roomId);
-
   Observable<Void> sendInvitations();
-
-  Observable<String> getRoomLink(String roomId);
-
-  Observable<Boolean> bookRoomLink(String linkId);
-
-  Observable<Void> roomAcceptRandom(String roomId);
 
   Observable<Boolean> reportUser(String userId);
 }

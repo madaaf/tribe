@@ -9,21 +9,10 @@
                     ...FriendshipInfos
                 }
 
-                memberships {
-                    ...MembershipInfos
-                }
-
                 invites {
-                    room_id
-                    room_name
-
-                    group {
-                        ...GroupInfos
-                    }
-
-                    friendships {
-                        ...FriendshipInfos
-                    }
+                  room {
+                    ...RoomInfos
+                  }
                 }
             }
         }
@@ -31,7 +20,6 @@
         %1$s
         %2$s
         %3$s
-        %4$s
     </string>
 
   <string name="user.infos.friendships" translatable="false">
@@ -547,23 +535,15 @@
         {
             user {
                 invites {
-                    room_id
-                    room_name
-
-                    group {
-                        ...GroupInfos
-                    }
-
-                    friendships {
-                        ...FriendshipInfos
-                    }
+                  room {
+                    ...RoomInfos
+                  }
                 }
             }
         }
 
         %1$s
         %2$s
-        %3$s
     </string>
 
   <string name="declineInvite" translatable="false">

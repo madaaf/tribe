@@ -530,8 +530,9 @@ public class LiveContainer extends FrameLayout {
   }
 
   private boolean isGuestUnder13(User user) {
+    // TODO handle better userIds
     getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName(),
-        viewLive.getLive().getId()); // first user in room
+        viewLive.getLive().getUserIds()[0]); // first user in room
     getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId()); //user I try to drag
 
     if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {

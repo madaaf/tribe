@@ -272,8 +272,8 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) ||
-          (live.getId().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) ||
+          (live.getType().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -898,9 +898,10 @@ public class LiveView extends FrameLayout {
     viewStatusName.setLive(live);
 
     if (StringUtils.isEmpty(live.getLinkId())) {
+      // TODO handle better with all the users already in the call
       TribeGuest guest =
-          new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(), live.isInvite(),
-              live.getMembersPics(), false, live.getUserName());
+          new TribeGuest(live.getUserIds()[0], live.getDisplayName(), live.getPicture(),
+              live.isInvite(), live.getMembersPics(), false, live.getUserName());
 
       LiveRowView liveRowView = new LiveRowView(getContext());
       liveRowViewMap.put(guest.getId(), liveRowView);
@@ -924,7 +925,7 @@ public class LiveView extends FrameLayout {
     } else {
       hasJoined = true;
       refactorNotifyButton();
-      if (live.getId().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
+      if (live.getType().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
       onShouldJoinRoom.onNext(null);
     }
   }
@@ -936,11 +937,12 @@ public class LiveView extends FrameLayout {
   }
 
   public void update(Live live) {
-    if (live != null) {
-      LiveRowView liveRowView = liveRowViewMap.get(live.getSubId());
+    if (live != null && live.hasUserIds()) {
+      // TODO handle better
+      LiveRowView liveRowView = liveRowViewMap.get(live.getUserIds()[0]);
       if (liveRowView != null) {
         liveRowView.setGuest(
-            new TribeGuest(live.getSubId(), live.getDisplayName(), live.getPicture(),
+            new TribeGuest(live.getUserIds()[0], live.getDisplayName(), live.getPicture(),
                 live.isInvite(), live.getMembersPics(), false, live.getUserName()));
       }
     }
@@ -1051,7 +1053,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void refactorShareOverlay() {
-    if (!live.getId().equals(Live.NEW_CALL)) return;
+    if (!live.getType().equals(Live.NEW_CALL)) return;
 
     int nbPeople = nbInRoom();
     if (nbPeople > 1) {

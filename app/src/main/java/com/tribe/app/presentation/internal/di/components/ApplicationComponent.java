@@ -19,6 +19,8 @@ import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.live.CloudLiveDataRepository;
+import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
@@ -221,6 +223,10 @@ public interface ApplicationComponent {
   DiskUserDataRepository diskUserRepository();
 
   CloudGameDataRepository cloudGameRepository();
+
+  CloudLiveDataRepository cloudLiveRepository();
+
+  DiskLiveDataRepository diskLiveRepository();
 
   TribeAuthorizer tribeAuthorizer();
 

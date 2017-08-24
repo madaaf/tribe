@@ -1,7 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.DeclineInvite;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import javax.inject.Inject;
 

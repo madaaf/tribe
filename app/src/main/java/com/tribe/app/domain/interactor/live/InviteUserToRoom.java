@@ -1,6 +1,6 @@
-package com.tribe.app.domain.interactor.user;
+package com.tribe.app.domain.interactor.live;
 
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -14,13 +14,13 @@ public class InviteUserToRoom extends UseCase {
 
   private String userId;
   private String roomId;
-  private UserRepository userRepository;
+  private LiveRepository liveRepository;
 
   @Inject
-  public InviteUserToRoom(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  public InviteUserToRoom(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userRepository;
+    this.liveRepository = liveRepository;
   }
 
   public void setup(String roomId, String userId) {
@@ -29,6 +29,6 @@ public class InviteUserToRoom extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.inviteUserToRoom(roomId, userId);
+    return this.liveRepository.inviteUserToRoom(roomId, userId);
   }
 }

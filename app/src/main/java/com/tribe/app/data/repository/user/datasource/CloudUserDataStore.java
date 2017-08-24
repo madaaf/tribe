@@ -174,8 +174,7 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.getUserInfos(
         context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
             context.getString(R.string.friendshipfragment_info),
-            context.getString(R.string.groupfragment_info_members),
-            context.getString(R.string.membershipfragment_info))).doOnNext(saveToCacheUser);
+            context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
@@ -815,66 +814,10 @@ public class CloudUserDataStore implements UserDataStore {
     if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
-    String body = context.getString(R.string.getRoom, roomId);
-
-    final String request = context.getString(R.string.query, body) +
-        "\n" +
-        context.getString(R.string.roomFragment_infos) +
-        "\n" +
-        context.getString(R.string.userfragment_infos_light);
-
-    return this.tribeApi.room(request);
-  }
-
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
-    final String request = context.getString(R.string.mutation,
-        context.getString(R.string.inviteToRoom, roomId, userId));
-
-    return this.tribeApi.inviteUserToRoom(request);
-  }
-
-  @Override public Observable<Boolean> buzzRoom(String roomId) {
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.buzzRoom, roomId));
-
-    return this.tribeApi.buzzRoom(request);
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    liveCache.removeInviteFromRoomId(roomId);
-
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.declineInvite, roomId));
-
-    return this.tribeApi.declineInvite(request);
-  }
 
   @Override public Observable<Void> sendInvitations() {
     return growthApi.sendInvitations(PreferencesUtils.getLookup(lookupResult))
         .doOnNext(aVoid -> lookupResult.set(""));
-  }
-
-  @Override public Observable<String> getRoomLink(String roomId) {
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.getRoomLink, roomId));
-
-    return this.tribeApi.getRoomLink(request)
-        .map(roomLinkEntity -> roomLinkEntity != null ? roomLinkEntity.getLink() : null);
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.bookRoomLink, linkId));
-
-    return this.tribeApi.bookRoomLink(request).map(BookRoomLinkEntity::isRoomBooked);
-  }
-
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.roomAcceptRandom, roomId));
-
-    return this.tribeApi.roomAcceptRandom(request);
   }
 
   @Override public Observable<Boolean> reportUser(String userId) {

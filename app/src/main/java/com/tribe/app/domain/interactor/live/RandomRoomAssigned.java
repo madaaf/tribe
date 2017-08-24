@@ -1,9 +1,10 @@
-package com.tribe.app.domain.interactor.user;
+package com.tribe.app.domain.interactor.live;
 
-import com.tribe.app.data.repository.user.DiskUserDataRepository;
+import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.UserRepository;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -12,16 +13,16 @@ import rx.Observable;
  */
 public class RandomRoomAssigned extends UseCase {
 
-  private UserRepository userRepository;
+  private LiveRepository liveRepository;
 
   @Inject
-  public RandomRoomAssigned(DiskUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  public RandomRoomAssigned(DiskLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userRepository;
+    this.liveRepository = liveRepository;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.randomRoomAssigned();
+    return this.liveRepository.randomRoomAssigned();
   }
 }
