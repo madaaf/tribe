@@ -598,11 +598,19 @@
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
 	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
-	<string name="game_song_pop_status_pick_playlist">Pick a playlist! :musical_note:</string>
-	<string name="game_song_pop_status_guess">Guess the song first! :musical_note:</string>
+	<string name="game_song_pop_status_pick_playlist">Pick a playlist!</string>
+	<string name="game_song_pop_status_score_rule">First to %1$d points wins!</string>
+	<string name="game_song_pop_status_guess">Guess the song!</string>
 	<string name="game_song_pop_status_wrong_answer">Arrgh! That\'s not the song! :hear_no_evil:</string>
-	<string name="game_song_pop_status_no_winner">Nobody guessed! :metal:</string>
-	<string name="game_song_pop_status_winner">%1$s guessed! :metal:</string>
+	<string name="game_song_pop_status_no_winner">Nobody guessed!</string>
+	<string name="game_song_pop_status_winner">%1$s guessed!</string>
+	<string name="game_song_pop_status_winner_step">%1$s wins!</string>
+	<string name="game_song_pop_status_no_winner_step">Nobody won...</string>
+	<string name="game_song_pop_new_popup_title">Keep playing!</string>
+	<string name="game_song_pop_new_popup_description">Would you like to play this game again or try another game?</string>
+	<string name="game_song_pop_new_popup_again">Play again!</string>
+	<string name="game_song_pop_new_popup_other">Pick another game</string>
+	<string name="game_song_pop_new_popup_stop">Stop playing</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renew the names</string>
 	<string name="game_post_it_menu_stop">Stop this game</string>
@@ -614,6 +622,8 @@
 	<string name="game_challenges_your_turn">Your turn to be challenged!</string>
 	<string name="game_challenges_menu_re_roll">Change the challenge</string>
 	<string name="game_challenges_re_roll_notification">%1$s put on a new challenge!</string>
+	<string name="game_challenges_fail_button">:poop: Failed.</string>
+	<string name="game_challenges_success_button">:crown: Did it!</string>
 	<string name="game_scream">Scream!</string>
 	<string name="game_scream_rule">Scream to reach the top!</string>
 	<string name="game_draw">Draw</string>
@@ -680,5 +690,14 @@
 	<string name="linked_friends_unlink_success_fb">Facebook unsynced</string>
 	<string name="linked_friends_link_success_phone">Address Book linked</string>
 	<string name="linked_friends_link_success_fb">Facebook linked</string>
+	<string name="linked_friends_link_error_phone">Address Book already linked to another account</string>
 	<string name="linked_friends_loading">Loading...</string>
+	
+	<!-- Home -->
+	<string name="home_section_ongoing">Ongoing</string>
+	<string name="home_section_online">Online</string>
+	<string name="home_section_recent">Recent</string>
+	<string name="home_action_join_live">Swipe left to join</string>
+	<string name="home_action_read_chat">Swipe right to read</string>
+	<string name="home_action_new_chat">New chat</string>
 </resources>
