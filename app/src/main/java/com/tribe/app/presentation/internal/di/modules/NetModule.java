@@ -184,18 +184,20 @@ import timber.log.Timber;
     OkHttpClient.Builder okHttpClient = createOkHttpClient(context);
 
     if (!BuildConfig.DEBUG) {
+      InputStream oldCert = context.getResources().openRawResource(R.raw.old_tribe);
       InputStream cert = context.getResources().openRawResource(R.raw.tribe);
 
       try {
         // loading CAs from an InputStream
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        Certificate ca;
-        ca = cf.generateCertificate(cert);
+        Certificate oldCa = cf.generateCertificate(oldCert);
+        Certificate ca = cf.generateCertificate(cert);
 
         // creating a KeyStore containing our trusted CAs
         String keyStoreType = KeyStore.getDefaultType();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, null);
+        keyStore.setCertificateEntry("oldCa", oldCa);
         keyStore.setCertificateEntry("ca", ca);
 
         // creating a TrustManager that trusts the CAs in our KeyStore
@@ -208,10 +210,14 @@ import timber.log.Timber;
         sslContext.init(null, tmf.getTrustManagers(), null);
         okHttpClient.sslSocketFactory(sslContext.getSocketFactory());
 
+        String oldCertPin = CertificatePinner.pin(oldCa);
         String certPin = CertificatePinner.pin(ca);
         CertificatePinner certificatePinner =
-            new CertificatePinner.Builder().add(BuildConfig.TRIBE_API, certPin)
-                .add(BuildConfig.TRIBE_AUTH, certPin)
+            new CertificatePinner.Builder()
+                    .add(BuildConfig.TRIBE_API, oldCertPin)
+                    .add(BuildConfig.TRIBE_AUTH, oldCertPin)
+                    .add(BuildConfig.TRIBE_API, certPin)
+                    .add(BuildConfig.TRIBE_AUTH, certPin)
                 .build();
         okHttpClient.certificatePinner(certificatePinner);
       } catch (IOException e) {
