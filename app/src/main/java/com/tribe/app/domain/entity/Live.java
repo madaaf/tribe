@@ -5,6 +5,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,46 +14,48 @@ import java.util.List;
 
 public class Live implements Serializable {
 
-  @StringDef({ NEW_CALL, WEB }) public @interface LiveType {
+  @StringDef({ NEW_CALL, WEB, FRIEND_CALL }) public @interface LiveType {
   }
 
   public static final String NEW_CALL = "NEW_CALL";
   public static final String WEB = "WEB";
+  public static final String FRIEND_CALL = "FRIEND_CALL";
 
   private @LiveType String type;
-  private String[] userIds;
-  private String displayName;
-  private String userName;
-  private String picture;
-  private List<User> memberList;
-  private boolean isInvite;
-  private String sessionId;
-  private String linkId;
+  private Room room;
+  private boolean fromRoom = false;
+  private List<User> users;
+  private List<String> userIds;
+  private List<String> userPics;
+  private String roomId;
   private String url;
   private int color = 0;
   private boolean countdown = true;
   private boolean intent = false;
   private @LiveActivity.Source String source;
   private boolean isDiceDragedInRoom = false;
-  private String fbId;
 
   private Live(Builder builder) {
-    this.userIds = builder.userIds;
+    this.room = builder.room;
+    this.fromRoom = room != null;
+    setUsers(builder.users);
     this.type = builder.type;
-    this.displayName = builder.displayName;
-    this.picture = builder.picture;
-    this.memberList = builder.memberList;
-    this.isInvite = builder.isInvite;
-    this.sessionId = builder.sessionId;
+    this.roomId = builder.roomId;
     this.color = builder.color;
     this.countdown = builder.countdown;
     this.intent = builder.intent;
-    this.userName = builder.userName;
-    this.linkId = builder.linkId;
     this.url = builder.url;
     this.source = builder.source;
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
-    this.fbId = builder.fbId;
+  }
+
+  public Room getRoom() {
+    return room;
+  }
+
+  public void setRoom(Room room) {
+    this.room = room;
+    setUsers(room.getLiveUsers());
   }
 
   public String getType() {
@@ -63,46 +66,6 @@ public class Live implements Serializable {
     this.type = type;
   }
 
-  public String[] getUserIds() {
-    return userIds;
-  }
-
-  public boolean hasUserIds() {
-    return userIds != null && userIds.length > 0;
-  }
-
-  public void setUserIds(String[] userIds) {
-    this.userIds = userIds;
-  }
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public String getUserName() {
-    return userName;
-  }
-
-  public String getFbId() {
-    return fbId;
-  }
-
-  public void setUserName(String userName) {
-    this.userName = userName;
-  }
-
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-  public String getPicture() {
-    return picture;
-  }
-
-  public void setPicture(String picture) {
-    this.picture = picture;
-  }
-
   public boolean isDiceDragedInRoom() {
     return isDiceDragedInRoom;
   }
@@ -111,33 +74,66 @@ public class Live implements Serializable {
     isDiceDragedInRoom = diceDragedInRoom;
   }
 
-  public List<User> getMembers() {
-    return memberList;
+  public void setRoomId(String roomId) {
+    this.roomId = roomId;
   }
 
-  public void setMembers(List<User> members) {
-    this.memberList = members;
+  public String getRoomId() {
+    return roomId;
   }
 
-  public void setInvite(boolean invite) {
-    isInvite = invite;
+  public void setUsers(List<User> users) {
+    this.users = users;
+
+    userIds = new ArrayList<>();
+    userPics = new ArrayList<>();
+
+    if (users != null) {
+      for (User user : users) {
+        userIds.add(user.getId());
+      }
+
+      userPics = new ArrayList<>();
+
+      List<User> subUsers = users.subList(Math.max(users.size() - 4, 0), users.size());
+
+      if (subUsers != null) {
+        for (User user : users) {
+          String url = user.getProfilePicture();
+          if (!StringUtils.isEmpty(url)) userPics.add(url);
+        }
+      }
+    }
   }
 
-  public boolean isInvite() {
-    return isInvite;
+  public List<User> getUsers() {
+    return users;
   }
 
-  public String getSessionId() {
-    return sessionId;
+  public List<String> getUserIds() {
+    return userIds;
   }
 
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
+  public boolean hasUsers() {
+    return users != null && users.size() > 0;
+  }
+
+  public String getName() {
+    if (fromRoom()) {
+      return room.getInitiator().getDisplayName();
+    } else if (users != null && users.size() > 0) {
+      return users.get(0).getDisplayName();
+    } else {
+      return type;
+    }
+  }
+
+  public boolean hasUser(String userId) {
+    return userIds != null && userIds.contains(userId);
   }
 
   public void setCallRouletteSessionId(String sessionId) {
-    setSessionId(sessionId);
-    setLinkId(null);
+    setRoomId(sessionId);
     setUrl(null);
   }
 
@@ -161,46 +157,20 @@ public class Live implements Serializable {
     return intent;
   }
 
-  public boolean isGroupMember(String userId) {
-    if (memberList != null) {
-      for (User member : memberList) {
-        if (member.getId().equals(userId)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+  public List<String> getUsersPics() {
+    return userPics;
   }
 
-  public List<String> getMembersPics() {
-    List<String> pics = new ArrayList<>();
-
-    if (memberList != null) {
-      List<User> subMembers =
-          memberList.subList(Math.max(memberList.size() - 4, 0), memberList.size());
-
-      if (subMembers != null) {
-        for (User user : subMembers) {
-          String url = user.getProfilePicture();
-          if (!StringUtils.isEmpty(url)) pics.add(url);
-        }
-      }
-    }
-
-    return pics;
+  public boolean hasRoom() {
+    return room != null;
   }
 
-  public void setLinkId(String linkId) {
-    this.linkId = linkId;
+  public boolean fromRoom() {
+    return fromRoom;
   }
 
-  public String getLinkId() {
-    return linkId;
-  }
-
-  public boolean isSessionOrLink() {
-    return !StringUtils.isEmpty(sessionId) || !StringUtils.isEmpty(linkId);
+  public boolean hasRoomId() {
+    return !StringUtils.isEmpty(roomId);
   }
 
   public String getUrl() {
@@ -221,25 +191,23 @@ public class Live implements Serializable {
 
   public static class Builder {
 
+    private Room room;
     private @LiveType String type;
-    private String[] userIds;
-    private String displayName;
-    private String picture;
-    private List<User> memberList;
-    private boolean isGroup;
-    private boolean isInvite = false;
-    private String sessionId;
-    private String linkId;
+    private List<User> users;
+    private String roomId;
     private String url;
     private int color;
     private boolean countdown = true;
     private boolean intent = false;
     private boolean isDiceDragedInRoom = false;
-    private String userName;
     private @LiveActivity.Source String source;
-    private String fbId;
 
     public Builder() {
+    }
+
+    public Builder room(Room room) {
+      this.room = room;
+      return this;
     }
 
     public Builder type(@LiveType String type) {
@@ -247,48 +215,13 @@ public class Live implements Serializable {
       return this;
     }
 
-    public Builder userIds(String... userIds) {
-      this.userIds = userIds;
+    public Builder users(User... users) {
+      this.users = new ArrayList<>(Arrays.asList(users));
       return this;
     }
 
-    public Builder displayName(String displayName) {
-      this.displayName = displayName;
-      return this;
-    }
-
-    public Builder fbId(String fbId) {
-      this.fbId = fbId;
-      return this;
-    }
-
-    public Builder userName(String userName) {
-      this.userName = userName;
-      return this;
-    }
-
-    public Builder picture(String picture) {
-      this.picture = picture;
-      return this;
-    }
-
-    public Builder memberList(List<User> memberList) {
-      this.memberList = memberList;
-      return this;
-    }
-
-    public Builder isInvite(boolean isInvite) {
-      this.isInvite = isInvite;
-      return this;
-    }
-
-    public Builder sessionId(String sessionId) {
-      this.sessionId = sessionId;
-      return this;
-    }
-
-    public Builder linkId(String linkId) {
-      this.linkId = linkId;
+    public Builder roomId(String roomId) {
+      this.roomId = roomId;
       return this;
     }
 

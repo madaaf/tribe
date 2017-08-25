@@ -317,11 +317,11 @@ public class LiveContainer extends FrameLayout {
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(time -> {
-                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS
-                    && isDown
-                    && Math.abs(currentX - downX) < diffDown
-                    && Math.abs(currentY - downY) < diffDown
-                    && overallScrollY < scrollTolerance) {
+                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS &&
+                    isDown &&
+                    Math.abs(currentX - downX) < diffDown &&
+                    Math.abs(currentY - downY) < diffDown &&
+                    overallScrollY < scrollTolerance) {
                   int nbInRoom = viewLive.nbInRoom();
 
                   if (nbInRoom == LiveView.LIVE_MAX) {
@@ -350,10 +350,10 @@ public class LiveContainer extends FrameLayout {
         if ((!isOpened || !isTouchInInviteView) && currentTileView == null) {
           final boolean isSwipingHorizontally = Math.abs(diffX) > Math.abs(diffY);
 
-          if (isSwipingHorizontally
-              && Math.abs(diffX) > touchSlop
-              && Math.abs(diffX) > screenUtils.dpToPx(DRAG_THRESHOLD)
-              && !beingDragged) {
+          if (isSwipingHorizontally &&
+              Math.abs(diffX) > touchSlop &&
+              Math.abs(diffX) > screenUtils.dpToPx(DRAG_THRESHOLD) &&
+              !beingDragged) {
             beingDragged = true;
           }
         }
@@ -509,8 +509,9 @@ public class LiveContainer extends FrameLayout {
   }
 
   public void getUserUnder13(String fbId, String displayName, String userId) {
-    if ((fbId == null || fbId.isEmpty()) && (displayName != null && !displayName.equals(
-        getContext().getString(R.string.roll_the_dice_invite_title)))) {
+    if ((fbId == null || fbId.isEmpty()) &&
+        (displayName != null &&
+            !displayName.equals(getContext().getString(R.string.roll_the_dice_invite_title)))) {
       userUnder13 = displayName;
       userUnder13Id = userId;
 
@@ -531,8 +532,12 @@ public class LiveContainer extends FrameLayout {
 
   private boolean isGuestUnder13(User user) {
     // TODO handle better userIds
-    getUserUnder13(viewLive.getLive().getFbId(), viewLive.getLive().getDisplayName(),
-        viewLive.getLive().getUserIds()[0]); // first user in room
+    if (viewLive.getLive().hasUsers()) {
+      User userLive = viewLive.getLive().getUsers().get(0);
+      getUserUnder13(userLive.getFbid(), userLive.getDisplayName(),
+          userLive.getId()); // first user in room
+    }
+
     getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId()); //user I try to drag
 
     if (user.getId().equals(Recipient.ID_CALL_ROULETTE) && !userUnder13.isEmpty()) {

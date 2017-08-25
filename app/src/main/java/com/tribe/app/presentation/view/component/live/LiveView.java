@@ -219,10 +219,6 @@ public class LiveView extends FrameLayout {
     room.jump();
   }
 
-  public String getDisplayName() {
-    return live.getDisplayName();
-  }
-
   public int getRowsInLive() {
     return viewRoom.getRowsInLive();
   }
@@ -819,7 +815,7 @@ public class LiveView extends FrameLayout {
       latestView = new LiveRowView(getContext());
       TribeGuest guest = new TribeGuest(tileView.getRecipient().getSubId(),
           tileView.getRecipient().getDisplayName(), tileView.getRecipient().getProfilePicture(),
-          false, null, true, tileView.getRecipient().getUsername());
+          false, true, tileView.getRecipient().getUsername());
 
       addView(latestView, guest, tileView.getBackgroundColor(), true);
     }));
@@ -890,18 +886,19 @@ public class LiveView extends FrameLayout {
 
   public void start(Live live) {
     this.live = live;
-    this.fbId = live.getFbId();
+    this.fbId = live.hasUsers() ? live.getUsers().get(0).getFbid() : "";
 
     room = tribeLiveSDK.newRoom();
     room.initLocalStream(viewLocalLive.getLocalPeerView());
 
     viewStatusName.setLive(live);
 
-    if (StringUtils.isEmpty(live.getLinkId())) {
+    if (StringUtils.isEmpty(live.getRoomId()) && live.hasUsers()) {
       // TODO handle better with all the users already in the call
+      User user = live.getUsers().get(0);
       TribeGuest guest =
-          new TribeGuest(live.getUserIds()[0], live.getDisplayName(), live.getPicture(),
-              live.isInvite(), live.getMembersPics(), false, live.getUserName());
+          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(),
+              live.fromRoom(), false, user.getUsername());
 
       LiveRowView liveRowView = new LiveRowView(getContext());
       liveRowViewMap.put(guest.getId(), liveRowView);
@@ -937,13 +934,14 @@ public class LiveView extends FrameLayout {
   }
 
   public void update(Live live) {
-    if (live != null && live.hasUserIds()) {
+    if (live != null && live.hasUsers()) {
       // TODO handle better
-      LiveRowView liveRowView = liveRowViewMap.get(live.getUserIds()[0]);
+      User user = live.getUsers().get(0);
+      LiveRowView liveRowView = liveRowViewMap.get(live.getUsers().get(0).getId());
       if (liveRowView != null) {
         liveRowView.setGuest(
-            new TribeGuest(live.getUserIds()[0], live.getDisplayName(), live.getPicture(),
-                live.isInvite(), live.getMembersPics(), false, live.getUserName()));
+            new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(),
+                live.fromRoom(), false, user.getUsername()));
       }
     }
   }
@@ -1083,7 +1081,7 @@ public class LiveView extends FrameLayout {
         .containsKey(
             remotePeer.getSession().getUserId())) { // If the user was invited before joining
       if (nbLiveInRoom() == 0) { // First user joining in a group call
-        if (live.isInvite()) {
+        if (live.fromRoom()) {
           String inviteId = getInviteWaiting();
           if (!StringUtils.isEmpty(inviteId)) {
             liveRowView = liveRowViewMap.remove(inviteId);
@@ -1109,7 +1107,7 @@ public class LiveView extends FrameLayout {
       TribeGuest guest = guestFromRemotePeer(remotePeer);
 
       if (nbLiveInRoom() == 0) { // First user joining in a group call
-        if (live.isInvite()) { // if it's an invite
+        if (live.fromRoom()) { // if it's from a room
           String inviteId = getInviteWaiting();
           if (!StringUtils.isEmpty(inviteId)) {
             liveRowView = liveRowViewMap.remove(inviteId);
@@ -1179,14 +1177,14 @@ public class LiveView extends FrameLayout {
     for (Friendship friendship : user.getFriendships()) {
       if (remotePeer.getSession().getUserId().equals(friendship.getSubId())) {
         guest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-            friendship.getProfilePicture(), false, null, true, friendship.getUsername());
+            friendship.getProfilePicture(), false, true, friendship.getUsername());
         guest.setExternal(remotePeer.getSession().isExternal());
       }
     }
 
     if (guest == null) {
       guest = new TribeGuest(remotePeer.getSession().getUserId(),
-          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, null, false, "");
+          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, "");
       guest.setExternal(remotePeer.getSession().isExternal());
     }
 

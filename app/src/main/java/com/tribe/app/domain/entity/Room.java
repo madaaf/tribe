@@ -13,7 +13,7 @@ public class Room implements Serializable {
   private String id;
   private String name;
   private String link;
-  private RoomCoordinates roomCoordinates;
+  private RoomCoordinates coordinates;
   private boolean accept_random;
   private User initiator;
   private List<User> live_users;
@@ -47,11 +47,11 @@ public class Room implements Serializable {
   }
 
   public RoomCoordinates getRoomCoordinates() {
-    return roomCoordinates;
+    return coordinates;
   }
 
   public void setRoomCoordinates(RoomCoordinates roomCoordinates) {
-    this.roomCoordinates = roomCoordinates;
+    this.coordinates = roomCoordinates;
   }
 
   public boolean acceptsRandom() {
@@ -111,6 +111,6 @@ public class Room implements Serializable {
   }
 
   @Override public String toString() {
-    return "id : " + id + "\n" + "coordinates : " + roomCoordinates;
+    return "id : " + id + "\n" + "coordinates : " + coordinates;
   }
 }

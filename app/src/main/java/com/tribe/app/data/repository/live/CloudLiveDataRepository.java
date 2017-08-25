@@ -23,7 +23,9 @@ import rx.Observable;
   }
 
   @Override public Observable<Room> createRoom(String name, String... userIds) {
-    return null;
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.createRoom(name, userIds);
   }
 
   @Override public Observable<Void> deleteRoom(String roomId) {

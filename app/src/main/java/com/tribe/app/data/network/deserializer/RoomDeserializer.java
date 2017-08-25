@@ -1,7 +1,6 @@
 package com.tribe.app.data.network.deserializer;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -18,10 +17,10 @@ public class RoomDeserializer implements JsonDeserializer<Room> {
       throws JsonParseException {
     JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
 
-    if (results == null || results.get("getRoomParameters") instanceof JsonNull) {
-      JsonArray errors = je.getAsJsonObject().getAsJsonArray("errors");
-      JsonElement jsonElement = errors.get(0);
-      String message = jsonElement.getAsJsonObject().get("message").getAsString();
+    if (results == null || results.get("room") instanceof JsonNull) {
+      //JsonArray errors = je.getAsJsonObject().getAsJsonArray("errors");
+      //JsonElement jsonElement = errors.get(0);
+      //String message = jsonElement.getAsJsonObject().get("message").getAsString();
       Room room = new Room();
 
       // TODO what about errors?
@@ -32,9 +31,14 @@ public class RoomDeserializer implements JsonDeserializer<Room> {
       //}
 
       return room;
-    } else {
-      JsonElement toParse = results.getAsJsonObject("getRoomParameters");
+    } else if (results != null && results.has("room")) {
+      JsonElement toParse = results.getAsJsonObject("room");
+      return new Gson().fromJson(toParse, typeOfT);
+    } else if (results != null && results.has("createRoom")) {
+      JsonElement toParse = results.getAsJsonObject("createRoom");
       return new Gson().fromJson(toParse, typeOfT);
     }
+
+    return null;
   }
 }

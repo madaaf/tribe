@@ -149,23 +149,18 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     Intent intent = new Intent(context, LiveActivity.class);
 
     Live.Builder builder = new Live.Builder().color(color)
-        .displayName(recipient.getDisplayName())
-        .userName(recipient.getUsername())
         .countdown(!recipient.isLive())
-        .picture(recipient.getProfilePicture())
-        .source(source);
+        .source(source)
+        .type(Live.FRIEND_CALL);
 
     if (recipient instanceof Friendship) {
       Friendship fr = (Friendship) recipient;
-      builder.fbId(fr.getFriend().getFbid());
-      builder.userIds(fr.getSubId());
+      builder.users(fr.getFriend());
     }
 
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
-      builder.memberList(invite.getMembers());
-      builder.sessionId(invite.getId());
-      builder.isInvite(true);
+      builder.room(invite.getRoom());
     }
 
     intent.putExtra(EXTRA_LIVE, builder.build());
@@ -173,20 +168,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, String picture,
-      String name, String sessionId, @Source String source) {
+      String name, String roomId, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live.Builder builder = new Live.Builder().displayName(name)
-        .picture(picture)
-        .countdown(StringUtils.isEmpty(sessionId))
-        .sessionId(sessionId)
+    User user = new User(recipientId);
+    user.setDisplayName(name);
+    user.setProfilePicture(picture);
+
+    Live.Builder builder = new Live.Builder().users(user)
+        .countdown(StringUtils.isEmpty(roomId))
+        .roomId(roomId)
         .intent(true)
+        .type(Live.FRIEND_CALL)
         .source(source);
 
     if (StringUtils.isEmpty(recipientId)) {
       builder.type(Live.WEB);
-    } else {
-      builder.userIds(recipientId);
     }
 
     intent.putExtra(EXTRA_LIVE, builder.build());
@@ -194,11 +191,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, String linkId, String url,
+  public static Intent getCallingIntent(Context context, String roomId, String url,
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder().type(Live.WEB).linkId(linkId).url(url).source(source).build();
+    Live live = new Live.Builder().type(Live.WEB).roomId(roomId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -208,11 +205,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static Intent getCallingIntent(Context context, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    String linkId = StringUtils.generateLinkId();
-    String url = StringUtils.getUrlFromLinkId(context, linkId);
-
-    Live live =
-        new Live.Builder().type(Live.NEW_CALL).linkId(linkId).url(url).source(source).build();
+    Live live = new Live.Builder().type(Live.NEW_CALL).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -439,16 +432,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
-        if (live.isSessionOrLink()) {
-          viewLive.start(live);
+        viewLive.start(live);
+        if (live.fromRoom()) {
           ready();
-        } else {
-          // TODO rethink
-          //if (live.isIntent()) {
-          //livePresenter.loadRecipient(live);
-          //} else {
-          viewLive.start(live);
-          //}
         }
       } else {
         finish();
@@ -458,7 +444,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initBrightness() {
-
     int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
     if (hour <= 7 || hour >= 20) {
@@ -555,7 +540,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void launchCallRoulette() {
     if (!FacebookUtils.isLoggedIn()) {
-      //if (true) {
       Timber.d("not logged on fb ");
       blockView.setVisibility(VISIBLE);
       blockView.setOnTouchListener((v, event) -> true);
@@ -568,7 +552,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initSubscriptions() {
-
     subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
         viewLive.onInvitesChanged().startWith(new HashMap<>()),
@@ -581,10 +564,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 
           List<Friendship> filteredFriendships = new ArrayList<>();
-          liveIsInvite = live.isInvite();
-          if (live.getMembers() != null) {
+          liveIsInvite = live.fromRoom();
+          if (live.getUsers() != null) {
             for (Friendship fr : friendshipList) {
-              if (!live.isGroupMember(fr.getFriend().getId()) &&
+              if (!live.hasUser(fr.getFriend().getId()) &&
                   !idsToFilter.contains(fr.getFriend().getId())) {
                 filteredFriendships.add(fr);
               }
@@ -605,8 +588,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
-      if (StringUtils.isEmpty(live.getLinkId())) displayBuzzPopupTutorial();
-      if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) getRoomInfos();
+      if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
+      if (!live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+          !live.getSource().equals(SOURCE_NEW_CALL)) {
+        getRoomInfos();
+      } else if (live.getSource().equals(SOURCE_NEW_CALL)) createRoom();
     }));
 
     subscriptions.add(viewLive.onNewChallengeReceived()
@@ -676,8 +662,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
           if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
-            Timber.d("on dropped the dice :" + live.getSessionId());
-            livePresenter.roomAcceptRandom(live.getSessionId());
+            Timber.d("on dropped the dice :" + live.getRoomId());
+            livePresenter.roomAcceptRandom(live.getRoomId());
             reRollTheDiceFromLiveRoom();
           } else {
             invite(recipient.getSubId());
@@ -708,7 +694,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .subscribe(s -> {
           userUnder13List.remove(s);
           if (userUnder13List.isEmpty()) {
-            livePresenter.roomAcceptRandom(live.getSessionId());
+            livePresenter.roomAcceptRandom(live.getRoomId());
             diceView.setVisibility(VISIBLE);
             diceView.startDiceAnimation();
           }
@@ -899,17 +885,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void share() {
-
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
     tagManager.trackEvent(TagManagerUtils.Invites, bundle);
 
-    if (StringUtils.isEmpty(live.getLinkId())) {
+    if (StringUtils.isEmpty(live.getRoomId())) {
       livePresenter.getRoomLink(room.getId());
       Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG).show();
     } else {
-      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getLinkId(),
+      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getRoomId(),
           null, false);
     }
   }
@@ -975,7 +960,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public void displayBuzzPopupTutorial() {
     subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getDisplayName())));
+        .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getName())));
   }
 
   private void leave() {
@@ -1115,8 +1100,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private List<TribeGuest> getListGamer() {
     List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
     TribeGuest me =
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, null,
-            false, null);
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+            null);
     guestList.add(me);
     return guestList;
   }
@@ -1128,7 +1113,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       GameChallenge gameChallenge = (GameChallenge) game;
       List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
       TribeGuest me =
-          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, null,
+          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
               false, null);
       guestList.add(me);
       if (game.isUserAction()) gameChallenge.setNewDatas(nameList, guestList);
@@ -1147,6 +1132,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void getRoomInfos() {
     soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
     livePresenter.getRoomInfos(live);
+  }
+
+  private void createRoom() {
+    livePresenter.createRoom(live);
   }
 
   private void invite(String userId) {
@@ -1248,15 +1237,15 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.room = room;
     viewLive.joinRoom(this.room);
 
-    if (!live.isSessionOrLink() && live.hasUserIds()) {
+    if (!live.fromRoom() && live.hasUsers()) {
       for (String userId : live.getUserIds()) {
         livePresenter.inviteUserToRoom(this.room.getId(), userId);
       }
     }
 
-    live.setSessionId(room.getId());
+    live.setRoom(room);
 
-    if (!StringUtils.isEmpty(live.getLinkId()) &&
+    if (!StringUtils.isEmpty(live.getRoomId()) &&
         !StringUtils.isEmpty(room.getName()) &&
         !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
@@ -1352,7 +1341,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
                 TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
                     notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, null, true, null);
+                    false, true, null);
                 invite(tribeGuest.getId());
                 viewLive.addTribeGuest(tribeGuest);
               } else if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {

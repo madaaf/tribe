@@ -12,6 +12,7 @@ import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.live.BookRoomLink;
 import com.tribe.app.domain.interactor.live.BuzzRoom;
+import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.live.GetRoom;
 import com.tribe.app.domain.interactor.live.GetRoomLink;
@@ -40,6 +41,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   // USECASES
   private GetDiskFriendshipList diskFriendshipList;
   private GetRoom getRoom;
+  private CreateRoom createRoom;
   private BuzzRoom buzzRoom;
   private InviteUserToRoom inviteUserToRoom;
   private GetRecipientInfos getRecipientInfos;
@@ -64,11 +66,10 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private RandomRoomAssignedSubscriber randomRoomAssignedSubscriber;
   private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
 
-  @Inject
-  public LivePresenter(GetDiskFriendshipList diskFriendshipList, GetRoom getRoom, BuzzRoom buzzRoom,
-      InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite, CreateFriendship createFriendship,
+  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, GetRoom getRoom,
+      CreateRoom createRoom, BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom,
+      GetRecipientInfos getRecipientInfos, GetCloudUserInfosList cloudUserInfosList,
+      GetRoomLink getRoomLink, DeclineInvite declineInvite, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
       RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
@@ -77,6 +78,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.getRoom = getRoom;
+    this.createRoom = createRoom;
     this.buzzRoom = buzzRoom;
     this.inviteUserToRoom = inviteUserToRoom;
     this.getRecipientInfos = getRecipientInfos;
@@ -99,6 +101,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     super.onViewDetached();
     diskFriendshipList.unsubscribe();
     getRoom.unsubscribe();
+    createRoom.unsubscribe();
     buzzRoom.unsubscribe();
     cloudUserInfosList.unsubscribe();
     inviteUserToRoom.unsubscribe();
@@ -166,7 +169,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void getRoomInfos(Live live) {
-    getRoom.setup(live.getLinkId());
+    getRoom.setup(live.getRoomId());
     getRoom.execute(new GetRoomSubscriber());
   }
 
@@ -194,6 +197,28 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
         //} else {
         liveMVPView.onRoomInfos(room);
         //}
+      }
+    }
+  }
+
+  public void createRoom(Live live) {
+    createRoom.setup(live.getName(),
+        live.getUserIds().toArray(new String[live.getUserIds().size()]));
+    createRoom.execute(new CreateRoomSubscriber());
+  }
+
+  private final class CreateRoomSubscriber extends DefaultSubscriber<Room> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(Room room) {
+      if (liveMVPView != null) {
+        liveMVPView.onRoomInfos(room);
       }
     }
   }

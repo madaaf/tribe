@@ -3,12 +3,10 @@ package com.tribe.app.data.repository.live.datasource;
 import android.content.Context;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
-import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
-import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.domain.entity.Room;
-import java.util.List;
+import com.tribe.app.presentation.utils.StringUtils;
 import rx.Observable;
 
 public class CloudLiveDataStore implements LiveDataStore {
@@ -36,7 +34,22 @@ public class CloudLiveDataStore implements LiveDataStore {
   }
 
   @Override public Observable<Room> createRoom(String name, String[] userIds) {
-    return null;
+    String params = "";
+
+    if (!StringUtils.isEmpty(name)) params += context.getString(R.string.createRoom_name, name);
+    if (params.length() > 0) params += ", ";
+    if (userIds != null && userIds.length > 0) {
+      params += context.getString(R.string.createRoom_userIds, arrayToJson(userIds));
+    }
+    String body = context.getString(R.string.createRoom, params);
+
+    final String request = context.getString(R.string.mutation, body) +
+        "\n" +
+        context.getString(R.string.roomFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
+
+    return this.tribeApi.createRoom(request);
   }
 
   @Override public Observable<Void> deleteRoom(String roomId) {
@@ -90,5 +103,18 @@ public class CloudLiveDataStore implements LiveDataStore {
 
   @Override public Observable<String> randomRoomAssigned() {
     return null;
+  }
+
+  public String arrayToJson(String[] array) {
+    String json = "\"";
+    for (int i = 0; i < array.length; i++) {
+      if (i == array.length - 1) {
+        json += array[i] + "\"";
+      } else {
+        json += array[i] + "\", \"";
+      }
+    }
+    if (array.length == 0) json += "\"";
+    return json;
   }
 }
