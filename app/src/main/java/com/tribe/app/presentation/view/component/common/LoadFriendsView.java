@@ -6,15 +6,21 @@ import android.content.res.TypedArray;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.v4.widget.TextViewCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
+
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -32,7 +38,7 @@ import javax.inject.Inject;
 /**
  * Created by tiago on 12/14/16.
  */
-public class LoadFriendsView extends LinearLayout {
+public class LoadFriendsView extends LinearLayout implements CompoundButton.OnCheckedChangeListener {
 
   public static final int FB = 0;
   public static final int ADDRESSBOOK = 1;
@@ -46,20 +52,20 @@ public class LoadFriendsView extends LinearLayout {
 
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
-  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+  @BindView(R.id.txtStatus) TextViewFont txtStatus;
 
-  @BindView(R.id.imgIcon) ImageView imgIcon;
-
-  @BindView(R.id.layoutBG) ViewGroup layoutBG;
+  @BindView(R.id.viewSwitch) SwitchCompat viewSwitch;
 
   @BindView(R.id.progressView) CircularProgressView progressView;
+
+  // OBSERVABLES
+  private PublishSubject<Boolean> onChecked = PublishSubject.create();
 
   // VARIABLES
   private Unbinder unbinder;
   private int type;
-  private String imageUrl;
-  private int iconId;
   private String title;
+  private String status;
 
   public LoadFriendsView(Context context) {
     super(context);
@@ -89,23 +95,21 @@ public class LoadFriendsView extends LinearLayout {
 
     if (a.hasValue(R.styleable.LoadFriendsView_loadTitle)) {
       setTitle(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadTitle,
-          R.string.search_add_addressbook_title)));
-    }
-
-    if (a.hasValue(R.styleable.LoadFriendsView_loadIcon)) {
-      setIcon(a.getResourceId(R.styleable.LoadFriendsView_loadIcon, 0));
-    }
-
-    if (a.hasValue(R.styleable.LoadFriendsView_loadBG)) {
-      setLayoutBG(a.getResourceId(R.styleable.LoadFriendsView_loadBG, 0));
+              R.string.linked_friends_address_book)));
+      setStatus(getResources().getString(a.getResourceId(R.styleable.LoadFriendsView_loadStatus,
+              R.string.linked_friends_status_not_linked)));
     }
 
     a.recycle();
 
-    setImage(user.getProfilePicture());
+    viewSwitch.setOnCheckedChangeListener(this);
+
     setClickable(true);
-    setOrientation(HORIZONTAL);
-    setMinimumHeight(screenUtils.dpToPx(72.5f));
+  }
+
+  @Override
+  public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+    onChecked.onNext(b);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -131,37 +135,30 @@ public class LoadFriendsView extends LinearLayout {
   public void setTitle(String str) {
     title = str;
     computeTitle();
-
-    if (type == FB) {
-      TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_FB);
-    } else {
-      TextViewCompat.setTextAppearance(txtTitle, R.style.Title_2_AddressBook);
-    }
-    txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
   }
 
-  public void setImage(String url) {
-    imageUrl = url;
-    computeImageView();
+  public void setStatus(String str) {
+    status = str;
+    computeStatus();
   }
 
-  public void setIcon(@DrawableRes int iconId) {
-    this.iconId = iconId;
-    imgIcon.setImageResource(iconId);
-  }
+  public void setChecked(boolean checked) {
+    viewSwitch.setOnCheckedChangeListener(null);
+    viewSwitch.setChecked(checked);
+    viewSwitch.setOnCheckedChangeListener(this);
 
-  public void setLayoutBG(@DrawableRes int bgId) {
-    layoutBG.setBackgroundResource(bgId);
+    setStatus(checked ? getContext().getString(R.string.linked_friends_status_linked) : getContext().getString(R.string.linked_friends_status_not_linked));
+    TextViewCompat.setTextAppearance(txtStatus, checked ? R.style.Body_One_Blue_New : R.style.Body_One_Warning);
   }
 
   public void showLoading() {
-    imgIcon.setVisibility(View.GONE);
+    viewSwitch.setVisibility(View.GONE);
     progressView.setVisibility(View.VISIBLE);
   }
 
   public void hideLoading() {
     progressView.setVisibility(View.GONE);
-    imgIcon.setVisibility(View.VISIBLE);
+    viewSwitch.setVisibility(View.VISIBLE);
   }
 
   private void computeTitle() {
@@ -170,9 +167,15 @@ public class LoadFriendsView extends LinearLayout {
     }
   }
 
-  private void computeImageView() {
-    if (viewAvatar != null && !StringUtils.isEmpty(imageUrl)) {
-      viewAvatar.load(imageUrl);
+  private void computeStatus() {
+    if (txtStatus != null && !StringUtils.isEmpty(status)) {
+      txtStatus.setText(status);
     }
+  }
+
+  // OBSERVABLES
+
+  public Observable<Boolean> onChecked() {
+    return onChecked;
   }
 }

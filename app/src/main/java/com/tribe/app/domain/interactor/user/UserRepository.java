@@ -5,6 +5,8 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
@@ -19,6 +21,8 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
+import java.util.Set;
+
 import rx.Observable;
 
 /**
@@ -39,7 +43,7 @@ public interface UserRepository {
    *
    * @param loginEntity infos needed to login.
    */
-  Observable<AccessToken> loginWithPhoneNumber(final LoginEntity loginEntity);
+  Observable<AccessToken> login(final LoginEntity loginEntity);
 
   /**
    * Get an {@link Observable} which will emit an Access Token.
@@ -79,6 +83,12 @@ public interface UserRepository {
    */
   Observable<User> updateUser(List<Pair<String, String>> values);
 
+  Observable<User> updateUserFacebook(String userId, String accessToken);
+
+  Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession);
+
+  Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
+
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
    * about the contacts from the AddressBook.
@@ -97,7 +107,7 @@ public interface UserRepository {
 
   Observable<List<Contact>> contactsInvite();
 
-  Observable<List<Object>> searchLocally(String s);
+  Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos

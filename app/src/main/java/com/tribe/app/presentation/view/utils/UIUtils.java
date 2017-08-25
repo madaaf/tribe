@@ -123,30 +123,23 @@ public class UIUtils {
   public static void showReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
     if (!ViewCompat.isAttachedToWindow(v) || v.getVisibility() == View.VISIBLE) return;
 
-    v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      @Override
-      public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-          int oldTop, int oldRight, int oldBottom) {
-        v.removeOnLayoutChangeListener(this);
-        v.post(() -> {
-          int initialRadius = 0;
-          Animator anim = null;
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            anim = ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
+      v.post(() -> {
+        int initialRadius = 0;
+        Animator anim =
+            ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
                 (int) (v.getY() + v.getHeight() / 2), initialRadius,
                 Math.max(v.getWidth(), v.getHeight()));
-            anim.setInterpolator(new AccelerateDecelerateInterpolator());
-            if (listenerAdapter != null) anim.addListener(listenerAdapter);
-            anim.setDuration(DURATION_REVEAL);
-            anim.start();
-          } else {
-            if (listenerAdapter != null) listenerAdapter.onAnimationStart(null);
-            v.setVisibility(View.VISIBLE);
-            if (listenerAdapter != null) listenerAdapter.onAnimationEnd(null);
-          }
-        });
-      }
-    });
+        anim.setInterpolator(new AccelerateDecelerateInterpolator());
+        if (listenerAdapter != null) anim.addListener(listenerAdapter);
+        anim.setDuration(DURATION_REVEAL);
+        anim.start();
+      });
+    } else {
+      if (listenerAdapter != null) listenerAdapter.onAnimationStart(null);
+      v.setVisibility(View.VISIBLE);
+      if (listenerAdapter != null) listenerAdapter.onAnimationEnd(null);
+    }
   }
 
   public static void hideReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {

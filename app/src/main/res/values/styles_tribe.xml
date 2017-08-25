@@ -45,6 +45,14 @@
     <item name="android:textColor">@color/blue.text</item>
   </style>
 
+  <style name="Body.One.FB" parent="@style/Body.One">
+    <item name="android:textColor">@color/blue.facebook.dark.hard</item>
+  </style>
+
+  <style name="Body.One.Warning" parent="@style/Body.One">
+    <item name="android:textColor">@color/warning</item>
+  </style>
+
   <style name="Body.One.Blue.New" parent="@style/Body.One">
     <item name="android:textColor">@color/blue.new</item>
   </style>
@@ -272,6 +280,15 @@
 
   <style name="Headline.Black.1" parent="@style/Headline.Black">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+  </style>
+
+
+  <style name="Headline.Black.1.2" parent="@style/Headline.Black.1">
+    <item name="android:textSize">13sp</item>
+  </style>
+
+  <style name="Headline.White.1.2" parent="@style/Headline.White.1">
+    <item name="android:textSize">13sp</item>
   </style>
 
   <style name="Headline.Black.2" parent="@style/Headline.Black">

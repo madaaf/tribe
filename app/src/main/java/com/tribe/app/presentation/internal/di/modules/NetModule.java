@@ -31,7 +31,7 @@ import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
-import com.tribe.app.data.network.deserializer.NameListPostItGameDeserializer;
+import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
@@ -94,7 +94,9 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.CertificatePinner;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -136,8 +138,8 @@ import timber.log.Timber;
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
     GroupDeserializer groupDeserializer = new GroupDeserializer();
-    NameListPostItGameDeserializer nameListPostItGameDeserializer =
-        new NameListPostItGameDeserializer(context);
+    DataGameDeserializer dataGameDeserializer =
+        new DataGameDeserializer(context);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
@@ -173,7 +175,7 @@ import timber.log.Timber;
         .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
         .registerTypeAdapter(new TypeToken<List<String>>() {
-        }.getType(), nameListPostItGameDeserializer)
+        }.getType(), dataGameDeserializer)
         .create();
   }
 
@@ -251,10 +253,9 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-
-    httpClientBuilder.authenticator(
-        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
-            tagManager));
+    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
+    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -279,10 +280,9 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-
-    httpClientBuilder.authenticator(
-        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
-            tagManager));
+    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
+    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -307,10 +307,9 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-
-    httpClientBuilder.authenticator(
-        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
-            tagManager));
+    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
+    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -349,6 +348,11 @@ import timber.log.Timber;
 
     @Override public Request authenticate(Route route, okhttp3.Response response)
         throws IOException {
+
+      return refresh(response.request(), response);
+    }
+
+    public Request refresh(Request request, okhttp3.Response response) {
       if (accessToken == null || accessToken.getRefreshToken() == null) return null;
 
       if (isRefreshing.compareAndSet(false, true)) {
@@ -379,13 +383,15 @@ import timber.log.Timber;
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
           accessToken.setAccessToken(newAccessToken.getAccessToken());
           accessToken.setRefreshToken(newAccessToken.getRefreshToken());
+          accessToken.setAccessExpiresAt(newAccessToken.getAccessExpiresAt());
+          accessToken.setUserId(newAccessToken.getUserId());
           accessToken.setTokenType("Bearer");
           userCache.put(accessToken);
           tribeAuthorizer.setAccessToken(accessToken);
 
           clearLock();
 
-          return response.request()
+          return request
               .newBuilder()
               .header("Authorization",
                   accessToken.getTokenType() + " " + accessToken.getAccessToken())
@@ -433,7 +439,7 @@ import timber.log.Timber;
       } else {
         boolean conditionOpened = LOCK.block(60000);
         if (conditionOpened) {
-          return response.request()
+          return request
               .newBuilder()
               .header("Authorization",
                   accessToken.getTokenType() + " " + accessToken.getAccessToken())
@@ -442,6 +448,33 @@ import timber.log.Timber;
 
         return null;
       }
+    }
+  }
+
+  private class TribeTokenExpirationInterceptor implements Interceptor {
+
+    private TribeAuthorizer tribeAuthorizer;
+    private TribeAuthenticator tribeAuthenticator;
+
+    public TribeTokenExpirationInterceptor(TribeAuthorizer tribeAuthorizer, TribeAuthenticator tribeAuthenticator) {
+      this.tribeAuthorizer = tribeAuthorizer;
+      this.tribeAuthenticator = tribeAuthenticator;
+    }
+
+    @Override
+    public okhttp3.Response intercept(Chain chain) throws IOException {
+
+      if (tribeAuthorizer != null &&
+              tribeAuthorizer.getAccessToken() != null &&
+              tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
+              tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+
+        Timber.d("The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
+
+        return chain.proceed(tribeAuthenticator.refresh(chain.request(), null));
+      }
+
+      return chain.proceed(chain.request());
     }
   }
 
@@ -489,13 +522,21 @@ import timber.log.Timber;
       Request original = chain.request();
 
       Request.Builder requestBuilder =
-          original.newBuilder().header("Content-type", "application/json");
+          original.newBuilder().header("Content-type", "application/json").removeHeader("@");
 
-      byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
-          tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
-      String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+      List<String> customAnnotations = original.headers("@");
+      if (customAnnotations.contains("UseUserToken")) {
+        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
+                + " " + tribeAuthorizer.getAccessToken().getAccessToken());
 
-      requestBuilder.header("Authorization", "Basic " + base64);
+      } else {
+        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
+                tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
+
+        requestBuilder.header("Authorization", "Basic " + base64);
+      }
+
       TribeApiUtils.appendUserAgent(context, requestBuilder);
       requestBuilder.method(original.method(), original.body());
 

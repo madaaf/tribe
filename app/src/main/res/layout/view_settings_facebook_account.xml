@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/horizontal_margin_small"
+    tools:context=".presentation.view.activity.ProfileActivity">
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_gravity="left"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval_light"
+        android:scaleType="centerInside"
+        app:avatarType="facebook"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="false"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_marginStart="@dimen/avatar_size_smaller"
+        android:paddingStart="@dimen/horizontal_margin_small"
+        android:id="@+id/txtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Title.2.Black"
+        tools:text="Name" />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:paddingStart="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/avatar_size_smaller"
+        android:layout_below="@+id/txtName"
+        android:id="@+id/txtStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Body.One.FB"
+        tools:text="Status" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:checked="true"
+        android:id="@+id/viewSwitch"
+        android:layout_width="45dp"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_alignParentRight="true"
+        android:theme="@style/ColorSwitchFacebookStyle"
+        />
+
+</com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView>

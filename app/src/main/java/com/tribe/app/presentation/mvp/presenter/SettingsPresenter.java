@@ -11,6 +11,8 @@ import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
+import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SettingsMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
@@ -37,12 +39,12 @@ public class SettingsPresenter extends UpdateUserPresenter {
   private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
   @Inject SettingsPresenter(UpdateUser updateUser,
-      @Named("lookupByUsername") LookupUsername lookupUsername, RxFacebook rxFacebook,
-      RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
-      JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
-      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
-      GetBlockedFriendshipList getBlockedFriendshipList) {
-    super(updateUser, lookupUsername, rxFacebook);
+                            @Named("lookupByUsername") LookupUsername lookupUsername, RxFacebook rxFacebook,
+                            RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
+                            JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
+                            @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
+                            GetBlockedFriendshipList getBlockedFriendshipList, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.removeInstall = removeInstall;
     this.synchroContactList = synchroContactList;
     this.jobManager = jobManager;

@@ -20,4 +20,14 @@
       android:scaleType="centerInside"
       />
 
+  <ImageView
+      android:visibility="gone"
+      android:id="@+id/imgWarning"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical|right"
+      android:src="@drawable/picto_warning"
+      android:scaleType="centerInside"
+      />
+
 </merge>

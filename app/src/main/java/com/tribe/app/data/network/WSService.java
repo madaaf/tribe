@@ -141,7 +141,7 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (StringUtils.isEmpty(accessToken.getTokenType()) || StringUtils.isEmpty(
+    if (accessToken.isAnonymous() || StringUtils.isEmpty(accessToken.getTokenType()) || StringUtils.isEmpty(
         accessToken.getAccessToken())) {
       webSocketConnection.setShouldReconnect(false);
     } else {

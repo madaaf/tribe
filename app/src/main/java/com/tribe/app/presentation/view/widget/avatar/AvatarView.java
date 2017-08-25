@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
@@ -41,13 +40,14 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private static final float SHADOW_RATIO = 0.22f;
 
-  @IntDef({ LIVE, ONLINE, REGULAR, PHONE }) public @interface AvatarType {
+  @IntDef({ LIVE, ONLINE, REGULAR, PHONE, FACEBOOK }) public @interface AvatarType {
   }
 
   public static final int LIVE = 0;
   public static final int ONLINE = 1;
   public static final int REGULAR = 2;
   public static final int PHONE = 3;
+  public static final int FACEBOOK = 4;
 
   @Inject ScreenUtils screenUtils;
 
@@ -65,8 +65,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private boolean hasShadow = false;
   private boolean hasInd = true;
   private boolean hasHole = true;
-  private boolean isAttached = false;
-  private RequestManager mRequestManager;
 
   // RESOURCES
   private int avatarSize;
@@ -116,20 +114,17 @@ public class AvatarView extends RelativeLayout implements Avatar {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
         changeSize(getMeasuredWidth(), false);
-        mRequestManager = Glide.with(context);
       }
     });
   }
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    isAttached = true;
     Glide.get(getContext()).clearMemory();
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    isAttached = false;
     Glide.get(getContext()).clearMemory();
   }
 
@@ -254,12 +249,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private void loadPlaceholder(boolean hasHole) {
     if (avatarSize == 0) return;
     Runnable r = () -> {
-      if (true) {
-        new GlideUtils.Builder(getContext()).size(avatarSize)
-            .target(imgAvatar)
-            .hasHole(hasHole)
-            .load();
-      }
+      new GlideUtils.Builder(getContext()).size(avatarSize)
+          .target(imgAvatar)
+          .hasHole(hasHole)
+          .load();
     };
     r.run();
   }
@@ -285,7 +278,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   }
 
   private boolean isOnlineOrLive() {
-    return type == LIVE || type == ONLINE || type == PHONE;
+    return type == LIVE || type == ONLINE || type == PHONE || type == FACEBOOK;
   }
 
   public void setType(@AvatarType int type) {
@@ -296,6 +289,9 @@ public class AvatarView extends RelativeLayout implements Avatar {
     if (type == PHONE) {
       imgInd.setVisibility(View.VISIBLE);
       imgInd.setImageResource(R.drawable.picto_call);
+    } else if (type == FACEBOOK) {
+      imgInd.setVisibility(View.VISIBLE);
+      imgInd.setImageResource(R.drawable.picto_avatar_facebook);
     } else if (type == LIVE && hasInd) {
       imgInd.setVisibility(View.VISIBLE);
       imgInd.setImageResource(R.drawable.picto_live);

@@ -37,7 +37,7 @@ public class AvatarsSuperposedLayout extends LinearLayout {
   }) public @interface AvatarSize {
   }
 
-  private final static int MAX_AVATAR = 10;
+  private final static int MAX_AVATAR = 7;
   public final static int AVATARS_SMALL_SIZE = 55;
   public final static int AVATARS_BIG_SIZE = 115;
 

@@ -199,10 +199,10 @@ public class UserInfosNotificationView extends FrameLayout {
     return contactAdapter.onClickInvite();
   }
 
-  public Observable<String> onAdd() {
+  public Observable<User> onAdd() {
     return contactAdapter.onClickAdd()
         .map(view -> ((User) contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view))).getId());
+            recyclerViewContacts.getChildLayoutPosition(view))));
   }
 
   public Observable<Recipient> onUnblock() {

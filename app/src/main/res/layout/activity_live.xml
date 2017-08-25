@@ -57,6 +57,8 @@
         android:layout_height="@dimen/top_bar_notification_height_small"
         android:background="@android:color/black"
         android:gravity="center"
+        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@android:color/white"
         android:visibility="gone"
         />

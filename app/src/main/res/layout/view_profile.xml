@@ -137,6 +137,28 @@
     <include layout="@layout/view_separator_simple"/>
 
     <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionChangePhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_change_phone"
+        app:actionType="hierarchy"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionFacebookAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_facebook_account"
+        app:actionType="hierarchy"
+        />
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
         android:id="@+id/viewActionRateUs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -169,30 +191,7 @@
 
     <include layout="@layout/view_separator_simple"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="50dp"
-        >
+    <include layout="@layout/view_profile_footer"/>
 
-      <ImageView
-          android:id="@+id/imgLogo"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:src="@drawable/picto_tribe_logo_black"
-          />
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtVersion"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/vertical_margin"
-          android:clickable="true"
-          android:gravity="center"
-          style="@style/Body.One.Black40"
-          />
-    </LinearLayout>
   </LinearLayout>
 </com.tribe.app.presentation.view.component.profile.ProfileView>

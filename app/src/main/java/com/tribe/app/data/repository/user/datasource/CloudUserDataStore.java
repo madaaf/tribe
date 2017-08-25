@@ -7,6 +7,7 @@ import android.telephony.TelephonyManager;
 import android.util.Pair;
 import com.digits.sdk.android.Digits;
 import com.digits.sdk.android.DigitsOAuthSigning;
+import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
@@ -18,6 +19,7 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
+import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.network.entity.LookupHolder;
@@ -49,6 +51,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -59,12 +62,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Action2;
 import timber.log.Timber;
 
 /**
@@ -126,16 +131,21 @@ public class CloudUserDataStore implements UserDataStore {
     return this.loginApi.requestCode(new LoginEntity(phoneNumber, shouldCall));
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
-    if (loginEntity.getPhoneNumber() == null) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
+    if (loginEntity.getFbAccessToken() != null) {
+      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken()).doOnNext(saveToCacheAccessToken);
+
+    } else if (loginEntity.getPhoneNumber() == null) {
       return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
+
     } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
       Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
       return loginApi.loginWithUsername(authHeaders.get(LoginApi.X_VERIFY),
-          authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
+              authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
+
     } else {
       return loginApi.loginWithUsername(loginEntity).doOnNext(saveToCacheAccessToken);
     }
@@ -149,10 +159,13 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
     registerEntity.setPhoneNumber(
-        loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), ""));
+            loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), "") : null);
     registerEntity.setPinId(loginEntity.getPinId());
 
-    if (Digits.getActiveSession() != null) {
+    if (loginEntity.getFbAccessToken() != null) {
+      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity).doOnNext(saveToCacheAccessToken);
+
+    } else if (Digits.getActiveSession() != null) {
       TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
       TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
       DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
@@ -315,6 +328,44 @@ public class CloudUserDataStore implements UserDataStore {
     }
   }
 
+  @Override
+  public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
+    return accessToken != null ?
+            this.loginApi.linkFacebook(accessToken)
+            : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
+  }
+
+  @Override
+  public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
+
+    if (digitsSession != null) {
+      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
+      TwitterAuthToken authToken = digitsSession.getAuthToken();
+      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
+      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
+
+      String phoneNumber = digitsSession.getPhoneNumber();
+      String countryCode = "+" + phoneUtils.getCountryCode(phoneNumber);
+
+      return this.loginApi.linkPhoneNumber(authHeaders.get(LoginApi.X_VERIFY),
+              authHeaders.get(LoginApi.X_AUTH), countryCode, phoneNumber.replace(countryCode, ""));
+
+    } else {
+      return this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_PHONE_NUMBER);
+    }
+  }
+
+  @Override
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+    return this.tribeApi.incrUserTimeInCall(
+            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall))).doOnNext(aVoid -> {
+
+      if (userCache != null) {
+        userCache.incrUserTimeInCall(userId, timeInCall);
+      }
+    });
+  }
+
   @Override public Observable<List<ContactInterface>> contacts() {
     return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
         (contactABRealmList, contactFBRealmList) -> {
@@ -392,6 +443,9 @@ public class CloudUserDataStore implements UserDataStore {
       }
 
       String regionCode = phoneUtils.getRegionCodeForNumber(currentUser.getPhone());
+      if (StringUtils.isEmpty(regionCode)) {
+        regionCode = Locale.getDefault().getCountry();
+      }
 
       String fbRequests = buffer.toString();
       String reqLookup = context.getString(R.string.lookup, buffer.toString(),
@@ -614,6 +668,7 @@ public class CloudUserDataStore implements UserDataStore {
       this.accessToken.setRefreshToken(accessToken.getRefreshToken());
       this.accessToken.setTokenType(accessToken.getTokenType());
       this.accessToken.setUserId(accessToken.getUserId());
+      this.accessToken.setAccessExpiresAt(accessToken.getAccessExpiresAt());
 
       CloudUserDataStore.this.userCache.put(accessToken);
     }

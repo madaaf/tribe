@@ -36,6 +36,7 @@ public class PreferencesUtils {
   public static String IMMERSIVE_CALL_STATE = "IMMERSIVE_CALL_STATE";
   public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
   public static String FULLSCREEN_NOTIFICATION_STATE = "FULLSCREEN_NOTIFICATION_STATE";
+  public static String DATA_CHALLANGES_GAME = "DATA_CHALLANGES_GAME";
   public static String TRIBE_STATE = "TRIBE_STATE";
   public static String CALL_TAGS_MAP = "CALL_TAGS_MAP";
   public static String LOOKUP_RESULT = "LOOKUP_RESULT";
@@ -58,6 +59,12 @@ public class PreferencesUtils {
     Set<String> newStrSet = new HashSet<>();
     newStrSet.add(value);
     newStrSet.addAll(preference.get());
+    preference.set(newStrSet);
+  }
+
+  public static void addListToSet(Preference<Set<String>> preference, List<String> values) {
+    Set<String> newStrSet = new HashSet<>();
+    newStrSet.addAll(values);
     preference.set(newStrSet);
   }
 

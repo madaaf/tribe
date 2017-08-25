@@ -4,6 +4,9 @@ import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -13,6 +16,7 @@ import rx.Observable;
 public class CreateFriendship extends UseCase {
 
   private String userId;
+  private long debounceDelay = 0;
   private UserRepository userRepository;
 
   @Inject
@@ -26,7 +30,12 @@ public class CreateFriendship extends UseCase {
     this.userId = userId;
   }
 
+  public void configure(String userId, long debounceDelay) {
+    this.userId = userId;
+    this.debounceDelay = debounceDelay;
+  }
+
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.createFriendship(userId);
+    return this.userRepository.createFriendship(userId).debounce(debounceDelay, TimeUnit.MILLISECONDS);
   }
 }

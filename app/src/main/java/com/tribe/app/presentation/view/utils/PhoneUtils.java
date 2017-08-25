@@ -132,12 +132,13 @@ import javax.inject.Singleton;
 
     try {
       numberProto = phoneUtil.parse(loginEntity.getUsername(), "");
+
+      loginEntity.setCountryCode("+" + numberProto.getCountryCode());
+      loginEntity.setNationalNumber("" + numberProto.getNationalNumber());
+
     } catch (NumberParseException e) {
       System.err.println("NumberParseException was thrown: " + e.toString());
     }
-
-    loginEntity.setCountryCode("+" + numberProto.getCountryCode());
-    loginEntity.setNationalNumber("" + numberProto.getNationalNumber());
 
     return loginEntity;
   }

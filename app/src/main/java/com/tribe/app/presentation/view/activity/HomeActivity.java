@@ -389,9 +389,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initMissedCall() {
-    if (missedCallManager != null
-        && missedCallManager.getNotificationPayloadList() != null
-        && missedCallManager.getNbrOfMissedCall() > 0) {
+    if (missedCallManager != null &&
+        missedCallManager.getNotificationPayloadList() != null &&
+        missedCallManager.getNbrOfMissedCall() > 0) {
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
           missedCallManager.buildNotificationBuilderFromMissedCallList());
@@ -425,7 +425,9 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+              false);
       homeGridPresenter.bookRoomLink(linkId);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
@@ -451,8 +453,8 @@ public class HomeActivity extends BaseActivity
           }
         }, ((recipient, labelType) -> {
           if (labelType != null) {
-            if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                .equals(LabelType.BLOCK_HIDE)) {
+            if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
               Friendship friendship = (Friendship) recipient;
               homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                   labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -504,7 +506,7 @@ public class HomeActivity extends BaseActivity
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
-          temp.add(new Friendship(Recipient.ID_VIDEO));
+          // temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
@@ -572,7 +574,9 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+              false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -582,6 +586,7 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.requestDisallowInterceptTouchEvent(true);
             layoutManager.setScrollEnabled(false);
             searchViewDisplayed = true;
+            searchView.refactorActions();
             searchView.show();
           } else {
             if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
@@ -606,7 +611,9 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null, false);
+      String linkId =
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+              false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -625,7 +632,8 @@ public class HomeActivity extends BaseActivity
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
       String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null, contact.getPhone(), false);
+          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null,
+              contact.getPhone(), false);
       homeGridPresenter.bookRoomLink(linkId);
     }));
 
@@ -694,7 +702,8 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void successFacebookLogin() {
-    homeGridPresenter.updateUserFacebook(AccessToken.getCurrentAccessToken().getUserId());
+    homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
+        AccessToken.getCurrentAccessToken().getToken());
     syncContacts();
   }
 
@@ -740,7 +749,8 @@ public class HomeActivity extends BaseActivity
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
         String linkId =
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null, null, true);
+            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null,
+                null, true);
         homeGridPresenter.bookRoomLink(linkId);
       }
     }
@@ -843,8 +853,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
-        && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
+        !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -878,6 +888,7 @@ public class HomeActivity extends BaseActivity
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
+    if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
 
     if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {

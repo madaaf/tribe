@@ -1,6 +1,9 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
+import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -38,7 +41,7 @@ public interface UserDataStore {
    *
    * @param loginEntity the infos for the log in
    */
-  Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity);
+  Observable<AccessToken> login(LoginEntity loginEntity);
 
   /**
    * Get an {@link Observable} which will emit an Access Token.
@@ -79,6 +82,12 @@ public interface UserDataStore {
    * @return the new user value
    */
   Observable<UserRealm> updateUser(List<Pair<String, String>> values);
+
+  Observable<LinkIdResult> updateUserFacebook(String accessToken);
+
+  Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession);
+
+  Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
 
   /**
    * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos

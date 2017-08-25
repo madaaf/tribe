@@ -3,6 +3,8 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
+import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.FBInfoMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
@@ -22,8 +24,8 @@ public class FacebookPresenter extends UpdateUserPresenter {
 
   protected CompositeSubscription subscriptions = new CompositeSubscription();
 
-  @Inject public FacebookPresenter(RxFacebook rxFacebook, UpdateUser updateUser) {
-    super(updateUser, null, rxFacebook);
+  @Inject public FacebookPresenter(RxFacebook rxFacebook, UpdateUser updateUser, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+    super(updateUser, null, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
   }
 
   @Override public void onViewDetached() {

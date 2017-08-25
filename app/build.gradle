@@ -103,7 +103,7 @@ android {
 
   buildTypes {
     debug {
-      //generateStrings()
+      generateStrings()
 
       signingConfig signingConfigs.debug
       testCoverageEnabled false
@@ -130,7 +130,7 @@ android {
       buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin_debug}\""
 
       debuggable = true
-      jniDebuggable = true
+      jniDebuggable = false
     }
 
     release {

@@ -8,12 +8,17 @@
     <attr format="boolean" name="onboardingAutoStart" />
   </declare-styleable>
 
+  <declare-styleable name="TooltipVideoView">
+    <attr format="boolean" name="tooltipAutoStart" />
+  </declare-styleable>
+
   <declare-styleable name="AvatarView">
     <attr format="enum" name="avatarType">
       <enum name="live" value="0" />
       <enum name="online" value="1" />
       <enum name="regular" value="2" />
       <enum name="phone" value="3" />
+      <enum name="facebook" value="4" />
     </attr>
 
     <attr format="boolean" name="hasShadow" />
@@ -171,7 +176,7 @@
 
   <declare-styleable name="LoadFriendsView">
     <attr format="string" name="loadTitle" />
-    <attr format="string" name="loadBody" />
+    <attr format="string" name="loadStatus" />
     <attr format="integer" name="loadBG" />
     <attr format="integer" name="loadIcon" />
     <attr format="enum" name="loadType">

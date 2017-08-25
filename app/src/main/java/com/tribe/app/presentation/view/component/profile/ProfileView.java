@@ -21,8 +21,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -59,6 +61,10 @@ public class ProfileView extends ScrollView {
 
   @BindView(R.id.viewActionRateUs) ActionView viewActionRateUs;
 
+  @BindView(R.id.viewActionChangePhoneNumber) ActionView viewActionChangePhoneNumber;
+
+  @BindView(R.id.viewActionFacebookAccount) ActionView viewActionFacebookAccount;
+
   @BindView(R.id.viewActionLogout) ActionView viewActionLogout;
 
   @BindView(R.id.viewActionVisible) ActionView viewActionVisible;
@@ -68,6 +74,7 @@ public class ProfileView extends ScrollView {
   @BindView(R.id.viewActionBlocked) ActionView viewActionBlocked;
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
+  @BindView(R.id.txtTimeInCall) TextViewFont txtTimeInCall;
 
   @BindView(R.id.imgLogo) ImageView imgLogo;
 
@@ -88,6 +95,8 @@ public class ProfileView extends ScrollView {
     initDependencyInjector();
     initUI();
     initSubscriptions();
+
+    reloadUserUI();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -102,14 +111,32 @@ public class ProfileView extends ScrollView {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
 
+  public void reloadUserUI() {
+
+    txtName.setText(user.getDisplayName());
+    txtUsername.setText("@" + user.getUsername());
+    viewAvatar.load(user.getProfilePicture());
+
+    long minutes = Math.round(user.getTimeInCall() / 60.0f);
+    txtTimeInCall.setText(" " + getContext().getString(minutes > 1 ? R.string.profile_calls_length_mins : R.string.profile_calls_length_min, minutes));
+
+    viewActionChangePhoneNumber.setWarning(!canOpenPhoneNumberView());
+    viewActionFacebookAccount.setWarning(!canOpenFacebookView());
+  }
+
+  public boolean canOpenFacebookView() {
+    return FacebookUtils.isLoggedIn();
+  }
+
+  public boolean canOpenPhoneNumberView() {
+    return !StringUtils.isEmpty(user.getPhone());
+  }
+
   /////////////
   // PRIVATE //
   /////////////
 
   private void initUI() {
-    txtName.setText(user.getDisplayName());
-    txtUsername.setText("@" + user.getUsername());
-    viewAvatar.load(user.getProfilePicture());
 
     viewActionVisible.setValue(!user.isInvisibleMode());
     viewActionPhoneIntegration.setValue(fullScreenNotifications.get());
@@ -210,6 +237,14 @@ public class ProfileView extends ScrollView {
 
   public Observable<Void> onRateClick() {
     return viewActionRateUs.onClick();
+  }
+
+  public Observable<Void> onChangePhoneNumberClick() {
+    return viewActionChangePhoneNumber.onClick();
+  }
+
+  public Observable<Void> onFacebookAccountClick() {
+    return viewActionFacebookAccount.onClick();
   }
 
   public Observable<Void> onLogoutClick() {

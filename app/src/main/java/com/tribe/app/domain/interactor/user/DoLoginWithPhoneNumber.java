@@ -27,6 +27,6 @@ public class DoLoginWithPhoneNumber extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.loginWithPhoneNumber(loginEntity);
+    return this.userRepository.login(loginEntity);
   }
 }

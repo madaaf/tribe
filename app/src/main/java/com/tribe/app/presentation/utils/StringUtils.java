@@ -50,6 +50,10 @@ public class StringUtils {
     return messageStr.length() == 0;
   }
 
+  public static String usernameFromEmail(String email) {
+    return email.split("@")[0];
+  }
+
   public static boolean isUrl(String str) {
     try {
       URL url = new URL(str);

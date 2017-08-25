@@ -27,6 +27,7 @@ import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.CallLevelHelper;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -47,21 +48,27 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.game.GameChallengesView;
+import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import com.tribe.tribelivesdk.core.Room;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +78,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -127,7 +135,9 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.btnScreenshot) ImageView btnScreenshot;
 
-  // @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
+
+  @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
 
   // VARIABLES
   private Live live;
@@ -159,22 +169,29 @@ public class LiveView extends FrameLayout {
   private Unbinder unbinder;
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
+  private Subscription callDurationSubscription;
+
   private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<String> onBuzzPopup = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
+  private PublishSubject<Long> onEndCall = PublishSubject.create();
   private PublishSubject<Void> onLeaveRoom = PublishSubject.create();
   private PublishSubject<Void> onScreenshot = PublishSubject.create();
   private PublishSubject<Boolean> onHiddenControls = PublishSubject.create();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<String> onRoomStateChanged = PublishSubject.create();
   private PublishSubject<String> unlockRollTheDice = PublishSubject.create();
+  private PublishSubject<String> onPointsDrawReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
+  private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
   private PublishSubject<Void> onShare = PublishSubject.create();
-  private PublishSubject<Void> onRoomFull = PublishSubject.create();
+  private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
@@ -188,6 +205,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationGameStopped = PublishSubject.create();
   private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
   private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
+  private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -236,12 +254,14 @@ public class LiveView extends FrameLayout {
 
     if (live != null) {
       duration = 0.0D;
+      Long durationInSeconds = 0L;
 
       if (timeStart > 0) {
         timeEnd = System.currentTimeMillis();
         long delta = timeEnd - timeStart;
         duration = (double) delta / 60000.0;
         duration = DoubleUtils.round(duration, 2);
+        durationInSeconds = delta / 1000L;
       }
 
       if (hasJoined && averageCountLive > 1) {
@@ -252,12 +272,16 @@ public class LiveView extends FrameLayout {
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
+
+        onEndCall.onNext(durationInSeconds);
       } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) || (
           live.getId().equals(Live.NEW_CALL)
               && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
+
+      endCallLevel();
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
       tagMap.put(TagManagerUtils.SOURCE, live.getSource());
@@ -464,27 +488,59 @@ public class LiveView extends FrameLayout {
           .subscribe(aLong -> refactorNotifyButton()));
     }));
 
-    persistentSubscriptions.add(
-        viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter()));
+    viewControlsLive.onClickFilter().subscribe(aVoid -> viewLocalLive.switchFilter());
 
     persistentSubscriptions.add(viewControlsLive.onStartGame().subscribe(game -> {
       displayStartGameNotification(game.getName(), user.getDisplayName());
       restartGame(game);
     }));
 
+    persistentSubscriptions.add(
+        gameChallengesView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+
+    persistentSubscriptions.add(
+        gameDrawView.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
+
     persistentSubscriptions.add(viewControlsLive.onRestartGame().subscribe(game -> {
-      displayReRollGameNotification(user.getDisplayName());
-      restartGame(game);
+      onRestartGame(game);
+    }));
+
+    persistentSubscriptions.add(gameChallengesView.onNextChallenge().subscribe(gameChallenge -> {
+      onRestartGame(gameManager.getCurrentGame());
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onNextDraw().subscribe(aVoid -> {
+      onRestartGame(gameManager.getCurrentGame());
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onCurrentGame().subscribe(game -> {
+      GameDraw draw = (GameDraw) game;
+      room.sendToPeers(getNewDrawPayload(user.getId(), draw.getCurrentDrawer().getId(),
+          draw.getCurrentDrawName()), false);
+    }));
+
+    persistentSubscriptions.add(gameChallengesView.onCurrentGame().subscribe(game -> {
+      GameChallenge draw = (GameChallenge) game;
+      room.sendToPeers(getNewChallengePayload(user.getId(), draw.getCurrentChallenger().getId(),
+          draw.getCurrentChallenge()), false);
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onClearDraw().subscribe(aVoid -> {
+      room.sendToPeers(getDrawClearPayload(), false);
+    }));
+
+    persistentSubscriptions.add(gameDrawView.onDrawing().subscribe(points -> {
+      room.sendToPeers(getDrawPointPayload(points), false);
     }));
 
     persistentSubscriptions.add(viewControlsLive.onGameOptions()
         .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
             ((game, labelType) -> {
               if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
-                displayReRollGameNotification(user.getDisplayName());
+                displayReRollGameNotification(game.getId(), user.getDisplayName());
                 restartGame(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
-                stopGame(true);
+                stopGame(true, game.getId());
                 displayStopGameNotification(game.getName(), user.getDisplayName());
                 room.sendToPeers(getStopGamePayload(game), false);
               }
@@ -551,15 +607,23 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
 
+    tempSubscriptions.add(room.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+
+    tempSubscriptions.add(room.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+
+    tempSubscriptions.add(room.onNewDrawReceived().subscribe(onNewDrawReceived));
+
+    tempSubscriptions.add(room.onClearDrawReceived().subscribe(onClearDrawReceived));
+
     tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
     tempSubscriptions.add(room.onShouldLeaveRoom().subscribe(onLeave));
 
-    tempSubscriptions.add(room.onRoomFull().subscribe(onRoomFull));
+    tempSubscriptions.add(room.onRoomError().subscribe(onRoomError));
 
-    tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {
+    tempSubscriptions.add(room.onNewGame().subscribe(pairSessionGame -> {//OEF
       Game currentGame = gameManager.getCurrentGame();
       Game game = gameManager.getGameById(pairSessionGame.second);
       if (game != null) {
@@ -569,7 +633,7 @@ public class LiveView extends FrameLayout {
         if (currentGame == null) {
           displayStartGameNotification(game.getName(), displayName);
         } else {
-          displayReRollGameNotification(displayName);
+          displayReRollGameNotification(game.getId(), displayName);
         }
 
         startGame(game, false);
@@ -578,11 +642,9 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onStopGame().subscribe(pairSessionGame -> {
       Game game = gameManager.getGameById(pairSessionGame.second);
-      if (game != null) {
-        String displayName = getDisplayNameFromSession(pairSessionGame.first);
-        displayStopGameNotification(game.getName(), displayName);
-        stopGame(false);
-      }
+      String displayName = getDisplayNameFromSession(pairSessionGame.first);
+      displayStopGameNotification(game.getName(), displayName);
+      stopGame(false, game.getId());
     }));
 
     tempSubscriptions.add(
@@ -612,6 +674,7 @@ public class LiveView extends FrameLayout {
 
           refactorShareOverlay();
           refactorNotifyButton();
+          startCallLevel();
 
           LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
           if (row != null) row.guestAppear();
@@ -630,6 +693,10 @@ public class LiveView extends FrameLayout {
 
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
+
+          if (nbOtherUsersInRoom() == 0) {
+            endCallLevel();
+          }
 
           if (shouldLeave()) {
             onLeave.onNext(null);
@@ -695,6 +762,35 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
     room.connect(options);
+  }
+
+  private void startCallLevel() {
+
+    if (callDurationSubscription == null) {
+
+      Date startedAt = new Date();
+
+      callDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(tick -> {
+
+            String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
+            String duration = CallLevelHelper.getFormattedDuration(startedAt);
+
+            viewStatusName.setStatusText(level, " " + duration);
+          });
+
+      tempSubscriptions.add(callDurationSubscription);
+    }
+  }
+
+  private void endCallLevel() {
+
+    if (callDurationSubscription != null) {
+      tempSubscriptions.remove(callDurationSubscription);
+      callDurationSubscription.unsubscribe();
+      callDurationSubscription = null;
+    }
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {
@@ -914,6 +1010,10 @@ public class LiveView extends FrameLayout {
     return count + 1;
   }
 
+  public int nbOtherUsersInRoom() {
+    return liveRowViewMap.getMap().size();
+  }
+
   public void setOpenInviteValue(float valueOpenInvite) {
     viewRoom.setOpenInviteValue(valueOpenInvite);
   }
@@ -959,7 +1059,7 @@ public class LiveView extends FrameLayout {
     if (!live.getId().equals(Live.NEW_CALL)) return;
 
     int nbPeople = nbInRoom();
-    if (viewLocalLive != null && nbPeople > 1) {
+    if (nbPeople > 1) {
       viewLocalLive.hideShareOverlay();
     } else {
       viewLocalLive.showShareOverlay(live.getSource());
@@ -1121,6 +1221,69 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
+  public JSONObject getNewChallengePayload(String userId, String peerId, String challengeMessage) {
+    JSONObject app = new JSONObject();
+    JSONObject obj = new JSONObject();
+    JSONObject challenge = new JSONObject();
+    jsonPut(challenge, "from", userId);
+    jsonPut(challenge, Game.ACTION, Game.NEW_CHALLENGE);
+    jsonPut(challenge, "user", peerId);
+    jsonPut(challenge, Game.CHALLENGE, challengeMessage);
+    jsonPut(obj, Game.GAME_CHALLENGE, challenge);
+    jsonPut(app, "app", obj);
+    return app;
+  }
+
+  public JSONObject getNewDrawPayload(String userId, String peerId, String draw) {
+    JSONObject app = new JSONObject();
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    jsonPut(game, "from", userId);
+    jsonPut(game, Game.ACTION, "newDraw");
+    jsonPut(game, "user", peerId);
+    jsonPut(game, "draw", draw);
+    jsonPut(obj, "draw", game);
+    jsonPut(app, "app", obj);
+    return app;
+  }
+
+  public JSONObject getDrawClearPayload() {
+    JSONObject app = new JSONObject();
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    jsonPut(game, "action", "clear");
+    jsonPut(obj, "draw", game);
+    jsonPut(app, "app", obj);
+    return app;
+  }
+
+  public JSONObject getDrawPointPayload(List<Float[]> map) {
+    JSONObject app = new JSONObject();
+    JSONObject game = new JSONObject();
+    JSONObject path = new JSONObject();
+    JSONArray array = new JSONArray();
+
+    for (Float[] value : map) {
+      JSONArray coord = new JSONArray();
+      coord.put(value[0]);
+      coord.put(value[1]);
+      array.put(coord);
+    }
+
+    jsonPut(path, "hexColor", "F9AD25");
+    jsonPut(path, "lineWidth", 6.0);
+    jsonPut(path, "id", "test");
+    jsonPut(path, "points", array);
+
+    JSONObject gameObject = new JSONObject();
+    jsonPut(gameObject, "action", "drawPath");
+    jsonPut(gameObject, "path", path);
+
+    jsonPut(game, "draw", gameObject);
+    jsonPut(app, "app", game);
+    return app;
+  }
+
   public JSONObject getStopGamePayload(Game game) {
     JSONObject obj = new JSONObject();
     JSONObject gameStop = new JSONObject();
@@ -1168,6 +1331,8 @@ public class LiveView extends FrameLayout {
 
     JSONObject userJson = new JSONObject();
     jsonPut(userJson, User.ID, user.getId());
+    jsonPut(userJson, User.FBID, user.getFbid());
+    jsonPut(userJson, User.USERNAME, user.getUsername());
     jsonPut(userJson, User.DISPLAY_NAME, user.getDisplayName());
     jsonPut(userJson, User.PICTURE, user.getProfilePicture());
 
@@ -1349,11 +1514,25 @@ public class LiveView extends FrameLayout {
     return null;
   }
 
+  private void onRestartGame(Game game) {
+    if (game instanceof GameChallenge) {
+      GameChallenge challenge = (GameChallenge) game;
+      if (challenge.getCurrentChallenger().getId().equals(user.getId())) {
+        gameChallengesView.displayPopup(txtTooltipFirstGame.getTranslationY());
+        return;
+      }
+    }
+    restartGame(game);
+    displayReRollGameNotification(game.getId(), user.getDisplayName());
+  }
+
   private void startGame(Game game, boolean isUserAction) {
+    if (game == null) return;
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
-    onStartGame.onNext(game);
+    game.setUserAction(isUserAction);
     gameManager.setCurrentGame(game);
+    onStartGame.onNext(game);
     viewLocalLive.startGame(game);
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
       AnimationUtils.animateBottomMargin(viewControlsLive, tooltipFirstGameHeight, DURATION);
@@ -1370,7 +1549,18 @@ public class LiveView extends FrameLayout {
     room.sendToPeers(getNewGamePayload(game), false);
   }
 
-  private void stopGame(boolean isCurrentUserAction) {
+  private void stopGame(boolean isCurrentUserAction, String gameId) {
+    switch (gameId) {
+      case Game.GAME_CHALLENGE:
+        gameChallengesView.setVisibility(GONE);
+        gameChallengesView.close();
+        break;
+      case Game.GAME_DRAW:
+        gameDrawView.setVisibility(GONE);
+        gameDrawView.close();
+        break;
+    }
+    gameManager.setCurrentGame(null);
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     if (stateManager.shouldDisplay(StateManager.NEW_GAME_START)) {
@@ -1389,9 +1579,17 @@ public class LiveView extends FrameLayout {
         getResources().getString(R.string.game_event_started, userDisplayName, gameName)));
   }
 
-  private void displayReRollGameNotification(String userDisplayName) {
-    onNotificationGameRestart.onNext(EmojiParser.demojizedText(
-        getResources().getString(R.string.game_event_post_it_re_roll, userDisplayName)));
+  private void displayReRollGameNotification(String gameId, String userDisplayName) {
+    String comment = "";
+    if (gameId.equals(Game.GAME_POST_IT)) {
+      comment = getResources().getString(R.string.game_event_post_it_re_roll, userDisplayName);
+    } else if (gameId.equals(Game.GAME_CHALLENGE)) {
+      comment =
+          getResources().getString(R.string.game_challenges_re_roll_notification, userDisplayName);
+    } else if (gameId.equals(Game.GAME_DRAW)) {
+      comment = getResources().getString(R.string.game_draw_re_roll_notification, userDisplayName);
+    }
+    onNotificationGameRestart.onNext(EmojiParser.demojizedText(comment));
   }
 
   private void displayStopGameNotification(String gameName, String userDisplayName) {
@@ -1404,7 +1602,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void blockOpenInviteView(boolean b) {
-    viewControlsLive.blockOpenInviteView(b);
+    viewControlsLive.blockOpenInviteViewBtn(b);
   }
 
   //////////////////////
@@ -1423,8 +1621,24 @@ public class LiveView extends FrameLayout {
     return onShouldJoinRoom;
   }
 
+  public Observable<List<String>> onNewChallengeReceived() {
+    return onNewChallengeReceived;
+  }
+
+  public Observable<List<String>> onNewDrawReceived() {
+    return onNewDrawReceived;
+  }
+
+  public Observable<Void> onClearDrawReceived() {
+    return onClearDrawReceived;
+  }
+
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
+  }
+
+  public Observable<String> onPointsDrawReceived() {
+    return onPointsDrawReceived;
   }
 
   public Observable<String> unlockedRollTheDice() {
@@ -1507,12 +1721,16 @@ public class LiveView extends FrameLayout {
     return onShare;
   }
 
+  public Observable<Long> onEndCall() {
+    return onEndCall;
+  }
+
   public Observable<Void> onChangeCallRouletteRoom() {
     return onChangeCallRouletteRoom;
   }
 
-  public Observable<Void> onRoomFull() {
-    return onRoomFull;
+  public Observable<WebSocketError> onRoomError() {
+    return onRoomError;
   }
 
   public Observable<Object> onRemotePeerClick() {
@@ -1525,6 +1743,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
+  }
+
+  public Observable<Boolean> onBlockOpenInviteView() {
+    return onBlockOpenInviteView;
   }
 }
 

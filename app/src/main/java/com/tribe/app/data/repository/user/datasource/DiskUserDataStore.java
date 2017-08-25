@@ -1,9 +1,12 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
@@ -56,7 +59,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     return null;
   }
 
@@ -86,6 +89,19 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<UserRealm> updateUser(List<Pair<String, String>> values) {
+    return null;
+  }
+
+  @Override public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
+    return null;
+  }
+
+  @Override public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
+    return null;
+  }
+
+  @Override
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return null;
   }
 

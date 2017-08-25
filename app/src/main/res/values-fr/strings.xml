@@ -28,7 +28,7 @@
 	<string name="action_sms">iMessage</string>
 	<string name="action_messenger">Messenger</string>
 	<string name="action_report">Signaler</string>
-	<string name="action_user_reported">Utilisateur signalé !</string>
+	<string name="action_user_reported">Signalé!</string>
 	
 	<!-- Group -->
 	<string name="group_member">membre</string>
@@ -152,9 +152,15 @@
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
 	<string name="grid_tutorial_profile">Gérer votre compte,\nvos amis et bien plus !</string>
-	<string name="grid_syncing_contacts_banner">Synchronisation des contacts...</string>
+	<string name="grid_syncing_contacts_banner">Synchronisation des amis...</string>
 	<string name="grid_sync_failed_contacts_banner">Synchronisation echouée</string>
-	<string name="grid_synced_contacts_banner">Contacts synchronisés!</string>
+	<string name="grid_synced_contacts_banner">Amis synchronisés !</string>
+	<string name="grid_syncing_address_book_banner">Synchronisation des contacts...</string>
+	<string name="grid_syncing_facebook_banner">Synchronisation de Facebook...</string>
+	<string name="grid_sync_failed_address_book_banner">Synchronisation echouée</string>
+	<string name="grid_sync_failed_facebook_banner">Synchronisation echouée</string>
+	<string name="grid_synced_address_book_banner">Contacts synchronisé !</string>
+	<string name="grid_synced_facebook_banner">Facebook synchronisé !</string>
 	
 	<!-- Group Identification -->
 	<string name="group_identification_custom_name_placeholder">Nom du groupe</string>
@@ -204,6 +210,10 @@
 	<string name="onboarding_new_version_popup_done">C\'est parti !</string>
 	
 	<!-- Onboarding Phone -->
+	<string name="onboarding_baseline">Have fun, together.</string>
+	<string name="onboarding_enter_options">Entrer avec</string>
+	<string name="onboarding_option_facebook">Facebook</string>
+	<string name="onboarding_option_phone_number">Numéro de téléphone</string>
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
 	<string name="onboarding_phone_disclaimer">En vous enregistrant, vous acceptez les CGU et la Politique de confidentialité</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>
@@ -229,8 +239,10 @@
 	<string name="onboarding_user_facebook_button_subtitle">Recommandé, c\'est plus simple et rapide !</string>
 	<string name="onboarding_user_alert_call_link_title">Parfait. Sélectionnez vos meilleurs amis pour essayer ! :metal:</string>
 	<string name="onboarding_user_alert_call_link_msg">Petit conseil: Envoyez un SMS aux amis que vous souhaitez appeler en même temps.</string>
+	<string name="onboarding_user_alert_call_link_msg_facebook">Petit conseil: Envoyez un message aux amis que vous souhaitez appeler en même temps.</string>
 	<string name="onboarding_user_alert_call_link_sms">Entrez et ouvrez SMS !</string>
 	<string name="onboarding_user_alert_call_link_iMessage">Entrez et ouvrez iMessage !</string>
+	<string name="onboarding_user_alert_call_link_facebook">Entrez et ouvrez Facebook !</string>
 	<string name="onboarding_user_alert_call_link_content">Hey ! Vous pouvez essayer avec moi rapidement ? Ca se passe ici %1$s</string>
 	<string name="onboarding_user_alert_call_link_metadata_title">Rejoins %1$s maintenant!</string>
 	<string name="onboarding_user_alert_call_link_metadata_description">%1$s vous a invité dans un appel vidéo.</string>
@@ -342,6 +354,7 @@
 	<string name="live_drop_friend">Relachez votre ami dans l\'appel !</string>
 	<string name="live_drop_friend_impossible">Seulement %1$d amis en appel en même temps !</string>
 	<string name="live_join_impossible">:lock: 8 amis max. en même temps !</string>
+	<string name="live_mask_unavailable">:lock: Ce masque n\'est pas disponible pendant ce jeu.</string>
 	<string name="live_dismiss_invitation_title">Supprimer l\'invité :skull:</string>
 	<string name="live_dismiss_invitation_message">Vous pourrez l\'inviter à nouveau\nquand vous voulez</string>
 	<string name="live_dismiss_invitation_cancel">Annuler</string>
@@ -380,7 +393,7 @@
 	<string name="profile_video_demo_subtitle">Apprenez Tribe en 30 secondes !</string>
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
-	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
+	<string name="profile_fullscreen_notifications_disable_alert_title">Dégradation de l\'expérience :warning:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_msg">Attention, vous êtes sur le point de désactiver les notifications plein écran (qui permettent de ne pas rater d\'appels) ainsi que d\'empêcher Tribe d\'apparaître dans le journal d\'appel du téléphone (pratique pour rappeler du monde)...</string>
 	<string name="profile_fullscreen_notifications_disable_alert_disable">Désactiver</string>
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
@@ -396,6 +409,18 @@
 	<string name="profile_calls_length_suffix">\nà appeler vos amis sur tribe !</string>
 	<string name="profile_calls_length_mins">%1$d mins</string>
 	<string name="profile_calls_length_min">%1$d min</string>
+	<string name="profile_change_phone">Changer mon numéro :telephone:</string>
+	<string name="profile_facebook_account">Profil Facebook :bust_in_silhouette:</string>
+	
+	<!-- Profile Phone Number -->
+	<string name="profile_change_phone_title">Numéro de téléphone</string>
+	<string name="profile_change_phone_already_in_use">Ce numéro de téléphone est déjà utilisé sur un autre compte.</string>
+	
+	<!-- Profile Facebook Account -->
+	<string name="profile_facebook_account_title">Profil Facebook</string>
+	<string name="profile_facebook_account_status_connected">Connecté</string>
+	<string name="profile_facebook_account_status_disconnected">Non connecté</string>
+	<string name="profile_facebook_account_already_in_use">Ce profil Facebook est déjà utilisé sur un autre compte.</string>
 	
 	<!-- Manage friendships -->
 	<string name="manage_friendships_title">Supprimer ou bloquer</string>
@@ -573,11 +598,19 @@
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
 	<string name="game_song_pop_menu_re_roll">Renouveler les morceaux</string>
-	<string name="game_song_pop_status_pick_playlist">Choisis une playlist ! :musical_note:</string>
-	<string name="game_song_pop_status_guess">Devine le morceau en premier ! :musical_note:</string>
-	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau ! :hear_no_evil:</string>
-	<string name="game_song_pop_status_no_winner">Personne n\'a deviné ! :metal:</string>
-	<string name="game_song_pop_status_winner">%1$s a deviné ! :metal:</string>
+	<string name="game_song_pop_status_pick_playlist">Choisis une playlist !</string>
+	<string name="game_song_pop_status_score_rule">Le premier à %1$d points gagne!</string>
+	<string name="game_song_pop_status_guess">Devine le morceau !</string>
+	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau !</string>
+	<string name="game_song_pop_status_no_winner">Personne n\'a deviné !</string>
+	<string name="game_song_pop_status_winner">%1$s a deviné !</string>
+	<string name="game_song_pop_status_winner_step">%1$s a gagné!</string>
+	<string name="game_song_pop_status_no_winner_step">Personne n\'a gagné...</string>
+	<string name="game_song_pop_new_popup_title">Continuer à jouer!</string>
+	<string name="game_song_pop_new_popup_description">Voulez-vous rejouer ou faire un autre jeu ?</string>
+	<string name="game_song_pop_new_popup_again">Rejouer!</string>
+	<string name="game_song_pop_new_popup_other">Faire un autre jeu</string>
+	<string name="game_song_pop_new_popup_stop">Arrêter de jouer</string>
 	<string name="game_post_it">Heads Up</string>
 	<string name="game_post_it_menu_re_roll">Renouveler les noms</string>
 	<string name="game_post_it_menu_stop">Arreter ce jeu</string>
@@ -585,8 +618,24 @@
 	<string name="game_challenges">Challenges</string>
 	<string name="game_challenges_rule">Lance le prochain challenge !</string>
 	<string name="game_challenges_next_impossible">Seuls les autres peuvent changer ton challenge !</string>
-	<string name="game_challenges_turn_prefix">À</string>
-	<string name="game_challenges_turn_suffix">de...</string>
+	<string name="game_challenges_turn">est challengé!</string>
+	<string name="game_challenges_your_turn">A ton tour d\'être challengé!</string>
+	<string name="game_challenges_menu_re_roll">Changer de challenge</string>
+	<string name="game_challenges_re_roll_notification">%1$s a changé de challenge!</string>
+	<string name="game_challenges_fail_button">:poop: Échec.</string>
+	<string name="game_challenges_success_button">:crown: Succès!</string>
+	<string name="game_scream">Scream !</string>
+	<string name="game_scream_rule">Criez pour atteindre les sommets !</string>
+	<string name="game_draw">Dessin</string>
+	<string name="game_draw_rule">Lance le prochain dessin !</string>
+	<string name="game_draw_my_turn">A ton tour de dessiner</string>
+	<string name="game_draw_other_is_drawing">Est en train de dessiner</string>
+	<string name="game_draw_re_roll_notification">%1$s a changé de dessin!</string>
+	<string name="game_draw_word_to_draw">Dessin à réaliser :pencil2:</string>
+	<string name="game_draw_word_to_guess">Devinez ce que c\'est :spy:</string>
+	<string name="game_draw_timer_instructions">Prochain dans :hourglass:</string>
+	<string name="game_draw_clear">Effacer</string>
+	<string name="game_draw_instructions_my_turn">A ton tour de dessiner</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -606,6 +655,7 @@
 	<string name="roll_the_dice_grid_button">Lancer le dé pour de nouvelles rencontres</string>
 	<string name="roll_the_dice_next_button">Suivant</string>
 	<string name="roll_the_dice_notification">%1$s vient de jeter le dé !</string>
+	<string name="roll_the_dice_kicked_notification">Le dé vient d\'être relancé\npar un groupe d\'amis</string>
 	
 	<!-- Fallback call invitations -->
 	<string name="fallback_invitation_call_title">Si tu ne préviens pas tes amis\nils ne viendront pas!</string>
@@ -618,8 +668,36 @@
 	<string name="unlock_roll_the_dice_facebook_action">Débloquer avec Facebook</string>
 	<string name="unlock_roll_the_dice_locked">Vous devez avoir 13 ans\nou plus pour lancer le dé!</string>
 	<string name="unlock_roll_the_dice_impossible_popup_title">%1$s a peut être moins de 13 ans</string>
-	<string name="unlock_roll_the_dice_impossible_popup_message">Vos amis doivent avoir au moins 13 ans pour participer à un call où le Dé est activé.</string>
+	<string name="unlock_roll_the_dice_impossible_popup_message">Votre ami n\'est pas Facebook connecté. Nous avons affiché une pop-up Facebook sur son téléphone pour se Facebook connecter. Cela nous permettra de nous assurer que votre ami a bien 13 ans ou plus pour continuer cet appel incluant le Dé.</string>
 	<string name="unlock_roll_the_dice_impossible_popup_action">Bon à savoir</string>
 	<string name="unlock_roll_the_dice_disclaimer">Nous ne publions rien sur Facebook</string>
 	<string name="unlock_roll_the_dice_decline_action">Non, je ne veux pas de nouvelles rencontres</string>
+	
+	<!-- Linked Friends -->
+	<string name="linked_friends_title">Contacts synchronisés ! :electric_plug:</string>
+	<string name="linked_friends_facebook">Amis Facebook</string>
+	<string name="linked_friends_address_book">Contacts du carnet d\'adresses</string>
+	<string name="linked_friends_status_linked">Synchronisé</string>
+	<string name="linked_friends_status_not_linked">Non synchronisé</string>
+	<string name="linked_friends_notifications_disable_phone_alert_title">Dégradation de l\'expérience :warning:</string>
+	<string name="linked_friends_notifications_disable_phone_alert_msg">Vous êtes sur le point de désynchorniser votre Carnet d\'Adresses de votre compte. Cela signifie que vous ne serez plus capable de trouver vos Contacts sur Tribe.</string>
+	<string name="linked_friends_notifications_disable_phone_alert_disable">Désactiver</string>
+	<string name="linked_friends_notifications_disable_fb_alert_title">Dégradation de l\'expérience :warning:</string>
+	<string name="linked_friends_notifications_disable_fb_alert_msg">Vous êtes sur le point de désynchroniser Facebook de votre compte. Cela signifie que vous ne serez plus capable de trouver vos amis Facebook sur Tribe.</string>
+	<string name="linked_friends_notifications_disable_fb_alert_disable">Désactiver</string>
+	<string name="linked_friends_unlink_error_unable_to_unlink">Facebook ou Carnet d\'Addresse doit être connecté</string>
+	<string name="linked_friends_unlink_success_phone">Carnet d\'Adresses déconnecté</string>
+	<string name="linked_friends_unlink_success_fb">Facebook déconnecté</string>
+	<string name="linked_friends_link_success_phone">Carnet d\'Adresses connecté</string>
+	<string name="linked_friends_link_success_fb">Facebook connecté</string>
+	<string name="linked_friends_link_error_phone">Carnet d\'Adresses déjà connecté à un autre compte</string>
+	<string name="linked_friends_loading">Chargement...</string>
+	
+	<!-- Home -->
+	<string name="home_section_ongoing">En cours</string>
+	<string name="home_section_online">En ligne</string>
+	<string name="home_section_recent">Récents</string>
+	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
+	<string name="home_action_read_chat">Swipe droite pour lire</string>
+	<string name="home_action_new_chat">Nouveau chat</string>
 </resources>

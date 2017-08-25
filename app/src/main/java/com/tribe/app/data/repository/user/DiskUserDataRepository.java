@@ -1,6 +1,8 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
+
+import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -32,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -68,7 +72,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<AccessToken> loginWithPhoneNumber(LoginEntity loginEntity) {
+  @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     return null;
   }
 
@@ -151,6 +155,21 @@ import rx.Observable;
     return null;
   }
 
+  @Override
+  public Observable<User> updateUserFacebook(String userId, String accessToken) {
+    return null;
+  }
+
+  @Override
+  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
+    return null;
+  }
+
+  @Override
+  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+    return null;
+  }
+
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
     return null;
   }
@@ -207,7 +226,7 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s) {
+  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
     return Observable.combineLatest(userDataStore.userInfos(null)
@@ -236,22 +255,23 @@ import rx.Observable;
           }
 
           for (Contact contact : contactOnAppList) {
-            compute(mapUsersAdded, contact, result);
+            compute(mapUsersAdded, includedUserIds, contact, result);
           }
 
           for (Contact contact : contactInviteList) {
-            compute(mapUsersAdded, contact, result);
+            compute(mapUsersAdded, includedUserIds, contact, result);
           }
 
           return result;
         });
   }
 
-  private void compute(Map<String, User> mapUsersAdded, Contact contact, List<Object> result) {
+  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds, Contact contact, List<Object> result) {
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId())) {
+        if (mapUsersAdded.containsKey(userInList.getId()) &&
+                (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }

@@ -12,22 +12,31 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
+import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class SearchPresenter implements Presenter {
+public class SearchPresenter extends UpdateUserPresenter {
 
   // VIEW ATTACHED
   private SearchMVPView searchView;
+
+  private Set<String> addedUserIds = new HashSet<>();
 
   // USECASES
   private JobManager jobManager;
@@ -36,8 +45,6 @@ public class SearchPresenter implements Presenter {
   private CreateFriendship createFriendship;
   private SearchLocally searchLocally;
   private UseCase synchroContactList;
-  private RxFacebook rxFacebook;
-  private UpdateUser updateUser;
 
   // SUBSCRIBERS
   private CreateFriendshipSubscriber createFriendshipSubscriber;
@@ -46,20 +53,24 @@ public class SearchPresenter implements Presenter {
   private LookupContactsSubscriber lookupContactsSubscriber;
 
   @Inject public SearchPresenter(JobManager jobManager,
-      @Named("cloudFindByUsername") FindByUsername findByUsername,
-      @Named("diskSearchResults") DiskSearchResults diskSearchResults,
-      CreateFriendship createFriendship, SearchLocally searchLocally,
-      @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
-      UpdateUser updateUser) {
-    super();
+                                 @Named("cloudFindByUsername") FindByUsername findByUsername,
+                                 @Named("diskSearchResults") DiskSearchResults diskSearchResults,
+                                 CreateFriendship createFriendship, SearchLocally searchLocally,
+                                 @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
+                                 UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
+                                 UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.jobManager = jobManager;
     this.findByUsername = findByUsername;
     this.searchResults = diskSearchResults;
     this.createFriendship = createFriendship;
     this.searchLocally = searchLocally;
     this.synchroContactList = synchroContactList;
-    this.rxFacebook = rxFacebook;
-    this.updateUser = updateUser;
+  }
+
+  @Override
+  protected UpdateUserMVPView getUpdateUserView() {
+    return searchView;
   }
 
   @Override public void onViewDetached() {
@@ -106,8 +117,10 @@ public class SearchPresenter implements Presenter {
   public void createFriendship(String userId) {
     if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
 
+    addedUserIds.add(userId);
+
     createFriendshipSubscriber = new CreateFriendshipSubscriber();
-    createFriendship.setUserId(userId);
+    createFriendship.configure(userId, 1500);
     createFriendship.execute(createFriendshipSubscriber);
   }
 
@@ -135,7 +148,7 @@ public class SearchPresenter implements Presenter {
     }
 
     contactListSubscriber = new ContactListSubscriber();
-    searchLocally.setup(s);
+    searchLocally.setup(s, addedUserIds);
     searchLocally.execute(contactListSubscriber);
   }
 
@@ -174,27 +187,5 @@ public class SearchPresenter implements Presenter {
     @Override public void onNext(List<Contact> contactList) {
       searchView.syncDone();
     }
-  }
-
-  public void loginFacebook() {
-    if (!FacebookUtils.isLoggedIn()) {
-      rxFacebook.requestLogin().subscribe(loginResult -> {
-        if (FacebookUtils.isLoggedIn()) {
-          searchView.successFacebookLogin();
-        } else {
-          searchView.errorFacebookLogin();
-        }
-      });
-    } else {
-      searchView.successFacebookLogin();
-    }
-  }
-
-  public void updateUser(String fbid) {
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(UserRealm.FBID, fbid));
-
-    updateUser.prepare(values);
-    updateUser.execute(new DefaultSubscriber());
   }
 }

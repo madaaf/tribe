@@ -206,6 +206,11 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     if (intent != null && intent.hasExtra(LOGIN_ENTITY)) {
       loginEntity = phoneUtils.prepareLoginForRegister(
           (LoginEntity) intent.getSerializableExtra(LOGIN_ENTITY));
+
+      if (FacebookUtils.isLoggedIn()) {
+        facebookView.setVisibility(View.INVISIBLE);
+        getInfoFromFacebook();
+      }
     }
 
     manageDeepLink(intent);
@@ -286,10 +291,9 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       profileInfoPresenter.getUserInfo();
     } else if (!StringUtils.isEmpty(user.getId())) {
       showLoading();
-      profileInfoPresenter.updateUser(profileInfoView.getUsername(),
+      profileInfoPresenter.updateUser(user.getId(), profileInfoView.getUsername(),
           profileInfoView.getDisplayName(), profileInfoView.getImgUri(),
-          facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())
-              ? facebookEntity.getId() : null);
+          FacebookUtils.accessToken());
     }
   }
 
@@ -306,16 +310,25 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     tagManager.setUserId(this.user.getId());
     tagManager.updateUser(this.user);
 
-    profileInfoPresenter.updateUser(user.getUsername(), user.getDisplayName(),
-        profileInfoView.getImgUri(),
-        facebookEntity != null && !StringUtils.isEmpty(facebookEntity.getId())
-            ? facebookEntity.getId() : null);
+    profileInfoPresenter.updateUser(user.getId(), user.getUsername(), user.getDisplayName(),
+        profileInfoView.getImgUri(), FacebookUtils.accessToken());
   }
 
   @Override public void successUpdateUser(User user) {
     this.user.copy(user);
     String linkId = StringUtils.generateLinkId();
-    if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
+
+    if (loginEntity.getFbAccessToken() != null) {
+      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCallFacebook);
+      subscriptions.add(DialogFactory.dialog(this,
+              EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
+              getString(R.string.onboarding_user_alert_call_link_msg_facebook),
+              getString(R.string.onboarding_user_alert_call_link_facebook), null)
+              .filter(x -> x == true)
+              .subscribe(
+                      a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId, true)));
+
+    } else if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCalliMessage);
       subscriptions.add(DialogFactory.dialog(this,
           EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
@@ -323,9 +336,9 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           getString(R.string.onboarding_user_alert_call_link_sms), null)
           .filter(x -> x == true)
           .subscribe(
-              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId)));
+              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId, false)));
     } else {
-      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null);
+      navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, false);
     }
   }
 
@@ -349,6 +362,20 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       tagManager.alias(accessToken.getUserId());
       tagManager.setUserId(accessToken.getUserId());
     }
+  }
+
+  @Override
+  public void successUpdateFacebook(User user) {
+
+  }
+
+  @Override
+  public void successUpdatePhoneNumber(User user) {
+
+  }
+
+  @Override public void errorUpdatePhoneNumber() {
+
   }
 
   @Override public void onRegisterFail() {

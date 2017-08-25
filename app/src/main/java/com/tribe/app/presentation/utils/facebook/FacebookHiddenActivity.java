@@ -55,6 +55,7 @@ public class FacebookHiddenActivity extends BaseActivity {
         }
 
         @Override public void onCancel() {
+          rxFacebook.onLogin(null);
           finish();
         }
 
@@ -65,7 +66,7 @@ public class FacebookHiddenActivity extends BaseActivity {
         }
       });
       LoginManager.getInstance()
-          .logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+          .logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends", "email"));
     }
   }
 

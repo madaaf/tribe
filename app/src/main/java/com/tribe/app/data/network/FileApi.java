@@ -1,6 +1,5 @@
 package com.tribe.app.data.network;
 
-import com.google.gson.JsonObject;
 import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -14,4 +13,8 @@ public interface FileApi {
   @GET @Streaming Call<ResponseBody> downloadFileWithUrl(@Url String fileUrl);
 
   @GET("/games/post-it.json") Observable<List<String>> getNamesForPostItGame();
+
+  @GET("/games/challenges.json") Observable<List<String>> getDataForChallengesGame();
+
+  @GET("/games/draw.json") Observable<List<String>> getNamesForDrawGame();
 }

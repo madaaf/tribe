@@ -18,6 +18,8 @@ public class User implements Serializable, BaseListInterface {
 
 
   public static final String ID = "id";
+  public static final String FBID = "fbid";
+  public static final String USERNAME = "username";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
 
@@ -44,6 +46,7 @@ public class User implements Serializable, BaseListInterface {
   private boolean invisible_mode;
   private boolean push_notif;
   private boolean is_online = false;
+  private long time_in_call = 0;
   private Date last_seen_at;
 
   private boolean isNewFriend = false;
@@ -139,6 +142,14 @@ public class User implements Serializable, BaseListInterface {
     this.id = id;
   }
 
+  public long getTimeInCall() {
+    return time_in_call;
+  }
+
+  public void setTimeInCall(long time_in_call) {
+    this.time_in_call = time_in_call;
+  }
+
   public void setFriendships(List<Friendship> friendships) {
     this.friendships = friendships;
   }
@@ -219,8 +230,7 @@ public class User implements Serializable, BaseListInterface {
     if (last_seen_at == null) return false;
 
     // We consider that somebody that was online less than fifteen minutes ago is still online
-    long fifteenMinutesAgo = System.currentTimeMillis() - FIFTEEN_MINUTES;
-    return last_seen_at.getTime() > fifteenMinutesAgo;
+    return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
   }
 
   public void setIsOnline(boolean isOnline) {
@@ -325,6 +335,8 @@ public class User implements Serializable, BaseListInterface {
       setInvisibleMode(user.isInvisibleMode());
       setTribeSave(user.isTribeSave());
       setPushNotif(user.isPushNotif());
+      setTimeInCall(user.getTimeInCall());
+      setLastSeenAt(user.getLastSeenAt());
       if (user.getLocation() != null) setLocation(user.getLocation());
       if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
         setMembershipList(user.getMembershipList());
@@ -347,6 +359,8 @@ public class User implements Serializable, BaseListInterface {
     setFbid(null);
     setInvisibleMode(false);
     setPushNotif(false);
+    setTimeInCall(0);
+    setLastSeenAt(null);
     setTribeSave(false);
     setLocation(null);
     setMembershipList(null);
