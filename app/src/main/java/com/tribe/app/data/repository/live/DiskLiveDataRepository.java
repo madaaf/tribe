@@ -1,9 +1,11 @@
 package com.tribe.app.data.repository.live;
 
+import android.util.Pair;
 import com.tribe.app.data.repository.live.datasource.DiskLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.live.LiveRepository;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -22,7 +24,7 @@ public class DiskLiveDataRepository implements LiveRepository {
   @Override public Observable<String> randomRoomAssigned() {
     final DiskLiveDataStore liveDataStore =
         (DiskLiveDataStore) this.dataStoreFactory.createDiskDataStore();
-    return liveDataStore.callRouletteMap();
+    return liveDataStore.randomRoomAssigned();
   }
 
   @Override public Observable<Room> getRoom(String roomId) {
@@ -30,6 +32,10 @@ public class DiskLiveDataRepository implements LiveRepository {
   }
 
   @Override public Observable<Room> createRoom(String name, String[] userIds) {
+    return null;
+  }
+
+  @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList) {
     return null;
   }
 
@@ -49,15 +55,7 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
-  @Override public Observable<String> getRoomLink(String roomId) {
-    return null;
-  }
-
   @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    return null;
-  }
-
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
     return null;
   }
 }

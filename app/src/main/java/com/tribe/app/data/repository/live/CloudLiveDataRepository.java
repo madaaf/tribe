@@ -1,9 +1,11 @@
 package com.tribe.app.data.repository.live;
 
+import android.util.Pair;
 import com.tribe.app.data.repository.live.datasource.CloudLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.live.LiveRepository;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -28,6 +30,12 @@ import rx.Observable;
     return cloudDataStore.createRoom(name, userIds);
   }
 
+  @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList) {
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.updateRoom(roomId, pairList);
+  }
+
   @Override public Observable<Void> deleteRoom(String roomId) {
     return null;
   }
@@ -50,22 +58,10 @@ import rx.Observable;
     return cloudDataStore.declineInvite(roomId);
   }
 
-  @Override public Observable<String> getRoomLink(String roomId) {
-    final CloudLiveDataStore cloudDataStore =
-        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoomLink(roomId);
-  }
-
   @Override public Observable<Boolean> bookRoomLink(String linkId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
     return cloudDataStore.bookRoomLink(linkId);
-  }
-
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
-    final CloudLiveDataStore cloudDataStore =
-        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.roomAcceptRandom(roomId);
   }
 
   @Override public Observable<String> randomRoomAssigned() {

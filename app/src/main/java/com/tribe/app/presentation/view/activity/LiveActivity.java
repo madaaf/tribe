@@ -889,14 +889,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
     tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-
-    if (StringUtils.isEmpty(live.getRoomId())) {
-      livePresenter.getRoomLink(room.getId());
-      Toast.makeText(this, R.string.group_details_invite_link_generating, Toast.LENGTH_LONG).show();
-    } else {
-      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getRoomId(),
-          null, false);
-    }
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getRoomId(),
+        null, false);
   }
 
   private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
@@ -1036,12 +1030,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     onAnonymousReceived.onNext(users);
   }
 
-  @Override public void onRoomLink(String roomLink) {
-    String linkId = StringUtils.getLinkIdFromUrl(roomLink);
-    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, linkId, null,
-        false);
-  }
-
   @Override public void onAddError() {
     Toast.makeText(context(),
         EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
@@ -1076,7 +1064,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
    *
    *  GENERATE DATA FOR GAMES
    */
-
   @Override public void onNamesPostItGame(List<String> nameList) {
     Game game = gameManager.getCurrentGame();
 

@@ -1,11 +1,9 @@
 package com.tribe.app.domain.interactor.live;
 
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.UserRepository;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -28,6 +26,6 @@ public class DeleteRoom extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.getRoom(roomId);
+    return this.liveRepository.deleteRoom(roomId);
   }
 }

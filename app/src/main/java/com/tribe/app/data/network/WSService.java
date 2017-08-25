@@ -270,57 +270,45 @@ import timber.log.Timber;
   private void initSubscriptions() {
     UserRealm userRealm = userCache.userInfosNoObs(accessToken.getUserId());
 
-    StringBuffer subscriptionsBuffer = new StringBuffer();
     String hash = generateHash();
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_friendshipCreated,
-            hash + FRIENDSHIP_CREATED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_friendshipCreated,
+        hash + FRIENDSHIP_CREATED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_friendshipRemoved,
-            hash + FRIENDSHIP_REMOVED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_friendshipRemoved,
+        hash + FRIENDSHIP_REMOVED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_inviteCreated,
-            hash + INVITE_CREATED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_inviteCreated,
+        hash + INVITE_CREATED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_inviteRemoved,
-            hash + INVITE_REMOVED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_inviteRemoved,
+        hash + INVITE_REMOVED_SUFFIX));
 
     tempSubscriptions.add(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
       int count = 0;
 
       for (FriendshipRealm friendshipRealm : friendshipList) {
         if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-          append(subscriptionsBuffer,
-              getApplicationContext().getString(R.string.subscription_userUpdated,
-                  hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
+          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+              hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
 
-          append(subscriptionsBuffer,
+          sendSubscription(
               getApplicationContext().getString(R.string.subscription_friendshipUpdated,
                   hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
 
           count++;
         }
       }
-    }).subscribe(stringBuffer -> {
-      String body = subscriptionsBuffer.toString();
+    }).subscribe());
+  }
 
-      String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-          getApplicationContext().getString(R.string.userfragment_infos) : "");
+  private void sendSubscription(String body) {
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
-      String groupInfosFragment = (body.contains("GroupInfos") ? "\n" +
-          getApplicationContext().getString(R.string.groupfragment_info_members) : "");
+    String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 
-      String req =
-          getApplicationContext().getString(R.string.subscription, subscriptionsBuffer.toString()) +
-              userInfosFragment +
-              groupInfosFragment;
-
-      webSocketConnection.send(req);
-    }));
+    webSocketConnection.send(req);
   }
 
   private void append(StringBuffer buffer, String str) {

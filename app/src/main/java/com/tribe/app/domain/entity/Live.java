@@ -79,7 +79,7 @@ public class Live implements Serializable {
   }
 
   public String getRoomId() {
-    return roomId;
+    return room != null ? room.getId() : roomId;
   }
 
   public void setUsers(List<User> users) {

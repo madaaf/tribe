@@ -10,6 +10,9 @@ import java.util.List;
 
 public class Room implements Serializable {
 
+  public static final String NAME = "name";
+  public static final String ACCEPT_RANDOM = "accept_random";
+
   private String id;
   private String name;
   private String link;

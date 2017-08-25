@@ -161,10 +161,6 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.liveMap();
   }
 
-  @Override public Observable<String> callRouletteMap() {
-    return liveCache.getRandomRoomAssignedValue();
-  }
-
   @Override public Observable<User> getFbIdUpdated() {
     return liveCache.getFbIdUpdated();
   }

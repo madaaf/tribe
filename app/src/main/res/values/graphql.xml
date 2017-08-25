@@ -508,6 +508,12 @@
     userIds : [%1$s]
   </string>
 
+  <string name="updateRoom" translatable="false">
+    updateRoom ( roomId : \"%1$s\", room : { %2$s } ) {
+      ...RoomInfos
+    }
+  </string>
+
   <string name="roomFragment_infos" translatable="false">
     fragment RoomInfos on Room {
       id
@@ -564,17 +570,8 @@
     declineInvite(roomId : \"%1$s\")
   </string>
 
-  <string name="getRoomLink" translatable="false">
-    getRoomLink(roomId : \"%1$s\")
-  </string>
-
   <string name="bookRoomLink" translatable="false">
     bookRoomLink(linkId : \"%1$s\")
-  </string>
-
-
-  <string name="roomAcceptRandom" translatable="false">
-    roomAcceptRandom(roomId : \"%1$s\")
   </string>
 
   <string name="reportUser" translatable="false">

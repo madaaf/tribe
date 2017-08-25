@@ -82,6 +82,8 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<Room> createRoom(
       @Field("query") String query);
 
+  @FormUrlEncoded @POST("/graphql") Observable<Room> updateRoom(@Field("query") String query);
+
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
       @Field("query") String query);
 

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
 import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
@@ -15,10 +16,9 @@ import com.tribe.app.domain.interactor.live.BuzzRoom;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.live.GetRoom;
-import com.tribe.app.domain.interactor.live.GetRoomLink;
 import com.tribe.app.domain.interactor.live.InviteUserToRoom;
 import com.tribe.app.domain.interactor.live.RandomRoomAssigned;
-import com.tribe.app.domain.interactor.live.RoomAcceptRandom;
+import com.tribe.app.domain.interactor.live.UpdateRoom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
@@ -30,6 +30,7 @@ import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -42,18 +43,17 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private GetDiskFriendshipList diskFriendshipList;
   private GetRoom getRoom;
   private CreateRoom createRoom;
+  private UpdateRoom updateRoom;
   private BuzzRoom buzzRoom;
   private InviteUserToRoom inviteUserToRoom;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
-  private GetRoomLink getRoomLink;
   private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
   private GetNamesDrawGame getNamesDrawGame;
   private GetDataChallengesGame getDataChallengesGame;
   private BookRoomLink bookRoomLink;
-  private RoomAcceptRandom roomAcceptRandom;
   private RandomRoomAssigned randomRoomAssigned;
   private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
@@ -67,11 +67,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, GetRoom getRoom,
-      CreateRoom createRoom, BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom,
-      GetRecipientInfos getRecipientInfos, GetCloudUserInfosList cloudUserInfosList,
-      GetRoomLink getRoomLink, DeclineInvite declineInvite, CreateFriendship createFriendship,
-      GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
-      BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
+      CreateRoom createRoom, UpdateRoom updateRoom, BuzzRoom buzzRoom,
+      InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
+      GetCloudUserInfosList cloudUserInfosList, DeclineInvite declineInvite,
+      CreateFriendship createFriendship, GetNamesPostItGame getNamesPostItGame,
+      UpdateFriendship updateFriendship, BookRoomLink bookRoomLink,
       RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
       GetDataChallengesGame getDataChallengesGame, IncrUserTimeInCall incrUserTimeInCall,
       GetNamesDrawGame getNamesDrawGame) {
@@ -79,16 +79,15 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.diskFriendshipList = diskFriendshipList;
     this.getRoom = getRoom;
     this.createRoom = createRoom;
+    this.updateRoom = updateRoom;
     this.buzzRoom = buzzRoom;
     this.inviteUserToRoom = inviteUserToRoom;
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
-    this.getRoomLink = getRoomLink;
     this.declineInvite = declineInvite;
     this.createFriendship = createFriendship;
     this.getNamesPostItGame = getNamesPostItGame;
     this.bookRoomLink = bookRoomLink;
-    this.roomAcceptRandom = roomAcceptRandom;
     this.randomRoomAssigned = randomRoomAssigned;
     this.reportUser = reportUser;
     this.incrUserTimeInCall = incrUserTimeInCall;
@@ -102,16 +101,15 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     diskFriendshipList.unsubscribe();
     getRoom.unsubscribe();
     createRoom.unsubscribe();
+    updateRoom.unsubscribe();
     buzzRoom.unsubscribe();
     cloudUserInfosList.unsubscribe();
     inviteUserToRoom.unsubscribe();
     declineInvite.unsubscribe();
     getRecipientInfos.unsubscribe();
-    getRoomLink.unsubscribe();
     createFriendship.unsubscribe();
     getNamesPostItGame.unsubscribe();
     bookRoomLink.unsubscribe();
-    roomAcceptRandom.unsubscribe();
     randomRoomAssigned.unsubscribe();
     reportUser.unsubscribe();
     incrUserTimeInCall.unsubscribe();
@@ -256,11 +254,6 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     cloudUserInfosList.execute(getUserInfoListSubscriber);
   }
 
-  public void getRoomLink(String roomId) {
-    getRoomLink.setup(roomId);
-    getRoomLink.execute(new GetRoomLinkSubscriber());
-  }
-
   public void declineInvite(String roomId) {
     declineInvite.prepare(roomId);
     declineInvite.execute(new DefaultSubscriber());
@@ -271,19 +264,6 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     if (timeInCall != null) {
       incrUserTimeInCall.prepare(userId, timeInCall);
       incrUserTimeInCall.execute(new DefaultSubscriber());
-    }
-  }
-
-  private final class GetRoomLinkSubscriber extends DefaultSubscriber<String> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-    }
-
-    @Override public void onNext(String roomLink) {
-      liveMVPView.onRoomLink(roomLink);
     }
   }
 
@@ -390,8 +370,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void roomAcceptRandom(String roomId) {
-    roomAcceptRandom.setRoomId(roomId);
-    roomAcceptRandom.execute(new DefaultSubscriber());
+    Pair<String, String> pair = Pair.create(Room.ACCEPT_RANDOM, "true");
+    List<Pair<String, String>> pairList = new ArrayList<>();
+    pairList.add(pair);
+    updateRoom.setup(roomId, pairList);
+    updateRoom.execute(new DefaultSubscriber());
   }
 
   public void reportUser(String userId) {

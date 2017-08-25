@@ -1,6 +1,8 @@
 package com.tribe.app.data.repository.live.datasource;
 
+import android.util.Pair;
 import com.tribe.app.domain.entity.Room;
+import java.util.List;
 import rx.Observable;
 
 /**
@@ -12,6 +14,8 @@ public interface LiveDataStore {
 
   Observable<Room> createRoom(String name, String[] userIds);
 
+  Observable<Room> updateRoom(String roomId, List<Pair<String, String>> values);
+
   Observable<Void> deleteRoom(String roomId);
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
@@ -20,11 +24,7 @@ public interface LiveDataStore {
 
   Observable<Void> declineInvite(String roomId);
 
-  Observable<String> getRoomLink(String roomId);
-
   Observable<Boolean> bookRoomLink(String linkId);
-
-  Observable<Void> roomAcceptRandom(String roomId);
 
   Observable<String> randomRoomAssigned();
 }

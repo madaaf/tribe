@@ -17,7 +17,5 @@ public interface LiveDataStore {
 
   Observable<Map<String, Invite>> inviteMap();
 
-  Observable<String> callRouletteMap();
-
   Observable<User> getFbIdUpdated();
 }
