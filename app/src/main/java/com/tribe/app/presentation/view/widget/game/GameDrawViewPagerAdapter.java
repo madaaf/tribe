@@ -24,7 +24,6 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 19/07/2017.
@@ -200,6 +199,8 @@ public class GameDrawViewPagerAdapter extends PagerAdapter {
   }
 
   public void onPointsDrawReceived(Float[][] points) {
+    if (dv == null) return;
+
     int width = dv.getWidth();
     int height = dv.getHeight();
     TrackablePath path = new TrackablePath();

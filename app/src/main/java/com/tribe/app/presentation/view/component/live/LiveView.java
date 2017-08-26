@@ -48,9 +48,9 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
@@ -274,9 +274,8 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) || (
-          live.getId().equals(Live.NEW_CALL)
-              && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getId().equals(Live.NEW_CALL)) ||
+          (live.getId().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -663,10 +662,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : "
-              + remotePeer.getSession().getPeerId()
-              + " & view : "
-              + remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : " +
+              remotePeer.getSession().getPeerId() +
+              " & view : " +
+              remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -736,8 +735,8 @@ public class LiveView extends FrameLayout {
         .subscribe(tribeGuests -> {
           if (tribeGuests != null && tribeGuests.size() > 0) {
             for (TribeGuest trg : tribeGuests) {
-              if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
-                  .containsKey(trg.getId())) {
+              if (!liveInviteMap.getMap().containsKey(trg.getId()) &&
+                  !liveRowViewMap.getMap().containsKey(trg.getId())) {
                 if (!user.getId().equals(trg.getId())) {
                   addTribeGuest(trg);
                   onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
@@ -767,7 +766,6 @@ public class LiveView extends FrameLayout {
   private void startCallLevel() {
 
     if (callDurationSubscription == null) {
-
       Date startedAt = new Date();
 
       callDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
@@ -861,9 +859,8 @@ public class LiveView extends FrameLayout {
         liveInviteMap.put(latestView.getGuest().getId(), latestView);
       }
 
-      if (latestView.getGuest() != null && !latestView.getGuest()
-          .getId()
-          .equals(Recipient.ID_CALL_ROULETTE)) {
+      if (latestView.getGuest() != null &&
+          !latestView.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
         room.sendToPeers(getInvitedPayload(), true);
       }
 
@@ -962,8 +959,8 @@ public class LiveView extends FrameLayout {
   }
 
   public void addTribeGuest(TribeGuest trg) {
-    if (!liveInviteMap.getMap().containsKey(trg.getId()) && !liveRowViewMap.getMap()
-        .containsKey(trg.getId())) {
+    if (!liveInviteMap.getMap().containsKey(trg.getId()) &&
+        !liveRowViewMap.getMap().containsKey(trg.getId())) {
       LiveRowView liveRowView = new LiveRowView(getContext());
       liveRowView.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -1019,10 +1016,10 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0
-        && liveInviteMap.size() == 0
-        && live != null
-        && !live.getSource().equals(SOURCE_CALL_ROULETTE);
+    return liveRowViewMap.size() == 0 &&
+        liveInviteMap.size() == 0 &&
+        live != null &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE);
   }
 
   public @LiveActivity.Source String getSource() {
@@ -1515,6 +1512,8 @@ public class LiveView extends FrameLayout {
   }
 
   private void onRestartGame(Game game) {
+    if (game == null) return;
+
     if (game instanceof GameChallenge) {
       GameChallenge challenge = (GameChallenge) game;
       if (challenge.getCurrentChallenger().getId().equals(user.getId())) {
@@ -1522,12 +1521,14 @@ public class LiveView extends FrameLayout {
         return;
       }
     }
+
     restartGame(game);
     displayReRollGameNotification(game.getId(), user.getDisplayName());
   }
 
   private void startGame(Game game, boolean isUserAction) {
     if (game == null) return;
+
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
     game.setUserAction(isUserAction);

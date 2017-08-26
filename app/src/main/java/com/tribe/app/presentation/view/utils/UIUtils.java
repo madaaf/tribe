@@ -125,15 +125,20 @@ public class UIUtils {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animate) {
       v.post(() -> {
-        int initialRadius = 0;
-        Animator anim =
-            ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
-                (int) (v.getY() + v.getHeight() / 2), initialRadius,
-                Math.max(v.getWidth(), v.getHeight()));
-        anim.setInterpolator(new AccelerateDecelerateInterpolator());
-        if (listenerAdapter != null) anim.addListener(listenerAdapter);
-        anim.setDuration(DURATION_REVEAL);
-        anim.start();
+        if (v == null) return;
+        if (!v.isAttachedToWindow()) {
+          v.setVisibility(View.VISIBLE);
+        } else {
+          int initialRadius = 0;
+          Animator anim =
+              ViewAnimationUtils.createCircularReveal(v, (int) (v.getX() + v.getWidth() / 2),
+                  (int) (v.getY() + v.getHeight() / 2), initialRadius,
+                  Math.max(v.getWidth(), v.getHeight()));
+          anim.setInterpolator(new AccelerateDecelerateInterpolator());
+          if (listenerAdapter != null) anim.addListener(listenerAdapter);
+          anim.setDuration(DURATION_REVEAL);
+          anim.start();
+        }
       });
     } else {
       if (listenerAdapter != null) listenerAdapter.onAnimationStart(null);

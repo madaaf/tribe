@@ -112,6 +112,7 @@ public class EmojiParser {
     IEmojiMap.put(":boom:", "\uD83D\uDCA5");
     IEmojiMap.put(":poop:", "\uD83D\uDCA9");
     IEmojiMap.put(":crown:", "\uD83D\uDC51");
+    IEmojiMap.put(":sports_medal:", "\uD83C\uDFC5");
   }
 
   /**
