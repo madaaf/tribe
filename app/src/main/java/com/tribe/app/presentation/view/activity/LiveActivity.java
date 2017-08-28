@@ -302,11 +302,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override protected void onNewIntent(Intent intent) {
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
-    boolean isJump = true;
     manageClickNotification(getIntent());
-    viewLive.endCall(isJump);
-    viewLive.dispose(isJump);
-    viewLive.jump();
+    disposeCall(true);
     initParams(intent);
     live.setCountdown(false);
     initRoom();
@@ -456,7 +453,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void resetBrightness() {
-
     WindowManager.LayoutParams attributes = getWindow().getAttributes();
     if (initialBrightness > 0 && attributes.screenBrightness == 1) {
 
@@ -471,9 +467,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     livePresenter.randomRoomAssigned();
   }
 
+  private void initRoomSubscription() {
+    startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
+  }
+
+  private void removeRoomSubscription() {
+    startService(WSService.getCallingIntentUnsubscribeRoom(this));
+  }
+
   private void stopCallRouletteService() {
-    Intent i = new Intent(this, WSService.class);
-    stopService(i);
+    // TODO remove subscription from call_roulette and call it
   }
 
   private void initResources() {
@@ -516,6 +519,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         firebaseRemoteConfig.activateFetched();
       }
     });
+  }
+
+  private void disposeCall(boolean isJump) {
+    removeRoomSubscription();
+    viewLive.endCall(isJump);
+
+    if (isJump) {
+      viewLive.dispose(isJump);
+      viewLive.jump();
+    }
   }
 
   private void manageClickNotification(Intent intent) {
@@ -902,9 +915,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
 
     if (subscriptions.hasSubscriptions()) subscriptions.clear();
-    viewLive.endCall(true);
-    viewLive.dispose(true);
-    viewLive.jump();
+    disposeCall(true);
     initRoom();
   }
 
@@ -1180,7 +1191,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       appStateMonitor.removeListener(this);
     }
 
-    viewLive.endCall(false);
+    disposeCall(false);
+
     putExtraHomeIntent();
     setExtraForCallFromUnknownUser();
 
@@ -1223,6 +1235,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   @Override public void onRoomInfos(Room room) {
     this.room = room;
     viewLive.joinRoom(this.room);
+
+    initRoomSubscription();
 
     if (!live.fromRoom() && live.hasUsers()) {
       for (String userId : live.getUserIds()) {

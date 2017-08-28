@@ -488,6 +488,16 @@
     %1$s : randomRoomAssigned
   </string>
 
+  <string name="subscription.roomUpdated" translatable="false">
+    %1$s : roomUpdated ( id : \"%2$s\" ) {
+      id
+    }
+  </string>
+
+  <string name="subscription.remove" translatable="false">
+    removeSubscription ( subscriptionId : \"%1$s\" )
+  </string>
+
   <string name="getRoom" translatable="false">
     room (roomId : \"%1$s\") {
       ...RoomInfos

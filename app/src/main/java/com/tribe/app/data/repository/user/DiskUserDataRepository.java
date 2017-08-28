@@ -285,7 +285,6 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  // TODO: update info in DB
   @Override public Observable<Friendship> createFriendship(String userId) {
     return null;
   }
