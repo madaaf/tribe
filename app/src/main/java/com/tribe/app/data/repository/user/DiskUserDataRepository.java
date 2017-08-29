@@ -16,6 +16,7 @@ import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -79,12 +80,26 @@ import rx.Observable;
         userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
         (userRealm, onlineMap, liveMap, inviteMap) -> {
           if (userRealm != null && userRealm.getFriendships() != null) {
-            userRealm.setFriendships(
-                updateOnlineLiveFriendship(userRealm.getFriendships(), onlineMap, liveMap, true));
+            RealmList<FriendshipRealm> friendships =
+                updateOnlineLiveFriendship(userRealm.getFriendships(), onlineMap, liveMap, true);
+
+            if (inviteMap != null && inviteMap.size() > 0) {
+              RealmList<FriendshipRealm> endFriendships = new RealmList<>();
+              for (FriendshipRealm friendshipRealm : friendships) {
+                for (Invite invite : inviteMap.values()) {
+                  if (!invite.isFriendship(friendshipRealm.getFriend().getId())) {
+                    endFriendships.add(friendshipRealm);
+                  }
+                }
+              }
+              
+              userRealm.setFriendships(endFriendships);
+            } else {
+              userRealm.setFriendships(friendships);
+            }
           }
 
           User user = userRealmDataMapper.transform(userRealm, true);
-          if (user != null && inviteMap != null) user.setInviteList(inviteMap.values());
 
           return user;
         });

@@ -22,7 +22,7 @@ public class Invite extends Recipient {
   }
 
   public String getRoomName() {
-    return room.getName();
+    return room != null ? room.getName() : "";
   }
 
   public void setRoomName(String name) {
@@ -107,5 +107,9 @@ public class Invite extends Recipient {
     }
 
     return userList;
+  }
+
+  public boolean isFriendship(String userId) {
+    return room.getLiveUsers().size() == 1 && room.getLiveUsers().get(0).getId().equals(userId);
   }
 }

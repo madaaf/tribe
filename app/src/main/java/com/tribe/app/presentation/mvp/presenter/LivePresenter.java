@@ -200,8 +200,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void createRoom(Live live) {
-    createRoom.setup(live.getName(),
-        live.getUserIds().toArray(new String[live.getUserIds().size()]));
+    createRoom.setup(null, live.getUserIds().toArray(new String[live.getUserIds().size()]));
     createRoom.execute(new CreateRoomSubscriber());
   }
 
@@ -408,6 +407,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     if (fbIdUpdatedSubscriber != null) {
       fbIdUpdatedSubscriber.unsubscribe();
     }
+    
     fbIdUpdatedSubscriber = new FbIdUpdatedSubscriber();
     fbIdUpdated.execute(fbIdUpdatedSubscriber);
   }

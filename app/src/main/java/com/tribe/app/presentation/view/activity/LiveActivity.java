@@ -148,10 +148,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live.Builder builder = new Live.Builder().color(color)
+    Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).color(color)
         .countdown(!recipient.isLive())
-        .source(source)
-        .type(Live.FRIEND_CALL);
+        .source(source);
 
     if (recipient instanceof Friendship) {
       Friendship fr = (Friendship) recipient;
@@ -175,16 +174,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     user.setDisplayName(name);
     user.setProfilePicture(picture);
 
-    Live.Builder builder = new Live.Builder().users(user)
-        .countdown(StringUtils.isEmpty(roomId))
-        .roomId(roomId)
-        .intent(true)
-        .type(Live.FRIEND_CALL)
-        .source(source);
-
-    if (StringUtils.isEmpty(recipientId)) {
-      builder.type(Live.WEB);
-    }
+    Live.Builder builder =
+        new Live.Builder(StringUtils.isEmpty(recipientId) ? Live.WEB : Live.FRIEND_CALL).users(user)
+            .countdown(StringUtils.isEmpty(roomId))
+            .roomId(roomId)
+            .intent(true)
+            .source(source);
 
     intent.putExtra(EXTRA_LIVE, builder.build());
 
@@ -195,7 +190,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder().type(Live.WEB).roomId(roomId).url(url).source(source).build();
+    Live live = new Live.Builder(Live.WEB).roomId(roomId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -205,7 +200,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   public static Intent getCallingIntent(Context context, @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder().type(Live.NEW_CALL).source(source).build();
+    Live live = new Live.Builder(Live.NEW_CALL).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -430,14 +425,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
         viewLive.start(live);
-        if (live.fromRoom()) {
-          ready();
-        }
       } else {
         finish();
       }
     }));
-    //livePresenter.fbidUpdated();
+
+    livePresenter.fbidUpdated();
   }
 
   private void initBrightness() {
@@ -602,10 +595,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
-      if (!live.getSource().equals(SOURCE_CALL_ROULETTE) &&
-          !live.getSource().equals(SOURCE_NEW_CALL)) {
+      if (live.fromRoom()) {
         getRoomInfos();
-      } else if (live.getSource().equals(SOURCE_NEW_CALL)) createRoom();
+      } else {
+        createRoom();
+      }
     }));
 
     subscriptions.add(viewLive.onNewChallengeReceived()
@@ -1139,11 +1133,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void invite(String userId) {
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
-    livePresenter.inviteUserToRoom(viewLive.getRoom().getOptions().getRoomId(), userId);
-  }
-
-  private void ready() {
-    viewLive.update(live);
+    livePresenter.inviteUserToRoom(room.getId(), userId);
   }
 
   private void roomFull() {
@@ -1234,17 +1224,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   @Override public void onRoomInfos(Room room) {
     this.room = room;
+    live.setRoom(room);
     viewLive.joinRoom(this.room);
 
     initRoomSubscription();
-
-    if (!live.fromRoom() && live.hasUsers()) {
-      for (String userId : live.getUserIds()) {
-        livePresenter.inviteUserToRoom(this.room.getId(), userId);
-      }
-    }
-
-    live.setRoom(room);
 
     if (!StringUtils.isEmpty(live.getRoomId()) &&
         !StringUtils.isEmpty(room.getName()) &&

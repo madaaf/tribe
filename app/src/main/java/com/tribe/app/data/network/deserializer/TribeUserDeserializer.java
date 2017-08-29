@@ -95,7 +95,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       for (JsonElement obj : resultsInvites) {
         if (!(obj instanceof JsonNull)) {
           Invite invite = gson.fromJson(obj, Invite.class);
-          listInvites.add(invite);
+          if (invite != null && invite.getRoom() != null) listInvites.add(invite);
         }
       }
     }

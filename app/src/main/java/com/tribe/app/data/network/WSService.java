@@ -354,11 +354,6 @@ import timber.log.Timber;
     webSocketConnection.send(req);
   }
 
-  private void append(StringBuffer buffer, String str) {
-    buffer.append(str);
-    buffer.append(System.getProperty("line.separator"));
-  }
-
   private String generateHash() {
     return "H" + UUID.randomUUID().toString().toUpperCase().replace("-", "");
   }

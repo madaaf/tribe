@@ -125,9 +125,9 @@ public class LiveStatusNameView extends FrameLayout {
   public void setLive(Live live) {
     this.live = live;
 
-    if (!StringUtils.isEmpty(live.getRoomId())) {
+    if (live.getType().equals(Live.WEB) || live.getType().equals(Live.NEW_CALL)) {
       if (live.getType().equals(Live.WEB)) {
-        if (user.getDisplayName() == null) {
+        if (StringUtils.isEmpty(user.getDisplayName())) {
           txtName.setText("");
         } else {
           txtName.setText(
@@ -169,8 +169,7 @@ public class LiveStatusNameView extends FrameLayout {
       return;
     }
 
-    setStatusText(EmojiParser.demojizedText(getContext().getString(status, live.getName())),
-        null);
+    setStatusText(EmojiParser.demojizedText(getContext().getString(status, live.getName())), null);
   }
 
   public @LiveStatusNameView.StatusType int getStatus() {

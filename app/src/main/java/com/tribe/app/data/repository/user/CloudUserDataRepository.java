@@ -76,9 +76,7 @@ import rx.Observable;
 
   @Override public Observable<User> userInfos(String userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userInfos(userId).doOnError(throwable -> {
-      throwable.printStackTrace();
-    }).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+    return userDataStore.userInfos(userId).doOnError(throwable -> throwable.printStackTrace()).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {

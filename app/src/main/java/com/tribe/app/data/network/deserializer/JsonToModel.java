@@ -10,6 +10,7 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.tribelivesdk.core.Room;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import timber.log.Timber;
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
+  private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
 
   @Inject public JsonToModel(@Named("simpleGson") Gson gson) {
     this.gson = gson;
@@ -130,6 +132,21 @@ import timber.log.Timber;
               Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
               onRandomRoomAssigned.onNext(
                   entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());
+            } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
+              boolean shouldUpdateLiveStatus = false;
+
+              if (jo.has("is_live")) shouldUpdateLiveStatus = true;
+
+              FriendshipRealm friendshipRealm =
+                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
+
+              if (shouldUpdateLiveStatus && !StringUtils.isEmpty(friendshipRealm.getId())) {
+                if (friendshipRealm.isLive()) {
+                  onAddedLive.onNext(friendshipRealm.getId());
+                } else {
+                  onRemovedLive.onNext(friendshipRealm.getId());
+                }
+              }
             }
           }
         }
@@ -202,5 +219,9 @@ import timber.log.Timber;
 
   public Observable<List<String>> onRemovedListOnline() {
     return onRemovedListOnline;
+  }
+
+  public Observable<Room> onRoomUpdated() {
+    return onRoomUpdated;
   }
 }

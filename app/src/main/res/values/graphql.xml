@@ -505,7 +505,7 @@
   </string>
 
   <string name="createRoom" translatable="false">
-    createRoom ( %1$s ) {
+    createRoom %1$s {
       ...RoomInfos
     }
   </string>
@@ -514,8 +514,8 @@
     name : \"%1$s\"
   </string>
 
-  <string name="createRoom.userIds" translatable="false">
-    userIds : [%1$s]
+  <string name="createRoom.usersIds" translatable="false">
+    usersIds : [%1$s]
   </string>
 
   <string name="updateRoom" translatable="false">

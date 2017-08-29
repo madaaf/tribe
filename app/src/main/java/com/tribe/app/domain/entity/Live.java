@@ -121,7 +121,7 @@ public class Live implements Serializable {
   public String getName() {
     if (fromRoom()) {
       return room.getInitiator().getDisplayName();
-    } else if (users != null && users.size() > 0) {
+    } else if (hasUsers()) {
       return users.get(0).getDisplayName();
     } else {
       return type;
@@ -202,16 +202,12 @@ public class Live implements Serializable {
     private boolean isDiceDragedInRoom = false;
     private @LiveActivity.Source String source;
 
-    public Builder() {
+    public Builder(@LiveType String type) {
+      this.type = type;
     }
 
     public Builder room(Room room) {
       this.room = room;
-      return this;
-    }
-
-    public Builder type(@LiveType String type) {
-      this.type = type;
       return this;
     }
 

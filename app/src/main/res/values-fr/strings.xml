@@ -701,4 +701,7 @@
 	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
 	<string name="home_action_read_chat">Swipe droite pour lire</string>
 	<string name="home_action_new_chat">Nouveau chat</string>
+	
+	<!-- New Chat -->
+	<string name="newchat_title">Nouveau chat</string>
 </resources>

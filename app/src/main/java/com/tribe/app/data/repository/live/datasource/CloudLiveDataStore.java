@@ -38,11 +38,16 @@ public class CloudLiveDataStore implements LiveDataStore {
   @Override public Observable<Room> createRoom(String name, String[] userIds) {
     String params = "";
 
-    if (!StringUtils.isEmpty(name)) params += context.getString(R.string.createRoom_name, name);
+    if (!StringUtils.isEmpty(name)) {
+      params += "( " + context.getString(R.string.createRoom_name, name);
+    }
     if (params.length() > 0) params += ", ";
     if (userIds != null && userIds.length > 0) {
-      params += context.getString(R.string.createRoom_userIds, arrayToJson(userIds));
+      params += params.length() == 0 ? "( " : "";
+      params += context.getString(R.string.createRoom_usersIds, arrayToJson(userIds));
     }
+    if (params.length() > 0) params += " )";
+
     String body = context.getString(R.string.createRoom, params);
 
     final String request = context.getString(R.string.mutation, body) +
