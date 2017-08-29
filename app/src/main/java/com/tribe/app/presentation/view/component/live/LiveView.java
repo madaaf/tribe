@@ -771,7 +771,8 @@ public class LiveView extends FrameLayout {
       callDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(tick -> {
-
+            if (viewStatusName == null) return;
+            
             String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
             String duration = CallLevelHelper.getFormattedDuration(startedAt);
 
