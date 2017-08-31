@@ -487,14 +487,22 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().subscribeOn(singleThreadExecutor).
+    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().map(recipients -> {
+      List<Recipient> recipientFinalList = new ArrayList<>();
+      for (Recipient recipient : recipients) {
+        if (recipient instanceof Invite || !recipient.isLive()) {
+          recipientFinalList.add(recipient);
+        }
+      }
+
+      return recipientFinalList;
+    }).subscribeOn(singleThreadExecutor).
         map(recipientList -> {
           DiffUtil.DiffResult diffResult = null;
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
-          // temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {

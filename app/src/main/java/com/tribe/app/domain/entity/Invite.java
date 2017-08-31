@@ -22,7 +22,13 @@ public class Invite extends Recipient {
   }
 
   public String getRoomName() {
-    return room != null ? room.getName() : "";
+    if (room != null) {
+      return room.getName();
+    } else if (room.getLiveUsers().size() <= 1) {
+      return "";
+    } else {
+      return "PLACEHOLDER";
+    }
   }
 
   public void setRoomName(String name) {
@@ -38,7 +44,11 @@ public class Invite extends Recipient {
   }
 
   @Override public String getDisplayName() {
-    return room.getName();
+    if (room.getLiveUsers().size() <= 1) {
+      return room.getInitiator().getDisplayName();
+    } else {
+      return room.getName();
+    }
   }
 
   @Override public String getUsername() {
@@ -50,7 +60,7 @@ public class Invite extends Recipient {
   }
 
   @Override public String getProfilePicture() {
-    return "";
+    return null;
   }
 
   @Override public String getSubId() {
@@ -110,6 +120,10 @@ public class Invite extends Recipient {
   }
 
   public boolean isFriendship(String userId) {
-    return room.getLiveUsers().size() == 1 && room.getLiveUsers().get(0).getId().equals(userId);
+    return room.getLiveUsers().size() <= 1 && room.getInitiator().getId().equals(userId);
+  }
+
+  public boolean isSingle() {
+    return room.getLiveUsers().size() <= 1;
   }
 }

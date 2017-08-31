@@ -22,6 +22,7 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
+import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DataGameDeserializer;
@@ -125,7 +126,10 @@ import timber.log.Timber;
       @Override public boolean shouldSkipClass(Class<?> clazz) {
         return false;
       }
-    }).registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate, sdf)).create();
+    })
+        .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate, sdf))
+        .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
+        .create();
   }
 
   @Provides @PerApplication Gson provideGson(Context context,

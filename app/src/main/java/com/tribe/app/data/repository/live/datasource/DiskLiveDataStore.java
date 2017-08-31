@@ -38,6 +38,10 @@ public class DiskLiveDataStore
     return null;
   }
 
+  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
+    return null;
+  }
+
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
   }
@@ -68,5 +72,9 @@ public class DiskLiveDataStore
 
   @Override public Observable<User> getFbIdUpdated() {
     return null;
+  }
+
+  @Override public Observable<Room> getRoomUpdated() {
+    return liveCache.getRoomUpdated();
   }
 }

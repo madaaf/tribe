@@ -8,9 +8,9 @@ import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.tribelivesdk.core.Room;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -133,20 +133,9 @@ import timber.log.Timber;
               onRandomRoomAssigned.onNext(
                   entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());
             } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
-              boolean shouldUpdateLiveStatus = false;
-
-              if (jo.has("is_live")) shouldUpdateLiveStatus = true;
-
-              FriendshipRealm friendshipRealm =
-                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
-
-              if (shouldUpdateLiveStatus && !StringUtils.isEmpty(friendshipRealm.getId())) {
-                if (friendshipRealm.isLive()) {
-                  onAddedLive.onNext(friendshipRealm.getId());
-                } else {
-                  onRemovedLive.onNext(friendshipRealm.getId());
-                }
-              }
+              //Timber.d("onRoomUpdate : " + entry.getValue().toString());
+              //Room room = gson.fromJson(entry.getValue().toString(), Room.class);
+              //onRoomUpdated.onNext(room);
             }
           }
         }

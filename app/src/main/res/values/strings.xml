@@ -704,4 +704,6 @@
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>
+	<string name="newchat_to">To</string>
+	<string name="newchat_create_error_noone_selected">You have to select people to create a chat</string>
 </resources>

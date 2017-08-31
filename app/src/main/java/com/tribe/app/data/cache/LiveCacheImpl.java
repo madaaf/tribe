@@ -2,6 +2,7 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class LiveCacheImpl implements LiveCache {
   private ObservableRxHashMap<String, Invite> inviteMap;
   private PublishSubject<String> roomCallRouletteMap = PublishSubject.create();
   private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
+  private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
 
   @Inject public LiveCacheImpl(Context context) {
     this.context = context;
@@ -86,5 +88,13 @@ public class LiveCacheImpl implements LiveCache {
 
   @Override public Observable<User> getFbIdUpdated() {
     return onFbIdUpdated;
+  }
+
+  @Override public void onRoomUpdated(Room roomUpdated) {
+    onRoomUpdated.onNext(roomUpdated);
+  }
+
+  @Override public Observable<Room> getRoomUpdated() {
+    return onRoomUpdated;
   }
 }

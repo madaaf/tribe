@@ -27,6 +27,12 @@ public class DiskLiveDataRepository implements LiveRepository {
     return liveDataStore.randomRoomAssigned();
   }
 
+  @Override public Observable<Room> getRoomUpdated() {
+    final DiskLiveDataStore liveDataStore =
+        (DiskLiveDataStore) this.dataStoreFactory.createDiskDataStore();
+    return liveDataStore.getRoomUpdated();
+  }
+
   @Override public Observable<Room> getRoom(String roomId) {
     return null;
   }
@@ -44,6 +50,10 @@ public class DiskLiveDataRepository implements LiveRepository {
   }
 
   @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
     return null;
   }
 

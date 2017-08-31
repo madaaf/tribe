@@ -23,7 +23,13 @@ public class Room implements Serializable {
   private List<User> invited_users;
   private Date created_at;
   private Date updated_at;
-  private Date last_activity_at;
+
+  public Room() {
+  }
+
+  public Room(String id) {
+    this.id = id;
+  }
 
   public String getId() {
     return id;
@@ -105,12 +111,8 @@ public class Room implements Serializable {
     this.updated_at = updatedAt;
   }
 
-  public Date getLastActivityAt() {
-    return last_activity_at;
-  }
+  public void update(Room room) {
 
-  public void setLastActivityAt(Date lastActivityAt) {
-    this.last_activity_at = lastActivityAt;
   }
 
   @Override public String toString() {

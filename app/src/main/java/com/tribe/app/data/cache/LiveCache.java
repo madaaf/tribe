@@ -1,6 +1,7 @@
 package com.tribe.app.data.cache;
 
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.Map;
 import javax.inject.Singleton;
@@ -40,4 +41,8 @@ import rx.Observable;
   void onFbIdUpdated(User userUpdated);
 
   Observable<User> getFbIdUpdated();
+
+  void onRoomUpdated(Room roomUpdated);
+
+  Observable<Room> getRoomUpdated();
 }

@@ -17,6 +17,7 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,6 +164,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<User> getFbIdUpdated() {
     return liveCache.getFbIdUpdated();
+  }
+
+  @Override public Observable<Room> getRoomUpdated() {
+    return null;
   }
 
   @Override public Observable<Void> sendInvitations() {

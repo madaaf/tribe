@@ -27,7 +27,6 @@ public class Live implements Serializable {
   private List<User> users;
   private List<String> userIds;
   private List<String> userPics;
-  private String roomId;
   private String url;
   private int color = 0;
   private boolean countdown = true;
@@ -40,7 +39,6 @@ public class Live implements Serializable {
     this.fromRoom = room != null;
     setUsers(builder.users);
     this.type = builder.type;
-    this.roomId = builder.roomId;
     this.color = builder.color;
     this.countdown = builder.countdown;
     this.intent = builder.intent;
@@ -74,12 +72,8 @@ public class Live implements Serializable {
     isDiceDragedInRoom = diceDragedInRoom;
   }
 
-  public void setRoomId(String roomId) {
-    this.roomId = roomId;
-  }
-
   public String getRoomId() {
-    return room != null ? room.getId() : roomId;
+    return room != null ? room.getId() : null;
   }
 
   public void setUsers(List<User> users) {
@@ -119,7 +113,7 @@ public class Live implements Serializable {
   }
 
   public String getName() {
-    if (fromRoom()) {
+    if (fromRoom() && room.getInitiator() != null) {
       return room.getInitiator().getDisplayName();
     } else if (hasUsers()) {
       return users.get(0).getDisplayName();
@@ -133,7 +127,7 @@ public class Live implements Serializable {
   }
 
   public void setCallRouletteSessionId(String sessionId) {
-    setRoomId(sessionId);
+    setRoom(new Room(sessionId));
     setUrl(null);
   }
 
@@ -170,7 +164,7 @@ public class Live implements Serializable {
   }
 
   public boolean hasRoomId() {
-    return !StringUtils.isEmpty(roomId);
+    return room != null;
   }
 
   public String getUrl() {
@@ -194,7 +188,6 @@ public class Live implements Serializable {
     private Room room;
     private @LiveType String type;
     private List<User> users;
-    private String roomId;
     private String url;
     private int color;
     private boolean countdown = true;
@@ -217,7 +210,7 @@ public class Live implements Serializable {
     }
 
     public Builder roomId(String roomId) {
-      this.roomId = roomId;
+      this.room = new Room(roomId);
       return this;
     }
 

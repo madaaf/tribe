@@ -87,12 +87,14 @@ import rx.Observable;
               RealmList<FriendshipRealm> endFriendships = new RealmList<>();
               for (FriendshipRealm friendshipRealm : friendships) {
                 for (Invite invite : inviteMap.values()) {
-                  if (!invite.isFriendship(friendshipRealm.getFriend().getId())) {
-                    endFriendships.add(friendshipRealm);
+                  if (invite.isFriendship(friendshipRealm.getFriend().getId())) {
+                    friendshipRealm.setLive(true);
                   }
                 }
+
+                endFriendships.add(friendshipRealm);
               }
-              
+
               userRealm.setFriendships(endFriendships);
             } else {
               userRealm.setFriendships(friendships);
@@ -100,6 +102,7 @@ import rx.Observable;
           }
 
           User user = userRealmDataMapper.transform(userRealm, true);
+          user.setInviteList(inviteMap.values());
 
           return user;
         });

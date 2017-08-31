@@ -462,6 +462,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
+    livePresenter.subscribeToRoomUpdates();
   }
 
   private void removeRoomSubscription() {
@@ -666,12 +667,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(
         viewLive.onLeave().observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> leave()));
 
+    subscriptions.add(viewLive.onDismissInvite()
+        .subscribe(userId -> livePresenter.dismissInvite(room.getId(), userId)));
+
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-          if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE)) {
+          if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE) && FacebookUtils.isLoggedIn()) {
             Timber.d("on dropped the dice :" + live.getRoomId());
             livePresenter.roomAcceptRandom(live.getRoomId());
             reRollTheDiceFromLiveRoom();
+            initCallRouletteService();
           } else {
             invite(recipient.getSubId());
           }
@@ -1112,6 +1117,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }
 
     setNextChallengeGame();
+  }
+
+  @Override public void onRoomUpdate(Room room) {
+    room.update(room);
   }
 
   private void displayNotification(String txt) {

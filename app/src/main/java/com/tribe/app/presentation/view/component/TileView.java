@@ -446,7 +446,12 @@ public class TileView extends SquareCardView {
   public void setName() {
     txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
     if (txtWithGuests != null) {
-      txtWithGuests.setVisibility(recipient instanceof Invite ? View.VISIBLE : View.GONE);
+      if (recipient instanceof Invite) {
+        Invite invite = (Invite) recipient;
+        txtWithGuests.setVisibility(invite.isSingle() ? View.GONE : View.VISIBLE);
+      } else {
+        txtWithGuests.setVisibility(View.GONE);
+      }
     }
 
     txtName.setText(recipient.getDisplayName());

@@ -549,12 +549,15 @@
       }
       created_at
       updated_at
-      last_activity_at
     }
   </string>
 
   <string name="inviteToRoom" translatable="false">
     inviteToRoom(roomId : \"%1$s\", userId : \"%2$s\")
+  </string>
+
+  <string name="dismissInvite" translatable="false">
+    dismissInvite(roomId : \"%1$s\", userId : \"%2$s\")
   </string>
 
   <string name="buzzRoom" translatable="false">

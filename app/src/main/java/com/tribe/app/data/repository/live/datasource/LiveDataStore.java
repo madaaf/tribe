@@ -20,6 +20,8 @@ public interface LiveDataStore {
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 
+  Observable<Boolean> dismissInvite(String roomId, String userId);
+
   Observable<Boolean> buzzRoom(String roomId);
 
   Observable<Void> declineInvite(String roomId);

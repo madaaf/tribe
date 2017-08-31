@@ -258,38 +258,31 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onInviteRemoved()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .subscribe(invite -> {
-          liveCache.removeInvite(invite);
-        }));
+        .subscribe(invite -> liveCache.removeInvite(invite)));
 
-    persistentSubscriptions.add(jsonToModel.onAddedLive().subscribe(s -> {
-      liveCache.putLive(s);
-    }));
+    persistentSubscriptions.add(jsonToModel.onAddedLive().subscribe(s -> liveCache.putLive(s)));
 
-    persistentSubscriptions.add(jsonToModel.onRemovedLive().subscribe(s -> {
-      liveCache.removeLive(s);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRemovedLive().subscribe(s -> liveCache.removeLive(s)));
 
-    persistentSubscriptions.add(jsonToModel.onAddedOnline().subscribe(s -> {
-      liveCache.putOnline(s);
-    }));
+    persistentSubscriptions.add(jsonToModel.onAddedOnline().subscribe(s -> liveCache.putOnline(s)));
 
-    persistentSubscriptions.add(jsonToModel.onRemovedOnline().subscribe(s -> {
-      liveCache.removeOnline(s);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRemovedOnline().subscribe(s -> liveCache.removeOnline(s)));
 
     persistentSubscriptions.add(jsonToModel.onRandomRoomAssigned().subscribe(assignedRoomId -> {
       Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
       liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
-    persistentSubscriptions.add(jsonToModel.onFbIdUpdated().subscribe(userUpdated -> {
-      liveCache.onFbIdUpdated(userUpdated);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-    persistentSubscriptions.add(jsonToModel.onUserListUpdated().subscribe(userRealmList -> {
-      userCache.updateUserRealmList(userRealmList);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRoomUpdated().subscribe(room -> liveCache.onRoomUpdated(room)));
+
+    persistentSubscriptions.add(jsonToModel.onUserListUpdated()
+        .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
 
     persistentSubscriptions.add(jsonToModel.onCreatedFriendship()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))

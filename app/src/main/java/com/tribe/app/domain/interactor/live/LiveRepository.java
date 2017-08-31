@@ -24,6 +24,8 @@ public interface LiveRepository {
 
   Observable<Boolean> inviteUserToRoom(String roomId, String userId);
 
+  Observable<Boolean> dismissInvite(String roomId, String userId);
+
   Observable<Boolean> buzzRoom(String roomId);
 
   Observable<Void> declineInvite(String roomId);
@@ -31,4 +33,6 @@ public interface LiveRepository {
   Observable<Boolean> bookRoomLink(String linkId);
 
   Observable<String> randomRoomAssigned();
+
+  Observable<Room> getRoomUpdated();
 }

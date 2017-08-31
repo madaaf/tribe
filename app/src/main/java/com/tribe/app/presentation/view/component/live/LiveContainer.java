@@ -555,12 +555,14 @@ public class LiveContainer extends FrameLayout {
   private void createTileForDrag() {
     viewInviteLive.setDragging(true);
 
-    Friendship friendshiip = (Friendship) currentTileView.getRecipient();
-    if (friendshiip.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
+    Friendship friendship = (Friendship) currentTileView.getRecipient();
+
+    if (friendship.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
       onDropDiceWithoutFbAuth.onNext(null);
       return;
     }
-    if (isGuestUnder13(friendshiip.getFriend())) {
+
+    if (isGuestUnder13(friendship.getFriend())) {
       onDroppedUnder13.onNext(userUnder13Id);
       return;
     }

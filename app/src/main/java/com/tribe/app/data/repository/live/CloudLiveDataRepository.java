@@ -46,6 +46,12 @@ import rx.Observable;
     return cloudDataStore.inviteUserToRoom(roomId, userId);
   }
 
+  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.dismissInvite(roomId, userId);
+  }
+
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
@@ -65,6 +71,10 @@ import rx.Observable;
   }
 
   @Override public Observable<String> randomRoomAssigned() {
+    return null;
+  }
+
+  @Override public Observable<Room> getRoomUpdated() {
     return null;
   }
 }

@@ -193,6 +193,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
+  private PublishSubject<String> onDismissInvite = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -979,6 +980,7 @@ public class LiveView extends FrameLayout {
 
   private void subscribeOnRemovingGuestFromLive(LiveRowView liveRowView) {
     tempSubscriptions.add(liveRowView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
+      onDismissInvite.onNext(tribeGuest.getId());
       removeFromInvites(tribeGuest.getId());
       room.sendToPeers(getRemovedPayload(tribeGuest), true);
       refactorShareOverlay();
@@ -1717,6 +1719,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Boolean> onBlockOpenInviteView() {
     return onBlockOpenInviteView;
+  }
+
+  public Observable<String> onDismissInvite() {
+    return onDismissInvite;
   }
 }
 
