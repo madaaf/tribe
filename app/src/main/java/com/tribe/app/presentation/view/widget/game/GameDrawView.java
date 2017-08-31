@@ -111,12 +111,14 @@ public class GameDrawView extends FrameLayout {
   }
 
   public void onPointsDrawReceived(String pointsReceived) {
+    if (adapter == null) return;
     Gson gson = new Gson();
     Float[][] str = gson.fromJson(pointsReceived, Float[][].class);
     adapter.onPointsDrawReceived(str);
   }
 
   public void onClearDrawReceived() {
+    if (adapter == null) return;
     adapter.onClearDrawReceived();
   }
 

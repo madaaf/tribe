@@ -760,13 +760,13 @@ public class LiveView extends FrameLayout {
   private void startCallLevel() {
 
     if (callDurationSubscription == null) {
-
       Date startedAt = new Date();
 
       callDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(tick -> {
-
+            if (viewStatusName == null) return;
+            
             String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
             String duration = CallLevelHelper.getFormattedDuration(startedAt);
 
@@ -1487,6 +1487,8 @@ public class LiveView extends FrameLayout {
   }
 
   private void onRestartGame(Game game) {
+    if (game == null) return;
+
     if (game instanceof GameChallenge) {
       GameChallenge challenge = (GameChallenge) game;
       if (challenge.getCurrentChallenger().getId().equals(user.getId())) {
@@ -1494,12 +1496,14 @@ public class LiveView extends FrameLayout {
         return;
       }
     }
+
     restartGame(game);
     displayReRollGameNotification(game.getId(), user.getDisplayName());
   }
 
   private void startGame(Game game, boolean isUserAction) {
     if (game == null) return;
+
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     postItGameCount++;
     game.setUserAction(isUserAction);

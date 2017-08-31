@@ -45,6 +45,8 @@ public class TagManagerUtils {
   public static final String KPI_Onboarding_HomeScreen = "KPI_Onboarding_HomeScreen";
   public static final String KPI_Onboarding_SystemCamera = "KPI_Onboarding_SystemCamera";
   public static final String KPI_Onboarding_SystemMicrophone = "KPI_Onboarding_SystemMicrophone";
+  public static final String KPI_Onboarding_Phone_Button = "KPI_Onboarding_Phone_Button";
+  public static final String KPI_Onboarding_Facebook_Button = "KPI_Onboarding_Facebook_Button";
   public static final String Groups_Creation = "Groups_Creation";
   public static final String Groups_Infos = "Groups_Infos";
   public static final String Groups_Members = "Groups_Members";

@@ -132,6 +132,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   }
 
   @OnClick(R.id.btnPhoneNumber) void digitAuth() {
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Phone_Button);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     Timber.d("KPI_Onboarding_Start");
 
@@ -217,6 +218,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   }
 
   @OnClick(R.id.btnFacebook) void facebookAuth() {
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Facebook_Button);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     Timber.d("KPI_Onboarding_Start");
 

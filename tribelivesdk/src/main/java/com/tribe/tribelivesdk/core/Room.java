@@ -7,7 +7,6 @@ import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
-import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -155,8 +154,8 @@ public class Room {
 
     persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
 
-
-    persistentSubscriptions.add(jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+    persistentSubscriptions.add(
+        jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
 
     persistentSubscriptions.add(jsonToModel.onNewDrawReceived().subscribe(onNewDrawReceived));
 
@@ -202,6 +201,7 @@ public class Room {
 
     persistentSubscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .observeOn(AndroidSchedulers.mainThread())
+        .onBackpressureDrop()
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
 
@@ -374,9 +374,9 @@ public class Room {
   public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null
-          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
-          && tpc.getSession().getUserId().equals(userId)) {
+      if (tpc != null &&
+          !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID) &&
+          tpc.getSession().getUserId().equals(userId)) {
 
         webSocketConnection.send(
             getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
@@ -387,9 +387,8 @@ public class Room {
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null && !remotePeer.getSession()
-        .getPeerId()
-        .equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null &&
+        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }
@@ -568,12 +567,15 @@ public class Room {
   public Observable<String> unlockRollTheDice() {
     return unlockRollTheDice;
   }
+
   public Observable<String> onPointsDrawReceived() {
     return onPointsDrawReceived;
   }
+
   public Observable<List<String>> onNewChallengeReceived() {
     return onNewChallengeReceived;
   }
+
   public Observable<List<String>> onNewDrawReceived() {
     return onNewDrawReceived;
   }
