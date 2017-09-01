@@ -35,6 +35,7 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -64,8 +65,6 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
-  @BindView(R.id.btnInvite) View btnNew;
-
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
@@ -84,9 +83,7 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
 
-  @BindView(R.id.callRoulette) FrameLayout callRouletteLayout;
-
-  //@BindView(R.id.diceLayout) DiceView diceView;
+  @BindView(R.id.diceLayout) DiceView diceView;
 
   // VARIABLES
   private float startX, startY = 0;
@@ -108,8 +105,7 @@ public class TopBarView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
-  private PublishSubject<Void> clickCallroulette = PublishSubject.create();
-  private PublishSubject<Void> clickInvite = PublishSubject.create();
+  private PublishSubject<Void> clickCallRoulette = PublishSubject.create();
   private PublishSubject<Boolean> onOpenCloseSearch = PublishSubject.create();
   private PublishSubject<Void> onSyncContacts = PublishSubject.create();
 
@@ -174,9 +170,9 @@ public class TopBarView extends FrameLayout {
         params.leftMargin = getMarginLeftSearch();
         btnSearch.setLayoutParams(params);
 
-        params = (MarginLayoutParams) btnNew.getLayoutParams();
+        params = (MarginLayoutParams) diceView.getLayoutParams();
         params.rightMargin = getMarginRightBtnNew();
-        btnNew.setLayoutParams(params);
+        diceView.setLayoutParams(params);
       }
     });
 
@@ -214,12 +210,9 @@ public class TopBarView extends FrameLayout {
           if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
             viewAvatar.onTouchEvent(event);
             viewAvatar.performClick();
-          } else if (isAClickInView(callRouletteLayout, (int) startX, (int) startY)) {
-            callRouletteLayout.onTouchEvent(event);
-            callRouletteLayout.performClick();
-          } else if (isAClickInView(btnNew, (int) startX, (int) startY)) {
-            btnNew.onTouchEvent(event);
-            btnNew.performClick();
+          } else if (isAClickInView(diceView, (int) startX, (int) startY)) {
+            diceView.onTouchEvent(event);
+            diceView.performClick();
           } else if (isAClickInView(btnSyncContacts, (int) startX, (int) startY)) {
             if (btnSyncContacts.isClickable()) {
               btnSyncContacts.onTouchEvent(event);
@@ -245,8 +238,8 @@ public class TopBarView extends FrameLayout {
       default:
         if (isAClickInView(viewAvatar, (int) event.getRawX(), (int) event.getRawY())) {
           viewAvatar.onTouchEvent(event);
-        } else if (isAClickInView(btnNew, (int) event.getRawX(), (int) event.getRawY())) {
-          btnNew.onTouchEvent(event);
+        } else if (isAClickInView(diceView, (int) event.getRawX(), (int) event.getRawY())) {
+          diceView.onTouchEvent(event);
         } else if (isAClickInView(btnSyncContacts, (int) event.getRawX(), (int) event.getRawY())) {
           btnSyncContacts.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
@@ -265,12 +258,8 @@ public class TopBarView extends FrameLayout {
     clickProfile.onNext(null);
   }
 
-  @OnClick(R.id.callRoulette) void onClickCallRoulette() {
-    clickCallroulette.onNext(null);
-  }
-
-  @OnClick(R.id.btnInvite) void launchInvite() {
-    clickInvite.onNext(null);
+  @OnClick(R.id.diceView) void clickCallRoulette() {
+    clickCallRoulette.onNext(null);
   }
 
   @OnClick(R.id.btnSyncContacts) void btnSyncContactsClick() {
@@ -319,7 +308,8 @@ public class TopBarView extends FrameLayout {
         imgClose.animate().setListener(null).start();
       }
     });
-    hideView(btnNew, false);
+
+    hideView(diceView, false);
     hideView(viewAvatar, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
@@ -338,7 +328,7 @@ public class TopBarView extends FrameLayout {
     editTextSearch.setEnabled(false);
     btnSearch.setClickable(true);
 
-    showView(btnNew, null);
+    showView(diceView, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
 
@@ -351,7 +341,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private int getMarginRightSearch() {
-    return btnNew.getWidth() + ((int) 2f * marginSmall);
+    return diceView.getWidth() + ((int) 2f * marginSmall);
   }
 
   private int getMarginLeftSearch() {
@@ -469,12 +459,8 @@ public class TopBarView extends FrameLayout {
     return clickProfile;
   }
 
-  public Observable<Void> onClickCallroulette() {
-    return clickCallroulette;
-  }
-
-  public Observable<Void> onClickInvite() {
-    return clickInvite;
+  public Observable<Void> onClickCallRoulette() {
+    return clickCallRoulette;
   }
 
   public Observable<Boolean> onOpenCloseSearch() {

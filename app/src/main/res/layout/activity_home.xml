@@ -25,7 +25,7 @@
     <com.tribe.app.presentation.view.component.TopBarView
         android:id="@+id/topBarView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_bar_height_expend"
+        android:layout_height="@dimen/top_bar_height"
         android:background="@null"
         />
 
@@ -40,8 +40,8 @@
         android:scrollbars="none"
         />
 
-    <com.tribe.app.presentation.view.component.home.NewCallView
-        android:id="@+id/btnNewCall"
+    <com.tribe.app.presentation.view.component.home.NewChatView
+        android:id="@+id/btnNewChat"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/bottom_bar_height"
         android:layout_gravity="center_horizontal|bottom"
@@ -51,7 +51,6 @@
         android:elevation="10dp"
         android:foreground="@drawable/selectable_button"
         />
-
 
   </com.tribe.app.presentation.view.component.TopBarContainer>
 

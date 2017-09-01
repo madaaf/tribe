@@ -28,11 +28,11 @@
         app:cpv_thickness="2sp"
         />
   </RelativeLayout>
+
   <FrameLayout
       android:id="@+id/viewTopBarContainer"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-
       android:padding="10dp"
       >
     <com.tribe.app.presentation.view.widget.avatar.AvatarView
@@ -50,21 +50,16 @@
         app:hasShadow="false"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnInvite"
-        android:layout_width="wrap_content"
+    <com.tribe.app.presentation.view.widget.DiceView
+        android:id="@+id/diceLayout"
+        android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_gravity="right"
-        android:background="@drawable/selectable_button_all_rounded_5_green"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
         android:clickable="true"
-        android:drawablePadding="8dp"
-        android:drawableStart="@drawable/picto_hangouts"
         android:gravity="center_vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:singleLine="true"
-        android:text="@string/topbar_invite"
-        style="@style/Body.Two.White"
+        app:diceType="homeGrid"
         />
 
     <ImageView
@@ -153,45 +148,5 @@
             />
       </FrameLayout>
     </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/callRoulette"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="55dp"
-        android:background="@drawable/shape_rect_white_corner"
-        android:clickable="true"
-        android:gravity="center"
-        android:padding="15dp"
-        >
-
-      <com.tribe.app.presentation.view.widget.DiceView
-          android:id="@+id/diceLayout"
-          android:layout_width="45dp"
-          android:layout_height="45dp"
-          android:layout_marginEnd="4dp"
-          app:diceType="homeGrid"
-          />
-
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:layout_marginStart="5dp"
-          android:gravity="center"
-          android:paddingEnd="50dp"
-          android:paddingStart="50dp"
-          android:text="@string/roll_the_dice_grid_button"
-          android:textSize="15sp"
-          style="@style/Body.Two.Black"
-          />
-
-    </FrameLayout>
   </FrameLayout>
-
-
 </merge>

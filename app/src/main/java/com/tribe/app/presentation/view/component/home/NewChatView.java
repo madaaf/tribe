@@ -25,19 +25,19 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 05/08/2017.
  */
-public class NewCallView extends FrameLayout {
+public class NewChatView extends FrameLayout {
 
   private static final int DURATION = 150;
   private static final float OVERSHOOT = 3f;
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.layoutNewCall) ViewGroup layoutNewCall;
+  @BindView(R.id.layoutNewChat) ViewGroup layoutNewChat;
 
   @BindView(R.id.imgBackToTop) ImageView imgBackToTop;
 
   // VARIABLES
-  private boolean isNewCall = true;
+  private boolean isNewChat = true;
 
   // RESOURCES
   int sizeInit, sizeHeight, translationY;
@@ -45,15 +45,15 @@ public class NewCallView extends FrameLayout {
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onNewCall = PublishSubject.create();
+  private PublishSubject<Void> onNewChat = PublishSubject.create();
   private PublishSubject<Void> onGoBackToTop = PublishSubject.create();
 
-  public NewCallView(Context context) {
+  public NewChatView(Context context) {
     super(context);
     init(context, null);
   }
 
-  public NewCallView(Context context, AttributeSet attrs) {
+  public NewChatView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init(context, attrs);
   }
@@ -69,7 +69,7 @@ public class NewCallView extends FrameLayout {
   }
 
   @Override protected void onFinishInflate() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_new_call, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_new_chat, this);
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -96,8 +96,8 @@ public class NewCallView extends FrameLayout {
     });
 
     setOnClickListener(v -> {
-      if (isNewCall) {
-        onNewCall.onNext(null);
+      if (isNewChat) {
+        onNewChat.onNext(null);
       } else {
         onGoBackToTop.onNext(null);
       }
@@ -120,9 +120,9 @@ public class NewCallView extends FrameLayout {
   //  PUBLIC  //
   //////////////
 
-  public void showNewCall() {
-    if (isNewCall) return;
-    isNewCall = true;
+  public void showNewChat() {
+    if (isNewChat) return;
+    isNewChat = true;
 
     imgBackToTop.animate()
         .alpha(0f)
@@ -131,7 +131,7 @@ public class NewCallView extends FrameLayout {
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
-    layoutNewCall.animate()
+    layoutNewChat.animate()
         .alpha(1f)
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
@@ -141,8 +141,8 @@ public class NewCallView extends FrameLayout {
   }
 
   public void showBackToTop() {
-    if (!isNewCall) return;
-    isNewCall = false;
+    if (!isNewChat) return;
+    isNewChat = false;
 
     imgBackToTop.animate()
         .alpha(1f)
@@ -151,7 +151,7 @@ public class NewCallView extends FrameLayout {
         .setInterpolator(new OvershootInterpolator(OVERSHOOT))
         .start();
 
-    layoutNewCall.animate()
+    layoutNewChat.animate()
         .alpha(0f)
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
@@ -164,8 +164,8 @@ public class NewCallView extends FrameLayout {
   //   OBSERVABLES    //
   //////////////////////
 
-  public Observable<Void> onNewCall() {
-    return onNewCall;
+  public Observable<Void> onNewChat() {
+    return onNewChat;
   }
 
   public Observable<Void> onBackToTop() {

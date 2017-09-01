@@ -23,7 +23,7 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.view.component.home.NewCallView;
+import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -54,7 +54,7 @@ public class TopBarContainer extends FrameLayout {
 
   @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
-  @BindView(R.id.btnNewCall) NewCallView btnNewCall;
+  @BindView(R.id.btnNewChat) NewChatView btnNewCall;
 
   // VARIABLES
   private ScreenUtils screenUtils;
@@ -159,7 +159,7 @@ public class TopBarContainer extends FrameLayout {
         if (overallYScroll > scrollThresholdFloatingButton) {
           btnNewCall.showBackToTop();
         } else {
-          btnNewCall.showNewCall();
+          btnNewCall.showNewChat();
         }
       }
     });
@@ -193,8 +193,8 @@ public class TopBarContainer extends FrameLayout {
 
               tooltipView.setTranslationY(locationNewContacts[1] + screenUtils.dpToPx(10));
               tooltipView.setTranslationX(
-                  locationNewContacts[0] + (txtNewContacts.getMeasuredWidth() >> 1)
-                      - (tooltipView.getMeasuredWidth() >> 1));
+                  locationNewContacts[0] + (txtNewContacts.getMeasuredWidth() >> 1) -
+                      (tooltipView.getMeasuredWidth() >> 1));
 
               tooltipView.setOnClickListener(v -> topBarView.animateSearch());
             }
@@ -272,10 +272,10 @@ public class TopBarContainer extends FrameLayout {
 
         final boolean isSwipingVertically = Math.abs(diffY) > Math.abs(diffX);
 
-        if (isSwipingVertically
-            && diffY > touchSlop
-            && diffY > screenUtils.dpToPx(DRAG_THRESHOLD)
-            && !beingDragged) {
+        if (isSwipingVertically &&
+            diffY > touchSlop &&
+            diffY > screenUtils.dpToPx(DRAG_THRESHOLD) &&
+            !beingDragged) {
           beingDragged = true;
         }
 
@@ -433,12 +433,8 @@ public class TopBarContainer extends FrameLayout {
     return topBarView.onClickProfile();
   }
 
-  public Observable<Void> onClickCallroulette() {
-    return topBarView.onClickCallroulette();
-  }
-
-  public Observable<Void> onClickInvite() {
-    return topBarView.onClickInvite();
+  public Observable<Void> onClickCallRoulette() {
+    return topBarView.onClickCallRoulette();
   }
 
   public Observable<Boolean> onOpenCloseSearch() {

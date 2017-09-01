@@ -34,7 +34,6 @@ public class HomeGridAdapter extends RecyclerView.Adapter implements RecyclerVie
   private MoreFriendsAdapterDelegate moreFriendsAdapterDelegate;
   private VideoDemoAdapterDelegate videoDemoAdapterDelegate;
 
-
   // VARIABLES
   private List<Recipient> items;
   private boolean allEnabled = true;

@@ -77,7 +77,7 @@ import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
-import com.tribe.app.presentation.view.component.home.NewCallView;
+import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -185,7 +185,7 @@ public interface ApplicationComponent {
 
   void inject(TooltipView tooltipView);
 
-  void inject(NewCallView newCallButton);
+  void inject(NewChatView newChatButton);
 
   void inject(ManageFriendshipListAdapterDelegate manageFriendshipListAdapterDelegate);
 

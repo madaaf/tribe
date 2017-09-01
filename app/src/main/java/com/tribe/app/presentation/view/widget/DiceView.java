@@ -156,7 +156,11 @@ public class DiceView extends FrameLayout {
       case TYPE_FROM_GRID:
         bgView.setVisibility(GONE);
         label.setVisibility(GONE);
-        dice.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.dice_top_bar_bg));
+        sizeDice = screenUtils.dpToPx(30);
+        setDiceSize(sizeDice);
+        showLabel(false);
+        dice.setBackground(
+            ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white_corner));
         Timber.d("dice from grid");
         break;
       case TYPE_FROM_TILE:

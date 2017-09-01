@@ -4,14 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -66,7 +64,7 @@ import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
-import com.tribe.app.presentation.view.component.home.NewCallView;
+import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -156,9 +154,7 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
 
-  @BindView(R.id.btnNewCall) NewCallView btnNewCall;
-
-  @BindView(R.id.btnInvite) View btnInvite;
+  @BindView(R.id.btnNewChat) NewChatView btnNewChat;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -291,7 +287,7 @@ public class HomeActivity extends BaseActivity
 
     if (stateManager.shouldDisplay(StateManager.NEW_CALL_POPUP)) {
       stateManager.addTutorialKey(StateManager.NEW_CALL_POPUP);
-      popupContainerView.displayPopup(btnNewCall, PopupContainerView.DISPLAY_NEW_CALL_POPUP,
+      popupContainerView.displayPopup(btnNewChat, PopupContainerView.DISPLAY_NEW_CALL_POPUP,
           getResources().getString(R.string.grid_tutorial_new_call));
     } else if (stateManager.shouldDisplay(StateManager.PROFILE_POPUP)) {
       stateManager.addTutorialKey(StateManager.PROFILE_POPUP);
@@ -442,32 +438,33 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-        .flatMap(recipient -> {
-          return DialogFactory.showBottomSheetForRecipient(this, recipient);
-        }, ((recipient, labelType) -> {
-          if (labelType != null) {
-            if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
-              Friendship friendship = (Friendship) recipient;
-              homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                  labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                      : FriendshipRealm.HIDDEN);
-            } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-              Friendship friendship = (Friendship) recipient;
-              friendship.setMute(true);
-              homeGridPresenter.updateFriendship(friendship.getId(), true, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-              Friendship friendship = (Friendship) recipient;
-              friendship.setMute(false);
-              homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
-              Invite invite = (Invite) recipient;
-              homeGridPresenter.declineInvite(invite.getId());
-            }
-          }
+        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+            ((recipient, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+                          : FriendshipRealm.HIDDEN);
+                } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  friendship.setMute(true);
+                  homeGridPresenter.updateFriendship(friendship.getId(), true,
+                      friendship.getStatus());
+                } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  friendship.setMute(false);
+                  homeGridPresenter.updateFriendship(friendship.getId(), false,
+                      friendship.getStatus());
+                } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+                  Invite invite = (Invite) recipient;
+                  homeGridPresenter.declineInvite(invite.getId());
+                }
+              }
 
-          return recipient;
-        }))
+              return recipient;
+            }))
         .subscribe());
 
     subscriptions.add(homeGridAdapter.onClick()
@@ -525,10 +522,10 @@ public class HomeActivity extends BaseActivity
 
   private void initNewCall() {
     subscriptions.add(
-        btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_NEW_CALL)));
+        btnNewChat.onNewChat().subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_NEW_CALL)));
 
     subscriptions.add(
-        btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
+        btnNewChat.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
   }
 
   private void initRemoteConfig() {
@@ -561,20 +558,20 @@ public class HomeActivity extends BaseActivity
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
-    subscriptions.add(topBarContainer.onClickCallroulette().subscribe(aVoid -> {
+    subscriptions.add(topBarContainer.onClickCallRoulette().subscribe(aVoid -> {
       navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);
     }));
 
-    subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
-      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
-    }));
+    //subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
+    //  Bundle bundle = new Bundle();
+    //  bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
+    //  bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+    //  tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+    //  String linkId =
+    //      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
+    //          false);
+    //  homeGridPresenter.bookRoomLink(linkId);
+    //}));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
         .doOnNext(open -> {
@@ -585,11 +582,6 @@ public class HomeActivity extends BaseActivity
             searchView.refactorActions();
             searchView.show();
           } else {
-            if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
-              stateManager.addTutorialKey(StateManager.INVITE_POPUP);
-              popupContainerView.displayPopup(btnInvite, PopupContainerView.DISPLAY_INVITE_POPUP,
-                  getString(R.string.grid_tutorial_invite));
-            }
             recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
             layoutManager.setScrollEnabled(true);
             searchViewDisplayed = false;
@@ -906,8 +898,7 @@ public class HomeActivity extends BaseActivity
   //  BROADCAST  //
   /////////////////
   private void initUIRecyclerView() {
-    layoutManager =
-        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
+    layoutManager = new HomeLayoutManager(context());
     layoutManager.setAutoMeasureEnabled(false);
     recyclerViewFriends.setHasFixedSize(true);
     recyclerViewFriends.setLayoutManager(layoutManager);
@@ -923,51 +914,6 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setItemViewCacheSize(30);
     recyclerViewFriends.setDrawingCacheEnabled(true);
     recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-        switch (homeGridAdapter.getItemViewType(position)) {
-          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-            return layoutManager.getSpanCount();
-          default:
-            return 1;
-        }
-      }
-    });
-  }
-
-  @Override public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    layoutManager =
-        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
-    layoutManager.setAutoMeasureEnabled(true);
-    recyclerViewFriends.setHasFixedSize(false);
-    recyclerViewFriends.setLayoutManager(layoutManager);
-    recyclerViewFriends.setItemAnimator(null);
-    recyclerViewFriends.setAdapter(homeGridAdapter);
-
-    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
-
-    recyclerViewFriends.setItemViewCacheSize(30);
-    recyclerViewFriends.setDrawingCacheEnabled(true);
-    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-        switch (homeGridAdapter.getItemViewType(position)) {
-          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-            return layoutManager.getSpanCount();
-          default:
-            return 1;
-        }
-      }
-    });
-
-    homeGridAdapter.notifyDataSetChanged();
   }
 
   private void displayDeclinedCallNotification(NotificationPayload notificationPayload) {
