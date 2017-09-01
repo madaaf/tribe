@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.live.datasource;
 
 import android.util.Pair;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import java.util.List;
 import rx.Observable;
@@ -10,7 +11,7 @@ import rx.Observable;
  */
 public interface LiveDataStore {
 
-  Observable<Room> getRoom(String roomId);
+  Observable<Room> getRoom(Live live);
 
   Observable<Room> createRoom(String name, String[] userIds);
 

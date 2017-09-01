@@ -498,8 +498,14 @@
     removeSubscription ( subscriptionId : \"%1$s\" )
   </string>
 
-  <string name="getRoom" translatable="false">
+  <string name="getRoom.roomId" translatable="false">
     room (roomId : \"%1$s\") {
+      ...RoomInfos
+    }
+  </string>
+
+  <string name="getRoom.linkId" translatable="false">
+    room (linkId : \"%1$s\") {
       ...RoomInfos
     }
   </string>

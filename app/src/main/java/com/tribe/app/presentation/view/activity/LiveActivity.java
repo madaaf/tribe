@@ -186,11 +186,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, String roomId, String url,
+  public static Intent getCallingIntent(Context context, String linkId, String url,
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder(Live.WEB).roomId(roomId).url(url).source(source).build();
+    Live live = new Live.Builder(Live.WEB).linkId(linkId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -596,7 +596,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
-      if (live.fromRoom()) {
+      if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
         getRoomInfos();
       } else {
         createRoom();
@@ -1120,7 +1120,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRoomUpdate(Room room) {
-    room.update(room);
+    this.room.update(room);
   }
 
   private void displayNotification(String txt) {

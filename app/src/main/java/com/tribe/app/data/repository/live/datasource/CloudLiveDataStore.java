@@ -6,6 +6,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.util.List;
@@ -23,8 +24,14 @@ public class CloudLiveDataStore implements LiveDataStore {
     this.liveCache = liveCache;
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
-    String body = context.getString(R.string.getRoom, roomId);
+  @Override public Observable<Room> getRoom(Live live) {
+    String body;
+
+    if (!StringUtils.isEmpty(live.getLinkId())) {
+      body = context.getString(R.string.getRoom_linkId, live.getLinkId());
+    } else {
+      body = context.getString(R.string.getRoom_roomId, live.getRoomId());
+    }
 
     final String request = context.getString(R.string.query, body) +
         "\n" +

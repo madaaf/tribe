@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.live;
 import android.util.Pair;
 import com.tribe.app.data.repository.live.datasource.CloudLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.live.LiveRepository;
 import java.util.List;
@@ -18,10 +19,10 @@ import rx.Observable;
     this.dataStoreFactory = dataStoreFactory;
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
+  @Override public Observable<Room> getRoom(Live live) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoom(roomId);
+    return cloudDataStore.getRoom(live);
   }
 
   @Override public Observable<Room> createRoom(String name, String... userIds) {

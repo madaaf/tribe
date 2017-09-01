@@ -1,8 +1,13 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.domain.entity.helpers.ChangeHelper;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -23,12 +28,26 @@ public class Room implements Serializable {
   private List<User> invited_users;
   private Date created_at;
   private Date updated_at;
+  private ChangeHelper<List<User>> liveUsersChangeHelper;
+  private ChangeHelper<List<User>> invitedUsersChangeHelper;
+
+  private PublishSubject<List<User>> onAddedLiveUser = PublishSubject.create();
+  private PublishSubject<List<User>> onRemovedLiveUser = PublishSubject.create();
+  private PublishSubject<List<User>> onAddedInvitedUser = PublishSubject.create();
+  private PublishSubject<List<User>> onRemovedInvitedUser = PublishSubject.create();
 
   public Room() {
+    init();
   }
 
   public Room(String id) {
     this.id = id;
+    init();
+  }
+
+  private void init() {
+    liveUsersChangeHelper = new ChangeHelper<>();
+    invitedUsersChangeHelper = new ChangeHelper<>();
   }
 
   public String getId() {
@@ -83,7 +102,7 @@ public class Room implements Serializable {
     return live_users;
   }
 
-  public void setLive_users(List<User> liveUsers) {
+  public void setLiveUsers(List<User> liveUsers) {
     this.live_users = liveUsers;
   }
 
@@ -112,10 +131,32 @@ public class Room implements Serializable {
   }
 
   public void update(Room room) {
+    if (room.getLiveUsers() != null && liveUsersChangeHelper.filter(room.getLiveUsers())) {
+      Timber.d("New live users");
+    }
 
+    if (room.getInvitedUsers() != null && invitedUsersChangeHelper.filter(room.getInvitedUsers())) {
+      Timber.d("New invited users");
+    }
   }
 
   @Override public String toString() {
     return "id : " + id + "\n" + "coordinates : " + coordinates;
+  }
+
+  public Observable<List<User>> onAddedLiveUser() {
+    return onAddedLiveUser;
+  }
+
+  public Observable<List<User>> onRemovedLiveUser() {
+    return onRemovedLiveUser;
+  }
+
+  public Observable<List<User>> onAddedInvitedUser() {
+    return onAddedInvitedUser;
+  }
+
+  public Observable<List<User>> onRemovedInvitedUser() {
+    return onRemovedInvitedUser;
   }
 }

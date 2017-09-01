@@ -79,7 +79,8 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       BookRoomLink bookRoomLink, RandomRoomAssigned randomRoomAssigned, ReportUser reportUser,
       FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
-      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame, RoomUpdated roomUpdated) {
+      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame,
+      RoomUpdated roomUpdated) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
     this.getRoom = getRoom;
@@ -176,7 +177,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   }
 
   public void getRoomInfos(Live live) {
-    getRoom.setup(live.getRoomId());
+    getRoom.setup(live);
     getRoom.execute(new GetRoomSubscriber());
   }
 

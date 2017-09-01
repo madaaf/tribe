@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.live;
 import android.util.Pair;
 import com.tribe.app.data.repository.live.datasource.DiskLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.live.LiveRepository;
 import java.util.List;
@@ -33,7 +34,7 @@ public class DiskLiveDataRepository implements LiveRepository {
     return liveDataStore.getRoomUpdated();
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
+  @Override public Observable<Room> getRoom(Live live) {
     return null;
   }
 

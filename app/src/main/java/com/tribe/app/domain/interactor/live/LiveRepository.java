@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.live;
  */
 
 import android.util.Pair;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import java.util.List;
 import rx.Observable;
@@ -14,7 +15,7 @@ import rx.Observable;
  */
 public interface LiveRepository {
 
-  Observable<Room> getRoom(String roomId);
+  Observable<Room> getRoom(Live live);
 
   Observable<Room> createRoom(String name, String... userIds);
 
