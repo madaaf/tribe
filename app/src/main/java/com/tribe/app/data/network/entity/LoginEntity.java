@@ -18,18 +18,29 @@ public class LoginEntity implements Serializable {
   private String nationalNumber;
   private String call;
   private String fbAccessToken;
+  private String accessToken;
+
 
   public LoginEntity(String to, boolean shouldCall) {
     this.to = to;
     this.call = shouldCall ? "1" : "0";
   }
 
-  public LoginEntity(String phoneNumber, String code, String pinId, String fbAccessToken) {
+  public LoginEntity(String phoneNumber, String code, String pinId, String fbAccessToken, String accessToken) {
     this.username = phoneNumber;
     this.phoneNumber = phoneNumber;
     this.password = code;
     this.pinId = pinId;
     this.fbAccessToken = fbAccessToken;
+    this.accessToken = accessToken;
+  }
+
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
   }
 
   public String getUsername() {

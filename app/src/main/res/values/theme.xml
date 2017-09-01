@@ -10,6 +10,11 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="AppLoginTheme" parent="Theme.AccountKit">
+    <item name="android:windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+  </style>
+
   <style name="AppTheme.Black" parent="@style/AppTheme">
     <item name="android:windowBackground">@android:color/black</item>
   </style>

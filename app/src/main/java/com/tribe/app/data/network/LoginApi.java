@@ -24,8 +24,8 @@ public interface LoginApi {
   public static final String FACEBOOK_TOKEN = "facebook-token";
 
   public static final String AUTHORIZATION = "Authorization";
-  public static final String X_VERIFY = "X-Verify-Credentials-Authorization";
-  public static final String X_AUTH = "X-Auth-Service-Provider";
+  public static final String X_VERIFY = "accountkit-token";
+ // public static final String X_AUTH = "X-Auth-Service-Provider";
 
   @POST("/pin") Observable<PinRealm> requestCode(@Body LoginEntity loginEntity);
 
@@ -35,8 +35,7 @@ public interface LoginApi {
 
   @POST("/token") Observable<AccessToken> loginWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken);
 
-  @POST("/token") Observable<AccessToken> loginWithUsername(@Header(X_VERIFY) String xVerify,
-      @Header(X_AUTH) String xAuth, @Body LoginEntity loginEntity);
+  @POST("/token") Observable<AccessToken> loginWithUsername(@Header(X_VERIFY) String xVerify, @Body LoginEntity loginEntity);
 
   @POST("/refresh") Call<AccessToken> refreshToken(@Body RefreshEntity loginEntity);
 
@@ -44,8 +43,7 @@ public interface LoginApi {
 
   @POST("/register") Observable<AccessToken> registerWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken, @Body RegisterEntity registerEntity);
 
-  @POST("/register") Observable<AccessToken> register(@Header(X_VERIFY) String xVerify,
-                                                      @Header(X_AUTH) String xAuth, @Body RegisterEntity registerEntity);
+  @POST("/register") Observable<AccessToken> register(@Header(X_VERIFY) String xVerify, @Body RegisterEntity registerEntity);
 
   @POST("/username") Observable<Boolean> lookupUsername(@Body UsernameEntity usernameEntity);
 
@@ -53,7 +51,6 @@ public interface LoginApi {
 
   @FormUrlEncoded
   @POST("/linkAuthId") @Headers("@: UseUserToken") Observable<LinkIdResult> linkPhoneNumber(@Header(X_VERIFY) String xVerify,
-                                                                                            @Header(X_AUTH) String xAuth,
                                                                                             @Field("countryCode") String countryCode,
                                                                                             @Field("phoneNumber") String phoneNumber);
 
