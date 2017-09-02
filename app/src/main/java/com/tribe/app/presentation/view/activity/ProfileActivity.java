@@ -16,11 +16,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.digits.sdk.android.AuthCallback;
-import com.digits.sdk.android.AuthConfig;
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsException;
-import com.digits.sdk.android.DigitsSession;
+import com.f2prateek.rx.preferences.Preference;
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.facebook.accountkit.AccountKitLoginResult;
+import com.facebook.accountkit.PhoneNumber;
+import com.facebook.accountkit.ui.AccountKitActivity;
+import com.facebook.accountkit.ui.AccountKitConfiguration;
+import com.facebook.accountkit.ui.LoginType;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -45,6 +50,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
@@ -66,8 +72,10 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
+import static com.tribe.app.presentation.view.activity.AuthActivity.APP_REQUEST_CODE;
 
 public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
@@ -77,6 +85,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     Intent intent = new Intent(context, ProfileActivity.class);
     return intent;
   }
+
+  @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
 
   @Inject ScreenUtils screenUtils;
 
@@ -108,7 +118,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered;
   private FirebaseRemoteConfig firebaseRemoteConfig;
-  private AuthCallback authCallback;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -377,8 +386,60 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     }));
   }
 
+  @Override
+  protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == APP_REQUEST_CODE) { // confirm that this response matches your request
+      AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
+      if (loginResult.getError() != null) {
+        Timber.e("SOEF " + loginResult.getError());
+      } else {
+
+        Timber.e("SOEF  Success! Start your next activity...");
+        if (loginResult.getAccessToken() != null) {
+          getAccount(loginResult.getAccessToken().getToken());
+        }
+      }
+    }
+  }
+
+  private void getAccount(String accessToken) {
+    AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+      @Override public void onSuccess(final Account account) {
+        // Get Account Kit ID
+        String accountKitId = account.getId();
+
+        // Get phone number
+        PhoneNumber phoneNumber = account.getPhoneNumber();
+        String phoneNumberString = phoneNumber.toString();
+
+        Timber.e("SOEF =================+> ON SUCCESS " + accountKitId + " " + phoneNumberString);
+
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+        Timber.d("KPI_Onboarding_PinSucceeded");
+        Timber.d("digit login success " + phoneNumberString);
+        userPhoneNumber.set(phoneNumberString);
+        profilePresenter.updatePhoneNumber(getCurrentUser().getId(), accessToken,
+            phoneNumberString);
+      }
+
+      @Override public void onError(final AccountKitError error) {
+        userPhoneNumber.set(null);
+      }
+    });
+  }
+
   private void changeMyPhoneNumber() {
-    authCallback = new AuthCallback() {
+    final Intent intent = new Intent(this, AccountKitActivity.class);
+    AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
+        new AccountKitConfiguration.AccountKitConfigurationBuilder(LoginType.PHONE,
+            AccountKitActivity.ResponseType.TOKEN);
+    intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
+        configurationBuilder.build());
+    startActivityForResult(intent, APP_REQUEST_CODE);
+
+    /* authCallback = new AuthCallback() {
 
       @Override public void success(DigitsSession session, String phoneNumber) {
         profilePresenter.updatePhoneNumber(getCurrentUser().getId(), session);
@@ -395,7 +456,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     AuthConfig authConfig = builder.build();
 
     Digits.logout(); // Force logout
-    Digits.authenticate(authConfig);
+    Digits.authenticate(authConfig);*/
   }
 
   private void setupFacebookAccountView() {
@@ -458,8 +519,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                    .equals(LabelType.BLOCK_HIDE)) {
                   Friendship friendship = (Friendship) recipient;
                   profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
@@ -583,8 +644,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid ||
-          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
+          .equals(getCurrentUser().getUsername()));
     }
   }
 

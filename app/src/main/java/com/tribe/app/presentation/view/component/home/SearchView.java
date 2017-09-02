@@ -21,11 +21,6 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.digits.sdk.android.AuthCallback;
-import com.digits.sdk.android.AuthConfig;
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsException;
-import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
@@ -212,8 +207,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
                   .filter(x -> x == true)
                   .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
             } else if (searchResult.getFriendship() == null) {
-              if (searchResult.getUsername() != null &&
-                  !searchResult.getUsername().equals(user.getUsername())) {
+              if (searchResult.getUsername() != null && !searchResult.getUsername()
+                  .equals(user.getUsername())) {
                 searchPresenter.createFriendship(searchResult.getId());
               }
             } else {
@@ -302,17 +297,18 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
       boolean shouldAdd = false;
       if (obj instanceof Contact) {
         Contact contact = (Contact) obj;
-        if (!StringUtils.isEmpty(contact.getName()) &&
-            contact.getName().toLowerCase().startsWith(search)) {
+        if (!StringUtils.isEmpty(contact.getName()) && contact.getName()
+            .toLowerCase()
+            .startsWith(search)) {
           shouldAdd = true;
         }
       } else if (obj instanceof Recipient) {
         Recipient recipient = (Recipient) obj;
-        if (!StringUtils.isEmpty(search) &&
-            ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
-                recipient.getDisplayName().toLowerCase().startsWith(search)) ||
-                (recipient.getUsername() != null &&
-                    recipient.getUsername().toLowerCase().startsWith(search)))) {
+        if (!StringUtils.isEmpty(search) && ((!StringUtils.isEmpty(recipient.getDisplayName())
+            && recipient.getDisplayName().toLowerCase().startsWith(search))
+            || (recipient.getUsername() != null && recipient.getUsername()
+            .toLowerCase()
+            .startsWith(search)))) {
           shouldAdd = true;
         }
       }
@@ -394,9 +390,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
-    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions) &&
-        addressBook.get() &&
-        !StringUtils.isEmpty(user.getPhone());
+    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions)
+        && addressBook.get()
+        && !StringUtils.isEmpty(user.getPhone());
 
     layoutBottom.removeAllViews();
 
@@ -428,7 +424,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     subscriptions.add(viewFriendsAddressBookLoad.onChecked().subscribe(checked -> {
 
       if (checked) {
-        changeMyPhoneNumber();
+        //changeMyPhoneNumber();
       } else {
         disableLookupContacts();
       }
@@ -454,9 +450,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   private void openCloseContactsView(boolean open, boolean animate) {
 
     int rotation = open ? 180 : 0;
-    int translation = open ? 0 : (viewFriendsFBLoad.getHeight() +
-        viewFriendsAddressBookLoad.getHeight() +
-        screenUtils.dpToPx(1));
+    int translation = open ? 0 : (viewFriendsFBLoad.getHeight()
+        + viewFriendsAddressBookLoad.getHeight()
+        + screenUtils.dpToPx(1));
     // + 1 because of the dividers 2 * 0.5dp
 
     if (animate) {
@@ -537,7 +533,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
             } else {
               addressBook.set(false);
               refactorActions();
-              searchPresenter.updatePhoneNumber(user.getId(), null);
+              searchPresenter.updatePhoneNumber(user.getId(), null, null);
             }
           }));
     }
@@ -700,8 +696,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     if (isSearchMode) {
       searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
       this.searchResult = searchResult;
-      this.searchResult.setMyself(searchResult.getUsername() != null &&
-          searchResult.getUsername().equals(user.getUsername()));
+      this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
+          .equals(user.getUsername()));
       updateSearch();
     }
   }
@@ -725,7 +721,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     }
   }
 
-  private AuthCallback authCallback;
+/*  private AuthCallback authCallback;
 
   private void changeMyPhoneNumber() {
 
@@ -749,7 +745,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
     Digits.logout(); // Force logout
     Digits.authenticate(authConfig);
-  }
+  }*/
 
   @Override public void errorUpdatePhoneNumber() {
     refactorActions();

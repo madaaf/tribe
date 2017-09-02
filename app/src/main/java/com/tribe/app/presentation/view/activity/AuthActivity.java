@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -52,6 +53,8 @@ import timber.log.Timber;
 
 public class AuthActivity extends BaseActivity
     implements AuthMVPView, FBInfoMVPView, ViewTreeObserver.OnGlobalLayoutListener {
+
+  public static int APP_REQUEST_CODE = 99;
   private static String DEEP_LINK = "DEEP_LINK";
 
   public static Intent getCallingIntent(Context context, Uri deepLink) {
@@ -65,25 +68,25 @@ public class AuthActivity extends BaseActivity
   @Inject PhoneUtils phoneUtils;
 
   @Inject ScreenUtils screenUtils;
-
   @Inject AuthPresenter authPresenter;
+
   @Inject FacebookPresenter facebookPresenter;
 
   @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
-
   @BindView(R.id.btnPhoneNumber) View btnPhoneNumber;
   @BindView(R.id.btnFacebook) View btnFacebook;
   @BindView(R.id.logoView) View logoView;
   @BindView(R.id.buttonsView) View buttonsView;
   @BindView(R.id.imgLogo) View imgLogo;
   @BindView(R.id.baseline) View baseline;
+
   @BindView(R.id.loading_indicator) View loadingIndicator;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-
   // VARIABLES
   private LoginEntity loginEntity;
+
   private Uri deepLink = null;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -95,25 +98,6 @@ public class AuthActivity extends BaseActivity
     Timber.d("KPI_Onboarding_Start");
   }
 
-
-/*  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (data != null) {
-      if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          finishAndRemoveTask();
-        } else {
-          finish();
-        }
-        deepLink = null;
-        userPhoneNumber.set(null);
-        logout();
-      }
-    }
-  }*/
-
-  ////////////////
-  //  PRIVATE   //
   ////////////////
 
   private void loginFromDeepLink() {
@@ -124,8 +108,6 @@ public class AuthActivity extends BaseActivity
       loginEntity = authPresenter.login(null, null, null, null, null);
     }
   }
-
-  public static int APP_REQUEST_CODE = 99;
 
   public void phoneLogin(final View soef) {
     final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -170,35 +152,34 @@ public class AuthActivity extends BaseActivity
   @Override
   protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+    if (data != null) {
+      if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          finishAndRemoveTask();
+        } else {
+          finish();
+        }
+        deepLink = null;
+        userPhoneNumber.set(null);
+        logout();
+      }
+    }
+
     if (requestCode == APP_REQUEST_CODE) { // confirm that this response matches your request
       AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
-      String toastMessage;
       if (loginResult.getError() != null) {
-        toastMessage = loginResult.getError().getErrorType().getMessage();
-        // showErrorActivity(loginResult.getError());
         Timber.e("SOEF " + loginResult.getError());
-      } else if (loginResult.wasCancelled()) {
-        toastMessage = "Login Cancelled";
       } else {
-        if (loginResult.getAccessToken() != null) {
-          toastMessage = "Success:" + loginResult.getAccessToken().getAccountId();
-        } else {
-          toastMessage =
-              String.format("Success:%s...", loginResult.getAuthorizationCode().substring(0, 10));
-        }
 
-        // If you have an authorization code, retrieve it from
-        // loginResult.getAuthorizationCode()
-        // and pass it to your server and exchange it for an access token.
-
-        // Success! Start your next activity...
         Timber.e("SOEF  Success! Start your next activity...");
-        getAccount(loginResult.getAccessToken().getToken());
+        if (loginResult.getAccessToken() != null) {
+          getAccount(loginResult.getAccessToken().getToken());
+        }
       }
     }
   }
 
-  @OnClick(R.id.btnPhoneNumber) void digitAuth() {
+  @OnClick(R.id.btnPhoneNumber) void auth() {
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Phone_Button);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     Timber.d("KPI_Onboarding_Start");
@@ -225,7 +206,7 @@ public class AuthActivity extends BaseActivity
         switch (type.getTypeDef()) {
 
           case LabelType.LOGIN:
-            digitAuth();
+            auth();
             break;
 
           case LabelType.LOGIN_ALTERNATIVE:

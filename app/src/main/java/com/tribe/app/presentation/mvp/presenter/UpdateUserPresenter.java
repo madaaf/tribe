@@ -1,8 +1,8 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-import com.digits.sdk.android.DigitsSession;
 import com.facebook.AccessToken;
+import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
@@ -146,8 +146,8 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
   }
 
-  public void updatePhoneNumber(String userId, DigitsSession digitsSession) {
-    updateUserPhoneNumber.prepare(userId, digitsSession);
+  public void updatePhoneNumber(String userId, String accessToken, String phoneNumber) {
+    updateUserPhoneNumber.prepare(userId, accessToken, phoneNumber);
     updateUserPhoneNumber.execute(new UpdatePhoneNumberSubscriber());
   }
 
