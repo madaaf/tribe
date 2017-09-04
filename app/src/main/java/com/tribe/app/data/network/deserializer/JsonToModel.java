@@ -1,9 +1,11 @@
 package com.tribe.app.data.network.deserializer;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -133,9 +135,61 @@ import timber.log.Timber;
               onRandomRoomAssigned.onNext(
                   entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());
             } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
-              //Timber.d("onRoomUpdate : " + entry.getValue().toString());
-              //Room room = gson.fromJson(entry.getValue().toString(), Room.class);
-              //onRoomUpdated.onNext(room);
+              Timber.d("onRoomUpdate : " + entry.getValue().toString());
+              JsonObject roomJson = entry.getValue().getAsJsonObject();
+              Room room = new Room(roomJson.get("id").getAsString());
+              JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();
+              JsonArray invited_users_json = roomJson.get("invited_users").getAsJsonArray();
+
+              if (live_users_json.size() > 0) {
+                List<User> live_users;
+                try {
+                  live_users =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<User>>() {
+                      }.getType());
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+
+                  List<String> live_users_ids =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<String>>() {
+                      }.getType());
+
+                  live_users = new ArrayList<>();
+
+                  for (String id : live_users_ids) {
+                    live_users.add(new User(id));
+                  }
+                }
+
+                Timber.d("Live_users : " + live_users);
+                room.setLiveUsers(live_users);
+              }
+
+              if (invited_users_json.size() > 0) {
+                List<User> invited_users;
+                try {
+                  invited_users =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<User>>() {
+                      }.getType());
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+
+                  List<String> invited_users_ids =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<String>>() {
+                      }.getType());
+
+                  invited_users = new ArrayList<>();
+
+                  for (String id : invited_users_ids) {
+                    invited_users.add(new User(id));
+                  }
+                }
+
+                Timber.d("invited_users : " + invited_users);
+                room.setInvitedUsers(invited_users);
+              }
+
+              onRoomUpdated.onNext(room);
             }
           }
         }

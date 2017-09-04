@@ -498,8 +498,14 @@
     removeSubscription ( subscriptionId : \"%1$s\" )
   </string>
 
-  <string name="getRoom" translatable="false">
+  <string name="getRoom.roomId" translatable="false">
     room (roomId : \"%1$s\") {
+      ...RoomInfos
+    }
+  </string>
+
+  <string name="getRoom.linkId" translatable="false">
+    room (linkId : \"%1$s\") {
       ...RoomInfos
     }
   </string>
@@ -552,12 +558,12 @@
     }
   </string>
 
-  <string name="inviteToRoom" translatable="false">
-    inviteToRoom(roomId : \"%1$s\", userId : \"%2$s\")
+  <string name="createInvite" translatable="false">
+    createInvite(roomId : \"%1$s\", usersIds : [%2$s])
   </string>
 
-  <string name="dismissInvite" translatable="false">
-    dismissInvite(roomId : \"%1$s\", userId : \"%2$s\")
+  <string name="removeInvite" translatable="false">
+    removeInvite(roomId : \"%1$s\", userId : \"%2$s\")
   </string>
 
   <string name="buzzRoom" translatable="false">

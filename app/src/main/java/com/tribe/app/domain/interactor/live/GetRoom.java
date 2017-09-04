@@ -1,6 +1,7 @@
 package com.tribe.app.domain.interactor.live;
 
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -12,7 +13,7 @@ import rx.Observable;
  */
 public class GetRoom extends UseCase {
 
-  private String roomId;
+  private Live live;
   private LiveRepository liveRepository;
 
   @Inject public GetRoom(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
@@ -21,11 +22,11 @@ public class GetRoom extends UseCase {
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String roomId) {
-    this.roomId = roomId;
+  public void setup(Live live) {
+    this.live = live;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.getRoom(roomId);
+    return this.liveRepository.getRoom(live);
   }
 }

@@ -23,6 +23,7 @@ public class Live implements Serializable {
 
   private @LiveType String type;
   private Room room;
+  private String linkId;
   private boolean fromRoom = false;
   private List<User> users;
   private List<String> userIds;
@@ -37,6 +38,7 @@ public class Live implements Serializable {
   private Live(Builder builder) {
     this.room = builder.room;
     this.fromRoom = room != null;
+    this.linkId = builder.linkId;
     setUsers(builder.users);
     this.type = builder.type;
     this.color = builder.color;
@@ -183,9 +185,14 @@ public class Live implements Serializable {
     this.source = source;
   }
 
+  public String getLinkId() {
+    return linkId;
+  }
+
   public static class Builder {
 
     private Room room;
+    private String linkId;
     private @LiveType String type;
     private List<User> users;
     private String url;
@@ -211,6 +218,11 @@ public class Live implements Serializable {
 
     public Builder roomId(String roomId) {
       this.room = new Room(roomId);
+      return this;
+    }
+
+    public Builder linkId(String linkId) {
+      this.linkId = linkId;
       return this;
     }
 

@@ -54,7 +54,7 @@ import static android.R.attr.id;
   private PublishSubject<TribeOffer> onReadyToSendSdpOffer = PublishSubject.create();
   private PublishSubject<TribeAnswer> onReadyToSendSdpAnswer = PublishSubject.create();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
-  private PublishSubject<TribeMediaStream> onReceivedPeer = PublishSubject.create();
+  private PublishSubject<RemotePeer> onReceivedPeer = PublishSubject.create();
   private PublishSubject<JSONObject> onSendToPeers = PublishSubject.create();
   private PublishSubject<PeerConnection.IceGatheringState> onIceGatheringChanged =
       PublishSubject.create();
@@ -106,9 +106,9 @@ import static android.R.attr.id;
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
 
-    if ((options.getRoutingMode().equals(TribeLiveOptions.P2P)
-        || session.getPeerId().equals(TribeSession.PUBLISHER_ID)
-        && remotePeer.getPeerConnection() != null)) {
+    if ((options.getRoutingMode().equals(TribeLiveOptions.P2P) ||
+        session.getPeerId().equals(TribeSession.PUBLISHER_ID) &&
+            remotePeer.getPeerConnection() != null)) {
       remotePeer.getPeerConnection().addStream(localMediaStream);
     }
 
@@ -122,9 +122,11 @@ import static android.R.attr.id;
 
     subscriptions.add(remotePeer.onReceivedMediaStream()
         .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(tribeMediaStream -> streamManager.generateNewRemotePeer(session))
-        .doOnNext(tribeMediaStream -> streamManager.setMediaStreamForClient(session.getPeerId(),
-            tribeMediaStream.getMediaStream()))
+        .map(tribeMediaStream -> {
+          streamManager.generateNewRemotePeer(session);
+          return streamManager.setMediaStreamForClient(session.getPeerId(),
+              tribeMediaStream.getMediaStream());
+        })
         .subscribe(onReceivedPeer));
   }
 
@@ -154,8 +156,8 @@ import static android.R.attr.id;
   }
 
   public void setRemoteMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
-    Timber.d("setMediaConfiguration for peerId : " + tribePeerMediaConfiguration.getSession()
-        .getPeerId());
+    Timber.d("setMediaConfiguration for peerId : " +
+        tribePeerMediaConfiguration.getSession().getPeerId());
 
     streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
   }
@@ -218,6 +220,10 @@ import static android.R.attr.id;
     }
 
     tribePeerConnection.setRemoteDescription(sdp);
+  }
+
+  public RemotePeer getRemotePeer(String userId) {
+    return streamManager.getRemotePeer(userId);
   }
 
   public Collection<TribePeerConnection> getPeers() {
@@ -305,5 +311,9 @@ import static android.R.attr.id;
 
   public Observable<Boolean> isLocalFreeze() {
     return streamManager.isFreeze();
+  }
+
+  public Observable<RemotePeer> onReceivedStream() {
+    return onReceivedPeer;
   }
 }

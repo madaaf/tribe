@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.live;
  */
 
 import android.util.Pair;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import java.util.List;
 import rx.Observable;
@@ -14,7 +15,7 @@ import rx.Observable;
  */
 public interface LiveRepository {
 
-  Observable<Room> getRoom(String roomId);
+  Observable<Room> getRoom(Live live);
 
   Observable<Room> createRoom(String name, String... userIds);
 
@@ -22,15 +23,11 @@ public interface LiveRepository {
 
   Observable<Void> deleteRoom(String roomId);
 
-  Observable<Boolean> inviteUserToRoom(String roomId, String userId);
+  Observable<Boolean> createInvite(String roomId, String... userIds);
 
-  Observable<Boolean> dismissInvite(String roomId, String userId);
+  Observable<Boolean> removeInvite(String roomId, String userId);
 
   Observable<Boolean> buzzRoom(String roomId);
-
-  Observable<Void> declineInvite(String roomId);
-
-  Observable<Boolean> bookRoomLink(String linkId);
 
   Observable<String> randomRoomAssigned();
 

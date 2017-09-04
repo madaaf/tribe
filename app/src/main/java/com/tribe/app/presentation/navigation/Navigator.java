@@ -365,17 +365,7 @@ public class Navigator {
   }
 
   public String sendInviteToCall(BaseActivity activity, FirebaseRemoteConfig firebaseRemoteConfig,
-      String feature, String fromLinkId, String phoneNumber, boolean shouldOpenDefaultSms) {
-    String url, linkId;
-
-    if (StringUtils.isEmpty(fromLinkId)) {
-      linkId = StringUtils.generateLinkId();
-    } else {
-      linkId = fromLinkId;
-    }
-
-    url = StringUtils.getUrlFromLinkId(activity, linkId);
-
+      String feature, String link, String phoneNumber, boolean shouldOpenDefaultSms) {
     String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
         activity.getCurrentUser().getDisplayName());
     String description =
@@ -383,21 +373,21 @@ public class Navigator {
             activity.getCurrentUser().getDisplayName());
 
     activity.getTagManager()
-        .generateBranchLink(activity, url, title, description, feature, "SMS",
+        .generateBranchLink(activity, link, title, description, feature, "SMS",
             (generatedUrl, error) -> {
               String finalUrl;
 
               if (error == null && !StringUtils.isEmpty(generatedUrl)) {
                 finalUrl = generatedUrl;
               } else {
-                finalUrl = url;
+                finalUrl = link;
               }
 
               openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
                   shouldOpenDefaultSms);
             });
 
-    return linkId;
+    return link;
   }
 
   public void openDefaultMessagingApp(Activity activity, String message) {

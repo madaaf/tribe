@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.live.datasource;
 import android.util.Pair;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
@@ -18,7 +19,7 @@ public class DiskLiveDataStore
     this.liveCache = liveCache;
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
+  @Override public Observable<Room> getRoom(Live live) {
     return null;
   }
 
@@ -34,23 +35,15 @@ public class DiskLiveDataStore
     return null;
   }
 
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, String[] userIds) {
     return null;
   }
 
-  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
+  @Override public Observable<Boolean> removeInvite(String roomId, String userId) {
     return null;
   }
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {
-    return null;
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    return null;
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
     return null;
   }
 

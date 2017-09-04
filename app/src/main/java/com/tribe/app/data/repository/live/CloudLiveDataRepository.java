@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.live;
 import android.util.Pair;
 import com.tribe.app.data.repository.live.datasource.CloudLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.live.LiveRepository;
 import java.util.List;
@@ -18,10 +19,10 @@ import rx.Observable;
     this.dataStoreFactory = dataStoreFactory;
   }
 
-  @Override public Observable<Room> getRoom(String roomId) {
+  @Override public Observable<Room> getRoom(Live live) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoom(roomId);
+    return cloudDataStore.getRoom(live);
   }
 
   @Override public Observable<Room> createRoom(String name, String... userIds) {
@@ -40,34 +41,22 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.inviteUserToRoom(roomId, userId);
+    return cloudDataStore.createInvite(roomId, userIds);
   }
 
-  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
+  @Override public Observable<Boolean> removeInvite(String roomId, String userId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.dismissInvite(roomId, userId);
+    return cloudDataStore.removeInvite(roomId, userId);
   }
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
     return cloudDataStore.buzzRoom(roomId);
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    final CloudLiveDataStore cloudDataStore =
-        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.declineInvite(roomId);
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    final CloudLiveDataStore cloudDataStore =
-        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.bookRoomLink(linkId);
   }
 
   @Override public Observable<String> randomRoomAssigned() {

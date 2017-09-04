@@ -1,33 +1,33 @@
 package com.tribe.app.domain.interactor.live;
 
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.UserRepository;
 import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by tiago on 04/17/16.
+ * Created by tiago on 04/05/2016.
  */
-public class DeclineInvite extends UseCase {
+public class RemoveInvite extends UseCase {
 
-  private LiveRepository liveRepository;
+  private String userId;
   private String roomId;
+  private LiveRepository liveRepository;
 
-  @Inject DeclineInvite(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
+  @Inject public RemoveInvite(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.liveRepository = liveRepository;
   }
 
-  public void prepare(String roomId) {
+  public void setup(String roomId, String userId) {
     this.roomId = roomId;
+    this.userId = userId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.declineInvite(roomId);
+    return this.liveRepository.removeInvite(roomId, userId);
   }
 }

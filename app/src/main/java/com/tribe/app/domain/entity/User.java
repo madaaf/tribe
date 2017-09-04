@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.domain.entity.helpers.Changeable;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -14,7 +16,7 @@ import java.util.List;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class User implements Serializable, BaseListInterface {
+public class User implements Serializable, BaseListInterface, Changeable {
 
   public static final String ID = "id";
   public static final String FBID = "fbid";
@@ -375,9 +377,17 @@ public class User implements Serializable, BaseListInterface {
     return null;
   }
 
+  public boolean isEmpty() {
+    return StringUtils.isEmpty(username);
+  }
+
   @Override public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (getId() != null ? getId().hashCode() : 0);
     return result;
+  }
+
+  @Override public int getChangeHashCode() {
+    return id.hashCode();
   }
 }

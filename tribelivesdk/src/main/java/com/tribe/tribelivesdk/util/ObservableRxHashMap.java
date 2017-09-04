@@ -39,6 +39,12 @@ public class ObservableRxHashMap<T, R> {
     mapSubject.onNext(map);
   }
 
+  public void compute(Map<T, R> map) {
+    this.map.putAll(map);
+    subject.onNext(new RxHashMap<>(ADD_ALL, null, null));
+    mapSubject.onNext(map);
+  }
+
   public void update(T key, R value) {
     map.put(key, value);
     subject.onNext(new RxHashMap<>(UPDATE, key, value));

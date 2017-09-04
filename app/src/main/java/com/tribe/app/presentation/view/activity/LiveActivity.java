@@ -186,11 +186,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, String roomId, String url,
+  public static Intent getCallingIntent(Context context, String linkId, String url,
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder(Live.WEB).roomId(roomId).url(url).source(source).build();
+    Live live = new Live.Builder(Live.WEB).linkId(linkId).url(url).source(source).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -596,7 +596,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
-      if (live.fromRoom()) {
+      if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
         getRoomInfos();
       } else {
         createRoom();
@@ -658,9 +658,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
-      if (viewLive.getRoom() != null && viewLive.getRoom().getOptions() != null) {
+      if (viewLive.getWebRTCRoom() != null && viewLive.getWebRTCRoom().getOptions() != null) {
         soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
-        livePresenter.buzzRoom(viewLive.getRoom().getOptions().getRoomId());
+        livePresenter.buzzRoom(viewLive.getWebRTCRoom().getOptions().getRoomId());
       }
     }));
 
@@ -668,7 +668,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         viewLive.onLeave().observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> leave()));
 
     subscriptions.add(viewLive.onDismissInvite()
-        .subscribe(userId -> livePresenter.dismissInvite(room.getId(), userId)));
+        .subscribe(userId -> livePresenter.removeInvite(room.getId(), userId)));
 
     subscriptions.add(
         viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
@@ -842,10 +842,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null,
-              room.getId(), false);
-      livePresenter.bookRoomLink(linkId);
+      navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE,
+          live.getLinkId(), room.getId(), false);
     }));
 
     subscriptions.add(userInfosNotificationView.onClickMore().subscribe(tribeGuest -> {
@@ -1120,7 +1118,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRoomUpdate(Room room) {
-    room.update(room);
+    this.room.update(room);
   }
 
   private void displayNotification(String txt) {
@@ -1142,7 +1140,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private void invite(String userId) {
     Bundle bundle = new Bundle();
     bundle.putBoolean(TagManagerUtils.SWIPE, true);
-    livePresenter.inviteUserToRoom(room.getId(), userId);
+    livePresenter.createInvite(room.getId(), userId);
   }
 
   private void roomFull() {
@@ -1292,7 +1290,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   /////////////////
 
   private void declineInvitation(String sessionId) {
-    livePresenter.declineInvite(sessionId);
+    livePresenter.removeInvite(sessionId, getCurrentUser().getId());
   }
 
   class NotificationReceiver extends BroadcastReceiver {
