@@ -50,11 +50,11 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
     return null;
   }
 
-  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
+  @Override public Observable<Boolean> removeInvite(String roomId, String userId) {
     return null;
   }
 
@@ -62,11 +62,5 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
-  @Override public Observable<Void> declineInvite(String roomId) {
-    return null;
-  }
 
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    return null;
-  }
 }

@@ -23,15 +23,11 @@ public interface LiveRepository {
 
   Observable<Void> deleteRoom(String roomId);
 
-  Observable<Boolean> inviteUserToRoom(String roomId, String userId);
+  Observable<Boolean> createInvite(String roomId, String... userIds);
 
-  Observable<Boolean> dismissInvite(String roomId, String userId);
+  Observable<Boolean> removeInvite(String roomId, String userId);
 
   Observable<Boolean> buzzRoom(String roomId);
-
-  Observable<Void> declineInvite(String roomId);
-
-  Observable<Boolean> bookRoomLink(String linkId);
 
   Observable<String> randomRoomAssigned();
 

@@ -29,7 +29,8 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     this.id = id;
   }
 
-  public TribeGuest(String id, String displayName, String picture, boolean isInvite, boolean canRemove, String userName) {
+  public TribeGuest(String id, String displayName, String picture, boolean isInvite,
+      boolean canRemove, String userName) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;

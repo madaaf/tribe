@@ -108,6 +108,7 @@ public class Room {
   private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
+  private PublishSubject<RemotePeer> onReceivedStream = PublishSubject.create();
 
   public Room(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
     this.context = context;
@@ -316,9 +317,9 @@ public class Room {
       webSocketConnection.send(payload.toString());
     }));
 
-    tempSubscriptions.add(webRTCClient.isLocalFreeze().subscribe(freeze -> {
-      sendFreeze();
-    }));
+    tempSubscriptions.add(webRTCClient.onReceivedStream().subscribe(onReceivedStream));
+
+    tempSubscriptions.add(webRTCClient.isLocalFreeze().subscribe(freeze -> sendFreeze()));
   }
 
   public void leaveRoom() {
@@ -625,5 +626,9 @@ public class Room {
 
   public Observable<Pair<TribeSession, String>> onStopGame() {
     return onStopGame;
+  }
+
+  public Observable<RemotePeer> onReceivedStream() {
+    return onReceivedStream;
   }
 }

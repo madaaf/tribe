@@ -174,9 +174,9 @@ public class LivePeerOverlayView extends FrameLayout {
 
     int icon = MediaConfigurationUtils.getStateResource(mediaConfiguration);
 
-    final boolean isViewVisible = !mediaConfiguration.isVideoEnabled()
-        || mediaConfiguration.isLowConnection()
-        || !mediaConfiguration.isAudioEnabled();
+    final boolean isViewVisible = !mediaConfiguration.isVideoEnabled() ||
+        mediaConfiguration.isLowConnection() ||
+        !mediaConfiguration.isAudioEnabled();
 
     if (shouldAnimateAvatar) {
       txtName.setAlpha(0f);

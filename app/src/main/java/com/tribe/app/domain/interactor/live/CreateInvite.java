@@ -10,25 +10,24 @@ import rx.Observable;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class InviteUserToRoom extends UseCase {
+public class CreateInvite extends UseCase {
 
-  private String userId;
+  private String[] userIds;
   private String roomId;
   private LiveRepository liveRepository;
 
-  @Inject
-  public InviteUserToRoom(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
+  @Inject public CreateInvite(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String roomId, String userId) {
+  public void setup(String roomId, String... userIds) {
     this.roomId = roomId;
-    this.userId = userId;
+    this.userIds = userIds;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.inviteUserToRoom(roomId, userId);
+    return this.liveRepository.createInvite(roomId, userIds);
   }
 }

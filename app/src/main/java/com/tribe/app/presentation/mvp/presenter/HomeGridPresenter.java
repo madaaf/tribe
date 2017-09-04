@@ -6,14 +6,15 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.live.BookRoomLink;
+import com.tribe.app.domain.interactor.live.CreateRoom;
+import com.tribe.app.domain.interactor.live.RemoveInvite;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
-import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
@@ -36,6 +37,10 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
   // VIEW ATTACHED
   private HomeGridMVPView homeGridView;
 
+  // TEMP VARIABLES
+  private String feature, phone;
+  private boolean shouldOpenSMS;
+
   // USECASES
   private JobManager jobManager;
   private GetDiskUserInfos diskUserInfosUsecase;
@@ -46,10 +51,10 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
-  private DeclineInvite declineInvite;
+  private RemoveInvite removeInvite;
   private SendInvitations sendInvitations;
   private CreateFriendship createFriendship;
-  private BookRoomLink bookRoomLink;
+  private CreateRoom createRoom;
 
   // SUBSCRIBERS
   private FriendListSubscriber diskFriendListSubscriber;
@@ -62,8 +67,8 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
       @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
       @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUserFacebook updateUserFacebook,
       RxFacebook rxFacebook, @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
-      SendInvitations sendInvitations, CreateFriendship createFriendship, BookRoomLink bookRoomLink,
+      GetDiskContactOnAppList getDiskContactOnAppList, RemoveInvite removeInvite,
+      SendInvitations sendInvitations, CreateFriendship createFriendship, CreateRoom createRoom,
       UpdateFriendship updateFriendship) {
     this.updateFriendship = updateFriendship;
     this.jobManager = jobManager;
@@ -75,10 +80,10 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
-    this.declineInvite = declineInvite;
+    this.removeInvite = removeInvite;
     this.sendInvitations = sendInvitations;
     this.createFriendship = createFriendship;
-    this.bookRoomLink = bookRoomLink;
+    this.createRoom = createRoom;
   }
 
   @Override public void onViewDetached() {
@@ -89,10 +94,10 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
-    declineInvite.unsubscribe();
+    removeInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createFriendship.unsubscribe();
-    bookRoomLink.unsubscribe();
+    createRoom.unsubscribe();
     homeGridView = null;
   }
 
@@ -140,9 +145,11 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     sendTokenUseCase.execute(new SendTokenSubscriber());
   }
 
-  public void bookRoomLink(String linkId) {
-    bookRoomLink.setLinkId(linkId);
-    bookRoomLink.execute(new BookRoomLinkSubscriber());
+  public void createRoom(String feature, String phone, boolean shouldOpenSMS) {
+    this.feature = feature;
+    this.phone = phone;
+    this.shouldOpenSMS = shouldOpenSMS;
+    createRoom.execute(new CreateRoomSubscriber());
   }
 
   protected void showViewLoading() {
@@ -304,9 +311,9 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     }
   }
 
-  public void declineInvite(String roomId) {
-    declineInvite.prepare(roomId);
-    declineInvite.execute(new DefaultSubscriber());
+  public void removeInvite(String roomId, String userId) {
+    removeInvite.setup(roomId, userId);
+    removeInvite.execute(new DefaultSubscriber());
   }
 
   public void sendInvitations() {
@@ -318,7 +325,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     createFriendship.execute(new DefaultSubscriber());
   }
 
-  private class BookRoomLinkSubscriber extends DefaultSubscriber<Boolean> {
+  private class CreateRoomSubscriber extends DefaultSubscriber<Room> {
 
     @Override public void onCompleted() {
     }
@@ -327,8 +334,8 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
       e.printStackTrace();
     }
 
-    @Override public void onNext(Boolean isBookLink) {
-      homeGridView.onBookLink(isBookLink);
+    @Override public void onNext(Room room) {
+      homeGridView.onCreateRoom(room, feature, phone, shouldOpenSMS);
     }
   }
 }

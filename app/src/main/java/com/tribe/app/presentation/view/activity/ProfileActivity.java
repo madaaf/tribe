@@ -35,6 +35,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -283,10 +284,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewProfile = (ProfileView) viewStack.push(R.layout.view_profile);
 
     subscriptions.add(viewProfile.onShare().subscribe(aVoid -> {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.PROFILE, null,
-              null, false);
-      profilePresenter.bookRoomLink(linkId);
+      profilePresenter.createRoom();
     }));
 
     subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> setupProfileDetailView()));
@@ -539,8 +537,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     view.animate().translationX(0).alpha(1).setDuration(DURATION).start();
   }
 
-  private void declineInvitation(String sessionId) {
-    profilePresenter.declineInvite(sessionId);
+  private void removeInvite(String sessionId) {
+    profilePresenter.removeInvite(sessionId, getCurrentUser().getId());
   }
 
   @Override public void goToLauncher() {
@@ -556,6 +554,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (viewSettingsManageFriendships != null) {
       viewSettingsManageFriendships.renderUnblockedFriendshipList(friendshipList);
     }
+  }
+
+  @Override public void onCreateRoom(Room room) {
+    String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.PROFILE,
+        room.getLink(), null, false);
   }
 
   @Override public void successUpdateUser(User user) {
@@ -653,7 +656,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(action -> {
               if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                declineInvitation(action.getSessionId());
+                removeInvite(action.getSessionId());
               } else if (action.getIntent() != null) {
                 navigator.navigateToIntent(ProfileActivity.this, action.getIntent());
               }

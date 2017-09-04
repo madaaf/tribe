@@ -24,7 +24,6 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 19/07/2017.

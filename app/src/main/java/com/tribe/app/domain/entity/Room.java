@@ -1,13 +1,14 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.domain.entity.helpers.ChangeHelper;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -28,13 +29,14 @@ public class Room implements Serializable {
   private List<User> invited_users;
   private Date created_at;
   private Date updated_at;
-  private ChangeHelper<List<User>> liveUsersChangeHelper;
-  private ChangeHelper<List<User>> invitedUsersChangeHelper;
+  private transient ObservableRxHashMap<String, User> liveUsersMap;
+  private transient ObservableRxHashMap<String, User> invitedUsersMap;
 
-  private PublishSubject<List<User>> onAddedLiveUser = PublishSubject.create();
-  private PublishSubject<List<User>> onRemovedLiveUser = PublishSubject.create();
-  private PublishSubject<List<User>> onAddedInvitedUser = PublishSubject.create();
-  private PublishSubject<List<User>> onRemovedInvitedUser = PublishSubject.create();
+  private transient CompositeSubscription subscriptions = new CompositeSubscription();
+  private transient PublishSubject<User> onAddedInvitedUser = PublishSubject.create();
+  private transient PublishSubject<User> onRemovedInvitedUser = PublishSubject.create();
+  private transient PublishSubject<User> onAddedLiveUser = PublishSubject.create();
+  private transient PublishSubject<User> onRemovedLiveUser = PublishSubject.create();
 
   public Room() {
     init();
@@ -46,8 +48,30 @@ public class Room implements Serializable {
   }
 
   private void init() {
-    liveUsersChangeHelper = new ChangeHelper<>();
-    invitedUsersChangeHelper = new ChangeHelper<>();
+    liveUsersMap = new ObservableRxHashMap<>();
+    invitedUsersMap = new ObservableRxHashMap<>();
+    invited_users = new ArrayList<>();
+    live_users = new ArrayList<>();
+
+    subscriptions.add(liveUsersMap.getObservable().doOnNext(rxLiveUserMap -> {
+      if (rxLiveUserMap.changeType == ObservableRxHashMap.ADD) {
+        onAddedLiveUser.onNext(rxLiveUserMap.item);
+      } else if (rxLiveUserMap.changeType == ObservableRxHashMap.REMOVE) {
+        onRemovedLiveUser.onNext(rxLiveUserMap.item);
+      }
+    }).subscribe());
+
+    subscriptions.add(invitedUsersMap.getObservable().doOnNext(rxLiveUserMap -> {
+      if (rxLiveUserMap.changeType == ObservableRxHashMap.ADD) {
+        onAddedInvitedUser.onNext(rxLiveUserMap.item);
+      } else if (rxLiveUserMap.changeType == ObservableRxHashMap.REMOVE) {
+        onRemovedInvitedUser.onNext(rxLiveUserMap.item);
+      }
+    }).subscribe());
+  }
+
+  public void dispose() {
+    subscriptions.clear();
   }
 
   public String getId() {
@@ -131,32 +155,62 @@ public class Room implements Serializable {
   }
 
   public void update(Room room) {
-    if (room.getLiveUsers() != null && liveUsersChangeHelper.filter(room.getLiveUsers())) {
-      Timber.d("New live users");
+    List<User> newLiveUsers = room.getLiveUsers();
+    if (newLiveUsers != null && newLiveUsers.size() != liveUsersMap.size()) {
+      computeUsersChanges(liveUsersMap, newLiveUsers);
     }
 
-    if (room.getInvitedUsers() != null && invitedUsersChangeHelper.filter(room.getInvitedUsers())) {
-      Timber.d("New invited users");
+    live_users.clear();
+    live_users.addAll(newLiveUsers);
+
+    List<User> newInvitedUsers = room.getInvitedUsers();
+    if (room.getInvitedUsers() != null && room.getInvitedUsers().size() != invitedUsersMap.size()) {
+      computeUsersChanges(invitedUsersMap, newInvitedUsers);
     }
+
+    invited_users.clear();
+    invited_users.addAll(newInvitedUsers);
+  }
+
+  private void computeUsersChanges(ObservableRxHashMap<String, User> map, List<User> updatedUsers) {
+    Map<String, User> previousUsers = map.getMap();
+
+    if (previousUsers.size() > updatedUsers.size()) {
+      // Somebody left
+      for (String id : previousUsers.keySet()) {
+        boolean found = true;
+
+        for (User user : updatedUsers) {
+          if (!id.equals(user.getId())) found = false;
+        }
+
+        if (!found) map.remove(id);
+      }
+    } else {
+      // Somebody was added
+      for (User user : updatedUsers) {
+        map.put(user.getId(), user);
+      }
+    }
+  }
+
+  public Observable<User> onAddedLiveUser() {
+    return onAddedLiveUser;
+  }
+
+  public Observable<User> onAddedInvitedUser() {
+    return onAddedInvitedUser;
+  }
+
+  public Observable<User> onRemovedLiveUser() {
+    return onRemovedLiveUser;
+  }
+
+  public Observable<User> onRemovedInvitedUser() {
+    return onRemovedInvitedUser;
   }
 
   @Override public String toString() {
     return "id : " + id + "\n" + "coordinates : " + coordinates;
-  }
-
-  public Observable<List<User>> onAddedLiveUser() {
-    return onAddedLiveUser;
-  }
-
-  public Observable<List<User>> onRemovedLiveUser() {
-    return onRemovedLiveUser;
-  }
-
-  public Observable<List<User>> onAddedInvitedUser() {
-    return onAddedInvitedUser;
-  }
-
-  public Observable<List<User>> onRemovedInvitedUser() {
-    return onRemovedInvitedUser;
   }
 }

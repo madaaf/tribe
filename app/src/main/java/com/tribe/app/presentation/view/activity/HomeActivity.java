@@ -41,6 +41,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -424,10 +425,7 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
@@ -462,7 +460,7 @@ public class HomeActivity extends BaseActivity
               homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
             } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
               Invite invite = (Invite) recipient;
-              homeGridPresenter.declineInvite(invite.getId());
+              homeGridPresenter.removeInvite(invite.getId(), getCurrentUser().getId());
             }
           }
 
@@ -570,10 +568,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
@@ -607,10 +602,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     }));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
@@ -627,10 +619,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null,
-              contact.getPhone(), false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.SEARCH, contact.getPhone(), false);
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
@@ -661,7 +650,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void declineInvitation(String sessionId) {
-    homeGridPresenter.declineInvite(sessionId);
+    homeGridPresenter.removeInvite(sessionId, getCurrentUser().getId());
   }
 
   @Override public void onDeepLink(String url) {
@@ -737,10 +726,7 @@ public class HomeActivity extends BaseActivity
     if (intent != null && intent.hasExtra(Extras.ROOM_LINK_ID)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        String linkId =
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null,
-                null, true);
-        homeGridPresenter.bookRoomLink(linkId);
+        homeGridPresenter.createRoom(TagManagerUtils.ONBOARDING, null, true);
       }
     }
   }
@@ -804,8 +790,10 @@ public class HomeActivity extends BaseActivity
     onNewContacts.onNext(contactList);
   }
 
-  @Override public void onBookLink(Boolean isBookLink) {
-
+  @Override
+  public void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS) {
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, room.getLink(),
+        phone, shouldOpenSMS);
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

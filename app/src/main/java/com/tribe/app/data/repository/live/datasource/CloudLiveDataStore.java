@@ -5,7 +5,6 @@ import android.util.Pair;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -97,16 +96,16 @@ public class CloudLiveDataStore implements LiveDataStore {
     return null;
   }
 
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, String[] userIds) {
     final String request = context.getString(R.string.mutation,
-        context.getString(R.string.inviteToRoom, roomId, userId));
+        context.getString(R.string.createInvite, roomId, arrayToJson(userIds)));
 
     return this.tribeApi.inviteUserToRoom(request);
   }
 
-  @Override public Observable<Boolean> dismissInvite(String roomId, String userId) {
+  @Override public Observable<Boolean> removeInvite(String roomId, String userId) {
     final String request = context.getString(R.string.mutation,
-        context.getString(R.string.dismissInvite, roomId, userId));
+        context.getString(R.string.removeInvite, roomId, userId));
 
     return this.tribeApi.dismissInvite(request);
   }
@@ -116,22 +115,6 @@ public class CloudLiveDataStore implements LiveDataStore {
         context.getString(R.string.mutation, context.getString(R.string.buzzRoom, roomId));
 
     return this.tribeApi.buzzRoom(request);
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    liveCache.removeInviteFromRoomId(roomId);
-
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.declineInvite, roomId));
-
-    return this.tribeApi.declineInvite(request);
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.bookRoomLink, linkId));
-
-    return this.tribeApi.bookRoomLink(request).map(BookRoomLinkEntity::isRoomBooked);
   }
 
   @Override public Observable<String> randomRoomAssigned() {

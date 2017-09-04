@@ -11,7 +11,6 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 23/05/2017.

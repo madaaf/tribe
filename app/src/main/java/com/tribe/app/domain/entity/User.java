@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.domain.entity.helpers.Changeable;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -374,6 +375,10 @@ public class User implements Serializable, BaseListInterface, Changeable {
     }
 
     return null;
+  }
+
+  public boolean isEmpty() {
+    return StringUtils.isEmpty(username);
   }
 
   @Override public int hashCode() {
