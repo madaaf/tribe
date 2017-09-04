@@ -59,7 +59,6 @@ public class AuthPresenter implements Presenter {
       String accessToken) {
     LoginEntity loginEntity = new LoginEntity(phoneNumber, code, pinId, fbAccessToken, accessToken);
     showViewLoading();
-    Timber.e("SOEF accessToken " + accessToken);
     cloudLoginUseCase.prepare(loginEntity);
     if (phoneNumber == null && fbAccessToken == null) {
       cloudLoginUseCase.execute(new UnknownSubscriber());

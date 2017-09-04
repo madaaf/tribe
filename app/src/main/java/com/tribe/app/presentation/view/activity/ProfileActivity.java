@@ -393,10 +393,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     if (requestCode == APP_REQUEST_CODE) { // confirm that this response matches your request
       AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
       if (loginResult.getError() != null) {
-        Timber.e("SOEF " + loginResult.getError());
+        Timber.e("login error " + loginResult.getError());
       } else {
-
-        Timber.e("SOEF  Success! Start your next activity...");
         if (loginResult.getAccessToken() != null) {
           getAccount(loginResult.getAccessToken().getToken());
         }
@@ -407,15 +405,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private void getAccount(String accessToken) {
     AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
       @Override public void onSuccess(final Account account) {
-        // Get Account Kit ID
-        String accountKitId = account.getId();
-
         // Get phone number
         PhoneNumber phoneNumber = account.getPhoneNumber();
         String phoneNumberString = phoneNumber.toString();
-
-        Timber.e("SOEF =================+> ON SUCCESS " + accountKitId + " " + phoneNumberString);
-
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
         Timber.d("KPI_Onboarding_PinSucceeded");
         Timber.d("digit login success " + phoneNumberString);

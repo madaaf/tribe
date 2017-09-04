@@ -95,7 +95,6 @@ public class AuthActivity extends BaseActivity
     initDependencyInjector();
     initRessource();
     loginFromDeepLink();
-    Timber.d("KPI_Onboarding_Start");
   }
 
   ////////////////
@@ -109,7 +108,7 @@ public class AuthActivity extends BaseActivity
     }
   }
 
-  public void phoneLogin(final View soef) {
+  public void phoneLogin() {
     final Intent intent = new Intent(this, AccountKitActivity.class);
     AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
         new AccountKitConfiguration.AccountKitConfigurationBuilder(LoginType.PHONE,
@@ -123,14 +122,9 @@ public class AuthActivity extends BaseActivity
   private void getAccount(String accessToken) {
     AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
       @Override public void onSuccess(final Account account) {
-        // Get Account Kit ID
-        String accountKitId = account.getId();
-
         // Get phone number
         PhoneNumber phoneNumber = account.getPhoneNumber();
         String phoneNumberString = phoneNumber.toString();
-
-        Timber.e("SOEF =================+> ON SUCCESS " + accountKitId + " " + phoneNumberString);
 
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
         Timber.d("KPI_Onboarding_PinSucceeded");
@@ -141,7 +135,6 @@ public class AuthActivity extends BaseActivity
 
       @Override public void onError(final AccountKitError error) {
         // Handle Error
-        Timber.e("SOEF  =================+> ON ERROR ");
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
         Timber.d("KPI_Onboarding_PinFailed");
         userPhoneNumber.set(null);
@@ -168,10 +161,8 @@ public class AuthActivity extends BaseActivity
     if (requestCode == APP_REQUEST_CODE) { // confirm that this response matches your request
       AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
       if (loginResult.getError() != null) {
-        Timber.e("SOEF " + loginResult.getError());
+        Timber.e("login error " + loginResult.getError());
       } else {
-
-        Timber.e("SOEF  Success! Start your next activity...");
         if (loginResult.getAccessToken() != null) {
           getAccount(loginResult.getAccessToken().getToken());
         }
@@ -183,9 +174,7 @@ public class AuthActivity extends BaseActivity
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Phone_Button);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     Timber.d("KPI_Onboarding_Start");
-
-    com.facebook.accountkit.AccessToken accessToken = AccountKit.getCurrentAccessToken();//SOEF
-    phoneLogin(null);
+    phoneLogin();
   }
 
   private void alternativeAuth(boolean shouldCall) {
