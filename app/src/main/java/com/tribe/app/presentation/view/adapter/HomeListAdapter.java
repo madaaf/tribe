@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserChatActiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserHomeAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +24,8 @@ public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerVie
 
   protected RxAdapterDelegatesManager delegatesManager;
   private UserHomeAdapterDelegate userGridAdapterDelegate;
-  private UserLiveHomeAdapterDelegate userLiveGridAdapterDelegate;
-  private UserChatActiveHomeAdapterDelegate userConnectedGridAdapterDelegate;
+  //private UserLiveHomeAdapterDelegate userLiveGridAdapterDelegate;
+  //private UserChatActiveHomeAdapterDelegate userConnectedGridAdapterDelegate;
 
   // VARIABLES
   private List<Recipient> items;
@@ -45,11 +43,11 @@ public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerVie
     userGridAdapterDelegate = new UserHomeAdapterDelegate(context);
     delegatesManager.addDelegate(userGridAdapterDelegate);
 
-    userLiveGridAdapterDelegate = new UserLiveHomeAdapterDelegate(context);
-    delegatesManager.addDelegate(userLiveGridAdapterDelegate);
-
-    userConnectedGridAdapterDelegate = new UserChatActiveHomeAdapterDelegate(context);
-    delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
+    //userLiveGridAdapterDelegate = new UserLiveHomeAdapterDelegate(context);
+    //delegatesManager.addDelegate(userLiveGridAdapterDelegate);
+    //
+    //userConnectedGridAdapterDelegate = new UserChatActiveHomeAdapterDelegate(context);
+    //delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
 
     items = new ArrayList<>();
 
@@ -90,18 +88,21 @@ public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerVie
   }
 
   public Observable<View> onClickMore() {
-    return Observable.merge(userGridAdapterDelegate.onClickMore(),
-        userConnectedGridAdapterDelegate.onClickMore(), userLiveGridAdapterDelegate.onClickMore());
+    return userGridAdapterDelegate.onClickMore();
+    //return Observable.merge(userGridAdapterDelegate.onClickMore(),
+    //    userConnectedGridAdapterDelegate.onClickMore(), userLiveGridAdapterDelegate.onClickMore());
   }
 
   public Observable<View> onClick() {
-    return Observable.merge(userGridAdapterDelegate.onClick(),
-        userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
+    return userGridAdapterDelegate.onClick();
+    //return Observable.merge(userGridAdapterDelegate.onClick(),
+    //    userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
   }
 
   public Observable<View> onLongClick() {
-    return Observable.merge(userGridAdapterDelegate.onLongClick(),
-        userLiveGridAdapterDelegate.onLongClick(), userConnectedGridAdapterDelegate.onLongClick());
+    return userGridAdapterDelegate.onLongClick();
+    //return Observable.merge(userGridAdapterDelegate.onLongClick(),
+    //    userLiveGridAdapterDelegate.onLongClick(), userConnectedGridAdapterDelegate.onLongClick());
   }
 
   public void setItems(List<Recipient> items) {

@@ -103,6 +103,8 @@ import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -193,6 +195,8 @@ public interface ApplicationComponent {
 
   void inject(GamesFiltersAdapterDelegate gamesFiltersAdapterDelegate);
 
+  void inject(NewAvatarView newAvatarView);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -213,6 +217,8 @@ public interface ApplicationComponent {
   void inject(HomeListView homeListView);
 
   void inject(RecipientHomeAdapterDelegate homeAdapterDelegate);
+
+  void inject(PictoChatView pictoChatView);
 
   // SERVICES
   void inject(WSService wsService);

@@ -3,25 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <ImageView
-      android:id="@+id/imgChat"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_new_chat"
+  <com.tribe.app.presentation.view.widget.picto.PictoChatView
+      android:id="@+id/viewPictoChat"
+      android:layout_width="@dimen/picto_chat_size"
+      android:layout_height="@dimen/picto_chat_size"
+      android:layout_centerVertical="true"
+      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
+      android:layout_marginStart="@dimen/horizontal_margin_xsmall"
+      android:layout_marginTop="@dimen/horizontal_margin"
+      app:status="active"
       />
 
-  <com.tribe.app.presentation.view.widget.avatar.AvatarView
-      android:id="@+id/avatar"
-      android:layout_width="@dimen/avatar_size"
-      android:layout_height="@dimen/avatar_size"
-      android:layout_gravity="center"
-      android:background="@null"
-      android:clickable="true"
-      app:avatarType="phone"
-      app:hasHole="true"
-      app:hasInd="true"
-      app:hasShadow="true"
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="@dimen/avatar_size_smaller"
+      android:layout_height="@dimen/avatar_size_smaller"
+      android:layout_centerVertical="true"
+      android:layout_toRightOf="@id/viewPictoChat"
       />
-
-  <include layout="@layout/view_tile_grid_base_regular"/>
 
 </merge>

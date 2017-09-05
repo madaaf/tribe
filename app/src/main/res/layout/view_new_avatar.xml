@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <View
+      android:id="@+id/viewRing"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/viewAvatar"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:layout_margin="4dp"
+      android:background="@null"
+      android:scaleType="centerCrop"
+      />
+
+</merge>

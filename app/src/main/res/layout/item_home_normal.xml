@@ -2,6 +2,6 @@
 <com.tribe.app.presentation.view.component.home.HomeListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/viewListItem"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@null"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
     />

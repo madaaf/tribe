@@ -26,6 +26,14 @@
     <attr format="boolean" name="hasHole"/>
   </declare-styleable>
 
+  <declare-styleable name="NewAvatarView">
+    <attr format="enum" name="newAvatarType">
+      <enum name="live" value="0"/>
+      <enum name="online" value="1"/>
+      <enum name="normal" value="2"/>
+    </attr>
+  </declare-styleable>
+
   <declare-styleable name="NotificationView">
     <attr format="enum" name="notifType">
       <enum name="enjoyingTribe" value="0"/>
@@ -54,6 +62,13 @@
       <enum name="normal" value="0"/>
       <enum name="live" value="1"/>
       <enum name="chat" value="2"/>
+    </attr>
+  </declare-styleable>
+
+  <declare-styleable name="PictoChatView">
+    <attr format="enum" name="status">
+      <enum name="active" value="0"/>
+      <enum name="inactive" value="1"/>
     </attr>
   </declare-styleable>
 

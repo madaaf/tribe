@@ -6,10 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.component.home.HomeListView;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -45,12 +48,16 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
       @NonNull RecyclerView.ViewHolder holder) {
     RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
     Recipient recipient = items.get(position);
+
+    vh.viewListItem.setRecipient(recipient);
   }
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
     Recipient recipient = items.get(position);
+
+    vh.viewListItem.setRecipient(recipient);
   }
 
   public Observable<View> onClickMore() {
@@ -68,6 +75,8 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
   protected abstract int getLayoutId();
 
   static class RecipientHomeViewHolder extends RecyclerView.ViewHolder {
+
+    @BindView(R.id.viewListItem) HomeListView viewListItem;
 
     public RecipientHomeViewHolder(View itemView) {
       super(itemView);
