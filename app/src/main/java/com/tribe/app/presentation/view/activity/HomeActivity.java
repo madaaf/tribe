@@ -457,7 +457,7 @@ public class HomeActivity extends BaseActivity
               homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
             } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
               Invite invite = (Invite) recipient;
-              homeGridPresenter.removeInvite(invite.getId(), getCurrentUser().getId());
+              homeGridPresenter.declineInvite(invite.getId());
             }
           }
 
@@ -642,7 +642,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void declineInvitation(String sessionId) {
-    homeGridPresenter.removeInvite(sessionId, getCurrentUser().getId());
+    homeGridPresenter.declineInvite(sessionId);
   }
 
   @Override public void onDeepLink(String url) {

@@ -84,16 +84,15 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<Room> updateRoom(@Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
-      @Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> createInvite(@Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Boolean> dismissInvite(@Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> removeInvite(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> declineInvite(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<List<Invite>> invites(@Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<Void> declineInvite(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<LookupFBResult> lookupFacebook(
       @Field("query") String query);

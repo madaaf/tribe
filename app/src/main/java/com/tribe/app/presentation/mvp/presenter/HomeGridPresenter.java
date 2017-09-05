@@ -13,7 +13,7 @@ import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.live.CreateRoom;
-import com.tribe.app.domain.interactor.live.RemoveInvite;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
@@ -51,7 +51,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
-  private RemoveInvite removeInvite;
+  private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
   private CreateFriendship createFriendship;
   private CreateRoom createRoom;
@@ -67,7 +67,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
       @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
       @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUserFacebook updateUserFacebook,
       RxFacebook rxFacebook, @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList, RemoveInvite removeInvite,
+      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateFriendship createFriendship, CreateRoom createRoom,
       UpdateFriendship updateFriendship) {
     this.updateFriendship = updateFriendship;
@@ -80,7 +80,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
-    this.removeInvite = removeInvite;
+    this.declineInvite = declineInvite;
     this.sendInvitations = sendInvitations;
     this.createFriendship = createFriendship;
     this.createRoom = createRoom;
@@ -94,7 +94,7 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
-    removeInvite.unsubscribe();
+    declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createFriendship.unsubscribe();
     createRoom.unsubscribe();
@@ -311,9 +311,9 @@ public class HomeGridPresenter extends FriendshipPresenter implements Presenter 
     }
   }
 
-  public void removeInvite(String roomId, String userId) {
-    removeInvite.setup(roomId, userId);
-    removeInvite.execute(new DefaultSubscriber());
+  public void declineInvite(String roomId) {
+    declineInvite.setup(roomId);
+    declineInvite.execute(new DefaultSubscriber());
   }
 
   public void sendInvitations() {

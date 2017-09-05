@@ -100,14 +100,21 @@ public class CloudLiveDataStore implements LiveDataStore {
     final String request = context.getString(R.string.mutation,
         context.getString(R.string.createInvite, roomId, arrayToJson(userIds)));
 
-    return this.tribeApi.inviteUserToRoom(request);
+    return this.tribeApi.createInvite(request);
   }
 
   @Override public Observable<Boolean> removeInvite(String roomId, String userId) {
     final String request = context.getString(R.string.mutation,
         context.getString(R.string.removeInvite, roomId, userId));
 
-    return this.tribeApi.dismissInvite(request);
+    return this.tribeApi.removeInvite(request);
+  }
+
+  @Override public Observable<Boolean> declineInvite(String roomId) {
+    final String request =
+        context.getString(R.string.mutation, context.getString(R.string.declineInvite, roomId));
+
+    return this.tribeApi.declineInvite(request);
   }
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {

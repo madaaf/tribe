@@ -14,6 +14,7 @@ import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.live.BuzzRoom;
 import com.tribe.app.domain.interactor.live.CreateInvite;
 import com.tribe.app.domain.interactor.live.CreateRoom;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.live.GetRoom;
 import com.tribe.app.domain.interactor.live.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.live.RemoveInvite;
@@ -47,6 +48,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private BuzzRoom buzzRoom;
   private CreateInvite createInvite;
   private RemoveInvite removeInvite;
+  private DeclineInvite declineInvite;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
   private CreateFriendship createFriendship;
@@ -69,7 +71,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
 
   @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, GetRoom getRoom,
       CreateRoom createRoom, UpdateRoom updateRoom, BuzzRoom buzzRoom, CreateInvite createInvite,
-      RemoveInvite removeInvite, GetRecipientInfos getRecipientInfos,
+      RemoveInvite removeInvite, DeclineInvite declineInvite, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
       RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
@@ -83,6 +85,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     this.buzzRoom = buzzRoom;
     this.createInvite = createInvite;
     this.removeInvite = removeInvite;
+    this.declineInvite = declineInvite;
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
     this.createFriendship = createFriendship;
@@ -106,6 +109,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     cloudUserInfosList.unsubscribe();
     createInvite.unsubscribe();
     removeInvite.unsubscribe();
+    declineInvite.unsubscribe();
     getRecipientInfos.unsubscribe();
     createFriendship.unsubscribe();
     getNamesPostItGame.unsubscribe();
@@ -214,6 +218,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   public void removeInvite(String roomId, String userId) {
     removeInvite.setup(roomId, userId);
     removeInvite.execute(new DefaultSubscriber());
+  }
+
+  public void declineInvite(String roomId) {
+    declineInvite.setup(roomId);
+    declineInvite.execute(new DefaultSubscriber());
   }
 
   private final class GetUserInfoListSubscriber extends DefaultSubscriber<List<User>> {

@@ -53,6 +53,12 @@ import rx.Observable;
     return cloudDataStore.removeInvite(roomId, userId);
   }
 
+  @Override public Observable<Boolean> declineInvite(String roomId) {
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.declineInvite(roomId);
+  }
+
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
