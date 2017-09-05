@@ -5,8 +5,6 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import android.util.Pair;
-
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
@@ -22,7 +20,6 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import java.util.Set;
-
 import rx.Observable;
 
 /**
@@ -85,7 +82,7 @@ public interface UserRepository {
 
   Observable<User> updateUserFacebook(String userId, String accessToken);
 
-  Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession);
+  Observable<User> updateUserPhoneNumber(String userId, String accessToken, String phoneNumber);
 
   Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
 

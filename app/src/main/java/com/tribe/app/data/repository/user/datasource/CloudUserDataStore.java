@@ -5,9 +5,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsOAuthSigning;
-import com.digits.sdk.android.DigitsSession;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
@@ -51,11 +48,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
-import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterCore;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,13 +56,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.functions.Action1;
-import rx.functions.Action2;
 import timber.log.Timber;
 
 /**
@@ -133,19 +124,13 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<AccessToken> login(LoginEntity loginEntity) {
     if (loginEntity.getFbAccessToken() != null) {
-      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken()).doOnNext(saveToCacheAccessToken);
-
+      return loginApi.loginWithFacebook(loginEntity.getFbAccessToken())
+          .doOnNext(saveToCacheAccessToken);
     } else if (loginEntity.getPhoneNumber() == null) {
       return loginApi.loginWithAnonymous().doOnNext(saveToCacheAccessToken);
-
-    } else if (Digits.getActiveSession() != null) {
-      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
-      TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
-      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
-      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
-      return loginApi.loginWithUsername(authHeaders.get(LoginApi.X_VERIFY),
-              authHeaders.get(LoginApi.X_AUTH), loginEntity).doOnNext(saveToCacheAccessToken);
-
+    } else if (loginEntity.getAccessToken() != null) {
+      return loginApi.loginWithUsername(loginEntity.getAccessToken(), loginEntity)
+          .doOnNext(saveToCacheAccessToken);
     } else {
       return loginApi.loginWithUsername(loginEntity).doOnNext(saveToCacheAccessToken);
     }
@@ -159,19 +144,16 @@ public class CloudUserDataStore implements UserDataStore {
     registerEntity.setCountryCode(loginEntity.getCountryCode());
     registerEntity.setPassword(loginEntity.getPassword());
     registerEntity.setPhoneNumber(
-            loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber().replace(loginEntity.getCountryCode(), "") : null);
+        loginEntity.getPhoneNumber() != null ? loginEntity.getPhoneNumber()
+            .replace(loginEntity.getCountryCode(), "") : null);
     registerEntity.setPinId(loginEntity.getPinId());
 
     if (loginEntity.getFbAccessToken() != null) {
-      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity).doOnNext(saveToCacheAccessToken);
-
-    } else if (Digits.getActiveSession() != null) {
-      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
-      TwitterAuthToken authToken = Digits.getActiveSession().getAuthToken();
-      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
-      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
-      return loginApi.register(authHeaders.get(LoginApi.X_VERIFY), authHeaders.get(LoginApi.X_AUTH),
-          registerEntity).doOnNext(saveToCacheAccessToken);
+      return loginApi.registerWithFacebook(loginEntity.getFbAccessToken(), registerEntity)
+          .doOnNext(saveToCacheAccessToken);
+    } else if (loginEntity.getAccessToken() != null) {
+      return loginApi.register(loginEntity.getAccessToken(), registerEntity)
+          .doOnNext(saveToCacheAccessToken);
     } else {
       return loginApi.register(registerEntity).doOnNext(saveToCacheAccessToken);
     }
@@ -328,42 +310,32 @@ public class CloudUserDataStore implements UserDataStore {
     }
   }
 
-  @Override
-  public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
-    return accessToken != null ?
-            this.loginApi.linkFacebook(accessToken)
-            : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
+  @Override public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
+    return accessToken != null ? this.loginApi.linkFacebook(accessToken)
+        : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
   }
 
   @Override
-  public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
-
-    if (digitsSession != null) {
-      TwitterAuthConfig authConfig = TwitterCore.getInstance().getAuthConfig();
-      TwitterAuthToken authToken = digitsSession.getAuthToken();
-      DigitsOAuthSigning oauthSigning = new DigitsOAuthSigning(authConfig, authToken);
-      Map<String, String> authHeaders = oauthSigning.getOAuthEchoHeadersForVerifyCredentials();
-
-      String phoneNumber = digitsSession.getPhoneNumber();
+  public Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber) {
+    if (accessToken != null) {
       String countryCode = "+" + phoneUtils.getCountryCode(phoneNumber);
 
-      return this.loginApi.linkPhoneNumber(authHeaders.get(LoginApi.X_VERIFY),
-              authHeaders.get(LoginApi.X_AUTH), countryCode, phoneNumber.replace(countryCode, ""));
-
+      return this.loginApi.linkPhoneNumber(accessToken, countryCode,
+          phoneNumber.replace(countryCode, ""));
     } else {
       return this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_PHONE_NUMBER);
     }
   }
 
-  @Override
-  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return this.tribeApi.incrUserTimeInCall(
-            context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall))).doOnNext(aVoid -> {
+        context.getString(R.string.user_incrUserTimeInCall, Long.toString(timeInCall)))
+        .doOnNext(aVoid -> {
 
-      if (userCache != null) {
-        userCache.incrUserTimeInCall(userId, timeInCall);
-      }
-    });
+          if (userCache != null) {
+            userCache.incrUserTimeInCall(userId, timeInCall);
+          }
+        });
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {

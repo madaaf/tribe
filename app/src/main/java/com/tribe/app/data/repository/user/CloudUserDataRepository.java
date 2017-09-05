@@ -1,8 +1,6 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
-
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -30,7 +28,6 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -120,24 +117,22 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
-  @Override
-  public Observable<User> updateUserFacebook(String userId, String accessToken) {
+  @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserFacebook(accessToken)
-            .flatMap(aVoid -> userDataStore.userInfos(userId)
+        .flatMap(aVoid -> userDataStore.userInfos(userId)
             .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
 
-  @Override
-  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
+  @Override public Observable<User> updateUserPhoneNumber(String userId, String accessToken,
+      String phoneNumber) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.updateUserPhoneNumber(digitsSession)
-            .flatMap(aVoid -> userDataStore.userInfos(userId)
+    return userDataStore.updateUserPhoneNumber(accessToken, phoneNumber)
+        .flatMap(aVoid -> userDataStore.userInfos(userId)
             .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
 
-  @Override
-  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.incrUserTimeInCall(userId, timeInCall);
   }

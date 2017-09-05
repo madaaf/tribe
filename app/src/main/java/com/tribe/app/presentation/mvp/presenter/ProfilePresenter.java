@@ -2,9 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
 
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsSession;
-import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;

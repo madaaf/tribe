@@ -1,8 +1,6 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
-
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -35,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -155,18 +152,16 @@ import rx.Observable;
     return null;
   }
 
-  @Override
-  public Observable<User> updateUserFacebook(String userId, String accessToken) {
+  @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     return null;
   }
 
-  @Override
-  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
+  @Override public Observable<User> updateUserPhoneNumber(String userId, String accessToken,
+      String phoneNumber) {
     return null;
   }
 
-  @Override
-  public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
+  @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
     return null;
   }
 
@@ -266,12 +261,13 @@ import rx.Observable;
         });
   }
 
-  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds, Contact contact, List<Object> result) {
+  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds,
+      Contact contact, List<Object> result) {
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) &&
-                (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
+        if (mapUsersAdded.containsKey(userInList.getId()) && (includedUserIds == null
+            || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }
