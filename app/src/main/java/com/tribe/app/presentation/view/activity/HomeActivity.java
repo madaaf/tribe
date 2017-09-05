@@ -61,7 +61,7 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
-import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
+import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
@@ -119,7 +119,7 @@ public class HomeActivity extends BaseActivity
 
   @Inject HomeGridPresenter homeGridPresenter;
 
-  @Inject HomeGridAdapter homeGridAdapter;
+  @Inject HomeListAdapter homeGridAdapter;
 
   @Inject ScreenUtils screenUtils;
 

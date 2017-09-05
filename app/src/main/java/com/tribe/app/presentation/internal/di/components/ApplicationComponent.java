@@ -71,12 +71,14 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
+import com.tribe.app.presentation.view.component.home.HomeListView;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
@@ -207,6 +209,10 @@ public interface ApplicationComponent {
   void inject(RemoveNewStatusContactJob removeNewStatusContactJob);
 
   void inject(NotificationBuilder notificationBuilder);
+
+  void inject(HomeListView homeListView);
+
+  void inject(RecipientHomeAdapterDelegate homeAdapterDelegate);
 
   // SERVICES
   void inject(WSService wsService);

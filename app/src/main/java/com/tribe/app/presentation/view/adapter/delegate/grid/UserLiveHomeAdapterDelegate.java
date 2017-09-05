@@ -11,16 +11,17 @@ import java.util.List;
 /**
  * Created by tiago on 01/18/2017.
  */
-public class UserLiveGridAdapterDelegate extends RecipientGridAdapterDelegate {
+public class UserLiveHomeAdapterDelegate extends RecipientGridAdapterDelegate {
 
-  public UserLiveGridAdapterDelegate(Context context) {
+  public UserLiveHomeAdapterDelegate(Context context) {
     super(context);
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     Recipient recipient = items.get(position);
-    return (recipient instanceof Friendship
-        || recipient instanceof Invite) && !recipient.isFake() && recipient.isLive();
+    return (recipient instanceof Friendship || recipient instanceof Invite) &&
+        !recipient.isFake() &&
+        recipient.isLive();
   }
 
   @Override protected int getLayoutId() {

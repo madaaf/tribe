@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+  <ImageView
+      android:id="@+id/imgChat"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_new_chat"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/avatar"
+      android:layout_width="@dimen/avatar_size"
+      android:layout_height="@dimen/avatar_size"
+      android:layout_gravity="center"
+      android:background="@null"
+      android:clickable="true"
+      app:avatarType="phone"
+      app:hasHole="true"
+      app:hasInd="true"
+      app:hasShadow="true"
+      />
+
+  <include layout="@layout/view_tile_grid_base_regular"/>
+
+</merge>
