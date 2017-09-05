@@ -12,15 +12,28 @@
       android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
       android:layout_marginStart="@dimen/horizontal_margin_xsmall"
       android:layout_marginTop="@dimen/horizontal_margin"
-      app:status="active"
+      app:chatStatus="active"
       />
 
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
       android:id="@+id/viewNewAvatar"
-      android:layout_width="@dimen/avatar_size_smaller"
-      android:layout_height="@dimen/avatar_size_smaller"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
       android:layout_centerVertical="true"
       android:layout_toRightOf="@id/viewPictoChat"
+      />
+
+  <com.tribe.app.presentation.view.widget.picto.PictoLiveView
+      android:id="@+id/viewPictoLive"
+      android:layout_width="@dimen/picto_live_size"
+      android:layout_height="@dimen/picto_live_size"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
+      android:layout_marginStart="@dimen/horizontal_margin_xsmall"
+      android:layout_marginTop="@dimen/horizontal_margin"
+      app:liveStatus="active"
       />
 
 </merge>

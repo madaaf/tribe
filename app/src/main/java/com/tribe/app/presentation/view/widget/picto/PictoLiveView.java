@@ -12,11 +12,12 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.widget.PulseLayout;
 
 /**
  * Created by tiago on 09/05/17.
  */
-public class PictoChatView extends FrameLayout {
+public class PictoLiveView extends FrameLayout {
 
   @IntDef({ ACTIVE, INACTIVE }) public @interface Status {
   }
@@ -24,21 +25,22 @@ public class PictoChatView extends FrameLayout {
   public static final int ACTIVE = 0;
   public static final int INACTIVE = 1;
 
-  @BindView(R.id.imgChat) ImageView imgChat;
+  @BindView(R.id.imgLive) ImageView imgLive;
+  @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
 
   private int status;
   private Unbinder unbinder;
 
-  public PictoChatView(Context context) {
+  public PictoLiveView(Context context) {
     super(context);
     init();
   }
 
-  public PictoChatView(Context context, AttributeSet attrs) {
+  public PictoLiveView(Context context, AttributeSet attrs) {
     super(context, attrs);
 
-    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PictoChatView);
-    status = a.getInt(R.styleable.PictoChatView_chatStatus, INACTIVE);
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.PictoLiveView);
+    status = a.getInt(R.styleable.PictoLiveView_liveStatus, INACTIVE);
     a.recycle();
 
     init();
@@ -64,7 +66,7 @@ public class PictoChatView extends FrameLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_picto_chat, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_picto_live, this);
     unbinder = ButterKnife.bind(this);
     setStatus(status);
   }
@@ -72,9 +74,11 @@ public class PictoChatView extends FrameLayout {
   public void setStatus(@Status int status) {
     this.status = status;
     if (status == INACTIVE) {
-      imgChat.setImageResource(R.drawable.picto_chat_inactive);
+      imgLive.setImageResource(R.drawable.picto_live_inactive);
+      layoutPulse.stop();
     } else {
-      imgChat.setImageResource(R.drawable.picto_chat_active);
+      imgLive.setImageResource(R.drawable.picto_live_active);
+      layoutPulse.start();
     }
   }
 }

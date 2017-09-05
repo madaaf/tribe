@@ -105,6 +105,7 @@ import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
+import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -197,6 +198,16 @@ public interface ApplicationComponent {
 
   void inject(NewAvatarView newAvatarView);
 
+  void inject(NotificationBuilder notificationBuilder);
+
+  void inject(HomeListView homeListView);
+
+  void inject(RecipientHomeAdapterDelegate homeAdapterDelegate);
+
+  void inject(PictoChatView pictoChatView);
+
+  void inject(PictoLiveView pictoLiveView);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -211,14 +222,6 @@ public interface ApplicationComponent {
   void inject(DeleteContactsFBJob deleteContactsFBJob);
 
   void inject(RemoveNewStatusContactJob removeNewStatusContactJob);
-
-  void inject(NotificationBuilder notificationBuilder);
-
-  void inject(HomeListView homeListView);
-
-  void inject(RecipientHomeAdapterDelegate homeAdapterDelegate);
-
-  void inject(PictoChatView pictoChatView);
 
   // SERVICES
   void inject(WSService wsService);

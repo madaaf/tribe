@@ -40,6 +40,9 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
   private int type;
   private GradientDrawable gradientDrawable;
 
+  // RESOURCES
+  private int strokeWidth;
+
   public NewAvatarView(Context context) {
     this(context, null);
     init(context, null);
@@ -58,6 +61,8 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
+    initResources();
+
     avatar.setType(AvatarView.REGULAR);
 
     TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NewAvatarView);
@@ -67,6 +72,10 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
     a.recycle();
 
     setBackground(null);
+  }
+
+  private void initResources() {
+    strokeWidth = screenUtils.dpToPx(3);
   }
 
   @Override public void load(Recipient recipient) {
@@ -96,13 +105,12 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
     }
 
     if (type == LIVE) {
-      gradientDrawable.setStroke(screenUtils.dpToPx(4),
-          ContextCompat.getColor(getContext(), R.color.red));
+      gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), R.color.red));
     } else if (type == ONLINE) {
-      gradientDrawable.setStroke(screenUtils.dpToPx(4),
+      gradientDrawable.setStroke(strokeWidth,
           ContextCompat.getColor(getContext(), R.color.blue_new));
     } else {
-      gradientDrawable.setStroke(screenUtils.dpToPx(4),
+      gradientDrawable.setStroke(strokeWidth,
           ContextCompat.getColor(getContext(), R.color.grey_offline));
     }
 

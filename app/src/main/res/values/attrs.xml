@@ -66,7 +66,14 @@
   </declare-styleable>
 
   <declare-styleable name="PictoChatView">
-    <attr format="enum" name="status">
+    <attr format="enum" name="chatStatus">
+      <enum name="active" value="0"/>
+      <enum name="inactive" value="1"/>
+    </attr>
+  </declare-styleable>
+
+  <declare-styleable name="PictoLiveView">
+    <attr format="enum" name="liveStatus">
       <enum name="active" value="0"/>
       <enum name="inactive" value="1"/>
     </attr>
