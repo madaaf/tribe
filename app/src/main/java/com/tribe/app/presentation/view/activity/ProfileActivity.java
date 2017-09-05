@@ -537,8 +537,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     view.animate().translationX(0).alpha(1).setDuration(DURATION).start();
   }
 
-  private void removeInvite(String sessionId) {
-    profilePresenter.removeInvite(sessionId, getCurrentUser().getId());
+  private void declineInvite(String sessionId) {
+    profilePresenter.declineInvite(sessionId);
   }
 
   @Override public void goToLauncher() {
@@ -656,7 +656,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(action -> {
               if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                removeInvite(action.getSessionId());
+                declineInvite(action.getSessionId());
               } else if (action.getIntent() != null) {
                 navigator.navigateToIntent(ProfileActivity.this, action.getIntent());
               }

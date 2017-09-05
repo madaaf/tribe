@@ -58,6 +58,10 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
+  @Override public Observable<Boolean> declineInvite(String roomId) {
+    return null;
+  }
+
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
   }

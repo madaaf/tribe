@@ -1290,7 +1290,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   /////////////////
 
   private void declineInvitation(String sessionId) {
-    livePresenter.removeInvite(sessionId, getCurrentUser().getId());
+    livePresenter.declineInvite(sessionId);
   }
 
   class NotificationReceiver extends BroadcastReceiver {

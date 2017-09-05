@@ -311,7 +311,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
 
   private void endDismiss() {
     shouldStartHome = false;
-    presenter.removeInvite(payload.getSessionId(), getCurrentUser().getId());
+    presenter.declineInvite(payload.getSessionId());
     immersiveCallState.set(false);
     finish();
   }
