@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
@@ -47,6 +49,7 @@ import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import io.branch.referral.Branch;
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
@@ -187,6 +190,7 @@ public class AndroidApplication extends Application {
       Timber.plant(new Timber.DebugTree());
     } else {
       Timber.plant(new ProductionTree(this));
+      Fabric.with(this, new Crashlytics(), new Answers());
     }
   }
 

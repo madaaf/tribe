@@ -113,6 +113,8 @@
 	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
 	<string name="live_notification_call_after_decline">Appeler %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
+	<string name="live_notification_action_see_thread">Voir la conversation</string>
+	<string name="live_notification_action_reply">Répondre</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
