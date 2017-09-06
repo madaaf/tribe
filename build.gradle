@@ -21,7 +21,6 @@ allprojects {
   ext {
     androidApplicationId = 'com.tribe.app'
     androidVersionCode = 115
-    androidVersionName = "3.0.15"
     testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     testApplicationId = 'com.tribe.app.test'
   }
