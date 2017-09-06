@@ -725,12 +725,12 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(live.getRoom()
         .onAddedInvitedUser()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(user -> {
-          if (!liveInviteMap.getMap().containsKey(user.getId()) &&
-              !liveRowViewMap.getMap().containsKey(user.getId())) {
-            if (!user.getId().equals(user.getId())) {
-              addTribeGuest(user.asTribeGuest());
-              onNotificationRemotePeerInvited.onNext(user.getDisplayName());
+        .subscribe(invitedUser -> {
+          if (!liveInviteMap.getMap().containsKey(invitedUser.getId()) &&
+              !liveRowViewMap.getMap().containsKey(invitedUser.getId())) {
+            if (!invitedUser.getId().equals(user.getId())) {
+              addTribeGuest(invitedUser.asTribeGuest());
+              onNotificationRemotePeerInvited.onNext(invitedUser.getDisplayName());
             }
           }
         }));
@@ -738,9 +738,9 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(live.getRoom()
         .onRemovedInvitedUser()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(user -> {
-          if (liveInviteMap.getMap().containsKey(user.getId())) {
-            removeFromInvites(user.getId());
+        .subscribe(invitedUser -> {
+          if (liveInviteMap.getMap().containsKey(invitedUser.getId())) {
+            removeFromInvites(invitedUser.getId());
           }
         }));
 
@@ -748,7 +748,8 @@ public class LiveView extends FrameLayout {
     Timber.d("Initiating Room");
     webRTCRoom.connect(options);
 
-    live.getRoom().update(room); // We just want to trigger the updates to update the UI
+    live.getRoom()
+        .update(user, room, false); // We just want to trigger the updates to update the UI
   }
 
   private void startCallLevel() {

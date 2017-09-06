@@ -403,6 +403,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initRoom() {
+    livePresenter.onViewAttached(this);
+
     subscriptions.add(rxPermissions.request(PermissionUtils.PERMISSIONS_LIVE).subscribe(granted -> {
       if (granted) {
         Bundle bundle = new Bundle();
@@ -518,6 +520,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void disposeCall(boolean isJump) {
     removeRoomSubscription();
+    livePresenter.onViewDetached();
     viewLive.endCall(isJump);
 
     if (isJump) {
@@ -597,10 +600,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
-      if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
-        getRoomInfos();
-      } else {
-        createRoom();
+      if (!live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
+        if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
+          getRoomInfos();
+        } else {
+          createRoom();
+        }
       }
     }));
 
@@ -656,6 +661,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
+      initRoomSubscription();
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
@@ -905,7 +911,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
-
     if (isFromOthers) {
       Toast.makeText(this,
           EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
@@ -1119,7 +1124,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRoomUpdate(Room room) {
-    this.room.update(room);
+    this.room.update(user, room, true);
   }
 
   private void displayNotification(String txt) {
@@ -1225,8 +1230,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.room = room;
     live.setRoom(room);
     viewLive.joinRoom(this.room);
-
-    initRoomSubscription();
 
     if (!StringUtils.isEmpty(live.getRoomId()) &&
         !StringUtils.isEmpty(room.getName()) &&

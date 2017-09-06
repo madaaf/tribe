@@ -201,6 +201,7 @@ public class Room {
             tribeMediaConstraints -> webRTCClient.updateMediaConstraints(tribeMediaConstraints)));
 
     persistentSubscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
