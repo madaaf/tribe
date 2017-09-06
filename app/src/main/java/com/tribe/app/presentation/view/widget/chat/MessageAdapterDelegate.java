@@ -12,6 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
 
@@ -57,8 +58,8 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   static class MessageViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.text) public TextView txtName;
-    @BindView(R.id.name) public TextView name;
+    @BindView(R.id.text) public TextViewFont txtName;
+    @BindView(R.id.name) public TextViewFont name;
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
     @BindView(R.id.header) public LinearLayout header;
 

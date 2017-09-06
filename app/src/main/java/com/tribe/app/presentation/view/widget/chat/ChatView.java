@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,6 +19,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -38,8 +38,8 @@ public class ChatView extends FrameLayout {
   private LinearLayoutManager layoutManager;
   private List<Message> items = new ArrayList<>();
 
-  @BindView(R.id.editText) EditText countrySearchView;
-  @BindView(R.id.recyclerViewSef) RecyclerView recyclerView;
+  @BindView(R.id.editText) EditTextFont countrySearchView;
+  @BindView(R.id.recyclerView) RecyclerView recyclerView;
   @Inject User user;
 
   public ChatView(@NonNull Context context) {
@@ -72,7 +72,7 @@ public class ChatView extends FrameLayout {
     recyclerView.setAdapter(adapter);
   }
 
-  @OnClick(R.id.envoyer) public void envoyer() {
+  @OnClick(R.id.sendBtn) public void envoyer() {
     String ok = countrySearchView.getText().toString();
     Timber.e("SOEF " + ok);
     Message t = new Message();

@@ -52,6 +52,9 @@
   <color name="grey.new.contacts">#757575</color>
   <color name="grey.share">#E8EBEE</color>
   <color name="grey.onboarding.phone_number">#F9F9F9</color>
+  <color name="grey.chat.border">#D7E1E1</color>
+  <color name="grey.chat.grey">#E9F4F4</color>
+  <color name="grey.chat.grey.hint">#D8D8D8</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
