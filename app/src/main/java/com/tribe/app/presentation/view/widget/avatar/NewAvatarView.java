@@ -96,6 +96,8 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
   }
 
   public void setType(int type) {
+    if (this.type == type) return;
+
     this.type = type;
 
     if (gradientDrawable == null) {

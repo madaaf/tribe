@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -62,6 +63,7 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
+import com.tribe.app.presentation.view.adapter.decorator.DividerDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
@@ -72,7 +74,6 @@ import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
-import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -463,7 +464,7 @@ public class HomeActivity extends BaseActivity
 
           return recipient;
         }))
-    .subscribe());
+        .subscribe());
 
     subscriptions.add(homeGridAdapter.onClick()
         .map(view -> homeGridAdapter.getItemAtPosition(
@@ -497,8 +498,6 @@ public class HomeActivity extends BaseActivity
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
-          temp.add(new Friendship(Recipient.ID_MORE));
-          ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
             diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
@@ -891,6 +890,9 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setHasFixedSize(true);
     recyclerViewFriends.setLayoutManager(layoutManager);
     recyclerViewFriends.setItemAnimator(null);
+    recyclerViewFriends.addItemDecoration(
+        new DividerDecoration(context(), ContextCompat.getColor(context(), R.color.grey_divider),
+            screenUtils.dpToPx(0.5f)));
     homeGridAdapter.setItems(new ArrayList<>());
     recyclerViewFriends.setAdapter(homeGridAdapter);
 

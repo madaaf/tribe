@@ -4,14 +4,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import java.util.List;
 
 /**
  * Created by tiago on 01/18/2017.
  */
-public class UserLiveHomeAdapterDelegate extends RecipientGridAdapterDelegate {
+public class UserLiveHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
 
   public UserLiveHomeAdapterDelegate(Context context) {
     super(context);
@@ -19,12 +18,11 @@ public class UserLiveHomeAdapterDelegate extends RecipientGridAdapterDelegate {
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     Recipient recipient = items.get(position);
-    return (recipient instanceof Friendship || recipient instanceof Invite) &&
-        !recipient.isFake() &&
-        recipient.isLive();
+    //return recipient instanceof Invite;
+    return (recipient instanceof Friendship) && !recipient.getSubId().equals(Recipient.ID_HEADER);
   }
 
   @Override protected int getLayoutId() {
-    return R.layout.item_user_live_grid;
+    return R.layout.item_home_live;
   }
 }

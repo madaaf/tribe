@@ -70,6 +70,8 @@ public class PictoChatView extends FrameLayout {
   }
 
   public void setStatus(@Status int status) {
+    if (this.status == status) return;
+
     this.status = status;
     if (status == INACTIVE) {
       imgChat.setImageResource(R.drawable.picto_chat_inactive);

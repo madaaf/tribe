@@ -8,18 +8,19 @@
       android:layout_width="@dimen/picto_chat_size"
       android:layout_height="@dimen/picto_chat_size"
       android:layout_centerVertical="true"
-      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:layout_marginBottom="@dimen/horizontal_margin_xsmall"
       android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
       android:layout_marginStart="@dimen/horizontal_margin_xsmall"
-      android:layout_marginTop="@dimen/horizontal_margin"
-      app:chatStatus="active"
+      android:layout_marginTop="@dimen/horizontal_margin_xsmall"
+      app:chatStatus="inactive"
       />
 
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
       android:id="@+id/viewNewAvatar"
       android:layout_width="@dimen/avatar_size_small"
       android:layout_height="@dimen/avatar_size_small"
-      android:layout_centerVertical="true"
+      android:layout_alignParentTop="true"
+      android:layout_marginTop="@dimen/horizontal_margin_smaller"
       android:layout_toRightOf="@id/viewPictoChat"
       />
 
@@ -29,11 +30,22 @@
       android:layout_height="@dimen/picto_live_size"
       android:layout_alignParentEnd="true"
       android:layout_centerVertical="true"
-      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:layout_marginBottom="@dimen/horizontal_margin_xsmall"
       android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
       android:layout_marginStart="@dimen/horizontal_margin_xsmall"
-      android:layout_marginTop="@dimen/horizontal_margin"
-      app:liveStatus="active"
+      android:layout_marginTop="@dimen/horizontal_margin_xsmall"
+      app:liveStatus="inactive"
+      />
+
+  <com.tribe.app.presentation.view.widget.text.TextHomeNameActionView
+      android:id="@+id/viewHomeNameAction"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/horizontal_margin_smaller"
+      android:layout_marginStart="@dimen/horizontal_margin"
+      android:layout_marginTop="@dimen/horizontal_margin_smaller"
+      android:layout_toLeftOf="@id/viewPictoLive"
+      android:layout_toRightOf="@id/viewNewAvatar"
       />
 
 </merge>

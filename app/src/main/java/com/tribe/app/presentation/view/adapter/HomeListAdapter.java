@@ -5,9 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserChatActiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +22,12 @@ import rx.subscriptions.CompositeSubscription;
 public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerViewItemEnabler {
 
   public static final int EMPTY_HEADER_VIEW_TYPE = 99;
+  public static final int HEADERS_VIEW_TYPE = 98;
 
   protected RxAdapterDelegatesManager delegatesManager;
   private UserHomeAdapterDelegate userGridAdapterDelegate;
-  //private UserLiveHomeAdapterDelegate userLiveGridAdapterDelegate;
-  //private UserChatActiveHomeAdapterDelegate userConnectedGridAdapterDelegate;
+  private UserLiveHomeAdapterDelegate userLiveGridAdapterDelegate;
+  private UserChatActiveHomeAdapterDelegate userchatActiveHomeAdapterDelegate;
 
   // VARIABLES
   private List<Recipient> items;
@@ -36,16 +38,15 @@ public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerVie
 
   @Inject public HomeListAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
-    delegatesManager.addDelegate(new EmptyGridAdapterDelegate(context, true, false));
     delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
         new EmptyHeaderGridAdapterDelegate(context));
 
     userGridAdapterDelegate = new UserHomeAdapterDelegate(context);
     delegatesManager.addDelegate(userGridAdapterDelegate);
 
-    //userLiveGridAdapterDelegate = new UserLiveHomeAdapterDelegate(context);
-    //delegatesManager.addDelegate(userLiveGridAdapterDelegate);
-    //
+    userLiveGridAdapterDelegate = new UserLiveHomeAdapterDelegate(context);
+    delegatesManager.addDelegate(userLiveGridAdapterDelegate);
+
     //userConnectedGridAdapterDelegate = new UserChatActiveHomeAdapterDelegate(context);
     //delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
 

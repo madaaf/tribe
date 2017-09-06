@@ -53,6 +53,7 @@
   <color name="grey.share">#E8EBEE</color>
   <color name="grey.onboarding.phone_number">#F9F9F9</color>
   <color name="grey.offline">#B6BFBF</color>
+  <color name="grey.divider">#E9F4F4</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
@@ -63,6 +64,7 @@
   <color name="blue.new">#3DE9DA</color>
   <color name="blue.new.opacity.10">#1A3DE9DA</color>
   <color name="blue.dialogs">#316DF8</color>
+  <color name="blue.gradient.chat.opacity.5">#0D21A6FF</color>
 
   <!-- VIOLET -->
   <color name="purple.group">#8161DA</color>
@@ -81,6 +83,7 @@
   <color name="red">#F9474C</color>
   <color name="red.circle">#F22936</color>
   <color name="red.new.contacts">#FD2448</color>
+  <color name="red.gradient.live.opacity.5">#0DF8143A</color>
 
   <!-- ORANGES -->
 

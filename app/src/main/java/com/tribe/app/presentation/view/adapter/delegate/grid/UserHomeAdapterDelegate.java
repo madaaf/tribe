@@ -18,8 +18,8 @@ public class UserHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     Recipient recipient = items.get(position);
-
-    return (recipient instanceof Friendship) && !recipient.getSubId().equals(Recipient.ID_HEADER);
+    return false;
+    //return (recipient instanceof Friendship) && !recipient.getSubId().equals(Recipient.ID_HEADER);
   }
 
   @Override protected int getLayoutId() {

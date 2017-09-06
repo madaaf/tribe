@@ -99,7 +99,7 @@
   </style>
 
   <style name="Caption.One">
-    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
   </style>
 
   <style name="Caption.Two">
@@ -368,7 +368,7 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
-  <style name="Text" />
+  <style name="Text"/>
 
   <style name="Text.Input">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>

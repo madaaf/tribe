@@ -10,10 +10,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
+import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
+import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -29,7 +32,9 @@ public class HomeListView extends RelativeLayout {
   public static final int CHAT = 2;
 
   @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
+  @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
   @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
+  @BindView(R.id.viewHomeNameAction) TextHomeNameActionView viewHomeNameAction;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -78,20 +83,38 @@ public class HomeListView extends RelativeLayout {
   }
 
   private void initUI() {
-    int resLayout = 0;
+    int resLayout = R.layout.view_home_list;
+    LayoutInflater.from(getContext()).inflate(resLayout, this);
+    unbinder = ButterKnife.bind(this);
 
     switch (type) {
       case NORMAL:
-        resLayout = R.layout.view_home_list_normal;
+        viewPictoLive.setStatus(PictoLiveView.INACTIVE);
+        viewPictoChat.setStatus(PictoChatView.INACTIVE);
+        viewHomeNameAction.setTextType(TextHomeNameActionView.NORMAL);
+        break;
+
+      case LIVE:
+        viewPictoChat.setStatus(PictoChatView.INACTIVE);
+        viewAvatar.setType(NewAvatarView.LIVE);
+        viewPictoLive.setStatus(PictoLiveView.ACTIVE);
+        viewHomeNameAction.setTextType(TextHomeNameActionView.LIVE);
+        break;
+
+      case CHAT:
+        viewPictoChat.setStatus(PictoChatView.ACTIVE);
+        viewPictoLive.setStatus(PictoLiveView.INACTIVE);
+        viewHomeNameAction.setTextType(TextHomeNameActionView.CHAT);
         break;
     }
-
-    LayoutInflater.from(getContext()).inflate(resLayout, this);
-    unbinder = ButterKnife.bind(this);
   }
 
   public void setRecipient(Recipient recipient) {
     this.recipient = recipient;
+
+    if (!(recipient instanceof Invite)) {
+      viewAvatar.setType(recipient.isOnline() ? NewAvatarView.ONLINE : NewAvatarView.NORMAL);
+    }
 
     viewAvatar.load(recipient);
   }

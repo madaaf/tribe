@@ -106,6 +106,7 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
+import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -207,6 +208,8 @@ public interface ApplicationComponent {
   void inject(PictoChatView pictoChatView);
 
   void inject(PictoLiveView pictoLiveView);
+
+  void inject(TextHomeNameActionView textHomeNameStatusView);
 
   // JOBS
   void inject(BaseJob baseJob);
