@@ -10,6 +10,11 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="AppLoginTheme" parent="Theme.AccountKit">
+    <item name="android:windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+  </style>
+
   <style name="AppTheme.Black" parent="@style/AppTheme">
     <item name="android:windowBackground">@android:color/black</item>
   </style>
@@ -71,12 +76,4 @@
     <item name="android:windowIsFloating">false</item>
   </style>
 
-  <style name="CustomDigitsTheme" parent="@style/Theme.AppCompat.Light">
-    <item name="android:textColorPrimary">@android:color/black</item>
-    <item name="android:textColorSecondary">@color/grey.light</item>
-    <item name="android:windowBackground">@android:color/white</item>
-    <item name="android:textColorLink">@color/blue.new</item>
-    <item name="dgts__accentColor">@color/blue.new</item>
-    <item name="dgts__logoDrawable">@drawable/picto_tribe_logo_black</item>
-  </style>
 </resources>

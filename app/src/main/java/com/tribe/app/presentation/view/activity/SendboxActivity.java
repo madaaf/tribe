@@ -8,7 +8,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.digits.sdk.android.Digits;
 import com.tribe.app.R;
 import timber.log.Timber;
 
@@ -36,7 +35,7 @@ public class SendboxActivity extends Activity {
   @OnClick(R.id.btnEnable) void enableSendboxAction() {
     if (sendboxEditText.getText().toString().equals(PASS)) {
       Timber.w("enable sendbox");
-      Digits.enableSandbox();
+     // Digits.enableSandbox();
       Toast toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
       toast.show();
       finish();
@@ -49,7 +48,7 @@ public class SendboxActivity extends Activity {
   }
 
   @OnClick(R.id.btnDisable) void disableSendboxAction() {
-    Digits.disableSandbox();
+   // Digits.disableSandbox();
     Timber.w("diable sendbox");
     Toast toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
     toast.show();

@@ -113,6 +113,8 @@
 	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
 	<string name="live_notification_call_after_decline">Appeler %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
+	<string name="live_notification_action_see_thread">Voir la conversation</string>
+	<string name="live_notification_action_reply">Répondre</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -701,7 +703,11 @@
 	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
 	<string name="home_action_read_chat">Swipe droite pour lire</string>
 	<string name="home_action_new_chat">Nouveau chat</string>
+	<string name="home_anonymous_user">personne</string>
+	<string name="home_anonymous_users">personnes</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
+	<string name="newchat_to">À</string>
+	<string name="newchat_create_error_noone_selected">Vous devez sélectionner des gens pour créer un chat</string>
 </resources>

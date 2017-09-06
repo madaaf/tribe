@@ -3,27 +3,29 @@ package com.tribe.app.presentation.view.activity;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.DecelerateInterpolator;
-
-import com.digits.sdk.android.AuthCallback;
-import com.digits.sdk.android.AuthConfig;
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsException;
-import com.digits.sdk.android.DigitsSession;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnLongClick;
 import com.f2prateek.rx.preferences.Preference;
-import com.facebook.AccessToken;
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.facebook.accountkit.AccountKitLoginResult;
+import com.facebook.accountkit.PhoneNumber;
+import com.facebook.accountkit.ui.AccountKitActivity;
+import com.facebook.accountkit.ui.AccountKitConfiguration;
+import com.facebook.accountkit.ui.LoginType;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
-import com.facebook.rebound.SpringListener;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -33,7 +35,6 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.AuthPresenter;
 import com.tribe.app.presentation.mvp.presenter.FacebookPresenter;
 import com.tribe.app.presentation.mvp.view.AuthMVPView;
@@ -46,17 +47,14 @@ import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.ShakeDetector;
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnLongClick;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVPView, ViewTreeObserver.OnGlobalLayoutListener {
+public class AuthActivity extends BaseActivity
+    implements AuthMVPView, FBInfoMVPView, ViewTreeObserver.OnGlobalLayoutListener {
+
+  public static int APP_REQUEST_CODE = 99;
   private static String DEEP_LINK = "DEEP_LINK";
 
   public static Intent getCallingIntent(Context context, Uri deepLink) {
@@ -70,27 +68,26 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   @Inject PhoneUtils phoneUtils;
 
   @Inject ScreenUtils screenUtils;
-
   @Inject AuthPresenter authPresenter;
+
   @Inject FacebookPresenter facebookPresenter;
 
   @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
-
   @BindView(R.id.btnPhoneNumber) View btnPhoneNumber;
   @BindView(R.id.btnFacebook) View btnFacebook;
   @BindView(R.id.logoView) View logoView;
   @BindView(R.id.buttonsView) View buttonsView;
   @BindView(R.id.imgLogo) View imgLogo;
   @BindView(R.id.baseline) View baseline;
+
   @BindView(R.id.loading_indicator) View loadingIndicator;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-
   // VARIABLES
   private LoginEntity loginEntity;
+
   private Uri deepLink = null;
-  private AuthCallback authCallback;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -98,10 +95,55 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     initDependencyInjector();
     initRessource();
     loginFromDeepLink();
-    Timber.d("KPI_Onboarding_Start");
   }
 
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  ////////////////
+
+  private void loginFromDeepLink() {
+
+    deepLink = getIntent().getData();
+    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
+      Timber.d("login from deeplink " + deepLink);
+      loginEntity = authPresenter.login(null, null, null, null, null);
+    }
+  }
+
+  public void phoneLogin() {
+    final Intent intent = new Intent(this, AccountKitActivity.class);
+    AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
+        new AccountKitConfiguration.AccountKitConfigurationBuilder(LoginType.PHONE,
+            AccountKitActivity.ResponseType.TOKEN); // or .ResponseType.TOKEN
+    // ... perform additional configuration ...
+    intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
+        configurationBuilder.build());
+    startActivityForResult(intent, APP_REQUEST_CODE);
+  }
+
+  private void getAccount(String accessToken) {
+    AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+      @Override public void onSuccess(final Account account) {
+        // Get phone number
+        PhoneNumber phoneNumber = account.getPhoneNumber();
+        String phoneNumberString = phoneNumber.toString();
+
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
+        Timber.d("KPI_Onboarding_PinSucceeded");
+        Timber.d("digit login success " + phoneNumberString);
+        userPhoneNumber.set(phoneNumberString);
+        loginEntity = authPresenter.login(phoneNumberString, null, null, null, accessToken);
+      }
+
+      @Override public void onError(final AccountKitError error) {
+        // Handle Error
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
+        Timber.d("KPI_Onboarding_PinFailed");
+        userPhoneNumber.set(null);
+      }
+    });
+  }
+
+  @Override
+  protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (data != null) {
       if (data.hasExtra(LiveActivity.UNKNOWN_USER_FROM_DEEPLINK)) {
@@ -115,57 +157,31 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
         logout();
       }
     }
-  }
 
-
-  ////////////////
-  //  PRIVATE   //
-  ////////////////
-
-  private void loginFromDeepLink() {
-
-    deepLink = getIntent().getData();
-    if (getIntent().hasExtra(DEEP_LINK) && deepLink != null) {
-      Timber.d("login from deeplink " + deepLink);
-      loginEntity = authPresenter.login(null, null, null, null);
+    if (requestCode == APP_REQUEST_CODE) { // confirm that this response matches your request
+      AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
+      if (loginResult.getError() != null) {
+        Timber.e("login error " + loginResult.getError());
+      } else {
+        if (loginResult.getAccessToken() != null) {
+          getAccount(loginResult.getAccessToken().getToken());
+        }
+      }
     }
   }
 
-  @OnClick(R.id.btnPhoneNumber) void digitAuth() {
+  @OnClick(R.id.btnPhoneNumber) void auth() {
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Phone_Button);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_Start);
     Timber.d("KPI_Onboarding_Start");
-
-    authCallback = new AuthCallback() {
-      @Override public void success(DigitsSession session, String phoneNumber) {
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinSucceeded);
-        Timber.d("KPI_Onboarding_PinSucceeded");
-        Timber.d("digit login success " + phoneNumber);
-        userPhoneNumber.set(phoneNumber);
-        loginEntity = authPresenter.login(phoneNumber, null, null, null);
-      }
-
-      @Override public void failure(DigitsException error) {
-        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_PinFailed);
-        Timber.d("KPI_Onboarding_PinFailed");
-        userPhoneNumber.set(null);
-      }
-    };
-
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(authCallback);
-
-    AuthConfig authConfig = builder.build();
-    Digits.authenticate(authConfig);
+    phoneLogin();
   }
 
   private void alternativeAuth(boolean shouldCall) {
 
-    subscriptions.add(DialogFactory.numberPadDialog(this,
-            getString(R.string.onboarding_step_phone),
-            getString(R.string.action_start),
-            getString(R.string.action_cancel),
-            InputType.TYPE_CLASS_PHONE).subscribe(phoneNumber -> {
+    subscriptions.add(DialogFactory.numberPadDialog(this, getString(R.string.onboarding_step_phone),
+        getString(R.string.action_start), getString(R.string.action_cancel),
+        InputType.TYPE_CLASS_PHONE).subscribe(phoneNumber -> {
 
       userPhoneNumber.set(phoneNumber);
       authPresenter.requestCode(phoneNumber, shouldCall);
@@ -179,7 +195,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
         switch (type.getTypeDef()) {
 
           case LabelType.LOGIN:
-            digitAuth();
+            auth();
             break;
 
           case LabelType.LOGIN_ALTERNATIVE:
@@ -208,6 +224,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
 
           case LabelType.FORCE_LOGOUT:
             FacebookUtils.logout();
+            AccountKit.logOut();
             facebookAuth();
             break;
         }
@@ -246,7 +263,9 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
     this.currentUser.copy(user);
     Bundle properties = new Bundle();
     properties.putString(TagManagerUtils.TYPE, "signup");
-    properties.putString(TagManagerUtils.PLATFORM, loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK : TagManagerUtils.PLATFORM_PHONE);
+    properties.putString(TagManagerUtils.PLATFORM,
+        loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK
+            : TagManagerUtils.PLATFORM_PHONE);
     tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
     Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
@@ -266,7 +285,8 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
       Timber.d("goToConnected from " + user.getDisplayName());
-      navigator.navigateToHomeFromLogin(this, countryCode, null, loginEntity.getFbAccessToken() != null);
+      navigator.navigateToHomeFromLogin(this, countryCode, null,
+          loginEntity.getFbAccessToken() != null);
     }
   }
 
@@ -282,9 +302,7 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   //  OVERRIDE  //
   ////////////////
 
-
-  @Override
-  public void onGlobalLayout() {
+  @Override public void onGlobalLayout() {
     animate();
     imgLogo.getViewTreeObserver().removeOnGlobalLayoutListener(this);
   }
@@ -311,15 +329,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   @Override public void goToCode(Pin pin) {
     Timber.d("goToCode");
 
-    subscriptions.add(DialogFactory.numberPadDialog(context(),
-            getString(R.string.onboarding_step_code),
-            getString(R.string.action_enter),
-            getString(R.string.action_cancel),
+    subscriptions.add(
+        DialogFactory.numberPadDialog(context(), getString(R.string.onboarding_step_code),
+            getString(R.string.action_enter), getString(R.string.action_cancel),
             InputType.TYPE_CLASS_NUMBER).subscribe(code -> {
 
-      Timber.d("login with phoneNumber (alternative) " + userPhoneNumber.get());
-      loginEntity = authPresenter.login(userPhoneNumber.get(), code, pin.getPinId(), null);
-    }));
+          Timber.d("login with phoneNumber (alternative) " + userPhoneNumber.get());
+          loginEntity =
+              authPresenter.login(userPhoneNumber.get(), code, pin.getPinId(), null, null);
+        }));
   }
 
   @Override public void goToConnected(User user) {
@@ -357,15 +375,15 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
   @Override public void errorFacebookLogin() {
   }
 
-  @Override public void loadFacebookInfos(FacebookEntity facebookEntity) { }
+  @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
+  }
 
-  @Override
-  public void successFacebookLogin() {
+  @Override public void successFacebookLogin() {
     userPhoneNumber.set(null);
 
     String token = FacebookUtils.accessToken().getToken();
     Timber.d("facebook login success " + token);
-    loginEntity = authPresenter.login(null, null, null, token);
+    loginEntity = authPresenter.login(null, null, null, token, null);
   }
 
   /////////////////
@@ -395,58 +413,66 @@ public class AuthActivity extends BaseActivity implements AuthMVPView, FBInfoMVP
 
     springStep1.addListener(new SimpleSpringListener() {
 
-      @Override
-      public void onSpringUpdate(Spring spring) {
+      @Override public void onSpringUpdate(Spring spring) {
 
-        baseline.setTranslationY(imgLogo.getHeight() * 2/3 * (float)spring.getCurrentValue());
-        imgLogo.setTranslationY(-imgLogo.getHeight() * 2/3 * (float)spring.getCurrentValue());
+        baseline.setTranslationY(imgLogo.getHeight() * 2 / 3 * (float) spring.getCurrentValue());
+        imgLogo.setTranslationY(-imgLogo.getHeight() * 2 / 3 * (float) spring.getCurrentValue());
       }
     });
 
     springStep2.addListener(new SimpleSpringListener() {
 
-      @Override
-      public void onSpringUpdate(Spring spring) {
+      @Override public void onSpringUpdate(Spring spring) {
 
-        buttonsView.setTranslationY(buttonsViewHeight * (1 - (float)spring.getCurrentValue()));
-        logoView.setTranslationY(-buttonsViewHeight / 2 * (float)spring.getCurrentValue());
-        btnFacebook.setTranslationY((btnFacebook.getHeight() * 6) * (1 - (float)spring.getCurrentValue()));
-        btnPhoneNumber.setTranslationY((btnPhoneNumber.getHeight() * 3) * (1 - (float)spring.getCurrentValue()));
+        buttonsView.setTranslationY(buttonsViewHeight * (1 - (float) spring.getCurrentValue()));
+        logoView.setTranslationY(-buttonsViewHeight / 2 * (float) spring.getCurrentValue());
+        btnFacebook.setTranslationY(
+            (btnFacebook.getHeight() * 6) * (1 - (float) spring.getCurrentValue()));
+        btnPhoneNumber.setTranslationY(
+            (btnPhoneNumber.getHeight() * 3) * (1 - (float) spring.getCurrentValue()));
       }
     });
 
     baseline.animate()
-            .alpha(1)
-            .setStartDelay(delayStep1)
-            .setListener(new Animator.AnimatorListener() {
+        .alpha(1)
+        .setStartDelay(delayStep1)
+        .setListener(new Animator.AnimatorListener() {
 
-              @Override
-              public void onAnimationStart(Animator animator) {
-                springStep1.setEndValue(1);
-              }
+          @Override public void onAnimationStart(Animator animator) {
+            springStep1.setEndValue(1);
+          }
 
-              @Override public void onAnimationEnd(Animator animator) { }
-              @Override public void onAnimationCancel(Animator animator) { }
-              @Override public void onAnimationRepeat(Animator animator) { }
-            })
-            .setDuration(duration)
-            .start();
+          @Override public void onAnimationEnd(Animator animator) {
+          }
+
+          @Override public void onAnimationCancel(Animator animator) {
+          }
+
+          @Override public void onAnimationRepeat(Animator animator) {
+          }
+        })
+        .setDuration(duration)
+        .start();
 
     buttonsView.animate()
-            .alpha(1)
-            .setStartDelay(delayStep2)
-            .setListener(new Animator.AnimatorListener() {
+        .alpha(1)
+        .setStartDelay(delayStep2)
+        .setListener(new Animator.AnimatorListener() {
 
-              @Override
-              public void onAnimationStart(Animator animator) {
-                springStep2.setEndValue(1);
-              }
+          @Override public void onAnimationStart(Animator animator) {
+            springStep2.setEndValue(1);
+          }
 
-              @Override public void onAnimationEnd(Animator animator) { }
-              @Override public void onAnimationCancel(Animator animator) { }
-              @Override public void onAnimationRepeat(Animator animator) { }
-            })
-            .setDuration(duration)
-            .start();
+          @Override public void onAnimationEnd(Animator animator) {
+          }
+
+          @Override public void onAnimationCancel(Animator animator) {
+          }
+
+          @Override public void onAnimationRepeat(Animator animator) {
+          }
+        })
+        .setDuration(duration)
+        .start();
   }
 }

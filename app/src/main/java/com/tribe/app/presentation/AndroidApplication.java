@@ -9,9 +9,6 @@ import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
-import com.digits.sdk.android.Digits;
-import com.digits.sdk.android.DigitsEventLogger;
-import com.digits.sdk.android.events.DigitsEventDetails;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.stetho.Stetho;
@@ -39,7 +36,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerApplicationCompon
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -52,8 +48,6 @@ import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterCore;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -84,7 +78,6 @@ public class AndroidApplication extends Application {
     super.onCreate();
     initInjector();
     // initLeakDetection();
-    initFabric();
     initRealm();
     initStetho();
     initFacebook();
@@ -125,33 +118,6 @@ public class AndroidApplication extends Application {
     //
     //  LeakCanary.install(this);
     //}
-  }
-
-  private void initFabric() {
-    TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-
-    Digits digits = new Digits.Builder().withTheme(R.style.CustomDigitsTheme)
-        .withDigitsEventLogger(new DigitsEventLogger() {
-          @Override public void phoneNumberSubmit(DigitsEventDetails details) {
-            super.phoneNumberSubmit(details);
-            Timber.d("phone number submit");
-            applicationComponent.tagManager()
-                .trackEvent(TagManagerUtils.KPI_Onboarding_PinConfirmed);
-          }
-
-          @Override public void confirmationCodeSubmit(DigitsEventDetails details) {
-            Timber.d("pin submitted");
-            applicationComponent.tagManager()
-                .trackEvent(TagManagerUtils.KPI_Onboarding_PinSubmitted);
-          }
-        })
-        .build();
-
-    if (BuildConfig.DEBUG) {
-      Fabric.with(this, new TwitterCore(authConfig), digits);
-    } else {
-      Fabric.with(this, new TwitterCore(authConfig), digits, new Crashlytics(), new Answers());
-    }
   }
 
   private void initStetho() {
@@ -224,6 +190,7 @@ public class AndroidApplication extends Application {
       Timber.plant(new Timber.DebugTree());
     } else {
       Timber.plant(new ProductionTree(this));
+      Fabric.with(this, new Crashlytics(), new Answers());
     }
   }
 
@@ -310,7 +277,6 @@ public class AndroidApplication extends Application {
     }
 
     FacebookUtils.logout();
-    Digits.logout();
 
     SharedPreferences preferences = applicationComponent.sharedPreferences();
     preferences.edit().clear().commit();

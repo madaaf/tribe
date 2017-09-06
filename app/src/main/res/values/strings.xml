@@ -113,6 +113,8 @@
 	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
 	<string name="live_notification_call_after_decline">Video call %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
+	<string name="live_notification_action_see_thread">See the conversation</string>
+	<string name="live_notification_action_reply">Reply</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -701,7 +703,11 @@
 	<string name="home_action_join_live">Swipe left to join</string>
 	<string name="home_action_read_chat">Swipe right to read</string>
 	<string name="home_action_new_chat">New chat</string>
+	<string name="home_anonymous_user">person</string>
+	<string name="home_anonymous_users">persons</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>
+	<string name="newchat_to">To</string>
+	<string name="newchat_create_error_noone_selected">You have to select people to create a chat</string>
 </resources>

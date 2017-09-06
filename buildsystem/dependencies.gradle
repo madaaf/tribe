@@ -23,7 +23,7 @@ ext {
   javaxAnnotationVersion = '1.0'
   gsonVersion = '2.8.0'
   retrofitVersion = '2.1.0'
-  androidAnnotationsVersion = '25.1.0'
+  androidAnnotationsVersion = '25.3.1'
   okHttpVersion = '3.6.0'
   priorityJobQueueVersion = '2.0.1'
   pahoMQTT3Version = '1.0.2'
@@ -46,7 +46,8 @@ ext {
   googlePlayBaseVersion = '10.2.1'
   googlePlayGCMVersion = '10.2.1'
   rxPermissionsVersion = '0.9.3@aar'
-  facebookVersion = '4.19.0'
+  facebookVersion = '4.23.0'
+  facebookAccountKitVersion = '4.23.0'
   multiDexVersion = '1.0.0'
   confettiVersion = '1.0.0'
   mixpanelVersion = '5.0.1'
@@ -119,6 +120,7 @@ ext {
                               googlePlayGcm           : "com.google.android.gms:play-services-gcm:${googlePlayGCMVersion}",
                               rxPermissions           : "com.tbruyelle.rxpermissions:rxpermissions:${rxPermissionsVersion}",
                               facebook                : "com.facebook.android:facebook-android-sdk:${facebookVersion}",
+                              facebookAccountKit      : "com.facebook.android:account-kit-sdk:${facebookAccountKitVersion}",
                               glide                   : "com.github.bumptech.glide:glide:${glideVersion}",
                               glideOKHttp             : "com.github.bumptech.glide:okhttp3-integration:${glideOKHttpVersion}",
                               multiDex                : "com.android.support:multidex:${multiDexVersion}",
