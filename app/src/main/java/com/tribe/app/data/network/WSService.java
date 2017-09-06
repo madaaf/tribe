@@ -13,9 +13,7 @@ import com.tribe.app.data.network.deserializer.JsonToModel;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -36,22 +34,38 @@ import timber.log.Timber;
 @Singleton public class WSService extends Service {
 
   public static final String TYPE = "TYPE";
+  public static final String ROOM_ID = "ROOM_ID";
+
   public static final String CALL_ROULETTE_TYPE = "CALL_ROULETTE_TYPE";
+  public static final String CALL_ROOM_UPDATE_SUBSCRIBE_TYPE = "CALL_ROOM_UPDATE_TYPE";
+  public static final String CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE =
+      "CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE";
 
   public static final String USER_SUFFIX = "___u";
-  public static final String GROUP_SUFFIX = "___g";
   public static final String FRIENDSHIP_CREATED_SUFFIX = "___fc";
   public static final String FRIENDSHIP_UDPATED_SUFFIX = "___fu";
   public static final String FRIENDSHIP_REMOVED_SUFFIX = "___fr";
-  public static final String MEMBERSHIP_CREATED_SUFFIX = "___mc";
-  public static final String MEMBERSHIP_REMOVED_SUFFIX = "___mr";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
   public static final String RANDOM_ROOM_ASSIGNED = "___ra";
+  public static final String ROOM_UDPATED_SUFFIX = "___ru";
 
   public static Intent getCallingIntent(Context context, String type) {
     Intent intent = new Intent(context, WSService.class);
     intent.putExtra(TYPE, type);
+    return intent;
+  }
+
+  public static Intent getCallingIntentSubscribeRoom(Context context, String roomId) {
+    Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(TYPE, CALL_ROOM_UPDATE_SUBSCRIBE_TYPE);
+    intent.putExtra(ROOM_ID, roomId);
+    return intent;
+  }
+
+  public static Intent getCallingIntentUnsubscribeRoom(Context context) {
+    Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(TYPE, CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE);
     return intent;
   }
 
@@ -73,6 +87,7 @@ import timber.log.Timber;
   private Map<String, String> headers;
   private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
   private boolean hasSubscribed = false;
+  private String lastRoomSubscriptionId;
 
   // OBSERVABLES
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
@@ -100,25 +115,50 @@ import timber.log.Timber;
 
   public void subscribeChatRoulette() {
     String hash = generateHash();
-    StringBuffer subscriptionsBuffer = new StringBuffer();
-    append(subscriptionsBuffer,
+
+    String req = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_randomRoomAssigned,
             hash + RANDOM_ROOM_ASSIGNED));
 
-    String req =
-        getApplicationContext().getString(R.string.subscription, subscriptionsBuffer.toString());
+    webSocketConnection.send(req);
+  }
+
+  public void subscribeRoomUpdate(String roomId) {
+    lastRoomSubscriptionId = generateHash() + ROOM_UDPATED_SUFFIX;
+
+    String req = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_roomUpdated, lastRoomSubscriptionId,
+            roomId));
+
+    webSocketConnection.send(req);
+  }
+
+  public void unsubscribeRoomUpdate() {
+    String req = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_remove, lastRoomSubscriptionId));
+
+    lastRoomSubscriptionId = null;
 
     webSocketConnection.send(req);
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
-    if (intent != null && intent.getStringExtra(TYPE) != null && intent.getStringExtra(TYPE)
-        .equals(CALL_ROULETTE_TYPE)) {
-      subscribeChatRoulette();
+    if (intent != null) {
+      String type = intent.getStringExtra(TYPE);
+      if (!StringUtils.isEmpty(type)) {
+        if (type.equals(CALL_ROULETTE_TYPE)) {
+          subscribeChatRoulette();
+        } else if (type.equals(CALL_ROOM_UPDATE_SUBSCRIBE_TYPE)) {
+          subscribeRoomUpdate(intent.getStringExtra(ROOM_ID));
+        } else if (type.equals(CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE)) {
+          unsubscribeRoomUpdate();
+        }
+      }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -141,8 +181,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() || StringUtils.isEmpty(accessToken.getTokenType()) || StringUtils.isEmpty(
-        accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
       webSocketConnection.setShouldReconnect(false);
     } else {
       headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
@@ -190,25 +231,15 @@ import timber.log.Timber;
   private void initModel() {
     persistentSubscriptions.add(jsonToModel.onInviteCreated()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .filter(invite -> !liveCache.getInviteMap().containsKey(invite.getRoomId()))
+        .filter(invite -> !liveCache.getInviteMap().containsKey(invite.getId()))
         .flatMap(invite -> this.tribeApi.invites(
             getApplicationContext().getString(R.string.invites_infos,
                 getApplicationContext().getString(R.string.userfragment_infos),
-                getApplicationContext().getString(R.string.groupfragment_info_members),
-                getApplicationContext().getString(R.string.friendshipfragment_info))),
+                getApplicationContext().getString(R.string.roomFragment_infos))),
             (invite, invites) -> {
               if (invites != null) {
                 for (Invite newInvite : invites) {
                   boolean shouldAdd = true;
-                  if (newInvite.getFriendships() != null) {
-                    for (Friendship friendship : newInvite.getFriendships()) {
-                      if (friendship != null
-                          && friendship.getFriend() != null
-                          && friendship.getFriend().equals(user)) {
-                        shouldAdd = false;
-                      }
-                    }
-                  }
 
                   if (shouldAdd) {
                     if (!StringUtils.isEmpty(invite.getRoomName())) {
@@ -227,42 +258,31 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onInviteRemoved()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .subscribe(invite -> {
-          liveCache.removeInvite(invite);
-        }));
+        .subscribe(invite -> liveCache.removeInvite(invite)));
 
-    persistentSubscriptions.add(jsonToModel.onAddedLive().subscribe(s -> {
-      liveCache.putLive(s);
-    }));
+    persistentSubscriptions.add(jsonToModel.onAddedLive().subscribe(s -> liveCache.putLive(s)));
 
-    persistentSubscriptions.add(jsonToModel.onRemovedLive().subscribe(s -> {
-      liveCache.removeLive(s);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRemovedLive().subscribe(s -> liveCache.removeLive(s)));
 
-    persistentSubscriptions.add(jsonToModel.onAddedOnline().subscribe(s -> {
-      liveCache.putOnline(s);
-    }));
+    persistentSubscriptions.add(jsonToModel.onAddedOnline().subscribe(s -> liveCache.putOnline(s)));
 
-    persistentSubscriptions.add(jsonToModel.onRemovedOnline().subscribe(s -> {
-      liveCache.removeOnline(s);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRemovedOnline().subscribe(s -> liveCache.removeOnline(s)));
 
     persistentSubscriptions.add(jsonToModel.onRandomRoomAssigned().subscribe(assignedRoomId -> {
       Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
       liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
-    persistentSubscriptions.add(jsonToModel.onFbIdUpdated().subscribe(userUpdated -> {
-      liveCache.onFbIdUpdated(userUpdated);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-    persistentSubscriptions.add(jsonToModel.onUserListUpdated().subscribe(userRealmList -> {
-      userCache.updateUserRealmList(userRealmList);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRoomUpdated().subscribe(room -> liveCache.onRoomUpdated(room)));
 
-    persistentSubscriptions.add(jsonToModel.onGroupListUpdated().subscribe(groupRealmList -> {
-      userCache.updateGroupRealmList(groupRealmList);
-    }));
+    persistentSubscriptions.add(jsonToModel.onUserListUpdated()
+        .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
 
     persistentSubscriptions.add(jsonToModel.onCreatedFriendship()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
@@ -278,109 +298,53 @@ import timber.log.Timber;
           userCache.addFriendship(userRealmInfos.getFriendships().first());
         }));
 
-    persistentSubscriptions.add(jsonToModel.onCreatedMembership()
-        .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .flatMap(membershipId -> {
-          String ids = "\"" + membershipId + "\"";
-          final String requestMembershipInfos =
-              getApplicationContext().getString(R.string.membership_infos, ids,
-                  getApplicationContext().getString(R.string.membershipfragment_info),
-                  getApplicationContext().getString(R.string.groupfragment_info_members),
-                  getApplicationContext().getString(R.string.userfragment_infos));
-          return this.tribeApi.getUserInfos(requestMembershipInfos);
-        }, (s, userRealmInfos) -> userRealmInfos)
-        .subscribe(userRealmInfos -> {
-          userCache.addMembership(userRealmInfos.getMemberships().first());
-        }));
-
     persistentSubscriptions.add(jsonToModel.onRemovedFriendship().subscribe(friendshipRealm -> {
       userCache.removeFriendship(friendshipRealm);
-    }));
-
-    persistentSubscriptions.add(jsonToModel.onRemovedMembership().subscribe(membershipRealm -> {
-      userCache.removeMembership(membershipRealm);
     }));
   }
 
   private void initSubscriptions() {
     UserRealm userRealm = userCache.userInfosNoObs(accessToken.getUserId());
 
-    StringBuffer subscriptionsBuffer = new StringBuffer();
     String hash = generateHash();
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_friendshipCreated,
-            hash + FRIENDSHIP_CREATED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_friendshipCreated,
+        hash + FRIENDSHIP_CREATED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_friendshipRemoved,
-            hash + FRIENDSHIP_REMOVED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_friendshipRemoved,
+        hash + FRIENDSHIP_REMOVED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_membershipCreated,
-            hash + MEMBERSHIP_CREATED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_inviteCreated,
+        hash + INVITE_CREATED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_membershipRemoved,
-            hash + MEMBERSHIP_REMOVED_SUFFIX));
+    sendSubscription(getApplicationContext().getString(R.string.subscription_inviteRemoved,
+        hash + INVITE_REMOVED_SUFFIX));
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_inviteCreated,
-            hash + INVITE_CREATED_SUFFIX));
+    tempSubscriptions.add(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
+      int count = 0;
 
-    append(subscriptionsBuffer,
-        getApplicationContext().getString(R.string.subscription_inviteRemoved,
-            hash + INVITE_REMOVED_SUFFIX));
+      for (FriendshipRealm friendshipRealm : friendshipList) {
+        if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
+          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+              hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
 
-    tempSubscriptions.add(
-        Observable.zip(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
-          int count = 0;
+          sendSubscription(
+              getApplicationContext().getString(R.string.subscription_friendshipUpdated,
+                  hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
 
-          for (FriendshipRealm friendshipRealm : friendshipList) {
-            if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-              append(subscriptionsBuffer,
-                  getApplicationContext().getString(R.string.subscription_userUpdated,
-                      hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
-
-              append(subscriptionsBuffer,
-                  getApplicationContext().getString(R.string.subscription_friendshipUpdated,
-                      hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
-
-              count++;
-            }
-          }
-        }), Observable.just(userRealm.getMemberships()).doOnNext(membershipList -> {
-          int count = 0;
-
-          for (MembershipRealm membershipRealm : membershipList) {
-            append(subscriptionsBuffer,
-                getApplicationContext().getString(R.string.subscription_groupUpdated,
-                    hash + GROUP_SUFFIX + count, membershipRealm.getGroup().getId()));
-
-            count++;
-          }
-        }), (friendshipRealmRealmList, membershipRealms) -> subscriptionsBuffer)
-            .subscribe(stringBuffer -> {
-              String body = subscriptionsBuffer.toString();
-
-              String userInfosFragment =
-                  (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-                      R.string.userfragment_infos) : "");
-
-              String groupInfosFragment =
-                  (body.contains("GroupInfos") ? "\n" + getApplicationContext().getString(
-                      R.string.groupfragment_info_members) : "");
-
-              String req = getApplicationContext().getString(R.string.subscription,
-                  subscriptionsBuffer.toString()) + userInfosFragment + groupInfosFragment;
-
-              webSocketConnection.send(req);
-            }));
+          count++;
+        }
+      }
+    }).subscribe());
   }
 
-  private void append(StringBuffer buffer, String str) {
-    buffer.append(str);
-    buffer.append(System.getProperty("line.separator"));
+  private void sendSubscription(String body) {
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
+
+    String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
+
+    webSocketConnection.send(req);
   }
 
   private String generateHash() {

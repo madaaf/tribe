@@ -1,38 +1,39 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
 import com.tribe.app.data.exception.JoinRoomException;
-import com.tribe.app.data.exception.RoomFullException;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetDataChallengesGame;
 import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
-import com.tribe.app.domain.interactor.user.BookRoomLink;
-import com.tribe.app.domain.interactor.user.BuzzRoom;
+import com.tribe.app.domain.interactor.live.BuzzRoom;
+import com.tribe.app.domain.interactor.live.CreateInvite;
+import com.tribe.app.domain.interactor.live.CreateRoom;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.live.GetRoom;
+import com.tribe.app.domain.interactor.live.RandomRoomAssigned;
+import com.tribe.app.domain.interactor.live.RemoveInvite;
+import com.tribe.app.domain.interactor.live.RoomUpdated;
+import com.tribe.app.domain.interactor.live.UpdateRoom;
 import com.tribe.app.domain.interactor.user.CreateFriendship;
-import com.tribe.app.domain.interactor.user.DeclineInvite;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskFriendshipList;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
-import com.tribe.app.domain.interactor.user.GetRoomLink;
 import com.tribe.app.domain.interactor.user.IncrUserTimeInCall;
-import com.tribe.app.domain.interactor.user.InviteUserToRoom;
-import com.tribe.app.domain.interactor.user.JoinRoom;
-import com.tribe.app.domain.interactor.user.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.user.ReportUser;
-import com.tribe.app.domain.interactor.user.RoomAcceptRandom;
 import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 public class LivePresenter extends FriendshipPresenter implements Presenter {
 
@@ -41,23 +42,24 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
 
   // USECASES
   private GetDiskFriendshipList diskFriendshipList;
-  private JoinRoom joinRoom;
+  private GetRoom getRoom;
+  private CreateRoom createRoom;
+  private UpdateRoom updateRoom;
   private BuzzRoom buzzRoom;
-  private InviteUserToRoom inviteUserToRoom;
+  private CreateInvite createInvite;
+  private RemoveInvite removeInvite;
+  private DeclineInvite declineInvite;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
-  private GetRoomLink getRoomLink;
-  private DeclineInvite declineInvite;
   private CreateFriendship createFriendship;
   private GetNamesPostItGame getNamesPostItGame;
   private GetNamesDrawGame getNamesDrawGame;
   private GetDataChallengesGame getDataChallengesGame;
-  private BookRoomLink bookRoomLink;
-  private RoomAcceptRandom roomAcceptRandom;
   private RandomRoomAssigned randomRoomAssigned;
   private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
   private IncrUserTimeInCall incrUserTimeInCall;
+  private RoomUpdated roomUpdated;
 
   // SUBSCRIBERS
   private FriendshipListSubscriber diskFriendListSubscriber;
@@ -65,57 +67,59 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
   private CreateFriendshipSubscriber createFriendshipSubscriber;
   private RandomRoomAssignedSubscriber randomRoomAssignedSubscriber;
   private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
+  private RoomUpdatedSubscriber roomUpdatedSubscriber;
 
-  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, JoinRoom joinRoom,
-      BuzzRoom buzzRoom, InviteUserToRoom inviteUserToRoom, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetRoomLink getRoomLink,
-      DeclineInvite declineInvite, CreateFriendship createFriendship,
+  @Inject public LivePresenter(GetDiskFriendshipList diskFriendshipList, GetRoom getRoom,
+      CreateRoom createRoom, UpdateRoom updateRoom, BuzzRoom buzzRoom, CreateInvite createInvite,
+      RemoveInvite removeInvite, DeclineInvite declineInvite, GetRecipientInfos getRecipientInfos,
+      GetCloudUserInfosList cloudUserInfosList, CreateFriendship createFriendship,
       GetNamesPostItGame getNamesPostItGame, UpdateFriendship updateFriendship,
-      BookRoomLink bookRoomLink, RoomAcceptRandom roomAcceptRandom,
       RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
       GetDataChallengesGame getDataChallengesGame, IncrUserTimeInCall incrUserTimeInCall,
-      GetNamesDrawGame getNamesDrawGame) {
+      GetNamesDrawGame getNamesDrawGame, RoomUpdated roomUpdated) {
     this.updateFriendship = updateFriendship;
     this.diskFriendshipList = diskFriendshipList;
-    this.joinRoom = joinRoom;
+    this.getRoom = getRoom;
+    this.createRoom = createRoom;
+    this.updateRoom = updateRoom;
     this.buzzRoom = buzzRoom;
-    this.inviteUserToRoom = inviteUserToRoom;
+    this.createInvite = createInvite;
+    this.removeInvite = removeInvite;
+    this.declineInvite = declineInvite;
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
-    this.getRoomLink = getRoomLink;
-    this.declineInvite = declineInvite;
     this.createFriendship = createFriendship;
     this.getNamesPostItGame = getNamesPostItGame;
-    this.bookRoomLink = bookRoomLink;
-    this.roomAcceptRandom = roomAcceptRandom;
     this.randomRoomAssigned = randomRoomAssigned;
     this.reportUser = reportUser;
     this.incrUserTimeInCall = incrUserTimeInCall;
     this.fbIdUpdated = fbIdUpdated;
     this.getDataChallengesGame = getDataChallengesGame;
     this.getNamesDrawGame = getNamesDrawGame;
+    this.roomUpdated = roomUpdated;
   }
 
   @Override public void onViewDetached() {
     super.onViewDetached();
     diskFriendshipList.unsubscribe();
-    joinRoom.unsubscribe();
+    getRoom.unsubscribe();
+    createRoom.unsubscribe();
+    updateRoom.unsubscribe();
     buzzRoom.unsubscribe();
     cloudUserInfosList.unsubscribe();
-    inviteUserToRoom.unsubscribe();
+    createInvite.unsubscribe();
+    removeInvite.unsubscribe();
     declineInvite.unsubscribe();
     getRecipientInfos.unsubscribe();
-    getRoomLink.unsubscribe();
     createFriendship.unsubscribe();
     getNamesPostItGame.unsubscribe();
-    bookRoomLink.unsubscribe();
-    roomAcceptRandom.unsubscribe();
     randomRoomAssigned.unsubscribe();
     reportUser.unsubscribe();
     incrUserTimeInCall.unsubscribe();
     fbIdUpdated.unsubscribe();
     getDataChallengesGame.unsubscribe();
     getNamesDrawGame.unsubscribe();
+    roomUpdated.unsubscribe();
     liveMVPView = null;
   }
 
@@ -146,33 +150,12 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
   }
 
-  public void loadRecipient(Live live) {
-    getRecipientInfos.prepare(live.getId(), live.isGroup());
-    getRecipientInfos.execute(new RecipientInfosSubscriber());
+  public void getRoomInfos(Live live) {
+    getRoom.setup(live);
+    getRoom.execute(new GetRoomSubscriber());
   }
 
-  private final class RecipientInfosSubscriber extends DefaultSubscriber<Recipient> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(Recipient recipient) {
-      liveMVPView.onRecipientInfos(recipient);
-    }
-  }
-
-  public void joinRoom(Live live) {
-    Timber.d("joinRoom");
-    joinRoom.setup(!live.isGroup() ? live.getId() : live.getSubId(), live.isGroup(),
-        live.getSessionId(), live.getLinkId());
-    joinRoom.execute(new JoinRoomSubscriber());
-  }
-
-  private final class JoinRoomSubscriber extends DefaultSubscriber<RoomConfiguration> {
+  private final class GetRoomSubscriber extends DefaultSubscriber<Room> {
 
     @Override public void onCompleted() {
     }
@@ -180,22 +163,43 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     @Override public void onError(Throwable e) {
       JoinRoomException joinRoomException = new JoinRoomException(e);
       String errorMessage = ErrorMessageFactory.create(liveMVPView.context(), joinRoomException);
-      if (liveMVPView != null) liveMVPView.onJoinRoomError(errorMessage);
+      if (liveMVPView != null) liveMVPView.onRoomInfosError(errorMessage);
     }
 
-    @Override public void onNext(RoomConfiguration roomConfiguration) {
+    @Override public void onNext(Room room) {
       if (liveMVPView != null) {
-        if (roomConfiguration.getException() != null) {
-          String errorMessage =
-              ErrorMessageFactory.create(liveMVPView.context(), roomConfiguration.getException());
-          if (roomConfiguration.getException() instanceof RoomFullException) {
-            liveMVPView.onRoomFull(errorMessage);
-          } else {
-            liveMVPView.onJoinRoomError(errorMessage);
-          }
-        } else {
-          liveMVPView.onJoinedRoom(roomConfiguration);
-        }
+        //if (roomConfiguration.getException() != null) {
+        //  String errorMessage =
+        //      ErrorMessageFactory.create(liveMVPView.context(), roomConfiguration.getException());
+        //  if (roomConfiguration.getException() instanceof RoomFullException) {
+        //    liveMVPView.onRoomFull(errorMessage);
+        //  } else {
+        //    liveMVPView.onJoinRoomError(errorMessage);
+        //  }
+        //} else {
+        liveMVPView.onRoomInfos(room);
+        //}
+      }
+    }
+  }
+
+  public void createRoom(Live live) {
+    createRoom.setup(null, live.getUserIds().toArray(new String[live.getUserIds().size()]));
+    createRoom.execute(new CreateRoomSubscriber());
+  }
+
+  private final class CreateRoomSubscriber extends DefaultSubscriber<Room> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(Room room) {
+      if (liveMVPView != null) {
+        liveMVPView.onRoomInfos(room);
       }
     }
   }
@@ -205,10 +209,20 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     buzzRoom.execute(new DefaultSubscriber());
   }
 
-  public void inviteUserToRoom(String roomId, String userId) {
+  public void createInvite(String roomId, String userId) {
     if (userId.equals(Recipient.ID_CALL_ROULETTE)) return;
-    inviteUserToRoom.setup(roomId, userId);
-    inviteUserToRoom.execute(new DefaultSubscriber());
+    createInvite.setup(roomId, userId);
+    createInvite.execute(new DefaultSubscriber());
+  }
+
+  public void removeInvite(String roomId, String userId) {
+    removeInvite.setup(roomId, userId);
+    removeInvite.execute(new DefaultSubscriber());
+  }
+
+  public void declineInvite(String roomId) {
+    declineInvite.setup(roomId);
+    declineInvite.execute(new DefaultSubscriber());
   }
 
   private final class GetUserInfoListSubscriber extends DefaultSubscriber<List<User>> {
@@ -233,34 +247,11 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     cloudUserInfosList.execute(getUserInfoListSubscriber);
   }
 
-  public void getRoomLink(String roomId) {
-    getRoomLink.setup(roomId);
-    getRoomLink.execute(new GetRoomLinkSubscriber());
-  }
-
-  public void declineInvite(String roomId) {
-    declineInvite.prepare(roomId);
-    declineInvite.execute(new DefaultSubscriber());
-  }
-
   public void incrementTimeInCall(String userId, Long timeInCall) {
 
     if (timeInCall != null) {
       incrUserTimeInCall.prepare(userId, timeInCall);
       incrUserTimeInCall.execute(new DefaultSubscriber());
-    }
-  }
-
-  private final class GetRoomLinkSubscriber extends DefaultSubscriber<String> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-    }
-
-    @Override public void onNext(String roomLink) {
-      liveMVPView.onRoomLink(roomLink);
     }
   }
 
@@ -361,14 +352,12 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     }
   }
 
-  public void bookRoomLink(String linkId) {
-    bookRoomLink.setLinkId(linkId);
-    bookRoomLink.execute(new DefaultSubscriber());
-  }
-
   public void roomAcceptRandom(String roomId) {
-    roomAcceptRandom.setRoomId(roomId);
-    roomAcceptRandom.execute(new DefaultSubscriber());
+    Pair<String, String> pair = Pair.create(Room.ACCEPT_RANDOM, "true");
+    List<Pair<String, String>> pairList = new ArrayList<>();
+    pairList.add(pair);
+    updateRoom.setup(roomId, pairList);
+    updateRoom.execute(new DefaultSubscriber());
   }
 
   public void reportUser(String userId) {
@@ -380,6 +369,7 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     if (randomRoomAssignedSubscriber != null) {
       randomRoomAssignedSubscriber.unsubscribe();
     }
+
     randomRoomAssignedSubscriber = new RandomRoomAssignedSubscriber();
     randomRoomAssigned.execute(randomRoomAssignedSubscriber);
   }
@@ -401,7 +391,30 @@ public class LivePresenter extends FriendshipPresenter implements Presenter {
     if (fbIdUpdatedSubscriber != null) {
       fbIdUpdatedSubscriber.unsubscribe();
     }
+
     fbIdUpdatedSubscriber = new FbIdUpdatedSubscriber();
     fbIdUpdated.execute(fbIdUpdatedSubscriber);
+  }
+
+  public void subscribeToRoomUpdates() {
+    if (roomUpdatedSubscriber != null) {
+      roomUpdatedSubscriber.unsubscribe();
+    }
+
+    roomUpdatedSubscriber = new RoomUpdatedSubscriber();
+    roomUpdated.execute(roomUpdatedSubscriber);
+  }
+
+  private final class RoomUpdatedSubscriber extends DefaultSubscriber<Room> {
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Room room) {
+      liveMVPView.onRoomUpdate(room);
+    }
   }
 }

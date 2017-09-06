@@ -40,8 +40,8 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
@@ -425,10 +425,7 @@ public class HomeActivity extends BaseActivity
 
   private void onClickItem(Recipient recipient) {
     if (recipient.getId().equals(Recipient.ID_MORE)) {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
       navigator.navigateToVideo(this);
     } else {
@@ -444,13 +441,7 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .flatMap(recipient -> {
-          if (recipient instanceof Membership) {
-            Membership membership = (Membership) recipient;
-            navigator.navigateToGroupDetails(this, membership);
-            return Observable.empty();
-          } else {
-            return DialogFactory.showBottomSheetForRecipient(this, recipient);
-          }
+          return DialogFactory.showBottomSheetForRecipient(this, recipient);
         }, ((recipient, labelType) -> {
           if (labelType != null) {
             if (labelType.getTypeDef().equals(LabelType.HIDE) ||
@@ -467,14 +458,9 @@ public class HomeActivity extends BaseActivity
               Friendship friendship = (Friendship) recipient;
               friendship.setMute(false);
               homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
-              Membership membership = (Membership) recipient;
-              navigator.navigateToGroupDetails(this, membership);
-            } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
-              homeGridPresenter.leaveGroup(recipient.getId());
             } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
               Invite invite = (Invite) recipient;
-              homeGridPresenter.declineInvite(invite.getRoomId());
+              homeGridPresenter.declineInvite(invite.getId());
             }
           }
 
@@ -499,14 +485,22 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().subscribeOn(singleThreadExecutor).
+    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().map(recipients -> {
+      List<Recipient> recipientFinalList = new ArrayList<>();
+      for (Recipient recipient : recipients) {
+        if (recipient instanceof Invite || !recipient.isLive()) {
+          recipientFinalList.add(recipient);
+        }
+      }
+
+      return recipientFinalList;
+    }).subscribeOn(singleThreadExecutor).
         map(recipientList -> {
           DiffUtil.DiffResult diffResult = null;
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           temp.add(new Friendship(Recipient.ID_MORE));
-          // temp.add(new Friendship(Recipient.ID_VIDEO));
           ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
@@ -574,10 +568,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     }));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
@@ -611,10 +602,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     }));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
@@ -631,10 +619,7 @@ public class HomeActivity extends BaseActivity
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
       tagManager.trackEvent(TagManagerUtils.Invites, bundle);
       shouldOverridePendingTransactions = true;
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null,
-              contact.getPhone(), false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.SEARCH, contact.getPhone(), false);
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
@@ -675,8 +660,6 @@ public class HomeActivity extends BaseActivity
       if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
         if (uri.getPath().startsWith("/u/")) {
           searchView.show();
-        } else if (uri.getPath().startsWith("/g/")) {
-          homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
         }
       }
     }
@@ -686,7 +669,6 @@ public class HomeActivity extends BaseActivity
     if (recipientList != null) {
       Bundle bundle = new Bundle();
       bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
-      bundle.putInt(TagManagerUtils.USER_GROUPS_COUNT, getCurrentUser().getMembershipList().size());
       tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
@@ -708,10 +690,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void errorFacebookLogin() {
-  }
-
-  @Override public void onMembershipCreated(Membership membership) {
-
   }
 
   private void initRegistrationToken() {
@@ -748,10 +726,7 @@ public class HomeActivity extends BaseActivity
     if (intent != null && intent.hasExtra(Extras.ROOM_LINK_ID)) {
       if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
         stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        String linkId =
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null,
-                null, true);
-        homeGridPresenter.bookRoomLink(linkId);
+        homeGridPresenter.createRoom(TagManagerUtils.ONBOARDING, null, true);
       }
     }
   }
@@ -815,8 +790,10 @@ public class HomeActivity extends BaseActivity
     onNewContacts.onNext(contactList);
   }
 
-  @Override public void onBookLink(Boolean isBookLink) {
-
+  @Override
+  public void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS) {
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, room.getLink(),
+        phone, shouldOpenSMS);
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

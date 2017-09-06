@@ -5,13 +5,11 @@ import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -43,7 +41,8 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Installation> removeInstall(
       @Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Void> incrUserTimeInCall(@Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<Void> incrUserTimeInCall(
+      @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<UserRealm> updateUser(@Field("query") String query);
 
@@ -63,36 +62,12 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> notifyFBFriends(@Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<GroupRealm> getGroupMembers(
-      @Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<GroupRealm> getGroupInfos(
-      @Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<GroupRealm> createGroup(
-      @Field("query") String query);
-
-  @Multipart @POST("/graphql") Observable<GroupRealm> createGroupMedia(
-      @Part("query") RequestBody query, @Part MultipartBody.Part file);
-
-  @FormUrlEncoded @POST("/graphql") Observable<GroupRealm> updateGroup(
-      @Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<MembershipRealm> updateMembership(
-      @Field("query") String query);
-
-  @Multipart @POST("/graphql") Observable<GroupRealm> updateGroupMedia(
-      @Part("query") RequestBody query, @Part MultipartBody.Part file);
-
   @FormUrlEncoded @POST("/graphql") Observable<Void> removeMembersFromGroup(
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> removeGroup(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> leaveGroup(@Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<MembershipRealm> createMembership(
-      @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> bootstrapSupport(@Field("query") String query);
 
@@ -101,20 +76,23 @@ public interface TribeApi {
 
   @HEAD Observable<Response<Void>> getHeadDeepLink(@Url String url);
 
-  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<RoomConfiguration> joinRoom(
+  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<Room> room(
       @Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
+  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<Room> createRoom(
       @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Room> updateRoom(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> createInvite(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> removeInvite(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> declineInvite(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<List<Invite>> invites(@Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<Void> createMembershipsForUsers(
-      @Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<Void> declineInvite(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<LookupFBResult> lookupFacebook(
       @Field("query") String query);

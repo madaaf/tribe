@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -126,36 +125,29 @@ public class LiveStatusNameView extends FrameLayout {
   public void setLive(Live live) {
     this.live = live;
 
-    if (!StringUtils.isEmpty(live.getLinkId())) {
-      if (live.getId().equals(Live.WEB)) {
-        if (user.getDisplayName() == null) {
+    if (live.getType().equals(Live.WEB) || live.getType().equals(Live.NEW_CALL)) {
+      if (live.getType().equals(Live.WEB)) {
+        if (StringUtils.isEmpty(user.getDisplayName())) {
           txtName.setText("");
         } else {
           txtName.setText(
               getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
         }
-      } else if (live.getId().equals(Live.NEW_CALL)) {
+      } else if (live.getType().equals(Live.NEW_CALL)) {
         txtName.setText(getContext().getString(R.string.live_new_call_title_alone));
       }
 
       setStatusText(null, null);
-
     } else {
-      if (live.isGroup()) {
-        txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0,
-            0);
-      } else {
-        txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-      }
-
-      txtName.setText(live.getDisplayName());
+      txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+      txtName.setText(live.getName());
 
       setStatus(INITIATING);
     }
   }
 
   public void refactorTitle() {
-    if (!live.getId().equals(Live.NEW_CALL)) return;
+    if (!live.getType().equals(Live.NEW_CALL)) return;
     if (user.getDisplayName() != null) {
       txtName.setText(
           getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
@@ -168,7 +160,7 @@ public class LiveStatusNameView extends FrameLayout {
   }
 
   public void setStatus(@StatusType int status) {
-    if (this.status == DONE || !StringUtils.isEmpty(live.getLinkId())) return;
+    if (this.status == DONE || !StringUtils.isEmpty(live.getRoomId())) return;
 
     this.status = status;
 
@@ -177,8 +169,7 @@ public class LiveStatusNameView extends FrameLayout {
       return;
     }
 
-    setStatusText(
-        EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())), null);
+    setStatusText(EmojiParser.demojizedText(getContext().getString(status, live.getName())), null);
   }
 
   public @LiveStatusNameView.StatusType int getStatus() {

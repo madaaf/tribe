@@ -15,14 +15,10 @@ import javax.inject.Singleton;
 @Singleton public class UserRealmDataMapper {
 
   LocationRealmDataMapper locationRealmDataMapper;
-  MembershipRealmDataMapper membershipRealmDataMapper;
   FriendshipRealmDataMapper friendshipRealmDataMapper;
 
-  @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
-      GroupMemberRealmDataMapper groupMemberRealmDataMapper) {
+  @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
     this.locationRealmDataMapper = locationRealmDataMapper;
-    this.membershipRealmDataMapper =
-        new MembershipRealmDataMapper(new GroupRealmDataMapper(this, groupMemberRealmDataMapper));
     this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
   }
 
@@ -55,9 +51,6 @@ import javax.inject.Singleton;
       user.setIsOnline(userRealm.isOnline());
       user.setLastSeenAt(userRealm.getLastSeenAt());
       if (shouldTransformFriendships) {
-        if (userRealm.getMemberships() != null) {
-          user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
-        }
         if (userRealm.getFriendships() != null) {
           user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
         }
@@ -115,10 +108,6 @@ import javax.inject.Singleton;
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
       if (shouldTransformFriendships) {
-        if (user.getMembershipList() != null) {
-          userRealm.setMemberships(
-              membershipRealmDataMapper.transformMemberships(user.getMembershipList()));
-        }
         if (user.getFriendships() != null) {
           userRealm.setFriendships(
               friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
@@ -175,9 +164,5 @@ import javax.inject.Singleton;
 
   public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
     return friendshipRealmDataMapper;
-  }
-
-  public MembershipRealmDataMapper getMembershipRealmDataMapper() {
-    return membershipRealmDataMapper;
   }
 }

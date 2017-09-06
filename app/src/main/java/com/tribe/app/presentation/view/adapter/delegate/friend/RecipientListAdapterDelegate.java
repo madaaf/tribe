@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
@@ -36,17 +35,14 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   @Override protected ButtonModel getButtonModelFrom(BaseListInterface baseListItem) {
     Recipient recipient = (Recipient) baseListItem;
 
-    if (recipient instanceof Membership) {
-      return getHangLiveButton();
+    Friendship friendship = (Friendship) recipient;
+
+    if (friendship.isBlocked()) {
+      return getUnblockButton();
+    } else if (friendship.isHidden()) {
+      return getUnhideButton();
     } else {
-      Friendship friendship = (Friendship) recipient;
-      if (friendship.isBlocked()) {
-        return getUnblockButton();
-      } else if (friendship.isHidden()) {
-        return getUnhideButton();
-      } else {
-        return getHangLiveButton();
-      }
+      return getHangLiveButton();
     }
   }
 

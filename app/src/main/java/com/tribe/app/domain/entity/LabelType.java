@@ -12,8 +12,8 @@ public class LabelType implements Serializable {
 
   @StringDef({
       SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, CANCEL, OPEN_CAMERA, OPEN_PHOTOS,
-      CLEAR_MESSAGES, HIDE, BLOCK_HIDE, GROUP_INFO, GROUP_LEAVE, TRIBE_SAVE, TRIBE_INCREASE_SPEED,
-      TRIBE_DECREASE_SPEED, UNHIDE
+      CLEAR_MESSAGES, HIDE, BLOCK_HIDE, TRIBE_SAVE, TRIBE_INCREASE_SPEED, TRIBE_DECREASE_SPEED,
+      UNHIDE
   }) @Retention(RetentionPolicy.SOURCE) public @interface GenericTypeDef {
   }
 
@@ -38,8 +38,6 @@ public class LabelType implements Serializable {
   public static final String UNHIDE = "unhide";
   public static final String DECLINE = "decline";
   public static final String BLOCK_HIDE = "blockHide";
-  public static final String GROUP_INFO = "groupInfo";
-  public static final String GROUP_LEAVE = "groupLeave";
   public static final String TRIBE_SAVE = "tribeSave";
   public static final String TRIBE_INCREASE_SPEED = "tribeIncreaseSpeed";
   public static final String TRIBE_DECREASE_SPEED = "tribeDecreaseSpeed";

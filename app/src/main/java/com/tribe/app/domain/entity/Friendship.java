@@ -116,10 +116,6 @@ public class Friendship extends Recipient implements Comparable<Friendship>, Ser
     return null;
   }
 
-  @Override public boolean isGroup() {
-    return false;
-  }
-
   public @FriendshipRealm.FriendshipStatus String getStatus() {
     return status;
   }

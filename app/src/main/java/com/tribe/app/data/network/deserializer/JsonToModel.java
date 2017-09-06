@@ -1,14 +1,16 @@
 package com.tribe.app.data.network.deserializer;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.util.ArrayList;
@@ -32,7 +34,6 @@ import timber.log.Timber;
 
   // OBSERABLES
   private PublishSubject<List<UserRealm>> onUserListUpdated = PublishSubject.create();
-  private PublishSubject<List<GroupRealm>> onGroupListUpdated = PublishSubject.create();
   private PublishSubject<List<FriendshipRealm>> onFriendshipListUpdated = PublishSubject.create();
   private PublishSubject<String> onAddedOnline = PublishSubject.create();
   private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
@@ -43,13 +44,12 @@ import timber.log.Timber;
   private PublishSubject<String> onRemovedOnline = PublishSubject.create();
   private PublishSubject<String> onAddedLive = PublishSubject.create();
   private PublishSubject<String> onRemovedLive = PublishSubject.create();
-  private PublishSubject<String> onCreatedMembership = PublishSubject.create();
-  private PublishSubject<String> onRemovedMembership = PublishSubject.create();
   private PublishSubject<String> onCreatedFriendship = PublishSubject.create();
   private PublishSubject<String> onRemovedFriendship = PublishSubject.create();
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
+  private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
 
   @Inject public JsonToModel(@Named("simpleGson") Gson gson) {
     this.gson = gson;
@@ -62,7 +62,6 @@ import timber.log.Timber;
       JsonObject results = jsonObject.getAsJsonObject("data");
 
       List<UserRealm> updatedUserList = new ArrayList<>();
-      List<GroupRealm> updatedGroupList = new ArrayList<>();
       List<FriendshipRealm> updatedFriendshipList = new ArrayList<>();
 
       boolean shouldBulkLiveStatus = results.entrySet().size() > 5;
@@ -98,22 +97,6 @@ import timber.log.Timber;
               }
 
               updatedUserList.add(userRealm);
-            } else if (entry.getKey().contains(WSService.GROUP_SUFFIX)) {
-              GroupRealm groupRealm = gson.fromJson(entry.getValue().toString(), GroupRealm.class);
-              groupRealm.setJsonPayloadUpdate(jo);
-              updatedGroupList.add(groupRealm);
-
-              boolean shouldUpdateLiveStatus = false;
-
-              if (jo.has("is_live")) shouldUpdateLiveStatus = true;
-
-              if (shouldUpdateLiveStatus) {
-                if (groupRealm.isLive()) {
-                  onAddedLive.onNext(groupRealm.getId());
-                } else {
-                  onRemovedLive.onNext(groupRealm.getId());
-                }
-              }
             } else if (entry.getKey().contains(WSService.FRIENDSHIP_UDPATED_SUFFIX)) {
               boolean shouldUpdateLiveStatus = false;
 
@@ -147,24 +130,71 @@ import timber.log.Timber;
               FriendshipRealm friendshipRealm =
                   gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
               onRemovedFriendship.onNext(friendshipRealm.getId());
-            } else if (entry.getKey().contains(WSService.MEMBERSHIP_CREATED_SUFFIX)) {
-              Timber.d("Membership created : " + entry.getValue().toString());
-              onCreatedMembership.onNext(
-                  entry.getValue().getAsJsonObject().get("id").getAsString());
-            } else if (entry.getKey().contains(WSService.MEMBERSHIP_REMOVED_SUFFIX)) {
-              Timber.d("Membership removed : " + entry.getValue().toString());
-              onRemovedMembership.onNext(
-                  entry.getValue().getAsJsonObject().get("id").getAsString());
             } else if (entry.getKey().contains(WSService.RANDOM_ROOM_ASSIGNED)) {
               Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
               onRandomRoomAssigned.onNext(
                   entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());
+            } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
+              Timber.d("onRoomUpdate : " + entry.getValue().toString());
+              JsonObject roomJson = entry.getValue().getAsJsonObject();
+              Room room = new Room(roomJson.get("id").getAsString());
+              JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();
+              JsonArray invited_users_json = roomJson.get("invited_users").getAsJsonArray();
+
+              if (live_users_json.size() > 0) {
+                List<User> live_users;
+                try {
+                  live_users =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<User>>() {
+                      }.getType());
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+
+                  List<String> live_users_ids =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<String>>() {
+                      }.getType());
+
+                  live_users = new ArrayList<>();
+
+                  for (String id : live_users_ids) {
+                    live_users.add(new User(id));
+                  }
+                }
+
+                Timber.d("Live_users : " + live_users);
+                room.setLiveUsers(live_users);
+              }
+
+              if (invited_users_json.size() > 0) {
+                List<User> invited_users;
+                try {
+                  invited_users =
+                      gson.fromJson(invited_users_json.toString(), new TypeToken<List<User>>() {
+                      }.getType());
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+
+                  List<String> invited_users_ids =
+                      gson.fromJson(live_users_json.toString(), new TypeToken<List<String>>() {
+                      }.getType());
+
+                  invited_users = new ArrayList<>();
+
+                  for (String id : invited_users_ids) {
+                    invited_users.add(new User(id));
+                  }
+                }
+
+                Timber.d("invited_users : " + invited_users);
+                room.setInvitedUsers(invited_users);
+              }
+
+              onRoomUpdated.onNext(room);
             }
           }
         }
       }
 
-      if (updatedGroupList.size() > 0) onGroupListUpdated.onNext(updatedGroupList);
       if (updatedUserList.size() > 0) onUserListUpdated.onNext(updatedUserList);
       if (updatedFriendshipList.size() > 0) onFriendshipListUpdated.onNext(updatedFriendshipList);
     }
@@ -172,10 +202,6 @@ import timber.log.Timber;
 
   public Observable<List<UserRealm>> onUserListUpdated() {
     return onUserListUpdated;
-  }
-
-  public Observable<List<GroupRealm>> onGroupListUpdated() {
-    return onGroupListUpdated;
   }
 
   public Observable<List<FriendshipRealm>> onFriendshipListUpdated() {
@@ -204,14 +230,6 @@ import timber.log.Timber;
 
   public Observable<String> onRemovedLive() {
     return onRemovedLive;
-  }
-
-  public Observable<String> onCreatedMembership() {
-    return onCreatedMembership;
-  }
-
-  public Observable<String> onRemovedMembership() {
-    return onRemovedMembership;
   }
 
   public Observable<String> onCreatedFriendship() {
@@ -244,5 +262,9 @@ import timber.log.Timber;
 
   public Observable<List<String>> onRemovedListOnline() {
     return onRemovedListOnline;
+  }
+
+  public Observable<Room> onRoomUpdated() {
+    return onRoomUpdated;
   }
 }

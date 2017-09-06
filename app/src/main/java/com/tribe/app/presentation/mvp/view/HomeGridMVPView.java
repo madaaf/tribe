@@ -2,13 +2,11 @@ package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Room;
 import java.util.List;
 
 public interface HomeGridMVPView extends LoadDataMVPView {
-
-  void onMembershipCreated(Membership membership);
 
   void onDeepLink(String url);
 
@@ -28,7 +26,7 @@ public interface HomeGridMVPView extends LoadDataMVPView {
 
   void renderContactsOnApp(List<Contact> contactList);
 
-  void onBookLink(Boolean isBookLink);
+  void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS);
 
   void onSyncError();
 }

@@ -1,13 +1,13 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.BookRoomLink;
-import com.tribe.app.domain.interactor.user.DeclineInvite;
+import com.tribe.app.domain.interactor.live.CreateRoom;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetDiskUnblockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
@@ -37,7 +37,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
   private GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList;
   private UpdateFriendship updateFriendship;
   private DeclineInvite declineInvite;
-  private BookRoomLink bookRoomLink;
+  private CreateRoom createRoom;
 
   private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
   private GetUnblockedFriendshipListSubscriber getUnblockedFriendshipListSubscriber;
@@ -46,14 +46,15 @@ public class ProfilePresenter extends UpdateUserPresenter {
       RxFacebook rxFacebook, RemoveInstall removeInstall,
       GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
       DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList,
-      BookRoomLink bookRoomLink, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+      CreateRoom createRoom, UpdateUserFacebook updateUserFacebook,
+      UpdateUserPhoneNumber updateUserPhoneNumber) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;
     this.updateFriendship = updateFriendship;
     this.declineInvite = declineInvite;
     this.getDiskUnblockedFriendshipList = getDiskUnblockedFriendshipList;
-    this.bookRoomLink = bookRoomLink;
+    this.createRoom = createRoom;
   }
 
   @Override public void onViewDetached() {
@@ -62,7 +63,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
     updateFriendship.unsubscribe();
     declineInvite.unsubscribe();
     getDiskUnblockedFriendshipList.unsubscribe();
-    bookRoomLink.unsubscribe();
+    createRoom.unsubscribe();
     profileView = null;
     super.onViewDetached();
   }
@@ -133,7 +134,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
   }
 
   public void declineInvite(String roomId) {
-    declineInvite.prepare(roomId);
+    declineInvite.setup(roomId);
     declineInvite.execute(new DefaultSubscriber());
   }
 
@@ -160,8 +161,19 @@ public class ProfilePresenter extends UpdateUserPresenter {
     }
   }
 
-  public void bookRoomLink(String linkId) {
-    bookRoomLink.setLinkId(linkId);
-    bookRoomLink.execute(new DefaultSubscriber());
+  public void createRoom() {
+    createRoom.execute(new CreateRoomSubscriber());
+  }
+
+  private class CreateRoomSubscriber extends DefaultSubscriber<Room> {
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+    }
+
+    @Override public void onNext(Room room) {
+      if (profileView != null) profileView.onCreateRoom(room);
+    }
   }
 }

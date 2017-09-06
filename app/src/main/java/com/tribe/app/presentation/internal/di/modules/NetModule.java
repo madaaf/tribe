@@ -22,19 +22,18 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
+import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
+import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.FriendshipRealmDeserializer;
-import com.tribe.app.data.network.deserializer.GroupDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
-import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
-import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
-import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
+import com.tribe.app.data.network.deserializer.RoomDeserializer;
 import com.tribe.app.data.network.deserializer.RoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
@@ -49,13 +48,11 @@ import com.tribe.app.data.network.interceptor.TribeInterceptor;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
@@ -96,7 +93,6 @@ import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -130,16 +126,17 @@ import timber.log.Timber;
       @Override public boolean shouldSkipClass(Class<?> clazz) {
         return false;
       }
-    }).registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate, sdf)).create();
+    })
+        .registerTypeAdapter(Date.class, new DateDeserializer(utcSimpleDate, sdf))
+        .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
+        .create();
   }
 
   @Provides @PerApplication Gson provideGson(Context context,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
-    GroupDeserializer groupDeserializer = new GroupDeserializer();
-    DataGameDeserializer dataGameDeserializer =
-        new DataGameDeserializer(context);
+    DataGameDeserializer dataGameDeserializer = new DataGameDeserializer(context);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
@@ -151,9 +148,8 @@ import timber.log.Timber;
       }
     })
         .registerTypeAdapter(new TypeToken<UserRealm>() {
-        }.getType(), new TribeUserDeserializer(groupDeserializer, utcSimpleDate))
+        }.getType(), new TribeUserDeserializer(utcSimpleDate))
         .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
-        .registerTypeAdapter(GroupRealm.class, groupDeserializer)
         .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
         .registerTypeAdapter(Date.class,
             new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
@@ -163,11 +159,10 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<List<Integer>>() {
         }.getType(), new HowManyFriendsDeserializer())
         .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
-        .registerTypeAdapter(MembershipRealm.class, new NewMembershipDeserializer())
         .registerTypeAdapter(new TypeToken<List<Installation>>() {
         }.getType(), new InstallsDeserializer())
         .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
-        .registerTypeAdapter(RoomConfiguration.class, new RoomConfigurationDeserializer())
+        .registerTypeAdapter(Room.class, new RoomDeserializer())
         .registerTypeAdapter(FriendshipRealm.class, new FriendshipRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<Invite>>() {
         }.getType(), new InvitesListDeserializer<>())
@@ -259,8 +254,11 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
-    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    TribeAuthenticator authenticator =
+        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
+            tagManager);
+    httpClientBuilder.addInterceptor(
+        new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
     httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
@@ -286,8 +284,11 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
-    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    TribeAuthenticator authenticator =
+        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
+            tagManager);
+    httpClientBuilder.addInterceptor(
+        new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
     httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
@@ -313,8 +314,11 @@ import timber.log.Timber;
     OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
 
     httpClientBuilder.addInterceptor(new TribeInterceptor(context, tribeAuthorizer));
-    TribeAuthenticator authenticator = new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer, tagManager);
-    httpClientBuilder.addInterceptor(new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
+    TribeAuthenticator authenticator =
+        new TribeAuthenticator(context, accessToken, loginApi, userCache, tribeAuthorizer,
+            tagManager);
+    httpClientBuilder.addInterceptor(
+        new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
     httpClientBuilder.authenticator(authenticator);
 
     if (BuildConfig.DEBUG) {
@@ -381,9 +385,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null
-            && responseRefresh.isSuccessful()
-            && responseRefresh.body() != null) {
+        if (responseRefresh != null &&
+            responseRefresh.isSuccessful() &&
+            responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -397,8 +401,7 @@ import timber.log.Timber;
 
           clearLock();
 
-          return request
-              .newBuilder()
+          return request.newBuilder()
               .header("Authorization",
                   accessToken.getTokenType() + " " + accessToken.getAccessToken())
               .build();
@@ -445,8 +448,7 @@ import timber.log.Timber;
       } else {
         boolean conditionOpened = LOCK.block(60000);
         if (conditionOpened) {
-          return request
-              .newBuilder()
+          return request.newBuilder()
               .header("Authorization",
                   accessToken.getTokenType() + " " + accessToken.getAccessToken())
               .build();
@@ -462,20 +464,21 @@ import timber.log.Timber;
     private TribeAuthorizer tribeAuthorizer;
     private TribeAuthenticator tribeAuthenticator;
 
-    public TribeTokenExpirationInterceptor(TribeAuthorizer tribeAuthorizer, TribeAuthenticator tribeAuthenticator) {
+    public TribeTokenExpirationInterceptor(TribeAuthorizer tribeAuthorizer,
+        TribeAuthenticator tribeAuthenticator) {
       this.tribeAuthorizer = tribeAuthorizer;
       this.tribeAuthenticator = tribeAuthenticator;
     }
 
-    @Override
-    public okhttp3.Response intercept(Chain chain) throws IOException {
+    @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
       if (tribeAuthorizer != null &&
-              tribeAuthorizer.getAccessToken() != null &&
-              tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
-              tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+          tribeAuthorizer.getAccessToken() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
-        Timber.d("The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
+        Timber.d(
+            "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
 
         return chain.proceed(tribeAuthenticator.refresh(chain.request(), null));
       }
@@ -532,12 +535,13 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType()
-                + " " + tribeAuthorizer.getAccessToken().getAccessToken());
-
+        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
+            " " +
+            tribeAuthorizer.getAccessToken().getAccessToken());
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
-                tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() +
+            ":" +
+            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

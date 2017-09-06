@@ -7,16 +7,13 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.GroupEntity;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import rx.Observable;
@@ -138,54 +135,14 @@ public interface UserDataStore {
    */
   Observable<Void> notifyFBFriends();
 
-  /**
-   * Get an {@link Observable} which will emit the members of the group
-   */
-  Observable<GroupRealm> getGroupMembers(String groupId);
-
-  Observable<GroupRealm> getGroupInfos(String groupId);
-
-  Observable<MembershipRealm> getMembershipInfos(String membershipId);
-
-  Observable<MembershipRealm> createGroup(GroupEntity groupEntity);
-
-  Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values);
-
-  Observable<MembershipRealm> updateMembership(String membershipId,
-      List<Pair<String, String>> values);
-
-  Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
-
-  Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds);
-
-  Observable<Void> removeGroup(String groupId);
-
-  Observable<Void> leaveGroup(String membershipId);
-
   Observable<FriendshipRealm> updateFriendship(String friendshipId,
       List<Pair<String, String>> values);
 
   Observable<String> getHeadDeepLink(String url);
 
-  Observable<MembershipRealm> createMembership(String groupId);
-
-  Observable<RecipientRealmInterface> getRecipientInfos(String recipientId, boolean isToGroup);
-
-  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId);
-
-  Observable<Boolean> inviteUserToRoom(String roomId, String userId);
-
-  Observable<Boolean> buzzRoom(String roomId);
-
-  Observable<Void> declineInvite(String roomId);
+  Observable<RecipientRealmInterface> getRecipientInfos(String recipientId);
 
   Observable<Void> sendInvitations();
-
-  Observable<String> getRoomLink(String roomId);
-
-  Observable<Boolean> bookRoomLink(String linkId);
-
-  Observable<Void> roomAcceptRandom(String roomId);
 
   Observable<Boolean> reportUser(String userId);
 }

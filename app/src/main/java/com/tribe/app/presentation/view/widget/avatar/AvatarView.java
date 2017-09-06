@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
@@ -144,14 +143,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
     if (createImageSubscription != null) createImageSubscription.unsubscribe();
 
     if (recipient instanceof Friendship) {
-      if (StringUtils.isEmpty(previousAvatar) || !previousAvatar.equals(
-          recipient.getProfilePicture())) {
+      if (StringUtils.isEmpty(previousAvatar) ||
+          !previousAvatar.equals(recipient.getProfilePicture())) {
         load(recipient.getProfilePicture());
       }
-    } else if (recipient instanceof Membership) {
-      Membership membership = (Membership) recipient;
-      loadGroupAvatar(membership.getProfilePicture(), previousAvatar, membership.getSubId(),
-          membership.getMembersPic());
     } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
       loadGroupAvatar(invite.getProfilePicture(), previousAvatar, invite.getId(),
@@ -165,13 +160,13 @@ public class AvatarView extends RelativeLayout implements Avatar {
     this.membersPic = membersPic;
     this.groupId = groupId;
 
-    if ((StringUtils.isEmpty(url) || url.equals(noUrl))
-        && membersPic != null
-        && membersPic.size() > 0) {
+    if ((StringUtils.isEmpty(url) || url.equals(noUrl)) &&
+        membersPic != null &&
+        membersPic.size() > 0) {
       File groupAvatarFile = FileUtils.getAvatarForGroupId(getContext(), groupId, FileUtils.PHOTO);
 
-      if ((StringUtils.isEmpty(previousUrl) || !previousUrl.equals(
-          groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
+      if ((StringUtils.isEmpty(previousUrl) ||
+          !previousUrl.equals(groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
         setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
         new GlideUtils.Builder(getContext()).file(groupAvatarFile)
             .target(imgAvatar)

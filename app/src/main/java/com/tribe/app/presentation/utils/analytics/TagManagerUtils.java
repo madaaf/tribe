@@ -20,9 +20,9 @@ public class TagManagerUtils {
   public static final String KPI_Onboarding_AuthenticationError =
       "KPI_Onboarding_AuthenticationError";
   public static final String KPI_Onboarding_OpenNewCalliMessage =
-          "KPI_Onboarding_OpenNewCalliMessage";
+      "KPI_Onboarding_OpenNewCalliMessage";
   public static final String KPI_Onboarding_OpenNewCallFacebook =
-          "KPI_Onboarding_OpenNewCallFacebook";
+      "KPI_Onboarding_OpenNewCallFacebook";
   public static final String KPI_Onboarding_SystemNotifications =
       "KPI_Onboarding_SystemNotifications";
   public static final String KPI_Onboarding_VideoSkipped = "KPI_Onboarding_VideoSkipped";
@@ -122,7 +122,6 @@ public class TagManagerUtils {
   public static final String USER_USERNAME = "user_username";
   public static final String USER_FACEBOOK_CONNECTED = "user_facebook_connected";
   public static final String USER_FRIENDS_COUNT = "user_friends_count";
-  public static final String USER_GROUPS_COUNT = "user_groups_count";
   public static final String USER_INVISIBLE_ENABLED = "user_invisible_enabled";
   public static final String USER_CALLS_COUNT = "user_calls_count";
   public static final String USER_CALLS_MINUTES = "user_calls_minutes";

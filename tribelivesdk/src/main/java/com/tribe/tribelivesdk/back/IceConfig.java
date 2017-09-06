@@ -1,12 +1,13 @@
 package com.tribe.tribelivesdk.back;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by tiago on 13/01/2017.
  */
 
-public class IceConfig {
+public class IceConfig implements Serializable {
 
   private List<String> urls;
   private String username;

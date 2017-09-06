@@ -41,11 +41,11 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if (notificationPayload.getClickAction() == null && StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    if (notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) {
       return null;
-    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null &&
+        !StringUtils.isEmpty(notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -59,15 +59,14 @@ public class NotificationUtils {
       missedCallManager.reset();
     }
 
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
-        && !isContextNotLive) {
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) &&
+        !isContextNotLive) {
       // A friend opened the app and is online
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder = addLiveActions(context, builder, notificationPayload);
       builder.sound(SoundManager.FRIEND_ONLINE);
       liveNotificationView = builder.build();
-    } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-        && StringUtils.isEmpty(notificationPayload.getGroupId())) {
+    } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       // A friend entered live - 1o1
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
 
@@ -79,25 +78,16 @@ public class NotificationUtils {
       }
 
       liveNotificationView = builder.build();
-    } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-        && !StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      // A friend entered live - Group
-      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder = addHangLiveAction(context, builder, notificationPayload);
-      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
       // A friend buzzing you in a group
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
 
-      if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-        if (isContextNotLive) {
-          builder = addHangLiveAction(context, builder, notificationPayload);
-        } else {
-          builder = addLiveActions(context, builder, notificationPayload);
-        }
-      } else {
+      if (isContextNotLive) {
         builder = addHangLiveAction(context, builder, notificationPayload);
+      } else {
+        builder = addLiveActions(context, builder, notificationPayload);
       }
+
       builder.sound(SoundManager.WIZZ);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
@@ -147,15 +137,8 @@ public class NotificationUtils {
   private static LiveNotificationView.Builder addHangLiveAction(Context context,
       LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
 
-    String title;
-    if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      title = context.getString(R.string.live_notification_action_hang_live_friend,
-          notificationPayload.getUserDisplayName());
-    } else {
-      title = context.getString(R.string.live_notification_action_hang_live_group,
-          notificationPayload.getGroupName());
-    }
-
+    String title = context.getString(R.string.live_notification_action_hang_live_friend,
+        notificationPayload.getUserDisplayName());
     builder.addAction(ACTION_HANG_LIVE, title,
         getIntentForLive(context, notificationPayload, false));
 
@@ -184,15 +167,9 @@ public class NotificationUtils {
 
   private static LiveNotificationView buildDeclinedCallNotification(Context context,
       LiveNotificationView liveNotifView, NotificationPayload notificationPayload) {
-    String title;
-    if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      title = EmojiParser.demojizedText(context.getString(R.string.live_notification_guest_declined,
-          notificationPayload.getUserDisplayName()));
-    } else {
-      title = EmojiParser.demojizedText(
-          context.getString(R.string.live_notification_action_hang_live_group,
-              notificationPayload.getGroupName()));
-    }
+    String title = EmojiParser.demojizedText(
+        context.getString(R.string.live_notification_guest_declined,
+            notificationPayload.getUserDisplayName()));
     notificationPayload.setBody(title);
     LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
     builder.sound(SoundManager.NO_SOUND);
@@ -254,12 +231,10 @@ public class NotificationUtils {
 
   public static Intent getIntentForLive(Context context, NotificationPayload payload,
       boolean isFromCallkit) {
-    String recipientId =
-        !StringUtils.isEmpty(payload.getGroupId()) ? payload.getGroupId() : payload.getUserId();
-    boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
+    String recipientId = payload.getUserId();
     String sessionId = payload.getSessionId();
-    String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
-    String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
+    String name = payload.getUserDisplayName();
+    String picture = payload.getUserPicture();
 
     String source = "";
     if (isFromCallkit) {
@@ -270,8 +245,7 @@ public class NotificationUtils {
     }
 
     Intent intent =
-        LiveActivity.getCallingIntent(context, recipientId, isGroup, picture, name, sessionId,
-            source);
+        LiveActivity.getCallingIntent(context, recipientId, picture, name, sessionId, source);
     intent.putExtra(Constants.NOTIFICATION_LIVE, payload.getClickAction());
     return intent;
   }

@@ -15,8 +15,6 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.domain.entity.GroupMember;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -29,15 +27,12 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.SendboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
-
 import java.util.List;
 import javax.inject.Inject;
 
@@ -123,7 +118,8 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId, boolean isFromFacebook) {
+  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId,
+      boolean isFromFacebook) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
@@ -132,9 +128,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-          | Intent.FLAG_ACTIVITY_CLEAR_TASK
-          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+          Intent.FLAG_ACTIVITY_CLEAR_TASK |
+          Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -191,43 +187,6 @@ public class Navigator {
   public void navigateToDebugMode(Activity activity) {
     if (activity != null) {
       Intent intent = DebugActivity.getCallingIntent(activity);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  /**
-   * Goes to the group screen.
-   *
-   * @param activity activity needed to open the destiny activity.
-   */
-  public void navigateToCreateGroup(Activity activity) {
-    if (activity != null) {
-      Intent intent = GroupActivity.getCallingIntent(activity, null);
-      activity.startActivityForResult(intent, 0);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  public void navigateToPrefilledCreationGroup(Activity activity,
-      List<GroupMember> prefilledGrpMembers, boolean createGrpDirectly) {
-    if (activity != null) {
-      Intent intent = GroupActivity.getCallingIntentWithMembers(activity, prefilledGrpMembers,
-          createGrpDirectly);
-      activity.startActivityForResult(intent, 0);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  /**
-   * Goes to the group screen.
-   *
-   * @param activity activity needed to open the destiny activity.
-   * @param membership membership to detail
-   */
-  public void navigateToGroupDetails(Activity activity, Membership membership) {
-    if (activity != null) {
-      Intent intent = GroupActivity.getCallingIntent(activity, membership);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -385,7 +344,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null && activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null &&
+        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);
@@ -405,17 +365,7 @@ public class Navigator {
   }
 
   public String sendInviteToCall(BaseActivity activity, FirebaseRemoteConfig firebaseRemoteConfig,
-      String feature, String fromLinkId, String phoneNumber, boolean shouldOpenDefaultSms) {
-    String url, linkId;
-
-    if (StringUtils.isEmpty(fromLinkId)) {
-      linkId = StringUtils.generateLinkId();
-    } else {
-      linkId = fromLinkId;
-    }
-
-    url = StringUtils.getUrlFromLinkId(activity, linkId);
-
+      String feature, String link, String phoneNumber, boolean shouldOpenDefaultSms) {
     String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
         activity.getCurrentUser().getDisplayName());
     String description =
@@ -423,21 +373,21 @@ public class Navigator {
             activity.getCurrentUser().getDisplayName());
 
     activity.getTagManager()
-        .generateBranchLink(activity, url, title, description, feature, "SMS",
+        .generateBranchLink(activity, link, title, description, feature, "SMS",
             (generatedUrl, error) -> {
               String finalUrl;
 
               if (error == null && !StringUtils.isEmpty(generatedUrl)) {
                 finalUrl = generatedUrl;
               } else {
-                finalUrl = url;
+                finalUrl = link;
               }
 
               openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
                   shouldOpenDefaultSms);
             });
 
-    return linkId;
+    return link;
   }
 
   public void openDefaultMessagingApp(Activity activity, String message) {
@@ -452,11 +402,10 @@ public class Navigator {
 
     if (AppInviteDialog.canShow()) {
 
-      AppInviteContent content = new AppInviteContent.Builder()
-              .setApplinkUrl(url)
-              .setPreviewImageUrl(Constants.OPEN_GRAPH_IMAGE)
-              .setDestination(AppInviteContent.Builder.Destination.FACEBOOK)
-              .build();
+      AppInviteContent content = new AppInviteContent.Builder().setApplinkUrl(url)
+          .setPreviewImageUrl(Constants.OPEN_GRAPH_IMAGE)
+          .setDestination(AppInviteContent.Builder.Destination.FACEBOOK)
+          .build();
 
       AppInviteDialog.show(activity, content);
     }

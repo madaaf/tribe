@@ -1,5 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.domain.entity.helpers.Changeable;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -14,16 +16,13 @@ import java.util.List;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class User implements Serializable, BaseListInterface {
-
+public class User implements Serializable, BaseListInterface, Changeable {
 
   public static final String ID = "id";
   public static final String FBID = "fbid";
   public static final String USERNAME = "username";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
-
-
 
   private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
   public static final String ID_EMPTY = "EMPTY";
@@ -39,7 +38,6 @@ public class User implements Serializable, BaseListInterface {
   private Location location;
   private boolean tribe_save;
   private List<Friendship> friendships;
-  private List<Membership> membershipList;
   private List<Recipient> friendshipList;
   private List<Invite> inviteList;
   private String fbid;
@@ -160,16 +158,6 @@ public class User implements Serializable, BaseListInterface {
     return friendships;
   }
 
-  public void setMembershipList(List<Membership> membershipList) {
-    this.membershipList = membershipList;
-  }
-
-  public List<Membership> getMembershipList() {
-    if (membershipList == null) return new ArrayList<>();
-
-    return membershipList;
-  }
-
   public String getFbid() {
     return fbid;
   }
@@ -217,7 +205,6 @@ public class User implements Serializable, BaseListInterface {
       friendshipList.addAll(friendshipWithoutMe);
     }
 
-    if (membershipList != null) friendshipList.addAll(membershipList);
     if (inviteList != null) friendshipList.addAll(inviteList);
 
     Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
@@ -338,9 +325,6 @@ public class User implements Serializable, BaseListInterface {
       setTimeInCall(user.getTimeInCall());
       setLastSeenAt(user.getLastSeenAt());
       if (user.getLocation() != null) setLocation(user.getLocation());
-      if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
-        setMembershipList(user.getMembershipList());
-      }
       if (user.getFriendships() != null && user.getFriendshipList().size() > 0) {
         setFriendships(user.getFriendships());
       }
@@ -363,37 +347,7 @@ public class User implements Serializable, BaseListInterface {
     setLastSeenAt(null);
     setTribeSave(false);
     setLocation(null);
-    setMembershipList(null);
     setFriendships(null);
-  }
-
-  public List<GroupMember> getUserList() {
-    List<GroupMember> userList = new ArrayList<>();
-
-    if (friendships == null) return userList;
-
-    Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-    for (Friendship friendship : friendships) {
-      if (!friendship.isFake() && !friendship.getSubId().equals(this.id)) {
-        GroupMember groupMember = new GroupMember(friendship.getFriend());
-        groupMember.setFriend(true);
-        userList.add(groupMember);
-      }
-    }
-
-    return userList;
-  }
-
-  public void computeMemberFriends(List<GroupMember> groupMemberList) {
-    for (GroupMember groupMember : groupMemberList) {
-      for (Friendship friendship : friendships) {
-        if (friendship.getFriend().equals(groupMember.getUser())) {
-          groupMember.setFriend(true);
-          groupMember.setFriendship(friendship);
-        }
-      }
-    }
   }
 
   public int computeUserFriends(List<User> userList) {
@@ -423,9 +377,17 @@ public class User implements Serializable, BaseListInterface {
     return null;
   }
 
+  public boolean isEmpty() {
+    return StringUtils.isEmpty(username);
+  }
+
   @Override public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (getId() != null ? getId().hashCode() : 0);
     return result;
+  }
+
+  @Override public int getChangeHashCode() {
+    return id.hashCode();
   }
 }

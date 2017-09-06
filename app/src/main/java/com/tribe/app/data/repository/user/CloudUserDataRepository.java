@@ -6,8 +6,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
-import com.tribe.app.data.realm.mapper.GroupRealmDataMapper;
-import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -16,12 +14,9 @@ import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupEntity;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -42,8 +37,6 @@ import rx.Observable;
   private final PinRealmDataMapper pinRealmDataMapper;
   private final ContactRealmDataMapper contactRealmDataMapper;
   private final SearchResultRealmDataMapper searchResultRealmDataMapper;
-  private final GroupRealmDataMapper groupRealmDataMapper;
-  private final MembershipRealmDataMapper membershipRealmDataMapper;
 
   /**
    * Constructs a {@link UserRepository}.
@@ -54,16 +47,13 @@ import rx.Observable;
    */
   @Inject public CloudUserDataRepository(UserDataStoreFactory dataStoreFactory,
       UserRealmDataMapper realmDataMapper, PinRealmDataMapper pinRealmDataMapper,
-      ContactRealmDataMapper contactRealmDataMapper, GroupRealmDataMapper groupRealmDataMapper,
-      MembershipRealmDataMapper membershipRealmDataMapper) {
+      ContactRealmDataMapper contactRealmDataMapper) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
     this.searchResultRealmDataMapper =
         new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
-    this.groupRealmDataMapper = groupRealmDataMapper;
-    this.membershipRealmDataMapper = membershipRealmDataMapper;
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -85,9 +75,7 @@ import rx.Observable;
 
   @Override public Observable<User> userInfos(String userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userInfos(userId).doOnError(throwable -> {
-      throwable.printStackTrace();
-    }).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+    return userDataStore.userInfos(userId).doOnError(throwable -> throwable.printStackTrace()).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {
@@ -162,7 +150,6 @@ import rx.Observable;
 
   @Override public Observable<SearchResult> findByUsername(String username) {
     final UserDataStore cloudDataStore = this.userDataStoreFactory.createCloudDataStore();
-
     return cloudDataStore.findByUsername(username)
         .map(searchResultRealm -> this.searchResultRealmDataMapper.transform(searchResultRealm));
   }
@@ -206,71 +193,6 @@ import rx.Observable;
     return cloudDataStore.notifyFBFriends();
   }
 
-  @Override public Observable<Group> getGroupMembers(String groupId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getGroupMembers(groupId).map(this.groupRealmDataMapper::transform);
-  }
-
-  @Override public Observable<Group> getGroupInfos(String groupId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getGroupInfos(groupId).map(this.groupRealmDataMapper::transform);
-  }
-
-  @Override public Observable<Membership> getMembershipInfos(String membershipId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getMembershipInfos(membershipId)
-        .map(this.membershipRealmDataMapper::transform);
-  }
-
-  @Override public Observable<Membership> createGroup(GroupEntity groupEntity) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createGroup(groupEntity)
-        .map((membershipRealm) -> this.membershipRealmDataMapper.transform(membershipRealm));
-  }
-
-  @Override
-  public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.updateGroup(groupId, values).map(this.groupRealmDataMapper::transform);
-  }
-
-  @Override public Observable<Membership> updateMembership(String membershipId,
-      List<Pair<String, String>> values) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.updateMembership(membershipId, values)
-        .map(this.membershipRealmDataMapper::transform);
-  }
-
-  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.addMembersToGroup(groupId, memberIds);
-  }
-
-  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.removeMembersFromGroup(groupId, memberIds);
-  }
-
-  @Override public Observable<Void> removeGroup(String groupId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.removeGroup(groupId);
-  }
-
-  @Override public Observable<Void> leaveGroup(String membershipId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.leaveGroup(membershipId);
-  }
-
   @Override public Observable<Friendship> updateFriendship(String friendshipId,
       List<Pair<String, String>> values) {
     final CloudUserDataStore cloudDataStore =
@@ -289,69 +211,14 @@ import rx.Observable;
     return cloudDataStore.getHeadDeepLink(url);
   }
 
-  @Override public Observable<Membership> createMembership(String groupId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createMembership(groupId)
-        .map(membershipRealm -> userRealmDataMapper.getMembershipRealmDataMapper()
-            .transform(membershipRealm));
-  }
-
-  @Override public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
+  @Override public Observable<Recipient> getRecipientInfos(String recipientId) {
     return null;
-  }
-
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
-      String linkId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.joinRoom(id, isGroup, roomId, linkId);
-  }
-
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.inviteUserToRoom(roomId, userId);
-  }
-
-  @Override public Observable<Boolean> buzzRoom(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.buzzRoom(roomId);
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.declineInvite(roomId);
   }
 
   @Override public Observable<Void> sendInvitations() {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.sendInvitations();
-  }
-
-  @Override public Observable<String> getRoomLink(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoomLink(roomId);
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.bookRoomLink(linkId);
-  }
-
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.roomAcceptRandom(roomId);
-  }
-
-  @Override public Observable<String> randomRoomAssigned() {
-    return null;
   }
 
   @Override public Observable<User> getFbIdUpdated() {

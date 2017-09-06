@@ -9,21 +9,10 @@
                     ...FriendshipInfos
                 }
 
-                memberships {
-                    ...MembershipInfos
-                }
-
                 invites {
-                    room_id
-                    room_name
-
-                    group {
-                        ...GroupInfos
-                    }
-
-                    friendships {
-                        ...FriendshipInfos
-                    }
+                  room {
+                    ...RoomInfos
+                  }
                 }
             }
         }
@@ -31,7 +20,6 @@
         %1$s
         %2$s
         %3$s
-        %4$s
     </string>
 
   <string name="user.infos.friendships" translatable="false">
@@ -101,6 +89,19 @@
         }
     </string>
 
+  <string name="userfragment.infos.light" translatable="false">
+    fragment UserInfos on User {
+      id
+      phone
+      fbid
+      invisible_mode
+      username
+      display_name
+      picture
+      is_online
+    }
+  </string>
+
   <string name="user.mutate" translatable="false">
         mutation {
             updateUser(user: {
@@ -119,7 +120,11 @@
 
   <string name="mutation" translatable="false">
         mutation { %1$s }
-    </string>
+  </string>
+
+  <string name="query" translatable="false">
+        query { %1$s }
+  </string>
 
   <string name="installs" translatable="false">
         {
@@ -150,13 +155,13 @@
         }
     </string>
 
-    <string name="install.remove" translatable="false">
+  <string name="install.remove" translatable="false">
         mutation {
             removeInstall(id: \"%1$s\")
         }
     </string>
 
-    <string name="user.incrUserTimeInCall" translatable="false">
+  <string name="user.incrUserTimeInCall" translatable="false">
         mutation {
             incrUserTimeInCall(duration: %1$s)
         }
@@ -483,48 +488,82 @@
     %1$s : randomRoomAssigned
   </string>
 
-  <string name="joinRoomFriendship" translatable="false">
-    getRoomParameters(friendshipId : \"%1$s\") {
+  <string name="subscription.roomUpdated" translatable="false">
+    %1$s : roomUpdated ( id : \"%2$s\" ) {
+      id
+    }
+  </string>
+
+  <string name="subscription.remove" translatable="false">
+    removeSubscription ( subscriptionId : \"%1$s\" )
+  </string>
+
+  <string name="getRoom.roomId" translatable="false">
+    room (roomId : \"%1$s\") {
       ...RoomInfos
     }
   </string>
 
-  <string name="joinRoomGroup" translatable="false">
-    getRoomParameters(groupId : \"%1$s\") {
+  <string name="getRoom.linkId" translatable="false">
+    room (linkId : \"%1$s\") {
       ...RoomInfos
     }
   </string>
 
-  <string name="joinRoomWithRoomId" translatable="false">
-    getRoomParameters(roomId : \"%1$s\") {
+  <string name="createRoom" translatable="false">
+    createRoom %1$s {
       ...RoomInfos
     }
   </string>
 
-  <string name="joinRoomWithLinkId" translatable="false">
-    getRoomParameters(linkId : \"%1$s\") {
+  <string name="createRoom.name" translatable="false">
+    name : \"%1$s\"
+  </string>
+
+  <string name="createRoom.usersIds" translatable="false">
+    usersIds : [%1$s]
+  </string>
+
+  <string name="updateRoom" translatable="false">
+    updateRoom ( roomId : \"%1$s\", room : { %2$s } ) {
       ...RoomInfos
     }
   </string>
 
   <string name="roomFragment_infos" translatable="false">
-    fragment RoomInfos on RoomPeerCredentials {
-      room_id
-      initiator_id
-      initiator_name
-      websocketUrl
-      rtcPeerConfiguration {
-        iceServers {
+    fragment RoomInfos on Room {
+      id
+      name
+      link
+      coordinates {
+        websocket_url
+        ice_servers {
           urls
           username
           credential
         }
       }
+      accept_random
+      initiator {
+        ...UserInfos
+      }
+      live_users {
+        ...UserInfos
+      }
+      invited_users {
+        ...UserInfos
+      }
+      created_at
+      updated_at
     }
   </string>
 
-  <string name="inviteToRoom" translatable="false">
-    inviteToRoom(roomId : \"%1$s\", userId : \"%2$s\")
+  <string name="createInvite" translatable="false">
+    createInvite(roomId : \"%1$s\", usersIds : [%2$s])
+  </string>
+
+  <string name="removeInvite" translatable="false">
+    removeInvite(roomId : \"%1$s\", userId : \"%2$s\")
   </string>
 
   <string name="buzzRoom" translatable="false">
@@ -535,40 +574,23 @@
         {
             user {
                 invites {
-                    room_id
-                    room_name
-
-                    group {
-                        ...GroupInfos
-                    }
-
-                    friendships {
-                        ...FriendshipInfos
-                    }
+                  room {
+                    ...RoomInfos
+                  }
                 }
             }
         }
 
         %1$s
         %2$s
-        %3$s
     </string>
 
   <string name="declineInvite" translatable="false">
     declineInvite(roomId : \"%1$s\")
   </string>
 
-  <string name="getRoomLink" translatable="false">
-    getRoomLink(roomId : \"%1$s\")
-  </string>
-
   <string name="bookRoomLink" translatable="false">
     bookRoomLink(linkId : \"%1$s\")
-  </string>
-
-
-  <string name="roomAcceptRandom" translatable="false">
-    roomAcceptRandom(roomId : \"%1$s\")
   </string>
 
   <string name="reportUser" translatable="false">

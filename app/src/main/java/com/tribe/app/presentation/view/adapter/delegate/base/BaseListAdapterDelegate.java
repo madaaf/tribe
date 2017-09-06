@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -107,12 +106,6 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
       } else {
         displayName = context.getString(R.string.search_searching);
       }
-    } else if (item instanceof Membership) {
-      Membership membership = (Membership) item;
-      int size = membership.getGroup().getMembers() == null ? 0
-          : membership.getGroup().getMembers().size();
-      username = size + " " + (size > 1 ? context.getString(R.string.group_members)
-          : context.getString(R.string.group_member));
     } else if (item instanceof User) {
       User user = (User) item;
       vh.txtNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
