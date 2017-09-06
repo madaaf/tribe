@@ -1,10 +1,11 @@
-package com.tribe.app.presentation.view.activity;
+package com.tribe.app.presentation.view.widget.chat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.widget.DiceView;
 
 import butterknife.BindView;
