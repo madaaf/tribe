@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.view;
 
 import android.content.Context;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
@@ -13,8 +12,6 @@ import java.util.List;
 public interface LiveMVPView extends MVPView {
 
   Context context();
-
-  void onRecipientInfos(Recipient recipient);
 
   void renderFriendshipList(List<Friendship> friendshipList);
 

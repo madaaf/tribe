@@ -272,6 +272,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean shouldOverridePendingTransactions = false;
   private List<String> userUnder13List = new ArrayList<>();
   private float initialBrightness = -1;
+  private int createRoomErrorCount = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -1205,15 +1206,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return onAnonymousReceived;
   }
 
-  @Override public void onRecipientInfos(Recipient recipient) {
-    //if (recipient instanceof Friendship) {
-    //  live.setId(recipient.getId());
-    //  viewLive.start(live);
-    //}
-    //
-    //ready();
-  }
-
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
     onUpdateFriendshipList.onNext(friendshipList);
   }
@@ -1263,10 +1255,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
      * for now, if there is an error, we just create the room
      */
 
-    //livePresenter.getRoomInfos(live);
-
-    //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    //finish();
+    if (createRoomErrorCount == 0) {
+      createRoom();
+      createRoomErrorCount++;
+    } else {
+      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+      finish();
+    }
   }
 
   @Override public Context context() {
@@ -1300,23 +1295,22 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
       // TODO handle later
-      //if (live.getSubId().equals(notificationPayload.getUserId()) ||
-      //    (live.getSessionId() != null &&
-      //        live.getSessionId().equals(notificationPayload.getSessionId()))) {
-      //
-      //  if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
-      //    displayNotification(EmojiParser.demojizedText(
-      //        context.getString(R.string.live_notification_guest_declined,
-      //            notificationPayload.getUserDisplayName())));
-      //    if (viewLive.getRowsInLive() < 3) {
-      //      finishActivityAfterCallDeclined(notificationPayload);
-      //    } else {
-      //      viewLive.removeUserFromGrid(notificationPayload.getUserId());
-      //    }
-      //  }
-      //
-      //  return;
-      //}
+      if (live.hasUser(notificationPayload.getUserId()) ||
+          (room != null && room.getId().equals(notificationPayload.getSessionId()))) {
+
+        if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+          displayNotification(EmojiParser.demojizedText(
+              context.getString(R.string.live_notification_guest_declined,
+                  notificationPayload.getUserDisplayName())));
+          if (viewLive.getRowsInLive() < 3) {
+            finishActivityAfterCallDeclined(notificationPayload);
+          } else {
+            viewLive.removeUserFromGrid(notificationPayload.getUserId());
+          }
+        }
+
+        return;
+      }
 
       LiveNotificationView liveNotificationView =
           NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
