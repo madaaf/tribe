@@ -35,11 +35,15 @@ public class ChatView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private MessageAdapter adapter;
+  private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManager;
+  private LinearLayoutManager layoutManagerGrp;
   private List<Message> items = new ArrayList<>();
+  private List<User> users = new ArrayList<>();
 
   @BindView(R.id.editText) EditTextFont countrySearchView;
-  @BindView(R.id.recyclerView) RecyclerView recyclerView;
+  @BindView(R.id.recyclerViewChat) RecyclerView recyclerView;
+  @BindView(R.id.recyclerViewGrp) RecyclerView recyclerViewGrp;
   @Inject User user;
 
   public ChatView(@NonNull Context context) {
@@ -63,13 +67,36 @@ public class ChatView extends FrameLayout {
 
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
-/*    layoutManager.setReverseLayout(true);
-    layoutManager.setStackFromEnd(true);*/
     adapter = new MessageAdapter(getContext());
-
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
+
+    layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+    chatUserAdapter = new ChatUserAdapter(getContext());
+    recyclerViewGrp.setLayoutManager(layoutManagerGrp);
+    recyclerViewGrp.setItemAnimator(null);
+    recyclerViewGrp.setAdapter(chatUserAdapter);
+  }
+
+  void mock() {
+    users.clear();
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    users.add(user);
+    chatUserAdapter.setItems(users);
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mock();
   }
 
   @OnClick(R.id.sendBtn) public void envoyer() {
@@ -81,6 +108,8 @@ public class ChatView extends FrameLayout {
     items.add(t);
     adapter.setItems(items);
     countrySearchView.setText("");
+    recyclerViewGrp.scrollToPosition(0);
+    //layoutManager.setReverseLayout(true);
   }
 
   protected void initDependencyInjector() {

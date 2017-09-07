@@ -6,5 +6,5 @@
       android:color="@color/grey.chat.border"
       android:width="0.5dp" />
 
-  <corners android:radius="20dp" />
+  <corners android:radius="15dp" />
 </shape>

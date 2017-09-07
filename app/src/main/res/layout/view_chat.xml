@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
     >
   <android.support.v7.widget.RecyclerView
-      android:id="@+id/recyclerView"
+      android:id="@+id/recyclerViewChat"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_above="@+id/separator"
+      android:layout_above="@+id/containerUsers"
       android:layout_alignParentStart="true"
       android:padding="15dp"
       >
@@ -17,10 +18,42 @@
   </android.support.v7.widget.RecyclerView>
 
 
+  <FrameLayout
+      android:id="@+id/containerUsers"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_above="@+id/separator"
+      android:layout_alignParentStart="true"
+      >
+    <View
+        android:id="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey.chat.grey"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewGrp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="10dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:reverseLayout="true"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
+  </FrameLayout>
+
+
   <View
       android:id="@+id/separator"
       android:layout_width="match_parent"
-      android:layout_height="1dp"
+      android:layout_height="0.5dp"
       android:layout_above="@+id/containerEditText"
       android:background="@color/grey.chat.grey"
       />
@@ -94,6 +127,8 @@
         android:textColor="@android:color/black"
         android:textColorHint="@color/grey.chat.grey.hint"
         android:textCursorDrawable="@drawable/color_cursor"
+        android:textSize="15sp"
+        style="@style/Content.Three.Black"
         />
 
   </FrameLayout>
