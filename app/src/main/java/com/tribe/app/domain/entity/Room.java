@@ -154,6 +154,11 @@ public class Room implements Serializable {
     this.updated_at = updatedAt;
   }
 
+  public synchronized void onJoinSuccess(User currentUser) {
+    live_users.add(currentUser);
+    update(currentUser, this, true);
+  }
+
   public synchronized void update(User currentUser, Room room, boolean shouldOverwrite) {
     List<User> newLiveUsers = room.getLiveUsers();
     if (newLiveUsers == null || newLiveUsers.size() != liveUsersMap.size()) {

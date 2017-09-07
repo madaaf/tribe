@@ -1297,10 +1297,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      // TODO handle later
       if (live.hasUser(notificationPayload.getUserId()) ||
           (room != null && room.getId().equals(notificationPayload.getSessionId()))) {
-
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
           displayNotification(EmojiParser.demojizedText(
               context.getString(R.string.live_notification_guest_declined,
