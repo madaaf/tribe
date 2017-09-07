@@ -46,9 +46,9 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message i = items.get(position);
 
-    vh.txtName.setText(i.getMessage());
-    vh.name.setText(i.getAuther().getDisplayName());
-    vh.avatarView.load(i.getAuther().getProfilePicture());
+/*    vh.txtName.setText(i.getMessage());
+    vh.name.setText(i.getAuthor().getDisplayName());
+    vh.avatarView.load(i.getAuthor().getProfilePicture());*/
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,

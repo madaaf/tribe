@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -21,6 +22,7 @@ import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<UserRealm> userInfos(String userId) {
     return this.userCache.userInfos(accessToken.getUserId());
+  }
+
+  @Override public Observable<UserRealm> userMessage(String ok1, String ok2) {
+    return null;
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIds) {

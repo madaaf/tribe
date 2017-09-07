@@ -8,6 +8,7 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -31,6 +32,9 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<UserRealm> getUserInfos(
       @Field("query") String query);
 
+  @FormUrlEncoded @POST("/graphql") Observable<UserRealm> getUserMessage(
+      @Field("query") String query);
+
   @FormUrlEncoded @POST("/graphql") Observable<List<UserRealm>> getUserListInfos(
       @Field("query") String query);
 
@@ -43,7 +47,8 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Installation> removeInstall(
       @Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Void> incrUserTimeInCall(@Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<Void> incrUserTimeInCall(
+      @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<UserRealm> updateUser(@Field("query") String query);
 
@@ -101,8 +106,8 @@ public interface TribeApi {
 
   @HEAD Observable<Response<Void>> getHeadDeepLink(@Url String url);
 
-  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<RoomConfiguration> joinRoom(
-      @Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous")
+  Observable<RoomConfiguration> joinRoom(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> inviteUserToRoom(
       @Field("query") String query);

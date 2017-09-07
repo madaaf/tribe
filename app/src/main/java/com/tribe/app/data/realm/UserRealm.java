@@ -41,6 +41,7 @@ public class UserRealm extends RealmObject {
   private boolean tribe_save = false;
   private RealmList<FriendshipRealm> friendships;
   private RealmList<MembershipRealm> memberships;
+  private RealmList<MessageRealm> messages;
   private boolean invisible_mode;
   private boolean push_notif = true;
   private Date last_seen_at;
@@ -128,6 +129,14 @@ public class UserRealm extends RealmObject {
 
   public void setFriendships(RealmList<FriendshipRealm> friendships) {
     this.friendships = friendships;
+  }
+
+  public RealmList<MessageRealm> getMessages() {
+    return messages;
+  }
+
+  public void setMessages(RealmList<MessageRealm> messages) {
+    this.messages = messages;
   }
 
   public String getFbid() {

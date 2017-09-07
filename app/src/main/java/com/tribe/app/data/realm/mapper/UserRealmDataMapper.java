@@ -1,7 +1,9 @@
 package com.tribe.app.data.realm.mapper;
 
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +19,7 @@ import javax.inject.Singleton;
   LocationRealmDataMapper locationRealmDataMapper;
   MembershipRealmDataMapper membershipRealmDataMapper;
   FriendshipRealmDataMapper friendshipRealmDataMapper;
+  MessageRealmDataMapper messageRealmDataMapper;
 
   @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
       GroupMemberRealmDataMapper groupMemberRealmDataMapper) {
@@ -24,6 +27,7 @@ import javax.inject.Singleton;
     this.membershipRealmDataMapper =
         new MembershipRealmDataMapper(new GroupRealmDataMapper(this, groupMemberRealmDataMapper));
     this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
+    this.messageRealmDataMapper = new MessageRealmDataMapper(this);
   }
 
   /**
@@ -61,6 +65,9 @@ import javax.inject.Singleton;
         if (userRealm.getFriendships() != null) {
           user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
         }
+      }
+      if (userRealm.getMessages() != null) {
+        user.setMessageList(messageRealmDataMapper.transform(userRealm.getMessages()));
       }
     }
 
@@ -124,6 +131,10 @@ import javax.inject.Singleton;
               friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
         }
       }
+
+      if (user.getMessages() != null) {
+        userRealm.setMessages(messageRealmDataMapper.transformMessages(user.getMessageList()));
+      }
     }
 
     return userRealm;
@@ -179,5 +190,9 @@ import javax.inject.Singleton;
 
   public MembershipRealmDataMapper getMembershipRealmDataMapper() {
     return membershipRealmDataMapper;
+  }
+
+  public MessageRealmDataMapper getMessageRealmDataMapper() {
+    return messageRealmDataMapper;
   }
 }

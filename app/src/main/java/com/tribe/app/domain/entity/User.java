@@ -3,6 +3,7 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,14 +17,11 @@ import java.util.List;
  */
 public class User implements Serializable, BaseListInterface {
 
-
   public static final String ID = "id";
   public static final String FBID = "fbid";
   public static final String USERNAME = "username";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
-
-
 
   private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
   public static final String ID_EMPTY = "EMPTY";
@@ -41,6 +39,7 @@ public class User implements Serializable, BaseListInterface {
   private List<Friendship> friendships;
   private List<Membership> membershipList;
   private List<Recipient> friendshipList;
+  private List<Message> messageList;
   private List<Invite> inviteList;
   private String fbid;
   private boolean invisible_mode;
@@ -154,6 +153,12 @@ public class User implements Serializable, BaseListInterface {
     this.friendships = friendships;
   }
 
+  public List<Message> getMessages() {
+    if (messageList == null) return new ArrayList<>();
+
+    return messageList;
+  }
+
   public List<Friendship> getFriendships() {
     if (friendships == null) return new ArrayList<>();
 
@@ -168,6 +173,14 @@ public class User implements Serializable, BaseListInterface {
     if (membershipList == null) return new ArrayList<>();
 
     return membershipList;
+  }
+
+  public List<Message> getMessageList() {
+    return messageList;
+  }
+
+  public void setMessageList(List<Message> messageList) {
+    this.messageList = messageList;
   }
 
   public String getFbid() {

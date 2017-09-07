@@ -57,6 +57,8 @@ public interface UserDataStore {
    */
   Observable<UserRealm> userInfos(final String userId);
 
+  Observable<UserRealm> userMessage(final String ok1, final String ok2);
+
   Observable<List<UserRealm>> userInfosList(List<String> userIds);
 
   /**

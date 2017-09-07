@@ -8,8 +8,23 @@ import com.tribe.app.domain.entity.User;
 
 public class Message {
 
+  private String id;
+
+  public Message(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  /*
   private String message;
-  private User auther;
+  private User author;
 
   public String getMessage() {
     return message;
@@ -19,11 +34,11 @@ public class Message {
     this.message = message;
   }
 
-  public User getAuther() {
-    return auther;
+  public User getAuthor() {
+    return author;
   }
 
-  public void setAuther(User auther) {
-    this.auther = auther;
-  }
+  public void setAuthor(User author) {
+    this.author = author;
+  }*/
 }

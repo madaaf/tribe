@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
@@ -46,7 +45,8 @@ public class ProfilePresenter extends UpdateUserPresenter {
       RxFacebook rxFacebook, RemoveInstall removeInstall,
       GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
       DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList,
-      BookRoomLink bookRoomLink, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+      BookRoomLink bookRoomLink, UpdateUserFacebook updateUserFacebook,
+      UpdateUserPhoneNumber updateUserPhoneNumber) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;

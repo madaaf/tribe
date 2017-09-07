@@ -23,7 +23,6 @@ import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
@@ -31,6 +30,7 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
+import com.tribe.app.domain.interactor.user.UserMessageInfos;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
@@ -274,6 +274,11 @@ import timber.log.Timber;
   @Provides @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(
       GetCloudUserInfos getCloudUserInfos) {
     return getCloudUserInfos;
+  }
+
+  @Provides @Named("cloudUserMessageInfos") UseCase provideCloudUserMessage(
+      UserMessageInfos userMessageInfos) {
+    return userMessageInfos;
   }
 
   @Provides @Named("synchroContactList") UseCase provideSynchroContactList(

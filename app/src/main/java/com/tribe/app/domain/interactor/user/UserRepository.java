@@ -18,6 +18,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.List;
 import java.util.Set;
 import rx.Observable;
@@ -57,6 +58,8 @@ public interface UserRepository {
    * @param userId the id of the user for which we get the info
    */
   Observable<User> userInfos(final String userId);
+
+  Observable<List<Message>> userMessageInfo(final String userId);
 
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 

@@ -141,8 +141,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() || StringUtils.isEmpty(accessToken.getTokenType()) || StringUtils.isEmpty(
-        accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
       webSocketConnection.setShouldReconnect(false);
     } else {
       headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
@@ -277,7 +278,7 @@ import timber.log.Timber;
         .subscribe(userRealmInfos -> {
           userCache.addFriendship(userRealmInfos.getFriendships().first());
         }));
-
+    
     persistentSubscriptions.add(jsonToModel.onCreatedMembership()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .flatMap(membershipId -> {

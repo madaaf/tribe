@@ -19,6 +19,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
+import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ import timber.log.Timber;
  * Created by madaaflak on 05/09/2017.
  */
 
-public class ChatView extends FrameLayout {
+public class ChatView extends FrameLayout implements ChatMVPView {
 
   private LayoutInflater inflater;
   private Unbinder unbinder;
@@ -44,7 +46,9 @@ public class ChatView extends FrameLayout {
   @BindView(R.id.editText) EditTextFont countrySearchView;
   @BindView(R.id.recyclerViewChat) RecyclerView recyclerView;
   @BindView(R.id.recyclerViewGrp) RecyclerView recyclerViewGrp;
+
   @Inject User user;
+  @Inject MessagePresenter messagePresenter;
 
   public ChatView(@NonNull Context context) {
     super(context);
@@ -102,14 +106,15 @@ public class ChatView extends FrameLayout {
   @OnClick(R.id.sendBtn) public void envoyer() {
     String ok = countrySearchView.getText().toString();
     Timber.e("SOEF " + ok);
-    Message t = new Message();
-    t.setMessage(ok);
-    t.setAuther(user);
+    Message t = new Message("");
+/*    t.setMessage(ok);
+    t.setAuthor(user);*/
     items.add(t);
     adapter.setItems(items);
     countrySearchView.setText("");
     recyclerViewGrp.scrollToPosition(0);
     //layoutManager.setReverseLayout(true);
+    messagePresenter.loadMessage();
   }
 
   protected void initDependencyInjector() {
@@ -126,5 +131,13 @@ public class ChatView extends FrameLayout {
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) getContext()));
+  }
+
+  @Override public void successLoadingMessage() {
+    Timber.e("SOEF successLoadingMessage");
+  }
+
+  @Override public void errorLoadingMessage() {
+    Timber.e("SOEF errorLoadingMessage");
   }
 }

@@ -27,6 +27,7 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +100,10 @@ import rx.Observable;
 
           return user;
         });
+  }
+
+  @Override public Observable<List<Message>> userMessageInfo(String userId) {
+    return null;
   }
 
   @Override public Observable<String> randomRoomAssigned() {

@@ -33,6 +33,7 @@ import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateGroup;
 import com.tribe.app.domain.interactor.user.UpdateMembership;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UserMessageInfos;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import dagger.Module;
 import dagger.Provides;
@@ -83,6 +84,11 @@ import javax.inject.Named;
   @Provides @PerActivity @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(
       GetCloudUserInfos getCloudUserInfos) {
     return getCloudUserInfos;
+  }
+
+  @Provides @PerActivity @Named("cloudUserMessageInfos") UseCase provideUserMessageInfos(
+      UserMessageInfos userMessageInfos) {
+    return userMessageInfos;
   }
 
   @Provides @PerActivity @Named("diskUserInfos") GetDiskUserInfos provideDiskGetUserInfos(

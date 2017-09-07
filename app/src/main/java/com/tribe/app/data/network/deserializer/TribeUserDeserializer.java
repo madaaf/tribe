@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import io.realm.RealmList;
@@ -54,39 +55,53 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     userRealm.setId(result.get("id").getAsString());
     userRealm.setPhone(
-            result.get("phone") != null && !result.get("phone").isJsonNull() ? result.get("phone")
-                    .getAsString() : "");
+        result.get("phone") != null && !result.get("phone").isJsonNull() ? result.get("phone")
+            .getAsString() : "");
     userRealm.setFbid(
         result.get("fbid") != null && !result.get("fbid").isJsonNull() ? result.get("fbid")
             .getAsString() : "");
-    userRealm.setInvisibleMode(result.get("invisible_mode").getAsBoolean());
+    if (result.get("invisible_mode") != null) {
+      userRealm.setInvisibleMode(result.get("invisible_mode").getAsBoolean());
+    }
     userRealm.setUsername(
         result.get("username") != null && !result.get("username").isJsonNull() ? result.get(
             "username").getAsString() : null);
-    userRealm.setDisplayName(result.get("display_name").getAsString());
-    userRealm.setTimeInCall(result.get("time_in_call").getAsLong());
+    if (result.get("display_name") != null) {
+      userRealm.setDisplayName(result.get("display_name").getAsString());
+    }
+    if (result.get("time_in_call") != null) {
+      userRealm.setTimeInCall(result.get("time_in_call").getAsLong());
+    }
     userRealm.setProfilePicture(
         result.get("picture") != null && !result.get("picture").isJsonNull() ? result.get("picture")
             .getAsString() : null);
-    userRealm.setPushNotif(result.get("push_notif").getAsBoolean());
+    if (result.get("push_notif") != null) {
+      userRealm.setPushNotif(result.get("push_notif").getAsBoolean());
+    }
 
     try {
-      userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
+      if (result.get("created_at") != null) {
+        userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
+      }
     } catch (ParseException e) {
       e.printStackTrace();
     }
 
     try {
-      userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
+      if (result.get("last_seen_at") != null) {
+        userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
+      }
     } catch (ParseException e) {
       e.printStackTrace();
     }
 
     JsonArray resultsFriendships = result.getAsJsonArray("friendships");
     JsonArray resultsMemberships = result.getAsJsonArray("memberships");
+    JsonArray resultsMessages = result.getAsJsonArray("messages");
     JsonArray resultsInvites = result.getAsJsonArray("invites");
     RealmList<FriendshipRealm> realmListFriendships = new RealmList();
     RealmList<MembershipRealm> realmListMemberships = new RealmList();
+    RealmList<MessageRealm> realmListMessages = new RealmList();
     List<Invite> listInvites = new ArrayList<>();
 
     if (resultsFriendships != null) {
@@ -103,6 +118,15 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         if (!(obj instanceof JsonNull)) {
           MembershipRealm membershipRealm = gson.fromJson(obj, MembershipRealm.class);
           if (membershipRealm != null) realmListMemberships.add(membershipRealm);
+        }
+      }
+    }
+
+    if (resultsMessages != null) {
+      for (JsonElement obj : resultsMessages) {
+        if (!(obj instanceof JsonNull)) {
+          MessageRealm messageRealm = gson.fromJson(obj, MessageRealm.class);
+          if (messageRealm != null) realmListMessages.add(messageRealm);
         }
       }
     }
@@ -135,6 +159,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     userRealm.setInvites(listInvites);
     userRealm.setFriendships(realmListFriendships);
     userRealm.setMemberships(realmListMemberships);
+    userRealm.setMessages(realmListMessages);
 
     return userRealm;
   }
