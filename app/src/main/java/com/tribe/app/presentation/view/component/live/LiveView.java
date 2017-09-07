@@ -610,7 +610,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
-    tempSubscriptions.add(webRTCRoom.onJoined().subscribe(onJoined));
+    tempSubscriptions.add(webRTCRoom.onJoined().doOnNext(tribeJoinRoom -> live.getRoom().onJoinSuccess(user)).subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
 

@@ -113,6 +113,8 @@
 	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
 	<string name="live_notification_call_after_decline">Video call %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
+	<string name="live_notification_action_see_thread">See the conversation</string>
+	<string name="live_notification_action_reply">Reply</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
