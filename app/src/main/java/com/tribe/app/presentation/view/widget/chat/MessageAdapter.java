@@ -39,7 +39,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   public void setItems(List<Message> items) {
-    this.items.clear();
     this.items.addAll(items);
     notifyDataSetChanged();
   }

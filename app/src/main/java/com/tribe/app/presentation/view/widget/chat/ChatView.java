@@ -104,6 +104,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
+    messagePresenter.loadMessage();
     mock();
   }
 
@@ -114,17 +115,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @OnClick(R.id.sendBtn) public void envoyer() {
+    items.clear();
     String ok = countrySearchView.getText().toString();
     Timber.e("SOEF " + ok);
     Message t = new Message("");
-/*    t.setMessage(ok);
-    t.setAuthor(user);*/
+    //t.setMessage(ok);
+    t.setAuthor(user);
     items.add(t);
     adapter.setItems(items);
     countrySearchView.setText("");
     recyclerViewGrp.scrollToPosition(0);
     //layoutManager.setReverseLayout(true);
-    messagePresenter.loadMessage();
   }
 
   protected void initDependencyInjector() {
@@ -144,8 +145,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
+    adapter.setItems(messages);
     for (Message m : messages) {
-      Timber.e("SOEF " + m.getId() +"  " + m.getAuthor().getDisplayName());
+      Timber.e("SOEF " + m.toString());
     }
     Timber.e("SOEF successLoadingMessage");
   }

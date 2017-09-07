@@ -45,10 +45,16 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       @NonNull RecyclerView.ViewHolder holder) {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message i = items.get(position);
-
-/*    vh.txtName.setText(i.getMessage());
     vh.name.setText(i.getAuthor().getDisplayName());
-    vh.avatarView.load(i.getAuthor().getProfilePicture());*/
+    vh.avatarView.load(i.getAuthor().getProfilePicture());
+
+    if (i instanceof MessageText) {
+      vh.message.setText(((MessageText) i).getMessage());
+    } else if (i instanceof MessageEmoji) {
+      vh.message.setText(((MessageEmoji) i).getEmoji());
+    } else if (i instanceof MessageImage) {
+      //SOEF
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
@@ -57,7 +63,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   static class MessageViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.text) public TextViewFont txtName;
+    @BindView(R.id.message) public TextViewFont message;
     @BindView(R.id.name) public TextViewFont name;
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
     @BindView(R.id.header) public LinearLayout header;

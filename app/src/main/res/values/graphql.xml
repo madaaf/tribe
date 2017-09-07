@@ -27,11 +27,19 @@
             user {
                 id
                 messages {
+                __typename
                  id
                   author {
                       id
                       display_name
+                      picture
                  }
+                 ... on TextMessage {
+                      data
+                 }
+                  ... on EmojiMessage {
+                        data
+                  }
               }
             }
         }

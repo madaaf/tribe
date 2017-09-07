@@ -4,6 +4,9 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.widget.chat.Message;
+import com.tribe.app.presentation.view.widget.chat.MessageEmoji;
+import com.tribe.app.presentation.view.widget.chat.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.MessageText;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +27,7 @@ import javax.inject.Singleton;
   }
 
   /**
-   * Transform a {@link MessageRealm} into an {@link message}.
+   * Transform a {@link MessageRealm} into an {@link }.
    *
    * @param messageRealm Object to be transformed.
    * @return {@link Message} if valid {@link MessageRealm} otherwise null.
@@ -32,8 +35,22 @@ import javax.inject.Singleton;
   public Message transform(MessageRealm messageRealm) {
     Message message = null;
     if (messageRealm != null) {
-      message = new Message(messageRealm.getId());
+      switch (messageRealm.get__typename()) {
+        case MessageRealm.MESSAGE_TEXT:
+          message = new MessageText(messageRealm.getId());
+          ((MessageText) message).setMessage(messageRealm.getData());
+          break;
+        case MessageRealm.EMOJI:
+          message = new MessageEmoji(messageRealm.getId());
+          ((MessageEmoji) message).setEmoji(messageRealm.getData());
+          break;
+        case MessageRealm.IMAGE:
+          message = new MessageImage(messageRealm.getId());
+          break;
+      }
+
       message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), false));
+      message.setType(messageRealm.get__typename());
     }
 
     return message;
@@ -70,6 +87,18 @@ import javax.inject.Singleton;
     if (message != null) {
       messageRealm = new MessageRealm(message.getId());
       messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor(), false));
+      messageRealm.set__typename(message.getType());
+
+      switch (message.getType()) {
+        case MessageRealm.MESSAGE_TEXT:
+          messageRealm.setData(((MessageText) message).getMessage());
+          break;
+        case MessageRealm.EMOJI:
+          messageRealm.setData(((MessageEmoji) message).getEmoji());
+          break;
+        case MessageRealm.IMAGE:
+          break;
+      }
     }
 
     return messageRealm;

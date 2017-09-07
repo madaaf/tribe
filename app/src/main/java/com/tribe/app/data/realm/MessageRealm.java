@@ -1,6 +1,5 @@
 package com.tribe.app.data.realm;
 
-import com.tribe.app.domain.entity.User;
 import io.realm.RealmObject;
 
 /**
@@ -9,11 +8,32 @@ import io.realm.RealmObject;
 
 public class MessageRealm extends RealmObject {
 
+  public static final String MESSAGE_TEXT = "TextMessage";
+  public static final String EMOJI = "EmojiMessage";
+  public static final String IMAGE = "ImageMessage";
+
   private String id;
   private UserRealm author;
-
+  private String data;
+  private String __typename;
 
   public MessageRealm() {
+  }
+
+  public String getData() {
+    return data;
+  }
+
+  public String get__typename() {
+    return __typename;
+  }
+
+  public void set__typename(String __typename) {
+    this.__typename = __typename;
+  }
+
+  public void setData(String data) {
+    this.data = data;
   }
 
   public MessageRealm(String id) {

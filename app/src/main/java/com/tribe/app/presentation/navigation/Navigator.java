@@ -33,6 +33,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.widget.chat.TestActivity;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -199,7 +200,7 @@ public class Navigator {
    * @param recipient recipient to go live with
    * @param color the color of the tile
    */
-  public void navigateToLive(Activity activity, Recipient recipient, int color,
+ /* public void navigateToLive(Activity activity, Recipient recipient, int color,
       @LiveActivity.Source String source) {
     if (activity != null) {
       Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
@@ -211,8 +212,7 @@ public class Navigator {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
       }
     }
-  }
-  /*
+  }*/
   public void navigateToLive(Activity activity, Recipient recipient, int color,
       @LiveActivity.Source String source) {
     if (activity != null) {
@@ -226,7 +226,6 @@ public class Navigator {
       }
     }
   }
-  */
 
   public void navigateToIntent(Activity activity, Intent intent) {
     if (activity != null) {
