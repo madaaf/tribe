@@ -7,7 +7,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 06/09/2017.
@@ -33,6 +32,7 @@ public class MessagePresenter implements Presenter {
 
   @Override public void onViewDetached() {
     userMessageInfos.unsubscribe();
+    chatMVPView = null;
   }
 
   private class GetMessageSubscriber extends DefaultSubscriber<List<Message>> {
@@ -41,18 +41,11 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      if (chatMVPView != null) {
-        chatMVPView.errorLoadingMessage();
-      }
+      if (chatMVPView != null) chatMVPView.errorLoadingMessage();
     }
 
     @Override public void onNext(List<Message> messages) {
-      if (chatMVPView != null) {
-        chatMVPView.successLoadingMessage();
-      }
-      for (Message m : messages) {
-        Timber.e("SOEF " + m.getId());
-      }
+      if (chatMVPView != null) chatMVPView.successLoadingMessage(messages);
     }
   }
 }

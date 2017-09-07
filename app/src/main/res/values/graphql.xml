@@ -40,6 +40,10 @@
                 id
                 messages {
                  id
+                  author {
+                      id
+                      display_name
+                 }
               }
             }
         }

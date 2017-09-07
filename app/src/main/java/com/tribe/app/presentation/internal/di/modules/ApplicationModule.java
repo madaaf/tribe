@@ -276,11 +276,6 @@ import timber.log.Timber;
     return getCloudUserInfos;
   }
 
-  @Provides @Named("cloudUserMessageInfos") UseCase provideCloudUserMessage(
-      UserMessageInfos userMessageInfos) {
-    return userMessageInfos;
-  }
-
   @Provides @Named("synchroContactList") UseCase provideSynchroContactList(
       SynchroContactList synchroContactList) {
     return synchroContactList;

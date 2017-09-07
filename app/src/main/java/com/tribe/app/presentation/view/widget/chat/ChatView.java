@@ -25,6 +25,7 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -49,6 +50,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
+
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   public ChatView(@NonNull Context context) {
     super(context);
@@ -100,7 +103,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    messagePresenter.onViewAttached(this);
     mock();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    messagePresenter.onViewDetached();
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
+    super.onDetachedFromWindow();
   }
 
   @OnClick(R.id.sendBtn) public void envoyer() {
@@ -133,7 +143,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     return new ActivityModule(((Activity) getContext()));
   }
 
-  @Override public void successLoadingMessage() {
+  @Override public void successLoadingMessage(List<Message> messages) {
+    for (Message m : messages) {
+      Timber.e("SOEF " + m.getId() +"  " + m.getAuthor().getDisplayName());
+    }
     Timber.e("SOEF successLoadingMessage");
   }
 

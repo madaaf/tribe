@@ -1,5 +1,6 @@
 package com.tribe.app.data.realm;
 
+import com.tribe.app.domain.entity.User;
 import io.realm.RealmObject;
 
 /**
@@ -9,12 +10,22 @@ import io.realm.RealmObject;
 public class MessageRealm extends RealmObject {
 
   private String id;
+  private UserRealm author;
+
 
   public MessageRealm() {
   }
 
   public MessageRealm(String id) {
     this.id = id;
+  }
+
+  public UserRealm getAuthor() {
+    return author;
+  }
+
+  public void setAuthor(UserRealm author) {
+    this.author = author;
   }
 
   public String getId() {

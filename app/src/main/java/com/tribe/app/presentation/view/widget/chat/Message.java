@@ -8,10 +8,19 @@ import com.tribe.app.domain.entity.User;
 
 public class Message {
 
+  private User author;
   private String id;
 
   public Message(String id) {
     this.id = id;
+  }
+
+  public User getAuthor() {
+    return author;
+  }
+
+  public void setAuthor(User author) {
+    this.author = author;
   }
 
   public String getId() {
@@ -24,7 +33,7 @@ public class Message {
 
   /*
   private String message;
-  private User author;
+
 
   public String getMessage() {
     return message;
@@ -34,11 +43,5 @@ public class Message {
     this.message = message;
   }
 
-  public User getAuthor() {
-    return author;
-  }
-
-  public void setAuthor(User author) {
-    this.author = author;
-  }*/
+  */
 }

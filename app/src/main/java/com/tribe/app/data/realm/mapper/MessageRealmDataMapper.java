@@ -27,12 +27,13 @@ import javax.inject.Singleton;
    * Transform a {@link MessageRealm} into an {@link message}.
    *
    * @param messageRealm Object to be transformed.
-   * @return {@link Friendship} if valid {@link FriendshipRealm} otherwise null.
+   * @return {@link Message} if valid {@link MessageRealm} otherwise null.
    */
   public Message transform(MessageRealm messageRealm) {
     Message message = null;
     if (messageRealm != null) {
       message = new Message(messageRealm.getId());
+      message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), false));
     }
 
     return message;
@@ -41,7 +42,7 @@ import javax.inject.Singleton;
   /**
    * Transform a List of {@link FriendshipRealm} into a Collection of {@link Friendship}.
    *
-   * @param friendshipRealmCollection Object Collection to be transformed.
+   * @param messageRealmCollection Object Collection to be transformed.
    * @return {@link Friendship} if valid {@link FriendshipRealm} otherwise null.
    */
   public List<Message> transform(Collection<MessageRealm> messageRealmCollection) {
@@ -61,13 +62,14 @@ import javax.inject.Singleton;
   /**
    * Transform a {@link Friendship} into an {@link FriendshipRealm}.
    *
-   * @param friendship Object to be transformed.
+   * @param message Object to be transformed.
    * @return {@link FriendshipRealm} if valid {@link Friendship} otherwise null.
    */
-  public MessageRealm transform(Message message) {
+  private MessageRealm transform(Message message) {
     MessageRealm messageRealm = null;
     if (message != null) {
       messageRealm = new MessageRealm(message.getId());
+      messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor(), false));
     }
 
     return messageRealm;
@@ -76,7 +78,7 @@ import javax.inject.Singleton;
   /**
    * Transform a List of {@link Friendship} into a Collection of {@link FriendshipRealm}.
    *
-   * @param friendshipCollection Object Collection to be transformed.
+   * @param messageCollection Object Collection to be transformed.
    * @return {@link FriendshipRealm} if valid {@link Friendship} otherwise null.
    */
   public RealmList<MessageRealm> transformMessages(Collection<Message> messageCollection) {

@@ -97,8 +97,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     JsonArray resultsFriendships = result.getAsJsonArray("friendships");
     JsonArray resultsMemberships = result.getAsJsonArray("memberships");
-    JsonArray resultsMessages = result.getAsJsonArray("messages");
     JsonArray resultsInvites = result.getAsJsonArray("invites");
+    JsonArray resultsMessages = result.getAsJsonArray("messages");
     RealmList<FriendshipRealm> realmListFriendships = new RealmList();
     RealmList<MembershipRealm> realmListMemberships = new RealmList();
     RealmList<MessageRealm> realmListMessages = new RealmList();

@@ -32,7 +32,6 @@ import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
-import com.tribe.app.data.network.deserializer.MessageRealmDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.NewMembershipDeserializer;
 import com.tribe.app.data.network.deserializer.RoomConfigurationDeserializer;
@@ -169,7 +168,6 @@ import timber.log.Timber;
         .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
         .registerTypeAdapter(RoomConfiguration.class, new RoomConfigurationDeserializer())
         .registerTypeAdapter(FriendshipRealm.class, new FriendshipRealmDeserializer())
-        .registerTypeAdapter(MessageRealm.class, new MessageRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<Invite>>() {
         }.getType(), new InvitesListDeserializer<>())
         .registerTypeAdapter(LookupFBResult.class, new LookupFBDeserializer())
