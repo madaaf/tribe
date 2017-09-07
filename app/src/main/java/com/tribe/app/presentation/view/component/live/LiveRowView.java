@@ -150,53 +150,56 @@ public class LiveRowView extends FrameLayout {
   }
 
   public void setPeerView(PeerView peerView) {
-    remotePeerView = (RemotePeerView) peerView;
+    if (peerView == null) {
+      isWaiting = false;
+      viewWaiting.incomingPeer();
+    } else {
+      remotePeerView = (RemotePeerView) peerView;
 
-    subscriptions.add(this.remotePeerView.onNotificationRemoteJoined()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(s -> UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            viewWaiting.stopPulse();
-            viewWaiting.setVisibility(View.GONE);
-          }
+      subscriptions.add(this.remotePeerView.onNotificationRemoteJoined()
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(s -> UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(Animator animation) {
+              viewWaiting.stopPulse();
+              viewWaiting.setVisibility(View.GONE);
+            }
 
-          @Override public void onAnimationStart(Animator animation) {
-            layoutStream.setVisibility(View.VISIBLE);
-          }
-        })));
+            @Override public void onAnimationStart(Animator animation) {
+              layoutStream.setVisibility(View.VISIBLE);
+            }
+          })));
 
-    subscriptions.add(this.remotePeerView.onMediaConfiguration()
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(tribePeerMediaConfiguration -> {
-          if (!tribePeerMediaConfiguration.isVideoEnabled()) {
-            UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                if (animation != null) animation.removeAllListeners();
-                layoutStream.setVisibility(View.GONE);
-              }
-            });
-          } else {
-            UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-              @Override public void onAnimationStart(Animator animation) {
-                layoutStream.setVisibility(View.VISIBLE);
-              }
+      subscriptions.add(this.remotePeerView.onMediaConfiguration()
+          .onBackpressureDrop()
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(tribePeerMediaConfiguration -> {
+            if (!tribePeerMediaConfiguration.isVideoEnabled()) {
+              UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(Animator animation) {
+                  if (animation != null) animation.removeAllListeners();
+                  layoutStream.setVisibility(View.GONE);
+                }
+              });
+            } else {
+              UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+                @Override public void onAnimationStart(Animator animation) {
+                  layoutStream.setVisibility(View.VISIBLE);
+                }
 
-              @Override public void onAnimationEnd(Animator animation) {
-                if (animation != null) animation.removeAllListeners();
-              }
-            });
-          }
+                @Override public void onAnimationEnd(Animator animation) {
+                  if (animation != null) animation.removeAllListeners();
+                }
+              });
+            }
 
-          viewPeerOverlay.setMediaConfiguration(tribePeerMediaConfiguration);
-        }));
+            viewPeerOverlay.setMediaConfiguration(tribePeerMediaConfiguration);
+          }));
 
-    isWaiting = false;
-    viewWaiting.incomingPeer();
-
-    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT);
-    if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
+      ViewGroup.LayoutParams params =
+          new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.MATCH_PARENT);
+      if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
+    }
   }
 
   public TribeGuest getGuest() {

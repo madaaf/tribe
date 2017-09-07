@@ -610,7 +610,9 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
-    tempSubscriptions.add(webRTCRoom.onJoined().doOnNext(tribeJoinRoom -> live.getRoom().onJoinSuccess(user)).subscribe(onJoined));
+    tempSubscriptions.add(webRTCRoom.onJoined()
+        .doOnNext(tribeJoinRoom -> live.getRoom().onJoinSuccess(user))
+        .subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
 
@@ -667,6 +669,9 @@ public class LiveView extends FrameLayout {
           refactorShareOverlay();
           refactorNotifyButton();
           startCallLevel();
+
+          LiveRowView row = liveRowViewMap.get(addedUser.getId());
+          if (row != null) row.guestAppear();
         }));
 
     tempSubscriptions.add(live.getRoom()
@@ -698,8 +703,7 @@ public class LiveView extends FrameLayout {
       LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
 
       if (row != null) {
-        row.guestAppear();
-        row.addView(remotePeer.getPeerView());
+        row.setPeerView(remotePeer.getPeerView());
       }
 
       tempSubscriptions.add(remotePeer.getPeerView()
@@ -1091,6 +1095,7 @@ public class LiveView extends FrameLayout {
       }
 
       liveRowView = liveInviteMap.get(user.getId());
+      liveRowView.setPeerView(null);
       liveInviteMap.remove(user.getId());
       liveRowViewMap.put(user.getId(), liveRowView);
     } else {
@@ -1122,6 +1127,7 @@ public class LiveView extends FrameLayout {
         viewRoom.addView(liveRowView, false);
       }
 
+      liveRowView.setPeerView(null);
       liveRowViewMap.put(user.getId(), liveRowView);
     }
 
