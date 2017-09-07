@@ -117,5 +117,6 @@ public class HomeListView extends RelativeLayout {
     }
 
     viewAvatar.load(recipient);
+    viewHomeNameAction.setRecipient(recipient);
   }
 }

@@ -2,30 +2,28 @@ package com.tribe.app.presentation.view.adapter.decorator;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
-import timber.log.Timber;
+import com.tribe.app.presentation.view.adapter.SectionCallback;
 
 public class DividerDecoration extends RecyclerView.ItemDecoration {
 
   private final Paint paint;
   private int heightDp;
+  private SectionCallback sectionCallback;
 
-  public DividerDecoration(Context context) {
-    this(context, Color.argb((int) (255 * 0.2), 0, 0, 0), 1f);
-  }
-
-  public DividerDecoration(Context context, int color, float heightDp) {
+  public DividerDecoration(Context context, int color, float heightDp,
+      SectionCallback sectionCallback) {
     paint = new Paint();
     paint.setStyle(Paint.Style.FILL);
     paint.setColor(color);
     this.heightDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp,
         context.getResources().getDisplayMetrics());
+    this.sectionCallback = sectionCallback;
   }
 
   @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
@@ -39,8 +37,8 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
 
   private boolean hasDividerOnBottom(View view, RecyclerView parent, RecyclerView.State state) {
     int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewAdapterPosition();
-    Timber.d("Position : " + position + " / " + state.getItemCount());
     return position < state.getItemCount() - 1 &&
+        !sectionCallback.isSection(position + 1) &&
         parent.getAdapter().getItemViewType(position) != HomeListAdapter.HEADERS_VIEW_TYPE &&
         parent.getAdapter().getItemViewType(position + 1) != HomeListAdapter.HEADERS_VIEW_TYPE;
   }

@@ -63,7 +63,9 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
+import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.DividerDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
@@ -892,7 +894,7 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setItemAnimator(null);
     recyclerViewFriends.addItemDecoration(
         new DividerDecoration(context(), ContextCompat.getColor(context(), R.color.grey_divider),
-            screenUtils.dpToPx(0.5f)));
+            screenUtils.dpToPx(0.5f), getSectionCallback(homeGridAdapter.getItems())));
     homeGridAdapter.setItems(new ArrayList<>());
     recyclerViewFriends.setAdapter(homeGridAdapter);
 
@@ -904,6 +906,26 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setItemViewCacheSize(30);
     recyclerViewFriends.setDrawingCacheEnabled(true);
     recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+    RecyclerSectionItemDecoration sectionItemDecoration = new RecyclerSectionItemDecoration(
+        getResources().getDimensionPixelSize(R.dimen.list_home_header_height), true,
+        getSectionCallback(homeGridAdapter.getItems()), screenUtils);
+    recyclerViewFriends.addItemDecoration(sectionItemDecoration);
+  }
+
+  private SectionCallback getSectionCallback(final List<Recipient> recipientList) {
+    return new SectionCallback() {
+      @Override public boolean isSection(int position) {
+        return position == 1 ||
+            (position > 0 &&
+                recipientList.get(position).getSectionType() !=
+                    recipientList.get(position - 1).getSectionType());
+      }
+
+      @Override public int getSectionType(int position) {
+        return recipientList.get(position).getSectionType();
+      }
+    };
   }
 
   private void displayDeclinedCallNotification(NotificationPayload notificationPayload) {

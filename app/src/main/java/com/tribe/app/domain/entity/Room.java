@@ -16,6 +16,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class Room implements Serializable {
 
+  private static final int NB_MAX_USERS_STRING = 3;
+
   public static final String NAME = "name";
   public static final String ACCEPT_RANDOM = "accept_random";
 
@@ -152,6 +154,23 @@ public class Room implements Serializable {
 
   public void setUpdated_at(Date updatedAt) {
     this.updated_at = updatedAt;
+  }
+
+  public String getUserNames() {
+    StringBuffer buffer = new StringBuffer();
+    int max = Math.max(NB_MAX_USERS_STRING, live_users.size());
+    for (int i = 0; i < max; i++) {
+      User user = live_users.get(i);
+      buffer.append(user.getDisplayName());
+
+      if (i < max) buffer.append(", ");
+    }
+
+    if (live_users.size() > NB_MAX_USERS_STRING) {
+      buffer.append(", " + (live_users.size() - NB_MAX_USERS_STRING) + " persons");
+    }
+
+    return buffer.toString();
   }
 
   public void update(Room room) {

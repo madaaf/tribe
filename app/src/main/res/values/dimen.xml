@@ -64,6 +64,7 @@
   <dimen name="game_tooltip_first_height">40dp</dimen>
   <dimen name="dice_size">100dp</dimen>
   <dimen name="list_home_height">60dp</dimen>
+  <dimen name="list_home_header_height">40dp</dimen>
 
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>

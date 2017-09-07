@@ -30,6 +30,7 @@
   <!-- VIOLETS -->
   <color name="violet">#6643C1</color>
   <color name="violet.opacity.10">#1A6643C1</color>
+  <color name="violet.home">#9751E6</color>
 
   <!-- ME -->
 
@@ -86,6 +87,7 @@
   <color name="red.gradient.live.opacity.5">#0DF8143A</color>
 
   <!-- ORANGES -->
+  <color name="orange.recent">#FFA496</color>
 
   <!-- BROWNS -->
   <color name="brown">#9B6A51</color>

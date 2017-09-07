@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/list_home_header_height"
     >
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
+  <ImageView
+      android:id="@+id/imgPicto"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      style="@style/Title.1.Black"
+      android:scaleType="centerInside"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtAction"
+      android:id="@+id/txtLabel"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="2.5dp"
+      android:layout_marginStart="8dp"
       android:maxLines="1"
-      android:text="@string/home_action_read_chat"
       android:visibility="gone"
-      style="@style/Body.One.Blue"
+      style="@style/Body.Two.White"
       />
 
 </merge>

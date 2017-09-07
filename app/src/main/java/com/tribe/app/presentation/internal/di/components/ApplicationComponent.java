@@ -104,6 +104,7 @@ import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.header.HomeListViewHeader;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
@@ -210,6 +211,8 @@ public interface ApplicationComponent {
   void inject(PictoLiveView pictoLiveView);
 
   void inject(TextHomeNameActionView textHomeNameStatusView);
+
+  void inject(HomeListViewHeader homeListViewHeader);
 
   // JOBS
   void inject(BaseJob baseJob);

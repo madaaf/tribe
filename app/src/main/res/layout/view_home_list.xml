@@ -20,7 +20,7 @@
       android:layout_width="@dimen/avatar_size_small"
       android:layout_height="@dimen/avatar_size_small"
       android:layout_alignParentTop="true"
-      android:layout_marginTop="@dimen/horizontal_margin_smaller"
+      android:layout_marginTop="12.5dp"
       android:layout_toRightOf="@id/viewPictoChat"
       />
 
@@ -41,6 +41,7 @@
       android:id="@+id/viewHomeNameAction"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
       android:layout_marginBottom="@dimen/horizontal_margin_smaller"
       android:layout_marginStart="@dimen/horizontal_margin"
       android:layout_marginTop="@dimen/horizontal_margin_smaller"
