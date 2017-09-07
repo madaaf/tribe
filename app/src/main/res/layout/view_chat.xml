@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    >
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewChat"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_above="@+id/containerUsers"
+      android:layout_alignParentStart="true"
+      android:padding="15dp"
+      >
+
+  </android.support.v7.widget.RecyclerView>
+
+
+  <FrameLayout
+      android:id="@+id/containerUsers"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_above="@+id/separator"
+      android:layout_alignParentStart="true"
+      >
+    <View
+        android:id="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey.chat.grey"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewGrp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="10dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:reverseLayout="true"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
+  </FrameLayout>
+
+
+  <View
+      android:id="@+id/separator"
+      android:layout_width="match_parent"
+      android:layout_height="0.5dp"
+      android:layout_above="@+id/containerEditText"
+      android:background="@color/grey.chat.grey"
+      />
+
+  <RelativeLayout
+      android:id="@+id/sendLayout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentStart="true"
+      android:layout_gravity="bottom"
+      android:orientation="horizontal"
+      android:paddingBottom="5dp"
+      >
+    <ImageView
+        android:id="@+id/uploadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:padding="15dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_chat_upload"
+        />
+
+
+    <ImageView
+        android:id="@+id/sendBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/videoCallBtn"
+
+        android:padding="15dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_chat_send"
+        />
+
+
+    <ImageView
+        android:id="@+id/videoCallBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:padding="15dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_chat_video"
+        />
+
+  </RelativeLayout>
+
+  <FrameLayout
+      android:id="@+id/containerEditText"
+      android:layout_width="190dp"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_marginBottom="10dp"
+      android:layout_marginStart="60dp"
+      android:layout_marginTop="10dp"
+      android:background="@drawable/shape_rect_chat"
+      >
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@null"
+        android:hint="Message"
+        android:padding="10dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@color/grey.chat.grey.hint"
+        android:textCursorDrawable="@drawable/color_cursor"
+        android:textSize="15sp"
+        style="@style/Content.Three.Black"
+        />
+
+  </FrameLayout>
+</RelativeLayout>

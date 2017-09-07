@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="10dp"
+      android:background="@drawable/shape_rect_chat"
+      android:orientation="horizontal"
+      android:paddingBottom="5dp"
+      android:paddingEnd="5dp"
+      android:paddingStart="5dp"
+      android:paddingTop="5dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="@dimen/avatar_size_chat"
+        android:layout_height="@dimen/avatar_size_chat"
+        android:layout_gravity="left|center_vertical"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="false"
+        />
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="mada"
+        android:textAllCaps="true"
+        android:textSize="11sp"
+        style="@style/Body.Two.Black40"
+        />
+
+  </LinearLayout>
+
+</LinearLayout>

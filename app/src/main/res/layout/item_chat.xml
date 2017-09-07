@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+  <LinearLayout
+      android:id="@+id/header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="20dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="@dimen/avatar_size_chat"
+        android:layout_height="@dimen/avatar_size_chat"
+        android:layout_gravity="left|center_vertical"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="false"
+        />
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:text="mada"
+        android:textAllCaps="true"
+        android:textSize="11sp"
+        style="@style/Body.Two.Black"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:text="1m ago"
+        android:textSize="11sp"
+        style="@style/Body.Two.Black40"
+        />
+
+  </LinearLayout>
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="5dp"
+      android:layout_marginTop="5dp"
+      android:orientation="horizontal"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="message here "
+        style="@style/Content.Three.Black"
+        />
+
+  </LinearLayout>
+</LinearLayout>

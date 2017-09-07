@@ -11,6 +11,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.GroupRealm;
+import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import io.realm.RealmList;
@@ -54,32 +57,47 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     userRealm.setFbid(
         result.get("fbid") != null && !result.get("fbid").isJsonNull() ? result.get("fbid")
             .getAsString() : "");
-    userRealm.setInvisibleMode(result.get("invisible_mode").getAsBoolean());
+    if (result.get("invisible_mode") != null) {
+      userRealm.setInvisibleMode(result.get("invisible_mode").getAsBoolean());
+    }
     userRealm.setUsername(
         result.get("username") != null && !result.get("username").isJsonNull() ? result.get(
             "username").getAsString() : null);
-    userRealm.setDisplayName(result.get("display_name").getAsString());
-    userRealm.setTimeInCall(result.get("time_in_call").getAsLong());
+    if (result.get("display_name") != null) {
+      userRealm.setDisplayName(result.get("display_name").getAsString());
+    }
+    if (result.get("time_in_call") != null) {
+      userRealm.setTimeInCall(result.get("time_in_call").getAsLong());
+    }
     userRealm.setProfilePicture(
         result.get("picture") != null && !result.get("picture").isJsonNull() ? result.get("picture")
             .getAsString() : null);
-    userRealm.setPushNotif(result.get("push_notif").getAsBoolean());
+    if (result.get("push_notif") != null) {
+      userRealm.setPushNotif(result.get("push_notif").getAsBoolean());
+    }
 
     try {
-      userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
+      if (result.get("created_at") != null) {
+        userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
+      }
     } catch (ParseException e) {
       e.printStackTrace();
     }
 
     try {
-      userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
+      if (result.get("last_seen_at") != null) {
+        userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
+      }
     } catch (ParseException e) {
       e.printStackTrace();
     }
 
     JsonArray resultsFriendships = result.getAsJsonArray("friendships");
     JsonArray resultsInvites = result.getAsJsonArray("invites");
+    JsonArray resultsMessages = result.getAsJsonArray("messages");
     RealmList<FriendshipRealm> realmListFriendships = new RealmList();
+    RealmList<MembershipRealm> realmListMemberships = new RealmList();
+    RealmList<MessageRealm> realmListMessages = new RealmList();
     List<Invite> listInvites = new ArrayList<>();
 
     if (resultsFriendships != null) {
@@ -89,6 +107,40 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
           realmListFriendships.add(friendshipRealm);
         }
       }
+    }
+
+ if (resultsMemberships != null) {
+      for (JsonElement obj : resultsMemberships) {
+        if (!(obj instanceof JsonNull)) {
+          MembershipRealm membershipRealm = gson.fromJson(obj, MembershipRealm.class);
+          if (membershipRealm != null) realmListMemberships.add(membershipRealm);
+        }
+      }
+    }
+
+    if (resultsMessages != null) {
+      for (JsonElement obj : resultsMessages) {
+        if (!(obj instanceof JsonNull)) {
+          MessageRealm messageRealm = gson.fromJson(obj, MessageRealm.class);
+          if (messageRealm != null) realmListMessages.add(messageRealm);
+        }
+      }
+    }
+
+    if (result.get("groups") != null && !(result.get("groups") instanceof JsonNull)) {
+      JsonArray resultsGroups = result.getAsJsonArray("groups");
+      RealmList<GroupRealm> realmListGroups = new RealmList();
+
+      if (resultsGroups != null) {
+        for (JsonElement obj : resultsGroups) {
+          if (!(obj instanceof JsonNull)) {
+            GroupRealm groupRealm = groupDeserializer.parseGroup(obj.getAsJsonObject());
+            if (groupRealm != null) realmListGroups.add(groupRealm);
+          }
+        }
+      }
+
+      userRealm.setGroups(realmListGroups);
     }
 
     if (resultsInvites != null) {
@@ -102,6 +154,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     userRealm.setInvites(listInvites);
     userRealm.setFriendships(realmListFriendships);
+    userRealm.setMemberships(realmListMemberships);
+    userRealm.setMessages(realmListMessages);
 
     return userRealm;
   }

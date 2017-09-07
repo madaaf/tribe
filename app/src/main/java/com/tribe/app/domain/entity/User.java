@@ -5,6 +5,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 /**
  * Created by tiago on 04/05/2016.
  */
+
 public class User implements Serializable, BaseListInterface, Changeable {
 
   public static final String ID = "id";
@@ -39,6 +41,7 @@ public class User implements Serializable, BaseListInterface, Changeable {
   private boolean tribe_save;
   private List<Friendship> friendships;
   private List<Recipient> friendshipList;
+  private List<Message> messageList;
   private List<Invite> inviteList;
   private String fbid;
   private boolean invisible_mode;
@@ -152,10 +155,34 @@ public class User implements Serializable, BaseListInterface, Changeable {
     this.friendships = friendships;
   }
 
+  public List<Message> getMessages() {
+    if (messageList == null) return new ArrayList<>();
+
+    return messageList;
+  }
+
   public List<Friendship> getFriendships() {
     if (friendships == null) return new ArrayList<>();
 
     return friendships;
+  }
+
+ public void setMembershipList(List<Membership> membershipList) {
+    this.membershipList = membershipList;
+  }
+
+  public List<Membership> getMembershipList() {
+    if (membershipList == null) return new ArrayList<>();
+
+    return membershipList;
+  }
+
+  public List<Message> getMessageList() {
+    return messageList;
+  }
+
+  public void setMessageList(List<Message> messageList) {
+    this.messageList = messageList;
   }
 
   public String getFbid() {

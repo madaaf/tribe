@@ -162,6 +162,10 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
+  @Override public Observable<UserRealm> userMessage(String ok1, String ok2) {
+    return this.tribeApi.getUserMessage(context.getString(R.string.messages_details));
+  }
+
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
     String userIdsListFormated = listToJson(userIdsList);
     return this.tribeApi.getUserListInfos(

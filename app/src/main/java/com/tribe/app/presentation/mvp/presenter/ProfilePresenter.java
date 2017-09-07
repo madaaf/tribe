@@ -47,7 +47,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
       GetBlockedFriendshipList getBlockedFriendshipList, UpdateFriendship updateFriendship,
       DeclineInvite declineInvite, GetDiskUnblockedFriendshipList getDiskUnblockedFriendshipList,
       CreateRoom createRoom, UpdateUserFacebook updateUserFacebook,
-      UpdateUserPhoneNumber updateUserPhoneNumber) {
+      BookRoomLink bookRoomLink, UpdateUserFacebook updateUserFacebook) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.removeInstall = removeInstall;
     this.getBlockedFriendshipList = getBlockedFriendshipList;

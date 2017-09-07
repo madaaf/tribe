@@ -20,6 +20,7 @@ import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -76,6 +77,17 @@ import rx.Observable;
   @Override public Observable<User> userInfos(String userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.userInfos(userId).doOnError(throwable -> throwable.printStackTrace()).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+  }
+
+  @Override public Observable<List<Message>> userMessageInfo(String userId) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.userMessage("soef", "soef").doOnError(throwable -> {
+      throwable.printStackTrace();
+    }).map(userRealm -> {
+      List<Message> messageList = new ArrayList<Message>();
+      messageList = this.userRealmDataMapper.transform(userRealm, false).getMessages();
+      return messageList;
+    });
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {

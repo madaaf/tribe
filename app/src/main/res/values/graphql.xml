@@ -22,6 +22,21 @@
         %3$s
     </string>
 
+  <string name="messages.details" translatable="false">
+       {
+            user {
+                id
+                messages {
+                 id
+                  author {
+                      id
+                      display_name
+                 }
+              }
+            }
+        }
+    </string>
+
   <string name="user.infos.friendships" translatable="false">
         {
             user {
@@ -48,6 +63,12 @@
             friend {
                 ...UserInfos
             }
+        }
+    </string>
+
+  <string name="messagefragment.info" translatable="false">
+        fragment MessageInfos on User {
+            id
         }
     </string>
 
@@ -442,7 +463,7 @@
     </string>
 
   <string name="subscription.userUpdated" translatable="false">
-        %1$s : userUpdated ( id : \"%2$s\" ) {
+        %1$s : u ( id : \"%2$s\" ) {
             ...UserInfos
         }
     </string>
