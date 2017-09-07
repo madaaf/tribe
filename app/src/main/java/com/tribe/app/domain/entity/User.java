@@ -167,16 +167,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
     return friendships;
   }
 
- public void setMembershipList(List<Membership> membershipList) {
-    this.membershipList = membershipList;
-  }
-
-  public List<Membership> getMembershipList() {
-    if (membershipList == null) return new ArrayList<>();
-
-    return membershipList;
-  }
-
   public List<Message> getMessageList() {
     return messageList;
   }

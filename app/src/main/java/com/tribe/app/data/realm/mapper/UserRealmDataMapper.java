@@ -1,9 +1,7 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.widget.chat.Message;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,10 +173,6 @@ import javax.inject.Singleton;
 
   public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
     return friendshipRealmDataMapper;
-  }
-
-  public MembershipRealmDataMapper getMembershipRealmDataMapper() {
-    return membershipRealmDataMapper;
   }
 
   public MessageRealmDataMapper getMessageRealmDataMapper() {

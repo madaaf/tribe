@@ -48,13 +48,10 @@ import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragm
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
-import com.tribe.app.presentation.view.widget.game.GameChallengesView;
-import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.TestActivity;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
-import com.tribe.app.presentation.view.widget.notifications.CreateGroupNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
@@ -94,7 +91,6 @@ import dagger.Component;
 
   void inject(ChatView chatView);
 
-  void inject(CreateGroupNotificationView createGroupNotificationView);
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
   void inject(CountryActivity countryActivity);

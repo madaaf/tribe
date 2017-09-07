@@ -298,24 +298,6 @@ if (accessToken.isAnonymous() ||
         .subscribe(userRealmInfos -> {
           userCache.addFriendship(userRealmInfos.getFriendships().first());
         }));
-<<<<<<< HEAD
-=======
-    
-    persistentSubscriptions.add(jsonToModel.onCreatedMembership()
-        .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .flatMap(membershipId -> {
-          String ids = "\"" + membershipId + "\"";
-          final String requestMembershipInfos =
-              getApplicationContext().getString(R.string.membership_infos, ids,
-                  getApplicationContext().getString(R.string.membershipfragment_info),
-                  getApplicationContext().getString(R.string.groupfragment_info_members),
-                  getApplicationContext().getString(R.string.userfragment_infos));
-          return this.tribeApi.getUserInfos(requestMembershipInfos);
-        }, (s, userRealmInfos) -> userRealmInfos)
-        .subscribe(userRealmInfos -> {
-          userCache.addMembership(userRealmInfos.getMemberships().first());
-        }));
->>>>>>> feature-chat
 
     persistentSubscriptions.add(jsonToModel.onRemovedFriendship().subscribe(friendshipRealm -> {
       userCache.removeFriendship(friendshipRealm);

@@ -6,8 +6,6 @@ import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -81,13 +79,8 @@ public interface TribeApi {
 
   @HEAD Observable<Response<Void>> getHeadDeepLink(@Url String url);
 
-@FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<Room> room(
+  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<Room> room(
       @Field("query") String query);
-
-
-  @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous")
-  Observable<RoomConfiguration> joinRoom(@Field("query") String query);
->>>>>>> feature-chat
 
   @FormUrlEncoded @POST("/graphql") @Headers("@: CanBeAnonymous") Observable<Room> createRoom(
       @Field("query") String query);

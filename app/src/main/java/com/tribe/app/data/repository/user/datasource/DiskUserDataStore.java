@@ -11,11 +11,6 @@ import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-<<<<<<< HEAD
-=======
-import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.MessageRealm;
->>>>>>> feature-chat
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -23,7 +18,6 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

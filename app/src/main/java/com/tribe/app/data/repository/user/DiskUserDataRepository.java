@@ -108,19 +108,10 @@ import rx.Observable;
         });
   }
 
-<<<<<<< HEAD
-=======
   @Override public Observable<List<Message>> userMessageInfo(String userId) {
     return null;
   }
 
-  @Override public Observable<String> randomRoomAssigned() {
-    final DiskUserDataStore userDataStore =
-        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.callRouletteMap();
-  }
-
->>>>>>> feature-chat
   @Override public Observable<User> getFbIdUpdated() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
@@ -151,9 +142,8 @@ import rx.Observable;
     RealmList<FriendshipRealm> result = new RealmList<>();
 
     for (FriendshipRealm fr : friendships) {
-      if (!excludeBlocked ||
-          (!StringUtils.isEmpty(fr.getStatus()) &&
-              fr.getStatus().equals(FriendshipRealm.DEFAULT))) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+          .equals(FriendshipRealm.DEFAULT))) {
         fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
         fr.setLive(liveMap.containsKey(fr.getId()));
 
@@ -348,8 +338,8 @@ import rx.Observable;
           RealmList<FriendshipRealm> result = new RealmList<>();
 
           for (FriendshipRealm fr : userRealm.getFriendships()) {
-            if (!StringUtils.isEmpty(fr.getStatus()) &&
-                !fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+            if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus()
+                .equals(FriendshipRealm.DEFAULT)) {
               result.add(fr);
             }
           }
@@ -388,8 +378,8 @@ import rx.Observable;
           RealmList<FriendshipRealm> result = new RealmList<>();
 
           for (FriendshipRealm fr : userRealm.getFriendships()) {
-            if (!StringUtils.isEmpty(fr.getStatus()) &&
-                fr.getStatus().equals(FriendshipRealm.DEFAULT)) {
+            if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
+                .equals(FriendshipRealm.DEFAULT)) {
               result.add(fr);
             }
           }

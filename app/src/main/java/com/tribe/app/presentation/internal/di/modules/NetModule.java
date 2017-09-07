@@ -49,11 +49,6 @@ import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-<<<<<<< HEAD
-=======
-import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.MessageRealm;
->>>>>>> feature-chat
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -141,10 +136,6 @@ import timber.log.Timber;
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
-<<<<<<< HEAD
-=======
-    GroupDeserializer groupDeserializer = new GroupDeserializer();
->>>>>>> feature-chat
     DataGameDeserializer dataGameDeserializer = new DataGameDeserializer(context);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
@@ -188,20 +179,18 @@ import timber.log.Timber;
     OkHttpClient.Builder okHttpClient = createOkHttpClient(context);
 
     if (!BuildConfig.DEBUG) {
-      InputStream oldCert = context.getResources().openRawResource(R.raw.old_tribe);
       InputStream cert = context.getResources().openRawResource(R.raw.tribe);
 
       try {
         // loading CAs from an InputStream
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        Certificate oldCa = cf.generateCertificate(oldCert);
-        Certificate ca = cf.generateCertificate(cert);
+        Certificate ca;
+        ca = cf.generateCertificate(cert);
 
         // creating a KeyStore containing our trusted CAs
         String keyStoreType = KeyStore.getDefaultType();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(null, null);
-        keyStore.setCertificateEntry("oldCa", oldCa);
         keyStore.setCertificateEntry("ca", ca);
 
         // creating a TrustManager that trusts the CAs in our KeyStore
@@ -214,12 +203,9 @@ import timber.log.Timber;
         sslContext.init(null, tmf.getTrustManagers(), null);
         okHttpClient.sslSocketFactory(sslContext.getSocketFactory());
 
-        String oldCertPin = CertificatePinner.pin(oldCa);
         String certPin = CertificatePinner.pin(ca);
         CertificatePinner certificatePinner =
-            new CertificatePinner.Builder().add(BuildConfig.TRIBE_API, oldCertPin)
-                .add(BuildConfig.TRIBE_AUTH, oldCertPin)
-                .add(BuildConfig.TRIBE_API, certPin)
+            new CertificatePinner.Builder().add(BuildConfig.TRIBE_API, certPin)
                 .add(BuildConfig.TRIBE_AUTH, certPin)
                 .build();
         okHttpClient.certificatePinner(certificatePinner);
@@ -393,9 +379,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null &&
-            responseRefresh.isSuccessful() &&
-            responseRefresh.body() != null) {
+        if (responseRefresh != null
+            && responseRefresh.isSuccessful()
+            && responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -480,17 +466,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-<<<<<<< HEAD
-      if (tribeAuthorizer != null &&
-          tribeAuthorizer.getAccessToken() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
-=======
       if (tribeAuthorizer != null
           && tribeAuthorizer.getAccessToken() != null
           && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
           && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
->>>>>>> feature-chat
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -550,22 +529,12 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-<<<<<<< HEAD
-        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
-            " " +
-            tribeAuthorizer.getAccessToken().getAccessToken());
-      } else {
-        byte[] data = (tribeAuthorizer.getApiClient() +
-            ":" +
-            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
-=======
         requestBuilder.header("Authorization",
             tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
                 .getAccessToken());
       } else {
         byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
             tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
->>>>>>> feature-chat
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

@@ -40,11 +40,7 @@ public class UserRealm extends RealmObject {
   private LocationRealm location;
   private boolean tribe_save = false;
   private RealmList<FriendshipRealm> friendships;
-<<<<<<< HEAD
-=======
-  private RealmList<MembershipRealm> memberships;
   private RealmList<MessageRealm> messages;
->>>>>>> feature-chat
   private boolean invisible_mode;
   private boolean push_notif = true;
   private Date last_seen_at;
