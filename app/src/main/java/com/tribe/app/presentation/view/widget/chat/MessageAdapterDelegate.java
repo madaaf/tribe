@@ -50,10 +50,13 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
     if (i instanceof MessageText) {
       vh.message.setText(((MessageText) i).getMessage());
+      vh.emoji.setVisibility(View.GONE);
     } else if (i instanceof MessageEmoji) {
-      vh.message.setText(((MessageEmoji) i).getEmoji());
+      vh.emoji.setText(((MessageEmoji) i).getEmoji());
+      vh.emoji.setVisibility(View.VISIBLE);
     } else if (i instanceof MessageImage) {
       //SOEF
+      vh.emoji.setVisibility(View.GONE);
     }
   }
 
@@ -65,6 +68,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
     @BindView(R.id.message) public TextViewFont message;
     @BindView(R.id.name) public TextViewFont name;
+    @BindView(R.id.emoji) public TextViewFont emoji;
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
     @BindView(R.id.header) public LinearLayout header;
 
