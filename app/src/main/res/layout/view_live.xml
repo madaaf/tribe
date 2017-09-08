@@ -37,7 +37,6 @@
       android:visibility="gone"
       />
 
-
   <com.tribe.app.presentation.view.component.live.LiveControlsView
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
@@ -54,6 +53,5 @@
       android:layout_marginTop="19.5dp"
       android:background="@null"
       />
-
-
+  
 </merge>

@@ -104,4 +104,20 @@
       android:visibility="gone"
       />
 
+  <View
+      android:id="@+id/viewFadeInSwipe"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@android:color/black"
+      android:visibility="gone"
+      />
+
+  <com.tribe.app.presentation.view.component.live.LiveViewFake
+      android:id="@+id/viewLiveFake"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      />
+
 </FrameLayout>

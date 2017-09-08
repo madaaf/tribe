@@ -213,6 +213,16 @@ public class Navigator {
     }
   }
 
+  public void navigateToLiveFromSwipe(Activity activity, Recipient recipient, int color,
+      @LiveActivity.Source String source) {
+    if (activity != null) {
+      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      activity.startActivityForResult(intent, FROM_LIVE);
+      activity.overridePendingTransition(0, 0);
+    }
+  }
+
   public void navigateToIntent(Activity activity, Intent intent) {
     if (activity != null) {
       if (activity instanceof LiveActivity) {

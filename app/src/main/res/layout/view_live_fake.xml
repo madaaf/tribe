@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|center_horizontal"
+      android:layout_marginLeft="50dp"
+      android:layout_marginRight="50dp"
+      android:layout_marginTop="19.5dp"
+      android:drawablePadding="8.6dp"
+      android:shadowColor="@color/black.opacity.50"
+      android:shadowDx="3"
+      android:shadowDy="3"
+      android:shadowRadius="10"
+      android:singleLine="true"
+      style="@style/Headline.White.2"
+      />
+
+  <com.tribe.app.presentation.view.component.live.LiveControlsView
+      android:id="@+id/viewControlsLive"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
+
+</merge>

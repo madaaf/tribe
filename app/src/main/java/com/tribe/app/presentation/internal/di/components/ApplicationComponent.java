@@ -84,6 +84,7 @@ import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.component.live.LiveView;
+import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
@@ -213,6 +214,8 @@ public interface ApplicationComponent {
   void inject(TextHomeNameActionView textHomeNameStatusView);
 
   void inject(HomeListViewHeader homeListViewHeader);
+
+  void inject(LiveViewFake liveViewFake);
 
   // JOBS
   void inject(BaseJob baseJob);

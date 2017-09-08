@@ -12,10 +12,12 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperViewHolder;
 import com.tribe.app.presentation.view.component.home.HomeListView;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 09/04/2017
@@ -40,7 +42,9 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     RecipientHomeViewHolder recipientGridViewHolder =
         new RecipientHomeViewHolder(layoutInflater.inflate(getLayoutId(), parent, false));
-
+    recipientGridViewHolder.viewListItem.onLongClick()
+        .map(view -> recipientGridViewHolder.itemView)
+        .subscribe(longClick);
     return recipientGridViewHolder;
   }
 
@@ -48,7 +52,6 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
       @NonNull RecyclerView.ViewHolder holder) {
     RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
     Recipient recipient = items.get(position);
-
     vh.viewListItem.setRecipient(recipient);
   }
 
@@ -74,13 +77,22 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
 
   protected abstract int getLayoutId();
 
-  static class RecipientHomeViewHolder extends RecyclerView.ViewHolder {
+  static class RecipientHomeViewHolder extends RecyclerView.ViewHolder
+      implements ItemTouchHelperViewHolder {
 
     @BindView(R.id.viewListItem) HomeListView viewListItem;
 
     public RecipientHomeViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
+    }
+
+    @Override public void onItemSelected() {
+      Timber.d("onItemSelected");
+    }
+
+    @Override public void onItemClear() {
+      Timber.d("onItemClear");
     }
   }
 }

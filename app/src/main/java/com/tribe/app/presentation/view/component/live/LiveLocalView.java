@@ -114,7 +114,7 @@ public class LiveLocalView extends FrameLayout {
     viewPeerOverlay.initMediaConfiguration(localMediaConfiguration);
 
     viewPeerLocal = new LocalPeerView(getContext(), localMediaConfiguration);
-    viewPeerLocal.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
+    viewPeerLocal.setBackgroundColor(Color.BLACK);
 
     // We add the view in between the background and overlay
     cardViewStreamLayout.addView(viewPeerLocal, 0,
@@ -130,7 +130,8 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.initStopGameSubscription(onStopGame);
 
     viewPeerOverlay.setGuest(
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false, user.getUsername()));
+        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
+            user.getUsername()));
 
     initSubscriptions();
   }

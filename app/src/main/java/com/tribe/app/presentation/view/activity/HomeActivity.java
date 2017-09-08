@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,10 +68,12 @@ import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.DividerDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
+import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
@@ -166,6 +169,10 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
 
+  @BindView(R.id.viewFadeInSwipe) View viewFadeInSwipe;
+
+  @BindView(R.id.viewLiveFake) LiveViewFake viewLiveFake;
+
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -176,6 +183,7 @@ public class HomeActivity extends BaseActivity
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
+  private ItemTouchHelper itemTouchHelper;
   private List<Recipient> latestRecipientList;
   private boolean shouldOverridePendingTransactions = false;
   private NotificationReceiver notificationReceiver;
@@ -300,6 +308,7 @@ public class HomeActivity extends BaseActivity
     }
 
     initMissedCall();
+    initRecyclerViewCallback();
   }
 
   @Override protected void onPause() {
@@ -401,6 +410,7 @@ public class HomeActivity extends BaseActivity
   private void initUi() {
     setContentView(R.layout.activity_home);
     ButterKnife.bind(this);
+    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
   }
 
   private void initDimensions() {
@@ -436,36 +446,38 @@ public class HomeActivity extends BaseActivity
 
   private void initRecyclerView() {
     initUIRecyclerView();
+
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
 
-        .flatMap(recipient -> {
-          return DialogFactory.showBottomSheetForRecipient(this, recipient);
-        }, ((recipient, labelType) -> {
-          if (labelType != null) {
-            if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
-              Friendship friendship = (Friendship) recipient;
-              homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                  labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                      : FriendshipRealm.HIDDEN);
-            } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-              Friendship friendship = (Friendship) recipient;
-              friendship.setMute(true);
-              homeGridPresenter.updateFriendship(friendship.getId(), true, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-              Friendship friendship = (Friendship) recipient;
-              friendship.setMute(false);
-              homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
-              Invite invite = (Invite) recipient;
-              homeGridPresenter.declineInvite(invite.getId());
-            }
-          }
+        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+            ((recipient, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+                          : FriendshipRealm.HIDDEN);
+                } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  friendship.setMute(true);
+                  homeGridPresenter.updateFriendship(friendship.getId(), true,
+                      friendship.getStatus());
+                } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+                  Friendship friendship = (Friendship) recipient;
+                  friendship.setMute(false);
+                  homeGridPresenter.updateFriendship(friendship.getId(), false,
+                      friendship.getStatus());
+                } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+                  Invite invite = (Invite) recipient;
+                  homeGridPresenter.declineInvite(invite.getId());
+                }
+              }
 
-          return recipient;
-        }))
+              return recipient;
+            }))
         .subscribe());
 
     subscriptions.add(homeGridAdapter.onClick()
@@ -857,7 +869,9 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
+    if (requestCode == Navigator.FROM_LIVE) {
+      topBarContainer.displayTooltip();
+    }
     if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
 
     if (data != null) {
@@ -911,6 +925,43 @@ public class HomeActivity extends BaseActivity
         getResources().getDimensionPixelSize(R.dimen.list_home_header_height), true,
         getSectionCallback(homeGridAdapter.getItems()), screenUtils);
     recyclerViewFriends.addItemDecoration(sectionItemDecoration);
+  }
+
+  private void initRecyclerViewCallback() {
+    viewFadeInSwipe.setVisibility(View.GONE);
+    viewFadeInSwipe.setAlpha(0);
+    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
+
+    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(homeGridAdapter);
+
+    if (itemTouchHelper == null) {
+      itemTouchHelper = new ItemTouchHelper(callback);
+    }
+
+    itemTouchHelper.attachToRecyclerView(null);
+    itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
+
+    subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
+      if (pairPosDx.second == 0) {
+        viewFadeInSwipe.setVisibility(View.GONE);
+        viewFadeInSwipe.setAlpha(0);
+      } else {
+        Recipient recipient = homeGridAdapter.getItemAtPosition(pairPosDx.first);
+        viewLiveFake.setRecipient(recipient);
+        viewFadeInSwipe.setVisibility(View.VISIBLE);
+        viewFadeInSwipe.setTranslationX(pairPosDx.second);
+        viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
+        viewLiveFake.setTranslationX(screenUtils.getWidthPx() + pairPosDx.second);
+      }
+    }));
+
+    subscriptions.add(callback.onSwipedItem().subscribe(position -> {
+      Recipient recipient = homeGridAdapter.getItemAtPosition(position);
+      navigator.navigateToLiveFromSwipe(this, homeGridAdapter.getItemAtPosition(position),
+          PaletteGrid.get(position),
+          recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+              : LiveActivity.SOURCE_GRID);
+    }));
   }
 
   private SectionCallback getSectionCallback(final List<Recipient> recipientList) {

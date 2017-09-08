@@ -9,17 +9,20 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdap
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserChatActiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperAdapter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerViewItemEnabler {
+public class HomeListAdapter extends RecyclerView.Adapter
+    implements RecyclerViewItemEnabler, ItemTouchHelperAdapter {
 
   public static final int EMPTY_HEADER_VIEW_TYPE = 99;
   public static final int HEADERS_VIEW_TYPE = 98;
@@ -101,9 +104,8 @@ public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerVie
   }
 
   public Observable<View> onLongClick() {
-    return userGridAdapterDelegate.onLongClick();
-    //return Observable.merge(userGridAdapterDelegate.onLongClick(),
-    //    userLiveGridAdapterDelegate.onLongClick(), userConnectedGridAdapterDelegate.onLongClick());
+    return Observable.merge(userGridAdapterDelegate.onLongClick(),
+        userLiveGridAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
   }
 
   public void setItems(List<Recipient> items) {
@@ -134,5 +136,9 @@ public class HomeListAdapter extends RecyclerView.Adapter implements RecyclerVie
 
   @Override public boolean getItemEnabled(int position) {
     return true;
+  }
+
+  @Override public void onItemDismiss(int position) {
+    Timber.d("onItemDismiss");
   }
 }

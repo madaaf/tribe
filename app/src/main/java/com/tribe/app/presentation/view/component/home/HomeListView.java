@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,6 +18,8 @@ import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -38,6 +41,9 @@ public class HomeListView extends RelativeLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<View> onLongClick = PublishSubject.create();
+  private PublishSubject<View> onLive = PublishSubject.create();
+  private PublishSubject<View> onChat = PublishSubject.create();
 
   // RX SUBSCRIPTIONS / SUBJECTS
 
@@ -67,6 +73,7 @@ public class HomeListView extends RelativeLayout {
     initResources();
     initDependencyInjector();
     initUI();
+    initClicks();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -109,6 +116,13 @@ public class HomeListView extends RelativeLayout {
     }
   }
 
+  public void initClicks() {
+    setOnLongClickListener(v -> {
+      onLongClick.onNext(v);
+      return true;
+    });
+  }
+
   public void setRecipient(Recipient recipient) {
     this.recipient = recipient;
 
@@ -118,5 +132,21 @@ public class HomeListView extends RelativeLayout {
 
     viewAvatar.load(recipient);
     viewHomeNameAction.setRecipient(recipient);
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<View> onLongClick() {
+    return onLongClick;
+  }
+
+  public Observable<View> onLiveClick() {
+    return onLive;
+  }
+
+  public Observable<View> onChatClick() {
+    return onChat;
   }
 }
