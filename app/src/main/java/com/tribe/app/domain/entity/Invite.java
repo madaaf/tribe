@@ -56,7 +56,7 @@ public class Invite extends Recipient {
   }
 
   @Override public String getProfilePicture() {
-    return null;
+    return room.getInitiator().getProfilePicture();
   }
 
   @Override public String getSubId() {
