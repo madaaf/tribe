@@ -108,7 +108,7 @@ import rx.Observable;
         });
   }
 
-  @Override public Observable<List<Message>> userMessageInfo(String userId) {
+  @Override public Observable<List<Message>> userMessageInfo(String[] userIds) {
     return null;
   }
 

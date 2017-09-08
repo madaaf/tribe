@@ -12,7 +12,6 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.widget.chat.Message;
@@ -56,7 +55,7 @@ public interface UserRepository {
    */
   Observable<User> userInfos(final String userId);
 
-  Observable<List<Message>> userMessageInfo(final String userId);
+  Observable<List<Message>> userMessageInfo(final String[] userIds);
 
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 

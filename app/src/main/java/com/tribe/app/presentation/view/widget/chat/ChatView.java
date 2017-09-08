@@ -75,9 +75,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
     adapter = new MessageAdapter(getContext());
-    recyclerView.setLayoutManager(layoutManager);
+    layoutManager.setStackFromEnd(true);
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
+    recyclerView.setLayoutManager(layoutManager);
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -125,8 +126,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     items.add(t);
     adapter.setItems(items);
     countrySearchView.setText("");
-    recyclerViewGrp.scrollToPosition(0);
-    //layoutManager.setReverseLayout(true);
+
+    layoutManager.setStackFromEnd(true);
+    recyclerView.setLayoutManager(layoutManager);
   }
 
   protected void initDependencyInjector() {

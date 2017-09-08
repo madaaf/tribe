@@ -32,11 +32,8 @@ public class CloudLiveDataStore implements LiveDataStore {
       body = context.getString(R.string.getRoom_roomId, live.getRoomId());
     }
 
-    final String request = context.getString(R.string.query, body) +
-        "\n" +
-        context.getString(R.string.roomFragment_infos) +
-        "\n" +
-        context.getString(R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.query, body) + "\n" + context.getString(
+        R.string.roomFragment_infos) + "\n" + context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.room(request);
   }
@@ -56,11 +53,8 @@ public class CloudLiveDataStore implements LiveDataStore {
 
     String body = context.getString(R.string.createRoom, params);
 
-    final String request = context.getString(R.string.mutation, body) +
-        "\n" +
-        context.getString(R.string.roomFragment_infos) +
-        "\n" +
-        context.getString(R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
+        R.string.roomFragment_infos) + "\n" + context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.createRoom(request);
   }
@@ -83,11 +77,8 @@ public class CloudLiveDataStore implements LiveDataStore {
             : "";
 
     final String request = context.getString(R.string.mutation,
-        context.getString(R.string.updateRoom, roomId, roomInput)) +
-        "\n" +
-        context.getString(R.string.roomFragment_infos) +
-        "\n" +
-        context.getString(R.string.userfragment_infos_light);
+        context.getString(R.string.updateRoom, roomId, roomInput)) + "\n" + context.getString(
+        R.string.roomFragment_infos) + "\n" + context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.updateRoom(request);
   }

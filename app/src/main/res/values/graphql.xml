@@ -26,7 +26,7 @@
        {
             user {
                 id
-                messages {
+                messages(usersIds:[%1$s]){
                 __typename
                  id
                   author {

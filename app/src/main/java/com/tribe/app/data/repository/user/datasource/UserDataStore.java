@@ -13,7 +13,6 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import rx.Observable;
@@ -54,7 +53,7 @@ public interface UserDataStore {
    */
   Observable<UserRealm> userInfos(final String userId);
 
-  Observable<UserRealm> userMessage(final String ok1, final String ok2);
+  Observable<UserRealm> userMessage(final String[] userIds);
 
   Observable<List<UserRealm>> userInfosList(List<String> userIds);
 

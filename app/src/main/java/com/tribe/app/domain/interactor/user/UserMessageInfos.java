@@ -12,20 +12,21 @@ import rx.Observable;
  */
 public class UserMessageInfos extends UseCase {
 
-  private String userId;
+  private String[] userIds;
   private UserRepository userRepository;
 
-  @Inject public UserMessageInfos(CloudUserDataRepository userRepository,
-      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+  @Inject
+  public UserMessageInfos(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.userRepository = userRepository;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setUserIds(String[] userIds) {
+    this.userIds = userIds;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.userMessageInfo(userId);
+    return this.userRepository.userMessageInfo(userIds);
   }
 }

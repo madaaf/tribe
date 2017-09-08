@@ -16,7 +16,6 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -76,12 +75,14 @@ import rx.Observable;
 
   @Override public Observable<User> userInfos(String userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userInfos(userId).doOnError(throwable -> throwable.printStackTrace()).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+    return userDataStore.userInfos(userId)
+        .doOnError(throwable -> throwable.printStackTrace())
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
-  @Override public Observable<List<Message>> userMessageInfo(String userId) {
+  @Override public Observable<List<Message>> userMessageInfo(String[] userIds) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userMessage("soef", "soef").doOnError(throwable -> {
+    return userDataStore.userMessage(userIds).doOnError(throwable -> {
       throwable.printStackTrace();
     }).map(userRealm -> {
       List<Message> messageList = new ArrayList<Message>();

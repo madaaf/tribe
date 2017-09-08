@@ -14,7 +14,6 @@ import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -36,7 +35,6 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -162,8 +160,22 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
-  @Override public Observable<UserRealm> userMessage(String ok1, String ok2) {
-    return this.tribeApi.getUserMessage(context.getString(R.string.messages_details));
+  @Override public Observable<UserRealm> userMessage(String[] userIds) {
+    return this.tribeApi.getUserMessage(
+        context.getString(R.string.messages_details, arrayToJson(userIds)));
+  }
+
+  public String arrayToJson(String[] array) {
+    String json = "\"";
+    for (int i = 0; i < array.length; i++) {
+      if (i == array.length - 1) {
+        json += array[i] + "\"";
+      } else {
+        json += array[i] + "\", \"";
+      }
+    }
+    if (array.length == 0) json += "\"";
+    return json;
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
@@ -230,9 +242,8 @@ public class CloudUserDataStore implements UserDataStore {
       this.installation.setId("");
       return createOrUpdateInstall(token);
     }).flatMap(installationRecent -> {
-      if (installationRecent == null &&
-          this.installation != null &&
-          !StringUtils.isEmpty(this.installation.getId())) {
+      if (installationRecent == null && this.installation != null && !StringUtils.isEmpty(
+          this.installation.getId())) {
         this.installation.setToken("");
         this.installation.setId("");
         return createInstallation(token, this.installation);
@@ -252,13 +263,13 @@ public class CloudUserDataStore implements UserDataStore {
     StringBuilder userInputBuilder = new StringBuilder();
 
     for (Pair<String, String> value : values) {
-      if (value.first.equals(UserRealm.TRIBE_SAVE) ||
-          value.first.equals(UserRealm.INVISIBLE_MODE) ||
-          value.first.equals(UserRealm.PUSH_NOTIF)) {
+      if (value.first.equals(UserRealm.TRIBE_SAVE)
+          || value.first.equals(UserRealm.INVISIBLE_MODE)
+          || value.first.equals(UserRealm.PUSH_NOTIF)) {
         userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         userInputBuilder.append(",");
-      } else if (!value.first.equals(UserRealm.FBID) ||
-          (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
+      } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second)
+          && !value.second.equals("null"))) {
         userInputBuilder.append(value.first + ": \"" + value.second + "\"");
         userInputBuilder.append(",");
       }
@@ -314,7 +325,6 @@ public class CloudUserDataStore implements UserDataStore {
     return accessToken != null ? this.loginApi.linkFacebook(accessToken)
         : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
   }
-
 
   @Override
   public Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber) {
@@ -568,9 +578,9 @@ public class CloudUserDataStore implements UserDataStore {
         .map(createFriendshipEntity -> {
           FriendshipRealm friendshipRealm = null;
 
-          if (createFriendshipEntity != null &&
-              createFriendshipEntity.getNewFriendshipList() != null &&
-              createFriendshipEntity.getNewFriendshipList().size() > 0) {
+          if (createFriendshipEntity != null
+              && createFriendshipEntity.getNewFriendshipList() != null
+              && createFriendshipEntity.getNewFriendshipList().size() > 0) {
             friendshipRealm = createFriendshipEntity.getNewFriendshipList().get(0);
             userCache.addFriendship(friendshipRealm);
           }
@@ -604,9 +614,9 @@ public class CloudUserDataStore implements UserDataStore {
         : tribeApi.createFriendship(mutationCreateFriendship)).onErrorResumeNext(
         Observable.just(null)).doOnNext(createFriendshipEntity -> {
 
-      if (createFriendshipEntity != null &&
-          createFriendshipEntity.getNewFriendshipList() != null &&
-          createFriendshipEntity.getNewFriendshipList().size() > 0) {
+      if (createFriendshipEntity != null
+          && createFriendshipEntity.getNewFriendshipList() != null
+          && createFriendshipEntity.getNewFriendshipList().size() > 0) {
         for (FriendshipRealm fr : createFriendshipEntity.getNewFriendshipList()) {
           userCache.addFriendship(fr);
         }
@@ -776,11 +786,11 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {
-      if (response != null &&
-          response.raw() != null &&
-          response.raw().priorResponse() != null &&
-          response.raw().priorResponse().networkResponse() != null &&
-          response.raw().priorResponse().networkResponse().request() != null) {
+      if (response != null
+          && response.raw() != null
+          && response.raw().priorResponse() != null
+          && response.raw().priorResponse().networkResponse() != null
+          && response.raw().priorResponse().networkResponse().request() != null) {
         String result = response.raw().priorResponse().networkResponse().request().url().toString();
         return Observable.just(result);
       }
@@ -797,7 +807,6 @@ public class CloudUserDataStore implements UserDataStore {
     File groupAvatarFile = FileUtils.getAvatarForGroupId(context, groupId, FileUtils.PHOTO);
     if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
   }
-
 
   @Override public Observable<Void> sendInvitations() {
     return growthApi.sendInvitations(PreferencesUtils.getLookup(lookupResult))

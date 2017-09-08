@@ -23,6 +23,8 @@ public class MessagePresenter implements Presenter {
   }
 
   public void loadMessage() {
+    String[] userIds = new String[] { "soef", "soef" };
+    userMessageInfos.setUserIds(userIds);
     userMessageInfos.execute(new GetMessageSubscriber());
   }
 
