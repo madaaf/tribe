@@ -1,5 +1,6 @@
 package com.tribe.app.data.realm;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -16,7 +17,8 @@ public class MessageRealm extends RealmObject {
   private UserRealm author;
   private String data;
   private String __typename;
-  private OriginalRealm original;
+  private ImageRealm original;
+  private RealmList<ImageRealm> resources;
 
   public MessageRealm() {
   }
@@ -25,15 +27,23 @@ public class MessageRealm extends RealmObject {
     return data;
   }
 
+  public RealmList<ImageRealm> getResources() {
+    return resources;
+  }
+
+  public void setResources(RealmList<ImageRealm> resources) {
+    this.resources = resources;
+  }
+
   public String get__typename() {
     return __typename;
   }
 
-  public OriginalRealm getOriginal() {
+  public ImageRealm getOriginal() {
     return original;
   }
 
-  public void setOriginal(OriginalRealm original) {
+  public void setOriginal(ImageRealm original) {
     this.original = original;
   }
 

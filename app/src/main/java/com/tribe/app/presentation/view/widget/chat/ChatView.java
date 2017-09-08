@@ -197,8 +197,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       sendBtn.animate()
           .scaleX(1.3f)
           .scaleY(1.3f)
-          .setDuration(200)
-          .withEndAction(() -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(200).start())
+          .setDuration(300)
+          .withEndAction(() -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(300).start())
           .start();
       sendContent(MESSAGE_EMOJI, "\u2764");
     }
@@ -223,7 +223,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         break;
       case MESSAGE_IMAGE:
         message = new MessageImage(user.getId());
-        Original o = new Original();
+        Image o = new Image();
         o.setUrl(content);
         ((MessageImage) message).setOriginal(o);
         break;

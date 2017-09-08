@@ -4,14 +4,14 @@ package com.tribe.app.presentation.view.widget.chat;
  * Created by madaaflak on 07/09/2017.
  */
 
-public class Original {
+public class Image {
 
   private String url;
   private String filesize;
   private String width;
   private String height;
 
-  public Original() {
+  public Image() {
   }
 
   public String getUrl() {
@@ -44,5 +44,22 @@ public class Original {
 
   public void setHeight(String height) {
     this.height = height;
+  }
+
+  @Override public String toString() {
+    return "Original{"
+        + "url='"
+        + url
+        + '\''
+        + ", filesize='"
+        + filesize
+        + '\''
+        + ", width='"
+        + width
+        + '\''
+        + ", height='"
+        + height
+        + '\''
+        + '}';
   }
 }

@@ -1,9 +1,9 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.OriginalRealm;
+import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.widget.chat.Original;
+import com.tribe.app.presentation.view.widget.chat.Image;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,16 +67,47 @@ import javax.inject.Singleton;
     return user;
   }
 
-  public Original transform(OriginalRealm o) {
-    Original original = null;
+  public Image transform(ImageRealm o) {
+    Image original = null;
     if (o != null) {
-      original = new Original();
+      original = new Image();
       original.setUrl(o.getUrl());
       original.setWidth(o.getWidth());
       original.setHeight(o.getHeight());
       original.setFilesize(o.getFilesize());
     }
     return original;
+  }
+
+  public List<Image> transformOriginalRealmList(List<ImageRealm> collection) {
+    List<Image> originalList = new ArrayList<>();
+    Image original;
+
+    if (collection != null) {
+      for (ImageRealm originalRealm : collection) {
+        original = transform(originalRealm);
+        if (original != null) {
+          originalList.add(original);
+        }
+      }
+    }
+    return originalList;
+  }
+
+  public RealmList<ImageRealm> transformOriginalList(Collection<Image> collection) {
+    RealmList<ImageRealm> originalRealmList = new RealmList<>();
+    ImageRealm originalRealm;
+
+    if (collection != null) {
+      for (Image original : collection) {
+        originalRealm = transform(original);
+        if (originalRealm != null) {
+          originalRealmList.add(originalRealm);
+        }
+      }
+    }
+
+    return originalRealmList;
   }
 
   /**
@@ -141,10 +172,10 @@ import javax.inject.Singleton;
     return userRealm;
   }
 
-  public OriginalRealm transform(Original o) {
-    OriginalRealm originalRealm = null;
+  public ImageRealm transform(Image o) {
+    ImageRealm originalRealm = null;
     if (o != null) {
-      originalRealm = new OriginalRealm();
+      originalRealm = new ImageRealm();
       originalRealm.setFilesize(o.getFilesize());
       originalRealm.setHeight(o.getHeight());
       originalRealm.setWidth(o.getWidth());

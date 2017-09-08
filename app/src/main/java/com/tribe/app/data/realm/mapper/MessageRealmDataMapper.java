@@ -1,14 +1,14 @@
 package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.MessageRealm;
-import com.tribe.app.data.realm.OriginalRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import com.tribe.app.presentation.view.widget.chat.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.MessageText;
-import com.tribe.app.presentation.view.widget.chat.Original;
+import com.tribe.app.presentation.view.widget.chat.Image;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +48,11 @@ import javax.inject.Singleton;
           break;
         case MessageRealm.IMAGE:
           message = new MessageImage(messageRealm.getId());
-          OriginalRealm o = messageRealm.getOriginal();
+          ImageRealm o = messageRealm.getOriginal();
+          List<ImageRealm> ressources = messageRealm.getResources();
           ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
+          ((MessageImage) message).setRessources(
+              userRealmDataMapper.transformOriginalRealmList(ressources));
           break;
       }
 
@@ -101,8 +104,10 @@ import javax.inject.Singleton;
           messageRealm.setData(((MessageEmoji) message).getEmoji());
           break;
         case MessageRealm.IMAGE:
-          Original o = ((MessageImage) message).getOriginal();
+          Image o = ((MessageImage) message).getOriginal();
+          List<Image> ressources = ((MessageImage) message).getRessources();
           messageRealm.setOriginal(userRealmDataMapper.transform(o));
+          messageRealm.setResources(userRealmDataMapper.transformOriginalList(ressources));
           break;
       }
     }

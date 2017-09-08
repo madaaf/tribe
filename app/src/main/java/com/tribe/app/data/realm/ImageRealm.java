@@ -6,14 +6,14 @@ import io.realm.RealmObject;
  * Created by madaaflak on 07/09/2017.
  */
 
-public class OriginalRealm extends RealmObject {
+public class ImageRealm extends RealmObject {
 
   private String url;
   private String filesize;
   private String width;
   private String height;
 
-  public OriginalRealm() {
+  public ImageRealm() {
   }
 
   public String getUrl() {
