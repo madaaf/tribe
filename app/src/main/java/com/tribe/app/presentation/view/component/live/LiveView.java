@@ -636,6 +636,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.onStopGame().subscribe(pairSessionGame -> {
       Game game = gameManager.getGameById(pairSessionGame.second);
+      if(game==null) return;
       String displayName = getDisplayNameFromSession(pairSessionGame.first);
       displayStopGameNotification(game.getName(), displayName);
       stopGame(false, game.getId());
