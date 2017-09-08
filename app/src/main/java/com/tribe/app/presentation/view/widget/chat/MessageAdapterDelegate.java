@@ -76,7 +76,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       new GlideUtils.Builder(context).url(o.getUrl())
           .rounded(false)
           .target(vh.image)
-          .size(vh.image.getWidth())
+          .hasPlaceholder(false)
           .load();
     }
   }

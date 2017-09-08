@@ -12,7 +12,8 @@
       android:layout_height="wrap_content"
       android:layout_above="@+id/containerUsers"
       android:layout_alignParentStart="true"
-      android:padding="15dp"
+      android:paddingEnd="15dp"
+      android:paddingStart="15dp"
       >
 
   </android.support.v7.widget.RecyclerView>
