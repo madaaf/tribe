@@ -10,9 +10,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
@@ -72,18 +73,23 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       vh.message.setVisibility(View.GONE);
       vh.image.setVisibility(View.VISIBLE);
       Timber.e("SOEF IMAGE SIZE " + vh.image.getWidth());
-      //Original o = ((MessageImage) i).getOriginal();
-      Image o = ((MessageImage) i).getRessources().get(0);
+      Image o = ((MessageImage) i).getOriginal();
+      //Image o = ((MessageImage) i).getRessources().get(0);
 
-      for (Image p : ((MessageImage) i).getRessources()) {
+    /*  for (Image p : ((MessageImage) i).getRessources()) {
         Timber.e("SOEF IMAGE SIZE " + p.toString());
       }
-
-      new GlideUtils.Builder(context).url(o.getUrl())
+*/
+ /*     new GlideUtils.Builder(context).url(o.getUrl())
           .rounded(false)
           .target(vh.image)
           .hasPlaceholder(false)
-          .load();
+          .load();*/
+
+      Glide.with(context)
+          .load(o.getUrl())
+          .bitmapTransform(new RoundedCornersTransformation(context, 15, 0))
+          .into(vh.image);
     }
   }
 
