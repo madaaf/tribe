@@ -161,9 +161,9 @@ public class Room implements Serializable {
 
   public synchronized void update(User currentUser, Room room, boolean shouldOverwrite) {
     List<User> newLiveUsers = room.getLiveUsers();
-    if (newLiveUsers == null || newLiveUsers.size() != liveUsersMap.size()) {
-      computeUsersChanges(currentUser, liveUsersMap, newLiveUsers);
-    }
+    //if (newLiveUsers == null || newLiveUsers.size() != liveUsersMap.size()) {
+    //  computeUsersChanges(currentUser, liveUsersMap, newLiveUsers);
+    //}
 
     if (shouldOverwrite) {
       live_users.clear();
@@ -171,9 +171,9 @@ public class Room implements Serializable {
     }
 
     List<User> newInvitedUsers = room.getInvitedUsers();
-    if (newInvitedUsers == null || newInvitedUsers.size() != invitedUsersMap.size()) {
-      computeUsersChanges(currentUser, invitedUsersMap, newInvitedUsers);
-    }
+    //if (newInvitedUsers == null || newInvitedUsers.size() != invitedUsersMap.size()) {
+    //  computeUsersChanges(currentUser, invitedUsersMap, newInvitedUsers);
+    //}
 
     if (shouldOverwrite) {
       invited_users.clear();

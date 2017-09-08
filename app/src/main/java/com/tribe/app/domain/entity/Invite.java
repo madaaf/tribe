@@ -44,11 +44,7 @@ public class Invite extends Recipient {
   }
 
   @Override public String getDisplayName() {
-    if (room.getLiveUsers().size() <= 1) {
-      return room.getInitiator().getDisplayName();
-    } else {
-      return room.getName();
-    }
+    return room.getInitiator().getDisplayName();
   }
 
   @Override public String getUsername() {
