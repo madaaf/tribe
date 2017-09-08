@@ -40,6 +40,11 @@
                   ... on EmojiMessage {
                         data
                   }
+                 ... on ImageMessage {
+                       original {
+                           url
+                        }
+                 }
               }
             }
         }

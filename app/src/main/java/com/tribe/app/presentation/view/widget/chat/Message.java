@@ -9,12 +9,12 @@ import com.tribe.app.domain.entity.User;
 
 public class Message {
 
-  @StringDef({ MESSAGE_TEXT, EMOJI, IMAGE }) public @interface Type {
+  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE }) public @interface Type {
   }
 
   public static final String MESSAGE_TEXT = "TextMessage";
-  public static final String EMOJI = "EmojiMessage";
-  public static final String IMAGE = "ImageMessage";
+  public static final String MESSAGE_EMOJI = "EmojiMessage";
+  public static final String MESSAGE_IMAGE = "ImageMessage";
 
   private User author;
   private String id;
@@ -46,9 +46,5 @@ public class Message {
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  @Override public String toString() {
-    return "Message{" + "author=" + author + ", id='" + id + '\'' + ", type='" + type + '\'' + '}';
   }
 }

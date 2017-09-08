@@ -5,7 +5,18 @@ package com.tribe.app.presentation.view.widget.chat;
  */
 
 public class MessageImage extends Message {
+
+  private Original original;
+
   public MessageImage(String id) {
     super(id);
+  }
+
+  public Original getOriginal() {
+    return original;
+  }
+
+  public void setOriginal(Original original) {
+    this.original = original;
   }
 }

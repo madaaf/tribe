@@ -2,11 +2,13 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.OriginalRealm;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import com.tribe.app.presentation.view.widget.chat.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.MessageText;
+import com.tribe.app.presentation.view.widget.chat.Original;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +48,8 @@ import javax.inject.Singleton;
           break;
         case MessageRealm.IMAGE:
           message = new MessageImage(messageRealm.getId());
+          OriginalRealm o = messageRealm.getOriginal();
+          ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
           break;
       }
 
@@ -97,6 +101,8 @@ import javax.inject.Singleton;
           messageRealm.setData(((MessageEmoji) message).getEmoji());
           break;
         case MessageRealm.IMAGE:
+          Original o = ((MessageImage) message).getOriginal();
+          messageRealm.setOriginal(userRealmDataMapper.transform(o));
           break;
       }
     }

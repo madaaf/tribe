@@ -19,4 +19,8 @@ public class MessageText extends Message {
   public void setMessage(String message) {
     this.message = message;
   }
+
+  @Override public String toString() {
+    return "MessageText{" + "message='" + message + '\'' + '}';
+  }
 }

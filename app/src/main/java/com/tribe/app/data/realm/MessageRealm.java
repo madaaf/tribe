@@ -16,6 +16,7 @@ public class MessageRealm extends RealmObject {
   private UserRealm author;
   private String data;
   private String __typename;
+  private OriginalRealm original;
 
   public MessageRealm() {
   }
@@ -26,6 +27,14 @@ public class MessageRealm extends RealmObject {
 
   public String get__typename() {
     return __typename;
+  }
+
+  public OriginalRealm getOriginal() {
+    return original;
+  }
+
+  public void setOriginal(OriginalRealm original) {
+    this.original = original;
   }
 
   public void set__typename(String __typename) {

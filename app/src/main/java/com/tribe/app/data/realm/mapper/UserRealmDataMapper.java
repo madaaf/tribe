@@ -1,7 +1,9 @@
 package com.tribe.app.data.realm.mapper;
 
+import com.tribe.app.data.realm.OriginalRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.widget.chat.Original;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,6 +67,18 @@ import javax.inject.Singleton;
     return user;
   }
 
+  public Original transform(OriginalRealm o) {
+    Original original = null;
+    if (o != null) {
+      original = new Original();
+      original.setUrl(o.getUrl());
+      original.setWidth(o.getWidth());
+      original.setHeight(o.getHeight());
+      original.setFilesize(o.getFilesize());
+    }
+    return original;
+  }
+
   /**
    * Transform a List of {@link UserRealm} into a Collection of {@link User}.
    *
@@ -125,6 +139,18 @@ import javax.inject.Singleton;
     }
 
     return userRealm;
+  }
+
+  public OriginalRealm transform(Original o) {
+    OriginalRealm originalRealm = null;
+    if (o != null) {
+      originalRealm = new OriginalRealm();
+      originalRealm.setFilesize(o.getFilesize());
+      originalRealm.setHeight(o.getHeight());
+      originalRealm.setWidth(o.getWidth());
+      originalRealm.setUrl(o.getUrl());
+    }
+    return null;
   }
 
   /**

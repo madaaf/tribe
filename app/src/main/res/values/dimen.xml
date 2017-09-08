@@ -72,6 +72,7 @@
   <dimen name="avatar_size_big">80dp</dimen>
   <dimen name="avatar_size_big_shadow">95dp</dimen>
   <dimen name="avatar_size">75dp</dimen>
+  <dimen name="image_size">175dp</dimen>
   <dimen name="avatar_size_with_shadow">82dp</dimen>
   <dimen name="avatar_size_scaled">110dp</dimen>
   <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
