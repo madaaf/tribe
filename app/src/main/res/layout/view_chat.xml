@@ -63,18 +63,18 @@
   <RelativeLayout
       android:id="@+id/sendLayout"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="55dp"
       android:layout_alignParentBottom="true"
       android:layout_alignParentStart="true"
       android:layout_gravity="bottom"
       android:orientation="horizontal"
-      android:paddingBottom="5dp"
       >
     <ImageView
         android:id="@+id/uploadBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
+        android:layout_centerVertical="true"
+        android:gravity="center"
         android:padding="15dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_chat_upload"
@@ -84,29 +84,41 @@
         android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/videoCallBtn"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/layoutPulse"
         android:padding="15dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_chat_send"
         />
 
-    <ImageView
-        android:id="@+id/videoCallBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <com.tribe.app.presentation.view.widget.PulseLayout
+        android:id="@+id/layoutPulse"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"
-        android:padding="15dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_chat_video"
-        />
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        app:pulseColor="@color/red.pulse"
+        app:pulseCount="3"
+        app:pulseDuration="3000"
+        >
 
+      <ImageView
+          android:id="@+id/videoCallBtn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"
+          android:layout_centerVertical="true"
+          android:paddingLeft="4dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_chat_video"
+          />
+    </com.tribe.app.presentation.view.widget.PulseLayout>
   </RelativeLayout>
 
   <FrameLayout
       android:id="@+id/containerEditText"
-      android:layout_width="190dp"
+      android:layout_width="210dp"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
       android:layout_marginBottom="10dp"

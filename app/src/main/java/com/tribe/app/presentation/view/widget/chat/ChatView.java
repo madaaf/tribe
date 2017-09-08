@@ -30,6 +30,7 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.EditTextFont;
+import com.tribe.app.presentation.view.widget.PulseLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -57,12 +58,15 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private LinearLayoutManager layoutManagerGrp;
   private List<Message> items = new ArrayList<>();
   private List<User> users = new ArrayList<>();
+  private boolean editTextChange = false, isHeart = false;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerView recyclerView;
   @BindView(R.id.recyclerViewGrp) RecyclerView recyclerViewGrp;
   @BindView(R.id.uploadBtn) ImageView uploadImageBtn;
   @BindView(R.id.sendBtn) ImageView sendBtn;
+  @BindView(R.id.videoCallBtn) ImageView videoCallBtn;
+  @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -113,13 +117,28 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     subscriptions.add(
         RxTextView.textChanges(editText).map(CharSequence::toString).subscribe(text -> {
           if (text.isEmpty()) {
-            sendBtn.setImageDrawable(
-                ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
-          } else {
-            sendBtn.setImageDrawable(
-                ContextCompat.getDrawable(context, R.drawable.picto_chat_send));
+            isHeart = true;
+            editTextChange = false;
+            sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
+              sendBtn.setImageDrawable(
+                  ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
+              sendBtn.animate().setDuration(200).alpha(1f).start();
+            }).start();
+          } else if (!text.isEmpty() && !editTextChange) {
+            editTextChange = true;
+            isHeart = false;
+            sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
+              sendBtn.setImageDrawable(
+                  ContextCompat.getDrawable(context, R.drawable.picto_chat_send));
+              sendBtn.animate().setDuration(200).alpha(1f).start();
+            }).start();
           }
         }));
+
+    editText.setOnClickListener(v -> {
+      Timber.e("SOEF EDIT TEXT OPEN");
+      recyclerView.smoothScrollToPosition(adapter.getItemCount());
+    });
   }
 
   void init() {
@@ -137,7 +156,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     recyclerViewGrp.setAdapter(chatUserAdapter);
   }
 
-  void mock() {
+  void mock() { //TODO SOEF DELETE
     users.clear();
     users.add(user);
     users.add(user);
@@ -157,22 +176,40 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.onViewAttached(this);
     messagePresenter.loadMessage();
     mock();
+    setAnimation();
   }
 
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
+    dispose();
     super.onDetachedFromWindow();
   }
 
   @OnClick(R.id.sendBtn) void onClickSend() {
-    recyclerView.smoothScrollToPosition(adapter.getItemCount());
-    String editedMessage = editText.getText().toString();
-    if (!editedMessage.isEmpty()) sendContent(MESSAGE_TEXT, editedMessage);
-    editText.setText("");
+    if (!isHeart) {
+      recyclerView.smoothScrollToPosition(adapter.getItemCount());
+      String editedMessage = editText.getText().toString();
+      if (!editedMessage.isEmpty()) sendContent(MESSAGE_TEXT, editedMessage);
+      editText.setText("");
+    } else {
+      Timber.e("videoCallBtn");
+      sendBtn.animate()
+          .scaleX(1.3f)
+          .scaleY(1.3f)
+          .setDuration(200)
+          .withEndAction(() -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(200).start())
+          .start();
+      sendContent(MESSAGE_EMOJI, "\u2764");
+    }
+  }
+
+  @OnClick(R.id.videoCallBtn) void onClickvideoCall() {
+
   }
 
   private void sendContent(@Message.Type String type, String content) {
+    if (content.isEmpty()) return;
     items.clear();
     Message message = null;
     switch (type) {
@@ -197,6 +234,16 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     items.add(message);
     adapter.setItems(items);
     recyclerView.smoothScrollToPosition(adapter.getItemCount());
+  }
+
+  private void dispose() {
+    pulseLayout.clearAnimation();
+  }
+
+  private void setAnimation() {
+    videoCallBtn.setImageDrawable(
+        ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
+    pulseLayout.start();
   }
 
   protected void initDependencyInjector() {
