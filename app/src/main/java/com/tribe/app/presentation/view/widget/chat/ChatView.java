@@ -118,8 +118,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     items.clear();
     String ok = countrySearchView.getText().toString();
     Timber.e("SOEF " + ok);
-    Message t = new Message("");
-    //t.setMessage(ok);
+    MessageText t = new MessageText("");
+    t.setMessage(ok);
+    t.setType(Message.MESSAGE_TEXT);
     t.setAuthor(user);
     items.add(t);
     adapter.setItems(items);
