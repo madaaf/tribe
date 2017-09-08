@@ -43,7 +43,16 @@
                  ... on ImageMessage {
                        original {
                            url
+                            filesize
+                            width
+                            height
                         }
+                      resources {
+                            url
+                            filesize
+                            width
+                            height
+                         }
                  }
               }
             }

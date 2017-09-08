@@ -20,6 +20,9 @@ public class Message {
   private String id;
   private @Type String type;
 
+  public Message() {
+  }
+
   public Message(String id) {
     this.id = id;
   }

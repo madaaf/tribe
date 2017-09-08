@@ -8,6 +8,10 @@ public class MessageEmoji extends Message {
 
   private String emoji;
 
+  public MessageEmoji() {
+    super();
+  }
+
   public MessageEmoji(String id) {
     super(id);
   }

@@ -8,6 +8,10 @@ public class MessageImage extends Message {
 
   private Original original;
 
+  public MessageImage() {
+    super();
+  }
+
   public MessageImage(String id) {
     super(id);
   }

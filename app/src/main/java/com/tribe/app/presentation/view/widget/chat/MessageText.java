@@ -8,6 +8,10 @@ public class MessageText extends Message {
 
   private String message;
 
+  public MessageText() {
+    super();
+  }
+
   public MessageText(String id) {
     super(id);
   }

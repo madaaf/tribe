@@ -12,9 +12,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -66,7 +68,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
       vh.emoji.setText(((MessageEmoji) i).getEmoji());
     } else if (i instanceof MessageImage) {
-    /*  vh.emoji.setVisibility(View.GONE);
+      vh.emoji.setVisibility(View.GONE);
       vh.message.setVisibility(View.GONE);
       vh.image.setVisibility(View.VISIBLE);
       Timber.e("SOEF IMAGE SIZE " + vh.image.getWidth());
@@ -75,7 +77,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
           .rounded(false)
           .target(vh.image)
           .hasPlaceholder(false)
-          .load();*/
+          .load();
     }
   }
 
