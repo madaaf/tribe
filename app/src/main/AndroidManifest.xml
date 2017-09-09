@@ -153,6 +153,11 @@
         android:screenOrientation="portrait" />
 
     <activity
+        android:name=".presentation.view.widget.chat.PictureActivity"
+        android:label="@string/app_name"
+        android:screenOrientation="portrait" />
+
+    <activity
         android:name=".presentation.view.activity.CountryActivity"
         android:label="@string/app_name"
         android:screenOrientation="portrait" />

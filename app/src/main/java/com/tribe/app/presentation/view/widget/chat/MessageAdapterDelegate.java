@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,11 +13,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
+import javax.inject.Inject;
 import timber.log.Timber;
 
 /**
@@ -27,6 +34,8 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   protected LayoutInflater layoutInflater;
 
+  @Inject Navigator navigator;
+
   private Context context;
   private int imageSize;
 
@@ -34,9 +43,9 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     this.context = context;
-
     // DEFAULT SIZE
     imageSize = context.getResources().getDimensionPixelSize(R.dimen.image_size);
+    initDependencyInjector();
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
@@ -76,11 +85,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       Image o = ((MessageImage) i).getOriginal();
       //Image o = ((MessageImage) i).getRessources().get(0);
 
-    /*  for (Image p : ((MessageImage) i).getRessources()) {
-        Timber.e("SOEF IMAGE SIZE " + p.toString());
-      }
-*/
- /*     new GlideUtils.Builder(context).url(o.getUrl())
+      /*new GlideUtils.Builder(context).url(o.getUrl())
           .rounded(false)
           .target(vh.image)
           .hasPlaceholder(false)
@@ -90,6 +95,10 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
           .load(o.getUrl())
           .bitmapTransform(new RoundedCornersTransformation(context, 15, 0))
           .into(vh.image);
+
+      vh.image.setOnClickListener(v -> {
+        navigator.navigateToPicture(context, o.getUrl());
+      });
     }
   }
 
@@ -110,5 +119,21 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
+  }
+
+  protected void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) context).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) context));
   }
 }

@@ -33,6 +33,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import com.tribe.app.presentation.view.widget.chat.TestActivity;
 import java.util.List;
 import javax.inject.Inject;
@@ -225,6 +226,12 @@ public class Navigator {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
       }
     }
+  }
+
+  public void navigateToPicture(Context activity, String uri) {
+    Intent intent = PictureActivity.getCallingIntent(activity, uri);
+    activity.startActivity(intent);
+    // activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
   }
 
   public void navigateToIntent(Activity activity, Intent intent) {

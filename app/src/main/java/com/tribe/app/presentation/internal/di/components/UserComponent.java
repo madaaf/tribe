@@ -49,6 +49,7 @@ import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
+import com.tribe.app.presentation.view.widget.chat.MessageAdapterDelegate;
 import com.tribe.app.presentation.view.widget.chat.TestActivity;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
@@ -72,6 +73,8 @@ import dagger.Component;
   void inject(DebugActivity debugActivity);
 
   void inject(TestActivity testActivity);
+
+  void inject(MessageAdapterDelegate messageAdapterDelegate);
 
   void inject(LifeNotification lifeNotification);
 

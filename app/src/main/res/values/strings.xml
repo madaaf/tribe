@@ -42,6 +42,7 @@
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Add an avatar</string>
+	<string name="image_picker_chat_title">Send an image</string>
 	<string name="image_picker_camera">Take a selfie</string>
 	<string name="image_picker_library">Open camera roll</string>
 	

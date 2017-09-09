@@ -42,6 +42,7 @@
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Ajouter un avatar</string>
+	<string name="image_picker_chat_title">Envoyer une image</string>
 	<string name="image_picker_camera">Utiliser l\'appareil photo</string>
 	<string name="image_picker_library">Ouvrir ma bibliothèque</string>
 	

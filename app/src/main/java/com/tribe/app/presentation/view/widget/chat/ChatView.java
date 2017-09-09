@@ -52,7 +52,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
-  private MessageAdapter adapter;
+  private MessageAdapter messageAdapter;
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManager;
   private LinearLayoutManager layoutManagerGrp;
@@ -117,6 +117,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     subscriptions.add(
         RxTextView.textChanges(editText).map(CharSequence::toString).subscribe(text -> {
           if (text.isEmpty()) {
+            editText.setHint("Aa");
             isHeart = true;
             editTextChange = false;
             sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
@@ -134,20 +135,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
             }).start();
           }
         }));
-
-    editText.setOnClickListener(v -> {
-      Timber.e("SOEF EDIT TEXT OPEN");
-      recyclerView.smoothScrollToPosition(adapter.getItemCount());
-    });
   }
 
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
-    adapter = new MessageAdapter(getContext());
+    messageAdapter = new MessageAdapter(getContext());
     recyclerView.setItemAnimator(null);
-    recyclerView.setAdapter(adapter);
+    recyclerView.setAdapter(messageAdapter);
     recyclerView.setLayoutManager(layoutManager);
-    recyclerView.smoothScrollToPosition(adapter.getItemCount());
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -188,7 +183,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @OnClick(R.id.sendBtn) void onClickSend() {
     if (!isHeart) {
-      recyclerView.smoothScrollToPosition(adapter.getItemCount());
       String editedMessage = editText.getText().toString();
       if (!editedMessage.isEmpty()) sendContent(MESSAGE_TEXT, editedMessage);
       editText.setText("");
@@ -204,8 +198,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     }
   }
 
-  @OnClick(R.id.videoCallBtn) void onClickvideoCall() {
-
+  @OnClick(R.id.editText) void onClickEditText() {
+    Timber.e("SOEF EDIT TEXT OPEN");
+    scrollListToBottom();
+    editText.setHint("Message");
   }
 
   private void sendContent(@Message.Type String type, String content) {
@@ -232,8 +228,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setType(type);
     message.setAuthor(user);
     items.add(message);
-    adapter.setItems(items);
-    recyclerView.smoothScrollToPosition(adapter.getItemCount());
+    messageAdapter.setItems(items);
+    scrollListToBottom();
   }
 
   private void dispose() {
@@ -262,11 +258,15 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     return new ActivityModule(((Activity) getContext()));
   }
 
+  private void scrollListToBottom() {
+    Timber.e("SOEF SMOOTH " + messageAdapter.getItemCount());
+    recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()));
+  }
+
   @Override public void successLoadingMessage(List<Message> messages) {
-    adapter.setItems(messages);
-    for (Message m : messages) {
-      Timber.e("SOEF " + m.toString());
-    }
+    messageAdapter.setItems(messages);
+    scrollListToBottom();
+
     Timber.e("SOEF successLoadingMessage");
   }
 
