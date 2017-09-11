@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -113,10 +112,10 @@ import rx.Observable;
             .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
 
-  @Override
-  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
+  @Override public Observable<User> updateUserPhoneNumber(String userId, String accessToken,
+      String phoneNumber) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.updateUserPhoneNumber(digitsSession)
+    return userDataStore.updateUserPhoneNumber(accessToken, phoneNumber)
         .flatMap(aVoid -> userDataStore.userInfos(userId)
             .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
@@ -151,7 +150,6 @@ import rx.Observable;
 
   @Override public Observable<SearchResult> findByUsername(String username) {
     final UserDataStore cloudDataStore = this.userDataStoreFactory.createCloudDataStore();
-
     return cloudDataStore.findByUsername(username)
         .map(searchResultRealm -> this.searchResultRealmDataMapper.transform(searchResultRealm));
   }

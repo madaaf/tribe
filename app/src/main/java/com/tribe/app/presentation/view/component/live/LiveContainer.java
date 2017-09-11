@@ -531,11 +531,11 @@ public class LiveContainer extends FrameLayout {
   }
 
   private boolean isGuestUnder13(User user) {
-    // TODO handle better userIds
     if (viewLive.getLive().hasUsers()) {
-      User userLive = viewLive.getLive().getUsers().get(0);
-      getUserUnder13(userLive.getFbid(), userLive.getDisplayName(),
-          userLive.getId()); // first user in room
+      for (User userLive : viewLive.getLive().getUsers()) {
+        getUserUnder13(userLive.getFbid(), userLive.getDisplayName(),
+            userLive.getId()); // first user in room
+      }
     }
 
     getUserUnder13(user.getFbid(), user.getDisplayName(), user.getId()); //user I try to drag

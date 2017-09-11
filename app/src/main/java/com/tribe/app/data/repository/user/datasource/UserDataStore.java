@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.util.Pair;
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -81,7 +80,7 @@ public interface UserDataStore {
 
   Observable<LinkIdResult> updateUserFacebook(String accessToken);
 
-  Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession);
+  Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber);
 
   Observable<Void> incrUserTimeInCall(String userId, Long timeInCall);
 

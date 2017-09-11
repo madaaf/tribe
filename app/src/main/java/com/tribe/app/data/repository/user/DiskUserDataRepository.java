@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -158,8 +157,8 @@ import rx.Observable;
     return null;
   }
 
-  @Override
-  public Observable<User> updateUserPhoneNumber(String userId, DigitsSession digitsSession) {
+  @Override public Observable<User> updateUserPhoneNumber(String userId, String accessToken,
+      String phoneNumber) {
     return null;
   }
 
@@ -265,8 +264,8 @@ import rx.Observable;
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) &&
-            (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
+        if (mapUsersAdded.containsKey(userInList.getId()) && (includedUserIds == null
+            || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }

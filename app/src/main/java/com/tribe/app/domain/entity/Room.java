@@ -63,11 +63,11 @@ public class Room implements Serializable {
       }
     }).subscribe());
 
-    subscriptions.add(invitedUsersMap.getObservable().doOnNext(rxLiveUserMap -> {
-      if (rxLiveUserMap.changeType == ObservableRxHashMap.ADD) {
-        onAddedInvitedUser.onNext(rxLiveUserMap.item);
-      } else if (rxLiveUserMap.changeType == ObservableRxHashMap.REMOVE) {
-        onRemovedInvitedUser.onNext(rxLiveUserMap.item);
+    subscriptions.add(invitedUsersMap.getObservable().doOnNext(rxInvitedUserMap -> {
+      if (rxInvitedUserMap.changeType == ObservableRxHashMap.ADD) {
+        onAddedInvitedUser.onNext(rxInvitedUserMap.item);
+      } else if (rxInvitedUserMap.changeType == ObservableRxHashMap.REMOVE) {
+        onRemovedInvitedUser.onNext(rxInvitedUserMap.item);
       }
     }).subscribe());
   }
@@ -173,26 +173,44 @@ public class Room implements Serializable {
     return buffer.toString();
   }
 
-  public void update(Room room) {
-    List<User> newLiveUsers = room.getLiveUsers();
-    if (newLiveUsers != null && newLiveUsers.size() != liveUsersMap.size()) {
-      computeUsersChanges(liveUsersMap, newLiveUsers);
-    }
-
-    live_users.clear();
-    live_users.addAll(newLiveUsers);
-
-    List<User> newInvitedUsers = room.getInvitedUsers();
-    if (room.getInvitedUsers() != null && room.getInvitedUsers().size() != invitedUsersMap.size()) {
-      computeUsersChanges(invitedUsersMap, newInvitedUsers);
-    }
-
-    invited_users.clear();
-    invited_users.addAll(newInvitedUsers);
+  public synchronized void onJoinSuccess(User currentUser) {
+    live_users.add(currentUser);
+    update(currentUser, this, true);
   }
 
-  private void computeUsersChanges(ObservableRxHashMap<String, User> map, List<User> updatedUsers) {
+  public synchronized void update(User currentUser, Room room, boolean shouldOverwrite) {
+    List<User> newLiveUsers = room.getLiveUsers();
+    //if (newLiveUsers == null || newLiveUsers.size() != liveUsersMap.size()) {
+    //  computeUsersChanges(currentUser, liveUsersMap, newLiveUsers);
+    //}
+
+    if (shouldOverwrite) {
+      live_users.clear();
+      live_users.addAll(newLiveUsers);
+    }
+
+    List<User> newInvitedUsers = room.getInvitedUsers();
+    //if (newInvitedUsers == null || newInvitedUsers.size() != invitedUsersMap.size()) {
+    //  computeUsersChanges(currentUser, invitedUsersMap, newInvitedUsers);
+    //}
+
+    if (shouldOverwrite) {
+      invited_users.clear();
+      invited_users.addAll(newInvitedUsers);
+    }
+  }
+
+  private void computeUsersChanges(User currentUser, ObservableRxHashMap<String, User> map,
+      List<User> updatedUsers) {
     Map<String, User> previousUsers = map.getMap();
+
+    if (updatedUsers == null || updatedUsers.size() == 0) {
+      for (String key : map.getMap().keySet()) {
+        map.remove(key);
+      }
+
+      return;
+    }
 
     if (previousUsers.size() > updatedUsers.size()) {
       // Somebody left
@@ -208,7 +226,7 @@ public class Room implements Serializable {
     } else {
       // Somebody was added
       for (User user : updatedUsers) {
-        map.put(user.getId(), user);
+        if (updatedUsers != invited_users || !user.equals(currentUser)) map.put(user.getId(), user);
       }
     }
   }

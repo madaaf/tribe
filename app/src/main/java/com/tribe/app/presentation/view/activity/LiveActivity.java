@@ -272,6 +272,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   private boolean shouldOverridePendingTransactions = false;
   private List<String> userUnder13List = new ArrayList<>();
   private float initialBrightness = -1;
+  private int createRoomErrorCount = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -402,6 +403,8 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initRoom() {
+    livePresenter.onViewAttached(this);
+
     subscriptions.add(rxPermissions.request(PermissionUtils.PERMISSIONS_LIVE).subscribe(granted -> {
       if (granted) {
         Bundle bundle = new Bundle();
@@ -517,6 +520,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void disposeCall(boolean isJump) {
     removeRoomSubscription();
+    livePresenter.onViewDetached();
     viewLive.endCall(isJump);
 
     if (isJump) {
@@ -596,10 +600,12 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
       if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
-      if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
-        getRoomInfos();
-      } else {
-        createRoom();
+      if (!live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
+        if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
+          getRoomInfos();
+        } else {
+          createRoom();
+        }
       }
     }));
 
@@ -655,6 +661,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     }));
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
+      initRoomSubscription();
     }));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
@@ -904,7 +911,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
-
     if (isFromOthers) {
       Toast.makeText(this,
           EmojiParser.demojizedText(getString(R.string.roll_the_dice_kicked_notification)),
@@ -1118,7 +1124,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   @Override public void onRoomUpdate(Room room) {
-    this.room.update(room);
+    this.room.update(user, room, true);
   }
 
   private void displayNotification(String txt) {
@@ -1205,15 +1211,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return onAnonymousReceived;
   }
 
-  @Override public void onRecipientInfos(Recipient recipient) {
-    //if (recipient instanceof Friendship) {
-    //  live.setId(recipient.getId());
-    //  viewLive.start(live);
-    //}
-    //
-    //ready();
-  }
-
   @Override public void renderFriendshipList(List<Friendship> friendshipList) {
     onUpdateFriendshipList.onNext(friendshipList);
   }
@@ -1233,8 +1230,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     this.room = room;
     live.setRoom(room);
     viewLive.joinRoom(this.room);
-
-    initRoomSubscription();
 
     if (!StringUtils.isEmpty(live.getRoomId()) &&
         !StringUtils.isEmpty(room.getName()) &&
@@ -1263,10 +1258,13 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
      * for now, if there is an error, we just create the room
      */
 
-    //livePresenter.getRoomInfos(live);
-
-    //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-    //finish();
+    if (createRoomErrorCount == 0) {
+      createRoom();
+      createRoomErrorCount++;
+    } else {
+      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+      finish();
+    }
   }
 
   @Override public Context context() {
@@ -1299,24 +1297,21 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      // TODO handle later
-      //if (live.getSubId().equals(notificationPayload.getUserId()) ||
-      //    (live.getSessionId() != null &&
-      //        live.getSessionId().equals(notificationPayload.getSessionId()))) {
-      //
-      //  if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
-      //    displayNotification(EmojiParser.demojizedText(
-      //        context.getString(R.string.live_notification_guest_declined,
-      //            notificationPayload.getUserDisplayName())));
-      //    if (viewLive.getRowsInLive() < 3) {
-      //      finishActivityAfterCallDeclined(notificationPayload);
-      //    } else {
-      //      viewLive.removeUserFromGrid(notificationPayload.getUserId());
-      //    }
-      //  }
-      //
-      //  return;
-      //}
+      if (live.hasUser(notificationPayload.getUserId()) ||
+          (room != null && room.getId().equals(notificationPayload.getSessionId()))) {
+        if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+          displayNotification(EmojiParser.demojizedText(
+              context.getString(R.string.live_notification_guest_declined,
+                  notificationPayload.getUserDisplayName())));
+          if (viewLive.getRowsInLive() < 3) {
+            finishActivityAfterCallDeclined(notificationPayload);
+          } else {
+            viewLive.removeUserFromGrid(notificationPayload.getUserId());
+          }
+        }
+
+        return;
+      }
 
       LiveNotificationView liveNotificationView =
           NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,

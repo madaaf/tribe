@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
 import android.util.Pair;
-import com.digits.sdk.android.DigitsSession;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
@@ -92,7 +91,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<LinkIdResult> updateUserPhoneNumber(DigitsSession digitsSession) {
+  @Override
+  public Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber) {
     return null;
   }
 

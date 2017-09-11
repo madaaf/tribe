@@ -169,7 +169,7 @@ import timber.log.Timber;
                 List<User> invited_users;
                 try {
                   invited_users =
-                      gson.fromJson(live_users_json.toString(), new TypeToken<List<User>>() {
+                      gson.fromJson(invited_users_json.toString(), new TypeToken<List<User>>() {
                       }.getType());
                 } catch (Exception ex) {
                   ex.printStackTrace();

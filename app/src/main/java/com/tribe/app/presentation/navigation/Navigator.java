@@ -9,7 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
-import com.digits.sdk.android.Digits;
+import com.facebook.accountkit.AccountKit;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -159,7 +159,7 @@ public class Navigator {
    */
   public void navigateToLogout(Activity activity) {
     FacebookUtils.logout();
-    Digits.logout();
+    AccountKit.logOut();
     Intent intent = new Intent(activity, HomeActivity.class);
     intent.putExtra(IntentUtils.FINISH, true);
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

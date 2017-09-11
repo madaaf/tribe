@@ -24,8 +24,8 @@ public interface LoginApi {
   public static final String FACEBOOK_TOKEN = "facebook-token";
 
   public static final String AUTHORIZATION = "Authorization";
-  public static final String X_VERIFY = "X-Verify-Credentials-Authorization";
-  public static final String X_AUTH = "X-Auth-Service-Provider";
+  public static final String X_VERIFY = "accountkit-token";
+  // public static final String X_AUTH = "X-Auth-Service-Provider";
 
   @POST("/pin") Observable<PinRealm> requestCode(@Body LoginEntity loginEntity);
 
@@ -33,30 +33,31 @@ public interface LoginApi {
 
   @POST("/anonToken") Observable<AccessToken> loginWithAnonymous();
 
-  @POST("/token") Observable<AccessToken> loginWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken);
+  @POST("/token") Observable<AccessToken> loginWithFacebook(
+      @Header(FACEBOOK_TOKEN) String fbAccessToken);
 
   @POST("/token") Observable<AccessToken> loginWithUsername(@Header(X_VERIFY) String xVerify,
-      @Header(X_AUTH) String xAuth, @Body LoginEntity loginEntity);
+      @Body LoginEntity loginEntity);
 
   @POST("/refresh") Call<AccessToken> refreshToken(@Body RefreshEntity loginEntity);
 
   @POST("/register") Observable<AccessToken> register(@Body RegisterEntity registerEntity);
 
-  @POST("/register") Observable<AccessToken> registerWithFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken, @Body RegisterEntity registerEntity);
+  @POST("/register") Observable<AccessToken> registerWithFacebook(
+      @Header(FACEBOOK_TOKEN) String fbAccessToken, @Body RegisterEntity registerEntity);
 
   @POST("/register") Observable<AccessToken> register(@Header(X_VERIFY) String xVerify,
-                                                      @Header(X_AUTH) String xAuth, @Body RegisterEntity registerEntity);
+      @Body RegisterEntity registerEntity);
 
   @POST("/username") Observable<Boolean> lookupUsername(@Body UsernameEntity usernameEntity);
 
-  @POST("/linkAuthId") @Headers("@: UseUserToken") Observable<LinkIdResult> linkFacebook(@Header(FACEBOOK_TOKEN) String fbAccessToken);
+  @POST("/linkAuthId") @Headers("@: UseUserToken") Observable<LinkIdResult> linkFacebook(
+      @Header(FACEBOOK_TOKEN) String fbAccessToken);
 
-  @FormUrlEncoded
-  @POST("/linkAuthId") @Headers("@: UseUserToken") Observable<LinkIdResult> linkPhoneNumber(@Header(X_VERIFY) String xVerify,
-                                                                                            @Header(X_AUTH) String xAuth,
-                                                                                            @Field("countryCode") String countryCode,
-                                                                                            @Field("phoneNumber") String phoneNumber);
+  @FormUrlEncoded @POST("/linkAuthId") @Headers("@: UseUserToken")
+  Observable<LinkIdResult> linkPhoneNumber(@Header(X_VERIFY) String xVerify,
+      @Field("countryCode") String countryCode, @Field("phoneNumber") String phoneNumber);
 
-  @FormUrlEncoded
-  @POST("/unlinkAuthId") @Headers("@: UseUserToken") Observable<LinkIdResult> unlinkAuthId(@Field("type") String type);
+  @FormUrlEncoded @POST("/unlinkAuthId") @Headers("@: UseUserToken")
+  Observable<LinkIdResult> unlinkAuthId(@Field("type") String type);
 }
