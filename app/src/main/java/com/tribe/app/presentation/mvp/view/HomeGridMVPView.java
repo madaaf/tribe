@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import java.util.List;
@@ -13,8 +12,6 @@ public interface HomeGridMVPView extends LoadDataMVPView {
   void renderRecipientList(List<Recipient> recipientCollection);
 
   void refreshGrid();
-
-  void onFriendshipUpdated(Friendship friendship);
 
   void successFacebookLogin();
 

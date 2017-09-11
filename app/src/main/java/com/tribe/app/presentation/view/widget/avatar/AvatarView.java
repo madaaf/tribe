@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
@@ -131,12 +130,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
     if (createImageSubscription != null) createImageSubscription.unsubscribe();
 
-    if (recipient instanceof Friendship) {
-      if (StringUtils.isEmpty(previousAvatar) ||
-          !previousAvatar.equals(recipient.getProfilePicture())) {
-        load(recipient.getProfilePicture());
-      }
-    } else if (recipient instanceof Invite) {
+    if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
       loadGroupAvatar(invite.getProfilePicture(), previousAvatar, invite.getId(),
           invite.getMembersPic());

@@ -9,19 +9,15 @@ import android.os.Build;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
@@ -97,36 +93,36 @@ public final class DialogFactory {
     });
   }
 
-  public static Observable<String> numberPadDialog(Context context, String title, String positiveMessage, String negativeMessage, int inputType) {
+  public static Observable<String> numberPadDialog(Context context, String title,
+      String positiveMessage, String negativeMessage, int inputType) {
     return Observable.create((Subscriber<? super String> subscriber) -> {
 
       ContextThemeWrapper themedContext;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         themedContext = new ContextThemeWrapper(context,
-                android.R.style.Theme_Material_Light_Dialog_NoActionBar);
+            android.R.style.Theme_Material_Light_Dialog_NoActionBar);
       } else {
         themedContext =
-                new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+            new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
       }
 
       final EditText et = new EditText(themedContext);
       et.setInputType(inputType);
 
-      final AlertDialog ad = new AlertDialog.Builder(themedContext)
-              .setTitle(title)
-              .setPositiveButton(positiveMessage, (dialog, which) -> {
+      final AlertDialog ad = new AlertDialog.Builder(themedContext).setTitle(title)
+          .setPositiveButton(positiveMessage, (dialog, which) -> {
 
-                if (et.getText() != null) {
-                  subscriber.onNext(et.getText().toString());
-                }
+            if (et.getText() != null) {
+              subscriber.onNext(et.getText().toString());
+            }
 
-                subscriber.onCompleted();
-              })
-              .setNegativeButton(negativeMessage, (dialog, which) -> {
-                subscriber.onCompleted();
-              })
-              .setView(et)
-              .create();
+            subscriber.onCompleted();
+          })
+          .setNegativeButton(negativeMessage, (dialog, which) -> {
+            subscriber.onCompleted();
+          })
+          .setView(et)
+          .create();
 
       subscriber.add(Subscriptions.create(ad::dismiss));
       ad.show();
@@ -199,28 +195,29 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
     List<LabelType> moreTypeList = new ArrayList<>();
 
-    if (recipient instanceof Friendship) {
-      if (!recipient.isMute()) {
-        moreTypeList.add(new LabelType(
-            EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
-            LabelType.MUTE));
-      } else {
-        moreTypeList.add(new LabelType(
-            EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)),
-            LabelType.UNMUTE));
-      }
-
-      moreTypeList.add(new LabelType(
-          context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
-          LabelType.HIDE));
-
-      moreTypeList.add(new LabelType(
-          context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
-          LabelType.BLOCK_HIDE));
-    } else if (recipient instanceof Invite) {
-      moreTypeList.add(
-          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
-    }
+    // TODO CHANGE WITH SHORTCUTS
+    //if (recipient instanceof Friendship) {
+    //  if (!recipient.isMute()) {
+    //    moreTypeList.add(new LabelType(
+    //        EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
+    //        LabelType.MUTE));
+    //  } else {
+    //    moreTypeList.add(new LabelType(
+    //        EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)),
+    //        LabelType.UNMUTE));
+    //  }
+    //
+    //  moreTypeList.add(new LabelType(
+    //      context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
+    //      LabelType.HIDE));
+    //
+    //  moreTypeList.add(new LabelType(
+    //      context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
+    //      LabelType.BLOCK_HIDE));
+    //} else if (recipient instanceof Invite) {
+    //  moreTypeList.add(
+    //      new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
+    //}
 
     return moreTypeList;
   }
@@ -248,10 +245,8 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForFacebookAuth(Context context) {
     List<LabelType> followTypes = new ArrayList<>();
 
-    followTypes.add(
-            new LabelType("Login", LabelType.LOGIN));
-    followTypes.add(
-            new LabelType("Force logout", LabelType.FORCE_LOGOUT));
+    followTypes.add(new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(new LabelType("Force logout", LabelType.FORCE_LOGOUT));
     return followTypes;
   }
 
@@ -262,12 +257,9 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForPhoneNumberAuth(Context context) {
     List<LabelType> followTypes = new ArrayList<>();
 
-    followTypes.add(
-            new LabelType("Login", LabelType.LOGIN));
-    followTypes.add(
-            new LabelType("Login (alternative)", LabelType.LOGIN_ALTERNATIVE));
-    followTypes.add(
-            new LabelType("Login (call)", LabelType.LOGIN_CALL));
+    followTypes.add(new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(new LabelType("Login (alternative)", LabelType.LOGIN_ALTERNATIVE));
+    followTypes.add(new LabelType("Login (call)", LabelType.LOGIN_CALL));
     return followTypes;
   }
 

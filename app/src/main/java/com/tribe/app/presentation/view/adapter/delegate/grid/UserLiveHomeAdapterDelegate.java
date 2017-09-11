@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.adapter.delegate.grid;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import java.util.List;

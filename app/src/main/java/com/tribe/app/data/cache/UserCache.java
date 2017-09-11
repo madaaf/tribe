@@ -1,8 +1,8 @@
 package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import java.util.List;
 import javax.inject.Singleton;
@@ -29,22 +29,23 @@ import rx.Observable;
 
   Observable<UserRealm> userInfos(String userId);
 
-  Observable<List<FriendshipRealm>> friendships();
+  Observable<List<ShortcutRealm>> shortcuts();
 
   UserRealm userInfosNoObs(String userId);
 
-  FriendshipRealm friendshipForUserId(String userId);
+  ShortcutRealm shortcutForUserId(String userId);
 
-  void removeFriendship(String friendshipId);
+  void removeShortcut(String shortcutId);
 
-  void updateFriendship(FriendshipRealm friendshipRealm);
+  void updateShortcut(ShortcutRealm shortcutRealm);
 
-  FriendshipRealm updateFriendshipNoObs(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String moreType);
+  // TODO
+  //ShortcutRealm updateShortcutNoObs(String shortcutId,
+  //    @FriendshipRealm.FriendshipStatus String moreType);
 
   void updateUserRealmList(List<UserRealm> userRealm);
 
-  void addFriendship(FriendshipRealm friendshipRealm);
+  void addShortcut(ShortcutRealm shortcutRealm);
 
-  void removeFriendship(FriendshipRealm friendshipRealm);
+  void removeShortcut(ShortcutRealm shortcutRealm);
 }

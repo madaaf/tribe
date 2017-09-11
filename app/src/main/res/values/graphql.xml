@@ -5,8 +5,16 @@
             user {
                 ...UserInfos
 
-                friendships {
-                    ...FriendshipInfos
+                shortcuts {
+                  recent (max : 10) {
+                    ...ShortcutInfos
+                  }
+                  unread {
+                    ...ShortcutInfos
+                  }
+                  online {
+                    ...ShortcutInfos
+                  }
                 }
 
                 invites {
@@ -20,36 +28,7 @@
         %1$s
         %2$s
         %3$s
-    </string>
-
-  <string name="user.infos.friendships" translatable="false">
-        {
-            user {
-                ...UserInfos
-
-                friendships {
-                    ...FriendshipInfos
-                }
-            }
-        }
-
-        %1$s
-        %2$s
-    </string>
-
-
-  <string name="friendshipfragment.info" translatable="false">
-        fragment FriendshipInfos on Friendship {
-            id
-            status
-            tag
-            category
-            is_live
-            friend {
-                ...UserInfos
-            }
-        }
-    </string>
+  </string>
 
   <string name="user.infos.list" translatable="false">
         {
@@ -59,18 +38,7 @@
         }
 
         %2$s
-    </string>
-
-  <string name="friendships.infos" translatable="false">
-        id
-        tag
-        category
-        status
-        mute
-        friend {
-            ...UserInfos
-        }
-    </string>
+  </string>
 
   <string name="userfragment.infos" translatable="false">
         fragment UserInfos on User {
@@ -214,266 +182,22 @@
         }
 
         %2$s
-    </string>
-
-  <string name="friendship.mutation" translatable="false">
-        mutation {
-            %1$s
-        }
-
-        %2$s
-    </string>
-
-  <string name="createFriendship.input" translatable="false">
-        createFriendship%1$s : createFriendship(
-            friendId : \"%2$s\"
-        ) {
-            %3$s
-        }
-    </string>
-
-  <string name="removeFriendship.input" translatable="false">
-        removeFriendship%1$s : removeFriendship(friendshipId : \"%2$s\")
   </string>
-
-  <string name="groupfragment.info" translatable="false">
-        fragment GroupInfos on Group {
-            id
-            name
-            picture
-            created_at
-            last_seen_at
-            is_live
-        }
-  </string>
-
-  <string name="groupfragment.info.members" translatable="false">
-        fragment GroupInfos on Group {
-            id
-            name
-            picture
-            created_at
-            last_seen_at
-            is_live
-            members {
-                ...UserInfos
-            }
-        }
-    </string>
-
-  <string name="membershipfragment.info" translatable="false">
-        fragment MembershipInfos on Membership {
-            id
-            group {
-                ...GroupInfos
-            }
-            mute
-            created_at
-            updated_at
-        }
-    </string>
-
-  <string name="membershipfragment.info.light" translatable="false">
-        fragment MembershipInfos on Membership {
-            id
-            mute
-            created_at
-            updated_at
-        }
-    </string>
-
-  <string name="get.group.infos" translatable="false">
-        {
-            groups (ids : [\"%1$s\"]) {
-                ...GroupInfos
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
-
-
-  <string name="get.group.members" translatable="false">
-        {
-            groups (ids : [\"%1$s\"]) {
-                ...GroupInfos
-
-                members {
-                    ...UserInfos
-                }
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
-
-  <string name="create.group" translatable="false">
-       mutation {
-            createGroup(group: {
-                name : \"%1$s\"
-            } %2$s
-            ) {
-                ...GroupInfos
-            }
-        }
-        %3$s
-    </string>
-
-  <string name="create.group.members" translatable="false">
-        , members: [%1$s]
-    </string>
-
-  <string name="update.group" translatable="false">
-        mutation {
-            updateGroup(id : \"%1$s\",
-                group : { %2$s }
-            ) {
-                ...GroupInfos
-            }
-        }
-
-        %3$s
-    </string>
-
-  <string name="update.membership" translatable="false">
-        mutation {
-            updateMembership(membershipId : \"%1$s\",
-                membership : { %2$s }
-            ) {
-                ...MembershipInfos
-            }
-        }
-
-        %3$s
-    </string>
-
-  <string name="remove.members.group" translatable="false">
-        mutation {
-            removeMembersFromGroup(id : \"%1$s\", members: [%2$s]) {
-                id
-            }
-        }
-    </string>
-
-  <string name="remove.group" translatable="false">
-        mutation {
-            removeGroup(id : \"%1$s\")
-        }
-    </string>
-
-  <string name="leave.group" translatable="false">
-        mutation {
-            removeMembership(membershipId: \"%1$s\")
-        }
-    </string>
-
-  <string name="create.membership" translatable="false">
-        mutation {
-            createMembership(groupId: \"%1$s\") {
-                ...MembershipInfos
-            }
-        }
-
-        %2$s
-        %3$s
-        %4$s
-    </string>
-
-  <string name="create.membership.user" translatable="false">
-    createMembership%1$s : createMembership(groupId: \"%2$s\", userId: \"%3$s\") {
-      id
-    }
-    </string>
-
-  <string name="membership.infos" translatable="false">
-        {
-            user {
-                ...UserInfos
-
-                memberships(ids: [%1$s]) {
-                    ...MembershipInfos
-                }
-            }
-        }
-
-        %2$s
-        %3$s
-        %4$s
-    </string>
-
-  <string name="friendships.details" translatable="false">
-        {
-            user {
-                ...UserInfos
-
-                friendships(ids: [%1$s]) {
-                    ...FriendshipInfos
-                }
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
 
   <string name="boostrap.support" translatable="false">
         mutation {
             bootstrapSupport
         }
-    </string>
-
-  <string name="update.friendship" translatable="false">
-      mutation {
-          updateFriendship(friendshipId : \"%1$s\",
-              friendship : { %2$s }
-          ) {
-              id
-              mute
-              status
-          }
-      }
-
-    </string>
+  </string>
 
   <string name="subscription" translatable="false">
         subscription { %1$s }
-    </string>
+  </string>
 
   <string name="subscription.userUpdated" translatable="false">
         %1$s : userUpdated ( id : \"%2$s\" ) {
             ...UserInfos
         }
-    </string>
-
-  <string name="subscription.groupUpdated" translatable="false">
-        %1$s : groupUpdated ( id : \"%2$s\" ) {
-            ...GroupInfos
-        }
-    </string>
-
-  <string name="subscription.friendshipUpdated" translatable="false">
-      %1$s : friendshipUpdated ( id : \"%2$s\" ) {
-        id
-        is_live
-      }
-  </string>
-
-  <string name="subscription.friendshipCreated" translatable="false">
-      %1$s : friendshipCreated
-  </string>
-
-  <string name="subscription.friendshipRemoved" translatable="false">
-    %1$s : friendshipRemoved
-  </string>
-
-  <string name="subscription.membershipCreated" translatable="false">
-    %1$s : membershipCreated
-  </string>
-
-  <string name="subscription.membershipRemoved" translatable="false">
-    %1$s : membershipRemoved
   </string>
 
   <string name="subscription.inviteCreated" translatable="false">
@@ -595,6 +319,22 @@
 
   <string name="reportUser" translatable="false">
     reportUser(userId : \"%1$s\")
+  </string>
+
+  <string name="shortcut.infos" translatable="false">
+      fragment ShortcutInfos on Shortcut {
+        id
+        name
+        picture
+        pinned
+        status
+        read
+        created_at
+        last_activity_at
+        members {
+          ...UserInfos
+        }
+      }
   </string>
 
 </resources>

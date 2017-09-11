@@ -3,8 +3,8 @@ package com.tribe.app.data.cache;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Singleton;
@@ -23,7 +23,7 @@ import rx.Observable;
 
   void insertSearchResult(SearchResultRealm searchResultRealm);
 
-  void changeSearchResult(String username, FriendshipRealm friendshipRealm);
+  void changeSearchResult(String username, ShortcutRealm shortcutRealm);
 
   void updateHowManyFriends(Collection<ContactABRealm> contactABList);
 

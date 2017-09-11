@@ -1,10 +1,8 @@
 package com.tribe.app.data.network;
 
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
-import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -49,16 +47,11 @@ public interface TribeApi {
   @Multipart @POST("/graphql") Observable<UserRealm> updateUserMedia(
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
 
-  @FormUrlEncoded @POST("/graphql") Observable<CreateFriendshipEntity> createFriendship(
-      @Field("query") String query);
-
   @FormUrlEncoded @POST("/graphql") Observable<SearchResultRealm> findByUsername(
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<UserRealm> lookupByUsername(
       @Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<Void> removeFriendship(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> notifyFBFriends(@Field("query") String query);
 
@@ -70,9 +63,6 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Void> leaveGroup(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> bootstrapSupport(@Field("query") String query);
-
-  @FormUrlEncoded @POST("/graphql") Observable<FriendshipRealm> updateFriendship(
-      @Field("query") String query);
 
   @HEAD Observable<Response<Void>> getHeadDeepLink(@Url String url);
 

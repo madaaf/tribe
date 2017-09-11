@@ -9,7 +9,6 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +36,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
   private int score = 0;
   private Location location;
   private boolean tribe_save;
-  private List<Friendship> friendships;
   private List<Recipient> friendshipList;
   private List<Invite> inviteList;
   private String fbid;
@@ -148,16 +146,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
     this.time_in_call = time_in_call;
   }
 
-  public void setFriendships(List<Friendship> friendships) {
-    this.friendships = friendships;
-  }
-
-  public List<Friendship> getFriendships() {
-    if (friendships == null) return new ArrayList<>();
-
-    return friendships;
-  }
-
   public String getFbid() {
     return fbid;
   }
@@ -188,28 +176,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
 
   public boolean isPushNotif() {
     return push_notif;
-  }
-
-  public List<Recipient> getFriendshipList() {
-    friendshipList = new ArrayList<>();
-
-    List<Friendship> friendshipWithoutMe = new ArrayList<>();
-
-    if (friendships != null) {
-      for (Friendship fr : friendships) {
-        if (!id.equals(fr.getSubId())) {
-          friendshipWithoutMe.add(fr);
-        }
-      }
-
-      friendshipList.addAll(friendshipWithoutMe);
-    }
-
-    if (inviteList != null) friendshipList.addAll(inviteList);
-
-    Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-    return friendshipList;
   }
 
   public boolean isOnline() {
@@ -325,9 +291,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
       setTimeInCall(user.getTimeInCall());
       setLastSeenAt(user.getLastSeenAt());
       if (user.getLocation() != null) setLocation(user.getLocation());
-      if (user.getFriendships() != null && user.getFriendshipList().size() > 0) {
-        setFriendships(user.getFriendships());
-      }
     }
   }
 
@@ -347,34 +310,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
     setLastSeenAt(null);
     setTribeSave(false);
     setLocation(null);
-    setFriendships(null);
-  }
-
-  public int computeUserFriends(List<User> userList) {
-    int count = 0;
-
-    if (friendships != null) {
-      for (User user : userList) {
-        for (Friendship friendship : friendships) {
-          if (friendship.getFriend().equals(user)) {
-            user.setFriend(true);
-            count++;
-          }
-        }
-      }
-    }
-
-    return count;
-  }
-
-  public User getFromFriendships(String userId) {
-    for (Friendship friendship : friendships) {
-      if (friendship.getSubId().equals(userId)) {
-        return friendship.getFriend();
-      }
-    }
-
-    return null;
   }
 
   public boolean isEmpty() {

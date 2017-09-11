@@ -15,7 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -169,9 +168,10 @@ public class UserInfosNotificationView extends FrameLayout {
         .start();
   }
 
-  public void update(Friendship friendship) {
-    contactAdapter.updateAdd(friendship.getFriend());
-  }
+  // TODO REPLACE WITH SHORTCUTS
+  //public void update(Friendship friendship) {
+  //  contactAdapter.updateAdd(friendship.getFriend());
+  //}
 
   /////////////////
   // OBSERVABLES //

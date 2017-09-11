@@ -2,8 +2,8 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
@@ -42,7 +42,7 @@ public class UserCacheImpl implements UserCache {
 
     try {
       obsRealm.executeTransaction(realm1 -> {
-        realm1.delete(FriendshipRealm.class);
+        realm1.delete(ShortcutRealm.class);
         realm1.insertOrUpdate(userRealm);
       });
     } finally {
@@ -145,8 +145,8 @@ public class UserCacheImpl implements UserCache {
         .unsubscribeOn(AndroidSchedulers.mainThread());
   }
 
-  @Override public Observable<List<FriendshipRealm>> friendships() {
-    return realm.where(FriendshipRealm.class)
+  @Override public Observable<List<ShortcutRealm>> shortcuts() {
+    return realm.where(ShortcutRealm.class)
         .findAll()
         .asObservable()
         .filter(friendshipList -> friendshipList.isLoaded())
@@ -162,24 +162,24 @@ public class UserCacheImpl implements UserCache {
     return results;
   }
 
-  @Override public FriendshipRealm friendshipForUserId(String userId) {
+  @Override public ShortcutRealm shortcutForUserId(String userId) {
     Realm otherRealm = Realm.getDefaultInstance();
-    FriendshipRealm friendshipRealm =
-        otherRealm.where(FriendshipRealm.class).equalTo("friend.id", userId).findFirst();
-    if (friendshipRealm != null) {
-      return otherRealm.copyFromRealm(friendshipRealm);
+    ShortcutRealm shortcutRealm =
+        otherRealm.where(ShortcutRealm.class).equalTo("id", userId).findFirst();
+    if (shortcutRealm != null) {
+      return otherRealm.copyFromRealm(shortcutRealm);
     } else {
       return null;
     }
   }
 
-  @Override public void removeFriendship(String friendshipId) {
+  @Override public void removeShortcut(String shortcutId) {
     Realm otherRealm = Realm.getDefaultInstance();
     try {
       otherRealm.beginTransaction();
-      FriendshipRealm friendshipRealm =
-          otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
-      if (friendshipRealm != null) friendshipRealm.deleteFromRealm();
+      ShortcutRealm shortcutRealm =
+          otherRealm.where(ShortcutRealm.class).equalTo("id", shortcutId).findFirst();
+      if (shortcutRealm != null) shortcutRealm.deleteFromRealm();
       otherRealm.commitTransaction();
     } catch (IllegalStateException ex) {
       if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
@@ -189,47 +189,49 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  @Override public void updateFriendship(FriendshipRealm friendshipRealm) {
+  @Override public void updateShortcut(ShortcutRealm shortcutRealm) {
     Realm realm = Realm.getDefaultInstance();
 
     try {
       realm.executeTransaction(realm1 -> {
-        FriendshipRealm friendshipRealmDB =
-            realm1.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
-        friendshipRealmDB.setMute(friendshipRealm.isMute());
-        friendshipRealmDB.setStatus(friendshipRealm.getStatus());
+        ShortcutRealm shortcutRealmDB =
+            realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
+        // TODO
+        // shortcutRealmDB.setMute(shortcutRealm.isMute());
+        // shortcutRealmDB.setStatus(shortcutRealm.getStatus());
       });
     } finally {
       realm.close();
     }
   }
 
-  @Override public FriendshipRealm updateFriendshipNoObs(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String status) {
-    Realm otherRealm = Realm.getDefaultInstance();
-
-    try {
-      otherRealm.beginTransaction();
-      FriendshipRealm friendshipRealm =
-          otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
-      if (friendshipRealm != null) {
-        friendshipRealm.setStatus(status);
-      }
-
-      otherRealm.commitTransaction();
-
-      if (friendshipRealm != null) {
-        return otherRealm.copyFromRealm(friendshipRealm);
-      }
-    } catch (IllegalStateException ex) {
-      if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
-      ex.printStackTrace();
-    } finally {
-      otherRealm.close();
-    }
-
-    return null;
-  }
+  // TODO
+  //@Override public ShortcutRealm updateShortcutNoObs(String friendshipId,
+  //    @FriendshipRealm.FriendshipStatus String status) {
+  //  Realm otherRealm = Realm.getDefaultInstance();
+  //
+  //  try {
+  //    otherRealm.beginTransaction();
+  //    FriendshipRealm friendshipRealm =
+  //        otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
+  //    if (friendshipRealm != null) {
+  //      friendshipRealm.setStatus(status);
+  //    }
+  //
+  //    otherRealm.commitTransaction();
+  //
+  //    if (friendshipRealm != null) {
+  //      return otherRealm.copyFromRealm(friendshipRealm);
+  //    }
+  //  } catch (IllegalStateException ex) {
+  //    if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+  //    ex.printStackTrace();
+  //  } finally {
+  //    otherRealm.close();
+  //  }
+  //
+  //  return null;
+  //}
 
   @Override public void updateUserRealmList(List<UserRealm> userRealmList) {
     Realm realm = Realm.getDefaultInstance();
@@ -247,21 +249,20 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  @Override public void addFriendship(final FriendshipRealm friendshipRealm) {
+  @Override public void addShortcut(final ShortcutRealm shortcutRealm) {
     Realm realm = Realm.getDefaultInstance();
 
     try {
       realm.executeTransaction(realm1 -> {
         UserRealm userRealmDB =
             realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        FriendshipRealm friendshipRealmDB =
-            realm1.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
-        if (friendshipRealmDB == null) {
-          realm1.insertOrUpdate(friendshipRealm);
-          friendshipRealmDB = realm1.where(FriendshipRealm.class)
-              .equalTo("id", friendshipRealm.getId())
-              .findFirst();
-          userRealmDB.getFriendships().add(friendshipRealmDB);
+        ShortcutRealm shortcutRealmDB =
+            realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
+        if (shortcutRealmDB == null) {
+          realm1.insertOrUpdate(shortcutRealm);
+          shortcutRealmDB =
+              realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
+          userRealmDB.getShortcuts().add(shortcutRealmDB);
         }
       });
     } finally {
@@ -269,25 +270,25 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  @Override public void removeFriendship(FriendshipRealm friendshipRealm) {
+  @Override public void removeShortcut(ShortcutRealm shortcutRealm) {
     Realm realm = Realm.getDefaultInstance();
 
     try {
       realm.executeTransaction(realm1 -> {
         UserRealm userRealmDB =
             realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-        FriendshipRealm friendshipRealmDB =
-            realm1.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
-        if (friendshipRealmDB != null) friendshipRealmDB.deleteFromRealm();
+        ShortcutRealm shortcutRealmDB =
+            realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
+        if (shortcutRealmDB != null) shortcutRealmDB.deleteFromRealm();
 
-        RealmList<FriendshipRealm> newFriendships = new RealmList<>();
-        for (FriendshipRealm friendshipLoop : userRealmDB.getFriendships()) {
-          if (!friendshipLoop.getId().equals(friendshipRealm.getId())) {
-            newFriendships.add(friendshipLoop);
+        RealmList<ShortcutRealm> newShortcuts = new RealmList<>();
+        for (ShortcutRealm shortcutLoop : userRealmDB.getShortcuts()) {
+          if (!shortcutLoop.getId().equals(shortcutRealm.getId())) {
+            newShortcuts.add(shortcutLoop);
           }
         }
 
-        userRealmDB.setFriendships(newFriendships);
+        userRealmDB.setShortcuts(newShortcuts);
       });
     } finally {
       realm.close();

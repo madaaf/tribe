@@ -10,7 +10,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.navigation.Navigator;
@@ -158,13 +157,14 @@ public class LiveInviteView extends FrameLayout {
   // PUBLIC //
   ///////////
 
-  public void renderFriendshipList(List<Friendship> friendshipList,
-      @LiveActivity.Source String source) {
-    this.source = source;
-    this.friendshipList.clear();
-    this.friendshipList.addAll(friendshipList);
-    if (!dragging) adapter.setItems(this.friendshipList, source);
-  }
+  // TODO REPLACE WITH SHORTCUTS
+  //public void renderFriendshipList(List<Friendship> friendshipList,
+  //    @LiveActivity.Source String source) {
+  //  this.source = source;
+  //  this.friendshipList.clear();
+  //  this.friendshipList.addAll(friendshipList);
+  //  if (!dragging) adapter.setItems(this.friendshipList, source);
+  //}
 
   public void removeItemAtPosition(int position) {
     //adapter.removeItem(position);
@@ -172,14 +172,15 @@ public class LiveInviteView extends FrameLayout {
 
   public void diceDragued() {
     adapter.diceDragued();
-    List<Recipient> friendships = friendshipList;
-    List<Friendship> friendRend = new ArrayList<>();
-    for (Recipient fr : friendships) {
-      if (fr instanceof Friendship) {
-        friendRend.add((Friendship) fr);
-      }
-    }
-    renderFriendshipList(friendRend, source);
+    //List<Recipient> friendships = friendshipList;
+    // TODO REPLACE WITH SHORTCUTS
+    //List<Friendship> friendRend = new ArrayList<>();
+    //for (Recipient fr : friendships) {
+    //  if (fr instanceof Friendship) {
+    //    friendRend.add((Friendship) fr);
+    //  }
+    //}
+    //renderFriendshipList(friendRend, source);
     adapter.notifyDataSetChanged();
   }
 

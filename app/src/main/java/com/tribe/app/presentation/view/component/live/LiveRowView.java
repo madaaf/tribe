@@ -14,8 +14,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -102,20 +100,21 @@ public class LiveRowView extends FrameLayout {
   }
 
   public void setAddBtn(TribeGuest guest) {
-    for (Friendship friendship : user.getFriendships()) {
-      User friend = friendship.getFriend();
-      if (guest.getId().endsWith(friend.getId())) {
-        if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) ||
-            friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
-          guest.setFriend(false);
-        } else {
-          guest.setFriend(true);
-        }
-        break;
-      } else {
-        guest.setFriend(false);
-      }
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //for (Friendship friendship : user.getFriendships()) {
+    //  User friend = friendship.getFriend();
+    //  if (guest.getId().endsWith(friend.getId())) {
+    //    if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) ||
+    //        friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
+    //      guest.setFriend(false);
+    //    } else {
+    //      guest.setFriend(true);
+    //    }
+    //    break;
+    //  } else {
+    //    guest.setFriend(false);
+    //  }
+    //}
 
     if (guest.isFriend() || guest.isExternal()) {
       //btnAddFriend.setVisibility(GONE);

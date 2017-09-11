@@ -24,10 +24,8 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
-import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
 import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
-import com.tribe.app.data.network.deserializer.FriendshipRealmDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
@@ -40,14 +38,12 @@ import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
-import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.network.interceptor.TribeInterceptor;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -155,7 +151,6 @@ import timber.log.Timber;
             new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
         .registerTypeAdapter(new TypeToken<List<UserRealm>>() {
         }.getType(), new UserListDeserializer<>())
-        .registerTypeAdapter(CreateFriendshipEntity.class, new CreateFriendshipDeserializer())
         .registerTypeAdapter(new TypeToken<List<Integer>>() {
         }.getType(), new HowManyFriendsDeserializer())
         .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())
@@ -163,7 +158,6 @@ import timber.log.Timber;
         }.getType(), new InstallsDeserializer())
         .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
         .registerTypeAdapter(Room.class, new RoomDeserializer())
-        .registerTypeAdapter(FriendshipRealm.class, new FriendshipRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<Invite>>() {
         }.getType(), new InvitesListDeserializer<>())
         .registerTypeAdapter(LookupFBResult.class, new LookupFBDeserializer())
@@ -208,11 +202,10 @@ import timber.log.Timber;
         String oldCertPin = CertificatePinner.pin(oldCa);
         String certPin = CertificatePinner.pin(ca);
         CertificatePinner certificatePinner =
-            new CertificatePinner.Builder()
-                    .add(BuildConfig.TRIBE_API, oldCertPin)
-                    .add(BuildConfig.TRIBE_AUTH, oldCertPin)
-                    .add(BuildConfig.TRIBE_API, certPin)
-                    .add(BuildConfig.TRIBE_AUTH, certPin)
+            new CertificatePinner.Builder().add(BuildConfig.TRIBE_API, oldCertPin)
+                .add(BuildConfig.TRIBE_AUTH, oldCertPin)
+                .add(BuildConfig.TRIBE_API, certPin)
+                .add(BuildConfig.TRIBE_AUTH, certPin)
                 .build();
         okHttpClient.certificatePinner(certificatePinner);
       } catch (IOException e) {

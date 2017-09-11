@@ -6,14 +6,11 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import rx.Observable;
@@ -55,11 +52,6 @@ public interface UserDataStore {
   Observable<UserRealm> userInfos(final String userId);
 
   Observable<List<UserRealm>> userInfosList(List<String> userIds);
-
-  /**
-   * Get an {@link Observable} which will emit a {@link List<Friendship>}
-   */
-  Observable<List<FriendshipRealm>> friendships();
 
   /**
    * Get an {@link Observable} which will emit a {@link User}
@@ -119,24 +111,9 @@ public interface UserDataStore {
   Observable<List<ContactABRealm>> findByValue(String value);
 
   /**
-   * Get an {@link Observable} which will emit a {@link com.tribe.app.data.realm.FriendshipRealm}
-   * containing infos
-   * about the new friendship.
-   */
-  Observable<FriendshipRealm> createFriendship(String userId);
-
-  /**
-   * Get an {@link Observable} which will emit a void object
-   */
-  Observable<Void> removeFriendship(String userId);
-
-  /**
    * Get an {@link Observable} which will emit nothing
    */
   Observable<Void> notifyFBFriends();
-
-  Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      List<Pair<String, String>> values);
 
   Observable<String> getHeadDeepLink(String url);
 

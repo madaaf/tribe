@@ -10,9 +10,8 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -23,7 +22,7 @@ import rx.subjects.PublishSubject;
 /**
  * Created by tiago on 05/11/2017.
  */
-public class ManageFriendshipListAdapterDelegate extends RxAdapterDelegate<List<Friendship>> {
+public class ManageShortcutListAdapterDelegate extends RxAdapterDelegate<List<Shortcut>> {
 
   protected LayoutInflater layoutInflater;
   protected Context context;
@@ -32,15 +31,15 @@ public class ManageFriendshipListAdapterDelegate extends RxAdapterDelegate<List<
   private PublishSubject<View> onClickMute = PublishSubject.create();
   private PublishSubject<View> onClickRemove = PublishSubject.create();
 
-  public ManageFriendshipListAdapterDelegate(Context context) {
+  public ManageShortcutListAdapterDelegate(Context context) {
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
   }
 
-  @Override public boolean isForViewType(@NonNull List<Friendship> items, int position) {
-    return items.get(position) instanceof Friendship;
+  @Override public boolean isForViewType(@NonNull List<Shortcut> items, int position) {
+    return items.get(position) instanceof Shortcut;
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -50,23 +49,23 @@ public class ManageFriendshipListAdapterDelegate extends RxAdapterDelegate<List<
     return manageFriendshipViewHolder;
   }
 
-  @Override public void onBindViewHolder(@NonNull List<Friendship> items, int position,
+  @Override public void onBindViewHolder(@NonNull List<Shortcut> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     ManageFriendshipViewHolder vh = (ManageFriendshipViewHolder) holder;
-    Friendship fr = items.get(position);
-    vh.viewAvatar.setType(
-        fr.isLive() ? AvatarView.LIVE : (fr.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
-    vh.viewAvatar.load(fr);
-    vh.txtName.setText(fr.getDisplayName());
-    vh.txtUsername.setText(StringUtils.isEmpty(fr.getUsername()) ? "" : fr.getUsername());
-    vh.switchMute.setChecked(fr.isMute());
+    //Friendship fr = items.get(position);
+    //vh.viewAvatar.setType(
+    //    fr.isLive() ? AvatarView.LIVE : (fr.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
+    //vh.viewAvatar.load(fr);
+    //vh.txtName.setText(fr.getDisplayName());
+    //vh.txtUsername.setText(StringUtils.isEmpty(fr.getUsername()) ? "" : fr.getUsername());
+    //vh.switchMute.setChecked(fr.isMute());
 
     vh.switchMute.setOnClickListener(v -> onClickMute.onNext(vh.itemView));
 
     vh.btnRemove.setOnClickListener(v -> onClickRemove.onNext(vh.itemView));
   }
 
-  @Override public void onBindViewHolder(@NonNull List<Friendship> items,
+  @Override public void onBindViewHolder(@NonNull List<Shortcut> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
 
   }

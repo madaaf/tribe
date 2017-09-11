@@ -5,9 +5,8 @@ import android.util.Pair;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.UserCache;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.UpdateFriendship;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +15,17 @@ import javax.inject.Inject;
 /**
  * Created by tiago on 04/10/2017.
  */
-public class UnhideFriendshipJob extends BaseJob {
+public class UnhideShortcutJob extends BaseJob {
 
   private static final String TAG = "UpdateFriendshipJob";
 
-  @Inject UpdateFriendship updateFriendship;
-
   @Inject UserCache userCache;
 
-  private FriendshipRealm friendshipRealm;
+  private ShortcutRealm shortcutRealm;
 
-  public UnhideFriendshipJob(FriendshipRealm friendshipRealm) {
+  public UnhideShortcutJob(ShortcutRealm shortcutRealm) {
     super(new Params(Priority.HIGH).requireNetwork().singleInstanceBy(TAG).groupBy(TAG));
-    this.friendshipRealm = friendshipRealm;
+    this.shortcutRealm = shortcutRealm;
   }
 
   @Override public void onAdded() {
@@ -36,16 +33,17 @@ public class UnhideFriendshipJob extends BaseJob {
   }
 
   @Override public void onRun() throws Throwable {
-    friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
-    userCache.updateFriendship(friendshipRealm);
-
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(FriendshipRealm.STATUS, FriendshipRealm.DEFAULT));
-
-    if (values.size() > 0) {
-      updateFriendship.prepare(friendshipRealm.getId(), values);
-      updateFriendship.execute(new DefaultSubscriber());
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
+    //userCache.updateFriendship(friendshipRealm);
+    //
+    //List<Pair<String, String>> values = new ArrayList<>();
+    //values.add(new Pair<>(FriendshipRealm.STATUS, FriendshipRealm.DEFAULT));
+    //
+    //if (values.size() > 0) {
+    //  updateFriendship.prepare(friendshipRealm.getId(), values);
+    //  updateFriendship.execute(new DefaultSubscriber());
+    //}
   }
 
   @Override protected void onCancel(int cancelReason, @Nullable Throwable throwable) {

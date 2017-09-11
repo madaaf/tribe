@@ -18,7 +18,6 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
@@ -1187,13 +1186,14 @@ public class LiveView extends FrameLayout {
   private TribeGuest guestFromRemotePeer(RemotePeer remotePeer) {
     TribeGuest guest = null;
 
-    for (Friendship friendship : user.getFriendships()) {
-      if (user.getId().equals(friendship.getSubId())) {
-        guest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-            friendship.getProfilePicture(), false, true, friendship.getUsername());
-        guest.setExternal(remotePeer.getSession().isExternal());
-      }
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //for (Friendship friendship : user.getFriendships()) {
+    //  if (user.getId().equals(friendship.getSubId())) {
+    //    guest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
+    //        friendship.getProfilePicture(), false, true, friendship.getUsername());
+    //    guest.setExternal(remotePeer.getSession().isExternal());
+    //  }
+    //}
 
     if (guest == null) {
       guest =
@@ -1400,9 +1400,10 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (Friendship friendship : user.getFriendships()) {
-      myFriendIds.add(friendship.getFriend().getId());
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //for (Friendship friendship : user.getFriendships()) {
+    //  myFriendIds.add(friendship.getFriend().getId());
+    //}
 
     for (TribeGuest guest : usersInLive) {
       if (myFriendIds.contains(guest.getId())) {
@@ -1464,12 +1465,13 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (Friendship friendship : user.getFriendships()) {
-      User friend = friendship.getFriend();
-      if (friend.getId().equals(id)) {
-        return friend.getDisplayName();
-      }
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //for (Friendship friendship : user.getFriendships()) {
+    //  User friend = friendship.getFriend();
+    //  if (friend.getId().equals(id)) {
+    //    return friend.getDisplayName();
+    //  }
+    //}
 
     for (User anonymousUser : anonymousInLive) {
       if (anonymousUser.getId().equals(id)) {
@@ -1493,12 +1495,13 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (Friendship friendship : user.getFriendships()) {
-      User friend = friendship.getFriend();
-      if (friend.getId().equals(id)) {
-        return friendship;
-      }
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //for (Friendship friendship : user.getFriendships()) {
+    //  User friend = friendship.getFriend();
+    //  if (friend.getId().equals(id)) {
+    //    return friendship;
+    //  }
+    //}
 
     for (User anonymousUser : anonymousInLive) {
       if (anonymousUser.getId().equals(id)) {

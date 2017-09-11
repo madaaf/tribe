@@ -9,7 +9,6 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
@@ -71,10 +70,6 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<List<FriendshipRealm>> friendships() {
-    return this.userCache.friendships();
-  }
-
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
     return null;
   }
@@ -129,20 +124,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return contactCache.findContactsByValue(username);
   }
 
-  @Override public Observable<FriendshipRealm> createFriendship(String userId) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeFriendship(String userId) {
-    return null;
-  }
-
   @Override public Observable<Void> notifyFBFriends() {
-    return null;
-  }
-
-  @Override public Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      List<Pair<String, String>> values) {
     return null;
   }
 
@@ -151,7 +133,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId) {
-    return Observable.just(userCache.friendshipForUserId(recipientId));
+    return null;
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {

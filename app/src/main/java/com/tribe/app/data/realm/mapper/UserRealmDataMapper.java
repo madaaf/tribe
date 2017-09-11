@@ -15,11 +15,9 @@ import javax.inject.Singleton;
 @Singleton public class UserRealmDataMapper {
 
   LocationRealmDataMapper locationRealmDataMapper;
-  FriendshipRealmDataMapper friendshipRealmDataMapper;
 
   @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
     this.locationRealmDataMapper = locationRealmDataMapper;
-    this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
   }
 
   /**
@@ -50,11 +48,6 @@ import javax.inject.Singleton;
       user.setPushNotif(userRealm.isPushNotif());
       user.setIsOnline(userRealm.isOnline());
       user.setLastSeenAt(userRealm.getLastSeenAt());
-      if (shouldTransformFriendships) {
-        if (userRealm.getFriendships() != null) {
-          user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
-        }
-      }
     }
 
     return user;
@@ -107,12 +100,6 @@ import javax.inject.Singleton;
       userRealm.setIsOnline(user.isOnline());
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
-      if (shouldTransformFriendships) {
-        if (user.getFriendships() != null) {
-          userRealm.setFriendships(
-              friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
-        }
-      }
     }
 
     return userRealm;
@@ -160,9 +147,5 @@ import javax.inject.Singleton;
     }
 
     return userList;
-  }
-
-  public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
-    return friendshipRealmDataMapper;
   }
 }

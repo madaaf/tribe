@@ -39,7 +39,7 @@ public class UserRealm extends RealmObject {
   private String picture;
   private LocationRealm location;
   private boolean tribe_save = false;
-  private RealmList<FriendshipRealm> friendships;
+  private RealmList<ShortcutRealm> shortcuts;
   private boolean invisible_mode;
   private boolean push_notif = true;
   private Date last_seen_at;
@@ -119,12 +119,12 @@ public class UserRealm extends RealmObject {
     this.phone = phone;
   }
 
-  public RealmList<FriendshipRealm> getFriendships() {
-    return friendships;
+  public RealmList<ShortcutRealm> getShortcuts() {
+    return shortcuts;
   }
 
-  public void setFriendships(RealmList<FriendshipRealm> friendships) {
-    this.friendships = friendships;
+  public void setShortcuts(RealmList<ShortcutRealm> shortcuts) {
+    this.shortcuts = shortcuts;
   }
 
   public String getFbid() {

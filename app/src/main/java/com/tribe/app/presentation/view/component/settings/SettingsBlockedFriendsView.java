@@ -9,8 +9,6 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -97,11 +95,11 @@ public class SettingsBlockedFriendsView extends FrameLayout {
             (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
-          Friendship friendship = (Friendship) pair.first.second;
-          clickUnblock.onNext(pair.first.second);
-          friendship.setStatus(FriendshipRealm.DEFAULT);
-          friendship.setAnimateAdd(true);
-          adapter.notifyItemChanged(pair.first.first);
+          //Friendship friendship = (Friendship) pair.first.second;
+          //clickUnblock.onNext(pair.first.second);
+          //friendship.setStatus(FriendshipRealm.DEFAULT);
+          //friendship.setAnimateAdd(true);
+          //adapter.notifyItemChanged(pair.first.first);
         }));
 
     subscriptions.add(adapter.onHangLive()
@@ -129,10 +127,6 @@ public class SettingsBlockedFriendsView extends FrameLayout {
   /////////////////
   //   PUBLIC    //
   /////////////////
-
-  public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
-    adapter.setItems(new ArrayList<>(friendshipList));
-  }
 
   /**
    * OBSERVABLES

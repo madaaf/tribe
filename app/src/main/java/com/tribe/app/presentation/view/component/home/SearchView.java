@@ -24,11 +24,9 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
@@ -196,32 +194,33 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
-          if (o instanceof SearchResult) {
-            SearchResult searchResult = (SearchResult) o;
-            if (searchResult.isInvisible()) {
-              DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
-                  EmojiParser.demojizedText(
-                      getContext().getString(R.string.add_friend_error_invisible)),
-                  context().getString(R.string.add_friend_error_invisible_invite_android),
-                  context().getString(R.string.add_friend_error_invisible_cancel))
-                  .filter(x -> x == true)
-                  .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
-            } else if (searchResult.getFriendship() == null) {
-              if (searchResult.getUsername() != null && !searchResult.getUsername()
-                  .equals(user.getUsername())) {
-                searchPresenter.createFriendship(searchResult.getId());
-              }
-            } else {
-              searchResult.getFriendship().setStatus(FriendshipRealm.DEFAULT);
-              onUnblock.onNext(searchResult.getFriendship());
-            }
-          } else if (o instanceof Contact) {
-            Contact contact = (Contact) o;
-            searchPresenter.createFriendship(contact.getUserList().get(0).getId());
-          } else if (o instanceof User) {
-            User user = (User) o;
-            searchPresenter.createFriendship(user.getId());
-          }
+          // TODO CHANGE WITH SHORTCUTS
+          //if (o instanceof SearchResult) {
+          //  SearchResult searchResult = (SearchResult) o;
+          //  if (searchResult.isInvisible()) {
+          //    DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
+          //        EmojiParser.demojizedText(
+          //            getContext().getString(R.string.add_friend_error_invisible)),
+          //        context().getString(R.string.add_friend_error_invisible_invite_android),
+          //        context().getString(R.string.add_friend_error_invisible_cancel))
+          //        .filter(x -> x == true)
+          //        .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
+          //  } else if (searchResult.getFriendship() == null) {
+          //    if (searchResult.getUsername() != null &&
+          //        !searchResult.getUsername().equals(user.getUsername())) {
+          //      searchPresenter.createFriendship(searchResult.getId());
+          //    }
+          //  } else {
+          //    searchResult.getFriendship().setStatus(FriendshipRealm.DEFAULT);
+          //    onUnblock.onNext(searchResult.getFriendship());
+          //  }
+          //} else if (o instanceof Contact) {
+          //  Contact contact = (Contact) o;
+          //  searchPresenter.createFriendship(contact.getUserList().get(0).getId());
+          //} else if (o instanceof User) {
+          //  User user = (User) o;
+          //  searchPresenter.createFriendship(user.getId());
+          //}
         }));
 
     subscriptions.add(contactAdapter.onClickInvite()
@@ -243,7 +242,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
           if (o instanceof Recipient) {
             onHangLive.onNext((Recipient) o);
           } else if (o instanceof SearchResult) {
-            onHangLive.onNext(((SearchResult) o).getFriendship());
+            //onHangLive.onNext(((SearchResult) o).getFriendship());
           }
         }));
 
@@ -263,11 +262,11 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
             (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
-          Friendship friendship = (Friendship) pair.first.second;
-          onUnblock.onNext(pair.first.second);
-          friendship.setStatus(FriendshipRealm.DEFAULT);
-          friendship.setAnimateAdd(true);
-          contactAdapter.notifyItemChanged(pair.first.first);
+          //Friendship friendship = (Friendship) pair.first.second;
+          //onUnblock.onNext(pair.first.second);
+          //friendship.setStatus(FriendshipRealm.DEFAULT);
+          //friendship.setAnimateAdd(true);
+          //contactAdapter.notifyItemChanged(pair.first.first);
         }));
   }
 
@@ -297,18 +296,17 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
       boolean shouldAdd = false;
       if (obj instanceof Contact) {
         Contact contact = (Contact) obj;
-        if (!StringUtils.isEmpty(contact.getName()) && contact.getName()
-            .toLowerCase()
-            .startsWith(search)) {
+        if (!StringUtils.isEmpty(contact.getName()) &&
+            contact.getName().toLowerCase().startsWith(search)) {
           shouldAdd = true;
         }
       } else if (obj instanceof Recipient) {
         Recipient recipient = (Recipient) obj;
-        if (!StringUtils.isEmpty(search) && ((!StringUtils.isEmpty(recipient.getDisplayName())
-            && recipient.getDisplayName().toLowerCase().startsWith(search))
-            || (recipient.getUsername() != null && recipient.getUsername()
-            .toLowerCase()
-            .startsWith(search)))) {
+        if (!StringUtils.isEmpty(search) &&
+            ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
+                recipient.getDisplayName().toLowerCase().startsWith(search)) ||
+                (recipient.getUsername() != null &&
+                    recipient.getUsername().toLowerCase().startsWith(search)))) {
           shouldAdd = true;
         }
       }
@@ -390,9 +388,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
-    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions)
-        && addressBook.get()
-        && !StringUtils.isEmpty(user.getPhone());
+    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions) &&
+        addressBook.get() &&
+        !StringUtils.isEmpty(user.getPhone());
 
     layoutBottom.removeAllViews();
 
@@ -450,9 +448,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   private void openCloseContactsView(boolean open, boolean animate) {
 
     int rotation = open ? 180 : 0;
-    int translation = open ? 0 : (viewFriendsFBLoad.getHeight()
-        + viewFriendsAddressBookLoad.getHeight()
-        + screenUtils.dpToPx(1));
+    int translation = open ? 0 : (viewFriendsFBLoad.getHeight() +
+        viewFriendsAddressBookLoad.getHeight() +
+        screenUtils.dpToPx(1));
     // + 1 because of the dividers 2 * 0.5dp
 
     if (animate) {
@@ -665,10 +663,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     return onUnblock;
   }
 
-  @Override public void onAddSuccess(Friendship friendship) {
-    contactAdapter.updateAdd(friendship.getFriend());
-  }
-
   @Override public void onAddError() {
     Toast.makeText(context(),
         EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
@@ -696,8 +690,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     if (isSearchMode) {
       searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
       this.searchResult = searchResult;
-      this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
-          .equals(user.getUsername()));
+      this.searchResult.setMyself(searchResult.getUsername() != null &&
+          searchResult.getUsername().equals(user.getUsername()));
       updateSearch();
     }
   }

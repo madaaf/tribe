@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class UserLiveCoInviteAdapterDelegate extends RecipientGridAdapterDelegat
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     Recipient recipient = items.get(position);
-    return recipient instanceof Friendship && !recipient.isFake() && (recipient.isOnline()
+    return !recipient.isFake() && (recipient.isOnline()
         || recipient.isLive());
   }
 

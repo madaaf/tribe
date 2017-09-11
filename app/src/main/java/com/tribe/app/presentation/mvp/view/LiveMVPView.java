@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
 import android.content.Context;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
@@ -13,7 +12,8 @@ public interface LiveMVPView extends MVPView {
 
   Context context();
 
-  void renderFriendshipList(List<Friendship> friendshipList);
+  // TODO REPLACE WITH SHORTCUTS
+  //void renderFriendshipList(List<Friendship> friendshipList);
 
   void onRoomInfos(Room room);
 
@@ -25,7 +25,8 @@ public interface LiveMVPView extends MVPView {
 
   void onAddError();
 
-  void onAddSuccess(Friendship friendship);
+  // TODO REPLACE WITH SHORTCUTS
+  //void onAddSuccess(Friendship friendship);
 
   void randomRoomAssignedSubscriber(String roomId);
 

@@ -10,7 +10,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import io.realm.RealmList;
@@ -77,20 +77,27 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       e.printStackTrace();
     }
 
-    JsonArray resultsFriendships = result.getAsJsonArray("friendships");
-    RealmList<FriendshipRealm> realmListFriendships = new RealmList();
-    List<Invite> listInvites = new ArrayList<>();
+    RealmList<ShortcutRealm> listShortcuts = new RealmList<>();
 
-    if (resultsFriendships != null) {
-      for (JsonElement obj : resultsFriendships) {
-        if (!(obj instanceof JsonNull)) {
-          FriendshipRealm friendshipRealm = gson.fromJson(obj, FriendshipRealm.class);
-          realmListFriendships.add(friendshipRealm);
+    if (result.has("shortcuts") && !(result.get("shortcuts") instanceof JsonNull)) {
+      JsonObject resultsShortcuts = result.getAsJsonObject("shortcuts");
+      if (resultsShortcuts != null) {
+        if (resultsShortcuts.has("online") &&
+            !(resultsShortcuts.get("online") instanceof JsonNull)) {
+          JsonArray shortcutsOnline = resultsShortcuts.getAsJsonArray("online");
+          for (JsonElement obj : shortcutsOnline) {
+            if (!(obj instanceof JsonNull)) {
+              ShortcutRealm shortcut = gson.fromJson(obj, ShortcutRealm.class);
+              if (shortcut != null) listShortcuts.add(shortcut);
+            }
+          }
         }
       }
+
+      userRealm.setShortcuts(listShortcuts);
     }
 
-    userRealm.setFriendships(realmListFriendships);
+    List<Invite> listInvites = new ArrayList<>();
 
     if (result.has("invites") && !(result.get("invites") instanceof JsonNull)) {
       JsonArray resultsInvites = result.getAsJsonArray("invites");

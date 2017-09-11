@@ -5,26 +5,20 @@ import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.adapter.FriendshipsAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.FriendshipsLayoutManager;
-import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import java.util.List;
 import javax.inject.Inject;
-import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -42,11 +36,11 @@ public class SettingsManageFriendshipsView extends FrameLayout {
 
   // VARIABLES
   private FriendshipsLayoutManager layoutManager;
-  private FriendshipsAdapter adapter;
+  //private FriendshipsAdapter adapter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
-  private PublishSubject<Friendship> onClickMute = PublishSubject.create();
+  //private PublishSubject<Friendship> onClickMute = PublishSubject.create();
   private PublishSubject<Recipient> onClickRemove = PublishSubject.create();
 
   public SettingsManageFriendshipsView(Context context, AttributeSet attrs) {
@@ -75,39 +69,39 @@ public class SettingsManageFriendshipsView extends FrameLayout {
     itemAnimator.setSupportsChangeAnimations(false);
     recyclerView.setItemAnimator(itemAnimator);
 
-    adapter = new FriendshipsAdapter(getContext());
+    //adapter = new FriendshipsAdapter(getContext());
 
-    recyclerView.setAdapter(adapter);
+    //recyclerView.setAdapter(adapter);
     recyclerView.setHasFixedSize(true);
     recyclerView.addItemDecoration(
         new DividerFirstLastItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10), 0));
 
-    subscriptions.add(adapter.onClickMute()
-        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-        .flatMap(friendship -> {
-          if (!friendship.isMute()) {
-            return DialogFactory.dialog(getContext(),
-                getContext().getString(R.string.manage_friendships_mute_alert_title),
-                getContext().getString(R.string.manage_friendships_mute_alert_description),
-                getContext().getString(R.string.manage_friendships_mute_alert_mute),
-                getContext().getString(R.string.manage_friendships_mute_alert_cancel));
-          } else {
-            return Observable.just(true);
-          }
-        }, (friendship, proceed) -> Pair.create(friendship, proceed))
-        .filter(pair -> {
-          if (!pair.second) {
-            pair = Pair.create(pair.first, false);
-            adapter.reset(pair.first);
-          }
-
-          return pair.second;
-        })
-        .subscribe(pair -> onClickMute.onNext(pair.first)));
-
-    subscriptions.add(adapter.onClickRemove()
-        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-        .subscribe(onClickRemove));
+    //subscriptions.add(adapter.onClickMute()
+    //    .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
+    //    .flatMap(friendship -> {
+    //      if (!friendship.isMute()) {
+    //        return DialogFactory.dialog(getContext(),
+    //            getContext().getString(R.string.manage_friendships_mute_alert_title),
+    //            getContext().getString(R.string.manage_friendships_mute_alert_description),
+    //            getContext().getString(R.string.manage_friendships_mute_alert_mute),
+    //            getContext().getString(R.string.manage_friendships_mute_alert_cancel));
+    //      } else {
+    //        return Observable.just(true);
+    //      }
+    //    }, (friendship, proceed) -> Pair.create(friendship, proceed))
+    //    .filter(pair -> {
+    //      if (!pair.second) {
+    //        pair = Pair.create(pair.first, false);
+    //        adapter.reset(pair.first);
+    //      }
+    //
+    //      return pair.second;
+    //    })
+    //    .subscribe(pair -> onClickMute.onNext(pair.first)));
+    //
+    //subscriptions.add(adapter.onClickRemove()
+    //    .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
+    //    .subscribe(onClickRemove));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -130,23 +124,7 @@ public class SettingsManageFriendshipsView extends FrameLayout {
   //   PUBLIC    //
   /////////////////
 
-  public void renderUnblockedFriendshipList(List<Friendship> friendshipList) {
-    adapter.setItems(friendshipList);
-  }
-
-  public void remove(Friendship friendship) {
-    adapter.remove(friendship);
-  }
-
   /**
    * OBSERVABLES
    */
-
-  public Observable<Friendship> onClickMute() {
-    return onClickMute;
-  }
-
-  public Observable<Recipient> onClickRemove() {
-    return onClickRemove;
-  }
 }

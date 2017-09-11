@@ -14,8 +14,6 @@ import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.entity.BookRoomLinkEntity;
-import com.tribe.app.data.network.entity.CreateFriendshipEntity;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
@@ -27,7 +25,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
@@ -36,7 +33,6 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -158,7 +154,7 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public Observable<UserRealm> userInfos(String userId) {
     return this.tribeApi.getUserInfos(
         context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
-            context.getString(R.string.friendshipfragment_info),
+            context.getString(R.string.shortcut_infos),
             context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
@@ -167,10 +163,6 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.getUserListInfos(
         context.getString(R.string.lookup_userid, userIdsListFormated,
             context.getString(R.string.userfragment_infos)));
-  }
-
-  @Override public Observable<List<FriendshipRealm>> friendships() {
-    return null;
   }
 
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
@@ -310,7 +302,6 @@ public class CloudUserDataStore implements UserDataStore {
     return accessToken != null ? this.loginApi.linkFacebook(accessToken)
         : this.loginApi.unlinkAuthId(LoginApi.AUTH_ID_FACEBOOK);
   }
-
 
   @Override
   public Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber) {
@@ -526,15 +517,16 @@ public class CloudUserDataStore implements UserDataStore {
     }).map(searchResultRealm -> {
       SearchResultRealm searchResultRealmRet = new SearchResultRealm();
 
-      if (searchResultRealm != null) {
-        FriendshipRealm fr = userCache.friendshipForUserId(searchResultRealm.getId());
-        searchResultRealmRet.setFriendshipRealm(fr);
-        searchResultRealmRet.setDisplayName(searchResultRealm.getDisplayName());
-        searchResultRealmRet.setPicture(searchResultRealm.getPicture());
-        searchResultRealmRet.setId(searchResultRealm.getId());
-        searchResultRealmRet.setUsername(searchResultRealm.getUsername());
-        searchResultRealmRet.setInvisibleMode(searchResultRealm.isInvisibleMode());
-      }
+      // TODO CHANGE WITH SHORTCUTS
+      //if (searchResultRealm != null) {
+      //  FriendshipRealm fr = userCache.friendshipForUserId(searchResultRealm.getId());
+      //  searchResultRealmRet.setFriendshipRealm(fr);
+      //  searchResultRealmRet.setDisplayName(searchResultRealm.getDisplayName());
+      //  searchResultRealmRet.setPicture(searchResultRealm.getPicture());
+      //  searchResultRealmRet.setId(searchResultRealm.getId());
+      //  searchResultRealmRet.setUsername(searchResultRealm.getUsername());
+      //  searchResultRealmRet.setInvisibleMode(searchResultRealm.isInvisibleMode());
+      //}
 
       searchResultRealmRet.setUsername(searchResultInit.getUsername());
       searchResultRealmRet.setKey(SEARCH_KEY);
@@ -549,78 +541,6 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<List<ContactABRealm>> findByValue(String username) {
     return null;
-  }
-
-  @Override public Observable<FriendshipRealm> createFriendship(String userId) {
-    StringBuffer buffer = new StringBuffer();
-    String mutationCreateFriendship = null;
-
-    buffer.append(context.getString(R.string.createFriendship_input, 0, userId,
-        context.getString(R.string.friendships_infos)));
-    mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(),
-        context.getString(R.string.userfragment_infos));
-    return this.tribeApi.createFriendship(mutationCreateFriendship)
-        .onErrorResumeNext(Observable.just(null))
-        .map(createFriendshipEntity -> {
-          FriendshipRealm friendshipRealm = null;
-
-          if (createFriendshipEntity != null &&
-              createFriendshipEntity.getNewFriendshipList() != null &&
-              createFriendshipEntity.getNewFriendshipList().size() > 0) {
-            friendshipRealm = createFriendshipEntity.getNewFriendshipList().get(0);
-            userCache.addFriendship(friendshipRealm);
-          }
-
-          return friendshipRealm;
-        })
-        .doOnNext(friendshipRealm -> {
-          if (friendshipRealm != null) {
-            contactCache.changeSearchResult(friendshipRealm.getFriend().getUsername(),
-                friendshipRealm);
-          }
-        });
-  }
-
-  public Observable<Void> createFriendships(String... userIds) {
-    StringBuffer buffer = new StringBuffer();
-    String mutationCreateFriendship = null;
-
-    int count = 0;
-    for (String id : userIds) {
-      buffer.append(context.getString(R.string.createFriendship_input, count, id,
-          context.getString(R.string.friendships_infos)));
-      count++;
-    }
-
-    mutationCreateFriendship = context.getString(R.string.friendship_mutation, buffer.toString(),
-        context.getString(R.string.userfragment_infos));
-
-    return (StringUtils.isEmpty(mutationCreateFriendship) ? Observable.just(
-        new CreateFriendshipEntity())
-        : tribeApi.createFriendship(mutationCreateFriendship)).onErrorResumeNext(
-        Observable.just(null)).doOnNext(createFriendshipEntity -> {
-
-      if (createFriendshipEntity != null &&
-          createFriendshipEntity.getNewFriendshipList() != null &&
-          createFriendshipEntity.getNewFriendshipList().size() > 0) {
-        for (FriendshipRealm fr : createFriendshipEntity.getNewFriendshipList()) {
-          userCache.addFriendship(fr);
-        }
-      }
-    }).map(createFriendshipEntity -> null);
-  }
-
-  @Override public Observable<Void> removeFriendship(String friendshipId) {
-    StringBuffer buffer = new StringBuffer();
-    String mutationRemoveFriendship = null;
-
-    buffer.append(context.getString(R.string.removeFriendship_input, 0, friendshipId,
-        context.getString(R.string.friendships_infos)));
-    mutationRemoveFriendship =
-        context.getString(R.string.friendship_mutation, buffer.toString(), "");
-    return this.tribeApi.removeFriendship(mutationRemoveFriendship)
-        .onErrorResumeNext(throwable -> Observable.empty())
-        .doOnNext(aVoid -> userCache.removeFriendship(friendshipId));
   }
 
   @Override public Observable<Void> notifyFBFriends() {
@@ -646,16 +566,6 @@ public class CloudUserDataStore implements UserDataStore {
   private final Action1<UserRealm> saveToCacheUser = userRealm -> {
     if (userRealm != null) {
       CloudUserDataStore.this.userCache.put(userRealm);
-
-      if (userRealm.getFriendships() != null) {
-        for (FriendshipRealm friendshipRealm : userRealm.getFriendships()) {
-          if (friendshipRealm.isLive()) {
-            liveCache.putLive(friendshipRealm.getId());
-          } else {
-            liveCache.removeLive(friendshipRealm.getId());
-          }
-        }
-      }
 
       if (userRealm.getInvites() != null) {
         for (Invite newInvite : userRealm.getInvites()) {
@@ -739,37 +649,6 @@ public class CloudUserDataStore implements UserDataStore {
     return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
   }
 
-  @Override public Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      List<Pair<String, String>> values) {
-    StringBuilder friendshipInputBuilder = new StringBuilder();
-
-    for (Pair<String, String> value : values) {
-      if (value.first.equals(FriendshipRealm.MUTE)) {
-        friendshipInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
-        friendshipInputBuilder.append(",");
-      } else if (value.first.equals(FriendshipRealm.STATUS)) {
-        friendshipInputBuilder.append(value.first + ": " + value.second);
-        friendshipInputBuilder.append(",");
-      } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
-        friendshipInputBuilder.append(value.first + ": \"" + value.second + "\"");
-        friendshipInputBuilder.append(",");
-      }
-    }
-
-    String friendshipInput =
-        friendshipInputBuilder.length() > 0 ? friendshipInputBuilder.substring(0,
-            friendshipInputBuilder.length() - 1) : "";
-
-    String request = context.getString(R.string.update_friendship, friendshipId, friendshipInput);
-
-    if (!StringUtils.isEmpty(friendshipInput)) {
-      return this.tribeApi.updateFriendship(request)
-          .doOnNext(friendshipRealm -> userCache.updateFriendship(friendshipRealm));
-    } else {
-      return Observable.empty();
-    }
-  }
-
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {
       if (response != null &&
@@ -793,7 +672,6 @@ public class CloudUserDataStore implements UserDataStore {
     File groupAvatarFile = FileUtils.getAvatarForGroupId(context, groupId, FileUtils.PHOTO);
     if (groupAvatarFile != null && groupAvatarFile.exists()) groupAvatarFile.delete();
   }
-
 
   @Override public Observable<Void> sendInvitations() {
     return growthApi.sendInvitations(PreferencesUtils.getLookup(lookupResult))

@@ -4,8 +4,8 @@ import android.content.Context;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -68,12 +68,12 @@ public class ContactCacheImpl implements ContactCache {
         searchResultRealm.setUsername(searchResult.getUsername());
         searchResultRealm.setId(searchResult.getId());
         searchResultRealm.setInvisibleMode(searchResult.isInvisibleMode());
-        if (searchResult.getFriendshipRealm() != null) {
-          searchResultRealm.setFriendshipRealm(obsRealm.where(FriendshipRealm.class)
-              .equalTo("id", searchResult.getFriendshipRealm().getId())
+        if (searchResult.getShortcutRealm() != null) {
+          searchResultRealm.setShortcutRealm(obsRealm.where(ShortcutRealm.class)
+              .equalTo("id", searchResult.getShortcutRealm().getId())
               .findFirst());
         } else {
-          searchResultRealm.setFriendshipRealm(null);
+          searchResultRealm.setShortcutRealm(null);
         }
         searchResultRealm.setSearchDone(searchResult.isSearchDone());
       }
@@ -87,19 +87,20 @@ public class ContactCacheImpl implements ContactCache {
     }
   }
 
-  @Override public void changeSearchResult(String username, FriendshipRealm friendshipRealm) {
+  @Override public void changeSearchResult(String username, ShortcutRealm shortcutRealm) {
     Realm obsRealm = Realm.getDefaultInstance();
     SearchResultRealm resultRealm =
         obsRealm.where(SearchResultRealm.class).equalTo("username", username).findFirst();
-    FriendshipRealm friendshipManaged =
-        obsRealm.where(FriendshipRealm.class).equalTo("id", friendshipRealm.getId()).findFirst();
+    ShortcutRealm shortcutManaged =
+        obsRealm.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
 
     try {
       if (resultRealm != null) {
         obsRealm.beginTransaction();
-        friendshipManaged.setBlocked(friendshipRealm.isBlocked());
-        friendshipManaged.setStatus(friendshipRealm.getStatus());
-        resultRealm.setFriendshipRealm(friendshipManaged);
+        // TODO shortcuts
+        //shortcutManaged.setBlocked(shortcutManaged.isBlocked());
+        //shortcutManaged.setStatus(shortcutManaged.getStatus());
+        //resultRealm.setShortcutRealm(friendshipManaged);
         obsRealm.commitTransaction();
       }
     } catch (IllegalStateException ex) {
@@ -207,8 +208,8 @@ public class ContactCacheImpl implements ContactCache {
     return realm.where(SearchResultRealm.class)
         .findAll()
         .asObservable()
-        .filter(searchResultRealmList -> searchResultRealmList.isLoaded()
-            && searchResultRealmList.size() > 0)
+        .filter(searchResultRealmList -> searchResultRealmList.isLoaded() &&
+            searchResultRealmList.size() > 0)
         .map(searchResultRealmList -> searchResultRealmList.get(0))
         .map(o -> realm.copyFromRealm(o))
         .unsubscribeOn(AndroidSchedulers.mainThread());

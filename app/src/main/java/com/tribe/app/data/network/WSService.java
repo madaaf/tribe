@@ -12,7 +12,6 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.deserializer.JsonToModel;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
@@ -26,7 +25,6 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -42,9 +40,6 @@ import timber.log.Timber;
       "CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE";
 
   public static final String USER_SUFFIX = "___u";
-  public static final String FRIENDSHIP_CREATED_SUFFIX = "___fc";
-  public static final String FRIENDSHIP_UDPATED_SUFFIX = "___fu";
-  public static final String FRIENDSHIP_REMOVED_SUFFIX = "___fr";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
   public static final String RANDOM_ROOM_ASSIGNED = "___ra";
@@ -284,23 +279,6 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
 
-    persistentSubscriptions.add(jsonToModel.onCreatedFriendship()
-        .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .flatMap(friendshipId -> {
-          String ids = "\"" + friendshipId + "\"";
-          final String requestFriendshipsInfos =
-              getApplicationContext().getString(R.string.friendships_details, ids,
-                  getApplicationContext().getString(R.string.friendshipfragment_info),
-                  getApplicationContext().getString(R.string.userfragment_infos));
-          return this.tribeApi.getUserInfos(requestFriendshipsInfos);
-        }, (s, userRealmInfos) -> userRealmInfos)
-        .subscribe(userRealmInfos -> {
-          userCache.addFriendship(userRealmInfos.getFriendships().first());
-        }));
-
-    persistentSubscriptions.add(jsonToModel.onRemovedFriendship().subscribe(friendshipRealm -> {
-      userCache.removeFriendship(friendshipRealm);
-    }));
   }
 
   private void initSubscriptions() {
@@ -308,34 +286,29 @@ import timber.log.Timber;
 
     String hash = generateHash();
 
-    sendSubscription(getApplicationContext().getString(R.string.subscription_friendshipCreated,
-        hash + FRIENDSHIP_CREATED_SUFFIX));
-
-    sendSubscription(getApplicationContext().getString(R.string.subscription_friendshipRemoved,
-        hash + FRIENDSHIP_REMOVED_SUFFIX));
-
     sendSubscription(getApplicationContext().getString(R.string.subscription_inviteCreated,
         hash + INVITE_CREATED_SUFFIX));
 
     sendSubscription(getApplicationContext().getString(R.string.subscription_inviteRemoved,
         hash + INVITE_REMOVED_SUFFIX));
 
-    tempSubscriptions.add(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
-      int count = 0;
-
-      for (FriendshipRealm friendshipRealm : friendshipList) {
-        if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
-              hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
-
-          sendSubscription(
-              getApplicationContext().getString(R.string.subscription_friendshipUpdated,
-                  hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
-
-          count++;
-        }
-      }
-    }).subscribe());
+    // TODO REPLACE WITH SHORTCUTS
+    //tempSubscriptions.add(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
+    //  int count = 0;
+    //
+    //  for (FriendshipRealm friendshipRealm : friendshipList) {
+    //    if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
+    //      sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+    //          hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
+    //
+    //      sendSubscription(
+    //          getApplicationContext().getString(R.string.subscription_friendshipUpdated,
+    //              hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
+    //
+    //      count++;
+    //    }
+    //  }
+    //}).subscribe());
   }
 
   private void sendSubscription(String body) {

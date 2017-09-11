@@ -13,11 +13,10 @@ import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ import rx.Observable;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
     this.searchResultRealmDataMapper =
-        new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
+        new SearchResultRealmDataMapper();
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -75,7 +74,9 @@ import rx.Observable;
 
   @Override public Observable<User> userInfos(String userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userInfos(userId).doOnError(throwable -> throwable.printStackTrace()).map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+    return userDataStore.userInfos(userId)
+        .doOnError(throwable -> throwable.printStackTrace())
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {
@@ -85,7 +86,7 @@ import rx.Observable;
     }).map(userRealm -> this.userRealmDataMapper.transform(userRealm, false));
   }
 
-  @Override public Observable<List<Friendship>> friendships() {
+  @Override public Observable<List<Shortcut>> shortcuts() {
     return null;
   }
 
@@ -163,46 +164,10 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Friendship> createFriendship(String userId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createFriendship(userId).map(friendshipRealm -> {
-      if (friendshipRealm != null) {
-        return this.userRealmDataMapper.getFriendshipRealmDataMapper().transform(friendshipRealm);
-      } else {
-        return null;
-      }
-    });
-  }
-
-  @Override public Observable<Void> createFriendships(String... userIds) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createFriendships(userIds);
-  }
-
-  @Override public Observable<Void> removeFriendship(String friendshipId) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.removeFriendship(friendshipId);
-  }
-
   @Override public Observable<Void> notifyFBFriends() {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.notifyFBFriends();
-  }
-
-  @Override public Observable<Friendship> updateFriendship(String friendshipId,
-      List<Pair<String, String>> values) {
-    final CloudUserDataStore cloudDataStore =
-        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.updateFriendship(friendshipId, values)
-        .map(this.userRealmDataMapper.getFriendshipRealmDataMapper()::transform);
-  }
-
-  @Override public Observable<List<Friendship>> getBlockedFriendshipList() {
-    return null;
   }
 
   @Override public Observable<String> getHeadDeepLink(String url) {
@@ -229,9 +194,5 @@ import rx.Observable;
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.reportUser(userId);
-  }
-
-  @Override public Observable<List<Friendship>> unblockedFriendships() {
-    return null;
   }
 }

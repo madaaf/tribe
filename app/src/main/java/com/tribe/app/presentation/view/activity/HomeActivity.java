@@ -35,14 +35,11 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -359,31 +356,32 @@ public class HomeActivity extends BaseActivity
       List<Contact> result = new ArrayList<>();
       Map<String, Contact> mapContact = new HashMap<>();
 
-      if (getCurrentUser().getFriendships() == null) {
-        result.addAll(contactList);
-      } else {
-        for (Contact contact : contactList) {
-          boolean shouldAdd = true;
-
-          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-            User linkedUser = contact.getUserList().get(0);
-
-            for (Friendship friendship : getCurrentUser().getFriendships()) {
-              if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
-            }
-
-            if (mapContact.containsKey(linkedUser.getId())) {
-              shouldAdd = false;
-            } else {
-              mapContact.put(linkedUser.getId(), contact);
-            }
-          }
-
-          if (shouldAdd) {
-            result.add(contact);
-          }
-        }
-      }
+      // TODO CHANGE WITH SHORTCUTS
+      //if (getCurrentUser().getFriendships() == null) {
+      result.addAll(contactList);
+      //} else {
+      //  for (Contact contact : contactList) {
+      //    boolean shouldAdd = true;
+      //
+      //    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+      //      User linkedUser = contact.getUserList().get(0);
+      //
+      //      for (Friendship friendship : getCurrentUser().getFriendships()) {
+      //        if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
+      //      }
+      //
+      //      if (mapContact.containsKey(linkedUser.getId())) {
+      //        shouldAdd = false;
+      //      } else {
+      //        mapContact.put(linkedUser.getId(), contact);
+      //      }
+      //    }
+      //
+      //    if (shouldAdd) {
+      //      result.add(contact);
+      //    }
+      //  }
+      //}
 
       int nbContacts = result.size();
       boolean hasNewContacts = false;
@@ -454,23 +452,24 @@ public class HomeActivity extends BaseActivity
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
-                  Friendship friendship = (Friendship) recipient;
-                  homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                          : FriendshipRealm.HIDDEN);
-                } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-                  Friendship friendship = (Friendship) recipient;
-                  friendship.setMute(true);
-                  homeGridPresenter.updateFriendship(friendship.getId(), true,
-                      friendship.getStatus());
-                } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-                  Friendship friendship = (Friendship) recipient;
-                  friendship.setMute(false);
-                  homeGridPresenter.updateFriendship(friendship.getId(), false,
-                      friendship.getStatus());
-                } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+                //if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                //    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                //  Friendship friendship = (Friendship) recipient;
+                //  homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+                //      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+                //          : FriendshipRealm.HIDDEN);
+                //} else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+                //  Friendship friendship = (Friendship) recipient;
+                //  friendship.setMute(true);
+                //  homeGridPresenter.updateFriendship(friendship.getId(), true,
+                //      friendship.getStatus());
+                //} else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+                //  Friendship friendship = (Friendship) recipient;
+                //  friendship.setMute(false);
+                //  homeGridPresenter.updateFriendship(friendship.getId(), false,
+                //      friendship.getStatus());
+                //} else
+                if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
                   Invite invite = (Invite) recipient;
                   homeGridPresenter.declineInvite(invite.getId());
                 }
@@ -510,7 +509,7 @@ public class HomeActivity extends BaseActivity
         map(recipientList -> {
           DiffUtil.DiffResult diffResult = null;
           List<Recipient> temp = new ArrayList<>();
-          temp.add(new Friendship(Recipient.ID_HEADER));
+          //temp.add(new Friendship(Recipient.ID_HEADER));
           temp.addAll(recipientList);
 
           if (latestRecipientList.size() != 0) {
@@ -628,10 +627,10 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
-      if (recipient instanceof Friendship) {
-        Friendship fr = (Friendship) recipient;
-        homeGridPresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
-      }
+      //if (recipient instanceof Friendship) {
+      //  Friendship fr = (Friendship) recipient;
+      //  homeGridPresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
+      //}
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
@@ -672,19 +671,15 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
-      Bundle bundle = new Bundle();
-      bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
-      tagManager.setProperty(bundle);
+      //Bundle bundle = new Bundle();
+      //bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
+      //tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
   }
 
   @Override public void refreshGrid() {
-
-  }
-
-  @Override public void onFriendshipUpdated(Friendship friendship) {
 
   }
 
@@ -717,7 +712,8 @@ public class HomeActivity extends BaseActivity
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
 
         if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
-          homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
+          // TODO CHANGE WITH SHORTCUTS
+          //homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
         }
       } else if (intent.getData() != null) {
         Intent newIntent =
@@ -1004,7 +1000,8 @@ public class HomeActivity extends BaseActivity
               if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
                 declineInvitation(action.getSessionId());
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_FRIEND)) {
-                homeGridPresenter.createFriendship(action.getUserId());
+                // TODO CHANGE WITH SHORTCUTS
+                //homeGridPresenter.createFriendship(action.getUserId());
               } else if (action.getIntent() != null) {
                 navigator.navigateToIntent(HomeActivity.this, action.getIntent());
               }

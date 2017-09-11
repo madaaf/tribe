@@ -25,12 +25,10 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -124,7 +122,6 @@ public class LiveContainer extends FrameLayout {
   private int nbrCall = 0;
   private boolean blockOpenInviteView;
   private String userUnder13 = "", userUnder13Id = "";
-  private List<Friendship> friendshipList;
   private List<User> userList = new ArrayList<>();
 
   // DIMENS
@@ -206,7 +203,6 @@ public class LiveContainer extends FrameLayout {
   private void initRessource() {
     thresholdEnd =
         getContext().getResources().getDimensionPixelSize(R.dimen.threshold_open_live_invite);
-    friendshipList = user.getFriendships();
     userList = new ArrayList<>();
   }
 
@@ -515,9 +511,10 @@ public class LiveContainer extends FrameLayout {
       userUnder13 = displayName;
       userUnder13Id = userId;
 
-      for (Friendship fr : friendshipList) {
-        userList.add(fr.getFriend());
-      }
+      // TODO REPLACE WITH SHORTCUTS
+      //for (Friendship fr : friendshipList) {
+      //  userList.add(fr.getFriend());
+      //}
 
       for (User user : userList) {
         if (user.getId().equals(userId)) {
@@ -555,17 +552,18 @@ public class LiveContainer extends FrameLayout {
   private void createTileForDrag() {
     viewInviteLive.setDragging(true);
 
-    Friendship friendship = (Friendship) currentTileView.getRecipient();
-
-    if (friendship.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
-      onDropDiceWithoutFbAuth.onNext(null);
-      return;
-    }
-
-    if (isGuestUnder13(friendship.getFriend())) {
-      onDroppedUnder13.onNext(userUnder13Id);
-      return;
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //Friendship friendship = (Friendship) currentTileView.getRecipient();
+    //
+    //if (friendship.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
+    //  onDropDiceWithoutFbAuth.onNext(null);
+    //  return;
+    //}
+    //
+    //if (isGuestUnder13(friendship.getFriend())) {
+    //  onDroppedUnder13.onNext(userUnder13Id);
+    //  return;
+    //}
 
     draggedTileView = new TileView(getContext(), currentTileView.getType());
     draggedTileView.setBackground(currentTileView.getPosition());

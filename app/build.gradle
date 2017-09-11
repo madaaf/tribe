@@ -243,12 +243,12 @@ dependencies {
   compile presentationDependencies.flexbox
   compile presentationDependencies.instacapture
 
-  androidTestCompile presentationTestDependencies.mockito
-  androidTestCompile presentationTestDependencies.dexmaker
-  androidTestCompile presentationTestDependencies.dexmakerMockito
-  androidTestCompile presentationTestDependencies.espresso
-  androidTestCompile presentationTestDependencies.androidAnnotations
-  androidTestCompile presentationTestDependencies.testingSupportLib
+  //androidTestCompile presentationTestDependencies.mockito
+  //androidTestCompile presentationTestDependencies.dexmaker
+  //androidTestCompile presentationTestDependencies.dexmakerMockito
+  //androidTestCompile presentationTestDependencies.espresso
+  //androidTestCompile presentationTestDependencies.androidAnnotations
+  //androidTestCompile presentationTestDependencies.testingSupportLib
 
   // Development
   compile developmentDependencies.leakCanary

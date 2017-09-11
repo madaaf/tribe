@@ -9,11 +9,10 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import java.util.Set;
@@ -58,9 +57,9 @@ public interface UserRepository {
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 
   /**
-   * Get an {@link Observable} which will emit a {@link List<Friendship>}
+   * Get an {@link Observable} which will emit a {@link List<Shortcut>}
    */
-  Observable<List<Friendship>> friendships();
+  Observable<List<Shortcut>> shortcuts();
 
   /**
    * Get an {@link Observable} which will emit a {@link User}
@@ -116,20 +115,6 @@ public interface UserRepository {
   Observable<Boolean> lookupUsername(String username);
 
   /**
-   * Get an {@link Observable} which will emit a {@link com.tribe.app.domain.entity.Friendship}
-   * containing infos
-   * about the contact.
-   */
-  Observable<Friendship> createFriendship(String userId);
-
-  Observable<Void> createFriendships(String... userIds);
-
-  /**
-   * Get an {@link Observable} which will emit a void
-   */
-  Observable<Void> removeFriendship(String userId);
-
-  /**
    * Get an {@link Observable} which will emit a {@link Contact} containing infos
    * about the contact.
    */
@@ -140,11 +125,6 @@ public interface UserRepository {
    */
   Observable<Void> notifyFBFriends();
 
-  Observable<Friendship> updateFriendship(final String friendshipId,
-      List<Pair<String, String>> values);
-
-  Observable<List<Friendship>> getBlockedFriendshipList();
-
   Observable<String> getHeadDeepLink(String url);
 
   Observable<Recipient> getRecipientInfos(String recipientId);
@@ -154,6 +134,4 @@ public interface UserRepository {
   Observable<User> getFbIdUpdated();
 
   Observable<Boolean> reportUser(String userId);
-
-  Observable<List<Friendship>> unblockedFriendships();
 }

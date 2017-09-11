@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
@@ -34,7 +33,6 @@ import timber.log.Timber;
 
   // OBSERABLES
   private PublishSubject<List<UserRealm>> onUserListUpdated = PublishSubject.create();
-  private PublishSubject<List<FriendshipRealm>> onFriendshipListUpdated = PublishSubject.create();
   private PublishSubject<String> onAddedOnline = PublishSubject.create();
   private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<List<String>> onAddedListOnline = PublishSubject.create();
@@ -44,8 +42,6 @@ import timber.log.Timber;
   private PublishSubject<String> onRemovedOnline = PublishSubject.create();
   private PublishSubject<String> onAddedLive = PublishSubject.create();
   private PublishSubject<String> onRemovedLive = PublishSubject.create();
-  private PublishSubject<String> onCreatedFriendship = PublishSubject.create();
-  private PublishSubject<String> onRemovedFriendship = PublishSubject.create();
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
@@ -62,7 +58,6 @@ import timber.log.Timber;
       JsonObject results = jsonObject.getAsJsonObject("data");
 
       List<UserRealm> updatedUserList = new ArrayList<>();
-      List<FriendshipRealm> updatedFriendshipList = new ArrayList<>();
 
       boolean shouldBulkLiveStatus = results.entrySet().size() > 5;
 
@@ -97,21 +92,6 @@ import timber.log.Timber;
               }
 
               updatedUserList.add(userRealm);
-            } else if (entry.getKey().contains(WSService.FRIENDSHIP_UDPATED_SUFFIX)) {
-              boolean shouldUpdateLiveStatus = false;
-
-              if (jo.has("is_live")) shouldUpdateLiveStatus = true;
-
-              FriendshipRealm friendshipRealm =
-                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
-
-              if (shouldUpdateLiveStatus && !StringUtils.isEmpty(friendshipRealm.getId())) {
-                if (friendshipRealm.isLive()) {
-                  onAddedLive.onNext(friendshipRealm.getId());
-                } else {
-                  onRemovedLive.onNext(friendshipRealm.getId());
-                }
-              }
             } else if (entry.getKey().contains(WSService.INVITE_CREATED_SUFFIX)) {
               Timber.d("Invite created : " + entry.getValue().toString());
               Invite invite = gson.fromJson(entry.getValue().toString(), Invite.class);
@@ -120,16 +100,6 @@ import timber.log.Timber;
               Timber.d("Invite removed : " + entry.getValue().toString());
               Invite invite = gson.fromJson(entry.getValue().toString(), Invite.class);
               onInviteRemoved.onNext(invite);
-            } else if (entry.getKey().contains(WSService.FRIENDSHIP_CREATED_SUFFIX)) {
-              Timber.d("Friendship created : " + entry.getValue().toString());
-              FriendshipRealm friendshipRealm =
-                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
-              onCreatedFriendship.onNext(friendshipRealm.getId());
-            } else if (entry.getKey().contains(WSService.FRIENDSHIP_REMOVED_SUFFIX)) {
-              Timber.d("Friendship removed : " + entry.getValue().toString());
-              FriendshipRealm friendshipRealm =
-                  gson.fromJson(entry.getValue().toString(), FriendshipRealm.class);
-              onRemovedFriendship.onNext(friendshipRealm.getId());
             } else if (entry.getKey().contains(WSService.RANDOM_ROOM_ASSIGNED)) {
               Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
               onRandomRoomAssigned.onNext(
@@ -196,16 +166,11 @@ import timber.log.Timber;
       }
 
       if (updatedUserList.size() > 0) onUserListUpdated.onNext(updatedUserList);
-      if (updatedFriendshipList.size() > 0) onFriendshipListUpdated.onNext(updatedFriendshipList);
     }
   }
 
   public Observable<List<UserRealm>> onUserListUpdated() {
     return onUserListUpdated;
-  }
-
-  public Observable<List<FriendshipRealm>> onFriendshipListUpdated() {
-    return onFriendshipListUpdated;
   }
 
   public Observable<String> onAddedOnline() {
@@ -230,14 +195,6 @@ import timber.log.Timber;
 
   public Observable<String> onRemovedLive() {
     return onRemovedLive;
-  }
-
-  public Observable<String> onCreatedFriendship() {
-    return onCreatedFriendship;
-  }
-
-  public Observable<String> onRemovedFriendship() {
-    return onRemovedFriendship;
   }
 
   public Observable<Invite> onInviteCreated() {

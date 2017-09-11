@@ -32,8 +32,6 @@ import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
@@ -152,10 +150,11 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .countdown(!recipient.isLive())
         .source(source);
 
-    if (recipient instanceof Friendship) {
-      Friendship fr = (Friendship) recipient;
-      builder.users(fr.getFriend());
-    }
+    // TODO REPLACE WITH SHORTCUTS
+    //if (recipient instanceof Friendship) {
+    //  Friendship fr = (Friendship) recipient;
+    //  builder.users(fr.getFriend());
+    //}
 
     if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
@@ -276,7 +275,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
+  //private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -423,7 +422,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         initSubscriptions();
 
-        livePresenter.loadFriendshipList();
+        //livePresenter.loadFriendshipList();
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
@@ -563,39 +562,40 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initSubscriptions() {
-    subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
-        viewLive.onLiveChanged().startWith(new HashMap<>()),
-        viewLive.onInvitesChanged().startWith(new HashMap<>()),
-        (friendshipList, liveMap, invitesMap) -> {
-          List<String> idsToFilter = new ArrayList<>();
-          idsToFilter.addAll(liveMap.keySet());
-          idsToFilter.addAll(invitesMap.keySet());
-
-          usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
-          Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-          List<Friendship> filteredFriendships = new ArrayList<>();
-          liveIsInvite = live.fromRoom();
-          if (live.getUsers() != null) {
-            for (Friendship fr : friendshipList) {
-              if (!live.hasUser(fr.getFriend().getId()) &&
-                  !idsToFilter.contains(fr.getFriend().getId())) {
-                filteredFriendships.add(fr);
-              }
-            }
-          } else {
-            for (Friendship fr : friendshipList) {
-              if (!idsToFilter.contains(fr.getFriend().getId())) {
-                filteredFriendships.add(fr);
-              }
-            }
-          }
-          return filteredFriendships;
-        })
-        .delay(500, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships,
-            live.getSource())));
+    // TODO REPLACE WITH SHORTCUTS
+    //subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
+    //    viewLive.onLiveChanged().startWith(new HashMap<>()),
+    //    viewLive.onInvitesChanged().startWith(new HashMap<>()),
+    //    (friendshipList, liveMap, invitesMap) -> {
+    //      List<String> idsToFilter = new ArrayList<>();
+    //      idsToFilter.addAll(liveMap.keySet());
+    //      idsToFilter.addAll(invitesMap.keySet());
+    //
+    //      usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
+    //      Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+    //
+    //      List<Friendship> filteredFriendships = new ArrayList<>();
+    //      liveIsInvite = live.fromRoom();
+    //      if (live.getUsers() != null) {
+    //        for (Friendship fr : friendshipList) {
+    //          if (!live.hasUser(fr.getFriend().getId()) &&
+    //              !idsToFilter.contains(fr.getFriend().getId())) {
+    //            filteredFriendships.add(fr);
+    //          }
+    //        }
+    //      } else {
+    //        for (Friendship fr : friendshipList) {
+    //          if (!idsToFilter.contains(fr.getFriend().getId())) {
+    //            filteredFriendships.add(fr);
+    //          }
+    //        }
+    //      }
+    //      return filteredFriendships;
+    //    })
+    //    .delay(500, TimeUnit.MILLISECONDS)
+    //    .observeOn(AndroidSchedulers.mainThread())
+    //    .subscribe(filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships,
+    //        live.getSource())));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
@@ -876,15 +876,16 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               .filter(x -> x == true)
               .subscribe(a -> share());
         } else {
-          livePresenter.createFriendship(user.getId());
+          // TODO CHANGE WITH SHORTCUTS
+          //livePresenter.createFriendship(user.getId());
         }
       }
     }));
 
-    subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
-      livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
-          FriendshipRealm.DEFAULT);
-    }));
+    //subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
+    //  livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
+    //      FriendshipRealm.DEFAULT);
+    //}));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
@@ -1050,9 +1051,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         Toast.LENGTH_SHORT).show();
   }
 
-  @Override public void onAddSuccess(Friendship friendship) {
-    userInfosNotificationView.update(friendship);
-  }
+  // TODO REPLACE WITH SHORTCUTS
+  //@Override public void onAddSuccess(Friendship friendship) {
+  //  userInfosNotificationView.update(friendship);
+  //}
 
   private void setNextDrawGame() {
     Game game = gameManager.getCurrentGame();
@@ -1211,9 +1213,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return onAnonymousReceived;
   }
 
-  @Override public void renderFriendshipList(List<Friendship> friendshipList) {
-    onUpdateFriendshipList.onNext(friendshipList);
-  }
+  // TODO REPLACE WITH SHORTCUTS
+  //@Override public void renderFriendshipList(List<Friendship> friendshipList) {
+  //  onUpdateFriendshipList.onNext(friendshipList);
+  //}
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
     Timber.d("random room assigned " + roomId);

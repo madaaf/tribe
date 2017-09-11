@@ -36,9 +36,7 @@ import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -487,48 +485,48 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsBlockedFriends =
         (SettingsBlockedFriendsView) viewStack.push(R.layout.view_settings_blocked_friends);
 
-    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
-      if (recipient instanceof Friendship) {
-        Friendship fr = (Friendship) recipient;
-        profilePresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
-      }
-    }));
+    //subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
+    //  if (recipient instanceof Friendship) {
+    //    Friendship fr = (Friendship) recipient;
+    //    profilePresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
+    //  }
+    //}));
 
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
         .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
             LiveActivity.SOURCE_FRIENDS)));
 
-    profilePresenter.loadBlockedFriendshipList();
+    //profilePresenter.loadBlockedFriendshipList();
   }
 
   private void setupManageFriendshipsView() {
     viewSettingsManageFriendships =
         (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
 
-    subscriptions.add(viewSettingsManageFriendships.onClickRemove()
-        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
-            ((recipient, labelType) -> {
-              if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
-                  Friendship friendship = (Friendship) recipient;
-                  profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                          : FriendshipRealm.HIDDEN);
-                }
-              }
+    //subscriptions.add(viewSettingsManageFriendships.onClickRemove()
+    //    .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+    //        ((recipient, labelType) -> {
+    //          if (labelType != null) {
+    //            if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+    //                .equals(LabelType.BLOCK_HIDE)) {
+    //              Friendship friendship = (Friendship) recipient;
+    //              profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+    //                  labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
+    //                      : FriendshipRealm.HIDDEN);
+    //            }
+    //          }
+    //
+    //          return recipient;
+    //        }))
+    //    .subscribe(recipient -> viewSettingsManageFriendships.remove((Friendship) recipient)));
+    //
+    //subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(friendship -> {
+    //  friendship.setMute(!friendship.isMute());
+    //  profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
+    //      friendship.getStatus());
+    //}).subscribe());
 
-              return recipient;
-            }))
-        .subscribe(recipient -> viewSettingsManageFriendships.remove((Friendship) recipient)));
-
-    subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(friendship -> {
-      friendship.setMute(!friendship.isMute());
-      profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-          friendship.getStatus());
-    }).subscribe());
-
-    profilePresenter.loadUnblockedFriendshipList();
+    //profilePresenter.loadUnblockedFriendshipList();
   }
 
   private void computeTitle(boolean forward, View to) {
@@ -595,18 +593,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void goToLauncher() {
-  }
-
-  @Override public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
-    if (viewSettingsBlockedFriends != null) {
-      viewSettingsBlockedFriends.renderBlockedFriendshipList(friendshipList);
-    }
-  }
-
-  @Override public void renderUnblockedFriendshipList(List<Friendship> friendshipList) {
-    if (viewSettingsManageFriendships != null) {
-      viewSettingsManageFriendships.renderUnblockedFriendshipList(friendshipList);
-    }
   }
 
   @Override public void onCreateRoom(Room room) {
