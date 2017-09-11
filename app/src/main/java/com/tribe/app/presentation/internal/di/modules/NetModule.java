@@ -25,6 +25,7 @@ import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateFriendshipDeserializer;
+import com.tribe.app.data.network.deserializer.CreateMessageDeserializer;
 import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.FriendshipRealmDeserializer;
@@ -49,6 +50,7 @@ import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -151,6 +153,7 @@ import timber.log.Timber;
         }.getType(), new TribeUserDeserializer(utcSimpleDate))
         .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
         .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
+        .registerTypeAdapter(MessageRealm.class, new CreateMessageDeserializer())
         .registerTypeAdapter(Date.class,
             new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
         .registerTypeAdapter(new TypeToken<List<UserRealm>>() {

@@ -8,6 +8,7 @@ import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -54,6 +55,8 @@ public interface UserDataStore {
   Observable<UserRealm> userInfos(final String userId);
 
   Observable<UserRealm> userMessage(final String[] userIds);
+
+  Observable<MessageRealm> createMessage(final String[] userIds, String data, String date);
 
   Observable<List<UserRealm>> userInfosList(List<String> userIds);
 

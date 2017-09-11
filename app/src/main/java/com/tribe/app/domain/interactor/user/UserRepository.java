@@ -57,6 +57,8 @@ public interface UserRepository {
 
   Observable<List<Message>> userMessageInfo(final String[] userIds);
 
+  Observable<Message> createMessage(final String[] userIds, String data);
+
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 
   /**

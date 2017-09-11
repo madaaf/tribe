@@ -21,42 +21,25 @@
         %2$s
         %3$s
     </string>
-
   <string name="messages.details" translatable="false">
-       {
-            user {
-                id
-                messages(usersIds:[%1$s]){
-                __typename
-                 id
-                  author {
-                      id
-                      display_name
-                      picture
-                 }
-                 ... on TextMessage {
-                      data
-                 }
-                  ... on EmojiMessage {
-                        data
+                {
+                  user {
+                    id
+                    messages(usersIds: [%1$s]) {
+                      ...MessagePayload
+                    }
                   }
-                 ... on ImageMessage {
-                       original {
-                           url
-                            filesize
-                            width
-                            height
-                        }
-                      resources {
-                            url
-                            filesize
-                            width
-                            height
-                         }
-                 }
-              }
-            }
-        }
+                }
+    %2$s
+    </string>
+
+  <string name="messages.create" translatable="false">
+        mutation {
+            createMessage(usersIds:[%1$s],  message : {type: TEXT, sent_at: \"%2$s\", data: \"%3$s\"}) {
+                    ...MessagePayload
+                  }
+                }
+       %4$s
     </string>
 
   <string name="user.infos.friendships" translatable="false">
@@ -85,12 +68,6 @@
             friend {
                 ...UserInfos
             }
-        }
-    </string>
-
-  <string name="messagefragment.info" translatable="false">
-        fragment MessageInfos on User {
-            id
         }
     </string>
 
@@ -289,6 +266,40 @@
             is_live
         }
   </string>
+
+  <string name="messagefragment.info" translatable="false">
+        fragment MessagePayload on MessageInterface {
+            __typename
+            id
+            author {
+              display_name
+            }
+            ... on EmojiMessage {
+              data
+            }
+            ... on TextMessage {
+              data
+            }
+            ... on ImageMessage {
+              original {
+                url
+                filesize
+                width
+                height
+              }
+              resources {
+                url
+                filesize
+                width
+                height
+              }
+            }
+            created_at
+            updated_at
+            sent_at
+          }
+  </string>
+
 
   <string name="groupfragment.info.members" translatable="false">
         fragment GroupInfos on Group {

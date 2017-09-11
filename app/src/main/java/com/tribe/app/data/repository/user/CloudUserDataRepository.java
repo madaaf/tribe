@@ -6,6 +6,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -19,6 +20,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,8 @@ import rx.Observable;
   private final PinRealmDataMapper pinRealmDataMapper;
   private final ContactRealmDataMapper contactRealmDataMapper;
   private final SearchResultRealmDataMapper searchResultRealmDataMapper;
+  private final MessageRealmDataMapper messageRealmDataMapper;
+  private final DateUtils dateUtils;
 
   /**
    * Constructs a {@link UserRepository}.
@@ -47,13 +51,16 @@ import rx.Observable;
    */
   @Inject public CloudUserDataRepository(UserDataStoreFactory dataStoreFactory,
       UserRealmDataMapper realmDataMapper, PinRealmDataMapper pinRealmDataMapper,
-      ContactRealmDataMapper contactRealmDataMapper) {
+      ContactRealmDataMapper contactRealmDataMapper,
+      MessageRealmDataMapper messageRealmDataMapper, DateUtils dateUtils) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
     this.searchResultRealmDataMapper =
         new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
+    this.messageRealmDataMapper = messageRealmDataMapper;
+    this.dateUtils = dateUtils;
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -89,6 +96,14 @@ import rx.Observable;
       messageList = this.userRealmDataMapper.transform(userRealm, false).getMessages();
       return messageList;
     });
+  }
+
+  @Override public Observable<Message> createMessage(String[] userIds, String data) {
+    String date = dateUtils.getUTCDateAsString();
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.createMessage(userIds, data, date).doOnError(throwable -> {
+      throwable.printStackTrace();
+    }).map(this.messageRealmDataMapper::transform);
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {

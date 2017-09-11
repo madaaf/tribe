@@ -13,6 +13,7 @@ import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -24,7 +25,7 @@ import javax.inject.Singleton;
 
   private UserRealmDataMapper userRealmDataMapper;
 
-  public MessageRealmDataMapper(UserRealmDataMapper userRealmDataMapper) {
+  @Inject public MessageRealmDataMapper(UserRealmDataMapper userRealmDataMapper) {
     this.userRealmDataMapper = userRealmDataMapper;
   }
 

@@ -112,6 +112,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<Message> createMessage(String[] userIds, String data) {
+    return null;
+  }
+
   @Override public Observable<User> getFbIdUpdated() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();

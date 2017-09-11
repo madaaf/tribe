@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -141,8 +142,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
     recyclerView.setItemAnimator(null);
-    recyclerView.setAdapter(messageAdapter);
+/*    layoutManager.setReverseLayout(true);
+    layoutManager.setStackFromEnd(true);*/
     recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setAdapter(messageAdapter);
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -212,6 +215,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       case MESSAGE_TEXT:
         message = new MessageText();
         ((MessageText) message).setMessage(content);
+        messagePresenter.createMessage(content);
         break;
       case MESSAGE_EMOJI:
         message = new MessageEmoji(content);
@@ -264,6 +268,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
+    Collections.reverse(messages);
+    for (Message message : messages) {
+      Timber.e("SOO : " + message.toString());
+    }
     messageAdapter.setItems(messages);
     scrollListToBottom();
 
@@ -272,5 +280,13 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void errorLoadingMessage() {
     Timber.e("SOEF errorLoadingMessage");
+  }
+
+  @Override public void successMessageCreated(Message message) {
+
+  }
+
+  @Override public void errorMessageCreation() {
+
   }
 }

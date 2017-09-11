@@ -11,6 +11,7 @@ import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -68,6 +69,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<UserRealm> userMessage(String[] userIds) {
+    return null;
+  }
+
+  @Override
+  public Observable<MessageRealm> createMessage(String[] userIds, String data, String date) {
     return null;
   }
 

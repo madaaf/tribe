@@ -33,7 +33,6 @@ import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.app.domain.interactor.live.LiveRepository;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
-import com.tribe.app.domain.interactor.user.UserMessageInfos;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.UIThread;
