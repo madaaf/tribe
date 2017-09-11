@@ -7,6 +7,7 @@
     >
 
   <com.tribe.app.presentation.view.widget.chat.ChatView
+      android:id="@+id/chatview"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_gravity="center"

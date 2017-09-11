@@ -272,7 +272,9 @@
             __typename
             id
             author {
+              id
               display_name
+              picture
             }
             ... on EmojiMessage {
               data

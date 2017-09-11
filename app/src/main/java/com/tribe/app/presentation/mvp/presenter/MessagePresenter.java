@@ -26,14 +26,12 @@ public class MessagePresenter implements Presenter {
     this.createMessage = createMessage;
   }
 
-  public void loadMessage() { //SOEF
-    String[] userIds = new String[] { "r18EgyK_b" };
+  public void loadMessage(String[] userIds) {
     userMessageInfos.setUserIds(userIds);
     userMessageInfos.execute(new GetMessageSubscriber());
   }
 
-  public void createMessage(String data) {
-    String[] userIds = new String[] { "r18EgyK_b" };
+  public void createMessage(String[] userIds, String data) {
     createMessage.setParams(userIds, data);
     createMessage.execute(new CreateMessageSubscriber());
   }

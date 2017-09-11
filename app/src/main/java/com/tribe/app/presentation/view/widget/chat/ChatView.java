@@ -60,6 +60,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private List<Message> items = new ArrayList<>();
   private List<User> users = new ArrayList<>();
   private boolean editTextChange = false, isHeart = false;
+  private String[] arrIds;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerView recyclerView;
@@ -94,6 +95,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     init();
     initDependencyInjector();
     initSubscriptions();
+  }
+
+  public void setChatId(String chatId) {
+    Timber.e("CHAT ID " + chatId);
+    List<String> userIds = new ArrayList<>();
+    userIds.add(chatId);
+    arrIds = userIds.toArray(new String[userIds.size()]);
+    messagePresenter.loadMessage(arrIds);
   }
 
   private void initSubscriptions() {
@@ -172,7 +181,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
-    messagePresenter.loadMessage();
     mock();
     setAnimation();
   }
@@ -215,7 +223,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       case MESSAGE_TEXT:
         message = new MessageText();
         ((MessageText) message).setMessage(content);
-        messagePresenter.createMessage(content);
+        messagePresenter.createMessage(arrIds, content);
         break;
       case MESSAGE_EMOJI:
         message = new MessageEmoji(content);
@@ -269,9 +277,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Collections.reverse(messages);
-    for (Message message : messages) {
-      Timber.e("SOO : " + message.toString());
-    }
+
     messageAdapter.setItems(messages);
     scrollListToBottom();
 
