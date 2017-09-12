@@ -56,7 +56,8 @@ public interface UserDataStore {
 
   Observable<UserRealm> userMessage(final String[] userIds);
 
-  Observable<MessageRealm> createMessage(final String[] userIds, String data, String date);
+  Observable<MessageRealm> createMessage(final String[] userIds, String type, String data,
+      String date);
 
   Observable<List<UserRealm>> userInfosList(List<String> userIds);
 

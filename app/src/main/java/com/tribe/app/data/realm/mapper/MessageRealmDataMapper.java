@@ -4,11 +4,11 @@ import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.presentation.view.widget.chat.Image;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import com.tribe.app.presentation.view.widget.chat.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.MessageText;
-import com.tribe.app.presentation.view.widget.chat.Image;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,15 +39,15 @@ import javax.inject.Singleton;
     Message message = null;
     if (messageRealm != null) {
       switch (messageRealm.get__typename()) {
-        case MessageRealm.MESSAGE_TEXT:
+        case Message.MESSAGE_TEXT:
           message = new MessageText(messageRealm.getId());
           ((MessageText) message).setMessage(messageRealm.getData());
           break;
-        case MessageRealm.EMOJI:
+        case Message.MESSAGE_EMOJI:
           message = new MessageEmoji(messageRealm.getId());
           ((MessageEmoji) message).setEmoji(messageRealm.getData());
           break;
-        case MessageRealm.IMAGE:
+        case Message.MESSAGE_IMAGE:
           message = new MessageImage(messageRealm.getId());
           ImageRealm o = messageRealm.getOriginal();
           List<ImageRealm> ressources = messageRealm.getResources();
@@ -98,13 +98,13 @@ import javax.inject.Singleton;
       messageRealm.set__typename(message.getType());
 
       switch (message.getType()) {
-        case MessageRealm.MESSAGE_TEXT:
+        case Message.MESSAGE_TEXT:
           messageRealm.setData(((MessageText) message).getMessage());
           break;
-        case MessageRealm.EMOJI:
+        case Message.MESSAGE_EMOJI:
           messageRealm.setData(((MessageEmoji) message).getEmoji());
           break;
-        case MessageRealm.IMAGE:
+        case Message.MESSAGE_IMAGE:
           Image o = ((MessageImage) message).getOriginal();
           List<Image> ressources = ((MessageImage) message).getRessources();
           messageRealm.setOriginal(userRealmDataMapper.transform(o));

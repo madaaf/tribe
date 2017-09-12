@@ -69,11 +69,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<UserRealm> userMessage(String[] userIds) {
-    return null;
+    return this.userCache.userMessage(userIds);
   }
 
   @Override
-  public Observable<MessageRealm> createMessage(String[] userIds, String data, String date) {
+  public Observable<MessageRealm> createMessage(String[] userIds, String type, String data, String date) {
     return null;
   }
 

@@ -9,9 +9,9 @@ import io.realm.RealmObject;
 
 public class MessageRealm extends RealmObject {
 
-  public static final String MESSAGE_TEXT = "TextMessage";
-  public static final String EMOJI = "EmojiMessage";
-  public static final String IMAGE = "ImageMessage";
+  public static final String TEXT = "TEXT";
+  public static final String EMOJI = "EMOJI";
+  public static final String IMAGE = "IMAGE";
 
   private String id;
   private UserRealm author;

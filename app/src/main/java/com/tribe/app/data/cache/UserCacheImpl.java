@@ -145,6 +145,10 @@ public class UserCacheImpl implements UserCache {
         .unsubscribeOn(AndroidSchedulers.mainThread());
   }
 
+  @Override public Observable<UserRealm> userMessage(String[] userIds) {
+    return null;
+  }
+
   @Override public Observable<List<FriendshipRealm>> friendships() {
     return realm.where(FriendshipRealm.class)
         .findAll()

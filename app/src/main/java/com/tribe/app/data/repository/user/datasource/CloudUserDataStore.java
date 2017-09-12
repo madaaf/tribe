@@ -168,9 +168,9 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override
-  public Observable<MessageRealm> createMessage(String[] userIds, String data, String date) {
+  public Observable<MessageRealm> createMessage(String[] userIds, String type, String data, String date) {
     return this.tribeApi.createMessage(
-        context.getString(R.string.messages_create, arrayToJson(userIds), date, data,
+        context.getString(R.string.messages_create, arrayToJson(userIds), type, date, data,
             context.getString(R.string.messagefragment_info)));
   }
 

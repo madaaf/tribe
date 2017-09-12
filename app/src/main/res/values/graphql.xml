@@ -35,11 +35,11 @@
 
   <string name="messages.create" translatable="false">
         mutation {
-            createMessage(usersIds:[%1$s],  message : {type: TEXT, sent_at: \"%2$s\", data: \"%3$s\"}) {
+            createMessage(usersIds:[%1$s],  message : {type: %2$s, sent_at: \"%3$s\", data: \"%4$s\"}) {
                     ...MessagePayload
                   }
                 }
-       %4$s
+       %5$s
     </string>
 
   <string name="user.infos.friendships" translatable="false">

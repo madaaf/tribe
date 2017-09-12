@@ -29,6 +29,8 @@ import rx.Observable;
 
   Observable<UserRealm> userInfos(String userId);
 
+  Observable<UserRealm> userMessage(String[] userIds);
+
   Observable<List<FriendshipRealm>> friendships();
 
   UserRealm userInfosNoObs(String userId);

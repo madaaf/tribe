@@ -51,8 +51,8 @@ import rx.Observable;
    */
   @Inject public CloudUserDataRepository(UserDataStoreFactory dataStoreFactory,
       UserRealmDataMapper realmDataMapper, PinRealmDataMapper pinRealmDataMapper,
-      ContactRealmDataMapper contactRealmDataMapper,
-      MessageRealmDataMapper messageRealmDataMapper, DateUtils dateUtils) {
+      ContactRealmDataMapper contactRealmDataMapper, MessageRealmDataMapper messageRealmDataMapper,
+      DateUtils dateUtils) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
@@ -98,10 +98,10 @@ import rx.Observable;
     });
   }
 
-  @Override public Observable<Message> createMessage(String[] userIds, String data) {
+  @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
     String date = dateUtils.getUTCDateAsString();
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.createMessage(userIds, data, date).doOnError(throwable -> {
+    return userDataStore.createMessage(userIds, type, data, date).doOnError(throwable -> {
       throwable.printStackTrace();
     }).map(this.messageRealmDataMapper::transform);
   }

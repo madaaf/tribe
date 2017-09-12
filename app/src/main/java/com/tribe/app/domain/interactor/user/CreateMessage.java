@@ -11,6 +11,7 @@ public class CreateMessage extends UseCase {
 
   private String[] userIds;
   private String data;
+  private String type;
   private UserRepository userRepository;
 
   @Inject
@@ -20,12 +21,13 @@ public class CreateMessage extends UseCase {
     this.userRepository = userRepository;
   }
 
-  public void setParams(String[] userIds, String data) {
+  public void setParams(String[] userIds, String data, String type) {
     this.userIds = userIds;
     this.data = data;
+    this.type = type;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.createMessage(userIds, data);
+    return this.userRepository.createMessage(userIds, type, data);
   }
 }

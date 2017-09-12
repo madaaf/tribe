@@ -31,8 +31,8 @@ public class MessagePresenter implements Presenter {
     userMessageInfos.execute(new GetMessageSubscriber());
   }
 
-  public void createMessage(String[] userIds, String data) {
-    createMessage.setParams(userIds, data);
+  public void createMessage(String[] userIds, String data, String type) {
+    createMessage.setParams(userIds, data, type);
     createMessage.execute(new CreateMessageSubscriber());
   }
 

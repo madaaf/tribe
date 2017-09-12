@@ -18,6 +18,7 @@ import butterknife.Unbinder;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -223,17 +224,19 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       case MESSAGE_TEXT:
         message = new MessageText();
         ((MessageText) message).setMessage(content);
-        messagePresenter.createMessage(arrIds, content);
+        messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT);
         break;
       case MESSAGE_EMOJI:
         message = new MessageEmoji(content);
         ((MessageEmoji) message).setEmoji(content);
+        messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI);
         break;
       case MESSAGE_IMAGE:
         message = new MessageImage(user.getId());
         Image o = new Image();
         o.setUrl(content);
         ((MessageImage) message).setOriginal(o);
+       // messagePresenter.createMessage(arrIds, content, MessageRealm.IMAGE);
         break;
     }
 

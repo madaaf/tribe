@@ -65,16 +65,9 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message i = items.get(position);
     if (stamp != null && stamp.getAuthor().getId().equals(i.getAuthor().getId())) {
-      Timber.e("SOEF STAMP "
-          + ((MessageText) stamp).getMessage()
-          + "  "
-          + stamp.getAuthor().getId()
-          + " CURRENT :  "
-          + ((MessageText) i).getMessage());
       vh.header.setVisibility(View.GONE);
     } else {
       vh.header.setVisibility(View.VISIBLE);
-      Timber.e("SOEF STAMP NULL");
     }
     stamp = i;
     vh.name.setText(i.getAuthor().getDisplayName());

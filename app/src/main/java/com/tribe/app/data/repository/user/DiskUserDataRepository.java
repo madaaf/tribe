@@ -112,7 +112,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Message> createMessage(String[] userIds, String data) {
+  @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
     return null;
   }
 
