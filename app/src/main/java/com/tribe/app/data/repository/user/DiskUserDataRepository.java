@@ -108,14 +108,6 @@ import rx.Observable;
         });
   }
 
-  @Override public Observable<List<Message>> userMessageInfo(String[] userIds) {
-    return null;
-  }
-
-  @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
-    return null;
-  }
-
   @Override public Observable<User> getFbIdUpdated() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();

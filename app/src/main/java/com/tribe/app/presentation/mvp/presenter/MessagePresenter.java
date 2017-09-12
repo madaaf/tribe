@@ -1,8 +1,8 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.CreateMessage;
-import com.tribe.app.domain.interactor.user.UserMessageInfos;
+import com.tribe.app.domain.interactor.chat.CreateMessage;
+import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.view.widget.chat.Message;

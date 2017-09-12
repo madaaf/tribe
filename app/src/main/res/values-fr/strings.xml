@@ -11,6 +11,9 @@
 	<string name="action_next">Suivant</string>
 	<string name="action_enter">Entrer</string>
 	<string name="action_start">Commencer</string>
+	<string name="action_unsend">Dés-envoyer</string>
+	<string name="action_hide">Masquer</string>
+	<string name="action_copy">Copier</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Ajouter en ami</string>
@@ -715,4 +718,8 @@
 	<!-- Shortcut -->
 	<string name="shortcut_name_regular_separator">,</string>
 	<string name="shortcut_name_last_separator">et</string>
+	
+	<!-- Chat -->
+	<string name="date_today">Aujourd\'hui</string>
+	<string name="date_yesterday">Hier</string>
 </resources>

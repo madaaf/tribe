@@ -28,7 +28,6 @@ import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
@@ -159,19 +158,6 @@ public class CloudUserDataStore implements UserDataStore {
         context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
             context.getString(R.string.friendshipfragment_info),
             context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
-  }
-
-  @Override public Observable<UserRealm> userMessage(String[] userIds) {
-    return this.tribeApi.getUserMessage(
-        context.getString(R.string.messages_details, arrayToJson(userIds),
-            context.getString(R.string.messagefragment_info)));
-  }
-
-  @Override
-  public Observable<MessageRealm> createMessage(String[] userIds, String type, String data, String date) {
-    return this.tribeApi.createMessage(
-        context.getString(R.string.messages_create, arrayToJson(userIds), type, date, data,
-            context.getString(R.string.messagefragment_info)));
   }
 
   public String arrayToJson(String[] array) {

@@ -130,6 +130,7 @@ import javax.inject.Named;
     return new CreateFriendships(userRepository, threadExecutor, postExecutionThread);
   }
 
+
   @Provides @PerActivity @Named("notifyFBFriends") UseCase provideNotifyFBFriends(
       NotifyFBFriends notifyFBFriends) {
     return notifyFBFriends;

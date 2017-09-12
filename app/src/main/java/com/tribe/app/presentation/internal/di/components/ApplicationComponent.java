@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v4.app.NotificationManagerCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.WSService;
@@ -18,6 +19,7 @@ import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
@@ -224,6 +226,10 @@ public interface ApplicationComponent {
 
   CloudGameDataRepository cloudGameRepository();
 
+  CloudChatDataRepository cloudChatRepository();
+
+  // DiskChatDataRepository diskChatRepository();
+
   CloudLiveDataRepository cloudLiveRepository();
 
   DiskLiveDataRepository diskLiveRepository();
@@ -245,6 +251,8 @@ public interface ApplicationComponent {
   UserCache userCache();
 
   LiveCache liveCache();
+
+  ChatCache chatCache();
 
   JobManager jobManager();
 

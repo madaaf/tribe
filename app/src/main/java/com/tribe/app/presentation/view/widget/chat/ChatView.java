@@ -236,7 +236,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         Image o = new Image();
         o.setUrl(content);
         ((MessageImage) message).setOriginal(o);
-       // messagePresenter.createMessage(arrIds, content, MessageRealm.IMAGE);
+        // messagePresenter.createMessage(arrIds, content, MessageRealm.IMAGE);
         break;
     }
 

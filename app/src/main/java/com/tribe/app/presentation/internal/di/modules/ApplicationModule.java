@@ -7,6 +7,8 @@ import android.support.v4.content.ContextCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.ChatCacheImpl;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
 import com.tribe.app.data.cache.LiveCache;
@@ -19,6 +21,8 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
+import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
@@ -28,6 +32,7 @@ import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.app.domain.interactor.live.LiveRepository;
@@ -106,8 +111,22 @@ import timber.log.Timber;
     return userDataRepository;
   }
 
+  @Provides @Singleton ChatRepository provideCloudChatRepository(
+      CloudChatDataRepository chatDataRepository) {
+    return chatDataRepository;
+  }
+
+  @Provides @Singleton ChatRepository provideDiskChatRepository(
+      DiskChatDataRepository chatDataRepository) {
+    return chatDataRepository;
+  }
+
   @Provides @Singleton UserCache provideUserCache(UserCacheImpl userCache) {
     return userCache;
+  }
+
+  @Provides @Singleton ChatCache provideChatCache(ChatCacheImpl chatCache) {
+    return chatCache;
   }
 
   @Provides @Singleton LiveCache provideLiveCache(LiveCacheImpl liveCache) {

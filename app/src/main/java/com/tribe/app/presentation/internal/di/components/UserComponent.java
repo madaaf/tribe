@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.components;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
@@ -74,6 +75,8 @@ import dagger.Component;
 
   void inject(TestActivity testActivity);
 
+  void inject(ChatView chatView);
+
   void inject(MessageAdapterDelegate messageAdapterDelegate);
 
   void inject(LifeNotification lifeNotification);
@@ -91,8 +94,6 @@ import dagger.Component;
   void inject(ScreenshotView screenshotView);
 
   void inject(GameDrawView gameDrawView);
-
-  void inject(ChatView chatView);
 
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
@@ -115,6 +116,8 @@ import dagger.Component;
   void inject(SearchPresenter searchPresenter);
 
   void inject(SettingsPresenter settingsPresenter);
+
+  void inject(MessagePresenter messagePresenter);
 
   void inject(SettingsProfileView settingsProfileView);
 

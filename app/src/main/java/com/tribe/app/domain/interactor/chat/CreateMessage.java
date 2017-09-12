@@ -1,8 +1,9 @@
-package com.tribe.app.domain.interactor.user;
+package com.tribe.app.domain.interactor.chat;
 
-import com.tribe.app.data.repository.user.CloudUserDataRepository;
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.domain.interactor.common.UseCase;
 import javax.inject.Inject;
 import rx.Observable;
@@ -12,13 +13,13 @@ public class CreateMessage extends UseCase {
   private String[] userIds;
   private String data;
   private String type;
-  private UserRepository userRepository;
+  private ChatRepository chatRepository;
 
   @Inject
-  public CreateMessage(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
+  public CreateMessage(CloudChatDataRepository chatRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
-    this.userRepository = userRepository;
+    this.chatRepository = chatRepository;
   }
 
   public void setParams(String[] userIds, String data, String type) {
@@ -28,6 +29,6 @@ public class CreateMessage extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.createMessage(userIds, type, data);
+    return this.chatRepository.createMessage(userIds, type, data);
   }
 }

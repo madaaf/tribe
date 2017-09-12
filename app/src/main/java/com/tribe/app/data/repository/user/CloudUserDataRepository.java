@@ -87,25 +87,6 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
-  @Override public Observable<List<Message>> userMessageInfo(String[] userIds) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userMessage(userIds).doOnError(throwable -> {
-      throwable.printStackTrace();
-    }).map(userRealm -> {
-      List<Message> messageList = new ArrayList<Message>();
-      messageList = this.userRealmDataMapper.transform(userRealm, false).getMessages();
-      return messageList;
-    });
-  }
-
-  @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
-    String date = dateUtils.getUTCDateAsString();
-    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.createMessage(userIds, type, data, date).doOnError(throwable -> {
-      throwable.printStackTrace();
-    }).map(this.messageRealmDataMapper::transform);
-  }
-
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.userInfosList(userIds).doOnError(throwable -> {
