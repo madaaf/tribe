@@ -87,10 +87,10 @@ public class StringUtils {
 
   public static String millisecondsToHhMmSs(long millis) {
     return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-        TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(
-            TimeUnit.MILLISECONDS.toHours(millis)),
-        TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(
-            TimeUnit.MILLISECONDS.toMinutes(millis)));
+        TimeUnit.MILLISECONDS.toMinutes(millis) -
+            TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+        TimeUnit.MILLISECONDS.toSeconds(millis) -
+            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
   }
 
   public static String getLastBitFromUrl(final String url) {
@@ -121,5 +121,18 @@ public class StringUtils {
     String path = uri.getPath();
     String linkId = path.substring(path.lastIndexOf('/') + 1);
     return linkId;
+  }
+
+  public static String arrayToJson(String[] array) {
+    String json = "\"";
+    for (int i = 0; i < array.length; i++) {
+      if (i == array.length - 1) {
+        json += array[i] + "\"";
+      } else {
+        json += array[i] + "\", \"";
+      }
+    }
+    if (array.length == 0) json += "\"";
+    return json;
   }
 }

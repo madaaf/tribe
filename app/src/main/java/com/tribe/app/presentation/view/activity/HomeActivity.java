@@ -40,6 +40,7 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -509,7 +510,7 @@ public class HomeActivity extends BaseActivity
         map(recipientList -> {
           DiffUtil.DiffResult diffResult = null;
           List<Recipient> temp = new ArrayList<>();
-          //temp.add(new Friendship(Recipient.ID_HEADER));
+          temp.add(new Shortcut(Recipient.ID_HEADER));
           temp.addAll(recipientList);
 
           if (latestRecipientList.size() != 0) {

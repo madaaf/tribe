@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -134,6 +135,8 @@ public class AvatarView extends RelativeLayout implements Avatar {
       Invite invite = (Invite) recipient;
       loadGroupAvatar(invite.getProfilePicture(), previousAvatar, invite.getId(),
           invite.getMembersPic());
+    } else if (recipient instanceof Shortcut) {
+      load(recipient.getProfilePicture());
     }
   }
 

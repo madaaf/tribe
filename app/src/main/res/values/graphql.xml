@@ -321,7 +321,7 @@
     reportUser(userId : \"%1$s\")
   </string>
 
-  <string name="shortcut.infos" translatable="false">
+  <string name="shortcutFragment.infos" translatable="false">
       fragment ShortcutInfos on Shortcut {
         id
         name
@@ -337,4 +337,21 @@
       }
   </string>
 
+  <string name="createShortcut" translatable="false">
+    createShortcut(userIds : [%1$s]) {
+      ...ShortcutInfos
+    }
+  </string>
+
+  <string name="updateShortcut" translatable="false">
+    updateUser(shortcutId : \"%1$s\": {
+                  %2$s
+              }) {
+                  ...ShortcutInfos
+              }
+  </string>
+
+  <string name="removeShortcut" translatable="false">
+    removeShortcut(shortcutId : \"%1$s\")
+  </string>
 </resources>

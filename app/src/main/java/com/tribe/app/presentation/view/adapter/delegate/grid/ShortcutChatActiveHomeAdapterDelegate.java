@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * Created by tiago on 01/18/2017.
  */
-public class UserChatActiveHomeAdapterDelegate extends RecipientGridAdapterDelegate {
+public class ShortcutChatActiveHomeAdapterDelegate extends RecipientGridAdapterDelegate {
 
-  public UserChatActiveHomeAdapterDelegate(Context context) {
+  public ShortcutChatActiveHomeAdapterDelegate(Context context) {
     super(context);
   }
 

@@ -174,12 +174,12 @@ import timber.log.Timber;
           realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
 
       if (userRealmRes != null) {
-        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
+        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes)));
       }
     });
 
     if (userRealm != null && userRealm.size() > 0) {
-      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
+      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0))));
     }
 
     return user;
@@ -193,7 +193,7 @@ import timber.log.Timber;
     UserRealm userDB =
         realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
     if (userDB != null) {
-      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
+      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB)));
     }
 
     realmInst.close();

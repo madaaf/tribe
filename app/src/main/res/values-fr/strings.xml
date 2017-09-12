@@ -11,6 +11,9 @@
 	<string name="action_next">Suivant</string>
 	<string name="action_enter">Entrer</string>
 	<string name="action_start">Commencer</string>
+	<string name="action_unsend">Dés-envoyer</string>
+	<string name="action_hide">Masquer</string>
+	<string name="action_copy">Copier</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Ajouter en ami</string>

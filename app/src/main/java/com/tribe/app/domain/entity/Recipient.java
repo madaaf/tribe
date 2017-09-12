@@ -27,7 +27,6 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   protected Date created_at;
   protected Date updated_at;
-  protected Boolean mute;
   protected int position;
   protected boolean animateAdd = false;
   protected AvatarModel avatarModel = null;
@@ -42,6 +41,10 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public void setUpdatedAt(Date updatedAt) {
     this.updated_at = updatedAt;
+  }
+
+  public Date getUpdatedAt() {
+    return this.updated_at;
   }
 
   public void setPosition(int position) {
@@ -83,29 +86,17 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public abstract String getUsername();
 
-  public abstract String getUsernameDisplay();
-
   public abstract String getProfilePicture();
 
   public abstract String getSubId();
 
   public abstract String getId();
 
-  public abstract Date getUpdatedAt();
-
   public abstract boolean isLive();
 
   public abstract boolean isOnline();
 
   public abstract Date getLastSeenAt();
-
-  public boolean isMute() {
-    return mute;
-  }
-
-  public void setMute(boolean mute) {
-    this.mute = mute;
-  }
 
   public boolean isFake() {
     return (getId().equals(Recipient.ID_EMPTY) ||

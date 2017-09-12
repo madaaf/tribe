@@ -9,6 +9,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,10 +34,8 @@ public class User implements Serializable, BaseListInterface, Changeable {
   private Date updated_at;
   private String username;
   private String phone;
-  private int score = 0;
-  private Location location;
-  private boolean tribe_save;
-  private List<Recipient> friendshipList;
+  private List<Recipient> recipientList;
+  private List<Shortcut> shortcutList;
   private List<Invite> inviteList;
   private String fbid;
   private boolean invisible_mode;
@@ -56,26 +55,7 @@ public class User implements Serializable, BaseListInterface, Changeable {
   public User(String id) {
     this.id = id;
     this.inviteList = new ArrayList<>();
-  }
-
-  public int getScore() {
-    return score;
-  }
-
-  public String getScoreStr() {
-    return "" + score;
-  }
-
-  public void setScore(int score) {
-    this.score = score;
-  }
-
-  public Location getLocation() {
-    return location;
-  }
-
-  public void setLocation(Location location) {
-    this.location = location;
+    this.shortcutList = new ArrayList<>();
   }
 
   public String getUsername() {
@@ -152,14 +132,6 @@ public class User implements Serializable, BaseListInterface, Changeable {
 
   public void setFbid(String fbid) {
     this.fbid = fbid;
-  }
-
-  public boolean isTribeSave() {
-    return tribe_save;
-  }
-
-  public void setTribeSave(boolean tribeSave) {
-    this.tribe_save = tribeSave;
   }
 
   public boolean isInvisibleMode() {
@@ -249,6 +221,24 @@ public class User implements Serializable, BaseListInterface, Changeable {
     return inviteList;
   }
 
+  public void setShortcutList(List<Shortcut> shortcutList) {
+    this.shortcutList = shortcutList;
+  }
+
+  public List<Shortcut> getShortcutList() {
+    return shortcutList;
+  }
+
+  public List<Recipient> getRecipientList() {
+    recipientList = new ArrayList<>();
+    if (shortcutList != null) recipientList.addAll(shortcutList);
+    if (inviteList != null) recipientList.addAll(inviteList);
+
+    Collections.sort(recipientList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
+    return recipientList;
+  }
+
   public void setNew(boolean aNew) {
     isNew = aNew;
   }
@@ -282,15 +272,12 @@ public class User implements Serializable, BaseListInterface, Changeable {
       setDisplayName(user.getDisplayName());
       setUsername(user.getUsername());
       setProfilePicture(user.getProfilePicture());
-      setScore(user.getScore());
       setPhone(user.getPhone());
       setFbid(user.getFbid());
       setInvisibleMode(user.isInvisibleMode());
-      setTribeSave(user.isTribeSave());
       setPushNotif(user.isPushNotif());
       setTimeInCall(user.getTimeInCall());
       setLastSeenAt(user.getLastSeenAt());
-      if (user.getLocation() != null) setLocation(user.getLocation());
     }
   }
 
@@ -301,15 +288,12 @@ public class User implements Serializable, BaseListInterface, Changeable {
     setDisplayName(null);
     setUsername(null);
     setProfilePicture(null);
-    setScore(0);
     setPhone(null);
     setFbid(null);
     setInvisibleMode(false);
     setPushNotif(false);
     setTimeInCall(0);
     setLastSeenAt(null);
-    setTribeSave(false);
-    setLocation(null);
   }
 
   public boolean isEmpty() {

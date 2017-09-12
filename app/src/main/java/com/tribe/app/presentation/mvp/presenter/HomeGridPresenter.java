@@ -53,8 +53,8 @@ public class HomeGridPresenter implements Presenter {
   private CreateRoom createRoom;
 
   // SUBSCRIBERS
-  private FriendListSubscriber diskFriendListSubscriber;
-  private FriendListSubscriber cloudFriendListSubscriber;
+  private RecipientListSubscriber diskRecipientListSubscriber;
+  private RecipientListSubscriber cloudRecipientListSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
   private ContactsOnAppSubscriber contactsOnAppSubscriber;
 
@@ -104,25 +104,24 @@ public class HomeGridPresenter implements Presenter {
   }
 
   public void loadFriendList() {
-    if (diskFriendListSubscriber != null) {
-      diskFriendListSubscriber.unsubscribe();
+    if (diskRecipientListSubscriber != null) {
+      diskRecipientListSubscriber.unsubscribe();
     }
 
-    diskFriendListSubscriber = new FriendListSubscriber(false);
-    diskUserInfosUsecase.prepare(null);
-    diskUserInfosUsecase.execute(diskFriendListSubscriber);
+    diskRecipientListSubscriber = new RecipientListSubscriber(false);
+    diskUserInfosUsecase.execute(diskRecipientListSubscriber);
   }
 
   public void syncFriendList() {
-    if (cloudFriendListSubscriber != null) {
-      cloudFriendListSubscriber.unsubscribe();
+    if (cloudRecipientListSubscriber != null) {
+      cloudRecipientListSubscriber.unsubscribe();
     }
 
-    cloudFriendListSubscriber = new FriendListSubscriber(true);
-    cloudUserInfos.execute(cloudFriendListSubscriber);
+    cloudRecipientListSubscriber = new RecipientListSubscriber(true);
+    cloudUserInfos.execute(cloudRecipientListSubscriber);
   }
 
-  private void showFriendCollectionInView(List<Recipient> recipientList) {
+  private void showRecipients(List<Recipient> recipientList) {
     this.homeGridView.renderRecipientList(recipientList);
   }
 
@@ -159,11 +158,11 @@ public class HomeGridPresenter implements Presenter {
     }
   }
 
-  private final class FriendListSubscriber extends DefaultSubscriber<User> {
+  private final class RecipientListSubscriber extends DefaultSubscriber<User> {
 
     private boolean cloud = false;
 
-    public FriendListSubscriber(boolean cloud) {
+    public RecipientListSubscriber(boolean cloud) {
       this.cloud = cloud;
     }
 
@@ -176,8 +175,8 @@ public class HomeGridPresenter implements Presenter {
 
     @Override public void onNext(User user) {
       if (!cloud) {
-        //List<Recipient> recipients = user.getFriendshipList();
-        //showFriendCollectionInView(recipients);
+        List<Recipient> recipientList = user.getRecipientList();
+        showRecipients(recipientList);
       }
     }
   }

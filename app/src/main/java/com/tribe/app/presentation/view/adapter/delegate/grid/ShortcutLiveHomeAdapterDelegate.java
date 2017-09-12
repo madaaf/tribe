@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * Created by tiago on 01/18/2017.
  */
-public class UserLiveHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
+public class ShortcutLiveHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
 
-  public UserLiveHomeAdapterDelegate(Context context) {
+  public ShortcutLiveHomeAdapterDelegate(Context context) {
     super(context);
   }
 

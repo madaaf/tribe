@@ -30,6 +30,7 @@ import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Invite;
@@ -154,7 +155,7 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public Observable<UserRealm> userInfos(String userId) {
     return this.tribeApi.getUserInfos(
         context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
-            context.getString(R.string.shortcut_infos),
+            context.getString(R.string.shortcutFragment_infos),
             context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
@@ -567,6 +568,16 @@ public class CloudUserDataStore implements UserDataStore {
     if (userRealm != null) {
       CloudUserDataStore.this.userCache.put(userRealm);
 
+      if (userRealm.getShortcuts() != null) {
+        for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
+          if (shortcutRealm.isOnline()) {
+            liveCache.putOnline(shortcutRealm.getId());
+          } else {
+            liveCache.removeOnline(shortcutRealm.getId());
+          }
+        }
+      }
+
       if (userRealm.getInvites() != null) {
         for (Invite newInvite : userRealm.getInvites()) {
           boolean shouldAdd = true;
@@ -683,5 +694,110 @@ public class CloudUserDataStore implements UserDataStore {
         context.getString(R.string.mutation, context.getString(R.string.reportUser, userId));
 
     return this.tribeApi.reportUser(request);
+  }
+
+  @Override public Observable<ShortcutRealm> createShortcut(String[] userIds) {
+    String params = "";
+
+    if (userIds != null && userIds.length > 0) {
+      params += params.length() == 0 ? "( " : "";
+      params += context.getString(R.string.createRoom_usersIds, StringUtils.arrayToJson(userIds));
+    }
+
+    if (params.length() > 0) params += " )";
+
+    String body = context.getString(R.string.createShortcut, params);
+
+    final String request = context.getString(R.string.mutation, body) +
+        "\n" +
+        context.getString(R.string.shortcutFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
+
+    return this.tribeApi.createShortcut(request);
+  }
+
+  @Override public Observable<ShortcutRealm> updateShortcut(String shortcutId,
+      List<Pair<String, String>> values) {
+    String pictureUri = "";
+    StringBuilder shortcutInputBuilder = new StringBuilder();
+
+    for (Pair<String, String> value : values) {
+      if (ShortcutRealm.isKeyABool(value.first)) {
+        shortcutInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
+        shortcutInputBuilder.append(",");
+      } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
+        shortcutInputBuilder.append(value.first + ": \"" + value.second + "\"");
+        shortcutInputBuilder.append(",");
+      }
+
+      if (value.first.equals(ShortcutRealm.PICTURE)) {
+        pictureUri = value.second;
+      }
+    }
+
+    String shortcutInput = shortcutInputBuilder.length() > 0 ? shortcutInputBuilder.substring(0,
+        shortcutInputBuilder.length() - 1) : "";
+
+    if (StringUtils.isEmpty(pictureUri)) {
+      if (!StringUtils.isEmpty(shortcutInput)) {
+        String requestBody = context.getString(R.string.updateShortcut, shortcutId, shortcutInput);
+
+        final String request = context.getString(R.string.mutation, requestBody) +
+            "\n" +
+            context.getString(R.string.shortcutFragment_infos) +
+            "\n" +
+            context.getString(R.string.userfragment_infos_light);
+
+        return this.tribeApi.updateShortcut(request);
+      } else {
+        return Observable.empty();
+      }
+    } else {
+      String requestBody = context.getString(R.string.updateShortcut, shortcutId, shortcutInput);
+
+      final String request = context.getString(R.string.mutation, requestBody) +
+          "\n" +
+          context.getString(R.string.shortcutFragment_infos) +
+          "\n" +
+          context.getString(R.string.userfragment_infos_light);
+
+      RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
+
+      File file = new File(Uri.parse(pictureUri).getPath());
+
+      if (!(file != null && file.exists() && file.length() > 0)) {
+        InputStream inputStream = null;
+        file = FileUtils.getFile(context, FileUtils.generateIdForMessage(), FileUtils.PHOTO);
+        try {
+          inputStream = context.getContentResolver().openInputStream(Uri.parse(pictureUri));
+          FileUtils.copyInputStreamToFile(inputStream, file);
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      RequestBody requestFile = null;
+      MultipartBody.Part body = null;
+
+      requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
+      body = MultipartBody.Part.createFormData("picture", "picture.jpg", requestFile);
+
+      return tribeApi.updateShortcutMedia(query, body);
+    }
+  }
+
+  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+    String body = context.getString(R.string.removeShortcut, shortcutId);
+
+    final String request = context.getString(R.string.mutation, body) +
+        "\n" +
+        context.getString(R.string.shortcutFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
+
+    return this.tribeApi.removeShortcut(request);
   }
 }

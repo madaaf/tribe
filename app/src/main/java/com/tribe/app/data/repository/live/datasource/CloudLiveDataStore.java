@@ -50,7 +50,7 @@ public class CloudLiveDataStore implements LiveDataStore {
     if (params.length() > 0) params += ", ";
     if (userIds != null && userIds.length > 0) {
       params += params.length() == 0 ? "( " : "";
-      params += context.getString(R.string.createRoom_usersIds, arrayToJson(userIds));
+      params += context.getString(R.string.createRoom_usersIds, StringUtils.arrayToJson(userIds));
     }
     if (params.length() > 0) params += " )";
 
@@ -98,7 +98,7 @@ public class CloudLiveDataStore implements LiveDataStore {
 
   @Override public Observable<Boolean> createInvite(String roomId, String[] userIds) {
     final String request = context.getString(R.string.mutation,
-        context.getString(R.string.createInvite, roomId, arrayToJson(userIds)));
+        context.getString(R.string.createInvite, roomId, StringUtils.arrayToJson(userIds)));
 
     return this.tribeApi.createInvite(request);
   }
@@ -126,18 +126,5 @@ public class CloudLiveDataStore implements LiveDataStore {
 
   @Override public Observable<String> randomRoomAssigned() {
     return null;
-  }
-
-  public String arrayToJson(String[] array) {
-    String json = "\"";
-    for (int i = 0; i < array.length; i++) {
-      if (i == array.length - 1) {
-        json += array[i] + "\"";
-      } else {
-        json += array[i] + "\", \"";
-      }
-    }
-    if (array.length == 0) json += "\"";
-    return json;
   }
 }

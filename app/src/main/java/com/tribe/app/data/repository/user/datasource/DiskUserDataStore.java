@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
@@ -157,6 +158,19 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<Boolean> reportUser(String userId) {
+    return null;
+  }
+
+  @Override public Observable<ShortcutRealm> createShortcut(String[] userIds) {
+    return null;
+  }
+
+  @Override public Observable<ShortcutRealm> updateShortcut(String shortcutId,
+      List<Pair<String, String>> values) {
+    return null;
+  }
+
+  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
     return null;
   }
 

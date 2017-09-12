@@ -15,9 +15,13 @@ import javax.inject.Singleton;
 @Singleton public class UserRealmDataMapper {
 
   LocationRealmDataMapper locationRealmDataMapper;
+  ShortcutRealmDataMapper shortcutRealmDataMapper;
 
-  @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper) {
+  @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
+      ShortcutRealmDataMapper shortcutRealmDataMapper) {
     this.locationRealmDataMapper = locationRealmDataMapper;
+    this.shortcutRealmDataMapper = shortcutRealmDataMapper;
+    this.shortcutRealmDataMapper.setUserRealmDataMapper(this);
   }
 
   /**
@@ -28,7 +32,7 @@ import javax.inject.Singleton;
    * @return {@link com.tribe.app.domain.entity.User} if valid {@link com.tribe.app.data.realm.UserRealm}
    * otherwise null.
    */
-  public User transform(UserRealm userRealm, boolean shouldTransformFriendships) {
+  public User transform(UserRealm userRealm) {
     User user = null;
     if (userRealm != null) {
       user = new User(userRealm.getId());
@@ -41,13 +45,12 @@ import javax.inject.Singleton;
       user.setPhone(userRealm.getPhone());
       user.setFbid(userRealm.getFbid());
       user.setTimeInCall(userRealm.getTimeInCall());
-      if (userRealm.getLocation() != null) {
-        user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
-      }
-      user.setTribeSave(userRealm.isTribeSave());
       user.setPushNotif(userRealm.isPushNotif());
       user.setIsOnline(userRealm.isOnline());
       user.setLastSeenAt(userRealm.getLastSeenAt());
+      if (userRealm.getShortcuts() != null) {
+        user.setShortcutList(shortcutRealmDataMapper.transform(userRealm.getShortcuts()));
+      }
     }
 
     return user;
@@ -59,13 +62,12 @@ import javax.inject.Singleton;
    * @param userRealmCollection Object Collection to be transformed.
    * @return {@link User} if valid {@link UserRealm} otherwise null.
    */
-  public List<User> transform(Collection<UserRealm> userRealmCollection,
-      boolean shouldTransformFriendships) {
+  public List<User> transform(Collection<UserRealm> userRealmCollection) {
     List<User> userList = new ArrayList<>();
     User user;
     if (userRealmCollection != null) {
       for (UserRealm userRealm : userRealmCollection) {
-        user = transform(userRealm, shouldTransformFriendships);
+        user = transform(userRealm);
         if (user != null) {
           userList.add(user);
         }
@@ -81,7 +83,7 @@ import javax.inject.Singleton;
    * @param user Object to be transformed.
    * @return {@link UserRealm} if valid {@link User} otherwise null.
    */
-  public UserRealm transform(User user, boolean shouldTransformFriendships) {
+  public UserRealm transform(User user) {
     UserRealm userRealm = null;
 
     if (user != null) {
@@ -96,10 +98,10 @@ import javax.inject.Singleton;
       userRealm.setFbid(user.getFbid());
       userRealm.setPhone(user.getPhone());
       userRealm.setPushNotif(user.isPushNotif());
-      userRealm.setTribeSave(user.isTribeSave());
       userRealm.setIsOnline(user.isOnline());
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
+      userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
     }
 
     return userRealm;
@@ -117,7 +119,7 @@ import javax.inject.Singleton;
 
     if (userCollection != null) {
       for (User user : userCollection) {
-        userRealm = transform(user, true);
+        userRealm = transform(user);
         if (userRealm != null) {
           userRealmList.add(userRealm);
         }
@@ -139,7 +141,7 @@ import javax.inject.Singleton;
 
     if (userCollection != null) {
       for (UserRealm userRealm : userCollection) {
-        user = transform(userRealm, true);
+        user = transform(userRealm);
         if (user != null) {
           userList.add(user);
         }
@@ -147,5 +149,9 @@ import javax.inject.Singleton;
     }
 
     return userList;
+  }
+
+  public ShortcutRealmDataMapper getShortcutRealmDataMapper() {
+    return shortcutRealmDataMapper;
   }
 }

@@ -134,4 +134,10 @@ public interface UserRepository {
   Observable<User> getFbIdUpdated();
 
   Observable<Boolean> reportUser(String userId);
+
+  Observable<Shortcut> createShortcut(String... userIds);
+
+  Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values);
+
+  Observable<Boolean> removeShortcut(String shortcutId);
 }

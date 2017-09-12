@@ -10,7 +10,9 @@ import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import rx.Observable;
@@ -122,4 +124,10 @@ public interface UserDataStore {
   Observable<Void> sendInvitations();
 
   Observable<Boolean> reportUser(String userId);
+
+  Observable<ShortcutRealm> createShortcut(String[] userIds);
+
+  Observable<ShortcutRealm> updateShortcut(String shortcutId, List<Pair<String, String>> values);
+
+  Observable<Boolean> removeShortcut(String shortcutId);
 }

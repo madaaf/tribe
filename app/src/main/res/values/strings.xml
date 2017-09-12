@@ -11,6 +11,9 @@
 	<string name="action_next">Next</string>
 	<string name="action_enter">Enter</string>
 	<string name="action_start">Start</string>
+	<string name="action_unsend">Unsend</string>
+	<string name="action_hide">Hide</string>
+	<string name="action_copy">Copy</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>

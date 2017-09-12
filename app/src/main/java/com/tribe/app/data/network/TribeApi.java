@@ -5,6 +5,7 @@ import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
@@ -96,4 +97,16 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Void> roomAcceptRandom(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> reportUser(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<ShortcutRealm> createShortcut(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<ShortcutRealm> updateShortcut(
+      @Field("query") String query);
+
+  @Multipart @POST("/graphql") Observable<ShortcutRealm> updateShortcutMedia(
+      @Part("query") RequestBody query, @Part MultipartBody.Part file);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Boolean> removeShortcut(
+      @Field("query") String query);
 }

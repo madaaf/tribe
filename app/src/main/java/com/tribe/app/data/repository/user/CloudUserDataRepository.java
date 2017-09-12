@@ -51,8 +51,7 @@ import rx.Observable;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
-    this.searchResultRealmDataMapper =
-        new SearchResultRealmDataMapper();
+    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper();
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -76,14 +75,14 @@ import rx.Observable;
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.userInfos(userId)
         .doOnError(throwable -> throwable.printStackTrace())
-        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.userInfosList(userIds).doOnError(throwable -> {
-      throwable.printStackTrace();
-    }).map(userRealm -> this.userRealmDataMapper.transform(userRealm, false));
+    return userDataStore.userInfosList(userIds)
+        .doOnError(throwable -> throwable.printStackTrace())
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
   }
 
   @Override public Observable<List<Shortcut>> shortcuts() {
@@ -103,14 +102,14 @@ import rx.Observable;
   @Override public Observable<User> updateUser(List<Pair<String, String>> values) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUser(values)
-        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
   }
 
   @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserFacebook(accessToken)
         .flatMap(aVoid -> userDataStore.userInfos(userId)
-            .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
+            .map(userRealm -> this.userRealmDataMapper.transform(userRealm)));
   }
 
   @Override public Observable<User> updateUserPhoneNumber(String userId, String accessToken,
@@ -118,7 +117,7 @@ import rx.Observable;
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserPhoneNumber(accessToken, phoneNumber)
         .flatMap(aVoid -> userDataStore.userInfos(userId)
-            .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
+            .map(userRealm -> this.userRealmDataMapper.transform(userRealm)));
   }
 
   @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {
@@ -194,5 +193,28 @@ import rx.Observable;
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.reportUser(userId);
+  }
+
+  @Override public Observable<Shortcut> createShortcut(String... userIds) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.createShortcut(userIds)
+        .map(shortcutRealm -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealm));
+  }
+
+  @Override
+  public Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.updateShortcut(shortcutId, values)
+        .map(shortcutRealm -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealm));
+  }
+
+  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+    final CloudUserDataStore cloudDataStore =
+        (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
+    return cloudDataStore.removeShortcut(shortcutId);
   }
 }

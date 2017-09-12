@@ -158,12 +158,12 @@ public class Room implements Serializable {
 
   public String getUserNames() {
     StringBuffer buffer = new StringBuffer();
-    int max = Math.max(NB_MAX_USERS_STRING, live_users.size());
-    for (int i = 0; i < max; i++) {
+    int min = Math.min(NB_MAX_USERS_STRING, live_users.size());
+    for (int i = 0; i < min; i++) {
       User user = live_users.get(i);
       buffer.append(user.getDisplayName());
 
-      if (i < max) buffer.append(", ");
+      if (i < min) buffer.append(", ");
     }
 
     if (live_users.size() > NB_MAX_USERS_STRING) {

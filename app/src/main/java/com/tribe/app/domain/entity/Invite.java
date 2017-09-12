@@ -57,10 +57,6 @@ public class Invite extends Recipient {
     return null;
   }
 
-  @Override public String getUsernameDisplay() {
-    return null;
-  }
-
   @Override public String getProfilePicture() {
     return room.getInitiator().getProfilePicture();
   }

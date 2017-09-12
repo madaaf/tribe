@@ -3,8 +3,10 @@ package com.tribe.app.data.realm;
 import android.support.annotation.StringDef;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by tiago on 09/10/2017.
@@ -18,16 +20,27 @@ public class ShortcutRealm extends RealmObject {
   public static final String HIDDEN = "HIDDEN";
   public static final String BLOCKED = "BLOCKED";
 
+  public static final String NAME = "name";
+  public static final String PICTURE = "picture";
+  public static final String STATUS = "status";
+  public static final String PINNED = "pinned";
+  public static final String READ = "read";
+  public static final String MUTE = "mute";
+  public static final String SINGLE = "single";
+
   @PrimaryKey private String id;
   private String name;
   private String picture;
-  private boolean online;
   private boolean pinned;
-  private @ShortcutRealm.ShortcutStatus String status;
   private boolean read;
+  private boolean mute;
+  private boolean single;
+  private @ShortcutRealm.ShortcutStatus String status;
   private Date created_at;
   private Date last_activity_at;
   private RealmList<UserRealm> members;
+
+  @Ignore private boolean online;
 
   public ShortcutRealm() {
 
@@ -111,5 +124,31 @@ public class ShortcutRealm extends RealmObject {
 
   public boolean isOnline() {
     return online;
+  }
+
+  public void setSingle(boolean single) {
+    this.single = single;
+  }
+
+  public boolean isSingle() {
+    return single;
+  }
+
+  public boolean isMute() {
+    return mute;
+  }
+
+  public void setMute(boolean mute) {
+    this.mute = mute;
+  }
+
+  public boolean isUniqueMemberOnline(Map<String, Boolean> onlineMap) {
+    if (!isSingle()) return false;
+
+    return onlineMap.containsKey(members.get(0).getId());
+  }
+
+  public static boolean isKeyABool(String key) {
+    return key.equals(PINNED) || key.equals(READ);
   }
 }

@@ -6,9 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserChatActiveHomeAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserHomeAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserLiveHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperAdapter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import java.util.ArrayList;
@@ -28,9 +28,9 @@ public class HomeListAdapter extends RecyclerView.Adapter
   public static final int HEADERS_VIEW_TYPE = 98;
 
   protected RxAdapterDelegatesManager delegatesManager;
-  private UserHomeAdapterDelegate userGridAdapterDelegate;
-  private UserLiveHomeAdapterDelegate userLiveGridAdapterDelegate;
-  private UserChatActiveHomeAdapterDelegate userchatActiveHomeAdapterDelegate;
+  private ShortcutHomeAdapterDelegate shortcutHomeAdapterDelegate;
+  private ShortcutLiveHomeAdapterDelegate shortcutLiveHomeAdapterDelegate;
+  private ShortcutChatActiveHomeAdapterDelegate shortcutChatActiveHomeAdapterDelegate;
 
   // VARIABLES
   private List<Recipient> items;
@@ -44,11 +44,11 @@ public class HomeListAdapter extends RecyclerView.Adapter
     delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
         new EmptyHeaderGridAdapterDelegate(context));
 
-    userGridAdapterDelegate = new UserHomeAdapterDelegate(context);
-    delegatesManager.addDelegate(userGridAdapterDelegate);
+    shortcutHomeAdapterDelegate = new ShortcutHomeAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutHomeAdapterDelegate);
 
-    userLiveGridAdapterDelegate = new UserLiveHomeAdapterDelegate(context);
-    delegatesManager.addDelegate(userLiveGridAdapterDelegate);
+    shortcutLiveHomeAdapterDelegate = new ShortcutLiveHomeAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutLiveHomeAdapterDelegate);
 
     //userConnectedGridAdapterDelegate = new UserChatActiveHomeAdapterDelegate(context);
     //delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
@@ -92,20 +92,20 @@ public class HomeListAdapter extends RecyclerView.Adapter
   }
 
   public Observable<View> onClickMore() {
-    return userGridAdapterDelegate.onClickMore();
+    return shortcutHomeAdapterDelegate.onClickMore();
     //return Observable.merge(userGridAdapterDelegate.onClickMore(),
     //    userConnectedGridAdapterDelegate.onClickMore(), userLiveGridAdapterDelegate.onClickMore());
   }
 
   public Observable<View> onClick() {
-    return userGridAdapterDelegate.onClick();
+    return shortcutHomeAdapterDelegate.onClick();
     //return Observable.merge(userGridAdapterDelegate.onClick(),
     //    userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
   }
 
   public Observable<View> onLongClick() {
-    return Observable.merge(userGridAdapterDelegate.onLongClick(),
-        userLiveGridAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
+    return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
+        shortcutLiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
   }
 
   public void setItems(List<Recipient> items) {
