@@ -148,7 +148,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         app:pulseColor="@color/red.pulse"
-        app:pulseCount="2"
+        app:pulseCount="3"
         app:pulseDuration="3000"
         >
 

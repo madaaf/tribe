@@ -145,11 +145,13 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(context), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+              Timber.e("SOEF GET URI " + uri.toString());
               sendContent(MESSAGE_IMAGE, uri.toString());
               sendPicture(uri);
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+              Timber.e("SOEF GET URI " + uri.toString());
               sendContent(MESSAGE_IMAGE, uri.toString());
               sendPicture(uri);
             }));
@@ -185,7 +187,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
-    recyclerView.setItemAnimator(null);
+    //recyclerView.setItemAnimator(null);
 /*    layoutManager.setReverseLayout(true);
     layoutManager.setStackFromEnd(true);*/
     recyclerView.setLayoutManager(layoutManager);
@@ -200,14 +202,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   void mock() { //TODO SOEF DELETE
     users.clear();
-    users.add(user);
-    users.add(user);
-    users.add(user);
-    users.add(user);
-    users.add(user);
-    users.add(user);
-    users.add(user);
-    users.add(user);
     users.add(user);
     users.add(user);
     chatUserAdapter.setItems(users);
@@ -266,7 +260,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI);
         break;
       case MESSAGE_IMAGE:
-        message = new MessageImage(user.getId());
+        message = new MessageImage();
         Image o = new Image();
         o.setUrl(content);
         ((MessageImage) message).setOriginal(o);

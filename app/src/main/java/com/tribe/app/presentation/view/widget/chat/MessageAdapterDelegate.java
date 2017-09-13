@@ -20,7 +20,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
@@ -63,7 +62,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       @NonNull RecyclerView.ViewHolder holder) {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message i = items.get(position);
-    if (stamp != null && stamp.getAuthor().getId().equals(i.getAuthor().getId())) {
+    if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(i.getAuthor().getId())) {
       vh.header.setVisibility(View.GONE);
     } else {
       vh.header.setVisibility(View.VISIBLE);
@@ -90,18 +89,14 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       vh.image.setVisibility(View.VISIBLE);
       Image o = ((MessageImage) i).getOriginal();
 
-      /*new GlideUtils.Builder(context).url(o.getUrl())
-          .rounded(false)
-          .target(vh.image)
-          .hasPlaceholder(false)
-          .load();*/
 
       Glide.with(context)
           .load(o.getUrl())
-          .bitmapTransform(new RoundedCornersTransformation(context, 35, 0))
           .placeholder(ContextCompat.getColor(context, R.color.blue_new))
           .into(vh.image);
+      vh.image.setAlpha(0.4f);
 
+      //.bitmapTransform(new RoundedCornersTransformation(context, 40, 0))
       vh.image.setOnClickListener(v -> {
         navigator.navigateToPicture(context, o.getUrl());
       });

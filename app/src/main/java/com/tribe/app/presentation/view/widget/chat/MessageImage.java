@@ -23,10 +23,6 @@ public class MessageImage extends Message {
     this.ressources = ressources;
   }
 
-  public MessageImage(String id) {
-    super(id);
-  }
-
   public Image getOriginal() {
     return original;
   }
