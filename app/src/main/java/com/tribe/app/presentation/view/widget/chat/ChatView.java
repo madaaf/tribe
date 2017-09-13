@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -15,6 +16,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
@@ -27,11 +32,14 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +66,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManager;
   private LinearLayoutManager layoutManagerGrp;
+  private FirebaseRemoteConfig firebaseRemoteConfig;
   private List<Message> items = new ArrayList<>();
   private List<User> users = new ArrayList<>();
   private boolean editTextChange = false, isHeart = false;
@@ -74,6 +83,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
   @Inject RxImagePicker rxImagePicker;
+  @Inject DateUtils dateUtils;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -106,19 +116,39 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.loadMessage(arrIds);
   }
 
+  private void sendPicture(Uri uri) {
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
+    try {
+      InputStream inputStream = context.getContentResolver().openInputStream(uri);
+      StorageReference riversRef = storageRef.child(
+          "app/uploads/" + user.getId() + "/" + dateUtils.getUTCDateAsString() + ".jpg");
+      UploadTask uploadTask = riversRef.putStream(inputStream);
+
+      uploadTask.addOnFailureListener(exception -> {
+        Timber.e(exception.getMessage());
+      }).addOnSuccessListener(taskSnapshot -> {
+        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+        sendContent(MESSAGE_IMAGE, downloadUrl.toString());
+      });
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+      Timber.e("error load image " + e.toString());
+    }
+  }
+
   private void initSubscriptions() {
     subscriptions.add(RxView.clicks(uploadImageBtn)
         .delay(200, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(context), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
-              sendContent(MESSAGE_IMAGE, uri.toString());
-            }));
+            subscriptions.add(
+                rxImagePicker.requestImage(Sources.CAMERA).subscribe(this::sendPicture));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
-              sendContent(MESSAGE_IMAGE, uri.toString());
-            }));
+
+            subscriptions.add(
+                rxImagePicker.requestImage(Sources.GALLERY).subscribe(this::sendPicture));
           }
 
           return null;
