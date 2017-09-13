@@ -16,4 +16,8 @@ public interface ChatMVPView extends MVPView {
   void successMessageCreated(Message message);
 
   void errorMessageCreation();
+
+  void successGetSubscribeMessage(Message message);
+
+  void errorGetSubscribeMessage();
 }

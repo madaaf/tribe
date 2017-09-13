@@ -503,6 +503,10 @@
         }
     </string>
 
+  <string name="subscription.messageCreated" translatable="false">
+        %1$s : messageCreated ( usersIds : [%2$s] )
+    </string>
+
   <string name="subscription.groupUpdated" translatable="false">
         %1$s : groupUpdated ( id : \"%2$s\" ) {
             ...GroupInfos

@@ -436,7 +436,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       }
 
       @Override public void failure(DigitsException error) {
-        showError(error.getMessage());
+        showError(error.createdMessages());
       }
     };
 

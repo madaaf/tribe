@@ -5,6 +5,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -38,6 +39,10 @@ public class CloudChatDataStore implements ChatDataStore {
     return this.tribeApi.getUserMessage(
         context.getString(R.string.messages_details, arrayToJson(userIds),
             context.getString(R.string.messagefragment_info)));
+  }
+
+  @Override public Observable<Message> createdMessages() {
+    return null;
   }
 
   public String arrayToJson(String[] array) {

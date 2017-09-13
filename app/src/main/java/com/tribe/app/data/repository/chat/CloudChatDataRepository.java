@@ -41,7 +41,7 @@ import rx.Observable;
     }).map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> userMessageInfo(String[] userIds) {
+  @Override public Observable<List<Message>> loadMessages(String[] userIds) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.userMessage(userIds).doOnError(throwable -> {
       throwable.printStackTrace();
@@ -50,5 +50,9 @@ import rx.Observable;
       messageList = this.userRealmDataMapper.transform(userRealm, false).getMessages();
       return messageList;
     });
+  }
+
+  @Override public Observable<Message> createdMessages() {
+    return null;
   }
 }

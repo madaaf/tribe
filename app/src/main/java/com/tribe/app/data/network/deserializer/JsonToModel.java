@@ -8,11 +8,14 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +52,10 @@ import timber.log.Timber;
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
+  private PublishSubject<Message> onMessageCreated = PublishSubject.create();
   private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
+
+  @Inject MessageRealmDataMapper messageRealmDataMapper;
 
   @Inject public JsonToModel(@Named("simpleGson") Gson gson) {
     this.gson = gson;
@@ -134,6 +140,12 @@ import timber.log.Timber;
               Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
               onRandomRoomAssigned.onNext(
                   entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());
+            } else if (entry.getKey().contains(WSService.MESSAGE_CREATED_SUFFIX)) {
+              Timber.d("onMessageReceived : " + entry.getValue().toString());
+              MessageRealm messageRealm =
+                  gson.fromJson(entry.getValue().toString(), MessageRealm.class);
+              Message message = messageRealmDataMapper.transform(messageRealm);
+              onMessageCreated.onNext(message);
             } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
@@ -214,6 +226,10 @@ import timber.log.Timber;
 
   public Observable<String> onRandomRoomAssigned() {
     return onRandomRoomAssigned;
+  }
+
+  public Observable<Message> onMessageCreated() {
+    return onMessageCreated;
   }
 
   public Observable<User> onFbIdUpdated() {

@@ -1,29 +1,27 @@
 package com.tribe.app.domain.interactor.chat;
 
-import com.tribe.app.data.repository.chat.CloudChatDataRepository;
+import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import javax.inject.Inject;
 import rx.Observable;
 
-public class UserMessageInfos extends UseCase {
+/**
+ * Created by madaaflak on 13/09/2017.
+ */
 
-  private String[] userIds;
+public class CreatedMessages extends UseCase {
+
   private ChatRepository chatRepository;
 
-  @Inject
-  public UserMessageInfos(CloudChatDataRepository chatRepository, ThreadExecutor threadExecutor,
+  @Inject public CreatedMessages(DiskChatDataRepository chatRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.chatRepository = chatRepository;
   }
 
-  public void setUserIds(String[] userIds) {
-    this.userIds = userIds;
-  }
-
   @Override protected Observable buildUseCaseObservable() {
-    return this.chatRepository.loadMessages(userIds);
+    return chatRepository.createdMessages();
   }
 }

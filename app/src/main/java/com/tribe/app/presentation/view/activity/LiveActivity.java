@@ -459,7 +459,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   private void initCallRouletteService() {
     viewLive.setSourceLive(SOURCE_CALL_ROULETTE);
-    startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE));
+    startService(WSService.getCallingIntent(this, WSService.CALL_ROULETTE_TYPE, null));
     livePresenter.randomRoomAssigned();
   }
 

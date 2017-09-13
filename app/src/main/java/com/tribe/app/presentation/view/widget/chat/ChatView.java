@@ -37,6 +37,7 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @BindView(R.id.sendBtn) ImageView sendBtn;
   @BindView(R.id.videoCallBtn) ImageView videoCallBtn;
   @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
+  @BindView(R.id.viewAvatar) AvatarView avatarView;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -105,12 +107,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initSubscriptions();
   }
 
-  public void setChatId(String chatId) {
-    Timber.e("CHAT ID " + chatId);
+  public void setChatId(User friend) {
+    avatarView.load(friend.getProfilePicture());
+    Timber.e("CHAT_SUBSCRIBE ID " + friend.getId());
     List<String> userIds = new ArrayList<>();
-    userIds.add(chatId);
+    userIds.add(friend.getId());
     arrIds = userIds.toArray(new String[userIds.size()]);
     messagePresenter.loadMessage(arrIds);
+    messagePresenter.getCreatedMessages();
   }
 
   private void sendPicture(Uri uri) {
@@ -319,10 +323,24 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successMessageCreated(Message message) {
-
+    Timber.e("SOEF successMessageCreated " + message.toString());
   }
 
   @Override public void errorMessageCreation() {
+    Timber.e("SOEF errorMessageCreation");
+  }
 
+  @Override public void successGetSubscribeMessage(Message message) {
+    Timber.e("SOEF successGetSubscribeMessage " + message.toString());
+    if (!message.getAuthor().getId().equals(user.getId())) {
+      items.clear();
+      items.add(message);
+      messageAdapter.setItems(items);
+      scrollListToBottom();
+    }
+  }
+
+  @Override public void errorGetSubscribeMessage() {
+    Timber.e("SOEF errorGetSubscribeMessage ");
   }
 }

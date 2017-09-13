@@ -734,7 +734,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
       @Override public void failure(DigitsException error) {
         viewFriendsAddressBookLoad.setChecked(false);
-        showError(error.getMessage());
+        showError(error.createdMessages());
       }
     };
 

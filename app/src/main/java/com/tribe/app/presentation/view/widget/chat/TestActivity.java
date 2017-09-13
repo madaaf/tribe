@@ -6,8 +6,10 @@ import android.os.Bundle;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -26,8 +28,8 @@ public class TestActivity extends BaseActivity {
       @LiveActivity.Source String source) {
     Intent intent = new Intent(context, TestActivity.class);
     if (recipient instanceof Friendship) {
-      String id = ((Friendship) recipient).getFriend().getId();
-      intent.putExtra(EXTRA_LIVE, id);
+      User friend = ((Friendship) recipient).getFriend();
+      intent.putExtra(EXTRA_LIVE, friend);
     }
 
     return intent;
@@ -37,15 +39,36 @@ public class TestActivity extends BaseActivity {
     return new Intent(context, TestActivity.class);
   }
 
+  private void initCallRouletteService(String usersFromatedId) {
+    startService(WSService.getCallingIntent(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
+  }
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_test);
     ButterKnife.bind(this);
     initDependencyInjector();
+
     if (getIntent().hasExtra(EXTRA_LIVE)) {
-      String id = getIntent().getStringExtra(EXTRA_LIVE);
-      chatView.setChatId(id);
+      User friend = (User) getIntent().getSerializableExtra(EXTRA_LIVE);
+      chatView.setChatId(friend);
+      String[] ids = new String[1];
+      ids[0] = friend.getId();
+      initCallRouletteService(arrayToJson(ids));
     }
+  }
+
+  public String arrayToJson(String[] array) {
+    String json = "\"";
+    for (int i = 0; i < array.length; i++) {
+      if (i == array.length - 1) {
+        json += array[i] + "\"";
+      } else {
+        json += array[i] + "\", \"";
+      }
+    }
+    if (array.length == 0) json += "\"";
+    return json;
   }
 
   @Override protected void onResume() {

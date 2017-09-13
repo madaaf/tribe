@@ -27,4 +27,8 @@ public class DiskChatDataStore implements ChatDataStore {
   @Override public Observable<UserRealm> userMessage(String[] userIds) {
     return null;
   }
+
+  @Override public Observable<Message> createdMessages() {
+    return chatCache.getMessageCreated();
+  }
 }

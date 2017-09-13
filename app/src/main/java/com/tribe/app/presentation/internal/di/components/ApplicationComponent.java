@@ -20,6 +20,7 @@ import com.tribe.app.data.network.job.UnhideFriendshipJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
+import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
@@ -228,7 +229,7 @@ public interface ApplicationComponent {
 
   CloudChatDataRepository cloudChatRepository();
 
-  // DiskChatDataRepository diskChatRepository();
+  DiskChatDataRepository diskChatRepository();
 
   CloudLiveDataRepository cloudLiveRepository();
 

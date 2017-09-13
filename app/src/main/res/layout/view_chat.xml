@@ -3,15 +3,62 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
     android:orientation="vertical"
     >
+
+  <FrameLayout
+      android:id="@+id/topbar"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/top_bar_height_small"
+      android:background="@drawable/shape_rect_white_rounded_corners_top"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="@dimen/avatar_size_chat"
+        android:layout_height="@dimen/avatar_size_chat"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginStart="15dp"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="false"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="GROUP NAME"
+        style="@style/Title.2.Black40"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:background="@color/grey.chat.grey"
+        />
+
+  </FrameLayout>
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/topbar"
+      android:background="@android:color/white"
+      />
+
   <android.support.v7.widget.RecyclerView
       android:id="@+id/recyclerViewChat"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_above="@+id/containerUsers"
       android:layout_alignParentStart="true"
+      android:layout_below="@+id/topbar"
       android:overScrollMode="never"
       android:paddingEnd="15dp"
       android:paddingStart="15dp"
@@ -101,7 +148,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         app:pulseColor="@color/red.pulse"
-        app:pulseCount="3"
+        app:pulseCount="2"
         app:pulseDuration="3000"
         >
 
