@@ -38,7 +38,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return items.size();
   }
 
-  public void setItems(List<Message> items) {
+  public void setItems(List<Message> items) { //, boolean sendLocally
     this.items.addAll(items);
     notifyDataSetChanged();
   }

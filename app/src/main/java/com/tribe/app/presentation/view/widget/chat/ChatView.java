@@ -16,7 +16,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -41,7 +40,6 @@ import com.tribe.app.presentation.view.widget.PulseLayout;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -66,7 +64,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManager;
   private LinearLayoutManager layoutManagerGrp;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
   private List<Message> items = new ArrayList<>();
   private List<User> users = new ArrayList<>();
   private boolean editTextChange = false, isHeart = false;
@@ -129,7 +126,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         Timber.e(exception.getMessage());
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
-        sendContent(MESSAGE_IMAGE, downloadUrl.toString());
+        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -143,12 +140,15 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         .observeOn(AndroidSchedulers.mainThread())
         .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(context), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(
-                rxImagePicker.requestImage(Sources.CAMERA).subscribe(this::sendPicture));
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+              sendContent(MESSAGE_IMAGE, uri.toString());
+              sendPicture(uri);
+            }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-
-            subscriptions.add(
-                rxImagePicker.requestImage(Sources.GALLERY).subscribe(this::sendPicture));
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+              sendContent(MESSAGE_IMAGE, uri.toString());
+              sendPicture(uri);
+            }));
           }
 
           return null;
@@ -266,7 +266,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         Image o = new Image();
         o.setUrl(content);
         ((MessageImage) message).setOriginal(o);
-        // messagePresenter.createMessage(arrIds, content, MessageRealm.IMAGE);
         break;
     }
 
@@ -309,8 +308,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
-    Collections.reverse(messages);
-
     messageAdapter.setItems(messages);
     scrollListToBottom();
 

@@ -69,7 +69,6 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onNext(Message message) {
-      Timber.e("SUCESS SEND MESSAGE " + message.toString());
       if (chatMVPView != null) chatMVPView.successMessageCreated(message);
     }
   }

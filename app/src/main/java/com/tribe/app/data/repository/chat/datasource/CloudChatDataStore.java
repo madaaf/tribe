@@ -6,6 +6,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -24,6 +25,10 @@ public class CloudChatDataStore implements ChatDataStore {
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
       String date) {
+    String request =
+        context.getString(R.string.messages_create, arrayToJson(userIds), type, date, data,
+            context.getString(R.string.messagefragment_info));
+    Timber.i("SOEF CREATE MESSAGE REQUEST " + request);
     return this.tribeApi.createMessage(
         context.getString(R.string.messages_create, arrayToJson(userIds), type, date, data,
             context.getString(R.string.messagefragment_info)));

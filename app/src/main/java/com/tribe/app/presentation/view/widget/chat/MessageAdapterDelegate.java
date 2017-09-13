@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.widget.chat;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,6 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -38,6 +38,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   private Context context;
   private int imageSize;
+  private Message stamp = null;
 
   public MessageAdapterDelegate(Context context) {
     this.layoutInflater =
@@ -57,8 +58,6 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
         new MessageViewHolder(layoutInflater.inflate(R.layout.item_chat, parent, false));
     return vh;
   }
-
-  Message stamp = null;
 
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
@@ -89,9 +88,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       vh.emoji.setVisibility(View.GONE);
       vh.message.setVisibility(View.GONE);
       vh.image.setVisibility(View.VISIBLE);
-      Timber.e("SOEF IMAGE SIZE " + vh.image.getWidth());
       Image o = ((MessageImage) i).getOriginal();
-      //Image o = ((MessageImage) i).getRessources().get(0);
 
       /*new GlideUtils.Builder(context).url(o.getUrl())
           .rounded(false)
@@ -101,7 +98,8 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
       Glide.with(context)
           .load(o.getUrl())
-          .bitmapTransform(new RoundedCornersTransformation(context, 15, 0))
+          .bitmapTransform(new RoundedCornersTransformation(context, 35, 0))
+          .placeholder(ContextCompat.getColor(context, R.color.blue_new))
           .into(vh.image);
 
       vh.image.setOnClickListener(v -> {
