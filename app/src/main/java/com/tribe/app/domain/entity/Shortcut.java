@@ -4,6 +4,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,11 +44,11 @@ public class Shortcut extends Recipient implements Serializable {
   }
 
   @Override public boolean isInvisible() {
-    return false;
+    return single ? getSingleFriend().isInvisibleMode() : false;
   }
 
   @Override public boolean isFriend() {
-    return false;
+    return single;
   }
 
   @Override public AvatarModel getAvatar() {
@@ -160,6 +161,49 @@ public class Shortcut extends Recipient implements Serializable {
 
   public void setMembers(List<User> members) {
     this.members = members;
+  }
+
+  public void addMember(User user) {
+    if (members == null) members = new ArrayList<>();
+    members.add(user);
+  }
+
+  public boolean isFriend(User friend) {
+    if (members == null || members.size() == 0) return false;
+
+    for (User user : members) {
+      if (user.equals(friend)) return true;
+    }
+
+    return false;
+  }
+
+  public List<String> getMembersIds() {
+    List<String> memberIds = new ArrayList<>();
+
+    for (User user : members) {
+      memberIds.add(user.getId());
+    }
+
+    return memberIds;
+  }
+
+  public User getSingleFriend() {
+    if (members == null || members.size() == 0) return null;
+
+    return members.get(0);
+  }
+
+  public boolean isBlockedOrHidden() {
+    return status.equals(ShortcutRealm.BLOCKED) || status.equals(ShortcutRealm.HIDDEN);
+  }
+
+  public boolean isBlocked() {
+    return status.equals(ShortcutRealm.BLOCKED);
+  }
+
+  public boolean isHidden() {
+    return status.equals(ShortcutRealm.HIDDEN);
   }
 
   private String getUserNames() {

@@ -5,11 +5,12 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.CreateShortcut;
+import com.tribe.app.domain.interactor.user.GetDiskSingleShortcut;
 import com.tribe.app.domain.interactor.user.RemoveShortcut;
 import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.mvp.presenter.Presenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
-import com.tribe.app.presentation.mvp.view.ShortcutView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -17,9 +18,10 @@ import javax.inject.Inject;
 public class ShortcutPresenter implements Presenter {
 
   // VIEW ATTACHED
-  private ShortcutView shortcutView;
+  private ShortcutMVPView shortcutView;
 
   // USECASES
+  private GetDiskSingleShortcut getDiskSingleShortcut;
   private CreateShortcut createShortcut;
   private UpdateShortcut updateShortcut;
   private RemoveShortcut removeShortcut;
@@ -28,22 +30,26 @@ public class ShortcutPresenter implements Presenter {
   private CreateShortcutSubscriber createShortcutSubscriber;
   private UpdateShortcutSubscriber updateShortcutSubscriber;
   private RemoveShortcutSubscriber removeShortcutSubscriber;
+  private SingleShortcutsSubscriber singleShortcutsSubscriber;
 
   @Inject public ShortcutPresenter(CreateShortcut createShortcut, UpdateShortcut updateShortcut,
-      RemoveShortcut removeShortcut) {
+      RemoveShortcut removeShortcut, GetDiskSingleShortcut getDiskSingleShortcut) {
     this.createShortcut = createShortcut;
     this.updateShortcut = updateShortcut;
     this.removeShortcut = removeShortcut;
+    this.getDiskSingleShortcut = getDiskSingleShortcut;
   }
 
   @Override public void onViewDetached() {
     createShortcut.unsubscribe();
     updateShortcut.unsubscribe();
     removeShortcut.unsubscribe();
+    getDiskSingleShortcut.unsubscribe();
+    shortcutView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {
-
+    shortcutView = (ShortcutMVPView) v;
   }
 
   public void createShortcut(String... userIds) {
@@ -60,10 +66,11 @@ public class ShortcutPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      shortcutView.onShortcutCreatedError();
     }
 
     @Override public void onNext(Shortcut shortcut) {
-
+      shortcutView.onShortcutCreatedSuccess(shortcut);
     }
   }
 
@@ -105,10 +112,11 @@ public class ShortcutPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      shortcutView.onShortcutUpdatedError();
     }
 
     @Override public void onNext(Shortcut shortcut) {
-
+      shortcutView.onShortcutUpdatedSuccess(shortcut);
     }
   }
 
@@ -126,10 +134,31 @@ public class ShortcutPresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      shortcutView.onShortcutRemovedError();
     }
 
     @Override public void onNext(Shortcut shortcut) {
+      shortcutView.onShortcutRemovedSuccess();
+    }
+  }
 
+  public void loadSingleShortcuts() {
+    if (singleShortcutsSubscriber != null) singleShortcutsSubscriber.unsubscribe();
+    singleShortcutsSubscriber = new SingleShortcutsSubscriber();
+    getDiskSingleShortcut.execute(singleShortcutsSubscriber);
+  }
+
+  private class SingleShortcutsSubscriber extends DefaultSubscriber<List<Shortcut>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(List<Shortcut> shortcutList) {
+      shortcutView.onSingleShortcutsLoaded(shortcutList);
     }
   }
 }

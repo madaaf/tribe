@@ -30,17 +30,16 @@ public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
     SearchResult searchResult = (SearchResult) baseListItem;
     ButtonModel buttonModel = null;
 
-    // TODO CHANGE WITH SHORTCUTS
-    //if (searchResult.getFriendship() == null) {
-    //  buttonModel = getAddFriendButton();
-    //} else if (searchResult.getFriendship() != null && !searchResult.getFriendship()
-    //    .isBlockedOrHidden()) {
-    //  buttonModel = getHangLiveButton();
-    //} else if (searchResult.getFriendship().isBlocked()) {
-    //  buttonModel = getUnblockButton();
-    //} else if (searchResult.getFriendship().isHidden()) {
-    //  buttonModel = getUnhideButton();
-    //}
+    if (searchResult.getShortcut() == null) {
+      buttonModel = getAddFriendButton();
+    } else if (searchResult.getShortcut() != null &&
+        !searchResult.getShortcut().isBlockedOrHidden()) {
+      buttonModel = getHangLiveButton();
+    } else if (searchResult.getShortcut().isBlocked()) {
+      buttonModel = getUnblockButton();
+    } else if (searchResult.getShortcut().isHidden()) {
+      buttonModel = getUnhideButton();
+    }
 
     return buttonModel;
   }
@@ -71,23 +70,22 @@ public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     SearchResult searchResult = (SearchResult) baseListItem;
-    // TODO CHANGE WITH SHORTCUTS
-    //boolean conditions = (!searchResult.isMyself() && (searchResult.getFriendship() == null
-    //    || searchResult.getFriendship().isBlockedOrHidden()));
-    //
-    //if (searchResult.isInvisible()) {
-    //  vh.btnAdd.setOnClickListener(v -> {
-    //    clickAdd.onNext(vh.itemView);
-    //  });
-    //} else if (!searchResult.isInvisible() && conditions) {
-    //  vh.btnAdd.setOnClickListener(v -> {
-    //    animations.put(vh, animateProgressBar(vh));
-    //    searchResult.setAnimateAdd(true);
-    //    clickAdd.onNext(vh.itemView);
-    //  });
-    //} else {
-    //  vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
-    //}
+    boolean conditions = (!searchResult.isMyself() &&
+        (searchResult.getShortcut() == null || searchResult.getShortcut().isBlockedOrHidden()));
+
+    if (searchResult.isInvisible()) {
+      vh.btnAdd.setOnClickListener(v -> {
+        clickAdd.onNext(vh.itemView);
+      });
+    } else if (!searchResult.isInvisible() && conditions) {
+      vh.btnAdd.setOnClickListener(v -> {
+        animations.put(vh, animateProgressBar(vh));
+        searchResult.setAnimateAdd(true);
+        clickAdd.onNext(vh.itemView);
+      });
+    } else {
+      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
+    }
   }
 
   @Override

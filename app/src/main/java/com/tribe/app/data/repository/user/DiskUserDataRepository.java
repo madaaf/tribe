@@ -13,6 +13,7 @@ import com.tribe.app.data.repository.user.datasource.DiskUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -51,7 +52,7 @@ import rx.Observable;
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
-    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper();
+    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -78,7 +79,24 @@ import rx.Observable;
           if (userRealm != null && userRealm.getShortcuts() != null) {
             RealmList<ShortcutRealm> shortcutRealmList =
                 updateOnlineLiveShortcuts(userRealm.getShortcuts(), onlineMap, true);
-            userRealm.setShortcuts(shortcutRealmList);
+
+            if (inviteMap != null && inviteMap.size() > 0) {
+              RealmList<ShortcutRealm> endShortcuts = new RealmList<>();
+              for (ShortcutRealm shortcutRealm : shortcutRealmList) {
+                for (Invite invite : inviteMap.values()) {
+                  List<String> shortcutMembersIds = shortcutRealm.getMembersIds();
+                  // we add the current user id because he's not included in the shortcut
+                  shortcutMembersIds.add(userId);
+                  if (!invite.isShortcut(shortcutMembersIds)) {
+                    endShortcuts.add(shortcutRealm);
+                  }
+                }
+              }
+
+              userRealm.setShortcuts(endShortcuts);
+            } else {
+              userRealm.setShortcuts(shortcutRealmList);
+            }
           }
 
           User user = userRealmDataMapper.transform(userRealm);
@@ -116,7 +134,14 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Shortcut>> shortcuts() {
-    return null;
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.combineLatest(userDataStore.shortcuts(),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()),
+        (shortcuts, onlineMap, liveMap) -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(updateOnlineLiveShortcuts(shortcuts, onlineMap, true)));
   }
 
   private RealmList<ShortcutRealm> updateOnlineLiveShortcuts(List<ShortcutRealm> shortcutRealmList,

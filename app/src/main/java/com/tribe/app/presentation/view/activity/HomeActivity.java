@@ -35,17 +35,20 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
-import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
+import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -109,7 +112,7 @@ import timber.log.Timber;
 import static android.view.View.VISIBLE;
 
 public class HomeActivity extends BaseActivity
-    implements HasComponent<UserComponent>, HomeGridMVPView,
+    implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
     GoogleApiClient.OnConnectionFailedListener, AppStateListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
@@ -121,7 +124,7 @@ public class HomeActivity extends BaseActivity
 
   @Inject NotificationManagerCompat notificationManager;
 
-  @Inject HomeGridPresenter homeGridPresenter;
+  @Inject HomePresenter homeGridPresenter;
 
   @Inject HomeListAdapter homeGridAdapter;
 
@@ -357,32 +360,31 @@ public class HomeActivity extends BaseActivity
       List<Contact> result = new ArrayList<>();
       Map<String, Contact> mapContact = new HashMap<>();
 
-      // TODO CHANGE WITH SHORTCUTS
-      //if (getCurrentUser().getFriendships() == null) {
-      result.addAll(contactList);
-      //} else {
-      //  for (Contact contact : contactList) {
-      //    boolean shouldAdd = true;
-      //
-      //    if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-      //      User linkedUser = contact.getUserList().get(0);
-      //
-      //      for (Friendship friendship : getCurrentUser().getFriendships()) {
-      //        if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
-      //      }
-      //
-      //      if (mapContact.containsKey(linkedUser.getId())) {
-      //        shouldAdd = false;
-      //      } else {
-      //        mapContact.put(linkedUser.getId(), contact);
-      //      }
-      //    }
-      //
-      //    if (shouldAdd) {
-      //      result.add(contact);
-      //    }
-      //  }
-      //}
+      if (getCurrentUser().getShortcutList() == null) {
+        result.addAll(contactList);
+      } else {
+        for (Contact contact : contactList) {
+          boolean shouldAdd = true;
+
+          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+            User linkedUser = contact.getUserList().get(0);
+
+            for (Shortcut shortcut : getCurrentUser().getShortcutList()) {
+              if (shortcut.isSingle() && shortcut.isFriend(linkedUser)) shouldAdd = false;
+            }
+
+            if (mapContact.containsKey(linkedUser.getId())) {
+              shouldAdd = false;
+            } else {
+              mapContact.put(linkedUser.getId(), contact);
+            }
+          }
+
+          if (shouldAdd) {
+            result.add(contact);
+          }
+        }
+      }
 
       int nbContacts = result.size();
       boolean hasNewContacts = false;
@@ -453,24 +455,21 @@ public class HomeActivity extends BaseActivity
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                //if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                //    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
-                //  Friendship friendship = (Friendship) recipient;
-                //  homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                //      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                //          : FriendshipRealm.HIDDEN);
-                //} else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-                //  Friendship friendship = (Friendship) recipient;
-                //  friendship.setMute(true);
-                //  homeGridPresenter.updateFriendship(friendship.getId(), true,
-                //      friendship.getStatus());
-                //} else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-                //  Friendship friendship = (Friendship) recipient;
-                //  friendship.setMute(false);
-                //  homeGridPresenter.updateFriendship(friendship.getId(), false,
-                //      friendship.getStatus());
-                //} else
-                if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  homeGridPresenter.updateShortcutStatus(shortcut.getId(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
+                          : ShortcutRealm.HIDDEN);
+                } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  shortcut.setMute(true);
+                  homeGridPresenter.muteShortcut(shortcut.getId(), true);
+                } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  shortcut.setMute(false);
+                  homeGridPresenter.muteShortcut(shortcut.getId(), false);
+                } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
                   Invite invite = (Invite) recipient;
                   homeGridPresenter.declineInvite(invite.getId());
                 }
@@ -713,8 +712,7 @@ public class HomeActivity extends BaseActivity
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
 
         if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
-          // TODO CHANGE WITH SHORTCUTS
-          //homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
+          homeGridPresenter.createShortcut(intent.getStringExtra(IntentUtils.USER_REGISTERED));
         }
       } else if (intent.getData() != null) {
         Intent newIntent =
@@ -983,6 +981,34 @@ public class HomeActivity extends BaseActivity
     Alerter.create(HomeActivity.this, liveNotificationView).show();
   }
 
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
@@ -1001,8 +1027,7 @@ public class HomeActivity extends BaseActivity
               if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
                 declineInvitation(action.getSessionId());
               } else if (action.getId().equals(NotificationUtils.ACTION_ADD_FRIEND)) {
-                // TODO CHANGE WITH SHORTCUTS
-                //homeGridPresenter.createFriendship(action.getUserId());
+                homeGridPresenter.createShortcut(action.getUserId());
               } else if (action.getIntent() != null) {
                 navigator.navigateToIntent(HomeActivity.this, action.getIntent());
               }

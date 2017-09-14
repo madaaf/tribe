@@ -34,6 +34,7 @@ import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.RoomDeserializer;
 import com.tribe.app.data.network.deserializer.RoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
+import com.tribe.app.data.network.deserializer.ShortcutRealmDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
@@ -46,6 +47,7 @@ import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
@@ -165,6 +167,7 @@ import timber.log.Timber;
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
         .registerTypeAdapter(new TypeToken<List<String>>() {
         }.getType(), dataGameDeserializer)
+        .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
         .create();
   }
 

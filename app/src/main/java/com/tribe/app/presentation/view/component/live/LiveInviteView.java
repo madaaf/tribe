@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -49,7 +50,7 @@ public class LiveInviteView extends FrameLayout {
   // VARIABLES
   private LiveInviteLayoutManager layoutManager;
   private boolean dragging = false;
-  private List<Recipient> friendshipList;
+  private List<Recipient> recipientList;
   private @LiveActivity.Source String source;
 
   // RESOURCES
@@ -99,7 +100,7 @@ public class LiveInviteView extends FrameLayout {
   //////////////////////
 
   private void init(Context context, AttributeSet attrs) {
-    friendshipList = new ArrayList<>();
+    recipientList = new ArrayList<>();
   }
 
   private void initUI() {
@@ -157,14 +158,13 @@ public class LiveInviteView extends FrameLayout {
   // PUBLIC //
   ///////////
 
-  // TODO REPLACE WITH SHORTCUTS
-  //public void renderFriendshipList(List<Friendship> friendshipList,
-  //    @LiveActivity.Source String source) {
-  //  this.source = source;
-  //  this.friendshipList.clear();
-  //  this.friendshipList.addAll(friendshipList);
-  //  if (!dragging) adapter.setItems(this.friendshipList, source);
-  //}
+  public void renderShortcutList(List<Shortcut> shortcutSingleList,
+      @LiveActivity.Source String source) {
+    this.source = source;
+    this.recipientList.clear();
+    this.recipientList.addAll(shortcutSingleList);
+    if (!dragging) adapter.setItems(recipientList, source);
+  }
 
   public void removeItemAtPosition(int position) {
     //adapter.removeItem(position);
@@ -172,15 +172,15 @@ public class LiveInviteView extends FrameLayout {
 
   public void diceDragued() {
     adapter.diceDragued();
-    //List<Recipient> friendships = friendshipList;
-    // TODO REPLACE WITH SHORTCUTS
-    //List<Friendship> friendRend = new ArrayList<>();
-    //for (Recipient fr : friendships) {
-    //  if (fr instanceof Friendship) {
-    //    friendRend.add((Friendship) fr);
-    //  }
-    //}
-    //renderFriendshipList(friendRend, source);
+
+    List<Shortcut> shortcutList = new ArrayList<>();
+    for (Recipient sh : recipientList) {
+      if (sh instanceof Shortcut) {
+        shortcutList.add((Shortcut) sh);
+      }
+    }
+
+    renderShortcutList(shortcutList, source);
     adapter.notifyDataSetChanged();
   }
 

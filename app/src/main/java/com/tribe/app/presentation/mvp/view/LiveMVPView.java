@@ -23,11 +23,6 @@ public interface LiveMVPView extends MVPView {
 
   void onReceivedAnonymousMemberInRoom(List<User> users);
 
-  void onAddError();
-
-  // TODO REPLACE WITH SHORTCUTS
-  //void onAddSuccess(Friendship friendship);
-
   void randomRoomAssignedSubscriber(String roomId);
 
   void fbIdUpdatedSubscriber(User userUpdated);

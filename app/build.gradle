@@ -27,6 +27,11 @@ android {
   compileSdkVersion globalConfiguration.getAt("androidCompileSdkVersion")
   buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
 
+  if (project.hasProperty('devBuild')) {
+    splits.density.enable = false
+    aaptOptions.crunchedEnabled = false
+  }
+
   dexOptions {
     maxProcessCount 2
     preDexLibraries = false

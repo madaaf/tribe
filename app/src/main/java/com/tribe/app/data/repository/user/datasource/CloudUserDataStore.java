@@ -518,16 +518,15 @@ public class CloudUserDataStore implements UserDataStore {
     }).map(searchResultRealm -> {
       SearchResultRealm searchResultRealmRet = new SearchResultRealm();
 
-      // TODO CHANGE WITH SHORTCUTS
-      //if (searchResultRealm != null) {
-      //  FriendshipRealm fr = userCache.friendshipForUserId(searchResultRealm.getId());
-      //  searchResultRealmRet.setFriendshipRealm(fr);
-      //  searchResultRealmRet.setDisplayName(searchResultRealm.getDisplayName());
-      //  searchResultRealmRet.setPicture(searchResultRealm.getPicture());
-      //  searchResultRealmRet.setId(searchResultRealm.getId());
-      //  searchResultRealmRet.setUsername(searchResultRealm.getUsername());
-      //  searchResultRealmRet.setInvisibleMode(searchResultRealm.isInvisibleMode());
-      //}
+      if (searchResultRealm != null) {
+        ShortcutRealm sh = userCache.shortcutForUserId(searchResultRealm.getId());
+        searchResultRealmRet.setShortcutRealm(sh);
+        searchResultRealmRet.setDisplayName(searchResultRealm.getDisplayName());
+        searchResultRealmRet.setPicture(searchResultRealm.getPicture());
+        searchResultRealmRet.setId(searchResultRealm.getId());
+        searchResultRealmRet.setUsername(searchResultRealm.getUsername());
+        searchResultRealmRet.setInvisibleMode(searchResultRealm.isInvisibleMode());
+      }
 
       searchResultRealmRet.setUsername(searchResultInit.getUsername());
       searchResultRealmRet.setKey(SEARCH_KEY);
@@ -701,7 +700,8 @@ public class CloudUserDataStore implements UserDataStore {
 
     if (userIds != null && userIds.length > 0) {
       params += params.length() == 0 ? "( " : "";
-      params += context.getString(R.string.createRoom_usersIds, StringUtils.arrayToJson(userIds));
+      params +=
+          context.getString(R.string.createShortcut_userIds, StringUtils.arrayToJson(userIds));
     }
 
     if (params.length() > 0) params += " )";
@@ -726,6 +726,9 @@ public class CloudUserDataStore implements UserDataStore {
       if (ShortcutRealm.isKeyABool(value.first)) {
         shortcutInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         shortcutInputBuilder.append(",");
+      } else if (ShortcutRealm.isKeyEnum(value.first)) {
+        shortcutInputBuilder.append(value.first + ": " + value.second);
+        shortcutInputBuilder.append(",");
       } else if (!StringUtils.isEmpty(value.second) && !value.second.equals("null")) {
         shortcutInputBuilder.append(value.first + ": \"" + value.second + "\"");
         shortcutInputBuilder.append(",");
@@ -749,7 +752,8 @@ public class CloudUserDataStore implements UserDataStore {
             "\n" +
             context.getString(R.string.userfragment_infos_light);
 
-        return this.tribeApi.updateShortcut(request);
+        return this.tribeApi.updateShortcut(request)
+            .doOnNext(shortcutRealm -> userCache.updateShortcut(shortcutRealm));
       } else {
         return Observable.empty();
       }
@@ -785,7 +789,8 @@ public class CloudUserDataStore implements UserDataStore {
       requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
       body = MultipartBody.Part.createFormData("picture", "picture.jpg", requestFile);
 
-      return tribeApi.updateShortcutMedia(query, body);
+      return tribeApi.updateShortcutMedia(query, body)
+          .doOnNext(shortcutRealm -> userCache.updateShortcut(shortcutRealm));
     }
   }
 
@@ -799,5 +804,9 @@ public class CloudUserDataStore implements UserDataStore {
         context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.removeShortcut(request);
+  }
+
+  @Override public Observable<List<ShortcutRealm>> shortcuts() {
+    return null;
   }
 }

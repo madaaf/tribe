@@ -12,7 +12,5 @@ public interface SearchMVPView extends UpdateUserMVPView {
 
   void renderContactList(List<Object> contactList);
 
-  void onAddError();
-
   void syncDone();
 }

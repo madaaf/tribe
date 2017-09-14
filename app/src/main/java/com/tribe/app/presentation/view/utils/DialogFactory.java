@@ -17,6 +17,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
 import com.tribe.tribelivesdk.game.Game;
@@ -195,29 +196,29 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
     List<LabelType> moreTypeList = new ArrayList<>();
 
-    // TODO CHANGE WITH SHORTCUTS
-    //if (recipient instanceof Friendship) {
-    //  if (!recipient.isMute()) {
-    //    moreTypeList.add(new LabelType(
-    //        EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
-    //        LabelType.MUTE));
-    //  } else {
-    //    moreTypeList.add(new LabelType(
-    //        EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)),
-    //        LabelType.UNMUTE));
-    //  }
-    //
-    //  moreTypeList.add(new LabelType(
-    //      context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
-    //      LabelType.HIDE));
-    //
-    //  moreTypeList.add(new LabelType(
-    //      context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
-    //      LabelType.BLOCK_HIDE));
-    //} else if (recipient instanceof Invite) {
-    //  moreTypeList.add(
-    //      new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
-    //}
+    if (recipient instanceof Shortcut) {
+      Shortcut shortcut = (Shortcut) recipient;
+      if (!shortcut.isMute()) {
+        moreTypeList.add(new LabelType(
+            EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
+            LabelType.MUTE));
+      } else {
+        moreTypeList.add(new LabelType(
+            EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_unmute)),
+            LabelType.UNMUTE));
+      }
+
+      moreTypeList.add(new LabelType(
+          context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
+          LabelType.HIDE));
+
+      moreTypeList.add(new LabelType(
+          context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
+          LabelType.BLOCK_HIDE));
+    } else if (recipient instanceof Invite) {
+      moreTypeList.add(
+          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
+    }
 
     return moreTypeList;
   }

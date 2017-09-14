@@ -15,6 +15,8 @@ import com.jenzz.appstate.AppState;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.job.UnhideShortcutJob;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
@@ -58,12 +60,10 @@ import javax.inject.Singleton;
       // https://github.com/heytribe/roadmap/issues/530
       if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE) &&
           notificationPayload.isUserCall()) {
-        // TODO REPLACE WITH SHORTCUTS
-        //FriendshipRealm friendshipRealm =
-        //    userCache.friendshipForUserId(notificationPayload.getUserId());
-        //if (friendshipRealm != null && friendshipRealm.isHidden()) {
-        //  jobManager.addJobInBackground(new UnhideFriendshipJob(friendshipRealm));
-        //}
+        ShortcutRealm shortcutRealm = userCache.shortcutForUserId(notificationPayload.getUserId());
+        if (shortcutRealm != null && shortcutRealm.isHidden()) {
+          jobManager.addJobInBackground(new UnhideShortcutJob(shortcutRealm));
+        }
       } else if (notificationPayload.getClickAction()
           .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
         if (application.getAppState() != null) {

@@ -32,17 +32,20 @@ import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.RoomMember;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -110,7 +113,8 @@ import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
-public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateListener {
+public class LiveActivity extends BaseActivity
+    implements LiveMVPView, ShortcutMVPView, AppStateListener {
 
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
@@ -150,13 +154,10 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
         .countdown(!recipient.isLive())
         .source(source);
 
-    // TODO REPLACE WITH SHORTCUTS
-    //if (recipient instanceof Friendship) {
-    //  Friendship fr = (Friendship) recipient;
-    //  builder.users(fr.getFriend());
-    //}
-
-    if (recipient instanceof Invite) {
+    if (recipient instanceof Shortcut) {
+      Shortcut shortcut = (Shortcut) recipient;
+      builder.users(shortcut.getMembers().toArray(new User[shortcut.getMembers().size()]));
+    } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
       builder.room(invite.getRoom());
     }
@@ -275,7 +276,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  //private PublishSubject<List<Friendship>> onUpdateFriendshipList = PublishSubject.create();
+  private PublishSubject<List<Shortcut>> onUpdateSingleShortcutList = PublishSubject.create();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -422,7 +423,7 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
 
         initSubscriptions();
 
-        //livePresenter.loadFriendshipList();
+        livePresenter.loadSingleShortcuts();
 
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
@@ -562,40 +563,41 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
   }
 
   private void initSubscriptions() {
-    // TODO REPLACE WITH SHORTCUTS
-    //subscriptions.add(Observable.combineLatest(onUpdateFriendshipList,
-    //    viewLive.onLiveChanged().startWith(new HashMap<>()),
-    //    viewLive.onInvitesChanged().startWith(new HashMap<>()),
-    //    (friendshipList, liveMap, invitesMap) -> {
-    //      List<String> idsToFilter = new ArrayList<>();
-    //      idsToFilter.addAll(liveMap.keySet());
-    //      idsToFilter.addAll(invitesMap.keySet());
-    //
-    //      usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
-    //      Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-    //
-    //      List<Friendship> filteredFriendships = new ArrayList<>();
-    //      liveIsInvite = live.fromRoom();
-    //      if (live.getUsers() != null) {
-    //        for (Friendship fr : friendshipList) {
-    //          if (!live.hasUser(fr.getFriend().getId()) &&
-    //              !idsToFilter.contains(fr.getFriend().getId())) {
-    //            filteredFriendships.add(fr);
-    //          }
-    //        }
-    //      } else {
-    //        for (Friendship fr : friendshipList) {
-    //          if (!idsToFilter.contains(fr.getFriend().getId())) {
-    //            filteredFriendships.add(fr);
-    //          }
-    //        }
-    //      }
-    //      return filteredFriendships;
-    //    })
-    //    .delay(500, TimeUnit.MILLISECONDS)
-    //    .observeOn(AndroidSchedulers.mainThread())
-    //    .subscribe(filteredFriendships -> viewInviteLive.renderFriendshipList(filteredFriendships,
-    //        live.getSource())));
+    subscriptions.add(Observable.combineLatest(onUpdateSingleShortcutList,
+        viewLive.onLiveChanged().startWith(new HashMap<>()),
+        viewLive.onInvitesChanged().startWith(new HashMap<>()),
+        (singleShortcutList, liveMap, invitesMap) -> {
+          List<String> idsToFilter = new ArrayList<>();
+          idsToFilter.addAll(liveMap.keySet());
+          idsToFilter.addAll(invitesMap.keySet());
+
+          usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
+          Collections.sort(singleShortcutList,
+              (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
+          List<Shortcut> filteredSingleShortcut = new ArrayList<>();
+          liveIsInvite = live.fromRoom();
+          if (live.getUsers() != null) {
+            for (Shortcut shortcut : singleShortcutList) {
+              User single = shortcut.getSingleFriend();
+              if (!live.hasUser(single.getId()) && !idsToFilter.contains(single.getId())) {
+                filteredSingleShortcut.add(shortcut);
+              }
+            }
+          } else {
+            for (Shortcut shortcut : singleShortcutList) {
+              User single = shortcut.getSingleFriend();
+              if (!idsToFilter.contains(single.getId())) {
+                filteredSingleShortcut.add(shortcut);
+              }
+            }
+          }
+          return filteredSingleShortcut;
+        })
+        .delay(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(filteredFriendships -> viewInviteLive.renderShortcutList(filteredFriendships,
+            live.getSource())));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       viewLiveContainer.setEnabled(true);
@@ -876,16 +878,14 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
               .filter(x -> x == true)
               .subscribe(a -> share());
         } else {
-          // TODO CHANGE WITH SHORTCUTS
-          //livePresenter.createFriendship(user.getId());
+          livePresenter.createShortcut(user.getId());
         }
       }
     }));
 
-    //subscriptions.add(userInfosNotificationView.onUnblock().subscribe(recipient -> {
-    //  livePresenter.updateFriendship(recipient.getId(), recipient.isMute(),
-    //      FriendshipRealm.DEFAULT);
-    //}));
+    subscriptions.add(userInfosNotificationView.onUnblock()
+        .subscribe(recipient -> livePresenter.updateShortcutStatus(recipient.getId(),
+            ShortcutRealm.DEFAULT)));
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
@@ -1045,17 +1045,6 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     onAnonymousReceived.onNext(users);
   }
 
-  @Override public void onAddError() {
-    Toast.makeText(context(),
-        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
-        Toast.LENGTH_SHORT).show();
-  }
-
-  // TODO REPLACE WITH SHORTCUTS
-  //@Override public void onAddSuccess(Friendship friendship) {
-  //  userInfosNotificationView.update(friendship);
-  //}
-
   private void setNextDrawGame() {
     Game game = gameManager.getCurrentGame();
     if (game != null && game instanceof GameDraw) {
@@ -1213,10 +1202,9 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
     return onAnonymousReceived;
   }
 
-  // TODO REPLACE WITH SHORTCUTS
-  //@Override public void renderFriendshipList(List<Friendship> friendshipList) {
-  //  onUpdateFriendshipList.onNext(friendshipList);
-  //}
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+    onUpdateSingleShortcutList.onNext(singleShortcutList);
+  }
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
     Timber.d("random room assigned " + roomId);
@@ -1268,6 +1256,32 @@ public class LiveActivity extends BaseActivity implements LiveMVPView, AppStateL
       Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
       finish();
     }
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+    Toast.makeText(context(),
+        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+        Toast.LENGTH_SHORT).show();
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
   }
 
   @Override public Context context() {

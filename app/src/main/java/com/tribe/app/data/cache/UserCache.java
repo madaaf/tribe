@@ -39,9 +39,7 @@ import rx.Observable;
 
   void updateShortcut(ShortcutRealm shortcutRealm);
 
-  // TODO
-  //ShortcutRealm updateShortcutNoObs(String shortcutId,
-  //    @FriendshipRealm.FriendshipStatus String moreType);
+  ShortcutRealm updateShortcutNoObs(String shortcutId, @ShortcutRealm.ShortcutStatus String status);
 
   void updateUserRealmList(List<UserRealm> userRealm);
 

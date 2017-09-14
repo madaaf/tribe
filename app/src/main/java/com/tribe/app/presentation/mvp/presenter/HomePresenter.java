@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
@@ -15,21 +16,22 @@ import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
-import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.SendInvitations;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class HomeGridPresenter implements Presenter {
+public class HomePresenter implements Presenter {
+
+  private ShortcutPresenter shortcutPresenter;
 
   // VIEW ATTACHED
   private HomeGridMVPView homeGridView;
@@ -42,7 +44,6 @@ public class HomeGridPresenter implements Presenter {
   private JobManager jobManager;
   private GetDiskUserInfos diskUserInfosUsecase;
   private SendToken sendTokenUseCase;
-  private GetHeadDeepLink getHeadDeepLink;
   private UseCase cloudUserInfos;
   private UpdateUserFacebook updateUserFacebook;
   private RxFacebook rxFacebook;
@@ -58,17 +59,17 @@ public class HomeGridPresenter implements Presenter {
   private LookupContactsSubscriber lookupContactsSubscriber;
   private ContactsOnAppSubscriber contactsOnAppSubscriber;
 
-  @Inject public HomeGridPresenter(JobManager jobManager,
+  @Inject public HomePresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
-      @Named("sendToken") SendToken sendToken, GetHeadDeepLink getHeadDeepLink,
-      @Named("cloudUserInfos") UseCase cloudUserInfos, UpdateUserFacebook updateUserFacebook,
-      RxFacebook rxFacebook, @Named("synchroContactList") UseCase synchroContactList,
+      @Named("sendToken") SendToken sendToken, @Named("cloudUserInfos") UseCase cloudUserInfos,
+      UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
+      @Named("synchroContactList") UseCase synchroContactList,
       GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom) {
+    this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
     this.sendTokenUseCase = sendToken;
-    this.getHeadDeepLink = getHeadDeepLink;
     this.cloudUserInfos = cloudUserInfos;
     this.updateUserFacebook = updateUserFacebook;
     this.rxFacebook = rxFacebook;
@@ -80,7 +81,7 @@ public class HomeGridPresenter implements Presenter {
   }
 
   @Override public void onViewDetached() {
-    getHeadDeepLink.unsubscribe();
+    shortcutPresenter.onViewDetached();
     cloudUserInfos.unsubscribe();
     updateUserFacebook.unsubscribe();
     diskUserInfosUsecase.unsubscribe();
@@ -94,6 +95,7 @@ public class HomeGridPresenter implements Presenter {
 
   @Override public void onViewAttached(MVPView v) {
     homeGridView = (HomeGridMVPView) v;
+    shortcutPresenter.onViewAttached(v);
   }
 
   public void reload(boolean sync) {
@@ -123,11 +125,6 @@ public class HomeGridPresenter implements Presenter {
 
   private void showRecipients(List<Recipient> recipientList) {
     this.homeGridView.renderRecipientList(recipientList);
-  }
-
-  public void getHeadDeepLink(String url) {
-    getHeadDeepLink.prepare(url);
-    getHeadDeepLink.execute(new GetHeadDeepLinkSubscriber());
   }
 
   public void sendToken(String token) {
@@ -178,20 +175,6 @@ public class HomeGridPresenter implements Presenter {
         List<Recipient> recipientList = user.getRecipientList();
         showRecipients(recipientList);
       }
-    }
-  }
-
-  private final class GetHeadDeepLinkSubscriber extends DefaultSubscriber<String> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(String url) {
-      if (!StringUtils.isEmpty(url)) homeGridView.onDeepLink(url);
     }
   }
 
@@ -308,5 +291,29 @@ public class HomeGridPresenter implements Presenter {
     @Override public void onNext(Room room) {
       homeGridView.onCreateRoom(room, feature, phone, shouldOpenSMS);
     }
+  }
+
+  public void createShortcut(String... userIds) {
+    shortcutPresenter.createShortcut(userIds);
+  }
+
+  public void muteShortcut(String shortcutId, boolean mute) {
+    shortcutPresenter.muteShortcut(shortcutId, mute);
+  }
+
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status);
+  }
+
+  public void readShortcut(String shortcutId) {
+    shortcutPresenter.readShortcut(shortcutId);
+  }
+
+  public void pinShortcut(String shortcutId, boolean pinned) {
+    shortcutPresenter.pinShortcut(shortcutId, pinned);
+  }
+
+  public void removeShortcut(String shortcutId) {
+    shortcutPresenter.removeShortcut(shortcutId);
   }
 }

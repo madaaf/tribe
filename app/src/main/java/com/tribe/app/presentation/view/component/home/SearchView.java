@@ -24,11 +24,13 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -36,6 +38,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -65,7 +68,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class SearchView extends CustomFrameLayout implements SearchMVPView {
+public class SearchView extends CustomFrameLayout implements SearchMVPView, ShortcutMVPView {
 
   private final static int DURATION = 300;
   private final static int DURATION_FAST = 100;
@@ -194,33 +197,32 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
-          // TODO CHANGE WITH SHORTCUTS
-          //if (o instanceof SearchResult) {
-          //  SearchResult searchResult = (SearchResult) o;
-          //  if (searchResult.isInvisible()) {
-          //    DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
-          //        EmojiParser.demojizedText(
-          //            getContext().getString(R.string.add_friend_error_invisible)),
-          //        context().getString(R.string.add_friend_error_invisible_invite_android),
-          //        context().getString(R.string.add_friend_error_invisible_cancel))
-          //        .filter(x -> x == true)
-          //        .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
-          //  } else if (searchResult.getFriendship() == null) {
-          //    if (searchResult.getUsername() != null &&
-          //        !searchResult.getUsername().equals(user.getUsername())) {
-          //      searchPresenter.createFriendship(searchResult.getId());
-          //    }
-          //  } else {
-          //    searchResult.getFriendship().setStatus(FriendshipRealm.DEFAULT);
-          //    onUnblock.onNext(searchResult.getFriendship());
-          //  }
-          //} else if (o instanceof Contact) {
-          //  Contact contact = (Contact) o;
-          //  searchPresenter.createFriendship(contact.getUserList().get(0).getId());
-          //} else if (o instanceof User) {
-          //  User user = (User) o;
-          //  searchPresenter.createFriendship(user.getId());
-          //}
+          if (o instanceof SearchResult) {
+            SearchResult searchResult = (SearchResult) o;
+            if (searchResult.isInvisible()) {
+              DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
+                  EmojiParser.demojizedText(
+                      getContext().getString(R.string.add_friend_error_invisible)),
+                  context().getString(R.string.add_friend_error_invisible_invite_android),
+                  context().getString(R.string.add_friend_error_invisible_cancel))
+                  .filter(x -> x == true)
+                  .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
+            } else if (searchResult.getShortcut() == null) {
+              if (searchResult.getUsername() != null &&
+                  !searchResult.getUsername().equals(user.getUsername())) {
+                searchPresenter.createShortcut(searchResult.getId());
+              }
+            } else {
+              searchResult.getShortcut().setStatus(ShortcutRealm.DEFAULT);
+              onUnblock.onNext(searchResult.getShortcut());
+            }
+          } else if (o instanceof Contact) {
+            Contact contact = (Contact) o;
+            searchPresenter.createShortcut(contact.getUserList().get(0).getId());
+          } else if (o instanceof User) {
+            User user = (User) o;
+            searchPresenter.createShortcut(user.getId());
+          }
         }));
 
     subscriptions.add(contactAdapter.onClickInvite()
@@ -242,7 +244,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
           if (o instanceof Recipient) {
             onHangLive.onNext((Recipient) o);
           } else if (o instanceof SearchResult) {
-            //onHangLive.onNext(((SearchResult) o).getFriendship());
+            onHangLive.onNext(((SearchResult) o).getShortcut());
           }
         }));
 
@@ -262,11 +264,11 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
             (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
-          //Friendship friendship = (Friendship) pair.first.second;
-          //onUnblock.onNext(pair.first.second);
-          //friendship.setStatus(FriendshipRealm.DEFAULT);
-          //friendship.setAnimateAdd(true);
-          //contactAdapter.notifyItemChanged(pair.first.first);
+          Shortcut shortcut = (Shortcut) pair.first.second;
+          onUnblock.onNext(pair.first.second);
+          shortcut.setStatus(ShortcutRealm.DEFAULT);
+          shortcut.setAnimateAdd(true);
+          contactAdapter.notifyItemChanged(pair.first.first);
         }));
   }
 
@@ -663,13 +665,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     return onUnblock;
   }
 
-  @Override public void onAddError() {
-    Toast.makeText(context(),
-        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
-        Toast.LENGTH_SHORT).show();
-    updateSearch();
-  }
-
   @Override public void successFacebookLogin() {
     sync();
     viewFriendsFBLoad.showLoading();
@@ -715,32 +710,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     }
   }
 
-/*  private AuthCallback authCallback;
-
-  private void changeMyPhoneNumber() {
-
-    authCallback = new AuthCallback() {
-
-      @Override public void success(DigitsSession session, String phoneNumber) {
-        searchPresenter.updatePhoneNumber(user.getId(), session);
-        viewFriendsAddressBookLoad.showLoading();
-      }
-
-      @Override public void failure(DigitsException error) {
-        viewFriendsAddressBookLoad.setChecked(false);
-        showError(error.getMessage());
-      }
-    };
-
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(authCallback);
-
-    AuthConfig authConfig = builder.build();
-
-    Digits.logout(); // Force logout
-    Digits.authenticate(authConfig);
-  }*/
-
   @Override public void errorUpdatePhoneNumber() {
     refactorActions();
     showToastMessage(getContext().getString(R.string.linked_friends_link_error_phone));
@@ -777,5 +746,36 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   @Override public Context context() {
     return getContext();
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+    contactAdapter.updateAdd(shortcut.getSingleFriend());
+  }
+
+  @Override public void onShortcutCreatedError() {
+    Toast.makeText(context(),
+        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+        Toast.LENGTH_SHORT).show();
+    updateSearch();
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
   }
 }

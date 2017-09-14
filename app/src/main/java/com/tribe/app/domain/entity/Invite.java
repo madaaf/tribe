@@ -117,8 +117,18 @@ public class Invite extends Recipient {
     return userList;
   }
 
-  public boolean isFriendship(String userId) {
-    return room.getLiveUsers().size() <= 1 && room.getInitiator().getId().equals(userId);
+  public boolean isShortcut(List<String> shortcutMemberIds) {
+    if (room == null) return false;
+
+    List<String> roomUserIds = room.getUserIds();
+
+    if (roomUserIds.size() == shortcutMemberIds.size()) {
+      roomUserIds.removeAll(shortcutMemberIds);
+    }
+
+    if (roomUserIds.size() == 0) return true;
+
+    return false;
   }
 
   public boolean isSingle() {

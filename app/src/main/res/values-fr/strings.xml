@@ -709,6 +709,14 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
+	<string name="home_menu_shortcut_mute">:no_bell: notification \'est en ligne\'</string>
+	<string name="home_menu_shortcut_unmute">:bell: notification \'est en ligne\'</string>
+	<string name="home_menu_shortcut_hide">Masquer</string>
+	<string name="home_menu_shortcut_block">Bloquer</string>
+	<string name="home_menu_shortcut_update_name">Modifier le nom</string>
+	<string name="home_menu_shortcut_mark_as_read">Marquer comme lu</string>
+	<string name="home_menu_shortcut_mark_as_unread">Marquer comme non-lu</string>
+	<string name="home_menu_invite_decline">Rejeter l\'appel</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
@@ -718,4 +726,15 @@
 	<!-- Shortcut -->
 	<string name="shortcut_name_regular_separator">,</string>
 	<string name="shortcut_name_last_separator">et</string>
+	<string name="shortcut_members_count">%1$d personnes</string>
+	
+	<!-- Shortcut Update Name -->
+	<string name="shortcut_update_name_title">Modifier le nom</string>
+	<string name="shortcut_update_name_description">Le nom sera visible par chacun des membres.</string>
+	<string name="shortcut_update_name_placeholder">Nom</string>
+	<string name="shortcut_update_name_validate">Enregistrer</string>
+	
+	<!-- Chat -->
+	<string name="date_today">Aujourd\'hui</string>
+	<string name="date_yesterday">Hier</string>
 </resources>

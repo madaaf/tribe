@@ -100,7 +100,7 @@ import timber.log.Timber;
               Timber.d("Invite removed : " + entry.getValue().toString());
               Invite invite = gson.fromJson(entry.getValue().toString(), Invite.class);
               onInviteRemoved.onNext(invite);
-            } else if (entry.getKey().contains(WSService.RANDOM_ROOM_ASSIGNED)) {
+            } else if (entry.getKey().contains(WSService.RANDOM_ROOM_ASSIGNED_SUFFIX)) {
               Timber.d("onRandomRoomAssigned : " + entry.getValue().toString());
               onRandomRoomAssigned.onNext(
                   entry.getValue().getAsJsonObject().get("assignedRoomId").getAsString());

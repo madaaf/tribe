@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
 import com.tribe.app.data.exception.JoinRoomException;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
@@ -25,6 +26,7 @@ import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.IncrUserTimeInCall;
 import com.tribe.app.domain.interactor.user.ReportUser;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.ArrayList;
@@ -32,6 +34,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class LivePresenter implements Presenter {
+
+  // COMPOSITE PRESENTERS
+  private ShortcutPresenter shortcutPresenter;
 
   // VIEW ATTACHED
   private LiveMVPView liveMVPView;
@@ -61,13 +66,15 @@ public class LivePresenter implements Presenter {
   private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
   private RoomUpdatedSubscriber roomUpdatedSubscriber;
 
-  @Inject public LivePresenter(GetRoom getRoom, CreateRoom createRoom, UpdateRoom updateRoom,
-      BuzzRoom buzzRoom, CreateInvite createInvite, RemoveInvite removeInvite,
-      DeclineInvite declineInvite, GetRecipientInfos getRecipientInfos,
+  @Inject
+  public LivePresenter(ShortcutPresenter shortcutPresenter, GetRoom getRoom, CreateRoom createRoom,
+      UpdateRoom updateRoom, BuzzRoom buzzRoom, CreateInvite createInvite,
+      RemoveInvite removeInvite, DeclineInvite declineInvite, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
       RandomRoomAssigned randomRoomAssigned, ReportUser reportUser, FbIdUpdated fbIdUpdated,
       GetDataChallengesGame getDataChallengesGame, IncrUserTimeInCall incrUserTimeInCall,
       GetNamesDrawGame getNamesDrawGame, RoomUpdated roomUpdated) {
+    this.shortcutPresenter = shortcutPresenter;
     this.getRoom = getRoom;
     this.createRoom = createRoom;
     this.updateRoom = updateRoom;
@@ -88,6 +95,7 @@ public class LivePresenter implements Presenter {
   }
 
   @Override public void onViewDetached() {
+    shortcutPresenter.onViewDetached();
     getRoom.unsubscribe();
     createRoom.unsubscribe();
     updateRoom.unsubscribe();
@@ -110,6 +118,7 @@ public class LivePresenter implements Presenter {
 
   @Override public void onViewAttached(MVPView v) {
     liveMVPView = (LiveMVPView) v;
+    shortcutPresenter.onViewAttached(v);
   }
 
   public void getRoomInfos(Live live) {
@@ -241,7 +250,6 @@ public class LivePresenter implements Presenter {
     }
 
     @Override public void onNext(String roomId) {
-      //homeGridView.renderContactsOnApp(contactList);
       liveMVPView.randomRoomAssignedSubscriber(roomId);
     }
   }
@@ -352,5 +360,33 @@ public class LivePresenter implements Presenter {
     @Override public void onNext(Room room) {
       liveMVPView.onRoomUpdate(room);
     }
+  }
+
+  public void createShortcut(String... userIds) {
+    shortcutPresenter.createShortcut(userIds);
+  }
+
+  public void muteShortcut(String shortcutId, boolean mute) {
+    shortcutPresenter.muteShortcut(shortcutId, mute);
+  }
+
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status);
+  }
+
+  public void readShortcut(String shortcutId) {
+    shortcutPresenter.readShortcut(shortcutId);
+  }
+
+  public void pinShortcut(String shortcutId, boolean pinned) {
+    shortcutPresenter.pinShortcut(shortcutId, pinned);
+  }
+
+  public void removeShortcut(String shortcutId) {
+    shortcutPresenter.removeShortcut(shortcutId);
+  }
+
+  public void loadSingleShortcuts() {
+    shortcutPresenter.loadSingleShortcuts();
   }
 }

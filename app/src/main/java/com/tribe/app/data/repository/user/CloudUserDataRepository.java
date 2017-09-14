@@ -51,7 +51,7 @@ import rx.Observable;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
-    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper();
+    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {

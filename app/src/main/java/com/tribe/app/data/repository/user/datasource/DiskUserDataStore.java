@@ -174,6 +174,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
+  @Override public Observable<List<ShortcutRealm>> shortcuts() {
+    return userCache.shortcuts();
+  }
+
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return liveCache.inviteMap();
   }

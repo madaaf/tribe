@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -168,10 +169,9 @@ public class UserInfosNotificationView extends FrameLayout {
         .start();
   }
 
-  // TODO REPLACE WITH SHORTCUTS
-  //public void update(Friendship friendship) {
-  //  contactAdapter.updateAdd(friendship.getFriend());
-  //}
+  public void update(Shortcut shortcut) {
+    contactAdapter.updateAdd(shortcut.getSingleFriend());
+  }
 
   /////////////////
   // OBSERVABLES //

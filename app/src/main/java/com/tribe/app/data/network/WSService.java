@@ -12,6 +12,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.deserializer.JsonToModel;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -42,8 +44,9 @@ import timber.log.Timber;
   public static final String USER_SUFFIX = "___u";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
-  public static final String RANDOM_ROOM_ASSIGNED = "___ra";
+  public static final String RANDOM_ROOM_ASSIGNED_SUFFIX = "___ra";
   public static final String ROOM_UDPATED_SUFFIX = "___ru";
+  public static final String SHORTCUT_UPDATED_SUFFIX = "___su";
 
   public static Intent getCallingIntent(Context context, String type) {
     Intent intent = new Intent(context, WSService.class);
@@ -113,7 +116,7 @@ import timber.log.Timber;
 
     String req = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_randomRoomAssigned,
-            hash + RANDOM_ROOM_ASSIGNED));
+            hash + RANDOM_ROOM_ASSIGNED_SUFFIX));
 
     webSocketConnection.send(req);
   }
@@ -278,7 +281,6 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
-
   }
 
   private void initSubscriptions() {
@@ -292,29 +294,26 @@ import timber.log.Timber;
     sendSubscription(getApplicationContext().getString(R.string.subscription_inviteRemoved,
         hash + INVITE_REMOVED_SUFFIX));
 
-    // TODO REPLACE WITH SHORTCUTS
-    //tempSubscriptions.add(Observable.just(userRealm.getFriendships()).doOnNext(friendshipList -> {
-    //  int count = 0;
-    //
-    //  for (FriendshipRealm friendshipRealm : friendshipList) {
-    //    if (!friendshipRealm.getSubId().equals(accessToken.getUserId())) {
-    //      sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
-    //          hash + USER_SUFFIX + count, friendshipRealm.getSubId()));
-    //
-    //      sendSubscription(
-    //          getApplicationContext().getString(R.string.subscription_friendshipUpdated,
-    //              hash + FRIENDSHIP_UDPATED_SUFFIX + count, friendshipRealm.getId()));
-    //
-    //      count++;
-    //    }
-    //  }
-    //}).subscribe());
+    sendSubscription(getApplicationContext().getString(R.string.subscription_shortcutUpdated,
+        hash + SHORTCUT_UPDATED_SUFFIX));
+
+    tempSubscriptions.add(Observable.just(userRealm.getShortcuts()).doOnNext(shortcutList -> {
+      int count = 0;
+
+      for (ShortcutRealm shortcutRealm : shortcutList) {
+        if (shortcutRealm.isSingle()) {
+          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+              hash + USER_SUFFIX + count, shortcutRealm.getSingleFriend().getId()));
+        }
+
+        count++;
+      }
+    }).subscribe());
   }
 
   private void sendSubscription(String body) {
     String userInfosFragment = (body.contains("UserInfos") ? "\n" +
         getApplicationContext().getString(R.string.userfragment_infos) : "");
-
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 
     webSocketConnection.send(req);

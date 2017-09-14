@@ -97,10 +97,8 @@ public class ContactCacheImpl implements ContactCache {
     try {
       if (resultRealm != null) {
         obsRealm.beginTransaction();
-        // TODO shortcuts
-        //shortcutManaged.setBlocked(shortcutManaged.isBlocked());
-        //shortcutManaged.setStatus(shortcutManaged.getStatus());
-        //resultRealm.setShortcutRealm(friendshipManaged);
+        shortcutManaged.setStatus(shortcutManaged.getStatus());
+        resultRealm.setShortcutRealm(shortcutManaged);
         obsRealm.commitTransaction();
       }
     } catch (IllegalStateException ex) {

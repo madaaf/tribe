@@ -5,7 +5,9 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +22,7 @@ public class ShortcutRealm extends RealmObject {
   public static final String HIDDEN = "HIDDEN";
   public static final String BLOCKED = "BLOCKED";
 
+  public static final String ID = "id";
   public static final String NAME = "name";
   public static final String PICTURE = "picture";
   public static final String STATUS = "status";
@@ -43,7 +46,7 @@ public class ShortcutRealm extends RealmObject {
   @Ignore private boolean online;
 
   public ShortcutRealm() {
-
+    members = new RealmList<>();
   }
 
   public String getId() {
@@ -148,7 +151,31 @@ public class ShortcutRealm extends RealmObject {
     return onlineMap.containsKey(members.get(0).getId());
   }
 
+  public boolean isHidden() {
+    return status.equals(HIDDEN);
+  }
+
+  public List<String> getMembersIds() {
+    List<String> memberIds = new ArrayList<>();
+
+    for (UserRealm userRealm : members) {
+      memberIds.add(userRealm.getId());
+    }
+
+    return memberIds;
+  }
+
+  public UserRealm getSingleFriend() {
+    if (members == null || members.size() == 0) return null;
+
+    return members.get(0);
+  }
+
   public static boolean isKeyABool(String key) {
-    return key.equals(PINNED) || key.equals(READ);
+    return key.equals(PINNED) || key.equals(READ) || key.equals(MUTE);
+  }
+
+  public static boolean isKeyEnum(String key) {
+    return key.equals(STATUS);
   }
 }

@@ -7,6 +7,7 @@ import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,9 @@ import javax.inject.Inject;
  */
 public class UnhideShortcutJob extends BaseJob {
 
-  private static final String TAG = "UpdateFriendshipJob";
+  private static final String TAG = "UpdateShortcutJob";
+
+  @Inject UpdateShortcut updateShortcut;
 
   @Inject UserCache userCache;
 
@@ -33,17 +36,16 @@ public class UnhideShortcutJob extends BaseJob {
   }
 
   @Override public void onRun() throws Throwable {
-    // TODO REPLACE WITH SHORTCUTS
-    //friendshipRealm.setStatus(FriendshipRealm.DEFAULT);
-    //userCache.updateFriendship(friendshipRealm);
-    //
-    //List<Pair<String, String>> values = new ArrayList<>();
-    //values.add(new Pair<>(FriendshipRealm.STATUS, FriendshipRealm.DEFAULT));
-    //
-    //if (values.size() > 0) {
-    //  updateFriendship.prepare(friendshipRealm.getId(), values);
-    //  updateFriendship.execute(new DefaultSubscriber());
-    //}
+    shortcutRealm.setStatus(ShortcutRealm.DEFAULT);
+    userCache.updateShortcut(shortcutRealm);
+
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT));
+
+    if (values.size() > 0) {
+      updateShortcut.setup(shortcutRealm.getId(), values);
+      updateShortcut.execute(new DefaultSubscriber());
+    }
   }
 
   @Override protected void onCancel(int cancelReason, @Nullable Throwable throwable) {

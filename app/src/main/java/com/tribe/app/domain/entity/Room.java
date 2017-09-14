@@ -250,4 +250,18 @@ public class Room implements Serializable {
   @Override public String toString() {
     return "id : " + id + "\n" + "coordinates : " + coordinates;
   }
+
+  public List<String> getUserIds() {
+    List<String> memberIds = new ArrayList<>();
+
+    for (User user : live_users) {
+      memberIds.add(user.getId());
+    }
+
+    for (User user : invited_users) {
+      memberIds.add(user.getId());
+    }
+
+    return memberIds;
+  }
 }

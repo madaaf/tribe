@@ -200,6 +200,10 @@
         }
   </string>
 
+  <string name="subscription.shortcutUpdated" translatable="false">
+        %1$s : shortcutUpdated
+  </string>
+
   <string name="subscription.inviteCreated" translatable="false">
     %1$s : inviteCreated
   </string>
@@ -327,8 +331,11 @@
         name
         picture
         pinned
-        status
         read
+        single
+        mute
+        online
+        status
         created_at
         last_activity_at
         members {
@@ -338,17 +345,21 @@
   </string>
 
   <string name="createShortcut" translatable="false">
-    createShortcut(userIds : [%1$s]) {
+    createShortcut %1$s {
       ...ShortcutInfos
     }
   </string>
 
+  <string name="createShortcut.userIds" translatable="false">
+    userIds : [%1$s]
+  </string>
+
   <string name="updateShortcut" translatable="false">
-    updateUser(shortcutId : \"%1$s\": {
-                  %2$s
-              }) {
-                  ...ShortcutInfos
-              }
+    updateShortcut(shortcutId : \"%1$s\", shortcut : {
+        %2$s
+    }) {
+        ...ShortcutInfos
+    }
   </string>
 
   <string name="removeShortcut" translatable="false">

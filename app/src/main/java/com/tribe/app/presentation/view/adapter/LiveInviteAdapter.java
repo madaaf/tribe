@@ -4,7 +4,10 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
@@ -100,14 +103,14 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
     return items.size();
   }
 
-  // TODO REPLACE WITH SHORTCUTS
-  //private Friendship getDiceItem() {
-  //  User friend = new User(Recipient.ID_CALL_ROULETTE);
-  //  friend.setDisplayName(context.getResources().getString(R.string.roll_the_dice_invite_title));
-  //  Friendship friendship = new Friendship(Recipient.ID_CALL_ROULETTE);
-  //  friendship.setFriend(friend);
-  //  return friendship;
-  //}
+  private Shortcut getDiceItem() {
+    User friend = new User(Recipient.ID_CALL_ROULETTE);
+    friend.setDisplayName(context.getResources().getString(R.string.roll_the_dice_invite_title));
+    Shortcut shortcut = new Shortcut(Recipient.ID_CALL_ROULETTE);
+    shortcut.setSingle(true);
+    shortcut.addMember(friend);
+    return shortcut;
+  }
 
   public void setItems(List<Recipient> items, @LiveActivity.Source String source) {
     this.items.clear();

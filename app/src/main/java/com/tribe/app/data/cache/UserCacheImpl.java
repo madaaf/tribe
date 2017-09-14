@@ -136,7 +136,7 @@ public class UserCacheImpl implements UserCache {
   // ALWAYS CALLED ON MAIN THREAD
   @Override public Observable<UserRealm> userInfos(String userId) {
     return realm.where(UserRealm.class)
-        .equalTo("id", userId)
+        .equalTo(ShortcutRealm.ID, userId)
         .findAll()
         .asObservable()
         .filter(userRealmList -> userRealmList.isLoaded() && userRealmList.size() > 0)
@@ -147,10 +147,11 @@ public class UserCacheImpl implements UserCache {
 
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
     return realm.where(ShortcutRealm.class)
+        .equalTo(ShortcutRealm.SINGLE, true)
         .findAll()
         .asObservable()
-        .filter(friendshipList -> friendshipList.isLoaded())
-        .map(friendshipList -> realm.copyFromRealm(friendshipList))
+        .filter(singleShortcutList -> singleShortcutList.isLoaded())
+        .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
         .unsubscribeOn(AndroidSchedulers.mainThread());
   }
 
@@ -165,7 +166,7 @@ public class UserCacheImpl implements UserCache {
   @Override public ShortcutRealm shortcutForUserId(String userId) {
     Realm otherRealm = Realm.getDefaultInstance();
     ShortcutRealm shortcutRealm =
-        otherRealm.where(ShortcutRealm.class).equalTo("id", userId).findFirst();
+        otherRealm.where(ShortcutRealm.class).equalTo(ShortcutRealm.SINGLE, true).equalTo("members.id", userId).findFirst();
     if (shortcutRealm != null) {
       return otherRealm.copyFromRealm(shortcutRealm);
     } else {
@@ -196,42 +197,41 @@ public class UserCacheImpl implements UserCache {
       realm.executeTransaction(realm1 -> {
         ShortcutRealm shortcutRealmDB =
             realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
-        // TODO
-        // shortcutRealmDB.setMute(shortcutRealm.isMute());
-        // shortcutRealmDB.setStatus(shortcutRealm.getStatus());
+        shortcutRealmDB.setMute(shortcutRealm.isMute());
+        shortcutRealmDB.setStatus(shortcutRealm.getStatus());
+        shortcutRealmDB.setRead(shortcutRealm.isRead());
       });
     } finally {
       realm.close();
     }
   }
 
-  // TODO
-  //@Override public ShortcutRealm updateShortcutNoObs(String friendshipId,
-  //    @FriendshipRealm.FriendshipStatus String status) {
-  //  Realm otherRealm = Realm.getDefaultInstance();
-  //
-  //  try {
-  //    otherRealm.beginTransaction();
-  //    FriendshipRealm friendshipRealm =
-  //        otherRealm.where(FriendshipRealm.class).equalTo("id", friendshipId).findFirst();
-  //    if (friendshipRealm != null) {
-  //      friendshipRealm.setStatus(status);
-  //    }
-  //
-  //    otherRealm.commitTransaction();
-  //
-  //    if (friendshipRealm != null) {
-  //      return otherRealm.copyFromRealm(friendshipRealm);
-  //    }
-  //  } catch (IllegalStateException ex) {
-  //    if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
-  //    ex.printStackTrace();
-  //  } finally {
-  //    otherRealm.close();
-  //  }
-  //
-  //  return null;
-  //}
+  @Override public ShortcutRealm updateShortcutNoObs(String shortcutId,
+      @ShortcutRealm.ShortcutStatus String status) {
+    Realm otherRealm = Realm.getDefaultInstance();
+
+    try {
+      otherRealm.beginTransaction();
+      ShortcutRealm shortcutRealm =
+          otherRealm.where(ShortcutRealm.class).equalTo("id", shortcutId).findFirst();
+      if (shortcutRealm != null) {
+        shortcutRealm.setStatus(status);
+      }
+
+      otherRealm.commitTransaction();
+
+      if (shortcutRealm != null) {
+        return otherRealm.copyFromRealm(shortcutRealm);
+      }
+    } catch (IllegalStateException ex) {
+      if (otherRealm.isInTransaction()) otherRealm.cancelTransaction();
+      ex.printStackTrace();
+    } finally {
+      otherRealm.close();
+    }
+
+    return null;
+  }
 
   @Override public void updateUserRealmList(List<UserRealm> userRealmList) {
     Realm realm = Realm.getDefaultInstance();

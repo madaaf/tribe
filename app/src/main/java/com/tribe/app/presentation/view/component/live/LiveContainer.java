@@ -26,9 +26,11 @@ import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -552,18 +554,17 @@ public class LiveContainer extends FrameLayout {
   private void createTileForDrag() {
     viewInviteLive.setDragging(true);
 
-    // TODO REPLACE WITH SHORTCUTS
-    //Friendship friendship = (Friendship) currentTileView.getRecipient();
-    //
-    //if (friendship.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
-    //  onDropDiceWithoutFbAuth.onNext(null);
-    //  return;
-    //}
-    //
-    //if (isGuestUnder13(friendship.getFriend())) {
-    //  onDroppedUnder13.onNext(userUnder13Id);
-    //  return;
-    //}
+    Shortcut shortcut = (Shortcut) currentTileView.getRecipient();
+
+    if (shortcut.getId().equals(Recipient.ID_CALL_ROULETTE) && !FacebookUtils.isLoggedIn()) {
+      onDropDiceWithoutFbAuth.onNext(null);
+      return;
+    }
+
+    if (isGuestUnder13(shortcut.getSingleFriend())) {
+      onDroppedUnder13.onNext(userUnder13Id);
+      return;
+    }
 
     draggedTileView = new TileView(getContext(), currentTileView.getType());
     draggedTileView.setBackground(currentTileView.getPosition());
