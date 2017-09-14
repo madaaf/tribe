@@ -136,6 +136,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
     @BindView(R.id.header) public LinearLayout header;
     @BindView(R.id.image) public ImageView image;
+    @BindView(R.id.time) public TextViewFont time;
 
     public MessageViewHolder(View itemView) {
       super(itemView);

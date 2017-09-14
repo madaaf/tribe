@@ -35,16 +35,6 @@ public class ResizeAnimation extends Animation {
     deltaWidth = endWidth - startWidth;
   }
 
-  public void setHeightParams(int startHeight, int endHeight) {
-    this.startHeight = startHeight;
-    deltaHeight = endHeight - startHeight;
-  }
-
-  public void setWidthParams(int startWidth, int endWidth) {
-    this.startWidth = startWidth;
-    deltaWidth = endWidth - startWidth;
-  }
-
   /**
    * set the duration for the hideshowanimation
    */
