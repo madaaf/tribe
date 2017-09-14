@@ -6,6 +6,9 @@ import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import java.util.ArrayList;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -17,6 +20,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private List<Message> items;
   private MessageAdapterDelegate messageAdapterDelegate;
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<List<Object>> onPictureTaken = PublishSubject.create();
+
   public MessageAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
 
@@ -24,6 +30,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     delegatesManager.addDelegate(messageAdapterDelegate);
 
     items = new ArrayList<>();
+    subscriptions.add(messageAdapterDelegate.onPictureTaken().subscribe(onPictureTaken));
   }
 
   @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,5 +48,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
   public void setItems(List<Message> items) { //, boolean sendLocally
     this.items.addAll(items);
     notifyDataSetChanged();
+  }
+
+  public Observable<List<Object>> onPictureTaken() {
+    return onPictureTaken;
   }
 }

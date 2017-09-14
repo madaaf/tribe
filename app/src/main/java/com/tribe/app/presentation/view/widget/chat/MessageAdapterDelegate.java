@@ -2,8 +2,11 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -22,8 +26,11 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -38,6 +45,8 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
   private Context context;
   private int imageSize;
   private Message stamp = null;
+
+  private PublishSubject<List<Object>> onPictureTaken = PublishSubject.create();
 
   public MessageAdapterDelegate(Context context) {
     this.layoutInflater =
@@ -61,42 +70,54 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     MessageViewHolder vh = (MessageViewHolder) holder;
-    Message i = items.get(position);
-    if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(i.getAuthor().getId())) {
+    Message m = items.get(position);
+    if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(m.getAuthor().getId())) {
       vh.header.setVisibility(View.GONE);
     } else {
       vh.header.setVisibility(View.VISIBLE);
     }
-    stamp = i;
-    vh.name.setText(i.getAuthor().getDisplayName());
-    vh.avatarView.load(i.getAuthor().getProfilePicture());
+    stamp = m;
+    vh.name.setText(m.getAuthor().getDisplayName());
+    vh.avatarView.load(m.getAuthor().getProfilePicture());
 
-    if (i instanceof MessageText) {
+    if (m instanceof MessageText) {
       vh.emoji.setVisibility(View.GONE);
       vh.message.setVisibility(View.VISIBLE);
       vh.image.setVisibility(View.GONE);
 
-      vh.message.setText(((MessageText) i).getMessage());
-    } else if (i instanceof MessageEmoji) {
+      vh.message.setText(((MessageText) m).getMessage());
+    } else if (m instanceof MessageEmoji) {
       vh.emoji.setVisibility(View.VISIBLE);
       vh.message.setVisibility(View.GONE);
       vh.image.setVisibility(View.GONE);
 
-      vh.emoji.setText(((MessageEmoji) i).getEmoji());
-    } else if (i instanceof MessageImage) {
+      vh.emoji.setText(((MessageEmoji) m).getEmoji());
+    } else if (m instanceof MessageImage) {
       vh.emoji.setVisibility(View.GONE);
       vh.message.setVisibility(View.GONE);
       vh.image.setVisibility(View.VISIBLE);
-      Image o = ((MessageImage) i).getOriginal();
+      Image o = ((MessageImage) m).getOriginal();
+      Uri uri = ((MessageImage) m).getUri();
 
+      Glide.with(context).load(o.getUrl()).asBitmap().into(new BitmapImageViewTarget(vh.image) {
+        @Override protected void setResource(Bitmap resource) {
+          RoundedBitmapDrawable circularBitmapDrawable =
+              RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+          circularBitmapDrawable.setCornerRadius(30);
+          vh.image.setImageDrawable(circularBitmapDrawable);
+        }
+      });
 
-      Glide.with(context)
-          .load(o.getUrl())
-          .placeholder(ContextCompat.getColor(context, R.color.blue_new))
-          .into(vh.image);
-      vh.image.setAlpha(0.4f);
+      if (uri != null) {
+        vh.image.setAlpha(0.4f);
+        List<Object> list = new ArrayList<>();
+        list.add(uri);
+        list.add(vh.image);
+        onPictureTaken.onNext(list);
+      } else {
+        vh.image.setAlpha(1f);
+      }
 
-      //.bitmapTransform(new RoundedCornersTransformation(context, 40, 0))
       vh.image.setOnClickListener(v -> {
         navigator.navigateToPicture(context, o.getUrl());
       });
@@ -136,5 +157,9 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) context));
+  }
+
+  public Observable<List<Object>> onPictureTaken() {
+    return onPictureTaken;
   }
 }

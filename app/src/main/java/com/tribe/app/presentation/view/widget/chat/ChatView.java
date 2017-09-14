@@ -117,7 +117,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.getCreatedMessages();
   }
 
-  private void sendPicture(Uri uri) {
+  private void sendPicture(Uri uri, ImageView imageView) {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     try {
@@ -130,7 +130,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         Timber.e(exception.getMessage());
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
-        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE);
+        Timber.e("downloadUrl " + downloadUrl);
+        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE,
+            imageView);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -139,6 +141,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void initSubscriptions() {
+
+    subscriptions.add(messageAdapter.onPictureTaken().subscribe(list -> {
+      Timber.e("SOEF PN PICTURE TALEN");
+      sendPicture((Uri) list.get(0), (ImageView) list.get(1));
+    }));
+
     subscriptions.add(RxView.clicks(uploadImageBtn)
         .delay(200, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -146,14 +154,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
               Timber.e("SOEF GET URI " + uri.toString());
-              sendContent(MESSAGE_IMAGE, uri.toString());
-              sendPicture(uri);
+              sendContent(MESSAGE_IMAGE, null, uri);
+              //sendPicture(uri);
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
               Timber.e("SOEF GET URI " + uri.toString());
-              sendContent(MESSAGE_IMAGE, uri.toString());
-              sendPicture(uri);
+              sendContent(MESSAGE_IMAGE, null, uri);
+              //sendPicture(uri);
             }));
           }
 
@@ -224,7 +232,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @OnClick(R.id.sendBtn) void onClickSend() {
     if (!isHeart) {
       String editedMessage = editText.getText().toString();
-      if (!editedMessage.isEmpty()) sendContent(MESSAGE_TEXT, editedMessage);
+      if (!editedMessage.isEmpty()) sendContent(MESSAGE_TEXT, editedMessage, null);
       editText.setText("");
     } else {
       Timber.e("videoCallBtn");
@@ -234,7 +242,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           .setDuration(300)
           .withEndAction(() -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(300).start())
           .start();
-      sendContent(MESSAGE_EMOJI, "\u2764");
+      sendContent(MESSAGE_EMOJI, "\u2764", null);
     }
   }
 
@@ -244,26 +252,26 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     editText.setHint("Message");
   }
 
-  private void sendContent(@Message.Type String type, String content) {
-    if (content.isEmpty()) return;
+  private void sendContent(@Message.Type String type, String content, Uri uri) {
     items.clear();
     Message message = null;
     switch (type) {
       case MESSAGE_TEXT:
         message = new MessageText();
         ((MessageText) message).setMessage(content);
-        messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT);
+        messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT, null);
         break;
       case MESSAGE_EMOJI:
         message = new MessageEmoji(content);
         ((MessageEmoji) message).setEmoji(content);
-        messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI);
+        messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI, null);
         break;
       case MESSAGE_IMAGE:
         message = new MessageImage();
         Image o = new Image();
-        o.setUrl(content);
+        o.setUrl(uri.toString());
         ((MessageImage) message).setOriginal(o);
+        ((MessageImage) message).setUri(uri);
         break;
     }
 
@@ -316,8 +324,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     Timber.e("SOEF errorLoadingMessage");
   }
 
-  @Override public void successMessageCreated(Message message) {
+  @Override public void successMessageCreated(Message message, ImageView imageView) {
     Timber.e("SOEF successMessageCreated " + message.toString());
+    imageView.animate().alpha(1f).setStartDelay(300).start();
   }
 
   @Override public void errorMessageCreation() {

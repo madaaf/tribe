@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
+import android.widget.ImageView;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface ChatMVPView extends MVPView {
 
   void errorLoadingMessage();
 
-  void successMessageCreated(Message message);
+  void successMessageCreated(Message message, ImageView imageView);
 
   void errorMessageCreation();
 
