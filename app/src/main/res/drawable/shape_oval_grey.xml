@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-  <stroke
-      android:width="0.5dp"
-      android:color="@color/grey.light" />
-
-  <solid android:color="@android:color/transparent" />
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+  <solid android:color="@color/grey.chat.border" />
+  <corners android:radius="400dp" />
 </shape>

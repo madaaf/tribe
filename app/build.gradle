@@ -242,6 +242,7 @@ dependencies {
   compile presentationDependencies.firebaseInvites
   compile presentationDependencies.recyclerViewAnimators
   compile presentationDependencies.firebaseRemote
+  compile presentationDependencies.firebaseStorage
   compile presentationDependencies.branchIo
   compile presentationDependencies.timber
   compile presentationDependencies.rxAppState

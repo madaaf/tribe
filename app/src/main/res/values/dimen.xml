@@ -74,12 +74,14 @@
   <dimen name="avatar_size_big">80dp</dimen>
   <dimen name="avatar_size_big_shadow">95dp</dimen>
   <dimen name="avatar_size">75dp</dimen>
+  <dimen name="image_size">175dp</dimen>
   <dimen name="avatar_size_with_shadow">82dp</dimen>
   <dimen name="avatar_size_scaled">110dp</dimen>
   <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
   <dimen name="avatar_size_small">41dp</dimen>
   <dimen name="avatar_size_small_margin_start">55dp</dimen>
   <dimen name="avatar_size_smaller">35dp</dimen>
+  <dimen name="avatar_size_chat">25dp</dimen>
   <dimen name="avatar_size_medium">60dp</dimen>
   <dimen name="camera_height_settings">111.5dp</dimen>
   <dimen name="camera_width_settings">80dp</dimen>
@@ -104,6 +106,7 @@
   <dimen name="waiting_view_progress_bar_size">95dp</dimen>
   <dimen name="waiting_view_avatar_size">100dp</dimen>
   <dimen name="waiting_view_dot_size">7dp</dimen>
+  <dimen name="view_dot_size_chat">5dp</dimen>
   <dimen name="view_dice_dot_size">15dp</dimen>
   <dimen name="view_dice_dot_margin">1.5dp</dimen>
   <dimen name="filter_game_size">50dp</dimen>

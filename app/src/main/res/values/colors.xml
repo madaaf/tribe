@@ -55,6 +55,9 @@
   <color name="grey.onboarding.phone_number">#F9F9F9</color>
   <color name="grey.offline">#B6BFBF</color>
   <color name="grey.divider">#E9F4F4</color>
+  <color name="grey.chat.border">#D7E1E1</color>
+  <color name="grey.chat.grey">#E9F4F4</color>
+  <color name="grey.chat.grey.hint">#D8D8D8</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
@@ -85,6 +88,7 @@
   <color name="red.circle">#F22936</color>
   <color name="red.new.contacts">#FD2448</color>
   <color name="red.gradient.live.opacity.5">#0DF8143A</color>
+  <color name="red.pulse">#FCA4B5</color>
 
   <!-- ORANGES -->
   <color name="orange.recent">#FFA496</color>

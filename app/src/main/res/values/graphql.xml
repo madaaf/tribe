@@ -36,6 +36,27 @@
         %3$s
   </string>
 
+  <string name="messages.details" translatable="false">
+                {
+                  user {
+                    id
+                    messages(usersIds: [%1$s]) {
+                      ...MessagePayload
+                    }
+                  }
+                }
+    %2$s
+    </string>
+
+  <string name="messages.create" translatable="false">
+        mutation {
+            createMessage(usersIds:[%1$s],  message : {type: %2$s, sent_at: \"%3$s\", data: \"%4$s\"}) {
+                    ...MessagePayload
+                  }
+                }
+       %5$s
+  </string>
+
   <string name="user.infos.list" translatable="false">
         {
             users (ids: [%1$s]) {
@@ -190,6 +211,41 @@
         %2$s
   </string>
 
+  <string name="messagefragment.info" translatable="false">
+        fragment MessagePayload on MessageInterface {
+            __typename
+            id
+            author {
+              id
+              display_name
+              picture
+            }
+            ... on EmojiMessage {
+              data
+            }
+            ... on TextMessage {
+              data
+            }
+            ... on ImageMessage {
+              original {
+                url
+                filesize
+                width
+                height
+              }
+              resources {
+                url
+                filesize
+                width
+                height
+              }
+            }
+            created_at
+            updated_at
+            sent_at
+          }
+  </string>
+
   <string name="boostrap.support" translatable="false">
         mutation {
             bootstrapSupport
@@ -201,9 +257,13 @@
   </string>
 
   <string name="subscription.userUpdated" translatable="false">
-        %1$s : userUpdated ( id : \"%2$s\" ) {
+        %1$s : u ( id : \"%2$s\" ) {
             ...UserInfos
         }
+  </string>
+
+  <string name="subscription.messageCreated" translatable="false">
+        %1$s : messageCreated ( usersIds : [%2$s] )
   </string>
 
   <string name="subscription.shortcutCreated" translatable="false">

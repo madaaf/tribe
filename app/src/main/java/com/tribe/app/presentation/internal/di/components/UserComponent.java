@@ -3,6 +3,7 @@ package com.tribe.app.presentation.internal.di.components;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.internal.di.modules.UserModule;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
@@ -48,6 +49,9 @@ import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragm
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import com.tribe.app.presentation.view.widget.chat.ChatView;
+import com.tribe.app.presentation.view.widget.chat.MessageAdapterDelegate;
+import com.tribe.app.presentation.view.widget.chat.TestActivity;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
@@ -68,6 +72,12 @@ import dagger.Component;
 }) public interface UserComponent extends ActivityComponent {
 
   void inject(DebugActivity debugActivity);
+
+  void inject(TestActivity testActivity);
+
+  void inject(ChatView chatView);
+
+  void inject(MessageAdapterDelegate messageAdapterDelegate);
 
   void inject(LifeNotification lifeNotification);
 
@@ -106,6 +116,8 @@ import dagger.Component;
   void inject(SearchPresenter searchPresenter);
 
   void inject(SettingsPresenter settingsPresenter);
+
+  void inject(MessagePresenter messagePresenter);
 
   void inject(SettingsProfileView settingsProfileView);
 

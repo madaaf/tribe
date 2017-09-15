@@ -53,6 +53,7 @@ ext {
   mixpanelVersion = '5.0.1'
   imageCropperVersion = '2.3.1'
   firebaseRemoteVersion = '10.2.1'
+  firebaseStorageVersion = '10.2.1'
   firebaseMessagingVersion = '10.2.1'
   firebaseCrashReportingVersion = '10.2.1'
   firebaseInvitesVersion = '10.2.1'
@@ -129,6 +130,7 @@ ext {
                               imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
                               firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
                               firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",
+                              firebaseStorage         : "com.google.firebase:firebase-storage:${firebaseStorageVersion}",
                               recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}",
                               branchIo                : "io.branch.sdk.android:library:${branchIoVersion}",
                               timber                  : "com.jakewharton.timber:timber:${timberVersion}",

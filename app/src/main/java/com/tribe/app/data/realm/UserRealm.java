@@ -40,6 +40,7 @@ public class UserRealm extends RealmObject {
   private LocationRealm location;
   private boolean tribe_save = false;
   private RealmList<ShortcutRealm> shortcuts;
+  private RealmList<MessageRealm> messages;
   private boolean invisible_mode;
   private boolean push_notif = true;
   private Date last_seen_at;
@@ -125,6 +126,14 @@ public class UserRealm extends RealmObject {
 
   public void setShortcuts(RealmList<ShortcutRealm> shortcuts) {
     this.shortcuts = shortcuts;
+  }
+
+  public RealmList<MessageRealm> getMessages() {
+    return messages;
+  }
+
+  public void setMessages(RealmList<MessageRealm> messages) {
+    this.messages = messages;
   }
 
   public String getFbid() {

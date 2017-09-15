@@ -6,6 +6,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.realm.mapper.PinRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -19,6 +20,8 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
+import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +39,8 @@ import rx.Observable;
   private final PinRealmDataMapper pinRealmDataMapper;
   private final ContactRealmDataMapper contactRealmDataMapper;
   private final SearchResultRealmDataMapper searchResultRealmDataMapper;
+  private final MessageRealmDataMapper messageRealmDataMapper;
+  private final DateUtils dateUtils;
 
   /**
    * Constructs a {@link UserRepository}.
@@ -46,12 +51,15 @@ import rx.Observable;
    */
   @Inject public CloudUserDataRepository(UserDataStoreFactory dataStoreFactory,
       UserRealmDataMapper realmDataMapper, PinRealmDataMapper pinRealmDataMapper,
-      ContactRealmDataMapper contactRealmDataMapper) {
+      ContactRealmDataMapper contactRealmDataMapper, MessageRealmDataMapper messageRealmDataMapper,
+      DateUtils dateUtils) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
     this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
+    this.messageRealmDataMapper = messageRealmDataMapper;
+    this.dateUtils = dateUtils;
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {

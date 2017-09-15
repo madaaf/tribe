@@ -24,6 +24,7 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
+import com.tribe.app.data.network.deserializer.CreateMessageDeserializer;
 import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
@@ -46,6 +47,7 @@ import com.tribe.app.data.network.interceptor.TribeInterceptor;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -149,6 +151,7 @@ import timber.log.Timber;
         }.getType(), new TribeUserDeserializer(utcSimpleDate))
         .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
         .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
+        .registerTypeAdapter(MessageRealm.class, new CreateMessageDeserializer())
         .registerTypeAdapter(Date.class,
             new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
         .registerTypeAdapter(new TypeToken<List<UserRealm>>() {
@@ -176,8 +179,8 @@ import timber.log.Timber;
     OkHttpClient.Builder okHttpClient = createOkHttpClient(context);
 
     if (!BuildConfig.DEBUG) {
-      InputStream oldCert = context.getResources().openRawResource(R.raw.old_tribe);
       InputStream cert = context.getResources().openRawResource(R.raw.tribe);
+      InputStream oldCert = context.getResources().openRawResource(R.raw.old_tribe);
 
       try {
         // loading CAs from an InputStream
@@ -206,10 +209,11 @@ import timber.log.Timber;
         String certPin = CertificatePinner.pin(ca);
         CertificatePinner certificatePinner =
             new CertificatePinner.Builder().add(BuildConfig.TRIBE_API, oldCertPin)
-                .add(BuildConfig.TRIBE_AUTH, oldCertPin)
                 .add(BuildConfig.TRIBE_API, certPin)
                 .add(BuildConfig.TRIBE_AUTH, certPin)
+                .add(BuildConfig.TRIBE_AUTH, oldCertPin)
                 .build();
+
         okHttpClient.certificatePinner(certificatePinner);
       } catch (IOException e) {
         e.printStackTrace();

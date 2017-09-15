@@ -4,6 +4,7 @@ import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -26,6 +27,12 @@ import rx.Observable;
 public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<UserRealm> getUserInfos(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<UserRealm> getUserMessage(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<MessageRealm> createMessage(
       @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<List<UserRealm>> getUserListInfos(

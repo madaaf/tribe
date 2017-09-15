@@ -3,15 +3,12 @@ package com.tribe.app.presentation.utils.mediapicker;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -169,17 +166,7 @@ public class MediaHiddenActivity extends BaseActivity {
   }
 
   private void startCropImageActivity(Uri imageUri) {
-    CropImage.activity(imageUri)
-        .setGuidelines(CropImageView.Guidelines.ON)
-        .setRequestedSize(500, 500)
-        .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
-        .setOutputCompressQuality(70)
-        .setAspectRatio(1, 1)
-        .setMultiTouchEnabled(true)
-        .setActivityMenuIconColor(Color.BLACK)
-        .setBorderLineColor(getResources().getColor(R.color.black_opacity_40))
-        .setBorderCornerColor(getResources().getColor(R.color.black_opacity_40))
-        .start(this);
+    CropImage.activity(imageUri).start(this);
     overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
   }
 }

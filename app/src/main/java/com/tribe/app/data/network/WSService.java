@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.deserializer.JsonToModel;
@@ -36,7 +37,9 @@ import timber.log.Timber;
 
   public static final String TYPE = "TYPE";
   public static final String ROOM_ID = "ROOM_ID";
+  public static final String CHAT_IDS = "CHAT_IDS";
 
+  public static final String CHAT_SUBSCRIBE = "CHAT_SUBSCRIBE";
   public static final String CALL_ROULETTE_TYPE = "CALL_ROULETTE_TYPE";
   public static final String CALL_ROOM_UPDATE_SUBSCRIBE_TYPE = "CALL_ROOM_UPDATE_TYPE";
   public static final String CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE =
@@ -50,9 +53,11 @@ import timber.log.Timber;
   public static final String SHORTCUT_CREATED_SUFFIX = "___sc";
   public static final String SHORTCUT_UPDATED_SUFFIX = "___su";
   public static final String SHORTCUT_REMOVED_SUFFIX = "___sr";
+  public static final String MESSAGE_CREATED_SUFFIX = "___mc";
 
-  public static Intent getCallingIntent(Context context, String type) {
+  public static Intent getCallingIntent(Context context, String type, String usersFromatedIds) {
     Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(CHAT_IDS, usersFromatedIds);
     intent.putExtra(TYPE, type);
     return intent;
   }
@@ -77,6 +82,8 @@ import timber.log.Timber;
   @Inject UserCache userCache;
 
   @Inject LiveCache liveCache;
+
+  @Inject ChatCache chatCache;
 
   @Inject AccessToken accessToken;
 
@@ -124,6 +131,14 @@ import timber.log.Timber;
     webSocketConnection.send(req);
   }
 
+  public void subscribeChat(String userIds) {
+    String req = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_messageCreated,
+            MESSAGE_CREATED_SUFFIX, userIds));
+
+    webSocketConnection.send(req);
+  }
+
   public void subscribeRoomUpdate(String roomId) {
     lastRoomSubscriptionId = generateHash() + ROOM_UDPATED_SUFFIX;
 
@@ -153,13 +168,15 @@ import timber.log.Timber;
           subscribeRoomUpdate(intent.getStringExtra(ROOM_ID));
         } else if (type.equals(CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE)) {
           unsubscribeRoomUpdate();
+        } else if (type.equals(CHAT_SUBSCRIBE)) {
+          String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
+          subscribeChat(usersFromatedIds);
         }
       }
     }
 
-    if (webSocketState != null &&
-        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
-            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -182,9 +199,10 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() ||
-        StringUtils.isEmpty(accessToken.getTokenType()) ||
-        StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+
       webSocketConnection.setShouldReconnect(false);
     } else {
       headers.put(WebSocketConnection.CONTENT_TYPE, "application/json");
@@ -279,6 +297,10 @@ import timber.log.Timber;
       liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
+    persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(message -> {
+      chatCache.messageCreated(message);
+    }));
+
     persistentSubscriptions.add(
         jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
@@ -333,8 +355,10 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-        getApplicationContext().getString(R.string.userfragment_infos) : "");
+    String userInfosFragment =
+        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+            R.string.userfragment_infos) : "");
+        
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 
     webSocketConnection.send(req);
