@@ -398,9 +398,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initMissedCall() {
-    if (missedCallManager != null &&
-        missedCallManager.getNotificationPayloadList() != null &&
-        missedCallManager.getNbrOfMissedCall() > 0) {
+    if (missedCallManager != null
+        && missedCallManager.getNotificationPayloadList() != null
+        && missedCallManager.getNbrOfMissedCall() > 0) {
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
           missedCallManager.buildNotificationBuilderFromMissedCallList());
@@ -447,6 +447,10 @@ public class HomeActivity extends BaseActivity
 
   private void initRecyclerView() {
     initUIRecyclerView();
+    subscriptions.add(homeGridAdapter.onChatClick()
+        .map(view -> homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .subscribe(recipient -> navigator.navigateToChat(this, recipient)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
@@ -455,8 +459,8 @@ public class HomeActivity extends BaseActivity
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                    .equals(LabelType.BLOCK_HIDE)) {
                   Shortcut shortcut = (Shortcut) recipient;
                   homeGridPresenter.updateShortcutStatus(shortcut.getId(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
@@ -830,8 +834,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
-        !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -962,10 +966,9 @@ public class HomeActivity extends BaseActivity
   private SectionCallback getSectionCallback(final List<Recipient> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        return position == 1 ||
-            (position > 0 &&
-                recipientList.get(position).getSectionType() !=
-                    recipientList.get(position - 1).getSectionType());
+        return position == 1 || (position > 0
+            && recipientList.get(position).getSectionType() != recipientList.get(position - 1)
+            .getSectionType());
       }
 
       @Override public int getSectionType(int position) {

@@ -31,6 +31,7 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
   protected final PublishSubject<View> clickMoreView = PublishSubject.create();
   protected final PublishSubject<View> click = PublishSubject.create();
   protected final PublishSubject<View> longClick = PublishSubject.create();
+  protected final PublishSubject<View> onChatClick = PublishSubject.create();
 
   public RecipientHomeAdapterDelegate(Context context) {
     this.context = context;
@@ -45,6 +46,9 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
     recipientGridViewHolder.viewListItem.onLongClick()
         .map(view -> recipientGridViewHolder.itemView)
         .subscribe(longClick);
+    recipientGridViewHolder.viewListItem.onChatClick()
+        .map(view -> recipientGridViewHolder.itemView)
+        .subscribe(onChatClick);
     return recipientGridViewHolder;
   }
 
@@ -69,6 +73,10 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
 
   public Observable<View> onClick() {
     return click;
+  }
+
+  public Observable<View> onChatClick() {
+    return onChatClick;
   }
 
   public Observable<View> onLongClick() {

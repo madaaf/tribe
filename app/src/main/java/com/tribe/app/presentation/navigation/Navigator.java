@@ -201,7 +201,7 @@ public class Navigator {
    * @param recipient recipient to go live with
    * @param color the color of the tile
    */
- /* public void navigateToLive(Activity activity, Recipient recipient, int color,
+  public void navigateToLive(Activity activity, Recipient recipient, int color,
       @LiveActivity.Source String source) {
     if (activity != null) {
       Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
@@ -213,11 +213,11 @@ public class Navigator {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
       }
     }
-  }*/
-  public void navigateToLive(Activity activity, Recipient recipient, int color,
-      @LiveActivity.Source String source) {
+  }
+
+  public void navigateToChat(Activity activity, Recipient recipient) {
     if (activity != null) {
-      Intent intent = TestActivity.getCallingIntent(activity, recipient, color, source);
+      Intent intent = TestActivity.getCallingIntent(activity, recipient);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       if (activity instanceof TestActivity) {
         activity.startActivity(intent);

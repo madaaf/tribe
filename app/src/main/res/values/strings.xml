@@ -391,6 +391,7 @@
 	<string name="live_share_new_call_button_title">Call link</string>
 	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
+	<string name="live_ringing">Ringing...</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

@@ -38,7 +38,7 @@ import rx.Observable;
 
     return chatDataStore.loadMessages(userIds)
         .doOnError(Throwable::printStackTrace)
-        .map(userRealm -> userRealmDataMapper.transform(userRealm, false).getMessages());
+        .map(userRealm -> userRealmDataMapper.transform(userRealm).getMessages());
   }
 
   @Override public Observable<Message> createdMessages() {

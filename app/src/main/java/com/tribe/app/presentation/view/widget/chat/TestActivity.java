@@ -12,8 +12,9 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.activity.BaseActivity;
-import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by remy on 28/07/2017.
@@ -25,19 +26,19 @@ public class TestActivity extends BaseActivity {
 
   @BindView(R.id.chatview) ChatView chatView;
 
-  public static Intent getCallingIntent(Context context, Recipient recipient, int color,
-      @LiveActivity.Source String source) {
+  public static Intent getCallingIntent(Context context, Recipient recipient) {
     Intent intent = new Intent(context, TestActivity.class);
     if (recipient instanceof Shortcut) {
       User friend = ((Shortcut) recipient).getSingleFriend();
       intent.putExtra(EXTRA_LIVE, friend);
+
+      List<User> friends = ((Shortcut) recipient).getMembers();
+
+      for (User myFriend : friends) {
+        Timber.e("SOEF " + myFriend.getDisplayName() + " " + myFriend.getId());
+      }
     }
-
     return intent;
-  }
-
-  public static Intent getCallingIntent(Context context) {
-    return new Intent(context, TestActivity.class);
   }
 
   private void initCallRouletteService(String usersFromatedId) {

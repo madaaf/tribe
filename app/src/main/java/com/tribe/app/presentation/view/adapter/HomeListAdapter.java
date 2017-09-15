@@ -103,6 +103,11 @@ public class HomeListAdapter extends RecyclerView.Adapter
     //    userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
   }
 
+  public Observable<View> onChatClick(){
+    return Observable.merge(shortcutHomeAdapterDelegate.onChatClick(),
+        shortcutLiveHomeAdapterDelegate.onChatClick());
+  }
+
   public Observable<View> onLongClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
         shortcutLiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());

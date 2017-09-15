@@ -121,6 +121,10 @@ public class HomeListView extends RelativeLayout {
       onLongClick.onNext(v);
       return true;
     });
+
+    viewPictoChat.setOnClickListener(v -> {
+      onChat.onNext(v);
+    });
   }
 
   public void setRecipient(Recipient recipient) {
