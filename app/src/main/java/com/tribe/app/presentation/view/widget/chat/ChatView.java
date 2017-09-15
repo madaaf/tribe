@@ -121,6 +121,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     List<String> userIds = new ArrayList<>();
     userIds.add(friend.getId());
     arrIds = userIds.toArray(new String[userIds.size()]);
+    messagePresenter.loadMessagesDisk(arrIds);
     messagePresenter.loadMessage(arrIds);
     messagePresenter.getCreatedMessages();
   }
@@ -387,9 +388,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     Timber.e("SOEF errorLoadingMessage");
   }
 
+  @Override public void successLoadingMessageDisk(List<Message> messages) {
+    Timber.e("SOEF successLoadingMessageDisk " + messages.size());
+  }
+
+  @Override public void errorLoadingMessageDisk() {
+    Timber.e("SOEF errorLoadingMessageDisk");
+  }
+
   @Override public void successMessageCreated(Message message, ImageView imageView) {
     Timber.e("SOEF successMessageCreated " + message.toString());
-    imageView.animate().alpha(1f).setStartDelay(300).start();
+    if (imageView != null) imageView.animate().alpha(1f).setDuration(300).start();
   }
 
   @Override public void errorMessageCreation() {

@@ -7,6 +7,7 @@ import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.presentation.view.widget.chat.Image;
 import com.tribe.app.presentation.view.widget.chat.Message;
 import com.tribe.app.presentation.view.widget.chat.MessageEmoji;
+import com.tribe.app.presentation.view.widget.chat.MessageEvent;
 import com.tribe.app.presentation.view.widget.chat.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.MessageText;
 import io.realm.RealmList;
@@ -54,6 +55,9 @@ import javax.inject.Singleton;
           ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
           ((MessageImage) message).setRessources(
               userRealmDataMapper.transformOriginalRealmList(ressources));
+          break;
+        case Message.MESSAGE_EVENT:
+          message = new MessageEvent(messageRealm.getId());
           break;
       }
 

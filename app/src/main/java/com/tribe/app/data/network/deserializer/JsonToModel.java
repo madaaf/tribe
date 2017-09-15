@@ -52,7 +52,7 @@ import timber.log.Timber;
   private PublishSubject<Invite> onInviteCreated = PublishSubject.create();
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
-  private PublishSubject<Message> onMessageCreated = PublishSubject.create();
+  private PublishSubject<MessageRealm> onMessageCreated = PublishSubject.create();
   private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
 
   @Inject MessageRealmDataMapper messageRealmDataMapper;
@@ -144,8 +144,7 @@ import timber.log.Timber;
               Timber.d("onMessageReceived : " + entry.getValue().toString());
               MessageRealm messageRealm =
                   gson.fromJson(entry.getValue().toString(), MessageRealm.class);
-              Message message = messageRealmDataMapper.transform(messageRealm);
-              onMessageCreated.onNext(message);
+              onMessageCreated.onNext(messageRealm);
             } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
@@ -228,7 +227,7 @@ import timber.log.Timber;
     return onRandomRoomAssigned;
   }
 
-  public Observable<Message> onMessageCreated() {
+  public Observable<MessageRealm> onMessageCreated() {
     return onMessageCreated;
   }
 

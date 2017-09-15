@@ -742,4 +742,6 @@
 	<string name="shortcut_action_from">From chat</string>
 	<string name="shortcut_action_to">To chat</string>
 	<string name="shortcut_action_with">with</string>
+	<string name="chat_event_join">joined live</string>
+	<string name="chat_event_leave">left chat</string>
 </resources>

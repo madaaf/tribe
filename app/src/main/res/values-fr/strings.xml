@@ -742,4 +742,6 @@
 	<string name="shortcut_action_from">Depuis un chat</string>
 	<string name="shortcut_action_to">Vers un chat</string>
 	<string name="shortcut_action_with">avec</string>
+	<string name="chat_event_join">a rejoint le chat</string>
+	<string name="chat_event_leave">a quitté le chat</string>
 </resources>

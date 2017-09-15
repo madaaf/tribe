@@ -67,10 +67,44 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     return vh;
   }
 
+  private void setVisibilityItem(MessageViewHolder vh, String type) {
+    switch (type) {
+      case Message.MESSAGE_TEXT:
+        vh.emoji.setVisibility(View.GONE);
+        vh.message.setVisibility(View.VISIBLE);
+        vh.image.setVisibility(View.GONE);
+        vh.containerNotif.setVisibility(View.GONE);
+        break;
+      case Message.MESSAGE_EMOJI:
+        vh.emoji.setVisibility(View.VISIBLE);
+        vh.message.setVisibility(View.GONE);
+        vh.image.setVisibility(View.GONE);
+        vh.containerNotif.setVisibility(View.GONE);
+        break;
+      case Message.MESSAGE_IMAGE:
+        vh.emoji.setVisibility(View.GONE);
+        vh.message.setVisibility(View.GONE);
+        vh.image.setVisibility(View.VISIBLE);
+        vh.containerNotif.setVisibility(View.GONE);
+        break;
+      case Message.MESSAGE_EVENT:
+        vh.emoji.setVisibility(View.GONE);
+        vh.message.setVisibility(View.GONE);
+        vh.image.setVisibility(View.GONE);
+        vh.containerNotif.setVisibility(View.VISIBLE);
+        break;
+    }
+  }
+
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message m = items.get(position);
+    if (m instanceof MessageEvent) {
+      setVisibilityItem(vh, Message.MESSAGE_EVENT);
+      vh.header.setVisibility(View.GONE);
+      return;
+    }
     if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(m.getAuthor().getId())) {
       vh.header.setVisibility(View.GONE);
     } else {
@@ -81,21 +115,15 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     vh.avatarView.load(m.getAuthor().getProfilePicture());
 
     if (m instanceof MessageText) {
-      vh.emoji.setVisibility(View.GONE);
-      vh.message.setVisibility(View.VISIBLE);
-      vh.image.setVisibility(View.GONE);
-
+      setVisibilityItem(vh, Message.MESSAGE_TEXT);
       vh.message.setText(((MessageText) m).getMessage());
     } else if (m instanceof MessageEmoji) {
-      vh.emoji.setVisibility(View.VISIBLE);
-      vh.message.setVisibility(View.GONE);
-      vh.image.setVisibility(View.GONE);
+      setVisibilityItem(vh, Message.MESSAGE_EMOJI);
 
       vh.emoji.setText(((MessageEmoji) m).getEmoji());
     } else if (m instanceof MessageImage) {
-      vh.emoji.setVisibility(View.GONE);
-      vh.message.setVisibility(View.GONE);
-      vh.image.setVisibility(View.VISIBLE);
+      setVisibilityItem(vh, Message.MESSAGE_IMAGE);
+
       Image o = ((MessageImage) m).getOriginal();
       Uri uri = ((MessageImage) m).getUri();
 
@@ -134,9 +162,11 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     @BindView(R.id.name) public TextViewFont name;
     @BindView(R.id.emoji) public TextViewFont emoji;
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
+    @BindView(R.id.viewAvatarNotif) public AvatarView avatarNotif;
     @BindView(R.id.header) public LinearLayout header;
     @BindView(R.id.image) public ImageView image;
     @BindView(R.id.time) public TextViewFont time;
+    @BindView(R.id.containerNotif) public LinearLayout containerNotif;
 
     public MessageViewHolder(View itemView) {
       super(itemView);

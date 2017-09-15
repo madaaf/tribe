@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.chat;
 
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.data.repository.chat.datasource.DiskChatDataStore;
 import com.tribe.app.domain.interactor.chat.ChatRepository;
@@ -16,9 +18,14 @@ import rx.Observable;
 @Singleton public class DiskChatDataRepository implements ChatRepository {
 
   private final ChatDataStoreFactory chatDataStoreFactory;
+  private final MessageRealmDataMapper messageRealmDataMapper;
+  private final UserRealmDataMapper userRealmDataMapper;
 
-  @Inject public DiskChatDataRepository(ChatDataStoreFactory chatDataStoreFactory) {
+  @Inject public DiskChatDataRepository(ChatDataStoreFactory chatDataStoreFactory,
+      MessageRealmDataMapper messageRealmDataMapper, UserRealmDataMapper userRealmDataMapper) {
     this.chatDataStoreFactory = chatDataStoreFactory;
+    this.messageRealmDataMapper = messageRealmDataMapper;
+    this.userRealmDataMapper = userRealmDataMapper;
   }
 
   @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
@@ -26,12 +33,19 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Message>> loadMessages(String[] userIds) {
-    return null;
+    final DiskChatDataStore chatDataStore =
+        (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
+
+    return chatDataStore.loadMessages(userIds)
+        .doOnError(Throwable::printStackTrace)
+        .map(userRealm -> userRealmDataMapper.transform(userRealm, false).getMessages());
   }
 
   @Override public Observable<Message> createdMessages() {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
-    return chatDataStore.createdMessages();
+    return chatDataStore.createdMessages()
+        .doOnError(Throwable::printStackTrace)
+        .map(messageRealmDataMapper::transform);
   }
 }

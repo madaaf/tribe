@@ -3,7 +3,7 @@ package com.tribe.app.data.repository.chat.datasource;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.presentation.view.widget.chat.Message;
+import java.util.concurrent.TimeUnit;
 import rx.Observable;
 
 /**
@@ -24,11 +24,11 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<UserRealm> userMessage(String[] userIds) {
-    return null;
+  @Override public Observable<UserRealm> loadMessages(String[] userIds) {
+    return chatCache.loadMessage(userIds).debounce(600, TimeUnit.MILLISECONDS);
   }
 
-  @Override public Observable<Message> createdMessages() {
+  @Override public Observable<MessageRealm> createdMessages() {
     return chatCache.getMessageCreated();
   }
 }
