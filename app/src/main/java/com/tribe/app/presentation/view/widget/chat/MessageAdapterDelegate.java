@@ -31,6 +31,7 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -101,8 +102,12 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message m = items.get(position);
     if (m instanceof MessageEvent) {
+      Timber.e("ON BIND HOLDER " + m + " " + ((MessageEvent) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_EVENT);
       vh.header.setVisibility(View.GONE);
+      vh.notifContent.setText(
+          ((MessageEvent) m).getContent(((MessageEvent) m).getUser().getDisplayName()));
+      vh.avatarNotif.load(((MessageEvent) m).getUser().getProfilePicture());
       return;
     }
     if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(m.getAuthor().getId())) {
@@ -115,13 +120,16 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     vh.avatarView.load(m.getAuthor().getProfilePicture());
 
     if (m instanceof MessageText) {
+      Timber.e("ON BIND HOLDER " + m + " " + ((MessageText) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_TEXT);
       vh.message.setText(((MessageText) m).getMessage());
     } else if (m instanceof MessageEmoji) {
+      Timber.e("ON BIND HOLDER " + m + " " + ((MessageEmoji) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_EMOJI);
 
       vh.emoji.setText(((MessageEmoji) m).getEmoji());
     } else if (m instanceof MessageImage) {
+      Timber.e("ON BIND HOLDER " + m + " " + ((MessageImage) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_IMAGE);
 
       Image o = ((MessageImage) m).getOriginal();
@@ -160,6 +168,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
     @BindView(R.id.message) public TextViewFont message;
     @BindView(R.id.name) public TextViewFont name;
+    @BindView(R.id.notifContent) public TextViewFont notifContent;
     @BindView(R.id.emoji) public TextViewFont emoji;
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
     @BindView(R.id.viewAvatarNotif) public AvatarView avatarNotif;

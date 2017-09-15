@@ -23,4 +23,8 @@ public class MessageEmoji extends Message {
   public void setEmoji(String emoji) {
     this.emoji = emoji;
   }
+
+  @Override public String toString() {
+    return "MessageEmoji{" + "emoji='" + emoji + '\'' + '}';
+  }
 }

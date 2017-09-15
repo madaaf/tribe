@@ -16,10 +16,12 @@ public class MessageRealm extends RealmObject {
 
   private String id;
   private UserRealm author;
+  private UserRealm user;
   private String data;
   private String __typename;
   private ImageRealm original;
-  private RealmList<ImageRealm> resources;
+  private RealmList<ImageRealm> alts;
+  private String action;
 
   public MessageRealm() {
   }
@@ -28,12 +30,12 @@ public class MessageRealm extends RealmObject {
     return data;
   }
 
-  public RealmList<ImageRealm> getResources() {
-    return resources;
+  public RealmList<ImageRealm> getAlts() {
+    return alts;
   }
 
-  public void setResources(RealmList<ImageRealm> resources) {
-    this.resources = resources;
+  public void setAlts(RealmList<ImageRealm> alts) {
+    this.alts = alts;
   }
 
   public String get__typename() {
@@ -54,6 +56,22 @@ public class MessageRealm extends RealmObject {
 
   public void setData(String data) {
     this.data = data;
+  }
+
+  public String getAction() {
+    return action;
+  }
+
+  public UserRealm getUser() {
+    return user;
+  }
+
+  public void setUser(UserRealm user) {
+    this.user = user;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
   }
 
   public MessageRealm(String id) {

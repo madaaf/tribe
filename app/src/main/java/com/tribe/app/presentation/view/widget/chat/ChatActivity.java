@@ -7,12 +7,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import java.util.ArrayList;
 import java.util.List;
 import timber.log.Timber;
 
@@ -20,24 +22,34 @@ import timber.log.Timber;
  * Created by remy on 28/07/2017.
  */
 
-public class TestActivity extends BaseActivity {
+public class ChatActivity extends BaseActivity {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
 
   @BindView(R.id.chatview) ChatView chatView;
 
   public static Intent getCallingIntent(Context context, Recipient recipient) {
-    Intent intent = new Intent(context, TestActivity.class);
+    Intent intent = new Intent(context, ChatActivity.class);
+    List<User> friends = new ArrayList<>();
+
     if (recipient instanceof Shortcut) {
-      User friend = ((Shortcut) recipient).getSingleFriend();
-      intent.putExtra(EXTRA_LIVE, friend);
-
-      List<User> friends = ((Shortcut) recipient).getMembers();
-
-      for (User myFriend : friends) {
-        Timber.e("SOEF " + myFriend.getDisplayName() + " " + myFriend.getId());
+      friends = ((Shortcut) recipient).getMembers();
+    } else if (recipient instanceof Invite) {
+      friends = ((Invite) recipient).getMembers();
+      if (friends.isEmpty()) {
+        User user = ((Invite) recipient).getRoom().getInitiator();
+        friends.add(user);
       }
+    } else {
+      Timber.e("SOEF  NOT RECIPIENT OR SHORTCUT");
     }
+    for (User myFriend : friends) {
+      Timber.e("SOEF " + myFriend.getDisplayName() + " " + myFriend.getId());
+    }
+    Timber.e("SOEF LIST FRIENDS " + friends.size());
+    intent.putExtra(EXTRA_LIVE, (ArrayList<User>) friends);
+
+    Timber.e("SOEF NOT SHORTCUT " + recipient + " " + recipient.getDisplayName());
     return intent;
   }
 
@@ -52,10 +64,17 @@ public class TestActivity extends BaseActivity {
     initDependencyInjector();
 
     if (getIntent().hasExtra(EXTRA_LIVE)) {
-      User friend = (User) getIntent().getSerializableExtra(EXTRA_LIVE);
-      chatView.setChatId(friend);
-      String[] ids = new String[1];
-      ids[0] = friend.getId();
+      List<User> friends = (ArrayList<User>) getIntent().getSerializableExtra(EXTRA_LIVE);
+      if(friends.isEmpty()){
+        Timber.e(" EMPTY LIST ID ");
+        return;
+      }
+      chatView.setChatId(friends);
+
+      String[] ids = new String[friends.size()];
+      for (int i = 0; i < friends.size(); i++) {
+        ids[i] = friends.get(i).getId();
+      }
       initCallRouletteService(JsonUtils.arrayToJson(ids));
     }
   }

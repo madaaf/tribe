@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,6 +44,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -72,7 +74,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private LinearLayoutManager layoutManager;
   private LinearLayoutManager layoutManagerGrp;
   private List<Message> items = new ArrayList<>();
-  private List<User> users = new ArrayList<>();
+  private List<User> members = new ArrayList<>();
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds;
   private static boolean isOpen = false;
@@ -86,6 +88,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @BindView(R.id.viewAvatar) AvatarView avatarView;
   @BindView(R.id.refExpended) FrameLayout refExpended;
   @BindView(R.id.refInit) FrameLayout refInit;
+  @BindView(R.id.txtTitle) TextViewFont title;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -115,13 +118,22 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initSubscriptions();
   }
 
-  public void setChatId(User friend) {
-    avatarView.load(friend.getProfilePicture());
-    Timber.e("CHAT_SUBSCRIBE ID " + friend.getId());
+  public void setChatId(List<User> friends) {
+    avatarView.load(friends.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
-    userIds.add(friend.getId());
+    for (User friend : friends) {
+      userIds.add(friend.getId());
+    }
+    this.members = friends;
     arrIds = userIds.toArray(new String[userIds.size()]);
-    messagePresenter.loadMessagesDisk(arrIds);
+    if (friends.size() > 1) {
+      title.setText(context.getString(R.string.shortcut_members_count, friends.size()));
+      title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
+    } else {
+      title.setText(friends.get(0).getDisplayName());
+      title.setTextColor(Color.BLACK);
+    }
+    //messagePresenter.loadMessagesDisk(arrIds);
     messagePresenter.loadMessage(arrIds);
     messagePresenter.getCreatedMessages();
   }
@@ -273,11 +285,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     recyclerViewGrp.setAdapter(chatUserAdapter);
   }
 
-  void mock() { //TODO SOEF DELETE
-    users.clear();
-    users.add(user);
-    users.add(user);
-    chatUserAdapter.setItems(users);
+  void mock() {
+    chatUserAdapter.setItems(members);
   }
 
   @Override protected void onAttachedToWindow() {

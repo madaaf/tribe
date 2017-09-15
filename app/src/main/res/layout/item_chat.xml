@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:background="@android:color/white"
+    tools:background="
+    @android:color/white"
     >
 
   <LinearLayout
@@ -58,6 +59,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
+      android:layout_marginBottom="10dp"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -105,6 +107,7 @@
           android:layout_height="@dimen/avatar_size_chat"
           android:layout_gravity="left|center_vertical"
           android:layout_marginStart="15dp"
+          android:layout_marginEnd="15dp"
           android:background="@null"
           android:scaleType="centerCrop"
           app:hasHole="true"
@@ -120,11 +123,11 @@
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/notif"
+          android:id="@+id/notifContent"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:gravity="center_vertical"
-          android:padding="15dp"
+          android:padding="10dp"
           android:text="Anna joined live"
           android:textAllCaps="true"
           android:textSize="11sp"

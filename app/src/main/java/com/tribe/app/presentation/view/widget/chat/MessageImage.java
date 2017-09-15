@@ -44,4 +44,15 @@ public class MessageImage extends Message {
   public void setOriginal(Image original) {
     this.original = original;
   }
+
+  @Override public String toString() {
+    return "MessageImage{"
+        + "original="
+        + original
+        + ", ressources="
+        + ressources
+        + ", uri="
+        + uri
+        + '}';
+  }
 }

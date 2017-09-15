@@ -272,6 +272,12 @@
                 width
                 height
               }
+              alts {
+                url
+                filesize
+                width
+                height
+              }
             }
             ... on EventMessage {
                   id

@@ -720,4 +720,5 @@ public class LiveContainer extends FrameLayout {
   //public Observable<Void> onDropDiceWithoutFbAuth() {
   //  return onDropDiceWithoutFbAuth;
   //}
+
 }

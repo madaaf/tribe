@@ -33,8 +33,8 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
-import com.tribe.app.presentation.view.widget.chat.TestActivity;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -217,9 +217,9 @@ public class Navigator {
 
   public void navigateToChat(Activity activity, Recipient recipient) {
     if (activity != null) {
-      Intent intent = TestActivity.getCallingIntent(activity, recipient);
+      Intent intent = ChatActivity.getCallingIntent(activity, recipient);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      if (activity instanceof TestActivity) {
+      if (activity instanceof ChatActivity) {
         activity.startActivity(intent);
       } else {
         activity.startActivityForResult(intent, FROM_LIVE);
