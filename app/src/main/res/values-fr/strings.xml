@@ -709,6 +709,8 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
+	<string name="home_menu_shortcut_pin">Épingler en haut</string>
+	<string name="home_menu_shortcut_unpin">Retirer l\'épingle</string>
 	<string name="home_menu_shortcut_mute">:no_bell: notification \'est en ligne\'</string>
 	<string name="home_menu_shortcut_unmute">:bell: notification \'est en ligne\'</string>
 	<string name="home_menu_shortcut_hide">Masquer</string>
@@ -737,4 +739,9 @@
 	<!-- Chat -->
 	<string name="date_today">Aujourd\'hui</string>
 	<string name="date_yesterday">Hier</string>
+	<string name="shortcut_action_from">Depuis un chat</string>
+	<string name="shortcut_action_to">Vers un chat</string>
+	<string name="shortcut_action_with">avec</string>
+	<string name="chat_event_join">a rejoint le chat</string>
+	<string name="chat_event_leave">a quitté le chat</string>
 </resources>

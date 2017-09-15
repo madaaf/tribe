@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -36,14 +37,17 @@ import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -53,7 +57,7 @@ import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
-import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageShortcutsView;
 import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.notification.Alerter;
@@ -76,7 +80,7 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static com.tribe.app.presentation.view.activity.AuthActivity.APP_REQUEST_CODE;
 
-public class ProfileActivity extends BaseActivity implements ProfileMVPView {
+public class ProfileActivity extends BaseActivity implements ProfileMVPView, ShortcutMVPView {
 
   private static final int DURATION = 200;
 
@@ -109,7 +113,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private SettingsPhoneNumberView viewSettingsPhoneNumber;
   private SettingsFacebookAccountView viewSettingsFacebookAccount;
   private SettingsBlockedFriendsView viewSettingsBlockedFriends;
-  private SettingsManageFriendshipsView viewSettingsManageFriendships;
+  private SettingsManageShortcutsView viewSettingsManageFriendships;
 
   // VARIABLES
   private boolean disableUI = false;
@@ -485,48 +489,47 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsBlockedFriends =
         (SettingsBlockedFriendsView) viewStack.push(R.layout.view_settings_blocked_friends);
 
-    //subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
-    //  if (recipient instanceof Friendship) {
-    //    Friendship fr = (Friendship) recipient;
-    //    profilePresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
-    //  }
-    //}));
+    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
+      if (recipient instanceof Shortcut) {
+        Shortcut fr = (Shortcut) recipient;
+        profilePresenter.updateShortcutStatus(fr.getId(), ShortcutRealm.DEFAULT);
+      }
+    }));
 
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
         .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
             LiveActivity.SOURCE_FRIENDS)));
 
-    //profilePresenter.loadBlockedFriendshipList();
+    profilePresenter.loadSingleBlockedShortcuts();
   }
 
   private void setupManageFriendshipsView() {
     viewSettingsManageFriendships =
-        (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
+        (SettingsManageShortcutsView) viewStack.push(R.layout.view_settings_manage_friendships);
 
-    //subscriptions.add(viewSettingsManageFriendships.onClickRemove()
-    //    .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
-    //        ((recipient, labelType) -> {
-    //          if (labelType != null) {
-    //            if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-    //                .equals(LabelType.BLOCK_HIDE)) {
-    //              Friendship friendship = (Friendship) recipient;
-    //              profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-    //                  labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-    //                      : FriendshipRealm.HIDDEN);
-    //            }
-    //          }
-    //
-    //          return recipient;
-    //        }))
-    //    .subscribe(recipient -> viewSettingsManageFriendships.remove((Friendship) recipient)));
-    //
-    //subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(friendship -> {
-    //  friendship.setMute(!friendship.isMute());
-    //  profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-    //      friendship.getStatus());
-    //}).subscribe());
+    subscriptions.add(viewSettingsManageFriendships.onClickRemove()
+        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+            ((recipient, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  profilePresenter.updateShortcutStatus(shortcut.getId(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
+                          : ShortcutRealm.HIDDEN);
+                }
+              }
 
-    //profilePresenter.loadUnblockedFriendshipList();
+              return recipient;
+            }))
+        .subscribe(recipient -> viewSettingsManageFriendships.remove((Shortcut) recipient)));
+
+    subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(shortcut -> {
+      shortcut.setMute(!shortcut.isMute());
+      profilePresenter.muteShortcut(shortcut.getId(), shortcut.isMute());
+    }).subscribe());
+
+    profilePresenter.loadSingleShortcuts();
   }
 
   private void computeTitle(boolean forward, View to) {
@@ -540,7 +543,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     } else if (to instanceof SettingsBlockedFriendsView) {
       setupTitle(getString(R.string.profile_blocked_friends), forward);
       txtAction.setVisibility(GONE);
-    } else if (to instanceof SettingsManageFriendshipsView) {
+    } else if (to instanceof SettingsManageShortcutsView) {
       setupTitle(getString(R.string.manage_friendships_title), forward);
       txtAction.setVisibility(View.GONE);
     } else if (to instanceof SettingsPhoneNumberView) {
@@ -625,8 +628,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
-          .equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid ||
+          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
     }
   }
 
@@ -678,6 +681,42 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   @Override public Context context() {
     return this;
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+    if (viewSettingsManageFriendships != null &&
+        ViewCompat.isAttachedToWindow(viewSettingsManageFriendships)) {
+      viewSettingsManageFriendships.renderUnblockedShortcutList(singleShortcutList);
+    } else if (viewSettingsBlockedFriends != null &&
+        ViewCompat.isAttachedToWindow(viewSettingsBlockedFriends)) {
+      viewSettingsBlockedFriends.renderBlockedShortcutList(singleShortcutList);
+    }
+
+    profilePresenter.unsubscribeLoadShortcuts();
   }
 
   class NotificationReceiver extends BroadcastReceiver {

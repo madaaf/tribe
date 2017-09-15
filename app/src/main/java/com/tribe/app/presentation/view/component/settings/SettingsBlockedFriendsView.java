@@ -9,7 +9,9 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -95,11 +97,11 @@ public class SettingsBlockedFriendsView extends FrameLayout {
             (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
-          //Friendship friendship = (Friendship) pair.first.second;
-          //clickUnblock.onNext(pair.first.second);
-          //friendship.setStatus(FriendshipRealm.DEFAULT);
-          //friendship.setAnimateAdd(true);
-          //adapter.notifyItemChanged(pair.first.first);
+          Shortcut shortcut = (Shortcut) pair.first.second;
+          clickUnblock.onNext(pair.first.second);
+          shortcut.setStatus(ShortcutRealm.DEFAULT);
+          shortcut.setAnimateAdd(true);
+          adapter.notifyItemChanged(pair.first.first);
         }));
 
     subscriptions.add(adapter.onHangLive()
@@ -127,6 +129,10 @@ public class SettingsBlockedFriendsView extends FrameLayout {
   /////////////////
   //   PUBLIC    //
   /////////////////
+
+  public void renderBlockedShortcutList(List<Shortcut> shortcutList) {
+    adapter.setItems(new ArrayList<>(shortcutList));
+  }
 
   /**
    * OBSERVABLES

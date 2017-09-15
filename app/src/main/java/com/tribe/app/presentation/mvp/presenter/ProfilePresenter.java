@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -10,6 +11,7 @@ import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
@@ -22,24 +24,27 @@ import javax.inject.Inject;
 
 public class ProfilePresenter extends UpdateUserPresenter {
 
+  private ShortcutPresenter shortcutPresenter;
+
   private ProfileMVPView profileView;
 
   private final RemoveInstall removeInstall;
   private DeclineInvite declineInvite;
   private CreateRoom createRoom;
 
-  @Inject ProfilePresenter(UpdateUser updateUser, LookupUsername lookupUsername,
-      RxFacebook rxFacebook, RemoveInstall removeInstall,
-      DeclineInvite declineInvite,
-      CreateRoom createRoom, UpdateUserFacebook updateUserFacebook,
+  @Inject ProfilePresenter(ShortcutPresenter shortcutPresenter, UpdateUser updateUser,
+      LookupUsername lookupUsername, RxFacebook rxFacebook, RemoveInstall removeInstall,
+      DeclineInvite declineInvite, CreateRoom createRoom, UpdateUserFacebook updateUserFacebook,
       UpdateUserPhoneNumber updateUserPhoneNumber) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+    this.shortcutPresenter = shortcutPresenter;
     this.removeInstall = removeInstall;
     this.declineInvite = declineInvite;
     this.createRoom = createRoom;
   }
 
   @Override public void onViewDetached() {
+    shortcutPresenter.onViewDetached();
     removeInstall.unsubscribe();
     declineInvite.unsubscribe();
     createRoom.unsubscribe();
@@ -49,6 +54,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
 
   @Override public void onViewAttached(MVPView v) {
     profileView = (ProfileMVPView) v;
+    shortcutPresenter.onViewAttached(v);
   }
 
   public void logout() {
@@ -96,5 +102,25 @@ public class ProfilePresenter extends UpdateUserPresenter {
     @Override public void onNext(Room room) {
       if (profileView != null) profileView.onCreateRoom(room);
     }
+  }
+
+  public void muteShortcut(String shortcutId, boolean mute) {
+    shortcutPresenter.muteShortcut(shortcutId, mute);
+  }
+
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status);
+  }
+
+  public void loadSingleShortcuts() {
+    shortcutPresenter.loadSingleShortcuts();
+  }
+
+  public void unsubscribeLoadShortcuts() {
+    shortcutPresenter.unsubscribeLoadShortcuts();
+  }
+
+  public void loadSingleBlockedShortcuts() {
+    shortcutPresenter.loadBlockedSingleShortcuts();
   }
 }

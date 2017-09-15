@@ -68,11 +68,10 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   @Override protected void setClicks(BaseListInterface baseList, BaseListViewHolder vh) {
     boolean isBlockedOrHidden = false;
 
-    // TODO REPLACE WITH SHORTCUTS
-    //if (baseList instanceof Friendship) {
-    //  Friendship fr = (Friendship) baseList;
-    //  isBlockedOrHidden = fr.isBlockedOrHidden();
-    //}
+    if (baseList instanceof Shortcut) {
+      Shortcut sh = (Shortcut) baseList;
+      isBlockedOrHidden = sh.isBlockedOrHidden();
+    }
 
     if (isBlockedOrHidden) {
       vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh.itemView));

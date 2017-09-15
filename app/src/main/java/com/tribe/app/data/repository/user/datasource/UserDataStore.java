@@ -12,7 +12,6 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import rx.Observable;
@@ -132,4 +131,6 @@ public interface UserDataStore {
   Observable<Boolean> removeShortcut(String shortcutId);
 
   Observable<List<ShortcutRealm>> shortcuts();
+
+  Observable<List<ShortcutRealm>> blockedShortcuts();
 }

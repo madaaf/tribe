@@ -89,6 +89,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<List<Shortcut>> blockedShortcuts() {
+    return null;
+  }
+
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.createOrUpdateInstall(token);

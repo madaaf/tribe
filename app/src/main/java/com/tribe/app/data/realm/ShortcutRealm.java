@@ -44,6 +44,7 @@ public class ShortcutRealm extends RealmObject {
   private RealmList<UserRealm> members;
 
   @Ignore private boolean online;
+  @Ignore private boolean live;
 
   public ShortcutRealm() {
     members = new RealmList<>();
@@ -152,7 +153,15 @@ public class ShortcutRealm extends RealmObject {
   }
 
   public boolean isHidden() {
-    return status.equals(HIDDEN);
+    return status.equalsIgnoreCase(HIDDEN);
+  }
+
+  public void setLive(boolean live) {
+    this.live = live;
+  }
+
+  public boolean isLive() {
+    return live;
   }
 
   public List<String> getMembersIds() {

@@ -41,7 +41,7 @@ import com.tribe.app.presentation.view.component.onboarding.StatusView;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
-import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageShortcutsView;
 import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
@@ -171,7 +171,7 @@ import dagger.Component;
 
   void inject(ErrorNotificationView errorNotificationView);
 
-  void inject(SettingsManageFriendshipsView settingsManageFriendshipsView);
+  void inject(SettingsManageShortcutsView settingsManageFriendshipsView);
 
   void inject(UserInfosNotificationView userInfosNotificationView);
 }

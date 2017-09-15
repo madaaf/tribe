@@ -43,7 +43,7 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public void removeOnline(String id) {
-    onlineMap.remove(id);
+    onlineMap.remove(id, true);
   }
 
   @Override public void putLive(String id) {
@@ -51,19 +51,20 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public void removeLive(String id) {
-    liveMap.remove(id);
+    liveMap.remove(id, true);
   }
 
   @Override public void putInvite(Invite invite) {
+    this.inviteMap.remove(invite.getId(), false);
     this.inviteMap.put(invite.getId(), invite);
   }
 
   @Override public void removeInvite(Invite invite) {
-    this.inviteMap.remove(invite.getId());
+    this.inviteMap.remove(invite.getId(), true);
   }
 
   @Override public void removeInviteFromRoomId(String roomId) {
-    this.inviteMap.remove(roomId);
+    this.inviteMap.remove(roomId, true);
   }
 
   @Override public Observable<Map<String, Invite>> inviteMap() {

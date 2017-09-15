@@ -52,7 +52,8 @@ import rx.Observable;
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
-    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
+    this.searchResultRealmDataMapper =
+        new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -76,30 +77,26 @@ import rx.Observable;
         userDataStore.onlineMap().startWith(new HashMap<>()),
         userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
         (userRealm, onlineMap, liveMap, inviteMap) -> {
-          if (userRealm != null && userRealm.getShortcuts() != null) {
-            RealmList<ShortcutRealm> shortcutRealmList =
-                updateOnlineLiveShortcuts(userRealm.getShortcuts(), onlineMap, true);
+          User user = userRealmDataMapper.transform(userRealm);
+
+          if (user != null && user.getShortcutList() != null) {
+            List<Shortcut> shortcutList =
+                updateOnlineLiveShortcuts(user.getShortcutList(), onlineMap, true);
 
             if (inviteMap != null && inviteMap.size() > 0) {
-              RealmList<ShortcutRealm> endShortcuts = new RealmList<>();
-              for (ShortcutRealm shortcutRealm : shortcutRealmList) {
+              for (Shortcut shortcut : shortcutList) {
                 for (Invite invite : inviteMap.values()) {
-                  List<String> shortcutMembersIds = shortcutRealm.getMembersIds();
+                  List<String> shortcutMembersIds = shortcut.getMembersIds();
                   // we add the current user id because he's not included in the shortcut
-                  shortcutMembersIds.add(userId);
-                  if (!invite.isShortcut(shortcutMembersIds)) {
-                    endShortcuts.add(shortcutRealm);
+                  shortcutMembersIds.add(userRealm.getId());
+                  if (invite.isShortcut(shortcutMembersIds)) {
+                    shortcut.setLive(true);
                   }
                 }
               }
-
-              userRealm.setShortcuts(endShortcuts);
-            } else {
-              userRealm.setShortcuts(shortcutRealmList);
             }
           }
 
-          User user = userRealmDataMapper.transform(userRealm);
           user.setInviteList(inviteMap.values());
 
           return user;
@@ -141,16 +138,43 @@ import rx.Observable;
         userDataStore.onlineMap().startWith(new HashMap<>()),
         userDataStore.liveMap().startWith(new HashMap<>()),
         (shortcuts, onlineMap, liveMap) -> userRealmDataMapper.getShortcutRealmDataMapper()
-            .transform(updateOnlineLiveShortcuts(shortcuts, onlineMap, true)));
+            .transform(updateOnlineLiveShortcutsRealm(shortcuts, onlineMap, true)));
   }
 
-  private RealmList<ShortcutRealm> updateOnlineLiveShortcuts(List<ShortcutRealm> shortcutRealmList,
+  @Override public Observable<List<Shortcut>> blockedShortcuts() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.combineLatest(userDataStore.blockedShortcuts(),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()),
+        (shortcuts, onlineMap, liveMap) -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(updateOnlineLiveShortcutsRealm(shortcuts, onlineMap, false)));
+  }
+
+  private RealmList<ShortcutRealm> updateOnlineLiveShortcutsRealm(List<ShortcutRealm> shortcutRealmList,
       Map<String, Boolean> onlineMap, boolean excludeBlocked) {
     RealmList<ShortcutRealm> result = new RealmList<>();
 
     for (ShortcutRealm st : shortcutRealmList) {
       if (!excludeBlocked ||
-          (!StringUtils.isEmpty(st.getStatus()) && st.getStatus().equals(ShortcutRealm.DEFAULT))) {
+          (!StringUtils.isEmpty(st.getStatus()) &&
+              st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
+        st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
+        result.add(st);
+      }
+    }
+    return result;
+  }
+
+  private List<Shortcut> updateOnlineLiveShortcuts(List<Shortcut> shortcutList,
+      Map<String, Boolean> onlineMap, boolean excludeBlocked) {
+    List<Shortcut> result = new ArrayList<>();
+
+    for (Shortcut st : shortcutList) {
+      if (!excludeBlocked ||
+          (!StringUtils.isEmpty(st.getStatus()) &&
+              st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
         st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
         result.add(st);
       }

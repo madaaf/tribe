@@ -3,10 +3,12 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by tiago on 09/10/2017.
@@ -19,6 +21,7 @@ public class Shortcut extends Recipient implements Serializable {
   private String name;
   private String picture;
   private boolean online;
+  private boolean live;
   private boolean pinned;
   private boolean read;
   private boolean mute;
@@ -36,11 +39,11 @@ public class Shortcut extends Recipient implements Serializable {
   }
 
   @Override public boolean isLive() {
-    return false;
+    return live;
   }
 
   @Override public boolean isActionAvailable(User currentUser) {
-    return false;
+    return true;
   }
 
   @Override public boolean isInvisible() {
@@ -52,7 +55,7 @@ public class Shortcut extends Recipient implements Serializable {
   }
 
   @Override public AvatarModel getAvatar() {
-    return null;
+    return new AvatarModel(picture, isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR);
   }
 
   public void setId(String id) {
@@ -131,16 +134,20 @@ public class Shortcut extends Recipient implements Serializable {
     this.created_at = created_at;
   }
 
+  public void setLive(boolean live) {
+    this.live = live;
+  }
+
   @Override public String getDisplayName() {
-    return StringUtils.isEmpty(name) ? getUserNames() : name;
+    return StringUtils.isEmpty(name) ? getUserDisplayNames() : name;
   }
 
   @Override public String getUsername() {
-    return null;
+    return StringUtils.isEmpty(name) ? getUserNames() : name;
   }
 
   @Override public String getProfilePicture() {
-    return picture;
+    return isSingle() ? getSingleFriend().getProfilePicture() : picture;
   }
 
   @Override public String getSubId() {
@@ -195,18 +202,19 @@ public class Shortcut extends Recipient implements Serializable {
   }
 
   public boolean isBlockedOrHidden() {
-    return status.equals(ShortcutRealm.BLOCKED) || status.equals(ShortcutRealm.HIDDEN);
+    return status.equalsIgnoreCase(ShortcutRealm.BLOCKED) ||
+        status.equalsIgnoreCase(ShortcutRealm.HIDDEN);
   }
 
   public boolean isBlocked() {
-    return status.equals(ShortcutRealm.BLOCKED);
+    return status.equalsIgnoreCase(ShortcutRealm.BLOCKED);
   }
 
   public boolean isHidden() {
     return status.equals(ShortcutRealm.HIDDEN);
   }
 
-  private String getUserNames() {
+  private String getUserDisplayNames() {
     if (members == null || members.size() == 0) return "";
 
     StringBuffer buffer = new StringBuffer();
@@ -225,13 +233,24 @@ public class Shortcut extends Recipient implements Serializable {
     return buffer.toString();
   }
 
-  private boolean isMemberOnline() {
-    if (members == null || members.size() == 0) return false;
+  private String getUserNames() {
+    if (members == null || members.size() == 0) return "";
 
-    for (User user : members) {
-      if (user.isOnline()) return true;
+    StringBuffer buffer = new StringBuffer();
+    int min = Math.min(NB_MAX_USERS_STRING, members.size());
+    for (int i = 0; i < min; i++) {
+      User user = members.get(i);
+      buffer.append(user.getUsername());
+
+      if (i < min - 1) buffer.append(", ");
     }
 
-    return false;
+    return buffer.toString();
+  }
+
+  public boolean isUniqueMemberOnline(Map<String, Boolean> onlineMap) {
+    if (!isSingle()) return false;
+
+    return onlineMap.containsKey(members.get(0).getId());
   }
 }

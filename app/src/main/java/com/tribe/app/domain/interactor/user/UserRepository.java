@@ -57,11 +57,6 @@ public interface UserRepository {
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 
   /**
-   * Get an {@link Observable} which will emit a {@link List<Shortcut>}
-   */
-  Observable<List<Shortcut>> shortcuts();
-
-  /**
    * Get an {@link Observable} which will emit a {@link User}
    *
    * @param token the token of the user for which we get the info
@@ -134,6 +129,13 @@ public interface UserRepository {
   Observable<User> getFbIdUpdated();
 
   Observable<Boolean> reportUser(String userId);
+
+  /**
+   * Get an {@link Observable} which will emit a {@link List<Shortcut>}
+   */
+  Observable<List<Shortcut>> shortcuts();
+
+  Observable<List<Shortcut>> blockedShortcuts();
 
   Observable<Shortcut> createShortcut(String... userIds);
 

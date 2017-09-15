@@ -85,6 +85,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "recent");
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "unread");
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "online");
+        manageShortcuts(gson, resultsShortcuts, listShortcuts, "blocked");
+        manageShortcuts(gson, resultsShortcuts, listShortcuts, "hidden");
       }
 
       userRealm.setShortcuts(listShortcuts);

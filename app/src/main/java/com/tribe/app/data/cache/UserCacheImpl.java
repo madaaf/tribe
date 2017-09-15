@@ -148,6 +148,18 @@ public class UserCacheImpl implements UserCache {
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
     return realm.where(ShortcutRealm.class)
         .equalTo(ShortcutRealm.SINGLE, true)
+        .equalTo(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT)
+        .findAll()
+        .asObservable()
+        .filter(singleShortcutList -> singleShortcutList.isLoaded())
+        .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
+        .unsubscribeOn(AndroidSchedulers.mainThread());
+  }
+
+  @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
+    return realm.where(ShortcutRealm.class)
+        .equalTo(ShortcutRealm.SINGLE, true)
+        .in(ShortcutRealm.STATUS, new String[] { ShortcutRealm.BLOCKED, ShortcutRealm.HIDDEN })
         .findAll()
         .asObservable()
         .filter(singleShortcutList -> singleShortcutList.isLoaded())
@@ -165,8 +177,10 @@ public class UserCacheImpl implements UserCache {
 
   @Override public ShortcutRealm shortcutForUserId(String userId) {
     Realm otherRealm = Realm.getDefaultInstance();
-    ShortcutRealm shortcutRealm =
-        otherRealm.where(ShortcutRealm.class).equalTo(ShortcutRealm.SINGLE, true).equalTo("members.id", userId).findFirst();
+    ShortcutRealm shortcutRealm = otherRealm.where(ShortcutRealm.class)
+        .equalTo(ShortcutRealm.SINGLE, true)
+        .equalTo("members.id", userId)
+        .findFirst();
     if (shortcutRealm != null) {
       return otherRealm.copyFromRealm(shortcutRealm);
     } else {

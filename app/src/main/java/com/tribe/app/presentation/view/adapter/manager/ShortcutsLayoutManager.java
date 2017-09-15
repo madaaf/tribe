@@ -6,9 +6,9 @@ import android.support.v7.widget.LinearLayoutManager;
 /**
  * Layout manager to position items inside a {@link android.support.v7.widget.RecyclerView}.
  */
-public class FriendshipsLayoutManager extends LinearLayoutManager {
+public class ShortcutsLayoutManager extends LinearLayoutManager {
 
-  public FriendshipsLayoutManager(Context context) {
+  public ShortcutsLayoutManager(Context context) {
     super(context);
   }
 }

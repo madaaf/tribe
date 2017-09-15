@@ -206,7 +206,7 @@ public class Room implements Serializable {
 
     if (updatedUsers == null || updatedUsers.size() == 0) {
       for (String key : map.getMap().keySet()) {
-        map.remove(key);
+        map.remove(key, true);
       }
 
       return;
@@ -221,7 +221,7 @@ public class Room implements Serializable {
           if (!id.equals(user.getId())) found = false;
         }
 
-        if (!found) map.remove(id);
+        if (!found) map.remove(id, true);
       }
     } else {
       // Somebody was added

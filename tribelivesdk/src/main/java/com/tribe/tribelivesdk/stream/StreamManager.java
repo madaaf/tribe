@@ -123,7 +123,7 @@ public class StreamManager {
     if (remotePeerMap != null && remotePeerMap.size() > 0) {
       RemotePeer remotePeer = remotePeerMap.get(tribeSession.getPeerId());
       if (remotePeer != null) remotePeer.dispose();
-      remotePeerMap.remove(tribeSession.getPeerId());
+      remotePeerMap.remove(tribeSession.getPeerId(), true);
     }
   }
 

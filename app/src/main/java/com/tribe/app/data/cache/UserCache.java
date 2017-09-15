@@ -31,6 +31,8 @@ import rx.Observable;
 
   Observable<List<ShortcutRealm>> shortcuts();
 
+  Observable<List<ShortcutRealm>> blockedShortcuts();
+
   UserRealm userInfosNoObs(String userId);
 
   ShortcutRealm shortcutForUserId(String userId);

@@ -714,7 +714,13 @@ public class CloudUserDataStore implements UserDataStore {
         "\n" +
         context.getString(R.string.userfragment_infos_light);
 
-    return this.tribeApi.createShortcut(request);
+    return this.tribeApi.createShortcut(request).doOnNext(shortcutRealm -> {
+      if (shortcutRealm != null) {
+        userCache.addShortcut(shortcutRealm);
+        contactCache.changeSearchResult(shortcutRealm.getSingleFriend().getUsername(),
+            shortcutRealm);
+      }
+    });
   }
 
   @Override public Observable<ShortcutRealm> updateShortcut(String shortcutId,
@@ -807,6 +813,10 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
+    return null;
+  }
+
+  @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
     return null;
   }
 }

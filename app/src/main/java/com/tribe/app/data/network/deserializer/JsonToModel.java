@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
@@ -46,6 +47,9 @@ import timber.log.Timber;
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
   private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
+  private PublishSubject<ShortcutRealm> onShortcutCreated = PublishSubject.create();
+  private PublishSubject<ShortcutRealm> onShortcutUpdated = PublishSubject.create();
+  private PublishSubject<String> onShortcutRemoved = PublishSubject.create();
 
   @Inject public JsonToModel(@Named("simpleGson") Gson gson) {
     this.gson = gson;
@@ -160,6 +164,21 @@ import timber.log.Timber;
               }
 
               onRoomUpdated.onNext(room);
+            } else if (entry.getKey().contains(WSService.SHORTCUT_CREATED_SUFFIX)) {
+              Timber.d("Shortcut created : " + entry.getValue().toString());
+              ShortcutRealm shortcutRealm =
+                  gson.fromJson(entry.getValue().toString(), ShortcutRealm.class);
+              onShortcutCreated.onNext(shortcutRealm);
+            } else if (entry.getKey().contains(WSService.SHORTCUT_UPDATED_SUFFIX)) {
+              Timber.d("Shortcut updated : " + entry.getValue().toString());
+              ShortcutRealm shortcutRealm =
+                  gson.fromJson(entry.getValue().toString(), ShortcutRealm.class);
+              onShortcutUpdated.onNext(shortcutRealm);
+            } else if (entry.getKey().contains(WSService.SHORTCUT_REMOVED_SUFFIX)) {
+              Timber.d("Shortcut removed : " + entry.getValue().toString());
+              String shortcutId =
+                  entry.getValue().getAsJsonObject().get("shortcut_id").getAsString();
+              onShortcutRemoved.onNext(shortcutId);
             }
           }
         }
@@ -223,5 +242,17 @@ import timber.log.Timber;
 
   public Observable<Room> onRoomUpdated() {
     return onRoomUpdated;
+  }
+
+  public Observable<ShortcutRealm> onShortcutCreated() {
+    return onShortcutCreated;
+  }
+
+  public Observable<ShortcutRealm> onShortcutUpdated() {
+    return onShortcutUpdated;
+  }
+
+  public Observable<String> onShortcutRemoved() {
+    return onShortcutRemoved;
   }
 }

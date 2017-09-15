@@ -15,10 +15,16 @@ public class ShortcutRealmDeserializer implements JsonDeserializer<ShortcutRealm
   public ShortcutRealm deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject results = je.getAsJsonObject().getAsJsonObject("data");
+    JsonObject result = null;
 
     Gson gson = new Gson();
-    
-    JsonObject shortcutJson = results.getAsJsonObject("updateShortcut");
-    return gson.fromJson(shortcutJson, ShortcutRealm.class);
+
+    if (results.has("updateShortcut")) {
+      result = results.getAsJsonObject("updateShortcut");
+    } else if (results.has("createShortcut")) {
+      result = results.getAsJsonObject("createShortcut");
+    }
+
+    return gson.fromJson(result, ShortcutRealm.class);
   }
 }

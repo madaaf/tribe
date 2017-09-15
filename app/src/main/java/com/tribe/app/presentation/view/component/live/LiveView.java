@@ -635,7 +635,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.onStopGame().subscribe(pairSessionGame -> {
       Game game = gameManager.getGameById(pairSessionGame.second);
-      if(game==null) return;
+      if (game == null) return;
       String displayName = getDisplayNameFromSession(pairSessionGame.first);
       displayStopGameNotification(game.getName(), displayName);
       stopGame(false, game.getId());
@@ -1096,7 +1096,7 @@ public class LiveView extends FrameLayout {
         if (live.fromRoom()) {
           String inviteId = getInviteWaiting();
           if (!StringUtils.isEmpty(inviteId)) {
-            liveRowView = liveRowViewMap.remove(inviteId);
+            liveRowView = liveRowViewMap.remove(inviteId, true);
             if (liveRowView != null && liveRowView.getParent() != null) {
               liveRowView.dispose();
               viewRoom.removeView(liveRowView);
@@ -1107,7 +1107,7 @@ public class LiveView extends FrameLayout {
 
       liveRowView = liveInviteMap.get(remotePeer.getSession().getUserId());
       liveRowView.setPeerView(remotePeer.getPeerView());
-      liveInviteMap.remove(remotePeer.getSession().getUserId());
+      liveInviteMap.remove(remotePeer.getSession().getUserId(), true);
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
     } else if (liveRowViewMap.getMap()
         .containsKey(remotePeer.getSession()
@@ -1122,7 +1122,7 @@ public class LiveView extends FrameLayout {
         if (live.fromRoom()) { // if it's from a room
           String inviteId = getInviteWaiting();
           if (!StringUtils.isEmpty(inviteId)) {
-            liveRowView = liveRowViewMap.remove(inviteId);
+            liveRowView = liveRowViewMap.remove(inviteId, true);
           }
         }
 
@@ -1163,7 +1163,7 @@ public class LiveView extends FrameLayout {
 
   private void removeFromPeers(String id) {
     if (liveRowViewMap.getMap().containsKey(id)) {
-      LiveRowView liveRowView = liveRowViewMap.remove(id);
+      LiveRowView liveRowView = liveRowViewMap.remove(id, true);
       liveRowView.dispose();
       //viewRoom.removeView(liveRowView);
 
@@ -1175,7 +1175,7 @@ public class LiveView extends FrameLayout {
 
   private void removeFromInvites(String id) {
     if (liveInviteMap.getMap().containsKey(id)) {
-      LiveRowView liveRowView = liveInviteMap.remove(id);
+      LiveRowView liveRowView = liveInviteMap.remove(id, true);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
 

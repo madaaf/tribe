@@ -33,7 +33,7 @@ public class UIUtils {
   public static void setBackgroundGrid(ScreenUtils screenUtils, View v, int position,
       boolean hasCorners) {
     Drawable background = v.getBackground();
-    int color = PaletteGrid.get(position - 1);
+    int color = PaletteGrid.get(Math.max(position - 1, 0));
     int radiusTopLeft = position == 1 ? screenUtils.dpToPx(5) : 0;
     int radiusTopRight =
         position == screenUtils.getContext().getResources().getInteger(R.integer.columnNumber)
@@ -64,7 +64,7 @@ public class UIUtils {
 
   public static void setBackgroundMultiple(ScreenUtils screenUtils, View v, int position) {
     Drawable background = v.getBackground();
-    int color = PaletteGrid.get(position - 1);
+    int color = PaletteGrid.get(Math.max(position - 1, 0));
     int radius = screenUtils.dpToPx(5);
     float[] radiusMatrix =
         new float[] { radius, radius, radius, radius, radius, radius, radius, radius };
@@ -83,12 +83,12 @@ public class UIUtils {
   }
 
   public static void setBackgroundCard(CardView v, int position) {
-    int color = PaletteGrid.get(position - 1);
+    int color = PaletteGrid.get(Math.max(position - 1, 0));
     v.setCardBackgroundColor(color);
   }
 
   public static void setBackgroundInd(View v, int position) {
-    int color = PaletteGrid.get(position - 1);
+    int color = PaletteGrid.get(Math.max(position - 1, 0));
     GradientDrawable gradientDrawable = new GradientDrawable();
     gradientDrawable.setShape(GradientDrawable.OVAL);
     gradientDrawable.setColor(color);

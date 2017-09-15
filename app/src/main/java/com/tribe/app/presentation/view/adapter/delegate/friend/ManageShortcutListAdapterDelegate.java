@@ -12,6 +12,7 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -52,13 +53,13 @@ public class ManageShortcutListAdapterDelegate extends RxAdapterDelegate<List<Sh
   @Override public void onBindViewHolder(@NonNull List<Shortcut> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     ManageFriendshipViewHolder vh = (ManageFriendshipViewHolder) holder;
-    //Friendship fr = items.get(position);
-    //vh.viewAvatar.setType(
-    //    fr.isLive() ? AvatarView.LIVE : (fr.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
-    //vh.viewAvatar.load(fr);
-    //vh.txtName.setText(fr.getDisplayName());
-    //vh.txtUsername.setText(StringUtils.isEmpty(fr.getUsername()) ? "" : fr.getUsername());
-    //vh.switchMute.setChecked(fr.isMute());
+    Shortcut sh = items.get(position);
+    vh.viewAvatar.setType(
+        sh.isLive() ? AvatarView.LIVE : (sh.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR));
+    vh.viewAvatar.load(sh);
+    vh.txtName.setText(sh.getDisplayName());
+    vh.txtUsername.setText(StringUtils.isEmpty(sh.getUsername()) ? "" : sh.getUsername());
+    vh.switchMute.setChecked(sh.isMute());
 
     vh.switchMute.setOnClickListener(v -> onClickMute.onNext(vh.itemView));
 

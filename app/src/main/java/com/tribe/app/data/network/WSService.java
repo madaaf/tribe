@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -46,7 +47,9 @@ import timber.log.Timber;
   public static final String INVITE_REMOVED_SUFFIX = "___ir";
   public static final String RANDOM_ROOM_ASSIGNED_SUFFIX = "___ra";
   public static final String ROOM_UDPATED_SUFFIX = "___ru";
+  public static final String SHORTCUT_CREATED_SUFFIX = "___sc";
   public static final String SHORTCUT_UPDATED_SUFFIX = "___su";
+  public static final String SHORTCUT_REMOVED_SUFFIX = "___sr";
 
   public static Intent getCallingIntent(Context context, String type) {
     Intent intent = new Intent(context, WSService.class);
@@ -228,6 +231,9 @@ import timber.log.Timber;
 
   private void initModel() {
     persistentSubscriptions.add(jsonToModel.onInviteCreated()
+        // we wait to have a correct response with the live_users array
+        // in the room correctly updated
+        .delay(2000, TimeUnit.MILLISECONDS)
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .filter(invite -> !liveCache.getInviteMap().containsKey(invite.getId()))
         .flatMap(invite -> this.tribeApi.invites(
@@ -281,6 +287,15 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
+
+    persistentSubscriptions.add(jsonToModel.onShortcutCreated()
+        .subscribe(shortcutRealm -> userCache.addShortcut(shortcutRealm)));
+
+    persistentSubscriptions.add(jsonToModel.onShortcutUpdated()
+        .subscribe(shortcutRealm -> userCache.updateShortcut(shortcutRealm)));
+
+    persistentSubscriptions.add(jsonToModel.onShortcutRemoved()
+        .subscribe(shortcutRealm -> userCache.removeShortcut(shortcutRealm)));
   }
 
   private void initSubscriptions() {
@@ -294,8 +309,14 @@ import timber.log.Timber;
     sendSubscription(getApplicationContext().getString(R.string.subscription_inviteRemoved,
         hash + INVITE_REMOVED_SUFFIX));
 
+    sendSubscription(getApplicationContext().getString(R.string.subscription_shortcutCreated,
+        hash + SHORTCUT_CREATED_SUFFIX));
+
     sendSubscription(getApplicationContext().getString(R.string.subscription_shortcutUpdated,
         hash + SHORTCUT_UPDATED_SUFFIX));
+
+    sendSubscription(getApplicationContext().getString(R.string.subscription_shortcutRemoved,
+        hash + SHORTCUT_REMOVED_SUFFIX));
 
     tempSubscriptions.add(Observable.just(userRealm.getShortcuts()).doOnNext(shortcutList -> {
       int count = 0;

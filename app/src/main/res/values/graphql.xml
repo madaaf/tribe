@@ -15,6 +15,12 @@
                   online {
                     ...ShortcutInfos
                   }
+                  hidden {
+                    ...ShortcutInfos
+                  }
+                  blocked {
+                    ...ShortcutInfos
+                  }
                 }
 
                 invites {
@@ -200,8 +206,16 @@
         }
   </string>
 
+  <string name="subscription.shortcutCreated" translatable="false">
+        %1$s : shortcutCreated
+  </string>
+
   <string name="subscription.shortcutUpdated" translatable="false">
         %1$s : shortcutUpdated
+  </string>
+
+  <string name="subscription.shortcutRemoved" translatable="false">
+        %1$s : shortcutRemoved
   </string>
 
   <string name="subscription.inviteCreated" translatable="false">
