@@ -26,22 +26,21 @@ public class CloudChatDataStore implements ChatDataStore {
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
       String date) {
-    String request =
-        context.getString(R.string.messages_create, arrayToJson(userIds), type, date, data,
-            context.getString(R.string.messagefragment_info));
+    String request = context.getString(R.string.messages_create, arrayToJson(userIds), type, data,
+        context.getString(R.string.messagefragment_info));
     Timber.i("SOEF CREATE MESSAGE REQUEST " + request);
     return this.tribeApi.createMessage(
-        context.getString(R.string.messages_create, arrayToJson(userIds), type, date, data,
+        context.getString(R.string.messages_create, arrayToJson(userIds), type, data,
             context.getString(R.string.messagefragment_info)));
   }
 
-  @Override public Observable<UserRealm> userMessage(String[] userIds) {
+  @Override public Observable<UserRealm> loadMessages(String[] userIds) {
     return this.tribeApi.getUserMessage(
         context.getString(R.string.messages_details, arrayToJson(userIds),
             context.getString(R.string.messagefragment_info)));
   }
 
-  @Override public Observable<Message> createdMessages() {
+  @Override public Observable<MessageRealm> createdMessages() {
     return null;
   }
 

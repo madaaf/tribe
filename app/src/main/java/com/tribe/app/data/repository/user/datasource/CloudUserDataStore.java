@@ -159,19 +159,6 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
-  public String arrayToJson(String[] array) {
-    String json = "\"";
-    for (int i = 0; i < array.length; i++) {
-      if (i == array.length - 1) {
-        json += array[i] + "\"";
-      } else {
-        json += array[i] + "\", \"";
-      }
-    }
-    if (array.length == 0) json += "\"";
-    return json;
-  }
-
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
     String userIdsListFormated = listToJson(userIdsList);
     return this.tribeApi.getUserListInfos(

@@ -9,12 +9,13 @@ import com.tribe.app.domain.entity.User;
 
 public class Message {
 
-  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE }) public @interface Type {
+  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT }) public @interface Type {
   }
 
   public static final String MESSAGE_TEXT = "TextMessage";
   public static final String MESSAGE_EMOJI = "EmojiMessage";
   public static final String MESSAGE_IMAGE = "ImageMessage";
+  public static final String MESSAGE_EVENT = "EventMessage";
 
   private User author;
   private String id;

@@ -14,6 +14,10 @@ public interface ChatMVPView extends MVPView {
 
   void errorLoadingMessage();
 
+  void successLoadingMessageDisk(List<Message> messages);
+
+  void errorLoadingMessageDisk();
+
   void successMessageCreated(Message message, ImageView imageView);
 
   void errorMessageCreation();

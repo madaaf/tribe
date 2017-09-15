@@ -297,8 +297,8 @@ import timber.log.Timber;
       liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
-    persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(message -> {
-      chatCache.messageCreated(message);
+    persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
+      chatCache.messageCreated(messagRealm);
     }));
 
     persistentSubscriptions.add(

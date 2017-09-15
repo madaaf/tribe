@@ -50,12 +50,41 @@
 
   <string name="messages.create" translatable="false">
         mutation {
-            createMessage(usersIds:[%1$s],  message : {type: %2$s, sent_at: \"%3$s\", data: \"%4$s\"}) {
+            createMessage(usersIds:[%1$s],  message : {type: %2$s, data: \"%3$s\"}) {
                     ...MessagePayload
                   }
                 }
-       %5$s
-  </string>
+       %4$s
+    </string>
+
+  <string name="user.infos.friendships" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                friendships {
+                    ...FriendshipInfos
+                }
+            }
+        }
+
+        %1$s
+        %2$s
+    </string>
+
+
+  <string name="friendshipfragment.info" translatable="false">
+        fragment FriendshipInfos on Friendship {
+            id
+            status
+            tag
+            category
+            is_live
+            friend {
+                ...UserInfos
+            }
+        }
+    </string>
 
   <string name="user.infos.list" translatable="false">
         {
@@ -213,36 +242,44 @@
 
   <string name="messagefragment.info" translatable="false">
         fragment MessagePayload on MessageInterface {
-            __typename
+           __typename
             id
-            author {
-              id
-              display_name
-              picture
-            }
             ... on EmojiMessage {
+              author {
+                display_name
+                id
+                picture
+              }
               data
             }
             ... on TextMessage {
+              author {
+                display_name
+                id
+                picture
+              }
               data
             }
             ... on ImageMessage {
+              author {
+                display_name
+                id
+                picture
+              }
               original {
                 url
                 filesize
                 width
                 height
               }
-              resources {
-                url
-                filesize
-                width
-                height
-              }
+            }
+            ... on EventMessage {
+                  id
+                  action
+                  user{id picture display_name}
+                  created_at
             }
             created_at
-            updated_at
-            sent_at
           }
   </string>
 

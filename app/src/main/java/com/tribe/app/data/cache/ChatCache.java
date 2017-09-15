@@ -1,6 +1,9 @@
 package com.tribe.app.data.cache;
 
+import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.view.widget.chat.Message;
+import java.util.List;
 import javax.inject.Singleton;
 import rx.Observable;
 
@@ -10,7 +13,10 @@ import rx.Observable;
 
 @Singleton public interface ChatCache {
 
-  void messageCreated(Message message);
+  void messageCreated(MessageRealm message);
 
-  Observable<Message> getMessageCreated();
+  Observable<MessageRealm> getMessageCreated();
+
+  Observable<UserRealm> loadMessage(String[] userIds);
 }
+
