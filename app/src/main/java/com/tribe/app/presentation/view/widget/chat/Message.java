@@ -20,6 +20,7 @@ public class Message {
   private User author;
   private String id;
   private @Type String type;
+  private String creationDate;
 
   public Message() {
   }
@@ -50,5 +51,14 @@ public class Message {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+
+  public String getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(String creationDate) {
+    this.creationDate = creationDate;
   }
 }

@@ -51,6 +51,7 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
@@ -137,6 +138,8 @@ public class HomeActivity extends BaseActivity
   @Inject SoundManager soundManager;
 
   @Inject MissedCallManager missedCallManager;
+
+  @Inject DateUtils dateUtils;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
@@ -278,7 +281,6 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-
     if (finish) return;
 
     homeGridPresenter.loadContactsOnApp();

@@ -78,6 +78,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds;
   private static boolean isOpen = false;
+
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerView recyclerView;
   @BindView(R.id.recyclerViewGrp) RecyclerView recyclerViewGrp;
@@ -309,7 +310,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       if (!editedMessage.isEmpty()) sendContent(MESSAGE_TEXT, editedMessage, null);
       editText.setText("");
     } else {
-      Timber.e("videoCallBtn");
       sendBtn.animate()
           .scaleX(1.3f)
           .scaleY(1.3f)
@@ -351,6 +351,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
     message.setType(type);
     message.setAuthor(user);
+    message.setCreationDate(dateUtils.getUTCDateAsString());
     items.add(message);
     messageAdapter.setItems(items);
     scrollListToBottom();

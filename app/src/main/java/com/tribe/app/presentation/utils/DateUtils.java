@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.TimeZone;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Created by tiago on 17/08/2016.
@@ -39,6 +43,27 @@ public class DateUtils {
     }
 
     return dateToReturn;
+  }
+
+  public boolean isToday(String stringDate) {
+    DateTime dt = new DateTime();  // current time
+    int year = dt.getYear();
+    int month = dt.getMonthOfYear();
+    int day = dt.getDayOfMonth();
+
+    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+    DateTime dateTimeHere = parser.parseDateTime(stringDate);
+   /* return (dateTimeHere.getYear() == year
+        && dateTimeHere.getMonthOfYear() == month
+        && dateTimeHere.getDayOfMonth() == day);*/
+   return true;
+  }
+
+  public String getHourAndMinuteInLocal(String stringDate) {
+    DateTimeZone ok2 = DateTimeZone.forTimeZone(TimeZone.getDefault());
+    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser().withZone(ok2);
+    DateTime date = parser.parseDateTime(stringDate);
+    return date.getHourOfDay() + ":" + date.getMinuteOfHour();
   }
 
   public static String unifyDate(String dateInput) {

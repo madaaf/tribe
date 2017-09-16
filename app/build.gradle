@@ -248,6 +248,7 @@ dependencies {
   compile presentationDependencies.rxAppState
   compile presentationDependencies.flexbox
   compile presentationDependencies.instacapture
+  compile presentationDependencies.jodatime
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker

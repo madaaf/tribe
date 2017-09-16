@@ -22,6 +22,7 @@ public class MessageRealm extends RealmObject {
   private ImageRealm original;
   private RealmList<ImageRealm> alts;
   private String action;
+  private String created_at;
 
   public MessageRealm() {
   }
@@ -92,5 +93,12 @@ public class MessageRealm extends RealmObject {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getCreated_at() {
+    return created_at;
+  }
+  public void setCreated_at(String created_at) {
+    this.created_at = created_at;
   }
 }

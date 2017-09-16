@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -23,6 +24,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -42,6 +44,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
   protected LayoutInflater layoutInflater;
 
   @Inject Navigator navigator;
+  @Inject DateUtils dateUtils;
 
   private Context context;
   private int imageSize;
@@ -97,10 +100,27 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     }
   }
 
+  boolean isFristMessageOfToday = false;
+  String id;
+
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message m = items.get(position);
+
+    String time = m.getCreationDate();
+    vh.time.setText(dateUtils.getHourAndMinuteInLocal(time));
+
+    if (dateUtils.isToday(time) && !isFristMessageOfToday) {
+      id = m.getId();
+      isFristMessageOfToday = true;
+    }
+    if (m.getId().equals(id)) {
+      vh.daySeparatorContainer.setVisibility(View.VISIBLE);
+    } else {
+      vh.daySeparatorContainer.setVisibility(View.GONE);
+    }
+
     if (m instanceof MessageEvent) {
       Timber.e("ON BIND HOLDER " + m + " " + ((MessageEvent) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_EVENT);
@@ -111,7 +131,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
       return;
     }
     if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(m.getAuthor().getId())) {
-      vh.header.setVisibility(View.GONE);
+      //vh.header.setVisibility(View.GONE);
     } else {
       vh.header.setVisibility(View.VISIBLE);
     }
@@ -176,6 +196,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     @BindView(R.id.image) public ImageView image;
     @BindView(R.id.time) public TextViewFont time;
     @BindView(R.id.containerNotif) public LinearLayout containerNotif;
+    @BindView(R.id.daySeparatorContainer) public FrameLayout daySeparatorContainer;
 
     public MessageViewHolder(View itemView) {
       super(itemView);

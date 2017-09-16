@@ -68,6 +68,7 @@ ext {
   flexboxVersion = '0.2.5'
   instacaptureVersion = '1.2.2'
   googlePlayVisionVersion = '10.2.1'
+  jodatimeVersion = '2.9.9'
 
   //Testing
   robolectricVersion = '3.0'
@@ -141,7 +142,8 @@ ext {
                               easyRS                  : "io.github.silvaren:easyrs:${easyRSVersion}",
                               instacapture            : "com.github.tarek360:instacapture:${instacaptureVersion}",
                               guava                   : "com.google.guava:guava:${guavaVersion}",
-                              googleVision            : "com.google.android.gms:play-services-vision:${googlePlayVisionVersion}"]
+                              googleVision            : "com.google.android.gms:play-services-vision:${googlePlayVisionVersion}",
+                              jodatime                : "net.danlew:android.joda:${jodatimeVersion}"]
 
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",

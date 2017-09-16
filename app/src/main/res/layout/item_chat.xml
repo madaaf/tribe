@@ -9,6 +9,35 @@
     @android:color/white"
     >
 
+  <FrameLayout
+      android:id="@+id/daySeparatorContainer"
+      android:layout_width="match_parent"
+      android:layout_height="20dp"
+      android:background="@android:color/holo_red_dark"
+      android:visibility="gone"
+      >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:background="@color/grey.chat.grey"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/daySeparator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:text="TODAY"
+        android:textSize="11sp"
+        style="@style/Body.Two.Black40"
+        />
+
+  </FrameLayout>
+
+
   <LinearLayout
       android:id="@+id/header"
       android:layout_width="match_parent"
@@ -58,8 +87,8 @@
   <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
       android:layout_marginBottom="10dp"
+      android:orientation="horizontal"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -106,8 +135,8 @@
           android:layout_width="@dimen/avatar_size_chat"
           android:layout_height="@dimen/avatar_size_chat"
           android:layout_gravity="left|center_vertical"
-          android:layout_marginStart="15dp"
           android:layout_marginEnd="15dp"
+          android:layout_marginStart="15dp"
           android:background="@null"
           android:scaleType="centerCrop"
           app:hasHole="true"

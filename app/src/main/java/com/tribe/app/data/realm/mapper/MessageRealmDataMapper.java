@@ -58,6 +58,7 @@ import javax.inject.Singleton;
 
       message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
       message.setType(messageRealm.get__typename());
+      message.setCreationDate(messageRealm.getCreated_at());
     }
 
     return message;
@@ -83,6 +84,7 @@ import javax.inject.Singleton;
       messageRealm = new MessageRealm(message.getId());
       messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor()));
       messageRealm.set__typename(message.getType());
+      messageRealm.setCreated_at(message.getCreationDate());
 
       switch (message.getType()) {
         case Message.MESSAGE_TEXT:

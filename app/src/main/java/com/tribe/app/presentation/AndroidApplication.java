@@ -54,6 +54,7 @@ import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
 import java.util.ArrayList;
 import java.util.List;
+import net.danlew.android.joda.JodaTimeAndroid;
 import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.utils.StateManager.FACEBOOK_CONTACT_PERMISSION;
@@ -85,6 +86,7 @@ public class AndroidApplication extends Application {
     initUlsee();
     initFilters();
     initGameManager();
+    JodaTimeAndroid.init(this);
   }
 
   @Override protected void attachBaseContext(Context base) {
