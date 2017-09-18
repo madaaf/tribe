@@ -9,18 +9,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 
 /**
  * Created by tiago on 09/08/2017.
  */
 public class LiveViewFake extends FrameLayout {
 
-  @BindView(R.id.txtName) TextViewFont txtName;
+  @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
   // VARIABLES
+  private Live live;
   private Recipient recipient;
 
   // RESOURCES
@@ -71,10 +72,11 @@ public class LiveViewFake extends FrameLayout {
 
   }
 
-  public void setRecipient(Recipient recipient) {
+  public void setLive(Live live, Recipient recipient) {
     if (this.recipient != null && this.recipient.equals(recipient)) return;
     this.recipient = recipient;
-    txtName.setText(recipient.getDisplayName());
+    this.live = live;
+    viewControlsLive.setLive(this.live);
   }
 }
 

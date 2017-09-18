@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -64,11 +65,7 @@ public class LiveControlsView extends FrameLayout {
 
   @Inject StateManager stateManager;
 
-  @BindView(R.id.btnInviteLive) View btnInviteLive;
-
-  @BindView(R.id.btnNotify) View btnNotify;
-
-  @BindView(R.id.btnScreenshot) View btnScreenshot;
+  @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
 
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
@@ -103,11 +100,11 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
 
   @BindViews({
-      R.id.btnCameraOn, R.id.btnCameraOff, R.id.btnOrientationCamera, R.id.btnMicro, R.id.btnExpand
+      R.id.btnExpand, R.id.layoutGame
   }) List<View> viewToHideFilters;
 
   @BindViews({
-      R.id.btnInviteLive, R.id.btnExpand
+      R.id.btnExpand, R.id.layoutFilter
   }) List<View> viewToHideGames;
 
   @BindView(R.id.btnLeave) ImageView btnLeave;
@@ -115,8 +112,6 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.recyclerViewFilters) RecyclerView recyclerViewFilters;
 
   @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
-
-  @BindView(R.id.imgPlusAddIcon) ImageView imgPlusAddIcon;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -145,8 +140,6 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Boolean> onClickParamExpand = PublishSubject.create();
   private PublishSubject<Void> onClickCameraEnable = PublishSubject.create();
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
-  private PublishSubject<Void> onClickNotify = PublishSubject.create();
-  private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
   private PublishSubject<Filter> onClickFilter = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
@@ -180,7 +173,6 @@ public class LiveControlsView extends FrameLayout {
       timerSubscription.unsubscribe();
       timerSubscription = null;
     }
-    imgPlusAddIcon.clearAnimation();
     super.onDetachedFromWindow();
   }
 
@@ -215,11 +207,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void initUI() {
     xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
-    btnNotify.setEnabled(false);
-
-    Animation anim =
-        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate90);
-    imgPlusAddIcon.startAnimation(anim);
 
     btnFilterOff.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -348,8 +335,7 @@ public class LiveControlsView extends FrameLayout {
     if (cameraEnabled) {
       setXTranslateAnimation(btnExpand, widthExtended);
     } else {
-      setXTranslateAnimation(btnExpand,
-          layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation);
     }
   }
 
@@ -368,12 +354,11 @@ public class LiveControlsView extends FrameLayout {
 
   private void showFilters() {
     filtersMenuOn = true;
-    clearTimer();
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
-    int toY = -screenUtils.dpToPx(70);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
+    int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
         .translationX(toX)
@@ -396,12 +381,13 @@ public class LiveControlsView extends FrameLayout {
       hideView(v);
     }
 
+    if (currentGameView != null) hideView(currentGameView);
+
     showRecyclerView(recyclerViewFilters);
   }
 
   private void hideFilters() {
     filtersMenuOn = false;
-    setTimer();
 
     layoutFilter.animate()
         .translationX(0)
@@ -417,6 +403,8 @@ public class LiveControlsView extends FrameLayout {
     for (View v : viewToHideFilters) {
       showView(v);
     }
+
+    if (currentGameView != null) showView(currentGameView);
 
     hideRecyclerView(recyclerViewFilters);
   }
@@ -606,10 +594,6 @@ public class LiveControlsView extends FrameLayout {
     onLeave.onNext(null);
   }
 
-  @OnClick(R.id.btnInviteLive) void openInvite() {
-    onOpenInvite.onNext(null);
-  }
-
   @OnClick(R.id.btnOrientationCamera) void clickOrientationCamera() {
     btnOrientationCamera.animate()
         .rotation(btnOrientationCamera.getRotation() == 0 ? 180 : 0)
@@ -647,7 +631,7 @@ public class LiveControlsView extends FrameLayout {
         .subscribe(aLong -> {
           setXTranslateAnimation(btnMicro, -xTranslation);
           setXTranslateAnimation(btnExpand,
-              layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+              layoutContainerParamExtendedLive.getWidth() - xTranslation);
         }));
 
     onClickCameraEnable.onNext(null);
@@ -682,25 +666,6 @@ public class LiveControlsView extends FrameLayout {
     }
   }
 
-  @OnClick(R.id.btnNotify) void clickNotify() {
-    stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
-
-    btnNotify.setEnabled(false);
-    btnNotify.animate()
-        .alpha(0.2f)
-        .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new DecelerateInterpolator())
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            onNotifyAnimationDone.onNext(null);
-            btnNotify.animate().setListener(null);
-          }
-        })
-        .start();
-
-    onClickNotify.onNext(null);
-  }
-
   @OnClick({ R.id.btnFilterOn, R.id.btnFilterOff }) void clickFilter() {
     //onClickFilter.onNext(null);
     if (!filtersMenuOn) {
@@ -718,42 +683,16 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void dispose() {
-    btnNotify.clearAnimation();
-    btnNotify.animate().setListener(null);
+    viewStatusName.dispose();
   }
 
-  public void blockOpenInviteViewBtn(boolean block) {
-    btnInviteLive.setEnabled(!block);
-    if (block) {
-      btnInviteLive.setAlpha(0.4f);
-    } else {
-      btnInviteLive.setAlpha(1f);
-    }
-  }
-
-  public void setNotifyEnabled(boolean enable) {
-    btnNotify.setEnabled(enable);
+  public void setLive(Live live) {
+    viewStatusName.setLive(live);
   }
 
   public void setMicroEnabled(boolean enabled) {
     btnMicro.setImageResource(
         enabled ? R.drawable.picto_micro_on_live : R.drawable.picto_micro_off_live);
-  }
-
-  public void refactorNotifyButton(boolean enable) {
-    if (!enable) {
-      btnNotify.setVisibility(View.GONE);
-      btnScreenshot.setVisibility(VISIBLE);
-      return;
-    } else {
-      btnNotify.setVisibility(View.VISIBLE);
-      btnScreenshot.setVisibility(INVISIBLE);
-    }
-
-    if (enable != btnNotify.isEnabled()) {
-      btnNotify.animate().alpha(1).setDuration(DURATION_GAMES_FILTERS);
-      btnNotify.setEnabled(true);
-    }
   }
 
   public void startGameFromAnotherUser(Game game) {
@@ -806,14 +745,6 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Void> onClickCameraDisable() {
     return onClickCameraDisable;
-  }
-
-  public Observable<Void> onClickNotify() {
-    return onClickNotify;
-  }
-
-  public Observable<Void> onNotifyAnimationDone() {
-    return onNotifyAnimationDone;
   }
 
   public Observable<Filter> onClickFilter() {

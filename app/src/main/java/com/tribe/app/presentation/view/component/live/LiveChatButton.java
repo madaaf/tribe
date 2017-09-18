@@ -14,13 +14,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Live;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -29,42 +26,38 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by tiago on 01/22/17.
+ * Created by tiago on 09/18/17.
  */
-public class LiveStatusNameView extends FrameLayout {
+public class LiveChatButton extends FrameLayout {
 
   private static final int DURATION = 300;
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject User user;
-
-  @BindView(R.id.txtNameActive) TextViewFont txtNameActive;
-
-  @BindView(R.id.txtNameInactive) TextViewFont txtNameInactive;
+  @BindView(R.id.txtActive) TextViewFont txtActive;
+  @BindView(R.id.txtInactive) TextViewFont txtInactive;
 
   // VARIABLES
   private Unbinder unbinder;
-  private Live live;
 
   // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Boolean> onOpenView = PublishSubject.create();
-  private PublishSubject<Boolean> onCloseView = PublishSubject.create();
+  private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
+  private PublishSubject<Boolean> onCloseChat = PublishSubject.create();
 
-  public LiveStatusNameView(Context context) {
+  public LiveChatButton(Context context) {
     super(context);
     init();
   }
 
-  public LiveStatusNameView(Context context, AttributeSet attrs) {
+  public LiveChatButton(Context context, AttributeSet attrs) {
     super(context, attrs);
     init();
   }
 
-  public LiveStatusNameView(Context context, AttributeSet attrs, int defStyleAttr) {
+  public LiveChatButton(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
     init();
   }
@@ -83,7 +76,7 @@ public class LiveStatusNameView extends FrameLayout {
     initDependencyInjector();
     initResources();
 
-    LayoutInflater.from(getContext()).inflate(R.layout.view_live_status_name, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_live_chat_button, this);
     unbinder = ButterKnife.bind(this);
 
     setBackground(null);
@@ -108,27 +101,16 @@ public class LiveStatusNameView extends FrameLayout {
         .inject(this);
   }
 
-  @OnClick(R.id.txtNameActive) void openView() {
-    onOpenView.onNext(true);
-    showView(txtNameInactive);
-    hideView(txtNameActive);
+  @OnClick(R.id.txtActive) void openChat() {
+    onOpenChat.onNext(true);
+    showView(txtInactive);
+    hideView(txtActive);
   }
 
-  @OnClick(R.id.txtNameInactive) void closeView() {
-    onCloseView.onNext(true);
-    showView(txtNameActive);
-    hideView(txtNameInactive);
-  }
-
-  private void setAddFriendsTitle() {
-    int str = R.string.action_add_friend;
-    txtNameInactive.setText(str);
-    txtNameActive.setText(str);
-  }
-
-  private void setPeopleCountTitle(int total) {
-    String str = getContext().getString(R.string.shortcut_members_count, total);
-    txtNameInactive.setText(str);
+  @OnClick(R.id.txtInactive) void closeChat() {
+    onCloseChat.onNext(true);
+    showView(txtActive);
+    hideView(txtInactive);
   }
 
   private void showView(View v) {
@@ -161,36 +143,15 @@ public class LiveStatusNameView extends FrameLayout {
   public void dispose() {
   }
 
-  public void setLive(Live live) {
-    this.live = live;
+  ////////////////
+  // OBSERVABLE //
+  ////////////////
 
-    if (!live.hasUsers() || live.getUserIds().size() <= 1) {
-      setAddFriendsTitle();
-    } else {
-      setPeopleCountTitle(live.getUserIds().size());
-    }
-
-    if (live.onRoomUpdated() == null) return;
-    subscriptions.add(live.onRoomUpdated().subscribe(room -> {
-      if (!StringUtils.isEmpty(room.getName())) {
-        txtNameInactive.setText(room.getName());
-      } else if (room.nbUsersTotal() <= 1) {
-        setAddFriendsTitle();
-      } else {
-        setPeopleCountTitle(room.nbUsersTotal());
-      }
-    }));
+  public Observable<Boolean> onOpenChat() {
+    return onOpenChat;
   }
 
-  /////////////////
-  // OBSERVABLES //
-  /////////////////
-
-  public Observable<Boolean> onOpenView() {
-    return onOpenView;
-  }
-
-  public Observable<Boolean> onCloseView() {
-    return onCloseView;
+  public Observable<Boolean> onCloseChat() {
+    return onCloseChat;
   }
 }

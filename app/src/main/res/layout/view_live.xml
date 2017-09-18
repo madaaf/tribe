@@ -43,15 +43,4 @@
       android:layout_height="match_parent"
       />
 
-  <com.tribe.app.presentation.view.component.live.LiveStatusNameView
-      android:id="@+id/viewStatusName"
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:layout_gravity="top|center_horizontal"
-      android:layout_marginLeft="50dp"
-      android:layout_marginRight="50dp"
-      android:layout_marginTop="19.5dp"
-      android:background="@null"
-      />
-  
 </merge>

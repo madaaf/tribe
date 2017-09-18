@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -23,7 +22,6 @@ import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
-import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
@@ -86,11 +84,7 @@ public class LiveContainer extends FrameLayout {
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
-  @BindView(R.id.viewInviteLive) LiveInviteView viewInviteLive;
-
   @Inject @NumberOfCalls Preference<Integer> numberOfCalls;
-
-  @BindView(R.id.viewShadowRight) View viewShadowRight;
 
   @Nullable @BindView(R.id.nativeDialogsView) PopupContainerView nativeDialogsView;
 
@@ -209,19 +203,19 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void initSubscriptions() {
-    subscriptions.add(viewInviteLive.onScroll().subscribe(dy -> {
-      overallScrollY += dy;
-    }));
+    //subscriptions.add(viewInviteLive.onScroll().subscribe(dy -> {
+    //  overallScrollY += dy;
+    //}));
 
     subscriptions.add(viewLive.onHiddenControls().subscribe(aBoolean -> hiddenControls = aBoolean));
 
     subscriptions.add(viewLive.onShouldCloseInvites().subscribe(aVoid -> closeInviteView()));
 
-    subscriptions.add(viewInviteLive.onScrollStateChanged().subscribe(newState -> {
-      if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-        overallScrollY = 0;
-      } else if (timerLongPress != null) timerLongPress.unsubscribe();
-    }));
+    //subscriptions.add(viewInviteLive.onScrollStateChanged().subscribe(newState -> {
+    //  if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+    //    overallScrollY = 0;
+    //  } else if (timerLongPress != null) timerLongPress.unsubscribe();
+    //}));
 
     subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
       if (isEnabled()) {
@@ -253,10 +247,7 @@ public class LiveContainer extends FrameLayout {
 
     viewLive.initDropEnabledSubscription(onDropEnabled());
     viewLive.initInviteOpenSubscription(onEvent());
-    viewLive.initOnStartDragSubscription(onStartDrag());
-    viewLive.initOnEndDragSubscription(onEndDrag());
     viewLive.initOnAlphaSubscription(onAlpha());
-    viewLive.initDropSubscription(onDropped());
   }
 
   public void setStatusBarHeight(int height) {
@@ -277,7 +268,7 @@ public class LiveContainer extends FrameLayout {
 
   public void blockOpenInviteView(boolean block) {
     blockOpenInviteView = block;
-    viewLive.blockOpenInviteView(block);
+    //viewLive.blockOpenInviteView(block);
   }
 
   @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -327,7 +318,7 @@ public class LiveContainer extends FrameLayout {
                         getContext().getString(R.string.live_drop_friend_impossible,
                             LiveView.LIVE_MAX), Toast.LENGTH_SHORT).show();
                   } else {
-                    currentTileView = viewInviteLive.findViewByCoords(downX, downY);
+                    //currentTileView = viewInviteLive.findViewByCoords(downX, downY);
                     if (currentTileView != null) {
                       createTileForDrag();
                     }
@@ -443,7 +434,7 @@ public class LiveContainer extends FrameLayout {
   private void clearTouch() {
     if (currentTileView != null) {
       if (draggedTileView != null) {
-        viewInviteLive.setDragging(false);
+        //viewInviteLive.setDragging(false);
 
         if (!dropEnabled) {
           endTileDrag();
@@ -457,9 +448,9 @@ public class LiveContainer extends FrameLayout {
           enabledTimer = true;
           resetTimer();
           if (draggedTileView.getRecipient().getId().equals(Recipient.ID_CALL_ROULETTE)) {
-            viewInviteLive.diceDragued();
+            //viewInviteLive.diceDragued();
           }
-          viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
+          //viewInviteLive.removeItemAtPosition(draggedTileView.getPosition());
           prepareRemoveTileForDrag(DRAG_END_DELAY);
         }
       } else {
@@ -552,7 +543,7 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void createTileForDrag() {
-    viewInviteLive.setDragging(true);
+    //viewInviteLive.setDragging(true);
 
     Shortcut shortcut = (Shortcut) currentTileView.getRecipient();
 
@@ -644,22 +635,22 @@ public class LiveContainer extends FrameLayout {
     @Override public void onSpringUpdate(Spring spring) {
       if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {
         float value = (float) spring.getCurrentValue();
-        float appliedValue = Math.min(Math.max(value, -viewInviteLive.getWidth()), 0);
+        //float appliedValue = Math.min(Math.max(value, -viewInviteLive.getWidth()), 0);
 
-        if (Math.abs(appliedValue - spring.getEndValue()) < screenUtils.dpToPx(2.5f)) {
-          appliedValue = (float) spring.getEndValue();
+        //if (Math.abs(appliedValue - spring.getEndValue()) < screenUtils.dpToPx(2.5f)) {
+        //  appliedValue = (float) spring.getEndValue();
+        //
+        //  if (!hasNotifiedAtRest) {
+        //    if (spring.getEndValue() == 0) {
+        //      onEvent.onNext(EVENT_CLOSED);
+        //    } else {
+        //      onEvent.onNext(EVENT_OPENED);
+        //    }
+        //    hasNotifiedAtRest = true;
+        //  }
+        //}
 
-          if (!hasNotifiedAtRest) {
-            if (spring.getEndValue() == 0) {
-              onEvent.onNext(EVENT_CLOSED);
-            } else {
-              onEvent.onNext(EVENT_OPENED);
-            }
-            hasNotifiedAtRest = true;
-          }
-        }
-
-        applyRight(appliedValue);
+        //applyRight(appliedValue);
       }
     }
 
@@ -669,16 +660,16 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void applyRight(float value) {
-    onAlpha.onNext(
-        (float) SpringUtil.mapValueFromRangeToRange(value, -viewInviteLive.getWidth(), 0, 0, 1));
+    //onAlpha.onNext(
+    //    (float) SpringUtil.mapValueFromRangeToRange(value, -viewInviteLive.getWidth(), 0, 0, 1));
 
     ViewGroup.LayoutParams params = viewLive.getLayoutParams();
     params.width = (int) (screenUtils.getWidthPx() + value);
     viewLive.setLayoutParams(params);
     viewLive.requestLayout();
-    viewInviteLive.setFadeInEffet(Math.abs(value / screenUtils.dpToPx(LiveInviteView.WIDTH)));
-    viewLive.setOpenInviteValue(value);
-    viewShadowRight.setTranslationX(value);
+    //viewInviteLive.setFadeInEffet(Math.abs(value / screenUtils.dpToPx(LiveInviteView.WIDTH)));
+    //viewLive.setOpenInviteValue(value);
+    //viewShadowRight.setTranslationX(value);
   }
 
   private boolean applyOffsetRightWithTension(float offsetX) {
@@ -697,19 +688,19 @@ public class LiveContainer extends FrameLayout {
 
   public void openInviteView() {
     isOpened = true;
-    if (velocityTracker != null) {
-      springRight.setVelocity(velocityTracker.getXVelocity())
-          .setEndValue(-viewInviteLive.getWidth());
-    } else {
-      springRight.setEndValue(-viewInviteLive.getWidth());
-    }
-    resetTimer();
-
-    if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP) && (nbrCall % 2) == 0) {
-      nativeDialogsView.displayPopup(viewInviteLive,
-          PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);
-      nbrCall++;
-    }
+    //if (velocityTracker != null) {
+    //  springRight.setVelocity(velocityTracker.getXVelocity())
+    //      .setEndValue(-viewInviteLive.getWidth());
+    //} else {
+    //  springRight.setEndValue(-viewInviteLive.getWidth());
+    //}
+    //resetTimer();
+    //
+    //if (stateManager.shouldDisplay(StateManager.DRAG_FRIEND_POPUP) && (nbrCall % 2) == 0) {
+    //  nativeDialogsView.displayPopup(viewInviteLive,
+    //      PopupContainerView.DISPLAY_DRAGING_FRIEND_POPUP, null);
+    //  nbrCall++;
+    //}
   }
 
   private void closeInviteView() {

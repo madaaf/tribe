@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
-import android.support.annotation.IntDef;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -43,13 +42,7 @@ public class LiveRoomView extends FrameLayout {
 
   public static final int CORNER_RADIUS = 5;
 
-  @IntDef({ GRID, LINEAR }) public @interface TribeRoomViewType {
-  }
-
-  public static final int GRID = 0;
-  public static final int LINEAR = 1;
   private static final int DURATION = 300;
-  private static final int DEFAULT_TYPE = GRID;
 
   @Inject ScreenUtils screenUtils;
 
@@ -57,7 +50,6 @@ public class LiveRoomView extends FrameLayout {
 
   // VARIABLES
   private Unbinder unbinder;
-  private @TribeRoomViewType int type;
   private int onDroppedBarHeight = 0;
   private boolean landscapeMode = false;
   private int witdhScreen;
@@ -87,7 +79,6 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void init() {
-    type = DEFAULT_TYPE;
     initDependencyInjector();
     heightOndropBar = (int) getResources().getDimension(R.dimen.live_room_view_dropped_bar_height);
     onDroppedBarHeight = screenUtils.dpToPx(heightOndropBar);
@@ -197,9 +188,9 @@ public class LiveRoomView extends FrameLayout {
     setViewsOrder();
     setConfigurationScreen();
 
-    if (source != null
-        && source.equals(SOURCE_CALL_ROULETTE)
-        && flexboxLayout.getChildCount() < 2) {
+    if (source != null &&
+        source.equals(SOURCE_CALL_ROULETTE) &&
+        flexboxLayout.getChildCount() < 2) {
       diceView.setVisibility(VISIBLE);
       diceView.startDiceAnimation();
     }
@@ -222,35 +213,14 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
-  public void addView(LiveRowView liveRowView, boolean guestDraguedByMy) {
+  public void addView(LiveRowView liveRowView) {
     int viewIndex = flexboxLayout.getChildCount();
     if ((source != null && source.equals(SOURCE_CALL_ROULETTE)) || isCallRouletteMode) {
       diceView.setNextAnimation();
     }
     setScreenSize(0);
-    addViewInContainer(viewIndex, liveRowView, guestDraguedByMy);
+    addViewInContainer(viewIndex, liveRowView);
     setViewsOrder();
-    setConfigurationScreen();
-  }
-
-  public void setType(@TribeRoomViewType int type) {
-    if (this.type == type) return;
-    if (type == LINEAR) {
-      diceView.animate().alpha(0f).setDuration(300).setListener(null).start();
-    } else {
-      diceView.animate().alpha(1f).setDuration(300).setListener(null).start();
-    }
-    this.type = type;
-    setScreenSize(0);
-    setConfigurationScreen();
-  }
-
-  public @TribeRoomViewType int getType() {
-    return type;
-  }
-
-  public void setOpenInviteValue(float valueOpenInvite) {
-    setScreenSize((int) valueOpenInvite);
     setConfigurationScreen();
   }
 
@@ -290,17 +260,12 @@ public class LiveRoomView extends FrameLayout {
 
   private void setConfigurationScreen() {
     if (!landscapeMode) {
-      if (type == GRID) {
-        setSizeGridViewsInPortaitMode();
+      setSizeGridViewsInPortaitMode();
 
-        if (flexboxLayout.getChildCount() < 3) {
-          flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
-        } else {
-          flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
-        }
-      } else {
-        setSizeLinearViews();
+      if (flexboxLayout.getChildCount() < 3) {
         flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_COLUMN);
+      } else {
+        flexboxLayout.setFlexDirection(FlexboxLayout.FLEX_DIRECTION_ROW);
       }
     } else {
       setSizeGirdViewsInLandscapeMode();
@@ -313,10 +278,8 @@ public class LiveRoomView extends FrameLayout {
     }
   }
 
-  private void addViewInContainer(int viewIndex, LiveRowView liveRowView,
-      boolean guestDraguedByMe) {
+  private void addViewInContainer(int viewIndex, LiveRowView liveRowView) {
 
-    flexboxLayout.setBackgroundColor(liveRowView.getColor());
     FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(1, 1);
     lp.flexGrow = 1;
 
@@ -333,20 +296,8 @@ public class LiveRoomView extends FrameLayout {
         flexboxLayout.addView(viewLocalLive);
         break;
       default:
-        if (guestDraguedByMe) {
-          lp.flexGrow = 1;
-          lp.maxHeight = 0;
-          flexboxLayout.addView(liveRowView);
-          ResizeAnimation resizeAnimation =
-              new ResizeAnimation(lp, liveRowView, onDroppedBarHeight, 0);
-          resizeAnimation.setDuration(DURATION);
-          resizeAnimation.setInterpolator(new OvershootInterpolator(0.4f));
-          liveRowView.startAnimation(resizeAnimation);
-          liveRowView.setLayoutParams(lp);
-        } else {
-          liveRowView.setLayoutParams(lp);
-          flexboxLayout.addView(liveRowView);
-        }
+        liveRowView.setLayoutParams(lp);
+        flexboxLayout.addView(liveRowView);
     }
 
     setAvatarPicto(liveRowView, viewIndex);

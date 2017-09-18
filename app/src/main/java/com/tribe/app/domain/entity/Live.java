@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 23/02/2017.
@@ -35,6 +38,9 @@ public class Live implements Serializable {
   private @LiveActivity.Source String source;
   private boolean isDiceDragedInRoom = false;
 
+  private transient CompositeSubscription subscriptions;
+  private transient PublishSubject<Room> onRoomUpdated;
+
   private Live(Builder builder) {
     this.room = builder.room;
     this.fromRoom = room != null;
@@ -49,12 +55,28 @@ public class Live implements Serializable {
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
   }
 
+  public void init() {
+    subscriptions = new CompositeSubscription();
+    onRoomUpdated = PublishSubject.create();
+  }
+
+  public void dispose() {
+    subscriptions.clear();
+    room.dispose();
+  }
+
   public Room getRoom() {
     return room;
   }
 
   public void setRoom(Room room) {
     this.room = room;
+
+    if (this.room.getRoomCoordinates() != null) {
+      onRoomUpdated.onNext(room);
+      this.room.onRoomUpdated().subscribe(onRoomUpdated);
+    }
+
     setUsers(room.getLiveUsers());
   }
 
@@ -259,5 +281,13 @@ public class Live implements Serializable {
     public Live build() {
       return new Live(this);
     }
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Room> onRoomUpdated() {
+    return onRoomUpdated;
   }
 }

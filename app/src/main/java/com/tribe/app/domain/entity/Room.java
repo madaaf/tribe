@@ -39,6 +39,7 @@ public class Room implements Serializable {
   private transient PublishSubject<User> onRemovedInvitedUser = PublishSubject.create();
   private transient PublishSubject<User> onAddedLiveUser = PublishSubject.create();
   private transient PublishSubject<User> onRemovedLiveUser = PublishSubject.create();
+  private transient PublishSubject<Room> onRoomUpdated = PublishSubject.create();
 
   public Room() {
     init();
@@ -179,6 +180,10 @@ public class Room implements Serializable {
   }
 
   public synchronized void update(User currentUser, Room room, boolean shouldOverwrite) {
+    this.name = room.name;
+    this.link = room.link;
+    this.accept_random = room.accept_random;
+
     List<User> newLiveUsers = room.getLiveUsers();
     //if (newLiveUsers == null || newLiveUsers.size() != liveUsersMap.size()) {
     //  computeUsersChanges(currentUser, liveUsersMap, newLiveUsers);
@@ -198,6 +203,8 @@ public class Room implements Serializable {
       invited_users.clear();
       invited_users.addAll(newInvitedUsers);
     }
+
+    onRoomUpdated.onNext(this);
   }
 
   private void computeUsersChanges(User currentUser, ObservableRxHashMap<String, User> map,
@@ -263,5 +270,30 @@ public class Room implements Serializable {
     }
 
     return memberIds;
+  }
+
+  public int nbUsersLive() {
+    if (live_users == null) return 0;
+    return live_users.size();
+  }
+
+  public int nbUsersInvited() {
+    if (invited_users == null) return 0;
+    return invited_users.size();
+  }
+
+  public int nbUsersTotal() {
+    int total = 0;
+    if (invited_users != null) total += invited_users.size();
+    if (live_users != null) total += live_users.size();
+    return total;
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Room> onRoomUpdated() {
+    return onRoomUpdated;
   }
 }

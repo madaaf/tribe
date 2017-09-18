@@ -36,17 +36,20 @@ import rx.Observable;
   @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
     String date = dateUtils.getUTCDateAsString();
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.createMessage(userIds, type, data, date).doOnError(
-        Throwable::printStackTrace).map(this.messageRealmDataMapper::transform);
+    return userDataStore.createMessage(userIds, type, data, date)
+        .doOnError(Throwable::printStackTrace)
+        .map(this.messageRealmDataMapper::transform);
   }
 
   @Override public Observable<List<Message>> loadMessages(String[] userIds) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.loadMessages(userIds).doOnError(Throwable::printStackTrace).map(userRealm -> {
-      List<Message> messageList = new ArrayList<Message>();
-      messageList = this.userRealmDataMapper.transform(userRealm).getMessages();
-      return messageList;
-    });
+    return userDataStore.loadMessages(userIds)
+        .doOnError(Throwable::printStackTrace)
+        .map(userRealm -> {
+          List<Message> messageList = new ArrayList<Message>();
+          messageList = this.userRealmDataMapper.transform(userRealm).getMessages();
+          return messageList;
+        });
   }
 
   @Override public Observable<Message> createdMessages() {

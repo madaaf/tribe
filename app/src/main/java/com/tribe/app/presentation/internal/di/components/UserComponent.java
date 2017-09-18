@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
+import com.tribe.app.presentation.view.component.live.LiveChatButton;
 import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
@@ -31,8 +32,6 @@ import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveShareOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
-import com.tribe.app.presentation.view.component.live.LiveWaitingAvatarView;
-import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
@@ -159,13 +158,9 @@ import dagger.Component;
 
   void inject(AvatarsSuperposedLayout avatarsSuperposedLayout);
 
-  void inject(LiveWaitingView liveWaitingView);
-
   void inject(ChasingDotsView threeDotsView);
 
   void inject(BuzzView buzzView);
-
-  void inject(LiveWaitingAvatarView avatarView);
 
   void inject(LiveControlsView liveControlsView);
 
@@ -186,4 +181,6 @@ import dagger.Component;
   void inject(SettingsManageShortcutsView settingsManageFriendshipsView);
 
   void inject(UserInfosNotificationView userInfosNotificationView);
+
+  void inject(LiveChatButton liveChatButton);
 }

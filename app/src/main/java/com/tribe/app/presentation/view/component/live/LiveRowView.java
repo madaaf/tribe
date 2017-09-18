@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +13,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
@@ -41,8 +40,6 @@ public class LiveRowView extends FrameLayout {
 
   @Inject User user;
 
-  @BindView(R.id.viewWaiting) LiveWaitingView viewWaiting;
-
   @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
 
   @BindView(R.id.layoutStream) ViewGroup layoutStream;
@@ -53,7 +50,6 @@ public class LiveRowView extends FrameLayout {
   private Unbinder unbinder;
   private RemotePeerView remotePeerView;
   private TribeGuest guest;
-  private int color;
   private boolean isWaiting = false;
 
   // OBSERVABLES
@@ -86,13 +82,8 @@ public class LiveRowView extends FrameLayout {
         .inject(this);
 
     if (guest != null) {
-      viewWaiting.setGuest(guest);
       viewPeerOverlay.setGuest(guest);
     }
-
-    viewWaiting.setColor(color);
-
-    if (remotePeerView != null) viewWaiting.setVisibility(View.GONE);
   }
 
   public void guestAppear() {
@@ -100,73 +91,41 @@ public class LiveRowView extends FrameLayout {
   }
 
   public void setAddBtn(TribeGuest guest) {
-    // TODO REPLACE WITH SHORTCUTS
-    //for (Friendship friendship : user.getFriendships()) {
-    //  User friend = friendship.getFriend();
-    //  if (guest.getId().endsWith(friend.getId())) {
-    //    if (friendship.getStatus().equals(FriendshipRealm.HIDDEN) ||
-    //        friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
-    //      guest.setFriend(false);
-    //    } else {
-    //      guest.setFriend(true);
-    //    }
-    //    break;
-    //  } else {
-    //    guest.setFriend(false);
-    //  }
-    //}
-
-    if (guest.isFriend() || guest.isExternal()) {
-      //btnAddFriend.setVisibility(GONE);
-    } else {
-      //animateAddBtn();
+    for (Shortcut shortcut : user.getShortcutList()) {
+      User friend = shortcut.getSingleFriend();
+      if (guest.getId().endsWith(friend.getId())) {
+        if (shortcut.getStatus().equals(ShortcutRealm.HIDDEN) ||
+            shortcut.getStatus().equals(ShortcutRealm.BLOCKED)) {
+          guest.setFriend(false);
+        } else {
+          guest.setFriend(true);
+        }
+        break;
+      } else {
+        guest.setFriend(false);
+      }
     }
   }
 
   public void dispose() {
-    viewWaiting.dispose();
     subscriptions.clear();
-  }
-
-  public void setColor(int color) {
-    if (color == Color.BLACK || color == 0) color = PaletteGrid.getRandomColorExcluding(color);
-    this.color = color;
-    viewWaiting.setColor(color);
-  }
-
-  public int getColor() {
-    return color;
   }
 
   public void setGuest(TribeGuest guest) {
     this.guest = guest;
-    viewWaiting.setGuest(guest);
     viewPeerOverlay.setGuest(guest);
-  }
-
-  public void setRoomType(@LiveRoomView.TribeRoomViewType int type) {
-    viewWaiting.setRoomType(type);
   }
 
   public void setPeerView(PeerView peerView) {
     if (peerView == null) {
       isWaiting = false;
-      viewWaiting.incomingPeer();
     } else {
       remotePeerView = (RemotePeerView) peerView;
 
       subscriptions.add(this.remotePeerView.onNotificationRemoteJoined()
           .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(s -> UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) {
-              viewWaiting.stopPulse();
-              viewWaiting.setVisibility(View.GONE);
-            }
-
-            @Override public void onAnimationStart(Animator animation) {
-              layoutStream.setVisibility(View.VISIBLE);
-            }
-          })));
+          .doOnNext(peerView1 -> layoutStream.setVisibility(View.VISIBLE))
+          .subscribe(s -> UIUtils.showReveal(layoutStream, true, null)));
 
       subscriptions.add(this.remotePeerView.onMediaConfiguration()
           .onBackpressureDrop()
@@ -209,14 +168,6 @@ public class LiveRowView extends FrameLayout {
     return isWaiting;
   }
 
-  public boolean isInvite() {
-    return guest.isInvite();
-  }
-
-  public void prepareForDrop() {
-    viewWaiting.prepareForDrop();
-  }
-
   public void setAlphaOnBackground(float alphaOnBackground) {
     backgroundView.setAlpha(alphaOnBackground);
     backgroundView.setVisibility(VISIBLE);
@@ -224,25 +175,6 @@ public class LiveRowView extends FrameLayout {
     if (alphaOnBackground == 1) {
       backgroundView.setVisibility(GONE);
     }
-  }
-
-  public void showGuest(boolean hasCountDown) {
-    viewWaiting.showGuest();
-    if (hasCountDown) viewWaiting.startCountdown();
-    isWaiting = true;
-  }
-
-  public void startPulse() {
-    viewWaiting.startPulse();
-    isWaiting = true;
-  }
-
-  public void buzz() {
-    viewWaiting.buzz();
-  }
-
-  public AvatarView avatar() {
-    return viewWaiting.avatar();
   }
 
   @OnClick(R.id.layoutStream) void onClickStream(View v) {
@@ -255,18 +187,6 @@ public class LiveRowView extends FrameLayout {
   /////////////////
   // OBSERVABLES //
   /////////////////
-
-  public Observable<Void> onShouldJoinRoom() {
-    return viewWaiting.onShouldJoinRoom().distinct().doOnNext(aVoid -> viewWaiting.startPulse());
-  }
-
-  public Observable<Void> onNotifyStepDone() {
-    return viewWaiting.onNotifyStepDone().distinct();
-  }
-
-  public Observable<TribeGuest> onShouldRemoveGuest() {
-    return viewWaiting.onShouldRemoveGuest();
-  }
 
   public Observable<Void> onRollTheDice() {
     return onRollTheDice;

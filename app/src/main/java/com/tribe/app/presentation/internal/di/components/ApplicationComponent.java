@@ -88,7 +88,6 @@ import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.LiveViewFake;
-import com.tribe.app.presentation.view.component.live.LiveWaitingView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -183,8 +182,6 @@ public interface ApplicationComponent {
   void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
 
   void inject(CallRouletteAdapterDelegate callRouletteAdapterDelegate);
-
-  void inject(LiveWaitingView liveWaitingView);
 
   void inject(LiveRowView liveRowView);
 

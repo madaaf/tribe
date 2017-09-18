@@ -294,7 +294,7 @@
   </string>
 
   <string name="subscription.userUpdated" translatable="false">
-        %1$s : u ( id : \"%2$s\" ) {
+        %1$s : userUpdated ( id : \"%2$s\" ) {
             ...UserInfos
         }
   </string>

@@ -35,33 +35,6 @@
       />
 
   <ImageView
-      android:id="@+id/btnNotify"
-      android:layout_width="@dimen/nav_icon_size"
-      android:layout_height="@dimen/nav_icon_size"
-      android:layout_gravity="left|top"
-      android:layout_marginStart="10dp"
-      android:layout_marginTop="5dp"
-      android:background="@drawable/selectable_button_oval_light"
-      android:clickable="true"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_notify_buzz"
-      />
-
-  <ImageView
-      android:id="@+id/btnScreenshot"
-      android:layout_width="@dimen/nav_icon_size"
-      android:layout_height="@dimen/nav_icon_size"
-      android:layout_gravity="left|top"
-      android:layout_marginStart="10dp"
-      android:layout_marginTop="5dp"
-      android:background="@drawable/selectable_button_oval_light"
-      android:clickable="true"
-      android:scaleType="centerInside"
-      android:src="@drawable/picto_screenshot_bck"
-      android:visibility="invisible"
-      />
-
-  <ImageView
       android:id="@+id/btnLeave"
       android:layout_width="@dimen/nav_icon_size"
       android:layout_height="@dimen/nav_icon_size"
@@ -72,6 +45,26 @@
       android:clickable="true"
       android:scaleType="centerInside"
       android:src="@drawable/picto_leave_live"
+      />
+
+  <com.tribe.app.presentation.view.component.live.LiveChatButton
+      android:id="@+id/btnChat"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start|top"
+      android:layout_marginStart="10dp"
+      android:layout_marginTop="10dp"
+      />
+
+  <com.tribe.app.presentation.view.component.live.LiveStatusNameView
+      android:id="@+id/viewStatusName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|center_horizontal"
+      android:layout_marginLeft="50dp"
+      android:layout_marginRight="50dp"
+      android:layout_marginTop="10dp"
+      android:background="@null"
       />
 
   <LinearLayout
@@ -141,58 +134,8 @@
         android:scaleType="centerInside"
         android:src="@drawable/picto_micro_on_live"
         />
-
-    <LinearLayout
-        android:id="@+id/layoutFilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        >
-
-      <FrameLayout
-          android:layout_width="@dimen/nav_icon_size"
-          android:layout_height="@dimen/nav_icon_size"
-          >
-        <ImageView
-            android:id="@+id/btnFilterOn"
-            android:layout_width="@dimen/nav_icon_size"
-            android:layout_height="@dimen/nav_icon_size"
-            android:layout_gravity="center"
-            android:alpha="0"
-            android:background="@drawable/selectable_button_oval_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_filter_live_close"
-            android:visibility="visible"
-            />
-
-        <ImageView
-            android:id="@+id/btnFilterOff"
-            android:layout_width="@dimen/nav_icon_size"
-            android:layout_height="@dimen/nav_icon_size"
-            android:layout_gravity="center"
-            android:background="@drawable/selectable_button_oval_light"
-            android:clickable="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/picto_filter_live"
-            android:visibility="visible"
-            />
-      </FrameLayout>
-
-      <ImageView
-          android:id="@+id/imgTriangleCloseFilters"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginRight="2dp"
-          android:layout_marginTop="-10dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_triangle_close"
-          android:visibility="gone"
-          />
-    </LinearLayout>
   </LinearLayout>
+
   <FrameLayout
       android:id="@+id/layoutContainerParamLive"
       android:layout_width="match_parent"
@@ -253,38 +196,58 @@
           />
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/btnInviteLive"
+    <LinearLayout
+        android:id="@+id/layoutFilter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/selectable_button_oval_light"
-        android:clickable="true"
-        android:scaleType="centerInside"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
         >
 
-      <ImageView
-          android:id="@+id/imgAddIcon"
+      <FrameLayout
           android:layout_width="@dimen/nav_icon_size"
           android:layout_height="@dimen/nav_icon_size"
-          android:layout_marginEnd="-22dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_addbtn"
-          />
+          >
+
+        <ImageView
+            android:id="@+id/btnFilterOn"
+            android:layout_width="@dimen/nav_icon_size"
+            android:layout_height="@dimen/nav_icon_size"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:background="@drawable/selectable_button_oval_light"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_filter_live_close"
+            android:visibility="visible"
+            />
+
+        <ImageView
+            android:id="@+id/btnFilterOff"
+            android:layout_width="@dimen/nav_icon_size"
+            android:layout_height="@dimen/nav_icon_size"
+            android:layout_gravity="center"
+            android:background="@drawable/selectable_button_oval_light"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_filter_live"
+            android:visibility="visible"
+            />
+      </FrameLayout>
 
       <ImageView
-          android:id="@+id/imgPlusAddIcon"
-          android:layout_width="@dimen/nav_icon_little_size"
-          android:layout_height="@dimen/nav_icon_little_size"
-          android:layout_marginTop="5dp"
-          android:layout_toEndOf="@id/imgAddIcon"
+          android:id="@+id/imgTriangleCloseFilters"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="2dp"
+          android:layout_marginTop="-10dp"
           android:scaleType="centerInside"
-          android:src="@drawable/picto_plus_addbtn"
+          android:src="@drawable/picto_triangle_close"
+          android:visibility="gone"
           />
-
-    </RelativeLayout>
-
+    </LinearLayout>
 
   </FrameLayout>
 </merge>
