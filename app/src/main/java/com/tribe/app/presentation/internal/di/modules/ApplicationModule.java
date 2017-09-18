@@ -346,8 +346,8 @@ import timber.log.Timber;
 
   // DATES
   @Provides @Singleton DateUtils provideDateUtils(
-      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
-    return new DateUtils(utcSimpleDate);
+      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, Context context) {
+    return new DateUtils(utcSimpleDate, context);
   }
 
   @Provides @Singleton @Named("utcSimpleDate") SimpleDateFormat provideUTCSimpleDateFormat() {

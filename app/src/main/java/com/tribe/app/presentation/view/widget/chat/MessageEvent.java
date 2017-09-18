@@ -49,6 +49,7 @@ public class MessageEvent extends Message {
 
   public void setUser(User user) {
     this.user = user;
+    setAuthor(user);
   }
 
   public void setAction(@ActionType String action) {

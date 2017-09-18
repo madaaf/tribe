@@ -32,14 +32,17 @@ import javax.inject.Singleton;
   public Message transform(MessageRealm messageRealm) {
     Message message = null;
     if (messageRealm != null) {
+
       switch (messageRealm.get__typename()) {
         case Message.MESSAGE_TEXT:
           message = new MessageText(messageRealm.getId());
           ((MessageText) message).setMessage(messageRealm.getData());
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
           break;
         case Message.MESSAGE_EMOJI:
           message = new MessageEmoji(messageRealm.getId());
           ((MessageEmoji) message).setEmoji(messageRealm.getData());
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
           break;
         case Message.MESSAGE_IMAGE:
           message = new MessageImage(messageRealm.getId());
@@ -48,6 +51,7 @@ import javax.inject.Singleton;
           ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
           ((MessageImage) message).setRessources(
               userRealmDataMapper.transformOriginalRealmList(ressources));
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
           break;
         case Message.MESSAGE_EVENT:
           message = new MessageEvent(messageRealm.getId());
@@ -56,7 +60,6 @@ import javax.inject.Singleton;
           break;
       }
 
-      message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
       message.setType(messageRealm.get__typename());
       message.setCreationDate(messageRealm.getCreated_at());
     }

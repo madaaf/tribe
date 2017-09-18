@@ -12,15 +12,14 @@
   <FrameLayout
       android:id="@+id/daySeparatorContainer"
       android:layout_width="match_parent"
-      android:layout_height="20dp"
-      android:background="@android:color/holo_red_dark"
-      android:visibility="gone"
+      android:layout_height="wrap_content"
+      android:visibility="visible"
       >
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center"
         android:background="@color/grey.chat.grey"
         />
 
@@ -29,20 +28,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="10dp"
+        android:background="@android:color/white"
+        android:padding="10dp"
         android:text="TODAY"
-        android:textSize="11sp"
+        android:textAllCaps="true"
+        android:textSize="13sp"
         style="@style/Body.Two.Black40"
         />
 
   </FrameLayout>
 
 
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/time2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:text="1m ago"
+      android:textSize="11sp"
+      android:visibility="gone"
+      style="@style/Content.Three.Black40"
+      />
+
   <LinearLayout
       android:id="@+id/header"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="20dp"
+      android:layout_marginBottom="10dp"
+      android:layout_marginTop="10dp"
       >
 
     <com.tribe.app.presentation.view.widget.avatar.AvatarView
@@ -78,7 +91,7 @@
         android:layout_marginStart="10dp"
         android:text="1m ago"
         android:textSize="11sp"
-        style="@style/Body.Two.Black40"
+        style="@style/Content.Three.Black40"
         />
 
   </LinearLayout>

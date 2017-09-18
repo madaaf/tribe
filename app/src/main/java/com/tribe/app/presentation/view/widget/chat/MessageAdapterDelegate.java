@@ -33,7 +33,6 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -48,7 +47,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   private Context context;
   private int imageSize;
-  private Message stamp = null;
+  //private Message stamp = null;
 
   private PublishSubject<List<Object>> onPictureTaken = PublishSubject.create();
 
@@ -100,56 +99,57 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     }
   }
 
-  boolean isFristMessageOfToday = false;
-  String id;
-
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
+
     MessageViewHolder vh = (MessageViewHolder) holder;
     Message m = items.get(position);
 
     String time = m.getCreationDate();
     vh.time.setText(dateUtils.getHourAndMinuteInLocal(time));
+    vh.daySeparator.setText(dateUtils.getFormattedDayId(time));
 
-    if (dateUtils.isToday(time) && !isFristMessageOfToday) {
-      id = m.getId();
-      isFristMessageOfToday = true;
-    }
-    if (m.getId().equals(id)) {
-      vh.daySeparatorContainer.setVisibility(View.VISIBLE);
+    if (position > 0) {
+      Message previous = items.get(position - 1);
+
+      if (dateUtils.getDayId(previous.getCreationDate())
+          .equals(dateUtils.getDayId(m.getCreationDate()))) {
+        vh.daySeparatorContainer.setVisibility(View.GONE);
+      } else {
+        vh.daySeparatorContainer.setVisibility(View.VISIBLE);
+      }
+
+      if (previous.getAuthor().getId().equals(m.getAuthor().getId())) {
+        if (dateUtils.getDiffDate(previous.getCreationDate(), m.getCreationDate()) > 2) {
+          vh.time2.setText(dateUtils.getHourAndMinuteInLocal(time));
+          vh.time2.setVisibility(View.VISIBLE);
+        }
+        vh.header.setVisibility(View.GONE);
+      } else {
+        vh.header.setVisibility(View.VISIBLE);
+      }
     } else {
-      vh.daySeparatorContainer.setVisibility(View.GONE);
+      vh.daySeparatorContainer.setVisibility(View.VISIBLE);
     }
+
+    //  stamp = m;
+    vh.name.setText(m.getAuthor().getDisplayName());
+    vh.avatarView.load(m.getAuthor().getProfilePicture());
 
     if (m instanceof MessageEvent) {
-      Timber.e("ON BIND HOLDER " + m + " " + ((MessageEvent) m).toString());
+      //  Timber.e("ON BIND HOLDER " + m + " " + ((MessageEvent) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_EVENT);
-      vh.header.setVisibility(View.GONE);
       vh.notifContent.setText(
           ((MessageEvent) m).getContent(((MessageEvent) m).getUser().getDisplayName()));
       vh.avatarNotif.load(((MessageEvent) m).getUser().getProfilePicture());
       return;
-    }
-    if (position != 0 && stamp != null && stamp.getAuthor().getId().equals(m.getAuthor().getId())) {
-      //vh.header.setVisibility(View.GONE);
-    } else {
-      vh.header.setVisibility(View.VISIBLE);
-    }
-    stamp = m;
-    vh.name.setText(m.getAuthor().getDisplayName());
-    vh.avatarView.load(m.getAuthor().getProfilePicture());
-
-    if (m instanceof MessageText) {
-      Timber.e("ON BIND HOLDER " + m + " " + ((MessageText) m).toString());
+    } else if (m instanceof MessageText) {
       setVisibilityItem(vh, Message.MESSAGE_TEXT);
       vh.message.setText(((MessageText) m).getMessage());
     } else if (m instanceof MessageEmoji) {
-      Timber.e("ON BIND HOLDER " + m + " " + ((MessageEmoji) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_EMOJI);
-
       vh.emoji.setText(((MessageEmoji) m).getEmoji());
     } else if (m instanceof MessageImage) {
-      Timber.e("ON BIND HOLDER " + m + " " + ((MessageImage) m).toString());
       setVisibilityItem(vh, Message.MESSAGE_IMAGE);
 
       Image o = ((MessageImage) m).getOriginal();
@@ -170,6 +170,7 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
         list.add(uri);
         list.add(vh.image);
         onPictureTaken.onNext(list);
+        ((MessageImage) m).setUri(null);
       } else {
         vh.image.setAlpha(1f);
       }
@@ -195,8 +196,10 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
     @BindView(R.id.header) public LinearLayout header;
     @BindView(R.id.image) public ImageView image;
     @BindView(R.id.time) public TextViewFont time;
+    @BindView(R.id.time2) public TextViewFont time2;
     @BindView(R.id.containerNotif) public LinearLayout containerNotif;
     @BindView(R.id.daySeparatorContainer) public FrameLayout daySeparatorContainer;
+    @BindView(R.id.daySeparator) public TextViewFont daySeparator;
 
     public MessageViewHolder(View itemView) {
       super(itemView);
