@@ -554,13 +554,13 @@ public class LiveActivity extends BaseActivity
   private void initSubscriptions() {
     subscriptions.add(Observable.combineLatest(onUpdateSingleShortcutList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
-        viewLive.onInvitesChanged().startWith(new HashMap<>()),
-        (singleShortcutList, liveMap, invitesMap) -> {
+        //viewLive.onInvitesChanged().startWith(new HashMap<>()),
+        (singleShortcutList, liveMap) -> {
           List<String> idsToFilter = new ArrayList<>();
           idsToFilter.addAll(liveMap.keySet());
-          idsToFilter.addAll(invitesMap.keySet());
+          //idsToFilter.addAll(invitesMap.keySet());
 
-          usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
+          //usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
           Collections.sort(singleShortcutList,
               (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
 

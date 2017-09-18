@@ -109,13 +109,13 @@ public class LiveStatusNameView extends FrameLayout {
   }
 
   @OnClick(R.id.txtNameActive) void openView() {
-    onOpenView.onNext(true);
+    onCloseView.onNext(true);
     showView(txtNameInactive);
     hideView(txtNameActive);
   }
 
   @OnClick(R.id.txtNameInactive) void closeView() {
-    onCloseView.onNext(true);
+    onOpenView.onNext(true);
     showView(txtNameActive);
     hideView(txtNameInactive);
   }

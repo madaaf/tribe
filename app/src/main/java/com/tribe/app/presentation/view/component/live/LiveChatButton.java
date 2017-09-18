@@ -102,13 +102,13 @@ public class LiveChatButton extends FrameLayout {
   }
 
   @OnClick(R.id.txtActive) void openChat() {
-    onOpenChat.onNext(true);
+    onCloseChat.onNext(true);
     showView(txtInactive);
     hideView(txtActive);
   }
 
   @OnClick(R.id.txtInactive) void closeChat() {
-    onCloseChat.onNext(true);
+    onOpenChat.onNext(true);
     showView(txtActive);
     hideView(txtInactive);
   }

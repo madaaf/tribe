@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -65,8 +63,6 @@ public class LiveControlsView extends FrameLayout {
 
   @Inject StateManager stateManager;
 
-  @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
-
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
   @BindView(R.id.btnCameraOff) View btnCameraOff;
@@ -99,6 +95,10 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
 
+  @BindView(R.id.btnChat) LiveChatButton btnChat;
+
+  @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
+
   @BindViews({
       R.id.btnExpand, R.id.layoutGame
   }) List<View> viewToHideFilters;
@@ -106,6 +106,18 @@ public class LiveControlsView extends FrameLayout {
   @BindViews({
       R.id.btnExpand, R.id.layoutFilter
   }) List<View> viewToHideGames;
+
+  @BindViews({
+      R.id.viewStatusName
+  }) List<View> viewToHideTopChat;
+
+  @BindViews({
+      R.id.btnChat
+  }) List<View> viewToHideTopInvites;
+
+  @BindViews({
+      R.id.btnExpand, R.id.layoutFilter, R.id.layoutGame
+  }) List<View> viewToHideBottom;
 
   @BindView(R.id.btnLeave) ImageView btnLeave;
 
@@ -116,7 +128,7 @@ public class LiveControlsView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false,
-      filtersMenuOn = false, gamesMenuOn = false;
+      filtersMenuOn = false, gamesMenuOn = false, chatMenuOn = false, invitesMenuOn = false;
   private float xTranslation;
   private GameManager gameManager;
   private FilterManager filterManager;
@@ -134,7 +146,6 @@ public class LiveControlsView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Void> onClickCameraOrientation = PublishSubject.create();
   private PublishSubject<Boolean> onClickMicro = PublishSubject.create();
   private PublishSubject<Boolean> onClickParamExpand = PublishSubject.create();
@@ -378,10 +389,10 @@ public class LiveControlsView extends FrameLayout {
         .start();
 
     for (View v : viewToHideFilters) {
-      hideView(v);
+      hideView(v, false);
     }
 
-    if (currentGameView != null) hideView(currentGameView);
+    if (currentGameView != null) hideView(currentGameView, false);
 
     showRecyclerView(recyclerViewFilters);
   }
@@ -434,7 +445,7 @@ public class LiveControlsView extends FrameLayout {
         .start();
 
     for (View v : viewToHideGames) {
-      hideView(v);
+      hideView(v, false);
     }
 
     showRecyclerView(recyclerViewGames);
@@ -492,7 +503,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void hideGameControls() {
-    hideView(layoutGame);
+    hideView(layoutGame, false);
   }
 
   private void showGameControls() {
@@ -502,9 +513,9 @@ public class LiveControlsView extends FrameLayout {
     showView(layoutGame);
   }
 
-  private void hideView(View view) {
+  private void hideView(View view, boolean top) {
     view.animate()
-        .translationY(screenUtils.getHeightPx() >> 1)
+        .translationY(top ? -screenUtils.getHeightPx() >> 1 : screenUtils.getHeightPx() >> 1)
         .setDuration(DURATION_GAMES_FILTERS)
         .setInterpolator(new DecelerateInterpolator())
         .start();
@@ -514,7 +525,7 @@ public class LiveControlsView extends FrameLayout {
     view.animate()
         .translationY(0)
         .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new DecelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
         .start();
   }
 
@@ -565,12 +576,15 @@ public class LiveControlsView extends FrameLayout {
       onGameOptions.onNext(gameManager.getCurrentGame());
       return false;
     });
+
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
           new OvershootInterpolator(OVERSHOOT_LIGHT));
       onRestartGame.onNext(gameManager.getCurrentGame());//MADA
     });
+
     layoutContainerParamLive.addView(currentGameView, params);
+
     return currentGameView;
   }
 
@@ -584,6 +598,28 @@ public class LiveControlsView extends FrameLayout {
         .start();
 
     return xAnim;
+  }
+
+  private void showMenuTop(List<View> viewsToHide) {
+    for (View v : viewsToHide) {
+      hideView(v, true);
+    }
+
+    for (View v : viewToHideBottom) {
+      hideView(v, false);
+    }
+  }
+
+  private void closeMenuTop(List<View> viewsToHide) {
+    chatMenuOn = false;
+
+    for (View v : viewsToHide) {
+      showView(v);
+    }
+
+    for (View v : viewToHideBottom) {
+      showView(v);
+    }
   }
 
   ///////////////
@@ -723,10 +759,6 @@ public class LiveControlsView extends FrameLayout {
   // OBSERVABLES //
   /////////////////
 
-  public Observable<Void> onOpenInvite() {
-    return onOpenInvite;
-  }
-
   public Observable<Void> onClickCameraOrientation() {
     return onClickCameraOrientation;
   }
@@ -769,5 +801,33 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return onGameUIActive;
+  }
+
+  public Observable<Boolean> onOpenChat() {
+    return btnChat.onOpenChat().doOnNext(aBoolean -> {
+      chatMenuOn = true;
+      showMenuTop(viewToHideTopChat);
+    });
+  }
+
+  public Observable<Boolean> onCloseChat() {
+    return btnChat.onCloseChat().doOnNext(aBoolean -> {
+      chatMenuOn = false;
+      closeMenuTop(viewToHideTopChat);
+    });
+  }
+
+  public Observable<Boolean> onOpenInvite() {
+    return viewStatusName.onOpenView().doOnNext(aBoolean -> {
+      invitesMenuOn = true;
+      showMenuTop(viewToHideTopInvites);
+    });
+  }
+
+  public Observable<Boolean> onCloseInvite() {
+    return viewStatusName.onCloseView().doOnNext(aBoolean -> {
+      invitesMenuOn = false;
+      closeMenuTop(viewToHideTopInvites);
+    });
   }
 }
