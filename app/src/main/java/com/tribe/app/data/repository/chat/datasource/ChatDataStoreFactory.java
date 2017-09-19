@@ -24,7 +24,7 @@ import javax.inject.Singleton;
   }
 
   public ChatDataStore createCloudDataStore() {
-    return new CloudChatDataStore(context, tribeApi);
+    return new CloudChatDataStore(context, tribeApi, chatCache);
   }
 
   public ChatDataStore createDiskDataStore() {

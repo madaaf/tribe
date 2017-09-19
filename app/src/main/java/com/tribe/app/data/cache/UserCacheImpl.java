@@ -270,6 +270,7 @@ public class UserCacheImpl implements UserCache {
       realm.executeTransaction(realm1 -> {
         UserRealm userRealmDB =
             realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
+
         ShortcutRealm shortcutRealmDB =
             realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
         if (shortcutRealmDB == null) {

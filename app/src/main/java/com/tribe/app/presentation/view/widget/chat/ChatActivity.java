@@ -40,16 +40,8 @@ public class ChatActivity extends BaseActivity {
         User user = ((Invite) recipient).getRoom().getInitiator();
         friends.add(user);
       }
-    } else {
-      Timber.e("SOEF  NOT RECIPIENT OR SHORTCUT");
     }
-    for (User myFriend : friends) {
-      Timber.e("SOEF " + myFriend.getDisplayName() + " " + myFriend.getId());
-    }
-    Timber.e("SOEF LIST FRIENDS " + friends.size());
-    intent.putExtra(EXTRA_LIVE, (ArrayList<User>) friends);
-
-    Timber.e("SOEF NOT SHORTCUT " + recipient + " " + recipient.getDisplayName());
+    intent.putExtra(EXTRA_LIVE, (ArrayList<User>) friends); // TODO SOEF REVIEW
     return intent;
   }
 
@@ -65,7 +57,7 @@ public class ChatActivity extends BaseActivity {
 
     if (getIntent().hasExtra(EXTRA_LIVE)) {
       List<User> friends = (ArrayList<User>) getIntent().getSerializableExtra(EXTRA_LIVE);
-      if(friends.isEmpty()){
+      if (friends.isEmpty()) {
         Timber.e(" EMPTY LIST ID ");
         return;
       }

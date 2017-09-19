@@ -21,7 +21,6 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.widget.chat.Message;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,14 +152,14 @@ import rx.Observable;
             .transform(updateOnlineLiveShortcutsRealm(shortcuts, onlineMap, false)));
   }
 
-  private RealmList<ShortcutRealm> updateOnlineLiveShortcutsRealm(List<ShortcutRealm> shortcutRealmList,
-      Map<String, Boolean> onlineMap, boolean excludeBlocked) {
+  private RealmList<ShortcutRealm> updateOnlineLiveShortcutsRealm(
+      List<ShortcutRealm> shortcutRealmList, Map<String, Boolean> onlineMap,
+      boolean excludeBlocked) {
     RealmList<ShortcutRealm> result = new RealmList<>();
 
     for (ShortcutRealm st : shortcutRealmList) {
-      if (!excludeBlocked ||
-          (!StringUtils.isEmpty(st.getStatus()) &&
-              st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(st.getStatus()) && st.getStatus()
+          .equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
         st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
         result.add(st);
       }
@@ -173,9 +172,8 @@ import rx.Observable;
     List<Shortcut> result = new ArrayList<>();
 
     for (Shortcut st : shortcutList) {
-      if (!excludeBlocked ||
-          (!StringUtils.isEmpty(st.getStatus()) &&
-              st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(st.getStatus()) && st.getStatus()
+          .equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
         st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
         result.add(st);
       }
@@ -273,8 +271,8 @@ import rx.Observable;
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) &&
-            (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
+        if (mapUsersAdded.containsKey(userInList.getId()) && (includedUserIds == null
+            || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }

@@ -36,9 +36,13 @@ import rx.Observable;
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
 
-    return chatDataStore.loadMessages(userIds)
+/*    return chatDataStore.loadMessages(null).doOnError(Throwable::printStackTrace).map(userRealm -> {
+      return userRealmDataMapper.transform(userRealm).getMessages();
+    });*/
+
+    return chatDataStore.getMessages()
         .doOnError(Throwable::printStackTrace)
-        .map(userRealm -> userRealmDataMapper.transform(userRealm).getMessages());
+        .map(messageRealmDataMapper::transform);
   }
 
   @Override public Observable<Message> createdMessages() {

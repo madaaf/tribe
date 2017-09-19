@@ -21,7 +21,6 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import com.tribe.app.presentation.utils.DateUtils;
-import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +56,8 @@ import rx.Observable;
     this.userRealmDataMapper = realmDataMapper;
     this.pinRealmDataMapper = pinRealmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
-    this.searchResultRealmDataMapper = new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
+    this.searchResultRealmDataMapper =
+        new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
     this.messageRealmDataMapper = messageRealmDataMapper;
     this.dateUtils = dateUtils;
   }
@@ -93,7 +93,7 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
   }
 
-  @Override public Observable<List<Shortcut>> shortcuts() {
+  @Override public Observable<List<Shortcut>> shortcuts() { // TOSO
     return null;
   }
 

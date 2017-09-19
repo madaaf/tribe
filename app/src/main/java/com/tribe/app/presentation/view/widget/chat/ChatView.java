@@ -134,8 +134,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       title.setText(friends.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
-    //messagePresenter.loadMessagesDisk(arrIds);
     messagePresenter.loadMessage(arrIds);
+    messagePresenter.loadMessagesDisk(arrIds);
     messagePresenter.getCreatedMessages();
   }
 
@@ -399,6 +399,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
+    messageAdapter.setItems(messages);
+    scrollListToBottom();
+
     Timber.e("SOEF successLoadingMessageDisk " + messages.size());
   }
 

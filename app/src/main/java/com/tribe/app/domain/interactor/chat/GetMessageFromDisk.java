@@ -4,6 +4,7 @@ import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -11,15 +12,15 @@ import rx.Observable;
  * Created by madaaflak on 14/09/2017.
  */
 
-public class GetMessageFromDisk extends UseCase {
+public class GetMessageFromDisk extends UseCaseDisk {
 
   private String[] userIds;
   private ChatRepository chatRepository;
 
   @Inject
-  public GetMessageFromDisk(DiskChatDataRepository chatRepository, ThreadExecutor threadExecutor,
+  public GetMessageFromDisk(DiskChatDataRepository chatRepository,
       PostExecutionThread postExecutionThread) {
-    super(threadExecutor, postExecutionThread);
+    super(postExecutionThread);
     this.chatRepository = chatRepository;
   }
 

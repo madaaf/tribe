@@ -3,8 +3,8 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.Realm;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -20,6 +20,7 @@ public class ChatCacheImpl implements ChatCache {
   private Realm realm;
 
   private PublishSubject<MessageRealm> onMessageCreated = PublishSubject.create();
+  private PublishSubject<List<MessageRealm>> onLoadMessage = PublishSubject.create();
 
   @Inject public ChatCacheImpl(Context context, Realm realm) {
     this.context = context;
@@ -35,13 +36,29 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public Observable<UserRealm> loadMessage(String[] userIds) {
-    return realm.where(UserRealm.class)
-        .equalTo("id", JsonUtils.arrayToJson(userIds))
-        .findAll()
-        .asObservable()
-        .filter(userRealmList -> userRealmList.isLoaded() && userRealmList.size() > 0)
-        .map(userRealmList -> userRealmList.get(0))
-        .map(user -> realm.copyFromRealm(user))
-        .unsubscribeOn(AndroidSchedulers.mainThread());
+    return null;
+  }
+
+  @Override public void putMessages(List<MessageRealm> messages) {
+    //onLoadMessage.onNext(messages);
+    Realm realm = Realm.getDefaultInstance();
+    try {
+      realm.executeTransaction(realm1 -> {
+        for (MessageRealm messageRealm : messages) {
+          MessageRealm messageDB =
+              realm1.where(MessageRealm.class).equalTo("id", messageRealm.getId()).findFirst();
+          realm1.insertOrUpdate(messageDB);
+        }
+      });
+    } finally {
+      realm.close();
+    }
+  }
+
+  @Override public Observable<List<MessageRealm>> getMessages() {
+    return realm.where(MessageRealm.class).findAll().asObservable().map(singleShortcutList -> {
+      List<MessageRealm> list = realm.copyFromRealm(singleShortcutList);
+      return list;
+    }).unsubscribeOn(AndroidSchedulers.mainThread());
   }
 }

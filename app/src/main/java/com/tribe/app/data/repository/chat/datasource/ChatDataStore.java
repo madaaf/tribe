@@ -2,7 +2,7 @@ package com.tribe.app.data.repository.chat.datasource;
 
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.presentation.view.widget.chat.Message;
+import java.util.List;
 import rx.Observable;
 
 /**
@@ -17,4 +17,6 @@ public interface ChatDataStore {
   Observable<UserRealm> loadMessages(final String[] userIds);
 
   Observable<MessageRealm> createdMessages();
+
+  Observable<List<MessageRealm>> getMessages();
 }
