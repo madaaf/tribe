@@ -436,6 +436,7 @@
 	<string name="manage_friendships_mute_alert_description">You won\'t receive any notification from this friend when he\'s on the app</string>
 	<string name="manage_friendships_mute_alert_mute">Mute it anyways</string>
 	<string name="manage_friendships_mute_alert_cancel">Oops! Don\'t mute</string>
+	<string name="manage_friendships_mute_all_title">Disable \'is online\' notification for all</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Give access to %1$s?</string>
@@ -744,5 +745,5 @@
 	<string name="shortcut_action_to">To chat</string>
 	<string name="shortcut_action_with">with</string>
 	<string name="chat_event_join">joined live</string>
-	<string name="chat_event_leave">left chat</string>
+	<string name="chat_event_leave">left live</string>
 </resources>

@@ -130,6 +130,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewDarkOverlay) View viewDarkOverlay;
 
+  @BindView(R.id.viewRinging) LiveRingingView viewRinging;
+
   // VARIABLES
   private Live live;
   private com.tribe.tribelivesdk.core.Room webRTCRoom;
@@ -608,6 +610,7 @@ public class LiveView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
           if (isFirstToJoin) {
+            viewRinging.stopRinging();
             isFirstToJoin = !isFirstToJoin;
           }
 
@@ -817,7 +820,9 @@ public class LiveView extends FrameLayout {
     hasJoined = true;
     onShouldJoinRoom.onNext(null);
 
+    // TODO WHAT DO WE DO WITH THIS
     if (live.getType().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
+    viewRinging.startRinging();
   }
 
   public void update(Live live) {

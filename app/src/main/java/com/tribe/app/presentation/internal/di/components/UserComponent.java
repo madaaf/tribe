@@ -29,6 +29,7 @@ import com.tribe.app.presentation.view.component.live.LiveControlsView;
 import com.tribe.app.presentation.view.component.live.LiveLocalView;
 import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
+import com.tribe.app.presentation.view.component.live.LiveRingingView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveShareOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
@@ -183,4 +184,6 @@ import dagger.Component;
   void inject(UserInfosNotificationView userInfosNotificationView);
 
   void inject(LiveChatButton liveChatButton);
+
+  void inject(LiveRingingView liveRingingView);
 }

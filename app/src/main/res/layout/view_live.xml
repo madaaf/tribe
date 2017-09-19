@@ -10,6 +10,13 @@
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
 
+  <com.tribe.app.presentation.view.component.live.LiveRingingView
+      android:id="@+id/viewRinging"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      />
+
   <View
       android:id="@+id/viewDarkOverlay"
       android:layout_width="match_parent"

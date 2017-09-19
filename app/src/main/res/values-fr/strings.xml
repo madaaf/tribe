@@ -436,6 +436,7 @@
 	<string name="manage_friendships_mute_alert_description">Vous ne recevrez plus de notification \'est en ligne\' de la part de cet ami</string>
 	<string name="manage_friendships_mute_alert_mute">Supprimer la notification</string>
 	<string name="manage_friendships_mute_alert_cancel">Oops! Conserver la notification</string>
+	<string name="manage_friendships_mute_all_title">Supprimer la notification \'est en ligne\' pour tous</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Donner accès à %1$s ?</string>

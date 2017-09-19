@@ -62,7 +62,7 @@ public class Live implements Serializable {
 
   public void dispose() {
     subscriptions.clear();
-    room.dispose();
+    if (room != null) room.dispose();
   }
 
   public Room getRoom() {
