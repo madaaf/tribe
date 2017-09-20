@@ -18,5 +18,5 @@ public interface ChatDataStore {
 
   Observable<MessageRealm> createdMessages();
 
-  Observable<List<MessageRealm>> getMessages();
+  Observable<List<MessageRealm>> getMessages(String[] userIds);
 }

@@ -399,9 +399,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
-    messageAdapter.setItems(messages);
-    scrollListToBottom();
-
     Timber.e("SOEF successLoadingMessageDisk " + messages.size());
   }
 

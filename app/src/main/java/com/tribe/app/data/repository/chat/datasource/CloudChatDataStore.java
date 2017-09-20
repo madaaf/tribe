@@ -6,9 +6,9 @@ import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.List;
 import rx.Observable;
-import rx.functions.Action1;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -30,39 +30,25 @@ public class CloudChatDataStore implements ChatDataStore {
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
       String date) {
     return this.tribeApi.createMessage(
-        context.getString(R.string.messages_create, arrayToJson(userIds), type, data,
+        context.getString(R.string.messages_create, JsonUtils.arrayToJson(userIds), type, data,
             context.getString(R.string.messagefragment_info)));
   }
 
   @Override public Observable<UserRealm> loadMessages(String[] userIds) {
     return this.tribeApi.getUserMessage(
-        context.getString(R.string.messages_details, arrayToJson(userIds),
-            context.getString(R.string.messagefragment_info))).doOnNext(saveToCacheUser);
+        context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds),
+            context.getString(R.string.messagefragment_info)))
+        .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
+            JsonUtils.arrayToJson(userIds)));
   }
-
-  private final Action1<UserRealm> saveToCacheUser = userRealm -> {
-    //this.userCache.put(userRealm);
-    chatCache.putMessages(userRealm.getMessages());
-  };
 
   @Override public Observable<MessageRealm> createdMessages() {
     return null;
   }
 
-  @Override public Observable<List<MessageRealm>> getMessages() {
+  @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     return null;
   }
 
-  public String arrayToJson(String[] array) {
-    String json = "\"";
-    for (int i = 0; i < array.length; i++) {
-      if (i == array.length - 1) {
-        json += array[i] + "\"";
-      } else {
-        json += array[i] + "\", \"";
-      }
-    }
-    if (array.length == 0) json += "\"";
-    return json;
-  }
+
 }

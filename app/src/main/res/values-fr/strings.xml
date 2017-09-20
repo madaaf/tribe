@@ -119,6 +119,8 @@
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">Voir la conversation</string>
 	<string name="live_notification_action_reply">Répondre</string>
+	<string name="live_notification_online">En ligne</string>
+	<string name="live_notification_joined">A rejoint Tribe :metal</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -395,6 +397,12 @@
 	<string name="live_invite_section_chat_members">Members du chat</string>
 	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
 	<string name="live_invite_section_add_friends">Ajouter des amis dans cette conversation</string>
+<<<<<<< HEAD
+=======
+	<string name="live_members_chat_section_title">MEMBRES DU CHAT</string>
+	<string name="live_members_invite_link_section_title">LIEN D\'INVITATION</string>
+	<string name="live_members_invite_friends_section_title">AJOUTER UN AMI DANS LE LIVE</string>
+>>>>>>> set put message in disk
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

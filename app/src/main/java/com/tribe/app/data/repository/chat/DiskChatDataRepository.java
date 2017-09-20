@@ -10,6 +10,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
+import rx.functions.Action1;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -35,14 +37,20 @@ import rx.Observable;
   @Override public Observable<List<Message>> loadMessages(String[] userIds) {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
-
+    Timber.e("SOEF LOAD MESSAGE");
 /*    return chatDataStore.loadMessages(null).doOnError(Throwable::printStackTrace).map(userRealm -> {
       return userRealmDataMapper.transform(userRealm).getMessages();
     });*/
 
-    return chatDataStore.getMessages()
-        .doOnError(Throwable::printStackTrace)
-        .map(messageRealmDataMapper::transform);
+    return chatDataStore.getMessages(userIds).doOnError(new Action1<Throwable>() {
+      @Override public void call(Throwable throwable) {
+        Timber.e("SOEF DISK CHAT ERROR getMessages " + chatDataStore);
+      }
+    }).map(list -> {
+      List<Message> ok = messageRealmDataMapper.transform(list);
+      Timber.e("SOEF DISK CHAT DATA STORE " + ok.size());
+      return ok;
+    });
   }
 
   @Override public Observable<Message> createdMessages() {

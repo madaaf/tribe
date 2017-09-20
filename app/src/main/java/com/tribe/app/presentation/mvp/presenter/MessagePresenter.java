@@ -83,7 +83,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      Timber.e(e.getMessage());
+      Timber.e("SOEF " + e.getMessage());
       if (chatMVPView != null) chatMVPView.errorLoadingMessageDisk();
     }
 

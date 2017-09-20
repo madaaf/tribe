@@ -2,6 +2,7 @@ package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import io.realm.RealmList;
 import java.util.List;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -18,8 +19,8 @@ import rx.Observable;
 
   Observable<UserRealm> loadMessage(String[] userIds);
 
-  void putMessages(List<MessageRealm> messages);
+  void putMessages(RealmList<MessageRealm> messages, String userIds);
 
-  Observable<List<MessageRealm>> getMessages();
+  Observable<List<MessageRealm>> getMessages(String[] userIds);
 }
 

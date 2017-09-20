@@ -23,6 +23,7 @@ import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -266,6 +267,7 @@ public class AndroidApplication extends Application {
         realm1.delete(PinRealm.class);
         realm1.delete(SearchResultRealm.class);
         realm1.delete(UserRealm.class);
+        realm1.delete(MessageRealm.class);
       });
     } finally {
       realm.close();

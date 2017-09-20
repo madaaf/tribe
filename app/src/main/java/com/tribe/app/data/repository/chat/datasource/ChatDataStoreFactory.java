@@ -17,7 +17,6 @@ import javax.inject.Singleton;
   private final ChatCache chatCache;
 
   @Inject public ChatDataStoreFactory(Context context, TribeApi tribeApi, ChatCache chatCache) {
-
     this.context = context.getApplicationContext();
     this.tribeApi = tribeApi;
     this.chatCache = chatCache;

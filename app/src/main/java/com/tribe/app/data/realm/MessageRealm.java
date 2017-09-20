@@ -2,6 +2,7 @@ package com.tribe.app.data.realm;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by madaaflak on 06/09/2017.
@@ -14,7 +15,8 @@ public class MessageRealm extends RealmObject {
   public static final String IMAGE = "IMAGE";
   public static final String EVENT = "EVENT";
 
-  private String id;
+  private String localId;
+  @PrimaryKey private String id;
   private UserRealm author;
   private UserRealm user;
   private String data;
@@ -25,6 +27,14 @@ public class MessageRealm extends RealmObject {
   private String created_at;
 
   public MessageRealm() {
+  }
+
+  public String getLocalId() {
+    return localId;
+  }
+
+  public void setLocalId(String localId) {
+    this.localId = localId;
   }
 
   public String getData() {
@@ -98,6 +108,7 @@ public class MessageRealm extends RealmObject {
   public String getCreated_at() {
     return created_at;
   }
+
   public void setCreated_at(String created_at) {
     this.created_at = created_at;
   }
