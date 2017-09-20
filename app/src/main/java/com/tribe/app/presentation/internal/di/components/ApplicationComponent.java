@@ -73,11 +73,10 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdap
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientHomeAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.UserInviteHeaderAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
@@ -141,8 +140,6 @@ public interface ApplicationComponent {
 
   void inject(LauncherActivity launcherActivity);
 
-  void inject(RecipientGridAdapterDelegate recipientGridAdapterDelegate);
-
   void inject(AvatarView avatarView);
 
   void inject(PlayerView playerView);
@@ -165,8 +162,6 @@ public interface ApplicationComponent {
 
   void inject(TextViewAnimatedDots textViewAnimatedDots);
 
-  void inject(TileView tileView);
-
   void inject(ActionView actionView);
 
   void inject(SyncView syncView);
@@ -179,7 +174,7 @@ public interface ApplicationComponent {
 
   void inject(LiveInviteView liveInviteView);
 
-  void inject(UserInviteHeaderAdapterDelegate userInviteHeaderAdapterDelegate);
+  void inject(UserRoomAdapterDelegate liveInviteAdapterDelegate);
 
   void inject(CallRouletteAdapterDelegate callRouletteAdapterDelegate);
 
@@ -216,6 +211,8 @@ public interface ApplicationComponent {
   void inject(HomeListViewHeader homeListViewHeader);
 
   void inject(LiveViewFake liveViewFake);
+
+  void inject(RoomLinkAdapterDelegate roomAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

@@ -44,6 +44,7 @@ import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
+import com.tribe.app.presentation.mvp.view.RoomMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -110,7 +111,7 @@ import timber.log.Timber;
 import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity
-    implements LiveMVPView, ShortcutMVPView, AppStateListener {
+    implements LiveMVPView, ShortcutMVPView, RoomMVPView, AppStateListener {
 
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
@@ -656,7 +657,7 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
       if (viewLive.getWebRTCRoom() != null && viewLive.getWebRTCRoom().getOptions() != null) {
         soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
-        livePresenter.buzzRoom(viewLive.getWebRTCRoom().getOptions().getRoomId());
+        livePresenter.buzzRoom(room.getId());
       }
     }));
 

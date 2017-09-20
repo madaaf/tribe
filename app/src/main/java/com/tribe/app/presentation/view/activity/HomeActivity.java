@@ -66,7 +66,7 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
-import com.tribe.app.presentation.view.adapter.decorator.DividerDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
@@ -906,7 +906,7 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setLayoutManager(layoutManager);
     recyclerViewFriends.setItemAnimator(null);
     recyclerViewFriends.addItemDecoration(
-        new DividerDecoration(context(), ContextCompat.getColor(context(), R.color.grey_divider),
+        new HomeListDividerDecoration(context(), ContextCompat.getColor(context(), R.color.grey_divider),
             screenUtils.dpToPx(0.5f), getSectionCallback(homeGridAdapter.getItems())));
     homeGridAdapter.setItems(new ArrayList<>());
     recyclerViewFriends.setAdapter(homeGridAdapter);

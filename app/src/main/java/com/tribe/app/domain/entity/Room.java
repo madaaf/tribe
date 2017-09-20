@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 30/01/2017.
  */
 
-public class Room implements Serializable {
+public class Room implements Serializable, LiveInviteViewHeader.LiveInviteAdapterSectionInterface {
 
   private static final int NB_MAX_USERS_STRING = 3;
 
@@ -295,5 +296,9 @@ public class Room implements Serializable {
 
   public Observable<Room> onRoomUpdated() {
     return onRoomUpdated;
+  }
+
+  @Override public int getSectionType() {
+    return LiveInviteViewHeader.INVITE_LINK;
   }
 }

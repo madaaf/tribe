@@ -132,12 +132,13 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewRinging) LiveRingingView viewRinging;
 
+  @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
+
   // VARIABLES
   private Live live;
   private com.tribe.tribelivesdk.core.Room webRTCRoom;
   private ObservableRxHashMap<String, LiveRowView> liveRowViewMap;
   private boolean hiddenControls = false;
-  private @LiveContainer.Event int stateContainer = LiveContainer.EVENT_CLOSED;
   private Map<String, Object> tagMap;
   private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0,
       postItGameCount = 0;
@@ -398,14 +399,14 @@ public class LiveView extends FrameLayout {
       setAlphaOnGuestWhenHideControls(hiddenControls);
     }).subscribe());
 
-    persistentSubscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
-      if (stateContainer == LiveContainer.EVENT_OPENED) {
-        onShouldCloseInvites.onNext(null);
-      }
-    }).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
-      viewControlsLive.clickExpandParam();
-      onHiddenControls.onNext(isParamExpended);
-    }));
+    //persistentSubscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
+    //  if (stateContainer == LiveContainer.EVENT_OPENED) {
+    //    onShouldCloseInvites.onNext(null);
+    //  }
+    //}).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
+    //  viewControlsLive.clickExpandParam();
+    //  onHiddenControls.onNext(isParamExpended);
+    //}));
 
     persistentSubscriptions.add(
         viewLocalLive.onShare().doOnNext(aVoid -> hasShared = true).subscribe(onShare));
@@ -419,12 +420,18 @@ public class LiveView extends FrameLayout {
                 .start()));
 
     persistentSubscriptions.add(
+        viewControlsLive.onOpenInvite().subscribe(aBoolean -> viewLiveInvite.openInvite()));
+
+    persistentSubscriptions.add(
         Observable.merge(viewControlsLive.onCloseChat(), viewControlsLive.onCloseInvite())
             .subscribe(aBool -> viewDarkOverlay.animate()
                 .setInterpolator(new DecelerateInterpolator())
                 .alpha(0)
                 .setDuration(DURATION)
                 .start()));
+
+    persistentSubscriptions.add(
+        viewControlsLive.onCloseInvite().subscribe(aBoolean -> viewLiveInvite.closeInvite()));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
       viewLocalLive.switchCamera();
@@ -521,7 +528,7 @@ public class LiveView extends FrameLayout {
   ///////////////////
 
   @OnClick(R.id.viewRoom) void onClickRoom() {
-    if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
+    //if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
     if (hiddenControls) {
       onHiddenControls.onNext(false);
     }
@@ -778,25 +785,6 @@ public class LiveView extends FrameLayout {
 
         onNotificationRemoteJoined.onNext(userList.get(0).getDisplayName());
       }
-    }));
-  }
-
-  public void initInviteOpenSubscription(Observable<Integer> obs) {
-    persistentSubscriptions.add(obs.subscribe(event -> {
-      stateContainer = event;
-    }));
-  }
-
-  public void initOnAlphaSubscription(Observable<Float> obs) {
-    persistentSubscriptions.add(obs.subscribe(alpha -> {
-      viewControlsLive.setAlpha(alpha);
-      viewLocalLive.computeAlpha(alpha);
-    }));
-  }
-
-  public void initDropEnabledSubscription(Observable<Boolean> obs) {
-    persistentSubscriptions.add(obs.subscribe(enabled -> {
-      viewRoom.onDropEnabled(enabled);
     }));
   }
 

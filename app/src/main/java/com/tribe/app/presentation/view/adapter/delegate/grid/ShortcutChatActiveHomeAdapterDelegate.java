@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by tiago on 01/18/2017.
  */
-public class ShortcutChatActiveHomeAdapterDelegate extends RecipientGridAdapterDelegate {
+public class ShortcutChatActiveHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
 
   public ShortcutChatActiveHomeAdapterDelegate(Context context) {
     super(context);

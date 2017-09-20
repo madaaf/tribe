@@ -28,7 +28,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -123,20 +122,20 @@ public class LiveRoomView extends FrameLayout {
         .inject(this);
   }
 
-  public void onDropItem(TileView tileView) {
-    // drag and drop dice item view
-    LiveRowView lastViewAdded =
-        (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
-    if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
-      isCallRouletteMode = true;
-      removeView(lastViewAdded);
-      new Handler().postDelayed(() -> {
-        onShouldCloseInvites.onNext(null);
-        diceView.setVisibility(VISIBLE);
-        diceView.startDiceAnimation();
-      }, 800);
-    }
-  }
+  //public void onDropItem(TileView tileView) {
+  //  // drag and drop dice item view
+  //  LiveRowView lastViewAdded =
+  //      (LiveRowView) flexboxLayout.getChildAt(flexboxLayout.getChildCount() - 1);
+  //  if (lastViewAdded.getGuest().getId().equals(Recipient.ID_CALL_ROULETTE)) {
+  //    isCallRouletteMode = true;
+  //    removeView(lastViewAdded);
+  //    new Handler().postDelayed(() -> {
+  //      onShouldCloseInvites.onNext(null);
+  //      diceView.setVisibility(VISIBLE);
+  //      diceView.startDiceAnimation();
+  //    }, 800);
+  //  }
+  //}
 
   /**
    * ON ROLL THE DICE MESSAGE HAS RECEIVED. SOMEONE NEXT THE DICE

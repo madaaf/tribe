@@ -19,7 +19,6 @@ import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
-import com.tribe.app.presentation.view.component.TileView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
@@ -142,8 +141,6 @@ import dagger.Component;
   void inject(AccessView accessView);
 
   void inject(LoadFriendsView loadFriendsView);
-
-  void inject(TileView tileView);
 
   void inject(LiveActivity liveActivity);
 

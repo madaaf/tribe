@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@null"
+    >
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLink"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@drawable/shape_rect_room_link"
+      android:gravity="center_vertical|start"
+      style="@style/Title.2.White"
+      />
+
+  <ImageView
+      android:id="@+id/btnShare"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical|end"
+      android:layout_margin="5dp"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_more_friends"
+      />
+
+</FrameLayout>

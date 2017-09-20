@@ -120,6 +120,7 @@
 
   <style name="Caption.One">
     <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+    <item name="android:textSize">11dp</item>
   </style>
 
   <style name="Caption.Two">
@@ -273,6 +274,10 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="Title.Regular.White" parent="@style/Title.1.White">
+    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+  </style>
+
   <style name="Headline">
     <item name="android:textSize">19sp</item>
   </style>
@@ -328,7 +333,7 @@
   </style>
 
   <style name="Headline.Black.Regular" parent="Headline.Black">
-    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
   </style>
 
   <style name="Headline.Blue.2" parent="Headline.White.2">

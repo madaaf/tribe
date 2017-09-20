@@ -392,6 +392,9 @@
 	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	<string name="live_ringing">Appel en cours...</string>
+	<string name="live_invite_section_chat_members">Members du chat</string>
+	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
+	<string name="live_invite_section_add_friends">Ajouter des amis dans cette conversation</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

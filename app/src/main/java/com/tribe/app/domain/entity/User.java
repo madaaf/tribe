@@ -6,6 +6,7 @@ import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.Message;
+import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +19,8 @@ import java.util.List;
  * Created by tiago on 04/05/2016.
  */
 
-public class User implements Serializable, BaseListInterface, Changeable {
+public class User implements Serializable, BaseListInterface, Changeable,
+    LiveInviteViewHeader.LiveInviteAdapterSectionInterface {
 
   public static final String ID = "id";
   public static final String FBID = "fbid";
@@ -57,6 +59,8 @@ public class User implements Serializable, BaseListInterface, Changeable {
   private AvatarModel avatarModel = null;
 
   private boolean isNew = false;
+
+  private String currentRoomId;
 
   public User(String id) {
     this.id = id;
@@ -267,6 +271,14 @@ public class User implements Serializable, BaseListInterface, Changeable {
     return isNew;
   }
 
+  public void setCurrentRoomId(String currentRoomId) {
+    this.currentRoomId = currentRoomId;
+  }
+
+  public String getCurrentRoomId() {
+    return currentRoomId;
+  }
+
   public TribeGuest asTribeGuest() {
     TribeGuest guest = new TribeGuest(getId());
     guest.setDisplayName(getDisplayName());
@@ -328,5 +340,13 @@ public class User implements Serializable, BaseListInterface, Changeable {
 
   @Override public int getChangeHashCode() {
     return id.hashCode();
+  }
+
+  @Override public int getSectionType() {
+    if (!StringUtils.isEmpty(currentRoomId)) {
+      return LiveInviteViewHeader.CHAT_MEMBERS;
+    } else {
+      return LiveInviteViewHeader.ADD_FRIENDS_IN_CALL;
+    }
   }
 }
