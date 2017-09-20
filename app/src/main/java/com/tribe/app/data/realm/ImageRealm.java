@@ -1,6 +1,7 @@
 package com.tribe.app.data.realm;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by madaaflak on 07/09/2017.
@@ -8,7 +9,7 @@ import io.realm.RealmObject;
 
 public class ImageRealm extends RealmObject {
 
-  private String url;
+  @PrimaryKey private String url;
   private String filesize;
   private String width;
   private String height;

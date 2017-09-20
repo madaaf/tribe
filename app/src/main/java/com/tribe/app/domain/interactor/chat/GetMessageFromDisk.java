@@ -27,7 +27,6 @@ public class GetMessageFromDisk extends UseCaseDisk {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    Timber.e("SOEF LOAD MESSAGE");
     return chatRepository.loadMessages(userIds);
   }
 }

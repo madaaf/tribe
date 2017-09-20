@@ -5,7 +5,6 @@ import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import java.util.List;
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -34,8 +33,6 @@ public class DiskChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
-    Timber.e("SOEF GET MESSAGE " + chatCache);
-    Observable<List<MessageRealm>> soef = chatCache.getMessages(userIds).asObservable();
-    return soef;
+    return chatCache.getMessages(userIds);
   }
 }

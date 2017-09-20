@@ -388,10 +388,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
-    messageAdapter.setItems(messages);
-    scrollListToBottom();
+    Timber.e("SOEF successLoadingMessage" + messages.size());
 
-    Timber.e("SOEF successLoadingMessage");
   }
 
   @Override public void errorLoadingMessage() {
@@ -400,6 +398,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.e("SOEF successLoadingMessageDisk " + messages.size());
+    messageAdapter.setItems(messages);
+    scrollListToBottom();
   }
 
   @Override public void errorLoadingMessageDisk() {
