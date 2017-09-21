@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -134,8 +135,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       title.setText(friends.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
-    messagePresenter.loadMessage(arrIds);
+
     messagePresenter.loadMessagesDisk(arrIds);
+    messagePresenter.loadMessage(arrIds);
     messagePresenter.getCreatedMessages();
   }
 
@@ -273,16 +275,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
-    //recyclerView.setItemAnimator(null);
+    //
 /*    layoutManager.setReverseLayout(true);
     layoutManager.setStackFromEnd(true);*/
+    recyclerView.setItemAnimator(new DefaultItemAnimator());
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(messageAdapter);
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
     recyclerViewGrp.setLayoutManager(layoutManagerGrp);
-    recyclerViewGrp.setItemAnimator(null);
+    recyclerViewGrp.setItemAnimator(new DefaultItemAnimator());
     recyclerViewGrp.setAdapter(chatUserAdapter);
   }
 
@@ -387,19 +390,26 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()));
   }
 
+  boolean networkError = false;
+
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.e("SOEF successLoadingMessage" + messages.size());
-
+    networkError = false;
+    messageAdapter.setItems(messages);
+    scrollListToBottom();
   }
 
   @Override public void errorLoadingMessage() {
     Timber.e("SOEF errorLoadingMessage");
+    networkError = true;
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.e("SOEF successLoadingMessageDisk " + messages.size());
-    messageAdapter.setItems(messages);
-    scrollListToBottom();
+    if (networkError) {
+      messageAdapter.setItems(messages);
+      scrollListToBottom();
+    }
   }
 
   @Override public void errorLoadingMessageDisk() {

@@ -5,7 +5,6 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import javax.inject.Inject;
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 14/09/2017.

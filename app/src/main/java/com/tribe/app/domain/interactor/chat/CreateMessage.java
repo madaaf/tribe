@@ -3,7 +3,6 @@ package com.tribe.app.domain.interactor.chat;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
-import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.domain.interactor.common.UseCase;
 import javax.inject.Inject;
 import rx.Observable;

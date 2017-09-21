@@ -7,7 +7,6 @@ import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.widget.chat.Message;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,12 +44,9 @@ import rx.Observable;
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.loadMessages(userIds)
         .doOnError(Throwable::printStackTrace)
-        .map(userRealm -> {
-          List<Message> messageList = new ArrayList<Message>();
-          messageList = this.userRealmDataMapper.transform(userRealm).getMessages();
-          return messageList;
-        });
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
+
 
   @Override public Observable<Message> createdMessages() {
     return null;

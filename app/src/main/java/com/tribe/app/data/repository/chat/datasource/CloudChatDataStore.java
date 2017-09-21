@@ -7,6 +7,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import io.realm.RealmList;
 import java.util.List;
 import rx.Observable;
 
@@ -31,7 +32,11 @@ public class CloudChatDataStore implements ChatDataStore {
       String date) {
     return this.tribeApi.createMessage(
         context.getString(R.string.messages_create, JsonUtils.arrayToJson(userIds), type, data,
-            context.getString(R.string.messagefragment_info)));
+            context.getString(R.string.messagefragment_info))).doOnNext(messageRealm -> {
+      RealmList<MessageRealm> list = new RealmList<>();
+      list.add(messageRealm);
+      chatCache.putMessages(list, JsonUtils.arrayToJson(userIds));
+    });
   }
 
   @Override public Observable<UserRealm> loadMessages(String[] userIds) {
@@ -49,6 +54,4 @@ public class CloudChatDataStore implements ChatDataStore {
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     return null;
   }
-
-
 }

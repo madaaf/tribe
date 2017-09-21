@@ -53,7 +53,6 @@ public class Message {
     this.id = id;
   }
 
-
   public String getCreationDate() {
     return creationDate;
   }
