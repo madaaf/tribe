@@ -7,15 +7,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +122,9 @@ import timber.log.Timber;
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
               Room room = new Room(roomJson.get("id").getAsString());
+              room.setName(roomJson.get("name").getAsString());
+              room.setAcceptRandom(roomJson.get("accept_random").getAsBoolean());
+
               JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();
               JsonArray invited_users_json = roomJson.get("invited_users").getAsJsonArray();
 

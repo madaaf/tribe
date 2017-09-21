@@ -2,14 +2,16 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.delegate.EmptyHeaderInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -24,7 +26,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   private RoomLinkAdapterDelegate roomLinkAdapterDelegate;
 
   // VARIABLES
-  private List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items;
+  private List<LiveInviteAdapterSectionInterface> items;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -47,7 +49,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   }
 
   @Override public long getItemId(int position) {
-    LiveInviteViewHeader.LiveInviteAdapterSectionInterface object = getItemAtPosition(position);
+    LiveInviteAdapterSectionInterface object = getItemAtPosition(position);
     return object.hashCode();
   }
 
@@ -73,13 +75,12 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
     return items.size();
   }
 
-  public void setItems(List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items) {
+  public void setItems(List<LiveInviteAdapterSectionInterface> items) {
     this.items.clear();
     this.items.addAll(items);
-    notifyDataSetChanged();
   }
 
-  public LiveInviteViewHeader.LiveInviteAdapterSectionInterface getItemAtPosition(int position) {
+  public LiveInviteAdapterSectionInterface getItemAtPosition(int position) {
     if (items.size() > 0 && position < items.size()) {
       return items.get(position);
     } else {
@@ -87,9 +88,13 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
     }
   }
 
-  public List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> getItems() {
+  public List<LiveInviteAdapterSectionInterface> getItems() {
     return items;
   }
 
   // OBSERVABLES
+
+  public Observable<View> onInvite() {
+    return userRoomAdapterDelegate.onInvite();
+  }
 }

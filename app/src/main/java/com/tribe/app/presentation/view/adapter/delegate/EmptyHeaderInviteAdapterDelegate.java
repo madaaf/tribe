@@ -9,15 +9,15 @@ import android.view.ViewGroup;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import java.util.List;
 
 /**
  * Created by tiago on 09/20/2017.
  */
 public class EmptyHeaderInviteAdapterDelegate
-    extends RxAdapterDelegate<List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface>> {
+    extends RxAdapterDelegate<List<LiveInviteAdapterSectionInterface>> {
 
   private LayoutInflater layoutInflater;
   private Context context;
@@ -32,8 +32,8 @@ public class EmptyHeaderInviteAdapterDelegate
             .screenUtils();
   }
 
-  @Override public boolean isForViewType(
-      @NonNull List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items, int position) {
+  @Override public boolean isForViewType(@NonNull List<LiveInviteAdapterSectionInterface> items,
+      int position) {
     return items.get(position).getId().equals(Recipient.ID_HEADER);
   }
 
@@ -42,13 +42,12 @@ public class EmptyHeaderInviteAdapterDelegate
         layoutInflater.inflate(R.layout.item_empty_header_grid, parent, false));
   }
 
-  @Override public void onBindViewHolder(
-      @NonNull List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items, int position,
+  @Override
+  public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
   }
 
-  @Override public void onBindViewHolder(
-      @NonNull List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items,
+  @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
 
   }

@@ -400,6 +400,8 @@
 	<string name="live_members_chat_section_title">CHAT MEMBERS</string>
 	<string name="live_members_invite_link_section_title">INVITE LINK</string>
 	<string name="live_members_invite_friends_section_title">ADD FRIEND IN CALL</string>
+	<string name="live_members_ringing">Ringing</string>
+	<string name="live_members_waiting">Waiting</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

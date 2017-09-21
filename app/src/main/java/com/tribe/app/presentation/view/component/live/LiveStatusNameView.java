@@ -129,6 +129,7 @@ public class LiveStatusNameView extends FrameLayout {
   private void setPeopleCountTitle(int total) {
     String str = getContext().getString(R.string.shortcut_members_count, total);
     txtNameInactive.setText(str);
+    txtNameActive.setText(str);
   }
 
   private void showView(View v) {
@@ -174,6 +175,7 @@ public class LiveStatusNameView extends FrameLayout {
     subscriptions.add(live.onRoomUpdated().subscribe(room -> {
       if (!StringUtils.isEmpty(room.getName())) {
         txtNameInactive.setText(room.getName());
+        txtNameActive.setText(room.getName());
       } else if (room.nbUsersTotal() <= 1) {
         setAddFriendsTitle();
       } else {

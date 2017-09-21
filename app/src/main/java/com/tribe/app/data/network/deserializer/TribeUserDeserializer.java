@@ -10,8 +10,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import io.realm.RealmList;
@@ -19,14 +19,18 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
   private SimpleDateFormat simpleDateFormat;
+  private Set<String> shortcutSet;
 
   public TribeUserDeserializer(SimpleDateFormat simpleDateFormat) {
     this.simpleDateFormat = simpleDateFormat;
+    this.shortcutSet = new HashSet<>();
   }
 
   @Override
@@ -37,6 +41,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
 
     UserRealm userRealm = new UserRealm();
     JsonObject result = null;
+
+    shortcutSet.clear();
 
     if (je.getAsJsonObject().getAsJsonObject("data").has("user")) {
       if (!je.getAsJsonObject().getAsJsonObject("data").get("user").isJsonNull()) {
@@ -95,16 +101,17 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     if (result.has("shortcuts") && !(result.get("shortcuts") instanceof JsonNull)) {
       JsonObject resultsShortcuts = result.getAsJsonObject("shortcuts");
       if (resultsShortcuts != null) {
-        manageShortcuts(gson, resultsShortcuts, listShortcuts, "recent");
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "unread");
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "online");
+        manageShortcuts(gson, resultsShortcuts, listShortcuts, "single");
+        manageShortcuts(gson, resultsShortcuts, listShortcuts, "recent");
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "blocked");
         manageShortcuts(gson, resultsShortcuts, listShortcuts, "hidden");
       }
 
       userRealm.setShortcuts(listShortcuts);
     }
-   
+
     JsonArray resultsMessages = result.getAsJsonArray("messages");
     RealmList<MessageRealm> realmListMessages = new RealmList();
     if (resultsMessages != null) {
@@ -134,7 +141,6 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       userRealm.setInvites(listInvites);
     }
 
-
     return userRealm;
   }
 
@@ -142,10 +148,14 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       RealmList<ShortcutRealm> listShortcuts, String category) {
     if (jsonObj.has(category) && !(jsonObj.get(category) instanceof JsonNull)) {
       JsonArray shortcutsOnline = jsonObj.getAsJsonArray(category);
-      for (JsonElement obj : shortcutsOnline) {if (!(obj instanceof JsonNull)) {
+      for (JsonElement obj : shortcutsOnline) {
+        if (!(obj instanceof JsonNull)) {
           ShortcutRealm shortcut = gson.fromJson(obj, ShortcutRealm.class);
           if (category.equals("online")) shortcut.setOnline(true);
-          if (shortcut != null) listShortcuts.add(shortcut);
+          if (shortcut != null && !shortcutSet.contains(shortcut.getId())) {
+            listShortcuts.add(shortcut);
+            shortcutSet.add(shortcut.getId());
+          }
         }
       }
     }

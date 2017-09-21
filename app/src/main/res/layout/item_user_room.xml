@@ -39,4 +39,18 @@
         />
 
   </LinearLayout>
+
+  <ImageView
+      android:id="@+id/btnInvite"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_alignParentRight="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+      android:background="@drawable/shape_oval_black60"
+      android:clickable="true"
+      android:foreground="@drawable/selectable_button_oval_light"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_invite_live"
+      />
 </RelativeLayout>

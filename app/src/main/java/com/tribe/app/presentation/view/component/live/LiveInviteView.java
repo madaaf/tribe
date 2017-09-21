@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
@@ -27,12 +29,22 @@ import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.InviteListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.LiveInviteSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -41,6 +53,8 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveInviteView extends FrameLayout
     implements LiveInviteMVPView, RoomMVPView, ShortcutMVPView {
 
+  private static final int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
+  private static final int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
   private static final int DURATION = 300;
   private static final float OVERSHOOT = 1.25f;
 
@@ -52,18 +66,23 @@ public class LiveInviteView extends FrameLayout
 
   @Inject LiveInvitePresenter liveInvitePresenter;
 
+  @Inject User currentUser;
+
   @BindView(R.id.recyclerViewInvite) RecyclerView recyclerViewInvite;
 
   // VARIABLES
   private Unbinder unbinder;
   private LiveInviteLayoutManager layoutManager;
-  private List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> itemsList;
+  private List<LiveInviteAdapterSectionInterface> itemsList;
+  private Live live;
+  private Scheduler singleThreadExecutor;
 
   // RESOURCES
   private int translationY;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<List<Shortcut>> onShortcutUpdate = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -100,6 +119,7 @@ public class LiveInviteView extends FrameLayout
     initUI();
     initRecyclerView();
 
+    singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     liveInvitePresenter.loadShortcuts();
 
     super.onFinishInflate();
@@ -127,6 +147,11 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.setLayoutManager(layoutManager);
     recyclerViewInvite.setHasFixedSize(true);
     recyclerViewInvite.setItemAnimator(null);
+    //recyclerViewInvite.setItemAnimator(new FadeInAnimator(new OvershootInterpolator(1.5f)));
+    //recyclerViewInvite.getItemAnimator().setAddDuration(RECYCLER_VIEW_ANIMATIONS_DURATION_LONG);
+    //recyclerViewInvite.getItemAnimator().setRemoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
+    //recyclerViewInvite.getItemAnimator().setMoveDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
+    //recyclerViewInvite.getItemAnimator().setChangeDuration(RECYCLER_VIEW_ANIMATIONS_DURATION);
     recyclerViewInvite.addItemDecoration(new InviteListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.white_opacity_10), screenUtils.dpToPx(0.5f),
         getSectionCallback(adapter.getItems())));
@@ -140,13 +165,19 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.getRecycledViewPool().setMaxRecycledViews(3, 50);
 
     LiveInviteSectionItemDecoration sectionItemDecoration = new LiveInviteSectionItemDecoration(
-        getResources().getDimensionPixelSize(R.dimen.list_home_header_height), false,
+        getResources().getDimensionPixelSize(R.dimen.list_live_invite_header_height), false,
         getSectionCallback(adapter.getItems()), screenUtils);
     recyclerViewInvite.addItemDecoration(sectionItemDecoration);
+
+    subscriptions.add(adapter.onInvite()
+        .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
+        .subscribe(item -> {
+          User user = (User) item;
+          liveInvitePresenter.createInvite(live.getRoomId(), user.getId());
+        }));
   }
 
-  private SectionCallback getSectionCallback(
-      final List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> list) {
+  private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         return position == 1 ||
@@ -155,14 +186,75 @@ public class LiveInviteView extends FrameLayout
       }
 
       @Override public int getSectionType(int position) {
+        if (position == -1) return LiveInviteViewHeader.CHAT_MEMBERS;
         return itemsList.get(position).getSectionType();
       }
     };
   }
 
+  private void computeUser(List<LiveInviteAdapterSectionInterface> temp, User user,
+      Set<String> alreadyPresent) {
+    if (!alreadyPresent.contains(user.getId())) {
+      temp.add(user);
+      alreadyPresent.add(user.getId());
+    }
+  }
+
   ////////////
   // PUBLIC //
   ////////////
+
+  public void setLive(Live live) {
+    this.live = live;
+
+    subscriptions.add(Observable.combineLatest(live.onRoomUpdated().onBackpressureBuffer(),
+        onShortcutUpdate.onBackpressureBuffer(), (room, listShortcut) -> {
+          Set<String> alreadyPresent = new HashSet<>();
+          List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
+
+          for (User user : room.getLiveUsers()) {
+            if (!user.equals(currentUser)) {
+              user.setCurrentRoomId(room.getId());
+              computeUser(temp, user, alreadyPresent);
+            }
+          }
+
+          for (User user : room.getInvitedUsers()) {
+            user.setRinging(true);
+            computeUser(temp, user, alreadyPresent);
+          }
+
+          temp.add(room);
+
+          for (Shortcut shortcut : listShortcut) {
+            User user = shortcut.getSingleFriend();
+            computeUser(temp, user, alreadyPresent);
+          }
+
+          return temp;
+        }).subscribeOn(singleThreadExecutor).map(newListItems -> {
+      DiffUtil.DiffResult diffResult = null;
+      List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
+      temp.add(new User(Recipient.ID_HEADER));
+      temp.addAll(newListItems);
+
+      if (itemsList.size() != 0) {
+        diffResult = DiffUtil.calculateDiff(new LiveInviteDiffCallback(itemsList, temp));
+        adapter.setItems(temp);
+      }
+
+      itemsList.clear();
+      itemsList.addAll(temp);
+      return diffResult;
+    }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+      //if (diffResult != null) {
+      //  diffResult.dispatchUpdatesTo(adapter);
+      //} else {
+      adapter.setItems(itemsList);
+      adapter.notifyDataSetChanged();
+      //}
+    }));
+  }
 
   public void openInvite() {
     setVisibility(View.VISIBLE);
@@ -219,15 +311,7 @@ public class LiveInviteView extends FrameLayout
   }
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
-    itemsList.clear();
-
-    itemsList.add(new User(Recipient.ID_HEADER));
-
-    for (Shortcut shortcut : singleShortcutList) {
-      itemsList.add(shortcut.getSingleFriend());
-    }
-
-    adapter.setItems(itemsList);
+    onShortcutUpdate.onNext(singleShortcutList);
   }
 
   @Override public Context context() {

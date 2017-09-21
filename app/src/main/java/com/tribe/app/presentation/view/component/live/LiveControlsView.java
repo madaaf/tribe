@@ -108,11 +108,11 @@ public class LiveControlsView extends FrameLayout {
   }) List<View> viewToHideGames;
 
   @BindViews({
-      R.id.viewStatusName
+      R.id.viewStatusName, R.id.btnLeave
   }) List<View> viewToHideTopChat;
 
   @BindViews({
-      R.id.btnChat
+      R.id.btnChat, R.id.btnLeave
   }) List<View> viewToHideTopInvites;
 
   @BindViews({

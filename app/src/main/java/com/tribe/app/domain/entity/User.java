@@ -3,6 +3,7 @@ package com.tribe.app.domain.entity;
 import com.tribe.app.domain.entity.helpers.Changeable;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.Message;
@@ -19,8 +20,8 @@ import java.util.List;
  * Created by tiago on 04/05/2016.
  */
 
-public class User implements Serializable, BaseListInterface, Changeable,
-    LiveInviteViewHeader.LiveInviteAdapterSectionInterface {
+public class User
+    implements Serializable, BaseListInterface, Changeable, LiveInviteAdapterSectionInterface {
 
   public static final String ID = "id";
   public static final String FBID = "fbid";
@@ -40,9 +41,6 @@ public class User implements Serializable, BaseListInterface, Changeable,
   private String phone;
   private List<Recipient> recipientList;
   private List<Shortcut> shortcutList;
-  private int score = 0;
-  private Location location;
-  private boolean tribe_save;
   private List<Message> messageList;
   private List<Invite> inviteList;
   private String fbid;
@@ -61,6 +59,8 @@ public class User implements Serializable, BaseListInterface, Changeable,
   private boolean isNew = false;
 
   private String currentRoomId;
+  private boolean ringing = false;
+  private boolean waiting = false;
 
   public User(String id) {
     this.id = id;
@@ -174,12 +174,20 @@ public class User implements Serializable, BaseListInterface, Changeable,
     return push_notif;
   }
 
-  public boolean isOnline() {
+  @Override public boolean isOnline() {
     if (is_online) return is_online;
     if (last_seen_at == null) return false;
 
     // We consider that somebody that was online less than fifteen minutes ago is still online
     return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
+  }
+
+  @Override public boolean isRinging() {
+    return ringing;
+  }
+
+  @Override public boolean isWaiting() {
+    return waiting;
   }
 
   public void setIsOnline(boolean isOnline) {
@@ -275,8 +283,20 @@ public class User implements Serializable, BaseListInterface, Changeable,
     this.currentRoomId = currentRoomId;
   }
 
-  public String getCurrentRoomId() {
+  public void setRinging(boolean ringing) {
+    this.ringing = ringing;
+  }
+
+  public void setWaiting(boolean waiting) {
+    this.waiting = waiting;
+  }
+
+  @Override public String getCurrentRoomId() {
     return currentRoomId;
+  }
+
+  public boolean isUserInCall() {
+    return !StringUtils.isEmpty(currentRoomId) || waiting || ringing;
   }
 
   public TribeGuest asTribeGuest() {
@@ -343,7 +363,7 @@ public class User implements Serializable, BaseListInterface, Changeable,
   }
 
   @Override public int getSectionType() {
-    if (!StringUtils.isEmpty(currentRoomId)) {
+    if (isUserInCall()) {
       return LiveInviteViewHeader.CHAT_MEMBERS;
     } else {
       return LiveInviteViewHeader.ADD_FRIENDS_IN_CALL;

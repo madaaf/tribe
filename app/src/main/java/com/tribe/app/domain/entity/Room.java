@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 30/01/2017.
  */
 
-public class Room implements Serializable, LiveInviteViewHeader.LiveInviteAdapterSectionInterface {
+public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   private static final int NB_MAX_USERS_STRING = 3;
 
@@ -80,6 +81,22 @@ public class Room implements Serializable, LiveInviteViewHeader.LiveInviteAdapte
 
   public String getId() {
     return id;
+  }
+
+  @Override public boolean isOnline() {
+    return false;
+  }
+
+  @Override public boolean isRinging() {
+    return false;
+  }
+
+  @Override public boolean isWaiting() {
+    return false;
+  }
+
+  @Override public String getCurrentRoomId() {
+    return null;
   }
 
   public void setId(String id) {
@@ -182,7 +199,6 @@ public class Room implements Serializable, LiveInviteViewHeader.LiveInviteAdapte
 
   public synchronized void update(User currentUser, Room room, boolean shouldOverwrite) {
     this.name = room.name;
-    this.link = room.link;
     this.accept_random = room.accept_random;
 
     List<User> newLiveUsers = room.getLiveUsers();
@@ -288,6 +304,12 @@ public class Room implements Serializable, LiveInviteViewHeader.LiveInviteAdapte
     if (invited_users != null) total += invited_users.size();
     if (live_users != null) total += live_users.size();
     return total;
+  }
+
+  @Override public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getId() != null ? getId().hashCode() : 0);
+    return result;
   }
 
   /////////////////

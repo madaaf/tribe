@@ -40,4 +40,8 @@ public class LiveInvitePresenter implements Presenter {
   public void loadShortcuts() {
     shortcutPresenter.loadSingleShortcuts();
   }
+
+  public void createInvite(String roomId, String userId) {
+    roomPresenter.createInvite(roomId, userId);
+  }
 }

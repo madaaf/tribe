@@ -804,6 +804,7 @@ public class LiveView extends FrameLayout {
     webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
 
     viewControlsLive.setLive(live);
+    viewLiveInvite.setLive(live);
 
     hasJoined = true;
     onShouldJoinRoom.onNext(null);

@@ -13,10 +13,4 @@ public class LiveInviteViewHeader {
   public static final int CHAT_MEMBERS = 0;
   public static final int INVITE_LINK = 1;
   public static final int ADD_FRIENDS_IN_CALL = 2;
-
-  public interface LiveInviteAdapterSectionInterface {
-    String getId();
-
-    @HeaderType int getSectionType();
-  }
 }

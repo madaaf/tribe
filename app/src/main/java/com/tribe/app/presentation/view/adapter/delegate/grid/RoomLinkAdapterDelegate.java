@@ -6,21 +6,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import java.util.List;
 
 /**
  * Created by tiago on 09/04/2017
  */
 public class RoomLinkAdapterDelegate
-    extends RxAdapterDelegate<List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface>> {
+    extends RxAdapterDelegate<List<LiveInviteAdapterSectionInterface>> {
 
   protected LayoutInflater layoutInflater;
   protected Context context;
@@ -34,8 +35,8 @@ public class RoomLinkAdapterDelegate
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
   }
 
-  @Override public boolean isForViewType(
-      @NonNull List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items, int position) {
+  @Override public boolean isForViewType(@NonNull List<LiveInviteAdapterSectionInterface> items,
+      int position) {
     return items.get(position) instanceof Room;
   }
 
@@ -45,16 +46,15 @@ public class RoomLinkAdapterDelegate
     return roomLinkViewHolder;
   }
 
-  @Override public void onBindViewHolder(
-      @NonNull List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items, int position,
+  @Override
+  public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     RoomLinkViewHolder vh = (RoomLinkViewHolder) holder;
     Room room = (Room) items.get(position);
     vh.txtLink.setText(room.getLink());
   }
 
-  @Override public void onBindViewHolder(
-      @NonNull List<LiveInviteViewHeader.LiveInviteAdapterSectionInterface> items,
+  @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
 
   }
@@ -62,7 +62,7 @@ public class RoomLinkAdapterDelegate
   static class RoomLinkViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.txtLink) TextViewFont txtLink;
-    @BindView(R.id.btnShare) TextViewFont btnShare;
+    @BindView(R.id.btnShare) ImageView btnShare;
 
     public RoomLinkViewHolder(View itemView) {
       super(itemView);

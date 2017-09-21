@@ -12,7 +12,6 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.header.HomeListViewHeader;
 import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 
 /**
@@ -70,7 +69,7 @@ public class LiveInviteSectionItemDecoration extends RecyclerView.ItemDecoration
     }
   }
 
-  public void setHeaderType(Context context, @HomeListViewHeader.HeaderType int headerType,
+  public void setHeaderType(Context context, @LiveInviteViewHeader.HeaderType int headerType,
       int position) {
     switch (headerType) {
       case LiveInviteViewHeader.CHAT_MEMBERS:
@@ -100,7 +99,7 @@ public class LiveInviteSectionItemDecoration extends RecyclerView.ItemDecoration
 
   private View inflateHeaderView(RecyclerView parent) {
     return LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.item_home_list_header, parent, false);
+        .inflate(R.layout.item_live_invite_list_header, parent, false);
   }
 
   /**
