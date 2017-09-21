@@ -42,7 +42,7 @@ import rx.Observable;
 
   @Override public Observable<List<Message>> loadMessages(String[] userIds) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.loadMessages(userIds)
+    return userDataStore.loadMessages(userIds, dateUtils.getUTCDateAsString())
         .doOnError(Throwable::printStackTrace)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }

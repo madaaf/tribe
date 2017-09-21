@@ -43,12 +43,12 @@
                 {
                   user {
                     id
-                    messages(usersIds: [%1$s]) {
+                    messages(usersIds: [%1$s], before: \"%2$s\", limit:15) {
                       ...MessagePayload
                     }
                   }
                 }
-    %2$s
+    %3$s
     </string>
 
   <string name="messages.create" translatable="false">

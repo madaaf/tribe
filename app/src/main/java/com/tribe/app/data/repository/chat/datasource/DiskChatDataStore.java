@@ -25,7 +25,7 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<UserRealm> loadMessages(String[] userIds) {
+  @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
     return null;
   }
 

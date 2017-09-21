@@ -109,6 +109,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initView(context);
   }
 
+  private boolean loading = true;
+  int pastVisiblesItems, visibleItemCount, totalItemCount;
+
   void initView(Context context) {
     this.context = context;
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -281,6 +284,11 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     recyclerView.setItemAnimator(new DefaultItemAnimator());
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(messageAdapter);
+    recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
+      @Override public void onLoadMore(int current_page) {
+        Timber.e("SOEF LOAD MORE");
+      }
+    });
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -394,6 +402,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.e("SOEF successLoadingMessage" + messages.size());
+    String firstDate = messages.get(0).getCreationDate();
+    String lasteDate = messages.get(messages.size()).getCreationDate();
     networkError = false;
     messageAdapter.setItems(messages);
     scrollListToBottom();
@@ -405,8 +415,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
-    Timber.e("SOEF successLoadingMessageDisk " + messages.size());
+    Timber.e("SOEF PUT MESSAGE ON DISK " + messages.size());
     if (networkError) {
+      Timber.e("SOEF LOAD AND DISPLAY FROM DISK" + messages.size());
       messageAdapter.setItems(messages);
       scrollListToBottom();
     }

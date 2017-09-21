@@ -39,9 +39,9 @@ public class CloudChatDataStore implements ChatDataStore {
     });
   }
 
-  @Override public Observable<UserRealm> loadMessages(String[] userIds) {
+  @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
     return this.tribeApi.getUserMessage(
-        context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds),
+        context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds), dateBefore,
             context.getString(R.string.messagefragment_info)))
         .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
             JsonUtils.arrayToJson(userIds)));
