@@ -6,8 +6,10 @@ import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -35,6 +37,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   private Date updated_at;
   private transient ObservableRxHashMap<String, User> liveUsersMap;
   private transient ObservableRxHashMap<String, User> invitedUsersMap;
+  private Set<String> waitingIds;
 
   private transient CompositeSubscription subscriptions = new CompositeSubscription();
   private transient PublishSubject<User> onAddedInvitedUser = PublishSubject.create();
@@ -57,6 +60,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     invitedUsersMap = new ObservableRxHashMap<>();
     invited_users = new ArrayList<>();
     live_users = new ArrayList<>();
+    waitingIds = new HashSet<>();
 
     subscriptions.add(liveUsersMap.getObservable().doOnNext(rxLiveUserMap -> {
       if (rxLiveUserMap.changeType == ObservableRxHashMap.ADD) {
@@ -304,6 +308,22 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     if (invited_users != null) total += invited_users.size();
     if (live_users != null) total += live_users.size();
     return total;
+  }
+
+  public void userJoinedWebRTC(String id) {
+    waitingIds.add(id);
+  }
+
+  public void userJoinedStream(String id) {
+    waitingIds.remove(id);
+  }
+
+  public void userLeftWebRTC(String id) {
+    waitingIds.remove(id);
+  }
+
+  public boolean isUserWaiting(String id) {
+    return waitingIds.contains(id);
   }
 
   @Override public int hashCode() {

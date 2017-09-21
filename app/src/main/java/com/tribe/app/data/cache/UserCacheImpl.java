@@ -8,6 +8,8 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -42,9 +44,18 @@ public class UserCacheImpl implements UserCache {
 
     try {
       obsRealm.executeTransaction(realm1 -> {
-        realm1.delete(ShortcutRealm.class);
         realm1.insertOrUpdate(userRealm);
       });
+    } finally {
+      obsRealm.close();
+    }
+  }
+
+  @Override public void putShortcuts(List<ShortcutRealm> shortcutRealmList) {
+    Realm obsRealm = Realm.getDefaultInstance();
+
+    try {
+      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(shortcutRealmList));
     } finally {
       obsRealm.close();
     }
@@ -88,16 +99,16 @@ public class UserCacheImpl implements UserCache {
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) {
       to.setFbid(from.getFbid());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.TRIBE_SAVE)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) {
       to.setTribeSave(from.isTribeSave());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.INVISIBLE_MODE)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) {
       to.setInvisibleMode(from.isInvisibleMode());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.PUSH_NOTIF)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());
@@ -135,14 +146,22 @@ public class UserCacheImpl implements UserCache {
 
   // ALWAYS CALLED ON MAIN THREAD
   @Override public Observable<UserRealm> userInfos(String userId) {
-    return realm.where(UserRealm.class)
-        .equalTo(ShortcutRealm.ID, userId)
+    return Observable.combineLatest(realm.where(UserRealm.class)
+        .equalTo("id", userId)
         .findAll()
         .asObservable()
         .filter(userRealmList -> userRealmList.isLoaded() && userRealmList.size() > 0)
         .map(userRealmList -> userRealmList.get(0))
         .map(user -> realm.copyFromRealm(user))
-        .unsubscribeOn(AndroidSchedulers.mainThread());
+        .defaultIfEmpty(new UserRealm()), realm.where(ShortcutRealm.class)
+        .findAll()
+        .asObservable()
+        .filter(shortcutList -> shortcutList.isLoaded() && shortcutList.size() > 0)
+        .map(shortcutList -> realm.copyFromRealm(shortcutList))
+        .defaultIfEmpty(new ArrayList<>()), (userRealm, shortcutRealmList) -> {
+      userRealm.setShortcuts(shortcutRealmList);
+      return userRealm;
+    }).unsubscribeOn(AndroidSchedulers.mainThread());
   }
 
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
@@ -171,6 +190,9 @@ public class UserCacheImpl implements UserCache {
     Realm obsRealm = Realm.getDefaultInstance();
     UserRealm userRealm = obsRealm.where(UserRealm.class).equalTo("id", userId).findFirst();
     final UserRealm results = userRealm == null ? null : obsRealm.copyFromRealm(userRealm);
+    RealmResults<ShortcutRealm> shortcutRealmResults =
+        obsRealm.where(ShortcutRealm.class).findAll();
+    if (results != null) results.setShortcuts(obsRealm.copyFromRealm(shortcutRealmResults));
     obsRealm.close();
     return results;
   }

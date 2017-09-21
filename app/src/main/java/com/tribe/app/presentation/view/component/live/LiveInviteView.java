@@ -15,7 +15,6 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
@@ -55,8 +54,8 @@ public class LiveInviteView extends FrameLayout
 
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
-  private static final int DURATION = 300;
-  private static final float OVERSHOOT = 1.25f;
+  private static final int DURATION = 500;
+  private static final float OVERSHOOT = 0.75f;
 
   @Inject TagManager tagManager;
 
@@ -139,7 +138,7 @@ public class LiveInviteView extends FrameLayout
   }
 
   private void initResources() {
-    translationY = screenUtils.dpToPx(150);
+    translationY = -screenUtils.getHeightPx();
   }
 
   private void initRecyclerView() {
@@ -180,7 +179,7 @@ public class LiveInviteView extends FrameLayout
   private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        return position == 1 ||
+        return position == 0 ||
             (position > 0 &&
                 list.get(position).getSectionType() != list.get(position - 1).getSectionType());
       }
@@ -215,6 +214,7 @@ public class LiveInviteView extends FrameLayout
           for (User user : room.getLiveUsers()) {
             if (!user.equals(currentUser)) {
               user.setCurrentRoomId(room.getId());
+              user.setWaiting(room.isUserWaiting(user.getId()));
               computeUser(temp, user, alreadyPresent);
             }
           }
@@ -234,9 +234,7 @@ public class LiveInviteView extends FrameLayout
           return temp;
         }).subscribeOn(singleThreadExecutor).map(newListItems -> {
       DiffUtil.DiffResult diffResult = null;
-      List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
-      temp.add(new User(Recipient.ID_HEADER));
-      temp.addAll(newListItems);
+      List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>(newListItems);
 
       if (itemsList.size() != 0) {
         diffResult = DiffUtil.calculateDiff(new LiveInviteDiffCallback(itemsList, temp));

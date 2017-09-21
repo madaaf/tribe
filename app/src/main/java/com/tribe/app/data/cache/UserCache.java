@@ -19,6 +19,8 @@ import rx.Observable;
 
   void put(UserRealm userRealm);
 
+  void putShortcuts(List<ShortcutRealm> shortcutRealmList);
+
   void updateCurrentUser(UserRealm userRealm);
 
   void incrUserTimeInCall(String userId, Long timeInCall);

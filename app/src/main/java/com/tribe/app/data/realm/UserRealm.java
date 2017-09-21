@@ -39,7 +39,6 @@ public class UserRealm extends RealmObject {
   private String picture;
   private LocationRealm location;
   private boolean tribe_save = false;
-  private RealmList<ShortcutRealm> shortcuts;
   private RealmList<MessageRealm> messages;
   private boolean invisible_mode;
   private boolean push_notif = true;
@@ -47,6 +46,8 @@ public class UserRealm extends RealmObject {
   private long time_in_call = 0;
 
   @Ignore private List<Invite> invites;
+
+  @Ignore private List<ShortcutRealm> shortcuts;
 
   @Ignore private JsonObject jsonPayloadUpdate;
 
@@ -120,11 +121,11 @@ public class UserRealm extends RealmObject {
     this.phone = phone;
   }
 
-  public RealmList<ShortcutRealm> getShortcuts() {
+  public List<ShortcutRealm> getShortcuts() {
     return shortcuts;
   }
 
-  public void setShortcuts(RealmList<ShortcutRealm> shortcuts) {
+  public void setShortcuts(List<ShortcutRealm> shortcuts) {
     this.shortcuts = shortcuts;
   }
 

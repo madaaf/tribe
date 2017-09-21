@@ -212,6 +212,22 @@ public class LiveRingingView extends RelativeLayout {
     subscriptions.clear();
   }
 
+  public void hide() {
+    if (getVisibility() == View.GONE) return;
+    animate().alpha(0)
+        .setDuration(DURATION_INIT)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
+  public void show() {
+    if (getVisibility() == View.GONE) return;
+    animate().alpha(1)
+        .setDuration(DURATION_INIT)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
   public void dispose() {
     stopRinging();
     layoutCameras.removeAllViews();

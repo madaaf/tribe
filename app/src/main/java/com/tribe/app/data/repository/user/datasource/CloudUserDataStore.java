@@ -219,8 +219,9 @@ public class CloudUserDataStore implements UserDataStore {
       this.installation.setId("");
       return createOrUpdateInstall(token);
     }).flatMap(installationRecent -> {
-      if (installationRecent == null && this.installation != null && !StringUtils.isEmpty(
-          this.installation.getId())) {
+      if (installationRecent == null &&
+          this.installation != null &&
+          !StringUtils.isEmpty(this.installation.getId())) {
         this.installation.setToken("");
         this.installation.setId("");
         return createInstallation(token, this.installation);
@@ -240,13 +241,13 @@ public class CloudUserDataStore implements UserDataStore {
     StringBuilder userInputBuilder = new StringBuilder();
 
     for (Pair<String, String> value : values) {
-      if (value.first.equals(UserRealm.TRIBE_SAVE)
-          || value.first.equals(UserRealm.INVISIBLE_MODE)
-          || value.first.equals(UserRealm.PUSH_NOTIF)) {
+      if (value.first.equals(UserRealm.TRIBE_SAVE) ||
+          value.first.equals(UserRealm.INVISIBLE_MODE) ||
+          value.first.equals(UserRealm.PUSH_NOTIF)) {
         userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         userInputBuilder.append(",");
-      } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second)
-          && !value.second.equals("null"))) {
+      } else if (!value.first.equals(UserRealm.FBID) ||
+          (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
         userInputBuilder.append(value.first + ": \"" + value.second + "\"");
         userInputBuilder.append(",");
       }
@@ -565,6 +566,7 @@ public class CloudUserDataStore implements UserDataStore {
   private final Action1<UserRealm> saveToCacheUser = userRealm -> {
     if (userRealm != null) {
       CloudUserDataStore.this.userCache.put(userRealm);
+      CloudUserDataStore.this.userCache.putShortcuts(userRealm.getShortcuts());
 
       if (userRealm.getShortcuts() != null) {
         for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
@@ -660,11 +662,11 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {
-      if (response != null
-          && response.raw() != null
-          && response.raw().priorResponse() != null
-          && response.raw().priorResponse().networkResponse() != null
-          && response.raw().priorResponse().networkResponse().request() != null) {
+      if (response != null &&
+          response.raw() != null &&
+          response.raw().priorResponse() != null &&
+          response.raw().priorResponse().networkResponse() != null &&
+          response.raw().priorResponse().networkResponse().request() != null) {
         String result = response.raw().priorResponse().networkResponse().request().url().toString();
         return Observable.just(result);
       }

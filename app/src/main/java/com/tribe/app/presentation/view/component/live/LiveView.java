@@ -413,22 +413,30 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(
         Observable.merge(viewControlsLive.onOpenInvite(), viewControlsLive.onOpenChat())
-            .subscribe(aBool -> viewDarkOverlay.animate()
-                .setInterpolator(new DecelerateInterpolator())
-                .alpha(1)
-                .setDuration(DURATION)
-                .start()));
+            .subscribe(aBool -> {
+              viewDarkOverlay.animate()
+                  .setInterpolator(new DecelerateInterpolator())
+                  .alpha(1)
+                  .setDuration(DURATION)
+                  .start();
+
+              viewRinging.hide();
+            }));
 
     persistentSubscriptions.add(
         viewControlsLive.onOpenInvite().subscribe(aBoolean -> viewLiveInvite.openInvite()));
 
     persistentSubscriptions.add(
         Observable.merge(viewControlsLive.onCloseChat(), viewControlsLive.onCloseInvite())
-            .subscribe(aBool -> viewDarkOverlay.animate()
-                .setInterpolator(new DecelerateInterpolator())
-                .alpha(0)
-                .setDuration(DURATION)
-                .start()));
+            .subscribe(aBool -> {
+              viewDarkOverlay.animate()
+                  .setInterpolator(new DecelerateInterpolator())
+                  .alpha(0)
+                  .setDuration(DURATION)
+                  .start();
+
+              viewRinging.show();
+            }));
 
     persistentSubscriptions.add(
         viewControlsLive.onCloseInvite().subscribe(aBoolean -> viewLiveInvite.closeInvite()));
@@ -618,6 +626,7 @@ public class LiveView extends FrameLayout {
         .subscribe(remotePeer -> {
           if (isFirstToJoin) {
             viewRinging.stopRinging();
+            viewRinging.setVisibility(View.GONE);
             isFirstToJoin = !isFirstToJoin;
           }
 
@@ -643,6 +652,8 @@ public class LiveView extends FrameLayout {
 
           refactorShareOverlay();
           startCallLevel();
+
+          live.getRoom().userJoinedWebRTC(remotePeer.getSession().getUserId());
 
           LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
           if (row != null) row.guestAppear();
@@ -672,6 +683,8 @@ public class LiveView extends FrameLayout {
 
           refactorShareOverlay();
 
+          live.getRoom().userLeftWebRTC(remotePeer.getSession().getUserId());
+
           onNotificationRemotePeerRemoved.onNext(
               getDisplayNameFromSession(remotePeer.getSession()));
         }));
@@ -682,6 +695,8 @@ public class LiveView extends FrameLayout {
       if (row != null) {
         row.setPeerView(remotePeer.getPeerView());
       }
+
+      live.getRoom().userJoinedStream(remotePeer.getSession().getUserId());
 
       tempSubscriptions.add(remotePeer.getPeerView()
           .onNotificationRemoteJoined()

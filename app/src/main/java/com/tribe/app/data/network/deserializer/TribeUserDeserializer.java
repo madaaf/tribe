@@ -96,7 +96,7 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       e.printStackTrace();
     }
 
-    RealmList<ShortcutRealm> listShortcuts = new RealmList<>();
+    List<ShortcutRealm> listShortcuts = new ArrayList<>();
 
     if (result.has("shortcuts") && !(result.get("shortcuts") instanceof JsonNull)) {
       JsonObject resultsShortcuts = result.getAsJsonObject("shortcuts");
@@ -144,8 +144,8 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     return userRealm;
   }
 
-  private void manageShortcuts(Gson gson, JsonObject jsonObj,
-      RealmList<ShortcutRealm> listShortcuts, String category) {
+  private void manageShortcuts(Gson gson, JsonObject jsonObj, List<ShortcutRealm> listShortcuts,
+      String category) {
     if (jsonObj.has(category) && !(jsonObj.get(category) instanceof JsonNull)) {
       JsonArray shortcutsOnline = jsonObj.getAsJsonArray(category);
       for (JsonElement obj : shortcutsOnline) {
