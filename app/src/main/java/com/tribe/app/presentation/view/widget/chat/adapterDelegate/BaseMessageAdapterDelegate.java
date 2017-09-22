@@ -19,17 +19,22 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by madaaflak on 21/09/2017.
  */
 
 public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
+
   final private static int DIFF_TIMING_ALLOWED_MINUTE = 2;
   protected DateUtils dateUtils;
 
   protected Context context;
   protected LayoutInflater layoutInflater;
+
+  protected PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
 
   public BaseMessageAdapterDelegate(Context context) {
     this.context = context;
@@ -87,6 +92,9 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     } else {
       vh.daySeparatorContainer.setVisibility(View.VISIBLE);
     }
+
+
+    //onMessagePending.onNext(vh.getLayoutContent());
   }
 
   protected abstract BaseTextViewHolder getViewHolder(ViewGroup parent);
@@ -105,5 +113,11 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
+
+    protected abstract ViewGroup getLayoutContent();
+  }
+
+  public Observable<List<Object>> onMessagePending() {
+    return onMessagePending;
   }
 }

@@ -6,11 +6,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +42,18 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageEmoji m = (MessageEmoji) items.get(position);
 
     vh.emoji.setText(m.getEmoji());
-    //vh.txtName.setText(contact.getName());
+
+    if (m.isPending()) {
+      vh.container.setAlpha(0.4f);
+      List<Object> list = new ArrayList<>();
+      list.add(MessageRealm.EMOJI);
+      list.add(m.getEmoji());
+      list.add(vh.container);
+      onMessagePending.onNext(list);
+      m.setPending(false);
+    } else {
+      vh.container.setAlpha(1f);
+    }
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
@@ -51,6 +65,11 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
 
   static class MessageEmojiViewHolder extends BaseTextViewHolder {
     @BindView(R.id.emoji) public TextViewFont emoji;
+    @BindView(R.id.container) public LinearLayout container;
+
+    @Override protected ViewGroup getLayoutContent() {
+      return container;
+    }
 
     public MessageEmojiViewHolder(View itemView) {
       super(itemView);

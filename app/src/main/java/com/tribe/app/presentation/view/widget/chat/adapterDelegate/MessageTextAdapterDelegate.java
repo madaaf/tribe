@@ -6,12 +6,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +43,18 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageTextViewHolder vh = (MessageTextViewHolder) holder;
 
     vh.message.setText(m.getMessage());
+
+    if (m.isPending()) {
+      vh.container.setAlpha(0.4f);
+      List<Object> list = new ArrayList<>();
+      list.add(MessageRealm.TEXT);
+      list.add(m.getMessage());
+      list.add(vh.container);
+      onMessagePending.onNext(list);
+      m.setPending(false);
+    } else {
+      vh.container.setAlpha(1f);
+    }
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
@@ -52,11 +67,15 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
   static class MessageTextViewHolder extends BaseTextViewHolder {
 
     @BindView(R.id.message) public TextViewFont message;
+    @BindView(R.id.container) public LinearLayout container;
 
     MessageTextViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
 
+    @Override protected ViewGroup getLayoutContent() {
+      return container;
+    }
   }
 }

@@ -28,7 +28,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Object>> onPictureTaken = PublishSubject.create();
+  private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
+  // private PublishSubject<View> onMessagePending = PublishSubject.create();
 
   public MessageAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -49,7 +50,15 @@ public class MessageAdapter extends RecyclerView.Adapter {
     delegatesManager.addDelegate(messageImageAdapterDelegate);
 
     items = new ArrayList<>();
-    // subscriptions.add(messageAdapterDelegate.onPictureTaken().subscribe(onPictureTaken));
+
+    subscriptions.add(messageTextAdapterDelegate.onMessagePending().subscribe(onMessagePending));
+    subscriptions.add(messageEmojiAdapterDelegate.onMessagePending().subscribe(onMessagePending));
+    subscriptions.add(messageImageAdapterDelegate.onMessagePending().subscribe(onMessagePending));
+
+   /* subscriptions.add(Observable.merge(messageEmojiAdapterDelegate.onMessagePending(),
+        messageEmojiAdapterDelegate.onMessagePending(),
+        messageImageAdapterDelegate.onMessagePending()).subscribe(onMessagePending));*/
+
   }
 
   @Override public int getItemViewType(int position) {
@@ -73,7 +82,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
     super.notifyDataSetChanged();
   }
 
-  public Observable<List<Object>> onPictureTaken() {
+ /* public Observable<List<Object>> onPictureTaken() {
     return onPictureTaken;
+  }*/
+
+  public Observable<List<Object>> onMessagePending() {
+    return onMessagePending;
   }
 }

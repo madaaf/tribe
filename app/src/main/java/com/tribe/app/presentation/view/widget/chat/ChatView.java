@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -148,7 +149,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.getCreatedMessages();
   }
 
-  private void sendPicture(Uri uri, ImageView imageView) {
+  private void sendPicture(Uri uri, View imageView) {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     try {
@@ -173,10 +174,19 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void initSubscriptions() {
 
-    subscriptions.add(messageAdapter.onPictureTaken().subscribe(list -> {
-      Timber.e("SOEF PN PICTURE TALEN");
-      sendPicture((Uri) list.get(0), (ImageView) list.get(1));
+    subscriptions.add(messageAdapter.onMessagePending().subscribe(list -> {
+      String type = (String) list.get(0);
+      View view = (View) list.get(2);
+      if (type.equals(MessageRealm.IMAGE)) {
+        Uri uri = (Uri) list.get(1);
+        sendPicture(uri, view);
+      } else {
+        String data = (String) list.get(1);
+        messagePresenter.createMessage(arrIds, data, type, view);
+      }
     }));
+
+
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
         .delay(200, TimeUnit.MILLISECONDS)
@@ -346,12 +356,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       case MESSAGE_TEXT:
         message = new MessageText();
         ((MessageText) message).setMessage(content);
-        messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT, null);
+        // messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT, null);
         break;
       case MESSAGE_EMOJI:
         message = new MessageEmoji(content);
         ((MessageEmoji) message).setEmoji(content);
-        messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI, null);
+        // messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI, null);
         break;
       case MESSAGE_IMAGE:
         message = new MessageImage();
@@ -365,6 +375,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setType(type);
     message.setAuthor(user);
     message.setCreationDate(dateUtils.getUTCDateAsString());
+    message.setPending(true);
     items.add(message);
     messageAdapter.setItems(items);
     scrollListToBottom();
@@ -436,9 +447,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     Timber.e("SOEF errorLoadingMessageDisk");
   }
 
-  @Override public void successMessageCreated(Message message, ImageView imageView) {
+  @Override public void successMessageCreated(Message message, View view) {
     Timber.e("SOEF successMessageCreated " + message.toString());
-    if (imageView != null) imageView.animate().alpha(1f).setDuration(300).start();
+    if (view != null) view.animate().alpha(1f).setDuration(300).start();
   }
 
   @Override public void errorMessageCreation() {

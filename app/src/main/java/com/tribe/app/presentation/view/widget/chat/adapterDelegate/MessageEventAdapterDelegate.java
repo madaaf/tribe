@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -53,6 +54,11 @@ public class MessageEventAdapterDelegate extends BaseMessageAdapterDelegate {
   static class MessageEventViewHolder extends BaseTextViewHolder {
     @BindView(R.id.viewAvatarNotif) public AvatarView avatarNotif;
     @BindView(R.id.notifContent) public TextViewFont notifContent;
+
+    @Override protected ViewGroup getLayoutContent() {
+      return null;
+    }
+
 
     MessageEventViewHolder(View itemView) {
       super(itemView);

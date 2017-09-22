@@ -11,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +59,19 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
         vh.image.setImageDrawable(circularBitmapDrawable);
       }
     });
+
+    if (m.isPending()) {
+      vh.container.setAlpha(0.4f);
+      List<Object> list = new ArrayList<>();
+      list.add(MessageRealm.IMAGE);
+      list.add(uri);
+      list.add(vh.container);
+      onMessagePending.onNext(list);
+      m.setPending(false);
+      m.setUri(null);
+    } else {
+      vh.container.setAlpha(1f);
+    }
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
@@ -66,10 +82,14 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
 
   static class MessageImageViewHolder extends BaseTextViewHolder {
     @BindView(R.id.image) public ImageView image;
+    @BindView(R.id.container) public LinearLayout container;
+
+    @Override protected ViewGroup getLayoutContent() {
+      return container;
+    }
 
     MessageImageViewHolder(View itemView) {
       super(itemView);
     }
-
   }
 }

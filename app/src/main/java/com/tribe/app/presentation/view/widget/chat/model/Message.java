@@ -21,8 +21,17 @@ public class Message {
   private String id;
   private @Type String type;
   private String creationDate;
+  private boolean isPending = false;
 
   public Message() {
+  }
+
+  public boolean isPending() {
+    return isPending;
+  }
+
+  public void setPending(boolean pending) {
+    isPending = pending;
   }
 
   public Message(String id) {

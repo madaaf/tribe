@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.view.View;
 import android.widget.ImageView;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.CreatedMessages;
@@ -48,9 +49,9 @@ public class MessagePresenter implements Presenter {
     userMessageInfos.execute(new LoadMessageSubscriber());
   }
 
-  public void createMessage(String[] userIds, String data, String type, ImageView imageView) {
+  public void createMessage(String[] userIds, String data, String type, View view) {
     createMessage.setParams(userIds, data, type);
-    createMessage.execute(new CreateMessageSubscriber(imageView));
+    createMessage.execute(new CreateMessageSubscriber(view));
   }
 
   @Override public void onViewAttached(MVPView view) {
@@ -92,10 +93,10 @@ public class MessagePresenter implements Presenter {
   }
 
   private class CreateMessageSubscriber extends DefaultSubscriber<Message> {
-    private ImageView imageView;
+    private View view;
 
-    public CreateMessageSubscriber(ImageView imageView) {
-      this.imageView = imageView;
+    public CreateMessageSubscriber(View view) {
+      this.view = view;
     }
 
     @Override public void onCompleted() {
@@ -107,7 +108,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onNext(Message message) {
-      if (chatMVPView != null) chatMVPView.successMessageCreated(message, imageView);
+      if (chatMVPView != null) chatMVPView.successMessageCreated(message, view);
     }
   }
 
