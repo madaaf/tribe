@@ -99,6 +99,8 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
 
+  @BindView(R.id.btnEdit) ImageView btnEdit;
+
   @BindViews({
       R.id.btnExpand, R.id.layoutGame
   }) List<View> viewToHideFilters;
@@ -157,6 +159,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onGameOptions = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
+  private PublishSubject<Void> onEdit = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -226,6 +229,8 @@ public class LiveControlsView extends FrameLayout {
             btnFilterOff.getLocationInWindow(btnFilterLocation);
           }
         });
+
+    btnEdit.setTranslationY(-screenUtils.getHeightPx() >> 1);
   }
 
   private void initFilters() {
@@ -626,6 +631,10 @@ public class LiveControlsView extends FrameLayout {
   //  ONCLICK  //
   ///////////////
 
+  @OnClick(R.id.btnEdit) void clickEdit() {
+    onEdit.onNext(null);
+  }
+
   @OnClick(R.id.btnLeave) void clickLeave() {
     onLeave.onNext(null);
   }
@@ -820,6 +829,7 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Boolean> onOpenInvite() {
     return viewStatusName.onOpenView().doOnNext(aBoolean -> {
       invitesMenuOn = true;
+      showView(btnEdit);
       showMenuTop(viewToHideTopInvites);
     });
   }
@@ -827,7 +837,12 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Boolean> onCloseInvite() {
     return viewStatusName.onCloseView().doOnNext(aBoolean -> {
       invitesMenuOn = false;
+      hideView(btnEdit, true);
       closeMenuTop(viewToHideTopInvites);
     });
+  }
+
+  public Observable<Void> onEdit() {
+    return onEdit;
   }
 }

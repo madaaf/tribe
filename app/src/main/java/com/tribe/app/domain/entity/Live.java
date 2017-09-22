@@ -27,6 +27,7 @@ public class Live implements Serializable {
   private @LiveType String type;
   private Room room;
   private String linkId;
+  private String shortcutId;
   private boolean fromRoom = false;
   private List<User> users;
   private List<String> userIds;
@@ -37,9 +38,11 @@ public class Live implements Serializable {
   private boolean intent = false;
   private @LiveActivity.Source String source;
   private boolean isDiceDragedInRoom = false;
+  private Shortcut shortcut;
 
   private transient CompositeSubscription subscriptions;
   private transient PublishSubject<Room> onRoomUpdated;
+  private transient PublishSubject<Shortcut> onShortcutUpdated;
 
   private Live(Builder builder) {
     this.room = builder.room;
@@ -53,11 +56,13 @@ public class Live implements Serializable {
     this.url = builder.url;
     this.source = builder.source;
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
+    this.shortcutId = builder.shortcutId;
   }
 
   public void init() {
     subscriptions = new CompositeSubscription();
     onRoomUpdated = PublishSubject.create();
+    onShortcutUpdated = PublishSubject.create();
   }
 
   public void dispose() {
@@ -78,6 +83,15 @@ public class Live implements Serializable {
     }
 
     setUsers(room.getLiveUsers());
+  }
+
+  public Shortcut getShortcut() {
+    return shortcut;
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
+    if (onShortcutUpdated != null) onShortcutUpdated.onNext(this.shortcut);
   }
 
   public String getType() {
@@ -211,6 +225,14 @@ public class Live implements Serializable {
     return linkId;
   }
 
+  public String getShortcutId() {
+    return shortcutId;
+  }
+
+  public void setShortcutId(String shortcutId) {
+    this.shortcutId = shortcutId;
+  }
+
   public static class Builder {
 
     private Room room;
@@ -223,6 +245,7 @@ public class Live implements Serializable {
     private boolean intent = false;
     private boolean isDiceDragedInRoom = false;
     private @LiveActivity.Source String source;
+    private String shortcutId;
 
     public Builder(@LiveType String type) {
       this.type = type;
@@ -235,6 +258,11 @@ public class Live implements Serializable {
 
     public Builder users(User... users) {
       this.users = new ArrayList<>(Arrays.asList(users));
+      return this;
+    }
+
+    public Builder shortcutId(String shortcutId) {
+      this.shortcutId = shortcutId;
       return this;
     }
 
@@ -289,5 +317,9 @@ public class Live implements Serializable {
 
   public Observable<Room> onRoomUpdated() {
     return onRoomUpdated;
+  }
+
+  public Observable<Shortcut> onShortcutUpdated() {
+    return onShortcutUpdated;
   }
 }

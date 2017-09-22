@@ -378,6 +378,10 @@
     }
   </string>
 
+  <string name="removeRoom" translatable="false">
+    removeRoom ( roomId : \"%1$s\")
+  </string>
+
   <string name="roomFragment_infos" translatable="false">
     fragment RoomInfos on Room {
       id

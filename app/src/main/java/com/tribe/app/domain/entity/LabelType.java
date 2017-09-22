@@ -32,6 +32,8 @@ public class LabelType implements Serializable {
 
   public static final String CLEAR_MESSAGES = "clearMessages";
 
+  public static final String CHANGE_NAME = "changeName";
+  public static final String MARK_AS_READ = "markAsRead";
   public static final String HIDE = "hide";
   public static final String MUTE = "mute";
   public static final String UNMUTE = "unmute";

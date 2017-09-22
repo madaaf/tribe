@@ -22,7 +22,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:alpha="0"
-      android:background="@color/black.opacity.50"
+      android:background="@color/black.opacity.70"
       />
 
   <com.tribe.app.presentation.view.component.live.LiveInviteView

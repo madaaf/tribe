@@ -6,6 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -182,6 +183,18 @@ public class ShortcutRealm extends RealmObject {
 
   public static boolean isKeyABool(String key) {
     return key.equals(PINNED) || key.equals(READ) || key.equals(MUTE);
+  }
+
+  public boolean isSameShortcut(String... userIds) {
+    List<String> memberIds = getMembersIds();
+    List<String> userIdsList = Arrays.asList(userIds);
+    if (userIds.length == members.size()) {
+      memberIds.removeAll(userIdsList);
+    }
+
+    if (memberIds.size() == 0) return true;
+
+    return false;
   }
 
   public static boolean isKeyEnum(String key) {

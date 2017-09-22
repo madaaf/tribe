@@ -14,7 +14,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.widget.chat.Message;
 import java.util.List;
 import java.util.Set;
 import rx.Observable;
@@ -54,7 +53,6 @@ public interface UserRepository {
    * @param userId the id of the user for which we get the info
    */
   Observable<User> userInfos(final String userId);
-
 
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 
@@ -136,6 +134,8 @@ public interface UserRepository {
    * Get an {@link Observable} which will emit a {@link List<Shortcut>}
    */
   Observable<List<Shortcut>> shortcuts();
+
+  Observable<Shortcut> shortcutForUserIds(String... userIds);
 
   Observable<List<Shortcut>> blockedShortcuts();
 

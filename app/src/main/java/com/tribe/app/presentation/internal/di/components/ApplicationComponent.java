@@ -14,6 +14,7 @@ import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.network.job.DeleteContactsABJob;
 import com.tribe.app.data.network.job.DeleteContactsFBJob;
+import com.tribe.app.data.network.job.DeleteRoomJob;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideShortcutJob;
@@ -228,6 +229,8 @@ public interface ApplicationComponent {
   void inject(DeleteContactsFBJob deleteContactsFBJob);
 
   void inject(RemoveNewStatusContactJob removeNewStatusContactJob);
+
+  void inject(DeleteRoomJob deleteRoomJob);
 
   // SERVICES
   void inject(WSService wsService);

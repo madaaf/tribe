@@ -719,6 +719,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
     profilePresenter.unsubscribeLoadShortcuts();
   }
 
+  @Override public void onShortcut(Shortcut shortcut) {
+
+  }
+
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {

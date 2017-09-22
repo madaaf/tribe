@@ -312,6 +312,10 @@ public class LiveInviteView extends FrameLayout
     onShortcutUpdate.onNext(singleShortcutList);
   }
 
+  @Override public void onShortcut(Shortcut shortcut) {
+
+  }
+
   @Override public Context context() {
     return null;
   }

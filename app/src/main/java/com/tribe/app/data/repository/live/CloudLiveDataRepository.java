@@ -38,7 +38,9 @@ import rx.Observable;
   }
 
   @Override public Observable<Void> deleteRoom(String roomId) {
-    return null;
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.deleteRoom(roomId);
   }
 
   @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {

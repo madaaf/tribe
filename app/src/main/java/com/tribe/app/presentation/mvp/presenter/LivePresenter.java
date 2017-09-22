@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.job.DeleteRoomJob;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.User;
@@ -29,7 +31,7 @@ public class LivePresenter implements Presenter {
   private LiveMVPView liveMVPView;
 
   // USECASES
-
+  private JobManager jobManager;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
   private GetNamesPostItGame getNamesPostItGame;
@@ -43,11 +45,12 @@ public class LivePresenter implements Presenter {
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
   private FbIdUpdatedSubscriber fbIdUpdatedSubscriber;
 
-  @Inject public LivePresenter(RoomPresenter roomPresenter, ShortcutPresenter shortcutPresenter,
-      GetRecipientInfos getRecipientInfos, GetCloudUserInfosList cloudUserInfosList,
-      GetNamesPostItGame getNamesPostItGame, ReportUser reportUser, FbIdUpdated fbIdUpdated,
-      GetDataChallengesGame getDataChallengesGame, IncrUserTimeInCall incrUserTimeInCall,
-      GetNamesDrawGame getNamesDrawGame) {
+  @Inject public LivePresenter(JobManager jobManager, RoomPresenter roomPresenter,
+      ShortcutPresenter shortcutPresenter, GetRecipientInfos getRecipientInfos,
+      GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
+      ReportUser reportUser, FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
+      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame) {
+    this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
     this.roomPresenter = roomPresenter;
     this.getRecipientInfos = getRecipientInfos;
@@ -218,6 +221,10 @@ public class LivePresenter implements Presenter {
     roomPresenter.createRoom(live);
   }
 
+  public void deleteRoom(String roomId) {
+    jobManager.addJobInBackground(new DeleteRoomJob(roomId));
+  }
+
   public void roomAcceptRandom(String roomId) {
     roomPresenter.roomAcceptRandom(roomId);
   }
@@ -242,6 +249,10 @@ public class LivePresenter implements Presenter {
     shortcutPresenter.updateShortcutStatus(shortcutId, status);
   }
 
+  public void updateShortcutName(String shortcutId, String name) {
+    shortcutPresenter.updateShortcutName(shortcutId, name);
+  }
+
   public void readShortcut(String shortcutId) {
     shortcutPresenter.readShortcut(shortcutId);
   }
@@ -256,5 +267,9 @@ public class LivePresenter implements Presenter {
 
   public void loadSingleShortcuts() {
     shortcutPresenter.loadSingleShortcuts();
+  }
+
+  public void shortcutForUserIds(List<String> userIds) {
+    shortcutPresenter.shortcutForUserIds(userIds.toArray(new String[userIds.size()]));
   }
 }

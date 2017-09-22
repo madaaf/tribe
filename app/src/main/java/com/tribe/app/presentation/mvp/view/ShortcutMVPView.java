@@ -21,4 +21,6 @@ public interface ShortcutMVPView extends MVPView {
   void onShortcutUpdatedError();
 
   void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList);
+
+  void onShortcut(Shortcut shortcut);
 }

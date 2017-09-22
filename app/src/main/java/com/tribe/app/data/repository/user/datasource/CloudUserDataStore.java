@@ -817,6 +817,10 @@ public class CloudUserDataStore implements UserDataStore {
     return null;
   }
 
+  @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
+    return null;
+  }
+
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
     return null;
   }

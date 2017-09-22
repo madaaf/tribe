@@ -15,6 +15,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -126,6 +128,11 @@ public class LiveStatusNameView extends FrameLayout {
     txtNameActive.setText(str);
   }
 
+  private void setShortcutTitle() {
+    txtNameInactive.setText(live.getShortcut().getName());
+    txtNameActive.setText(live.getShortcut().getName());
+  }
+
   private void setPeopleCountTitle(int total) {
     String str = getContext().getString(R.string.shortcut_members_count, total);
     txtNameInactive.setText(str);
@@ -167,21 +174,34 @@ public class LiveStatusNameView extends FrameLayout {
 
     if (!live.hasUsers() || live.getUserIds().size() <= 1) {
       setAddFriendsTitle();
+    } else if (live.getShortcut() != null && !StringUtils.isEmpty(live.getShortcut().getName())) {
+      setShortcutTitle();
     } else {
       setPeopleCountTitle(live.getUserIds().size());
     }
 
+    if (live.onShortcutUpdated() == null) return;
+    subscriptions.add(live.onShortcutUpdated().subscribe(shortcut -> refactorTitle()));
+
     if (live.onRoomUpdated() == null) return;
-    subscriptions.add(live.onRoomUpdated().subscribe(room -> {
-      if (!StringUtils.isEmpty(room.getName())) {
-        txtNameInactive.setText(room.getName());
-        txtNameActive.setText(room.getName());
-      } else if (room.nbUsersTotal() <= 1) {
+    subscriptions.add(live.onRoomUpdated().subscribe(room -> refactorTitle()));
+  }
+
+  private void refactorTitle() {
+    Room room = live.getRoom();
+    Shortcut shortcut = live.getShortcut();
+
+    if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
+      setShortcutTitle();
+    } else if (room != null) {
+      if (room.nbUsersTotal() <= 1) {
         setAddFriendsTitle();
       } else {
         setPeopleCountTitle(room.nbUsersTotal());
       }
-    }));
+    } else {
+      setAddFriendsTitle();
+    }
   }
 
   /////////////////

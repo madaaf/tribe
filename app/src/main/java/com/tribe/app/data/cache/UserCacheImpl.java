@@ -210,6 +210,24 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
+  @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
+    return realm.where(ShortcutRealm.class)
+        .in("members.id", userIds)
+        .findAll()
+        .asObservable()
+        .filter(shortcutList -> shortcutList.isLoaded())
+        .map(shortcutList -> {
+          for (ShortcutRealm shortcutRealm : shortcutList) {
+            if (shortcutRealm.isSameShortcut(userIds)) {
+              return realm.copyFromRealm(shortcutRealm);
+            }
+          }
+
+          return null;
+        })
+        .unsubscribeOn(AndroidSchedulers.mainThread());
+  }
+
   @Override public void removeShortcut(String shortcutId) {
     Realm otherRealm = Realm.getDefaultInstance();
     try {
@@ -236,6 +254,8 @@ public class UserCacheImpl implements UserCache {
         shortcutRealmDB.setMute(shortcutRealm.isMute());
         shortcutRealmDB.setStatus(shortcutRealm.getStatus());
         shortcutRealmDB.setRead(shortcutRealm.isRead());
+        shortcutRealmDB.setName(shortcutRealm.getName());
+        shortcutRealmDB.setPicture(shortcutRealm.getPicture());
       });
     } finally {
       realm.close();

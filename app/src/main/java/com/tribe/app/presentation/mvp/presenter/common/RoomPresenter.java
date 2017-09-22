@@ -10,6 +10,7 @@ import com.tribe.app.domain.interactor.live.BuzzRoom;
 import com.tribe.app.domain.interactor.live.CreateInvite;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.live.DeleteRoom;
 import com.tribe.app.domain.interactor.live.GetRoom;
 import com.tribe.app.domain.interactor.live.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.live.RemoveInvite;
@@ -32,6 +33,7 @@ public class RoomPresenter implements Presenter {
   private GetRoom getRoom;
   private CreateRoom createRoom;
   private UpdateRoom updateRoom;
+  private DeleteRoom deleteRoom;
   private BuzzRoom buzzRoom;
   private CreateInvite createInvite;
   private RemoveInvite removeInvite;
@@ -44,8 +46,9 @@ public class RoomPresenter implements Presenter {
   private RoomUpdatedSubscriber roomUpdatedSubscriber;
 
   @Inject public RoomPresenter(GetRoom getRoom, CreateRoom createRoom, UpdateRoom updateRoom,
-      BuzzRoom buzzRoom, CreateInvite createInvite, RemoveInvite removeInvite,
-      DeclineInvite declineInvite, RandomRoomAssigned randomRoomAssigned, RoomUpdated roomUpdated) {
+      DeleteRoom deleteRoom, BuzzRoom buzzRoom, CreateInvite createInvite,
+      RemoveInvite removeInvite, DeclineInvite declineInvite, RandomRoomAssigned randomRoomAssigned,
+      RoomUpdated roomUpdated) {
     this.getRoom = getRoom;
     this.createRoom = createRoom;
     this.updateRoom = updateRoom;
@@ -55,12 +58,14 @@ public class RoomPresenter implements Presenter {
     this.declineInvite = declineInvite;
     this.randomRoomAssigned = randomRoomAssigned;
     this.roomUpdated = roomUpdated;
+    this.deleteRoom = deleteRoom;
   }
 
   @Override public void onViewDetached() {
     getRoom.unsubscribe();
     createRoom.unsubscribe();
     updateRoom.unsubscribe();
+    deleteRoom.unsubscribe();
     buzzRoom.unsubscribe();
     createInvite.unsubscribe();
     removeInvite.unsubscribe();
@@ -116,6 +121,11 @@ public class RoomPresenter implements Presenter {
         roomMVPView.onRoomInfos(room);
       }
     }
+  }
+
+  public void deleteRoom(String roomId) {
+    deleteRoom.setup(roomId);
+    deleteRoom.execute(new DefaultSubscriber());
   }
 
   public void buzzRoom(String roomId) {

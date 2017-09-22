@@ -590,7 +590,8 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
-    tempSubscriptions.add(webRTCRoom.onJoined().subscribe(onJoined));
+    tempSubscriptions.add(
+        webRTCRoom.onJoined().doOnNext(tribeJoinRoom -> hasJoined = true).subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
 
@@ -811,6 +812,10 @@ public class LiveView extends FrameLayout {
     return live;
   }
 
+  public boolean hasJoined() {
+    return hasJoined;
+  }
+
   public void start(Live live) {
     this.live = live;
     this.fbId = live.hasUsers() ? live.getUsers().get(0).getFbid() : "";
@@ -821,7 +826,6 @@ public class LiveView extends FrameLayout {
     viewControlsLive.setLive(live);
     viewLiveInvite.setLive(live);
 
-    hasJoined = true;
     onShouldJoinRoom.onNext(null);
 
     // TODO WHAT DO WE DO WITH THIS
@@ -1592,6 +1596,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<String> onDismissInvite() {
     return onDismissInvite;
+  }
+
+  public Observable<Void> onEdit() {
+    return viewControlsLive.onEdit();
   }
 }
 

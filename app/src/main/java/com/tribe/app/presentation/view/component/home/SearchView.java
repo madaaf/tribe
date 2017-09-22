@@ -778,4 +778,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
 
   }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
+  }
 }

@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
@@ -20,6 +19,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +94,7 @@ public final class DialogFactory {
     });
   }
 
-  public static Observable<String> numberPadDialog(Context context, String title,
+  public static Observable<String> inputDialog(Context context, String title, String body,
       String positiveMessage, String negativeMessage, int inputType) {
     return Observable.create((Subscriber<? super String> subscriber) -> {
 
@@ -107,10 +107,12 @@ public final class DialogFactory {
             new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
       }
 
-      final EditText et = new EditText(themedContext);
+      View parent = LayoutInflater.from(context).inflate(R.layout.view_edit_shortcut_name, null);
+      EditTextFont et = (EditTextFont) parent.findViewById(R.id.editTxtName);
       et.setInputType(inputType);
 
       final AlertDialog ad = new AlertDialog.Builder(themedContext).setTitle(title)
+          .setMessage(body)
           .setPositiveButton(positiveMessage, (dialog, which) -> {
 
             if (et.getText() != null) {
@@ -122,7 +124,7 @@ public final class DialogFactory {
           .setNegativeButton(negativeMessage, (dialog, which) -> {
             subscriber.onCompleted();
           })
-          .setView(et)
+          .setView(parent)
           .create();
 
       subscriber.add(Subscriptions.create(ad::dismiss));
@@ -198,6 +200,10 @@ public final class DialogFactory {
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
+      moreTypeList.add(new LabelType(
+          EmojiParser.demojizedText(context.getString(R.string.shortcut_update_name_title)),
+          LabelType.CHANGE_NAME));
+
       if (!shortcut.isMute()) {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),

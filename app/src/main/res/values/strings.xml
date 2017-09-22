@@ -756,4 +756,8 @@
 	<string name="shortcut_action_with">with</string>
 	<string name="chat_event_join">joined live</string>
 	<string name="chat_event_leave">left live</string>
+	<string name="chat_live_status_none">Chat</string>
+	<string name="chat_live_status_new">New</string>
+	<string name="chat_live_status_hide">Hide</string>
+	<string name="chat_quickchat_back_to_group">Group</string>
 </resources>

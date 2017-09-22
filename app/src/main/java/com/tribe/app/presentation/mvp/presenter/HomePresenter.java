@@ -305,6 +305,10 @@ public class HomePresenter implements Presenter {
     shortcutPresenter.updateShortcutStatus(shortcutId, status);
   }
 
+  public void updateShortcutName(String shortcutId, String name) {
+    shortcutPresenter.updateShortcutName(shortcutId, name);
+  }
+
   public void readShortcut(String shortcutId) {
     shortcutPresenter.readShortcut(shortcutId);
   }

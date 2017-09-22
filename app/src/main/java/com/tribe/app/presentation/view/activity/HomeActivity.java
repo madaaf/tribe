@@ -13,6 +13,7 @@ import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
@@ -478,6 +480,14 @@ public class HomeActivity extends BaseActivity
                 } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
                   Invite invite = (Invite) recipient;
                   homeGridPresenter.declineInvite(invite.getId());
+                } else if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  subscriptions.add(DialogFactory.inputDialog(this,
+                      getString(R.string.shortcut_update_name_title),
+                      getString(R.string.shortcut_update_name_description),
+                      getString(R.string.shortcut_update_name_validate),
+                      getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
+                      .subscribe(s -> homeGridPresenter.updateShortcutName(shortcut.getId(), s)));
                 }
               }
 
@@ -907,9 +917,9 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setHasFixedSize(true);
     recyclerViewFriends.setLayoutManager(layoutManager);
     recyclerViewFriends.setItemAnimator(null);
-    recyclerViewFriends.addItemDecoration(
-        new HomeListDividerDecoration(context(), ContextCompat.getColor(context(), R.color.grey_divider),
-            screenUtils.dpToPx(0.5f), getSectionCallback(homeGridAdapter.getItems())));
+    recyclerViewFriends.addItemDecoration(new HomeListDividerDecoration(context(),
+        ContextCompat.getColor(context(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
+        getSectionCallback(homeGridAdapter.getItems())));
     homeGridAdapter.setItems(new ArrayList<>());
     recyclerViewFriends.setAdapter(homeGridAdapter);
 
@@ -948,9 +958,14 @@ public class HomeActivity extends BaseActivity
         viewFadeInSwipe.setAlpha(0);
       } else {
         Recipient recipient = homeGridAdapter.getItemAtPosition(pairPosDx.first);
-        viewLiveFake.setLive(LiveActivity.getLive(recipient, PaletteGrid.get(pairPosDx.first),
+        Live live = LiveActivity.getLive(recipient, PaletteGrid.get(pairPosDx.first),
             recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                : LiveActivity.SOURCE_GRID), recipient);
+                : LiveActivity.SOURCE_GRID);
+        if (recipient instanceof Shortcut) {
+          Shortcut shortcut = (Shortcut) recipient;
+          live.setShortcut(shortcut);
+        }
+        viewLiveFake.setLive(live, recipient);
         viewFadeInSwipe.setVisibility(View.VISIBLE);
         viewFadeInSwipe.setTranslationX(pairPosDx.second);
         viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
@@ -1014,6 +1029,10 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
 
   }
 

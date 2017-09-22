@@ -10,7 +10,6 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -177,6 +176,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
     return userCache.shortcuts();
+  }
+
+  @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
+    return userCache.shortcutForUserIds(userIds);
   }
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {

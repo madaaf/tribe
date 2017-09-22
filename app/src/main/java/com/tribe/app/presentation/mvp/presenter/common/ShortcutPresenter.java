@@ -7,6 +7,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.CreateShortcut;
 import com.tribe.app.domain.interactor.user.GetDiskBlockedHiddenSingleShortcuts;
 import com.tribe.app.domain.interactor.user.GetDiskSingleShortcut;
+import com.tribe.app.domain.interactor.user.GetShortcutForUserIds;
 import com.tribe.app.domain.interactor.user.RemoveShortcut;
 import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.mvp.presenter.Presenter;
@@ -24,6 +25,7 @@ public class ShortcutPresenter implements Presenter {
   // USECASES
   private GetDiskSingleShortcut getDiskSingleShortcut;
   private GetDiskBlockedHiddenSingleShortcuts getDiskBlockedShortcuts;
+  private GetShortcutForUserIds getShortcutForUserIds;
   private CreateShortcut createShortcut;
   private UpdateShortcut updateShortcut;
   private RemoveShortcut removeShortcut;
@@ -34,15 +36,18 @@ public class ShortcutPresenter implements Presenter {
   private RemoveShortcutSubscriber removeShortcutSubscriber;
   private SingleShortcutsSubscriber singleShortcutsSubscriber;
   private BlockedSingleShortcutsSubscriber blockedSingleShortcutsSubscriber;
+  private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;
 
   @Inject public ShortcutPresenter(CreateShortcut createShortcut, UpdateShortcut updateShortcut,
       RemoveShortcut removeShortcut, GetDiskSingleShortcut getDiskSingleShortcut,
-      GetDiskBlockedHiddenSingleShortcuts getDiskBlockedShortcuts) {
+      GetDiskBlockedHiddenSingleShortcuts getDiskBlockedShortcuts,
+      GetShortcutForUserIds getShortcutForUserIds) {
     this.createShortcut = createShortcut;
     this.updateShortcut = updateShortcut;
     this.removeShortcut = removeShortcut;
     this.getDiskSingleShortcut = getDiskSingleShortcut;
     this.getDiskBlockedShortcuts = getDiskBlockedShortcuts;
+    this.getShortcutForUserIds = getShortcutForUserIds;
   }
 
   @Override public void onViewDetached() {
@@ -51,6 +56,7 @@ public class ShortcutPresenter implements Presenter {
     removeShortcut.unsubscribe();
     getDiskSingleShortcut.unsubscribe();
     getDiskBlockedShortcuts.unsubscribe();
+    getShortcutForUserIds.unsubscribe();
     shortcutView = null;
   }
 
@@ -89,6 +95,12 @@ public class ShortcutPresenter implements Presenter {
   public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.STATUS, status));
+    updateShortcut(shortcutId, values);
+  }
+
+  public void updateShortcutName(String shortcutId, String name) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.NAME, name));
     updateShortcut(shortcutId, values);
   }
 
@@ -191,5 +203,26 @@ public class ShortcutPresenter implements Presenter {
   public void unsubscribeLoadShortcuts() {
     if (singleShortcutsSubscriber != null) singleShortcutsSubscriber.unsubscribe();
     if (blockedSingleShortcutsSubscriber != null) blockedSingleShortcutsSubscriber.unsubscribe();
+  }
+
+  public void shortcutForUserIds(String... userIds) {
+    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
+    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber();
+    getShortcutForUserIds.setup(userIds);
+    getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
+  }
+
+  private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Shortcut shortcut) {
+      shortcutView.onShortcut(shortcut);
+    }
   }
 }
