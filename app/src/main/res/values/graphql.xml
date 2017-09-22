@@ -43,7 +43,7 @@
                 {
                   user {
                     id
-                    messages(usersIds: [%1$s], before: \"%2$s\", limit:15) {
+                    messages(usersIds: [%1$s], before: \"%2$s\", limit:100) {
                       ...MessagePayload
                     }
                   }

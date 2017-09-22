@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.chat;
+package com.tribe.app.presentation.view.widget.chat.model;
 
 /**
  * Created by madaaflak on 07/09/2017.

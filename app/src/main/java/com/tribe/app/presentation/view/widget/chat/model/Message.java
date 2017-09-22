@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.chat;
+package com.tribe.app.presentation.view.widget.chat.model;
 
 import android.support.annotation.StringDef;
 import com.tribe.app.domain.entity.User;

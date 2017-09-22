@@ -47,6 +47,12 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
+import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -57,9 +63,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static com.tribe.app.presentation.view.widget.chat.Message.MESSAGE_EMOJI;
-import static com.tribe.app.presentation.view.widget.chat.Message.MESSAGE_IMAGE;
-import static com.tribe.app.presentation.view.widget.chat.Message.MESSAGE_TEXT;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EMOJI;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -108,9 +114,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     super(context, attrs);
     initView(context);
   }
-
-  private boolean loading = true;
-  int pastVisiblesItems, visibleItemCount, totalItemCount;
 
   void initView(Context context) {
     this.context = context;
@@ -278,17 +281,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
-    //
-/*    layoutManager.setReverseLayout(true);
-    layoutManager.setStackFromEnd(true);*/
+
+    layoutManager.setStackFromEnd(true);
+    layoutManager.setReverseLayout(true);
+
     recyclerView.setItemAnimator(new DefaultItemAnimator());
     recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setHasFixedSize(true);
     recyclerView.setAdapter(messageAdapter);
-    recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
-      @Override public void onLoadMore(int current_page) {
-        Timber.e("SOEF LOAD MORE");
-      }
-    });
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -395,15 +395,24 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void scrollListToBottom() {
-    recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()));
+    //messageAdapter.getItemCount()
+    recyclerView.post(() -> recyclerView.scrollToPosition(0));
   }
 
   boolean networkError = false;
 
   @Override public void successLoadingMessage(List<Message> messages) {
-    Timber.e("SOEF successLoadingMessage" + messages.size());
-    String firstDate = messages.get(0).getCreationDate();
-    String lasteDate = messages.get(messages.size()).getCreationDate();
+
+  /*  String firstDate = messages.get(0).getCreationDate();
+    String lasteDate = messages.get(messages.size()).getCreationDate();*/
+
+    List<Message> lost = new ArrayList<>();
+    for (Message m : messages) {
+      if (m instanceof MessageText) {
+        lost.add(m);
+      }
+    }
+    Timber.e("SOEF successLoadingMessage" + lost.size());
     networkError = false;
     messageAdapter.setItems(messages);
     scrollListToBottom();
@@ -416,11 +425,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.e("SOEF PUT MESSAGE ON DISK " + messages.size());
-    if (networkError) {
-      Timber.e("SOEF LOAD AND DISPLAY FROM DISK" + messages.size());
-      messageAdapter.setItems(messages);
-      scrollListToBottom();
-    }
   }
 
   @Override public void errorLoadingMessageDisk() {

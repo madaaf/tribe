@@ -1,6 +1,6 @@
 package com.tribe.app.domain.interactor.chat;
 
-import com.tribe.app.presentation.view.widget.chat.Message;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import rx.Observable;
 

@@ -8,7 +8,7 @@ import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
-import com.tribe.app.presentation.view.widget.chat.Message;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
 import timber.log.Timber;

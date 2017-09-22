@@ -5,7 +5,7 @@ import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.data.repository.chat.datasource.DiskChatDataStore;
 import com.tribe.app.domain.interactor.chat.ChatRepository;
-import com.tribe.app.presentation.view.widget.chat.Message;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;

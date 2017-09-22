@@ -1,7 +1,7 @@
 package com.tribe.app.presentation.mvp.view;
 
 import android.widget.ImageView;
-import com.tribe.app.presentation.view.widget.chat.Message;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 
 /**

@@ -28,6 +28,12 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
+import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -187,15 +193,16 @@ public class MessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   static class MessageViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.message) public TextViewFont message;
     @BindView(R.id.name) public TextViewFont name;
-    @BindView(R.id.notifContent) public TextViewFont notifContent;
-    @BindView(R.id.emoji) public TextViewFont emoji;
     @BindView(R.id.viewAvatar) public AvatarView avatarView;
-    @BindView(R.id.viewAvatarNotif) public AvatarView avatarNotif;
-    @BindView(R.id.header) public LinearLayout header;
-    @BindView(R.id.image) public ImageView image;
     @BindView(R.id.time) public TextViewFont time;
+    @BindView(R.id.message) public TextViewFont message;
+    @BindView(R.id.emoji) public TextViewFont emoji;
+    @BindView(R.id.image) public ImageView image;
+    @BindView(R.id.header) public LinearLayout header;
+
+    @BindView(R.id.viewAvatarNotif) public AvatarView avatarNotif;
+    @BindView(R.id.notifContent) public TextViewFont notifContent;
     @BindView(R.id.time2) public TextViewFont time2;
     @BindView(R.id.containerNotif) public LinearLayout containerNotif;
     @BindView(R.id.daySeparatorContainer) public FrameLayout daySeparatorContainer;

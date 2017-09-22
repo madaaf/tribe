@@ -2,12 +2,12 @@ package com.tribe.app.data.realm.mapper;
 
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.MessageRealm;
-import com.tribe.app.presentation.view.widget.chat.Image;
-import com.tribe.app.presentation.view.widget.chat.Message;
-import com.tribe.app.presentation.view.widget.chat.MessageEmoji;
-import com.tribe.app.presentation.view.widget.chat.MessageEvent;
-import com.tribe.app.presentation.view.widget.chat.MessageImage;
-import com.tribe.app.presentation.view.widget.chat.MessageText;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
+import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;

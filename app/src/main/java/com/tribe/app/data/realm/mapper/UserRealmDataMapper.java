@@ -3,7 +3,7 @@ package com.tribe.app.data.realm.mapper;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.widget.chat.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;

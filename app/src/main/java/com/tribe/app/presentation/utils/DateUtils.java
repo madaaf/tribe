@@ -14,6 +14,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 17/08/2016.
@@ -82,7 +83,7 @@ public class DateUtils {
         suffix = " AM";
       } else {
         suffix = " PM";
-        h = dt.getHourOfDay() - 12;
+        if (dt.getHourOfDay() != 12) h = dt.getHourOfDay() - 12;
       }
     }
 
