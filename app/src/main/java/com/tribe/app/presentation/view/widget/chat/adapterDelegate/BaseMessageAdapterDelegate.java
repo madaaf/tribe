@@ -25,7 +25,7 @@ import java.util.List;
  */
 
 public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
-
+  final private static int DIFF_TIMING_ALLOWED_MINUTE = 2;
   protected DateUtils dateUtils;
 
   protected Context context;
@@ -56,8 +56,11 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     BaseTextViewHolder vh = (BaseTextViewHolder) holder;
     Message m = items.get(position);
 
-    String time = m.getCreationDate();
+    if (m instanceof MessageEvent) {
+      vh.header.setVisibility(View.GONE);
+    }
 
+    String time = m.getCreationDate();
     vh.time.setText(dateUtils.getHourAndMinuteInLocal(time));
     vh.avatarView.load(m.getAuthor().getProfilePicture());
     vh.name.setText(m.getAuthor().getDisplayName());
@@ -73,7 +76,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       }
 
       if (previous.getAuthor().getId().equals(m.getAuthor().getId())) {
-        if (dateUtils.getDiffDate(previous.getCreationDate(), time) > 2) {
+        if (dateUtils.getDiffDate(previous.getCreationDate(), time) > DIFF_TIMING_ALLOWED_MINUTE) {
           vh.time2.setText(dateUtils.getHourAndMinuteInLocal(time));
           vh.time2.setVisibility(View.VISIBLE);
         }
@@ -102,7 +105,5 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
-
-    protected abstract ViewGroup getLayoutContent();
   }
 }

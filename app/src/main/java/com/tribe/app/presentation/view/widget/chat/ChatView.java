@@ -56,6 +56,7 @@ import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -281,10 +282,11 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
-
     layoutManager.setStackFromEnd(true);
-    layoutManager.setReverseLayout(true);
 
+ /*
+    layoutManager.setReverseLayout(true);
+*/
     recyclerView.setItemAnimator(new DefaultItemAnimator());
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setHasFixedSize(true);
@@ -396,7 +398,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void scrollListToBottom() {
     //messageAdapter.getItemCount()
-    recyclerView.post(() -> recyclerView.scrollToPosition(0));
+    recyclerView.post(
+        () -> layoutManager.scrollToPositionWithOffset(layoutManager.getItemCount(), 1000));
   }
 
   boolean networkError = false;
@@ -412,6 +415,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         lost.add(m);
       }
     }
+
+    Collections.reverse(messages);
     Timber.e("SOEF successLoadingMessage" + lost.size());
     networkError = false;
     messageAdapter.setItems(messages);

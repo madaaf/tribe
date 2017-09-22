@@ -67,13 +67,9 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
   static class MessageImageViewHolder extends BaseTextViewHolder {
     @BindView(R.id.image) public ImageView image;
 
-    /**/
     MessageImageViewHolder(View itemView) {
       super(itemView);
     }
 
-    @Override protected ViewGroup getLayoutContent() {
-      return null;
-    }
   }
 }

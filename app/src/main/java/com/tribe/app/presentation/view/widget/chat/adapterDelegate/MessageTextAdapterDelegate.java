@@ -58,8 +58,5 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
       ButterKnife.bind(this, itemView);
     }
 
-    @Override protected ViewGroup getLayoutContent() {
-      return null;
-    }
   }
 }

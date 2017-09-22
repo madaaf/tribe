@@ -55,9 +55,5 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
     public MessageEmojiViewHolder(View itemView) {
       super(itemView);
     }
-
-    @Override protected ViewGroup getLayoutContent() {
-      return null;
-    }
   }
 }
