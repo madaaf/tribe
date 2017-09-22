@@ -14,6 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -30,6 +31,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   final private static int DIFF_TIMING_ALLOWED_MINUTE = 2;
   protected DateUtils dateUtils;
+  protected ScreenUtils screenUtils;
 
   protected Context context;
   protected LayoutInflater layoutInflater;
@@ -40,6 +42,8 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     this.context = context;
     dateUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
         .dateUtils();
+    screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
+        .screenUtils();
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {

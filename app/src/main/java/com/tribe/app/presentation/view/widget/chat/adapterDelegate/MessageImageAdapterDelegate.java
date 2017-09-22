@@ -51,6 +51,21 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
     Image o = m.getOriginal();
     Uri uri = m.getUri();
 
+    /*
+
+
+        List<Image> images = m.getRessources();
+    Image stamp = new Image();
+    stamp.setUrl("STAMP");
+    stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
+    images.add(stamp);
+
+    Collections.sort(images,
+        (o1, o2) -> String.valueOf(o1.getWidth()).compareTo(String.valueOf(o2.getWidth())));
+
+
+     */
+
     Glide.with(context).load(o.getUrl()).asBitmap().into(new BitmapImageViewTarget(vh.image) {
       @Override protected void setResource(Bitmap resource) {
         RoundedBitmapDrawable circularBitmapDrawable =
