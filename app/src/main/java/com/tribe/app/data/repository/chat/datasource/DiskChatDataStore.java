@@ -29,10 +29,6 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<MessageRealm> createdMessages() {
-    return chatCache.getMessageCreated().debounce(600, TimeUnit.MILLISECONDS);
-  }
-
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     return chatCache.getMessages(userIds).debounce(600, TimeUnit.MILLISECONDS);
   }

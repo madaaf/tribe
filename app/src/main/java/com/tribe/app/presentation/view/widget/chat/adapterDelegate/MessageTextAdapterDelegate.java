@@ -15,13 +15,17 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by madaaflak on 05/09/2017.
  */
 
 public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
+
+  Set<Message> pendingMessage = new HashSet<Message>();
 
   public MessageTextAdapterDelegate(Context context) {
     super(context);
@@ -51,6 +55,7 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
       list.add(m.getMessage());
       list.add(vh.container);
       onMessagePending.onNext(list);
+      //pendingMessage.add(m);
       m.setPending(false);
     } else {
       vh.container.setAlpha(1f);

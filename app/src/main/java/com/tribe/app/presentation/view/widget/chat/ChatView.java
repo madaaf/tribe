@@ -57,10 +57,14 @@ import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -146,7 +150,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
     messagePresenter.loadMessagesDisk(arrIds);
     messagePresenter.loadMessage(arrIds);
-    messagePresenter.getCreatedMessages();
   }
 
   private void sendPicture(Uri uri, View imageView) {
@@ -185,8 +188,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         messagePresenter.createMessage(arrIds, data, type, view);
       }
     }));
-
-
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
         .delay(200, TimeUnit.MILLISECONDS)
@@ -416,7 +417,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   boolean networkError = false;
 
   @Override public void successLoadingMessage(List<Message> messages) {
-
+    Timber.e("SOEF successLoadingMessage " + messages.size());
   /*  String firstDate = messages.get(0).getCreationDate();
     String lasteDate = messages.get(messages.size()).getCreationDate();*/
 
@@ -426,12 +427,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         lost.add(m);
       }
     }
-
-    Collections.reverse(messages);
-    Timber.e("SOEF successLoadingMessage" + lost.size());
-    networkError = false;
-    messageAdapter.setItems(messages);
-    scrollListToBottom();
   }
 
   @Override public void errorLoadingMessage() {
@@ -439,8 +434,29 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     networkError = true;
   }
 
+  Set<Message> unreadDiskMessages = new TreeSet<>((o1, o2) -> {
+    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+    DateTime d1 = parser.parseDateTime(o1.getCreationDate());
+    DateTime d2 = parser.parseDateTime(o2.getCreationDate());
+    return d1.compareTo(d2);
+  });
+
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.e("SOEF PUT MESSAGE ON DISK " + messages.size());
+    List<Message> diskMessages = messageAdapter.getItems();
+
+    for (Message m : messages) {
+      if (!diskMessages.contains(m) && !m.getAuthor().getId().equals(user.getId())) {
+        unreadDiskMessages.add(m);
+      }
+    }
+    //diskMessages.addAll(messages);
+    Timber.e("ON DISK MESSAGE : " + diskMessages.size());
+    Timber.e("ON DISK UNREAD : " + unreadDiskMessages.size());
+
+    messageAdapter.setItems(unreadDiskMessages);
+    unreadDiskMessages.clear();
+    scrollListToBottom();
   }
 
   @Override public void errorLoadingMessageDisk() {
@@ -449,24 +465,13 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successMessageCreated(Message message, View view) {
     Timber.e("SOEF successMessageCreated " + message.toString());
-    if (view != null) view.animate().alpha(1f).setDuration(300).start();
+    if (view != null){
+      view.animate().alpha(1f).setDuration(300).start();
+      message.setPending(true);
+    }
   }
 
   @Override public void errorMessageCreation() {
     Timber.e("SOEF errorMessageCreation");
-  }
-
-  @Override public void successGetSubscribeMessage(Message message) {
-    Timber.e("SOEF successGetSubscribeMessage " + message.toString());
-    if (!message.getAuthor().getId().equals(user.getId())) {
-      items.clear();
-      items.add(message);
-      messageAdapter.setItems(items);
-      scrollListToBottom();
-    }
-  }
-
-  @Override public void errorGetSubscribeMessage() {
-    Timber.e("SOEF errorGetSubscribeMessage ");
   }
 }

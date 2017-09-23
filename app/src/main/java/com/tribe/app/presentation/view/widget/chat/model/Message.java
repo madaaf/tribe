@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.chat.model;
 
 import android.support.annotation.StringDef;
 import com.tribe.app.domain.entity.User;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -68,5 +69,19 @@ public class Message {
 
   public void setCreationDate(String creationDate) {
     this.creationDate = creationDate;
+  }
+
+  @Override public boolean equals(Object obj) {
+    if (obj == null) return false;
+
+    if (!(obj instanceof Message)) return false;
+    Message other = (Message) obj;
+    boolean ok = this.id.equals(other.id);
+
+    return this.id.equals(other.id);
+  }
+
+  @Override public int hashCode() {
+    return this.id.length();
   }
 }

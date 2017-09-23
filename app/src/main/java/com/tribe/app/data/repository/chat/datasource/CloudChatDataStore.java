@@ -47,10 +47,6 @@ public class CloudChatDataStore implements ChatDataStore {
             JsonUtils.arrayToJson(userIds)));
   }
 
-  @Override public Observable<MessageRealm> createdMessages() {
-    return null;
-  }
-
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     return null;
   }

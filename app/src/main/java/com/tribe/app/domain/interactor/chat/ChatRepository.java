@@ -14,5 +14,4 @@ public interface ChatRepository {
 
   Observable<List<Message>> loadMessages(final String[] userIds);
 
-  Observable<Message> createdMessages();
 }

@@ -15,7 +15,6 @@
       android:layout_marginTop="15dp"
       android:background="@drawable/shape_rect_chat_notif"
       android:gravity="center"
-      android:visibility="gone"
       >
 
     <com.tribe.app.presentation.view.widget.avatar.AvatarView

@@ -16,7 +16,5 @@ public interface ChatDataStore {
 
   Observable<UserRealm> loadMessages(final String[] userIds, String dateBefore);
 
-  Observable<MessageRealm> createdMessages();
-
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 }

@@ -13,6 +13,7 @@ import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.deserializer.JsonToModel;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -20,6 +21,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import io.realm.RealmList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -175,9 +177,8 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null &&
-        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
-            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -200,9 +201,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() ||
-        StringUtils.isEmpty(accessToken.getTokenType()) ||
-        StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -301,7 +302,15 @@ import timber.log.Timber;
     }));
 
     persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
-      chatCache.messageCreated(messagRealm);
+
+      RealmList<MessageRealm> messages = new RealmList<>();
+      messages.add(messagRealm);
+ /*     String[] array = new String[1] {messages.get()};
+  *//*   ;
+      ;*/
+      chatCache.putMessages(messages, "\"ByFIVM7oW\"");
+
+
     }));
 
     persistentSubscriptions.add(
@@ -358,8 +367,9 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-        getApplicationContext().getString(R.string.userfragment_infos) : "");
+    String userInfosFragment =
+        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+            R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

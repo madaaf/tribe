@@ -1,9 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.view.View;
-import android.widget.ImageView;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
-import com.tribe.app.domain.interactor.chat.CreatedMessages;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -23,20 +21,14 @@ public class MessagePresenter implements Presenter {
   private ChatMVPView chatMVPView;
 
   protected UserMessageInfos userMessageInfos;
-  protected CreatedMessages createdMessages;
   protected CreateMessage createMessage;
   protected GetMessageFromDisk getMessageFromDisk;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
-      CreatedMessages createdMessages, GetMessageFromDisk getMessageFromDisk) {
+      GetMessageFromDisk getMessageFromDisk) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
-    this.createdMessages = createdMessages;
     this.getMessageFromDisk = getMessageFromDisk;
-  }
-
-  public void getCreatedMessages() {
-    createdMessages.execute(new GetMessageSubscriber());
   }
 
   public void loadMessagesDisk(String[] userIds) {
@@ -109,21 +101,6 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(Message message) {
       if (chatMVPView != null) chatMVPView.successMessageCreated(message, view);
-    }
-  }
-
-  private class GetMessageSubscriber extends DefaultSubscriber<Message> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      Timber.e(e.getMessage());
-      if (chatMVPView != null) chatMVPView.errorGetSubscribeMessage();
-    }
-
-    @Override public void onNext(Message message) {
-      if (chatMVPView != null) chatMVPView.successGetSubscribeMessage(message);
     }
   }
 }

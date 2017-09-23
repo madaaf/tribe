@@ -11,7 +11,6 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -23,27 +22,13 @@ public class ChatCacheImpl implements ChatCache {
   private Context context;
   private Realm realm;
 
-  private PublishSubject<MessageRealm> onMessageCreated = PublishSubject.create();
-  private PublishSubject<List<MessageRealm>> onLoadMessage = PublishSubject.create();
-
   @Inject public ChatCacheImpl(Context context, Realm realm) {
     this.context = context;
     this.realm = realm;
   }
 
-  @Override public void messageCreated(MessageRealm message) {
-    onMessageCreated.onNext(message);
-  }
-
-  @Override public Observable<MessageRealm> getMessageCreated() {
-    return onMessageCreated;
-  }
-
-  @Override public Observable<UserRealm> loadMessage(String[] userIds) {
-    return null;
-  }
-
   @Override public void putMessages(RealmList<MessageRealm> messages, String userId) {
+    Timber.e("SOEF PUT MESSAGE IN CACH " + userId);
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {

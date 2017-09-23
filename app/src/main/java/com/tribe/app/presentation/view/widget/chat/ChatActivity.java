@@ -32,7 +32,7 @@ public class ChatActivity extends BaseActivity {
 
   private Shortcut shortcut;
   private Invite invite;
-
+  private String arrayIds;
   @BindView(R.id.chatview) ChatView chatView;
 
   public static Intent getCallingIntent(Context context, Recipient recipient) {
@@ -91,7 +91,7 @@ public class ChatActivity extends BaseActivity {
       for (int i = 0; i < friends.size(); i++) {
         ids[i] = friends.get(i).getId();
       }
-      initCallRouletteService(JsonUtils.arrayToJson(ids));
+      arrayIds = JsonUtils.arrayToJson(ids);
     }
 
     initSubscription();
@@ -100,14 +100,14 @@ public class ChatActivity extends BaseActivity {
   private void initSubscription() {
   /*  Invite ok =
     subscriptions.add();*/
-    if(shortcut!=null){
+    if (shortcut != null) {
       User user = shortcut.getSingleFriend();
       //shortcut.getR
     }
-
   }
 
   @Override protected void onResume() {
+    initCallRouletteService(arrayIds);
     super.onResume();
   }
 

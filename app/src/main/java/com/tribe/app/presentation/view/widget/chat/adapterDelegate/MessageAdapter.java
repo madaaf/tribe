@@ -6,7 +6,10 @@ import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -77,14 +80,14 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return items.size();
   }
 
-  public void setItems(List<Message> items) {
+  public void setItems(Collection<Message> items) {
     this.items.addAll(items);
     super.notifyDataSetChanged();
   }
 
- /* public Observable<List<Object>> onPictureTaken() {
-    return onPictureTaken;
-  }*/
+  public List<Message> getItems() {
+    return items;
+  }
 
   public Observable<List<Object>> onMessagePending() {
     return onMessagePending;

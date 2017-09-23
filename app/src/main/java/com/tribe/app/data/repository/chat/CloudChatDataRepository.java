@@ -47,8 +47,4 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
 
-
-  @Override public Observable<Message> createdMessages() {
-    return null;
-  }
 }
