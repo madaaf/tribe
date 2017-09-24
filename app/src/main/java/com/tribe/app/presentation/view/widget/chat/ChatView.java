@@ -57,6 +57,7 @@ import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -166,8 +167,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
         Timber.e("downloadUrl " + downloadUrl);
-        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE,
-            imageView);
+        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE, 0);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -185,7 +185,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         sendPicture(uri, view);
       } else {
         String data = (String) list.get(1);
-        messagePresenter.createMessage(arrIds, data, type, view);
+        int posiiton = (int) list.get(3);
+        messagePresenter.createMessage(arrIds, data, type, posiiton);
       }
     }));
 
@@ -295,10 +296,11 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messageAdapter = new MessageAdapter(getContext());
     layoutManager.setStackFromEnd(true);
 
+
  /*
     layoutManager.setReverseLayout(true);
 */
-    recyclerView.setItemAnimator(new DefaultItemAnimator());
+    recyclerView.setItemAnimator(null);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setHasFixedSize(true);
     recyclerView.setAdapter(messageAdapter);
@@ -377,6 +379,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setAuthor(user);
     message.setCreationDate(dateUtils.getUTCDateAsString());
     message.setPending(true);
+    message.setId("PENDING");
     items.add(message);
     messageAdapter.setItems(items);
     scrollListToBottom();
@@ -410,8 +413,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void scrollListToBottom() {
     //messageAdapter.getItemCount()
-    recyclerView.post(
-        () -> layoutManager.scrollToPositionWithOffset(layoutManager.getItemCount(), 1000));
+   /* recyclerView.post(
+        () -> layoutManager.scrollToPositionWithOffset(layoutManager.getItemCount(), 1000));*/
+    recyclerView.post(() -> recyclerView.smoothScrollToPosition(layoutManager.getItemCount()));
   }
 
   boolean networkError = false;
@@ -440,35 +444,52 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     DateTime d2 = parser.parseDateTime(o2.getCreationDate());
     return d1.compareTo(d2);
   });
+  Set<Message> diskMessages = new HashSet<>();
 
-  @Override public void successLoadingMessageDisk(List<Message> messages) {
-    Timber.e("SOEF PUT MESSAGE ON DISK " + messages.size());
-    List<Message> diskMessages = messageAdapter.getItems();
+  @Override public void successLoadingMessageDisk(List<Message> messasges) {
+    Timber.e("SOEF successLoadingMessageDisk " + messasges.size());
+    Set<Message> ok = new HashSet<>();
+    ok.addAll(messageAdapter.getItems());
 
-    for (Message m : messages) {
-      if (!diskMessages.contains(m) && !m.getAuthor().getId().equals(user.getId())) {
-        unreadDiskMessages.add(m);
+    if (ok.isEmpty()) { // PREMIER ENTRE
+      for (Message m : messasges) {
+        if (!diskMessages.contains(m)) {
+          unreadDiskMessages.add(m);
+        }
+      }
+    } else {
+      for (Message m : messasges) {
+        if (!diskMessages.contains(m) && !m.getAuthor().getId().equals(user.getId())) {
+          unreadDiskMessages.add(m);
+        }
       }
     }
-    //diskMessages.addAll(messages);
-    Timber.e("ON DISK MESSAGE : " + diskMessages.size());
-    Timber.e("ON DISK UNREAD : " + unreadDiskMessages.size());
 
+    diskMessages.addAll(messasges);
     messageAdapter.setItems(unreadDiskMessages);
     unreadDiskMessages.clear();
     scrollListToBottom();
+
+    unreadDiskMessages.clear();
   }
 
   @Override public void errorLoadingMessageDisk() {
     Timber.e("SOEF errorLoadingMessageDisk");
   }
 
-  @Override public void successMessageCreated(Message message, View view) {
+  @Override public void successMessageCreated(Message message, int position) {
     Timber.e("SOEF successMessageCreated " + message.toString());
-    if (view != null){
+
+    Timber.d("butt", "click " + position);
+    MessageText m = (MessageText) message;
+    messageAdapter.notifyItemChanged(position, m);
+
+   /* if (view != null) {
       view.animate().alpha(1f).setDuration(300).start();
       message.setPending(true);
-    }
+      String id = ;message.getId();
+      // int positon = messageAdapter.getItemCount()
+    }*/
   }
 
   @Override public void errorMessageCreation() {

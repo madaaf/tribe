@@ -15,17 +15,14 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
  */
 
 public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
-
-  Set<Message> pendingMessage = new HashSet<Message>();
 
   public MessageTextAdapterDelegate(Context context) {
     super(context);
@@ -54,11 +51,9 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
       list.add(MessageRealm.TEXT);
       list.add(m.getMessage());
       list.add(vh.container);
+      list.add(position);
       onMessagePending.onNext(list);
-      //pendingMessage.add(m);
       m.setPending(false);
-    } else {
-      vh.container.setAlpha(1f);
     }
   }
 
@@ -67,6 +62,13 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
         layoutInflater.inflate(R.layout.item_message_text, parent, false));
 
     return vh;
+  }
+
+  @Override public void onBindViewHolder(@NonNull List<Message> items,
+      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+    Timber.e("PLAYLOAD  HERE " + position + " " + payloads.toString());
+    MessageTextViewHolder vh = (MessageTextViewHolder) holder;
+    vh.container.setAlpha(1f);
   }
 
   static class MessageTextViewHolder extends BaseTextViewHolder {

@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 21/09/2017.
@@ -57,7 +58,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
-
+    Timber.e("PLAYLOAD " + position + " " + payloads.toString());
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,

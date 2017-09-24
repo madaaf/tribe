@@ -41,9 +41,9 @@ public class MessagePresenter implements Presenter {
     userMessageInfos.execute(new LoadMessageSubscriber());
   }
 
-  public void createMessage(String[] userIds, String data, String type, View view) {
+  public void createMessage(String[] userIds, String data, String type, int positon) {
     createMessage.setParams(userIds, data, type);
-    createMessage.execute(new CreateMessageSubscriber(view));
+    createMessage.execute(new CreateMessageSubscriber(positon));
   }
 
   @Override public void onViewAttached(MVPView view) {
@@ -85,10 +85,10 @@ public class MessagePresenter implements Presenter {
   }
 
   private class CreateMessageSubscriber extends DefaultSubscriber<Message> {
-    private View view;
+    private int positon;
 
-    public CreateMessageSubscriber(View view) {
-      this.view = view;
+    public CreateMessageSubscriber(int positon) {
+      this.positon = positon;
     }
 
     @Override public void onCompleted() {
@@ -100,7 +100,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onNext(Message message) {
-      if (chatMVPView != null) chatMVPView.successMessageCreated(message, view);
+      if (chatMVPView != null) chatMVPView.successMessageCreated(message, positon);
     }
   }
 }
