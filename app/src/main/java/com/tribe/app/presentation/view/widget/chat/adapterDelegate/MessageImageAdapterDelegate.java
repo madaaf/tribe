@@ -20,7 +20,6 @@ import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,18 +74,13 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
       }
     });
 
-    if (m.isPending()) {
-      vh.container.setAlpha(0.4f);
-      List<Object> list = new ArrayList<>();
-      list.add(MessageRealm.IMAGE);
-      list.add(uri);
-      list.add(vh.container);
-      onMessagePending.onNext(list);
-      m.setPending(false);
-      m.setUri(null);
-    } else {
-      vh.container.setAlpha(1f);
-    }
+    setPendingBehavior(m, vh.container, position, uri, MessageRealm.IMAGE);
+  }
+
+  @Override public void onBindViewHolder(@NonNull List<Message> items,
+      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+    MessageImageViewHolder vh = (MessageImageViewHolder) holder;
+    vh.container.setAlpha(1f);
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {

@@ -13,7 +13,6 @@ import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,17 +42,13 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
 
     vh.emoji.setText(m.getEmoji());
 
-    if (m.isPending()) {
-      vh.container.setAlpha(0.4f);
-      List<Object> list = new ArrayList<>();
-      list.add(MessageRealm.EMOJI);
-      list.add(m.getEmoji());
-      list.add(vh.container);
-      onMessagePending.onNext(list);
-      m.setPending(false);
-    } else {
-      vh.container.setAlpha(1f);
-    }
+    setPendingBehavior(m, vh.container, position, m.getEmoji(), MessageRealm.EMOJI);
+  }
+
+  @Override public void onBindViewHolder(@NonNull List<Message> items,
+      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+    MessageEmojiViewHolder vh = (MessageEmojiViewHolder) holder;
+    vh.container.setAlpha(1f);
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {

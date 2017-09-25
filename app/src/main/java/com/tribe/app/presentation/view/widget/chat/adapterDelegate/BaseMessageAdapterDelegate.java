@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
+import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -36,7 +37,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   protected Context context;
   protected LayoutInflater layoutInflater;
-
+  protected List<Message> pendingMessages = new ArrayList<>();
   protected PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
 
   public BaseMessageAdapterDelegate(Context context) {
@@ -59,6 +60,23 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     Timber.e("PLAYLOAD " + position + " " + payloads.toString());
+  }
+
+  protected void setPendingBehavior(Message m, View container, int position, Object content,
+      String type) {
+    if (m.isPending()) {
+      container.setAlpha(0.4f);
+      if (!pendingMessages.contains(m)) {
+        List<Object> list = new ArrayList<>();
+        list.add(type);
+        list.add(content);
+        list.add(position);
+        onMessagePending.onNext(list);
+        pendingMessages.add(m);
+      }
+    } else {
+      container.setAlpha(1f);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
@@ -97,7 +115,6 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     } else {
       vh.daySeparatorContainer.setVisibility(View.VISIBLE);
     }
-
 
     //onMessagePending.onNext(vh.getLayoutContent());
   }

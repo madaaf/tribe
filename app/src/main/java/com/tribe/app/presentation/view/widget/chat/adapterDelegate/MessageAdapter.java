@@ -5,14 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
-import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -73,27 +71,25 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    delegatesManager.onBindViewHolder(items, position, holder);
-    Timber.w("BIND HOLDER EMPTY");
+  /*  delegatesManager.onBindViewHolder(items, position, holder);
+    Timber.w("BIND HOLDER EMPTY");*/
   }
 
   @Override
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List payloads) {
     if (!payloads.isEmpty()) {
-      Timber.e("BIND PLAYLOAD ");
+      Message m = (Message) payloads.get(0);
+      Message last = items.get(items.size() - 1);
+      last.setPending(false);
+      last.setId(m.getId());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
-      Timber.w("BIND PLAYLOAD EMPTY");
       delegatesManager.onBindViewHolder(items, position, holder);
     }
   }
 
   @Override public int getItemCount() {
     return items.size();
-  }
-
-  public int getPositionOfItem(Message m) {
-    return 0;
   }
 
   public void setItems(Collection<Message> items) {

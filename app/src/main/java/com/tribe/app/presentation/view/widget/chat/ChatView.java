@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -153,7 +152,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.loadMessage(arrIds);
   }
 
-  private void sendPicture(Uri uri, View imageView) {
+  private void sendPicture(Uri uri, int position) {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     try {
@@ -167,7 +166,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
         Timber.e("downloadUrl " + downloadUrl);
-        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE, 0);
+        messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE,
+            position);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -179,14 +179,14 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
     subscriptions.add(messageAdapter.onMessagePending().subscribe(list -> {
       String type = (String) list.get(0);
-      View view = (View) list.get(2);
+      int position = (int) list.get(2);
+
       if (type.equals(MessageRealm.IMAGE)) {
         Uri uri = (Uri) list.get(1);
-        sendPicture(uri, view);
+        sendPicture(uri, position);
       } else {
         String data = (String) list.get(1);
-        int posiiton = (int) list.get(3);
-        messagePresenter.createMessage(arrIds, data, type, posiiton);
+        messagePresenter.createMessage(arrIds, data, type, position);
       }
     }));
 
@@ -479,17 +479,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successMessageCreated(Message message, int position) {
     Timber.e("SOEF successMessageCreated " + message.toString());
-
-    Timber.d("butt", "click " + position);
-    MessageText m = (MessageText) message;
-    messageAdapter.notifyItemChanged(position, m);
-
-   /* if (view != null) {
-      view.animate().alpha(1f).setDuration(300).start();
-      message.setPending(true);
-      String id = ;message.getId();
-      // int positon = messageAdapter.getItemCount()
-    }*/
+    messageAdapter.notifyItemChanged(position, message);
   }
 
   @Override public void errorMessageCreation() {

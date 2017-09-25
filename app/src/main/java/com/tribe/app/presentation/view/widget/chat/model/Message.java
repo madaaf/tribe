@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.widget.chat.model;
 
 import android.support.annotation.StringDef;
 import com.tribe.app.domain.entity.User;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -43,6 +42,21 @@ public class Message {
     return author;
   }
 
+  public String getContent() {
+    switch (type) {
+      case MESSAGE_TEXT:
+        return ((MessageText) this).getMessage();
+      case MESSAGE_EVENT:
+        ((MessageEvent) this).getAction();
+        return ((MessageEvent) this).getAction();
+      case MESSAGE_EMOJI:
+        return ((MessageEmoji) this).getEmoji();
+      case MESSAGE_IMAGE:
+        return ((MessageImage) this).getOriginal().getUrl();
+    }
+    return null;
+  }
+
   public String getType() {
     return type;
   }
@@ -78,7 +92,7 @@ public class Message {
     Message other = (Message) obj;
     boolean ok = this.id.equals(other.id);
 
-    return this.id.equals(other.id);
+    return (this.id.equals(other.id) && this.id.equals(other.id));
   }
 
   @Override public int hashCode() {
