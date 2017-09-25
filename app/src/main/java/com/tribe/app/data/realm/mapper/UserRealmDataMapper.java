@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -85,12 +86,16 @@ import javax.inject.Singleton;
       ImageRealm stamp = new ImageRealm();
       stamp.setUrl("STAMP");
       stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
+      Timber.e(" SOEF STAMP " + screenUtils.getWidthPx() + " " + screenUtils.getWidthDp());
       collection.add(stamp);
 
       Collections.sort(collection, (o1, o2) -> {
         Integer w1 = Integer.parseInt(o1.getWidth());
         Integer w2 = Integer.parseInt(o2.getWidth());
+/*        Float f1 = screenUtils.pxToDp(w1);
+        float f2 = screenUtils.pxToDp(w2);*/
         return w1.compareTo(w2);
+        //return f1.compareTo(f2);
       });
 
       int position = collection.indexOf(stamp);

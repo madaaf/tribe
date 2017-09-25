@@ -38,6 +38,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
@@ -398,7 +399,13 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @OnClick(R.id.sendBtn) void onClickSend() {
     if (!isHeart) {
       String editedMessage = editText.getText().toString();
-      if (!editedMessage.isEmpty()) sendItemToAdapter(MESSAGE_TEXT, editedMessage, null);
+      if (!editedMessage.isEmpty()) {
+        if (StringUtils.isOnlyEmoji(editedMessage)) {
+          sendItemToAdapter(MESSAGE_EMOJI, editedMessage, null);
+        } else {
+          sendItemToAdapter(MESSAGE_TEXT, editedMessage, null);
+        }
+      }
       editText.setText("");
     } else {
       sendBtn.animate()
