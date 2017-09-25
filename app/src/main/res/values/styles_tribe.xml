@@ -278,6 +278,10 @@
     <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
   </style>
 
+  <style name="Title.Regular.Black" parent="@style/Title.1.Black">
+    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+  </style>
+
   <style name="Headline">
     <item name="android:textSize">19sp</item>
   </style>

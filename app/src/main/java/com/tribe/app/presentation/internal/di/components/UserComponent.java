@@ -16,9 +16,11 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
+import com.tribe.app.presentation.view.activity.NewChatActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
+import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
@@ -30,7 +32,6 @@ import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRingingView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
-import com.tribe.app.presentation.view.component.live.LiveShareOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
@@ -48,9 +49,9 @@ import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragm
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.MessageAdapterDelegate;
-import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
@@ -172,8 +173,6 @@ import dagger.Component;
 
   void inject(LiveWaveView liveWaveView);
 
-  void inject(LiveShareOverlayView liveShareOverlayView);
-
   void inject(ErrorNotificationView errorNotificationView);
 
   void inject(SettingsManageShortcutsView settingsManageFriendshipsView);
@@ -183,4 +182,8 @@ import dagger.Component;
   void inject(LiveChatButton liveChatButton);
 
   void inject(LiveRingingView liveRingingView);
+
+  void inject(NewChatActivity newChatActivity);
+
+  void inject(ShortcutCompletionTokenView shortcutCompletionTokenView);
 }

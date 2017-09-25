@@ -55,8 +55,6 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
 
-  @BindView(R.id.viewShareOverlay) LiveShareOverlayView viewShareOverlay;
-
   @BindView(R.id.cardViewStreamLayout) CardView cardViewStreamLayout;
 
   private LocalPeerView viewPeerLocal;
@@ -239,18 +237,6 @@ public class LiveLocalView extends FrameLayout {
     onStopGame.onNext(null);
   }
 
-  public void computeAlpha(float alpha) {
-    viewShareOverlay.setAlpha(alpha);
-  }
-
-  public void hideShareOverlay() {
-    viewShareOverlay.hide();
-  }
-
-  public void showShareOverlay(@LiveActivity.Source String source) {
-    viewShareOverlay.show(source);
-  }
-
   public void dispose() {
     if (subscriptions != null) subscriptions.unsubscribe();
     viewPeerLocal.dispose();
@@ -297,9 +283,5 @@ public class LiveLocalView extends FrameLayout {
 
   public Observable<Void> onClick() {
     return onClick;
-  }
-
-  public Observable<Void> onShare() {
-    return viewShareOverlay.onShare();
   }
 }

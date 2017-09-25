@@ -111,6 +111,7 @@ import com.tribe.app.presentation.view.widget.header.HomeListViewHeader;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
+import com.tribe.app.presentation.view.widget.text.TextShortcutNameView;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -214,6 +215,8 @@ public interface ApplicationComponent {
   void inject(LiveViewFake liveViewFake);
 
   void inject(RoomLinkAdapterDelegate roomAdapterDelegate);
+
+  void inject(TextShortcutNameView textShortcutNameView);
 
   // JOBS
   void inject(BaseJob baseJob);

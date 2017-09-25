@@ -21,7 +21,9 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +98,7 @@ import timber.log.Timber;
   private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
   private boolean hasSubscribed = false;
   private String lastRoomSubscriptionId;
+  private Set<String> userSubscribed;
 
   // OBSERVABLES
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
@@ -109,6 +112,7 @@ import timber.log.Timber;
     super.onCreate();
 
     headers = new HashMap<>();
+    userSubscribed = new HashSet<>();
 
     initDependencyInjection();
     prepareHeaders();
@@ -197,6 +201,8 @@ import timber.log.Timber;
     if (webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
       webSocketConnection.disconnect(false);
     }
+
+    userSubscribed.clear();
   }
 
   private void prepareHeaders() {
@@ -347,12 +353,15 @@ import timber.log.Timber;
       int count = 0;
 
       for (ShortcutRealm shortcutRealm : shortcutList) {
-        if (shortcutRealm.isSingle()) {
-          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
-              hash + USER_SUFFIX + count, shortcutRealm.getSingleFriend().getId()));
-        }
+        for (UserRealm user : shortcutRealm.getMembers()) {
+          if (!userSubscribed.contains(user.getId())) {
+            sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+                hash + USER_SUFFIX + count, user.getId()));
 
-        count++;
+            userSubscribed.add(user.getId());
+            count++;
+          }
+        }
       }
     }).subscribe());
   }

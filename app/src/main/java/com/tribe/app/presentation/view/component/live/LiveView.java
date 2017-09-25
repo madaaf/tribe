@@ -182,7 +182,6 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> unlockedRollTheDice = PublishSubject.create();
   private PublishSubject<TribeJoinRoom> onJoined = PublishSubject.create();
   private PublishSubject<String> onRollTheDice = PublishSubject.create();
-  private PublishSubject<Void> onShare = PublishSubject.create();
   private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
@@ -407,9 +406,6 @@ public class LiveView extends FrameLayout {
     //  viewControlsLive.clickExpandParam();
     //  onHiddenControls.onNext(isParamExpended);
     //}));
-
-    persistentSubscriptions.add(
-        viewLocalLive.onShare().doOnNext(aVoid -> hasShared = true).subscribe(onShare));
 
     persistentSubscriptions.add(
         Observable.merge(viewControlsLive.onOpenInvite(), viewControlsLive.onOpenChat())
@@ -651,7 +647,6 @@ public class LiveView extends FrameLayout {
           // TODO CHANGE WITH NEW SYSTEM
           //webRTCRoom.sendToPeer(remotePeer, getInvitedPayload(), true);
 
-          refactorShareOverlay();
           startCallLevel();
 
           live.getRoom().userJoinedWebRTC(remotePeer.getSession().getUserId());
@@ -681,8 +676,6 @@ public class LiveView extends FrameLayout {
           if (shouldLeave()) {
             onLeave.onNext(null);
           }
-
-          refactorShareOverlay();
 
           live.getRoom().userLeftWebRTC(remotePeer.getSession().getUserId());
 
@@ -828,8 +821,6 @@ public class LiveView extends FrameLayout {
 
     onShouldJoinRoom.onNext(null);
 
-    // TODO WHAT DO WE DO WITH THIS
-    if (live.getType().equals(Live.NEW_CALL)) viewLocalLive.showShareOverlay(live.getSource());
     viewRinging.startRinging();
   }
 
@@ -941,17 +932,6 @@ public class LiveView extends FrameLayout {
   ////////////////
   //  PRIVATE   //
   ////////////////
-
-  private void refactorShareOverlay() {
-    if (!live.getType().equals(Live.NEW_CALL)) return;
-
-    int nbPeople = nbInRoom();
-    if (nbPeople > 1) {
-      viewLocalLive.hideShareOverlay();
-    } else {
-      viewLocalLive.showShareOverlay(live.getSource());
-    }
-  }
 
   private void addView(LiveRowView liveRowView, TribeGuest guest) {
     liveRowView.setGuest(guest);
@@ -1564,10 +1544,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<Map<String, LiveRowView>> onLiveChanged() {
     return liveRowViewMap.getMapObservable();
-  }
-
-  public Observable<Void> onShare() {
-    return onShare;
   }
 
   public Observable<Long> onEndCall() {

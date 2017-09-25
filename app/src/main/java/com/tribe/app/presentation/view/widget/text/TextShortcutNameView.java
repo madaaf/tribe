@@ -12,16 +12,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 /**
- * Created by tiago on 09/05/17.
+ * Created by tiago on 09/22/17.
  */
-public class TextHomeNameActionView extends LinearLayout {
+public class TextShortcutNameView extends LinearLayout {
 
   @IntDef({ NORMAL, CHAT, LIVE }) public @interface TextType {
   }
@@ -30,19 +32,17 @@ public class TextHomeNameActionView extends LinearLayout {
   public static final int CHAT = 1;
   public static final int LIVE = 2;
 
-  @BindView(R.id.txtName) TextViewFont txtName;
-  @BindView(R.id.txtAction) TextViewFont txtAction;
-  @BindView(R.id.viewShortcutName) TextShortcutNameView txtShortcutName;
+  @BindView(R.id.txtNameShortcut) TextViewFont txtNameShortcut;
 
   private int textType = NORMAL;
   private Unbinder unbinder;
 
-  public TextHomeNameActionView(Context context) {
+  public TextShortcutNameView(Context context) {
     super(context);
     init();
   }
 
-  public TextHomeNameActionView(Context context, AttributeSet attrs) {
+  public TextShortcutNameView(Context context, AttributeSet attrs) {
     super(context, attrs);
 
     init();
@@ -68,10 +68,9 @@ public class TextHomeNameActionView extends LinearLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_text_home_name_action, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_text_shortcut_name, this);
     unbinder = ButterKnife.bind(this);
 
-    setOrientation(VERTICAL);
     setGravity(Gravity.CENTER_VERTICAL);
   }
 
@@ -81,33 +80,38 @@ public class TextHomeNameActionView extends LinearLayout {
     this.textType = textType;
 
     if (textType == NORMAL) {
-      txtAction.setVisibility(View.GONE);
-      TextViewCompat.setTextAppearance(txtName, R.style.Title_1_Black);
+      setVisibility(View.GONE);
     } else {
-      txtAction.setVisibility(View.VISIBLE);
-      TextViewCompat.setTextAppearance(txtName, R.style.Title_2_Black);
-      txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+      setVisibility(View.VISIBLE);
 
       if (textType == CHAT) {
-        TextViewCompat.setTextAppearance(txtAction, R.style.Body_One_Blue);
-        txtAction.setText(R.string.home_action_read_chat);
+        TextViewCompat.setTextAppearance(txtNameShortcut, R.style.Title_2_BlueNew);
+      } else if (textType == LIVE) {
+        TextViewCompat.setTextAppearance(txtNameShortcut, R.style.Title_2_Red);
       } else {
-        TextViewCompat.setTextAppearance(txtAction, R.style.Body_One_Red);
-        txtAction.setText(R.string.home_action_join_live);
+        TextViewCompat.setTextAppearance(txtNameShortcut, R.style.Title_2_Black);
       }
-    }
 
-    txtShortcutName.setTextType(textType);
+      txtNameShortcut.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+    }
   }
 
   public void setRecipient(Recipient recipient) {
+    String shortcutName = "";
+
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
-      txtName.setText(shortcut.getUserDisplayNames());
-    } else {
-      txtName.setText(recipient.getDisplayName());
+      shortcutName = shortcut.getName();
+    } else if (recipient instanceof Invite) {
+      Invite invite = (Invite) recipient;
+      shortcutName = invite.getShortcut().getName();
     }
 
-    txtShortcutName.setRecipient(recipient);
+    if (StringUtils.isEmpty(shortcutName)) {
+      setVisibility(View.GONE);
+    } else {
+      setVisibility(View.VISIBLE);
+      txtNameShortcut.setText(shortcutName);
+    }
   }
 }

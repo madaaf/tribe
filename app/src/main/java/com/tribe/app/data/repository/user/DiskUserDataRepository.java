@@ -91,6 +91,7 @@ import rx.Observable;
                   shortcutMembersIds.add(userRealm.getId());
                   if (invite.isShortcut(shortcutMembersIds)) {
                     shortcut.setLive(true);
+                    invite.setShortcut(shortcut);
                   }
                 }
               }

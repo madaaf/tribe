@@ -214,7 +214,7 @@ public class Shortcut extends Recipient implements Serializable {
     return status.equals(ShortcutRealm.HIDDEN);
   }
 
-  private String getUserDisplayNames() {
+  public String getUserDisplayNames() {
     if (members == null || members.size() == 0) return "";
 
     StringBuffer buffer = new StringBuffer();

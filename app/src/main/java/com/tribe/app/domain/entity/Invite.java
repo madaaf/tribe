@@ -12,6 +12,7 @@ import java.util.List;
 public class Invite extends Recipient {
 
   private Room room;
+  private Shortcut shortcut;
 
   public void setRoom(Room room) {
     this.room = room;
@@ -133,5 +134,13 @@ public class Invite extends Recipient {
 
   public boolean isSingle() {
     return room.getLiveUsers().size() <= 1;
+  }
+
+  public Shortcut getShortcut() {
+    return shortcut;
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
   }
 }

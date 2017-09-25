@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtNameShortcut"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/bg_shortcut_name_home"
+      android:padding="8dp"
+      style="@style/Title.2.Red"
+      />
+
+</merge>

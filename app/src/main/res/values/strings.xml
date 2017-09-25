@@ -119,8 +119,7 @@
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">See the conversation</string>
 	<string name="live_notification_action_reply">Reply</string>
-	<string name="live_notification_online">Online</string>
-	<string name="live_notification_joined">Joined tribe :metal</string>
+	<string name="live_notification_online">is online</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -402,6 +401,7 @@
 	<string name="live_members_invite_friends_section_title">ADD FRIEND IN CALL</string>
 	<string name="live_members_ringing">Ringing</string>
 	<string name="live_members_waiting">Waiting</string>
+	<string name="live_members_add_friends">Add friends</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
@@ -655,6 +655,15 @@
 	<string name="game_draw_timer_instructions">Next in :hourglass:</string>
 	<string name="game_draw_clear">Clear</string>
 	<string name="game_draw_instructions_my_turn">Your turn to draw!</string>
+	<string name="game_invaders">Invaders</string>
+	<string name="game_drop_it">Drop it!</string>
+	<string name="game_sing_along">Sing along</string>
+	<string name="game_faceswap">Faceswap</string>
+	<string name="game_hand_fight">Hand Fight</string>
+	<string name="game_lava_floor">Lava floor</string>
+	<string name="game_taboo">Taboo</string>
+	<string name="game_backgam">Backgam\'</string>
+	<string name="game_beats">Beats</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -759,5 +768,6 @@
 	<string name="chat_live_status_none">Chat</string>
 	<string name="chat_live_status_new">New</string>
 	<string name="chat_live_status_hide">Hide</string>
+	<string name="chat_live_status_switching">Switching</string>
 	<string name="chat_quickchat_back_to_group">Group</string>
 </resources>

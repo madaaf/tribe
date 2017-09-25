@@ -115,6 +115,7 @@
   <dimen name="filter_game_size_container">60dp</dimen>
   <dimen name="picto_chat_size">55dp</dimen>
   <dimen name="picto_live_size">55dp</dimen>
+  <dimen name="avatar_size_shortcut_completion">16dp</dimen>
 
   <!-- THRESHOLDS -->
   <dimen name="threshold_dismiss">100dp</dimen>

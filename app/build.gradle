@@ -267,6 +267,7 @@ dependencies {
   compile project(':AdapterDelegates')
   compile project(':tribelivesdk')
   compile project(':ViewNavigator')
+  compile project(':tokenlib')
   compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
     transitive = true;
   }

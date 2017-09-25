@@ -547,8 +547,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initNewCall() {
-    subscriptions.add(
-        btnNewChat.onNewChat().subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_NEW_CALL)));
+    subscriptions.add(btnNewChat.onNewChat().subscribe(aVoid -> navigateToNewChat()));
 
     subscriptions.add(
         btnNewChat.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
@@ -643,10 +642,10 @@ public class HomeActivity extends BaseActivity
     }));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
-      //if (recipient instanceof Friendship) {
-      //  Friendship fr = (Friendship) recipient;
-      //  homeGridPresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
-      //}
+      if (recipient instanceof Shortcut) {
+        Shortcut shortcut = (Shortcut) recipient;
+        homeGridPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.DEFAULT);
+      }
     }));
 
     searchView.initSearchTextSubscription(topBarContainer.onSearch());
@@ -824,6 +823,10 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToNewCall(@LiveActivity.Source String source) {
     HomeActivity.this.navigator.navigateToNewCall(this, source);
+  }
+
+  private void navigateToNewChat() {
+    HomeActivity.this.navigator.navigateToNewChat(this);
   }
 
   private void syncContacts() {

@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     >
+
+  <com.tribe.app.presentation.view.widget.text.TextShortcutNameView
+      android:id="@+id/viewShortcutName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="visible"
+      />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtName"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
       style="@style/Title.1.Black"
       />
 
@@ -22,4 +31,4 @@
       style="@style/Body.One.Blue"
       />
 
-</merge>
+</LinearLayout>
