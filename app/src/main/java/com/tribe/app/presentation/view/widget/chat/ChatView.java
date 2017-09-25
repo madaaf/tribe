@@ -47,19 +47,31 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
+import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static com.tribe.app.presentation.view.widget.chat.Message.MESSAGE_EMOJI;
-import static com.tribe.app.presentation.view.widget.chat.Message.MESSAGE_IMAGE;
-import static com.tribe.app.presentation.view.widget.chat.Message.MESSAGE_TEXT;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EMOJI;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -138,10 +150,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
     messagePresenter.loadMessagesDisk(arrIds);
     messagePresenter.loadMessage(arrIds);
-    messagePresenter.getCreatedMessages();
   }
 
-  private void sendPicture(Uri uri, ImageView imageView) {
+  private void sendPicture(Uri uri, int position) {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     try {
@@ -156,7 +167,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
         Timber.e("downloadUrl " + downloadUrl);
         messagePresenter.createMessage(arrIds, downloadUrl.toString(), MessageRealm.IMAGE,
-            imageView);
+            position);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -166,9 +177,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void initSubscriptions() {
 
-    subscriptions.add(messageAdapter.onPictureTaken().subscribe(list -> {
-      Timber.e("SOEF PN PICTURE TALEN");
-      sendPicture((Uri) list.get(0), (ImageView) list.get(1));
+    subscriptions.add(messageAdapter.onMessagePending().subscribe(list -> {
+      String type = (String) list.get(0);
+      int position = (int) list.get(2);
+
+      if (type.equals(MessageRealm.IMAGE)) {
+        Uri uri = (Uri) list.get(1);
+        sendPicture(uri, position);
+      } else {
+        String data = (String) list.get(1);
+        messagePresenter.createMessage(arrIds, data, type, position);
+      }
     }));
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
@@ -275,11 +294,15 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   void init() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
-    //
-/*    layoutManager.setReverseLayout(true);
-    layoutManager.setStackFromEnd(true);*/
-    recyclerView.setItemAnimator(new DefaultItemAnimator());
+    layoutManager.setStackFromEnd(true);
+
+
+ /*
+    layoutManager.setReverseLayout(true);
+*/
+    recyclerView.setItemAnimator(null);
     recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setHasFixedSize(true);
     recyclerView.setAdapter(messageAdapter);
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -336,12 +359,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       case MESSAGE_TEXT:
         message = new MessageText();
         ((MessageText) message).setMessage(content);
-        messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT, null);
+        // messagePresenter.createMessage(arrIds, content, MessageRealm.TEXT, null);
         break;
       case MESSAGE_EMOJI:
         message = new MessageEmoji(content);
         ((MessageEmoji) message).setEmoji(content);
-        messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI, null);
+        // messagePresenter.createMessage(arrIds, content, MessageRealm.EMOJI, null);
         break;
       case MESSAGE_IMAGE:
         message = new MessageImage();
@@ -355,6 +378,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setType(type);
     message.setAuthor(user);
     message.setCreationDate(dateUtils.getUTCDateAsString());
+    message.setPending(true);
+    message.setId("PENDING");
     items.add(message);
     messageAdapter.setItems(items);
     scrollListToBottom();
@@ -387,16 +412,25 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void scrollListToBottom() {
-    recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()));
+    //messageAdapter.getItemCount()
+   /* recyclerView.post(
+        () -> layoutManager.scrollToPositionWithOffset(layoutManager.getItemCount(), 1000));*/
+    recyclerView.post(() -> recyclerView.smoothScrollToPosition(layoutManager.getItemCount()));
   }
 
   boolean networkError = false;
 
   @Override public void successLoadingMessage(List<Message> messages) {
-    Timber.e("SOEF successLoadingMessage" + messages.size());
-    networkError = false;
-    messageAdapter.setItems(messages);
-    scrollListToBottom();
+    Timber.e("SOEF successLoadingMessage " + messages.size());
+  /*  String firstDate = messages.get(0).getCreationDate();
+    String lasteDate = messages.get(messages.size()).getCreationDate();*/
+
+    List<Message> lost = new ArrayList<>();
+    for (Message m : messages) {
+      if (m instanceof MessageText) {
+        lost.add(m);
+      }
+    }
   }
 
   @Override public void errorLoadingMessage() {
@@ -404,38 +438,51 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     networkError = true;
   }
 
-  @Override public void successLoadingMessageDisk(List<Message> messages) {
-    Timber.e("SOEF successLoadingMessageDisk " + messages.size());
-    if (networkError) {
-      messageAdapter.setItems(messages);
-      scrollListToBottom();
+  Set<Message> unreadDiskMessages = new TreeSet<>((o1, o2) -> {
+    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+    DateTime d1 = parser.parseDateTime(o1.getCreationDate());
+    DateTime d2 = parser.parseDateTime(o2.getCreationDate());
+    return d1.compareTo(d2);
+  });
+  Set<Message> diskMessages = new HashSet<>();
+
+  @Override public void successLoadingMessageDisk(List<Message> messasges) {
+    Timber.e("SOEF successLoadingMessageDisk " + messasges.size());
+    Set<Message> ok = new HashSet<>();
+    ok.addAll(messageAdapter.getItems());
+
+    if (ok.isEmpty()) { // PREMIER ENTRE
+      for (Message m : messasges) {
+        if (!diskMessages.contains(m)) {
+          unreadDiskMessages.add(m);
+        }
+      }
+    } else {
+      for (Message m : messasges) {
+        if (!diskMessages.contains(m) && !m.getAuthor().getId().equals(user.getId())) {
+          unreadDiskMessages.add(m);
+        }
+      }
     }
+
+    diskMessages.addAll(messasges);
+    messageAdapter.setItems(unreadDiskMessages);
+    unreadDiskMessages.clear();
+    scrollListToBottom();
+
+    unreadDiskMessages.clear();
   }
 
   @Override public void errorLoadingMessageDisk() {
     Timber.e("SOEF errorLoadingMessageDisk");
   }
 
-  @Override public void successMessageCreated(Message message, ImageView imageView) {
+  @Override public void successMessageCreated(Message message, int position) {
     Timber.e("SOEF successMessageCreated " + message.toString());
-    if (imageView != null) imageView.animate().alpha(1f).setDuration(300).start();
+    messageAdapter.notifyItemChanged(position, message);
   }
 
   @Override public void errorMessageCreation() {
     Timber.e("SOEF errorMessageCreation");
-  }
-
-  @Override public void successGetSubscribeMessage(Message message) {
-    Timber.e("SOEF successGetSubscribeMessage " + message.toString());
-    if (!message.getAuthor().getId().equals(user.getId())) {
-      items.clear();
-      items.add(message);
-      messageAdapter.setItems(items);
-      scrollListToBottom();
-    }
-  }
-
-  @Override public void errorGetSubscribeMessage() {
-    Timber.e("SOEF errorGetSubscribeMessage ");
   }
 }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="@android:color/white"
+    >
+
+  <FrameLayout
+      android:id="@+id/daySeparatorContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="visible"
+      >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="center"
+        android:background="@color/grey.chat.grey"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/daySeparator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/white"
+        android:padding="10dp"
+        android:text="TODAY"
+        android:textAllCaps="true"
+        android:textSize="13sp"
+        style="@style/Body.Two.Black40"
+        />
+
+  </FrameLayout>
+
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/time2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:text="1m ago"
+      android:textSize="11sp"
+      android:visibility="gone"
+      style="@style/Content.Three.Black40"
+      />
+
+  <LinearLayout
+      android:id="@+id/header"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:layout_marginTop="10dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="@dimen/avatar_size_chat"
+        android:layout_height="@dimen/avatar_size_chat"
+        android:layout_gravity="left|center_vertical"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        app:hasHole="true"
+        app:hasInd="true"
+        app:hasShadow="false"
+        />
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:text="mada"
+        android:textAllCaps="true"
+        android:textSize="11sp"
+        style="@style/Body.Two.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:text="1m ago"
+        android:textSize="11sp"
+        style="@style/Content.Three.Black40"
+        />
+
+  </LinearLayout>
+
+
+</LinearLayout>

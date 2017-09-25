@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.chat;
+package com.tribe.app.presentation.view.widget.chat.model;
 
 /**
  * Created by madaaflak on 07/09/2017.
@@ -25,6 +25,14 @@ public class MessageText extends Message {
   }
 
   @Override public String toString() {
-    return "MessageText{" + "message='" + message + '\'' + '}';
+    return "MessageText{"
+        + "message='"
+        + message
+        + '\''
+        + " pending "
+        + isPending()
+        + " "
+        + getId()
+        + '}';
   }
 }

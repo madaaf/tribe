@@ -16,6 +16,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -26,11 +27,17 @@ public class ChatActivity extends BaseActivity {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
 
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+
+  private Shortcut shortcut;
+  private Invite invite;
+  private String arrayIds;
   @BindView(R.id.chatview) ChatView chatView;
 
   public static Intent getCallingIntent(Context context, Recipient recipient) {
     Intent intent = new Intent(context, ChatActivity.class);
-    List<User> friends = new ArrayList<>();
+   /* List<User> friends = new ArrayList<>();
 
     if (recipient instanceof Shortcut) {
       friends = ((Shortcut) recipient).getMembers();
@@ -40,8 +47,9 @@ public class ChatActivity extends BaseActivity {
         User user = ((Invite) recipient).getRoom().getInitiator();
         friends.add(user);
       }
-    }
-    intent.putExtra(EXTRA_LIVE, (ArrayList<User>) friends); // TODO SOEF REVIEW
+    }*/
+    //intent.putExtra(EXTRA_LIVE, (ArrayList<User>) friends); // TODO SOEF REVIEW
+    intent.putExtra(EXTRA_LIVE, recipient); // TODO SOEF REVIEW
     return intent;
   }
 
@@ -56,7 +64,23 @@ public class ChatActivity extends BaseActivity {
     initDependencyInjector();
 
     if (getIntent().hasExtra(EXTRA_LIVE)) {
-      List<User> friends = (ArrayList<User>) getIntent().getSerializableExtra(EXTRA_LIVE);
+
+      // List<User> friends = (ArrayList<User>) getIntent().getSerializableExtra(EXTRA_LIVE);
+      Recipient recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_LIVE);
+      List<User> friends = new ArrayList<>();
+
+      if (recipient instanceof Shortcut) {
+        friends = ((Shortcut) recipient).getMembers();
+        shortcut = (Shortcut) recipient;
+      } else if (recipient instanceof Invite) {
+        invite = (Invite) recipient;
+        friends = ((Invite) recipient).getMembers();
+        if (friends.isEmpty()) {
+          User user = ((Invite) recipient).getRoom().getInitiator();
+          friends.add(user);
+        }
+      }
+
       if (friends.isEmpty()) {
         Timber.e(" EMPTY LIST ID ");
         return;
@@ -67,11 +91,23 @@ public class ChatActivity extends BaseActivity {
       for (int i = 0; i < friends.size(); i++) {
         ids[i] = friends.get(i).getId();
       }
-      initCallRouletteService(JsonUtils.arrayToJson(ids));
+      arrayIds = JsonUtils.arrayToJson(ids);
+    }
+
+    initSubscription();
+  }
+
+  private void initSubscription() {
+  /*  Invite ok =
+    subscriptions.add();*/
+    if (shortcut != null) {
+      User user = shortcut.getSingleFriend();
+      //shortcut.getR
     }
   }
 
   @Override protected void onResume() {
+    initCallRouletteService(arrayIds);
     super.onResume();
   }
 

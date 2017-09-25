@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.chat;
+package com.tribe.app.presentation.view.widget.chat.model;
 
 import android.support.annotation.StringDef;
 import com.tribe.app.domain.entity.User;
@@ -21,8 +21,17 @@ public class Message {
   private String id;
   private @Type String type;
   private String creationDate;
+  private boolean isPending = false;
 
   public Message() {
+  }
+
+  public boolean isPending() {
+    return isPending;
+  }
+
+  public void setPending(boolean pending) {
+    isPending = pending;
   }
 
   public Message(String id) {
@@ -31,6 +40,21 @@ public class Message {
 
   public User getAuthor() {
     return author;
+  }
+
+  public String getContent() {
+    switch (type) {
+      case MESSAGE_TEXT:
+        return ((MessageText) this).getMessage();
+      case MESSAGE_EVENT:
+        ((MessageEvent) this).getAction();
+        return ((MessageEvent) this).getAction();
+      case MESSAGE_EMOJI:
+        return ((MessageEmoji) this).getEmoji();
+      case MESSAGE_IMAGE:
+        return ((MessageImage) this).getOriginal().getUrl();
+    }
+    return null;
   }
 
   public String getType() {
@@ -59,5 +83,19 @@ public class Message {
 
   public void setCreationDate(String creationDate) {
     this.creationDate = creationDate;
+  }
+
+  @Override public boolean equals(Object obj) {
+    if (obj == null) return false;
+
+    if (!(obj instanceof Message)) return false;
+    Message other = (Message) obj;
+    boolean ok = this.id.equals(other.id);
+
+    return (this.id.equals(other.id) && this.id.equals(other.id));
+  }
+
+  @Override public int hashCode() {
+    return this.id.length();
   }
 }
