@@ -48,33 +48,24 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageImage m = (MessageImage) items.get(position);
 
     Image o = m.getOriginal();
+    String lowUrlImage =
+        (m.getRessources() != null && m.getRessources().get(0) != null) ? m.getRessources()
+            .get(0)
+            .getUrl() : null;
+    String url = (lowUrlImage != null) ? lowUrlImage : o.getUrl();
+
     Uri uri = m.getUri();
 
-    /*
-
-
-        List<Image> images = m.getRessources();
-    Image stamp = new Image();
-    stamp.setUrl("STAMP");
-    stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
-    images.add(stamp);
-
-    Collections.sort(images,
-        (o1, o2) -> String.valueOf(o1.getWidth()).compareTo(String.valueOf(o2.getWidth())));
-
-
-     */
-
-    Glide.with(context).load(o.getUrl()).asBitmap().into(new BitmapImageViewTarget(vh.image) {
+    Glide.with(context).load(url).asBitmap().into(new BitmapImageViewTarget(vh.image) {
       @Override protected void setResource(Bitmap resource) {
         RoundedBitmapDrawable circularBitmapDrawable =
             RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-        circularBitmapDrawable.setCornerRadius(30);
+        circularBitmapDrawable.setCornerRadius(40);
         vh.image.setImageDrawable(circularBitmapDrawable);
       }
     });
 
-    setPendingBehavior(m, vh.container, position, uri, MessageRealm.IMAGE);
+    if (uri != null) setPendingBehavior(m, vh.container, position, uri, MessageRealm.IMAGE); // is pending
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,

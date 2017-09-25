@@ -1,5 +1,6 @@
 package com.tribe.app.data.realm;
 
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -48,4 +49,6 @@ public class ImageRealm extends RealmObject {
   public void setHeight(String height) {
     this.height = height;
   }
+
+
 }
