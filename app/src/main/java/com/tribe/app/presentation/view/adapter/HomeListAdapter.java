@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperAdapter;
@@ -26,6 +27,7 @@ public class HomeListAdapter extends RecyclerView.Adapter
 
   public static final int EMPTY_HEADER_VIEW_TYPE = 99;
   public static final int HEADERS_VIEW_TYPE = 98;
+  public static final int EMPTY_VIEW_TYPE = 97;
 
   protected RxAdapterDelegatesManager delegatesManager;
   private ShortcutHomeAdapterDelegate shortcutHomeAdapterDelegate;
@@ -43,15 +45,13 @@ public class HomeListAdapter extends RecyclerView.Adapter
     delegatesManager = new RxAdapterDelegatesManager<>();
     delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
         new EmptyHeaderGridAdapterDelegate(context));
+    delegatesManager.addDelegate(EMPTY_VIEW_TYPE, new ShortcutEmptyListAdapterDelegate(context));
 
     shortcutHomeAdapterDelegate = new ShortcutHomeAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutHomeAdapterDelegate);
 
     shortcutLiveHomeAdapterDelegate = new ShortcutLiveHomeAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutLiveHomeAdapterDelegate);
-
-    //userConnectedGridAdapterDelegate = new UserChatActiveHomeAdapterDelegate(context);
-    //delegatesManager.addDelegate(userConnectedGridAdapterDelegate);
 
     items = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class HomeListAdapter extends RecyclerView.Adapter
     //    userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
   }
 
-  public Observable<View> onChatClick(){
+  public Observable<View> onChatClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onChatClick(),
         shortcutLiveHomeAdapterDelegate.onChatClick());
   }

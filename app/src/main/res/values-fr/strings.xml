@@ -725,6 +725,9 @@
 	<string name="home_section_ongoing">En cours</string>
 	<string name="home_section_online">En ligne</string>
 	<string name="home_section_recent">Récents</string>
+	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
+	<string name="home_section_invites_to_send">Amis à inviter</string>
+	<string name="home_section_results">Résultats</string>
 	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
 	<string name="home_action_read_chat">Swipe droite pour lire</string>
 	<string name="home_action_new_chat">Nouveau chat</string>

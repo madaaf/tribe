@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component;
+package com.tribe.app.presentation.view.component.home;
 
 import android.content.Context;
 import android.support.v4.util.Pair;
@@ -23,7 +23,6 @@ import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -42,7 +41,7 @@ public class TopBarContainer extends FrameLayout {
   private static final float DRAG_RATE = 0.5f;
   private static final int DRAG_THRESHOLD = 20;
   private static final int INVALID_POINTER = -1;
-  public static final int MIN_LENGTH = 1250; // ms
+  public static final int MIN_LENGTH = 1000; // ms
 
   @Inject SoundManager soundManager;
 
@@ -51,6 +50,8 @@ public class TopBarContainer extends FrameLayout {
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerView;
 
   @BindView(R.id.topBarView) TopBarView topBarView;
+
+  @BindView(R.id.viewTopBarLogo) TopBarLogoView viewTopBarLogo;
 
   @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
@@ -65,7 +66,8 @@ public class TopBarContainer extends FrameLayout {
   private VelocityTracker velocityTracker;
   private int touchSlop;
   private int currentOffsetTop;
-  private boolean dropPullToRefresh = false;
+  private boolean dropPullToRefresh = false, isRefreshing = false, wasRefreshing = false;
+
   private TooltipView tooltipView;
   private FrameLayout.LayoutParams tooltipParams;
   private int scrollThresholdFloatingButton = 0;
@@ -277,6 +279,9 @@ public class TopBarContainer extends FrameLayout {
             diffY > screenUtils.dpToPx(DRAG_THRESHOLD) &&
             !beingDragged) {
           beingDragged = true;
+          viewTopBarLogo.setVisibility(View.VISIBLE);
+          viewTopBarLogo.reset();
+          viewTopBarLogo.setAlpha(0);
         }
 
         break;
@@ -306,6 +311,14 @@ public class TopBarContainer extends FrameLayout {
     topBarView.onSyncError();
   }
 
+  public void endRefresh() {
+    isRefreshing = false;
+    dropPullToRefresh = false;
+    wasRefreshing = true;
+    springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
+    //viewTopBarLogo.endRefresh();
+  }
+
   ///////////////////////
   //    ANIMATIONS     //
   ///////////////////////
@@ -320,18 +333,28 @@ public class TopBarContainer extends FrameLayout {
 
     @Override public void onSpringAtRest(Spring spring) {
       super.onSpringAtRest(spring);
+      if (!beingDragged) viewTopBarLogo.setVisibility(View.GONE);
+      if (wasRefreshing) {
+        wasRefreshing = false;
+      }
     }
   }
 
   private void translateTop(float value) {
     recyclerView.setTranslationY(value);
     float alphaValue = (value / getTotalDragDistance());
-    topBarView.showSpinner(alphaValue);
+    topBarView.setAlpha(1 - alphaValue);
+    viewTopBarLogo.setAlpha(alphaValue);
+    topBarView.setTranslationY(value * 1.25f);
+    if (wasRefreshing) viewTopBarLogo.setTranslation(value);
     if (tooltipView != null && ViewCompat.isAttachedToWindow(tooltipView)) {
       tooltipView.setAlpha(1 - alphaValue);
     }
-    if (value > getTotalDragDistance() / 2 && dropPullToRefresh) {
+
+    if (value > getTotalDragDistance() / 2 && dropPullToRefresh && !isRefreshing) {
       onRefresh.onNext(true);
+      isRefreshing = true;
+      viewTopBarLogo.startRefresh(getTotalDragDistance());
     }
   }
 
@@ -365,14 +388,14 @@ public class TopBarContainer extends FrameLayout {
         if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
           velocityTracker.addMovement(event);
           velocityTracker.computeCurrentVelocity(1000);
+        }
 
-          float y = event.getY(pointerIndex) - location[1];
-          float offsetY = y - lastDownY + lastDownYTr;
+        float y = event.getY(pointerIndex) - location[1];
+        float offsetY = y - lastDownY + lastDownYTr;
 
-          if (offsetY >= 0) {
-            springTop.setCurrentValue(currentOffsetTop);
-            springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
-          }
+        if (offsetY >= 0) {
+          springTop.setCurrentValue(currentOffsetTop);
+          springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(currentOffsetTop);
         }
 
         break;
@@ -383,7 +406,7 @@ public class TopBarContainer extends FrameLayout {
   }
 
   private float getTotalDragDistance() {
-    return getHeight() / 8;
+    return getHeight() / 6;
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {

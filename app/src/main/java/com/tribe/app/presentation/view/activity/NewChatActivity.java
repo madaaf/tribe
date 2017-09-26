@@ -9,8 +9,10 @@ import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tokenautocomplete.FilteredArrayAdapter;
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -27,7 +29,9 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.util.FontCache;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -51,6 +55,7 @@ public class NewChatActivity extends BaseActivity
   private Unbinder unbinder;
   private FilteredArrayAdapter<Shortcut> adapter;
   private List<Shortcut> items;
+  private Set<String> selectedIds;
   private int count = 0;
 
   // OBSERVABLES
@@ -94,6 +99,7 @@ public class NewChatActivity extends BaseActivity
 
   private void init(Bundle savedInstanceState) {
     items = new ArrayList<>();
+    selectedIds = new HashSet<>();
   }
 
   private void initPresenter() {
@@ -140,7 +146,7 @@ public class NewChatActivity extends BaseActivity
     viewShortcutCompletion.allowCollapse(false);
     viewShortcutCompletion.allowDuplicates(false);
     ViewCompat.setElevation(viewShortcutCompletion, 0);
-    viewShortcutCompletion.setDropDownVerticalOffset(screenUtils.dpToPx(25));
+    viewShortcutCompletion.setDropDownVerticalOffset(screenUtils.dpToPx(17.5f));
     viewShortcutCompletion.setDropDownBackgroundDrawable(null);
     viewShortcutCompletion.setPrefix(getString(R.string.newchat_to).toUpperCase() + "   ",
         ContextCompat.getColor(this, R.color.black_opacity_40),
@@ -149,7 +155,19 @@ public class NewChatActivity extends BaseActivity
   }
 
   private void refactorAction() {
+    txtAction.setEnabled(count > 0);
+  }
 
+  @OnClick(R.id.btnClose) void close() {
+    finish();
+  }
+
+  @OnClick(R.id.txtAction) void create() {
+    if (selectedIds.size() > 0) {
+      newChatPresenter.createShortcut(selectedIds.toArray(new String[selectedIds.size()]));
+    } else {
+      Toast.makeText(this, R.string.newchat_create_error_noone_selected, Toast.LENGTH_LONG).show();
+    }
   }
 
   @Override public void finish() {
@@ -158,7 +176,7 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-
+    finish();
   }
 
   @Override public void onShortcutCreatedError() {
@@ -193,9 +211,13 @@ public class NewChatActivity extends BaseActivity
 
   @Override public void onTokenAdded(Shortcut token) {
     count++;
+    selectedIds.add(token.getSingleFriend().getId());
+    refactorAction();
   }
 
   @Override public void onTokenRemoved(Shortcut token) {
     count--;
+    selectedIds.remove(token.getSingleFriend().getId());
+    refactorAction();
   }
 }

@@ -3,32 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <RelativeLayout
-      android:id="@+id/progressRefreshBack"
-      android:layout_width="30dp"
-      android:layout_height="30dp"
-      android:layout_gravity="center"
-      android:background="@drawable/shape_oval_white10"
-      android:visibility="invisible"
-      >
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressRefresh"
-        android:layout_width="17.5dp"
-        android:layout_height="17.5dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="6dp"
-        android:alpha="0"
-        android:background="@null"
-        app:cpv_animAutostart="true"
-        app:cpv_animDuration="3000"
-        app:cpv_color="@android:color/white"
-        app:cpv_indeterminate="true"
-        app:cpv_thickness="2sp"
-        />
-  </RelativeLayout>
-
   <FrameLayout
       android:id="@+id/viewTopBarContainer"
       android:layout_width="match_parent"

@@ -74,15 +74,16 @@ import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDeco
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
-import com.tribe.app.presentation.view.component.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -430,6 +431,7 @@ public class HomeActivity extends BaseActivity
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(bool -> {
           if (canEndRefresh) {
+            topBarContainer.endRefresh();
             latestRecipientList.clear();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
@@ -527,6 +529,7 @@ public class HomeActivity extends BaseActivity
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Shortcut(Recipient.ID_HEADER));
           temp.addAll(recipientList);
+          ListUtils.addEmptyItems(screenUtils, temp);
 
           if (latestRecipientList.size() != 0) {
             diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));

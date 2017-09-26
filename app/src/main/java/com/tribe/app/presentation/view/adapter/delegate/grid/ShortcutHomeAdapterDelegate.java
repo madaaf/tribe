@@ -18,7 +18,9 @@ public class ShortcutHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     Recipient recipient = items.get(position);
-    return recipient instanceof Shortcut && !recipient.getSubId().equals(Recipient.ID_HEADER);
+    return recipient instanceof Shortcut &&
+        !recipient.getId().equals(Recipient.ID_HEADER) &&
+        !recipient.getId().equals(Recipient.ID_EMPTY);
   }
 
   @Override protected int getLayoutId() {

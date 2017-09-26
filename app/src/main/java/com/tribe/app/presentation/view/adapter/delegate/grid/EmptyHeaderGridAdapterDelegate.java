@@ -32,7 +32,7 @@ public class EmptyHeaderGridAdapterDelegate extends RxAdapterDelegate<List<Recip
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    return items.get(position).getSubId().equals(Recipient.ID_HEADER);
+    return items.get(position).getId().equals(Recipient.ID_HEADER);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {

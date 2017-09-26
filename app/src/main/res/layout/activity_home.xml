@@ -15,18 +15,26 @@
       android:orientation="vertical"
       />
 
-  <com.tribe.app.presentation.view.component.TopBarContainer
+  <com.tribe.app.presentation.view.component.home.TopBarContainer
       android:id="@+id/topBarContainer"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@null"
       >
 
-    <com.tribe.app.presentation.view.component.TopBarView
+    <com.tribe.app.presentation.view.component.home.TopBarView
         android:id="@+id/topBarView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_bar_height"
         android:background="@null"
+        />
+
+    <com.tribe.app.presentation.view.component.home.TopBarLogoView
+        android:id="@+id/viewTopBarLogo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:visibility="gone"
         />
 
     <android.support.v7.widget.RecyclerView
@@ -49,10 +57,9 @@
         android:background="@drawable/shape_oval_white"
         android:clickable="true"
         android:elevation="10dp"
-        android:foreground="@drawable/selectable_button"
         />
 
-  </com.tribe.app.presentation.view.component.TopBarContainer>
+  </com.tribe.app.presentation.view.component.home.TopBarContainer>
 
   <com.tribe.app.presentation.view.widget.PopupContainerView
       android:id="@+id/nativeDialogsView"

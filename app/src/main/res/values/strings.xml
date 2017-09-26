@@ -725,6 +725,9 @@
 	<string name="home_section_ongoing">Ongoing</string>
 	<string name="home_section_online">Online</string>
 	<string name="home_section_recent">Recent</string>
+	<string name="home_section_suggested_friends">Suggested friends</string>
+	<string name="home_section_invites_to_send">Invites to send</string>
+	<string name="home_section_results">Results</string>
 	<string name="home_action_join_live">Swipe left to join</string>
 	<string name="home_action_read_chat">Swipe right to read</string>
 	<string name="home_action_new_chat">New chat</string>

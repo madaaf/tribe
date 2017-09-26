@@ -78,11 +78,12 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientHomeAdapte
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
-import com.tribe.app.presentation.view.component.TopBarContainer;
-import com.tribe.app.presentation.view.component.TopBarView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.home.HomeListView;
 import com.tribe.app.presentation.view.component.home.NewChatView;
+import com.tribe.app.presentation.view.component.home.TopBarContainer;
+import com.tribe.app.presentation.view.component.home.TopBarLogoView;
+import com.tribe.app.presentation.view.component.home.TopBarView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -103,7 +104,6 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
-import com.tribe.app.presentation.view.widget.TextViewAnimatedDots;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -162,8 +162,6 @@ public interface ApplicationComponent {
 
   void inject(VisualizerView visualizerView);
 
-  void inject(TextViewAnimatedDots textViewAnimatedDots);
-
   void inject(ActionView actionView);
 
   void inject(SyncView syncView);
@@ -217,6 +215,8 @@ public interface ApplicationComponent {
   void inject(RoomLinkAdapterDelegate roomAdapterDelegate);
 
   void inject(TextShortcutNameView textShortcutNameView);
+
+  void inject(TopBarLogoView topBarLogoView);
 
   // JOBS
   void inject(BaseJob baseJob);

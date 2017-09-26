@@ -2,7 +2,6 @@ package com.tribe.app.presentation.utils.facebook;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.util.Log;
 import com.facebook.AccessToken;
@@ -120,14 +119,15 @@ import rx.subjects.PublishSubject;
 
   public void emitMe(Subscriber subscriber) {
 
-    new GraphRequest(AccessToken.getCurrentAccessToken(), "/me?fields=id,name,email", null, HttpMethod.GET, response -> {
+    new GraphRequest(AccessToken.getCurrentAccessToken(), "/me?fields=id,name,email", null,
+        HttpMethod.GET, response -> {
       JSONObject jsonResponse = response.getJSONObject();
       FacebookEntity facebookEntity = new FacebookEntity();
 
       if (jsonResponse != null) {
         try {
           facebookEntity.setName(jsonResponse.getString("name"));
-          facebookEntity.setEmail(jsonResponse.getString("email"));
+          if (jsonResponse.has("email")) facebookEntity.setEmail(jsonResponse.getString("email"));
           facebookEntity.setId(jsonResponse.getString("id"));
           facebookEntity.setProfilePicture(
               "https://graph.facebook.com/" + facebookEntity.getId() + "/picture?type=large");

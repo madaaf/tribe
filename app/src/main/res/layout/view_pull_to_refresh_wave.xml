@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <View
+      android:id="@+id/viewWave"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:background="@drawable/drawable_pull_to_refresh_wave_repeat"
+      android:rotation="20"
+      android:translationX="-50dp"
+      android:translationY="-100dp"
+      />
+
+  <ImageView
+      android:id="@+id/imgLogo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|center_horizontal"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_refresh_logo"
+      />
+</merge>

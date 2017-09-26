@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component;
+package com.tribe.app.presentation.view.component.home;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -20,12 +20,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
@@ -72,10 +70,6 @@ public class TopBarView extends FrameLayout {
   @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
   @BindView(R.id.imgClose) View imgClose;
-
-  @BindView(R.id.progressRefresh) CircularProgressView progressRefresh;
-
-  @BindView(R.id.progressRefreshBack) RelativeLayout progressRefreshBack;
 
   @BindView(R.id.viewTopBarContainer) FrameLayout viewTopBarContainer;
 
@@ -431,16 +425,6 @@ public class TopBarView extends FrameLayout {
 
   public boolean isSearchMode() {
     return searchMode;
-  }
-
-  public void showSpinner(float value) {
-    progressRefresh.clearAnimation();
-    progressRefresh.setVisibility(VISIBLE);
-    progressRefreshBack.setVisibility(VISIBLE);
-
-    progressRefresh.setAlpha(value);
-    progressRefreshBack.setAlpha(value);
-    viewTopBarContainer.setAlpha(1 - value);
   }
 
   //////////////////////

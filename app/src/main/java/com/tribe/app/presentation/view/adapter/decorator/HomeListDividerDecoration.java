@@ -40,7 +40,8 @@ public class HomeListDividerDecoration extends RecyclerView.ItemDecoration {
     return position < state.getItemCount() - 1 &&
         !sectionCallback.isSection(position + 1) &&
         parent.getAdapter().getItemViewType(position) != HomeListAdapter.HEADERS_VIEW_TYPE &&
-        parent.getAdapter().getItemViewType(position + 1) != HomeListAdapter.HEADERS_VIEW_TYPE;
+        parent.getAdapter().getItemViewType(position + 1) != HomeListAdapter.HEADERS_VIEW_TYPE &&
+        parent.getAdapter().getItemViewType(position + 1) != HomeListAdapter.EMPTY_VIEW_TYPE;
   }
 
   @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {

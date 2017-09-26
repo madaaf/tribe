@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -95,6 +96,16 @@ public class ShortcutCompletionTokenView extends FrameLayout {
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  @Override public void setSelected(boolean selected) {
+    if (!selected) {
+      setBackgroundResource(R.drawable.bg_shortcut_completion_badge);
+      txtName.setTextColor(Color.BLACK);
+    } else {
+      setBackgroundResource(R.drawable.shape_rect_rounded_100_grey);
+      txtName.setTextColor(Color.WHITE);
+    }
   }
 
   /**

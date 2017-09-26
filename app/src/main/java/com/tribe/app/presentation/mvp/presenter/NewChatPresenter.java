@@ -32,4 +32,8 @@ public class NewChatPresenter implements Presenter {
   public void loadSingleShortcuts() {
     shortcutPresenter.loadSingleShortcuts();
   }
+
+  public void createShortcut(String... userIds) {
+    shortcutPresenter.createShortcut(userIds);
+  }
 }
