@@ -20,24 +20,24 @@
         "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/layout/select_dialog_singlechoice_material.xml"
     },
     {
-        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/release/layout/abc_select_dialog_material.xml",
-        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/layout/abc_select_dialog_material.xml"
-    },
-    {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_popup_menu_header_item_layout.xml",
         "source": "/Users/madaaflak/.android/build-cache/8c471ddc8f1c5003d19c5d0e8629680fbc61b1c6/output/res/layout/abc_popup_menu_header_item_layout.xml"
     },
     {
-        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/release/layout/notification_template_part_chronometer.xml",
-        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/layout/notification_template_part_chronometer.xml"
+        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/release/layout/abc_select_dialog_material.xml",
+        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/layout/abc_select_dialog_material.xml"
+    },
+    {
+        "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_search_dropdown_item_icons_2line.xml",
+        "source": "/Users/madaaflak/.android/build-cache/8c471ddc8f1c5003d19c5d0e8629680fbc61b1c6/output/res/layout/abc_search_dropdown_item_icons_2line.xml"
     },
     {
         "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/release/layout/abc_action_menu_item_layout.xml",
         "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/layout/abc_action_menu_item_layout.xml"
     },
     {
-        "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_search_dropdown_item_icons_2line.xml",
-        "source": "/Users/madaaflak/.android/build-cache/8c471ddc8f1c5003d19c5d0e8629680fbc61b1c6/output/res/layout/abc_search_dropdown_item_icons_2line.xml"
+        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/release/layout/notification_template_part_chronometer.xml",
+        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/layout/notification_template_part_chronometer.xml"
     },
     {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_screen_toolbar.xml",

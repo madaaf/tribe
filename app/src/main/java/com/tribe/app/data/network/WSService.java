@@ -138,9 +138,9 @@ import timber.log.Timber;
   }
 
   public void subscribeChat(String userIds) {
+    String suffix = generateHash() + MESSAGE_CREATED_SUFFIX;
     String req = getApplicationContext().getString(R.string.subscription,
-        getApplicationContext().getString(R.string.subscription_messageCreated,
-            MESSAGE_CREATED_SUFFIX, userIds));
+        getApplicationContext().getString(R.string.subscription_messageCreated, suffix, userIds));
 
     webSocketConnection.send(req);
   }
