@@ -546,7 +546,7 @@ public class LiveActivity extends BaseActivity
         }
         String arrayIds = JsonUtils.arrayToJson(ids);
         initChatService(arrayIds);
-        chatView.setChatId(friends);
+        chatView.setChatId(friends, null);
         chatView.setVisibility(VISIBLE);
         chatView.animate().setDuration(300).alpha(1f).setListener(null);
       } else {

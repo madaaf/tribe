@@ -32,6 +32,7 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -154,7 +155,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initSubscriptions();
   }
 
-  public void setChatId(List<User> friends) {
+  public void setChatId(List<User> friends, Shortcut shortcut) {
 
     if (type == (FROM_LIVE)) {
       topbar.setVisibility(GONE);
@@ -190,6 +191,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
+    messagePresenter.getDiskShortcut(shortcut.getId());
   }
 
   private void sendPicture(Uri uri, int position) {
@@ -534,5 +536,18 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void errorMessageCreation() {
     Timber.e("SOEF errorMessageCreation");
+  }
+
+  @Override public void successShortcutUpdate(List<Shortcut> shortcuts) {
+    Timber.e("SHORTCUT SOEF "
+        + shortcuts.get(0).getMembers().get(0).getDisplayName()
+        + " "
+        + shortcuts.get(0).isOnline()
+        + " "
+        + shortcuts.get(0).getMembers().get(0).isOnline());
+  }
+
+  @Override public void errorShortcutUpdate() {
+    Timber.e("errorShortcutUpdateHORTCUT SOEF ");
   }
 }

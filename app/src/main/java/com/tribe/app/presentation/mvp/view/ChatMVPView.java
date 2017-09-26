@@ -1,6 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
-import android.view.View;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 
@@ -22,5 +22,7 @@ public interface ChatMVPView extends MVPView {
 
   void errorMessageCreation();
 
+  void successShortcutUpdate(List<Shortcut> shortcuts);
 
+  void errorShortcutUpdate();
 }

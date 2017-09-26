@@ -304,7 +304,7 @@
 	<string name="topbar_new_live">+ Groupe</string>
 	<string name="topbar_new_call">Appeler</string>
 	<string name="topbar_invite">Inviter</string>
-	<string name="topbar_search">Amis</string>
+	<string name="topbar_search">Rechercher</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Inviter des amis via iMessage</string>

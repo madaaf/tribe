@@ -104,6 +104,28 @@ import rx.Observable;
         });
   }
 
+  @Override public Observable<List<Shortcut>> getShortcuts(String shortcutId) {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.onlineMap().startWith(new HashMap<>()), ((userRealm, onlineMap) -> {
+          List<Shortcut> shortcutList = null;
+          User user = userRealmDataMapper.transform(userRealm);
+          if (user != null && user.getShortcutList() != null) {
+            shortcutList = updateOnlineLiveShortcuts(user.getShortcutList(), onlineMap, true);
+          }
+
+          return shortcutList;
+        })).map(list -> {
+      List<Shortcut> shortcutListFiltred = new ArrayList<Shortcut>();
+      for (Shortcut sc : list) {
+        if (sc.getId().equals(shortcutId)) shortcutListFiltred.add(sc);
+      }
+      return shortcutListFiltred;
+    });
+  }
+
   @Override public Observable<User> getFbIdUpdated() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
@@ -185,9 +207,8 @@ import rx.Observable;
     List<Shortcut> result = new ArrayList<>();
 
     for (Shortcut st : shortcutList) {
-      if (!excludeBlocked ||
-          (!StringUtils.isEmpty(st.getStatus()) &&
-              st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(st.getStatus()) && st.getStatus()
+          .equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
         st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
         result.add(st);
       }
@@ -285,8 +306,8 @@ import rx.Observable;
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) &&
-            (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
+        if (mapUsersAdded.containsKey(userInList.getId()) && (includedUserIds == null
+            || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }

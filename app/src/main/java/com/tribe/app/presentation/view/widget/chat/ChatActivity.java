@@ -12,10 +12,13 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -23,7 +26,7 @@ import timber.log.Timber;
  * Created by remy on 28/07/2017.
  */
 
-public class ChatActivity extends BaseActivity {
+public class ChatActivity extends BaseActivity implements ShortcutMVPView {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
 
@@ -33,6 +36,10 @@ public class ChatActivity extends BaseActivity {
   private Shortcut shortcut;
   private Invite invite;
   private String arrayIds;
+  private List<String> listId = new ArrayList<>();
+
+  @Inject ShortcutPresenter shortcutPresenter;
+
   @BindView(R.id.chatview) ChatView chatView;
 
   public static Intent getCallingIntent(Context context, Recipient recipient) {
@@ -73,16 +80,18 @@ public class ChatActivity extends BaseActivity {
         Timber.e(" EMPTY LIST ID ");
         return;
       }
-      chatView.setChatId(friends);
+      chatView.setChatId(friends, shortcut);
 
       String[] ids = new String[friends.size()];
       for (int i = 0; i < friends.size(); i++) {
         ids[i] = friends.get(i).getId();
+        listId.add(friends.get(i).getId());
       }
       arrayIds = JsonUtils.arrayToJson(ids);
     }
 
     initSubscription();
+    shortcutPresenter.onViewAttached(this);
   }
 
   private void initSubscription() {
@@ -97,6 +106,9 @@ public class ChatActivity extends BaseActivity {
   @Override protected void onResume() {
     initChatService(arrayIds);
     super.onResume();
+    //shortcutPresenter.loadSingleShortcuts();
+    //Timber.e("SOEF LOAD SHORTCUT FOR : " + listId.toArray(new String[listId.size()]).toString());
+    //shortcutPresenter.shortcutForUserIds(listId.toArray(new String[listId.size()]));
   }
 
   private void initDependencyInjector() {
@@ -105,5 +117,37 @@ public class ChatActivity extends BaseActivity {
         .activityModule(getActivityModule())
         .build()
         .inject(this);
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+    Timber.e(" onShortcutCreatedSuccess " + shortcut.toString());
+  }
+
+  @Override public void onShortcutCreatedError() {
+    Timber.e("onShortcutCreatedError");
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+    Timber.e("onShortcutRemovedSuccess");
+  }
+
+  @Override public void onShortcutRemovedError() {
+    Timber.e("onShortcutRemovedError");
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+    Timber.e("onShortcutUpdatedSuccess " + shortcut.toString());
+  }
+
+  @Override public void onShortcutUpdatedError() {
+    Timber.e("onShortcutUpdatedError ");
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+    Timber.e("onSingleShortcutsLoaded " + singleShortcutList.toString());
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+    Timber.e("onShortcut " + shortcut.toString());
   }
 }

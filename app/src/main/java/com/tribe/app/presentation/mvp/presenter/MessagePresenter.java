@@ -1,10 +1,11 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.view.View;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.GetDiskShortcut;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -23,12 +24,19 @@ public class MessagePresenter implements Presenter {
   protected UserMessageInfos userMessageInfos;
   protected CreateMessage createMessage;
   protected GetMessageFromDisk getMessageFromDisk;
+  protected GetDiskShortcut getDiskShortcut;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
-      GetMessageFromDisk getMessageFromDisk) {
+      GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
+    this.getDiskShortcut = getDiskShortcut;
+  }
+
+  public void getDiskShortcut(String shortcutId) {
+    getDiskShortcut.setShortcutId(shortcutId);
+    getDiskShortcut.execute(new GetDiskShortcutSubscriber());
   }
 
   public void loadMessagesDisk(String[] userIds, String date) {
@@ -67,6 +75,20 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(List<Message> messages) {
       if (chatMVPView != null) chatMVPView.successLoadingMessage(messages);
+    }
+  }
+
+  private class GetDiskShortcutSubscriber extends DefaultSubscriber<List<Shortcut>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      if (chatMVPView != null) chatMVPView.errorShortcutUpdate();
+    }
+
+    @Override public void onNext(List<Shortcut> shortcuts) {
+      if (chatMVPView != null) chatMVPView.successShortcutUpdate(shortcuts);
     }
   }
 

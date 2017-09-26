@@ -253,4 +253,37 @@ public class Shortcut extends Recipient implements Serializable {
 
     return onlineMap.containsKey(members.get(0).getId());
   }
+
+  @Override public String toString() {
+    return "Shortcut{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", picture='"
+        + picture
+        + '\''
+        + ", online="
+        + online
+        + ", live="
+        + live
+        + ", pinned="
+        + pinned
+        + ", read="
+        + read
+        + ", mute="
+        + mute
+        + ", single="
+        + single
+        + ", status='"
+        + status
+        + '\''
+        + ", last_activity_at="
+        + last_activity_at
+        + ", members="
+        + members
+        + '}';
+  }
 }
