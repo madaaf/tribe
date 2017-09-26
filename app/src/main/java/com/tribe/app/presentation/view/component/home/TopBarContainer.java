@@ -41,7 +41,7 @@ public class TopBarContainer extends FrameLayout {
   private static final float DRAG_RATE = 0.5f;
   private static final int DRAG_THRESHOLD = 20;
   private static final int INVALID_POINTER = -1;
-  public static final int MIN_LENGTH = 1000; // ms
+  public static final int MIN_LENGTH = 1500; // ms
 
   @Inject SoundManager soundManager;
 
@@ -346,15 +346,9 @@ public class TopBarContainer extends FrameLayout {
     topBarView.setAlpha(1 - alphaValue);
     viewTopBarLogo.setAlpha(alphaValue);
     topBarView.setTranslationY(value * 1.25f);
-    if (wasRefreshing) viewTopBarLogo.setTranslation(value);
+    //if (wasRefreshing) viewTopBarLogo.setTranslation(value);
     if (tooltipView != null && ViewCompat.isAttachedToWindow(tooltipView)) {
       tooltipView.setAlpha(1 - alphaValue);
-    }
-
-    if (value > getTotalDragDistance() / 2 && dropPullToRefresh && !isRefreshing) {
-      onRefresh.onNext(true);
-      isRefreshing = true;
-      viewTopBarLogo.startRefresh(getTotalDragDistance());
     }
   }
 
@@ -392,10 +386,20 @@ public class TopBarContainer extends FrameLayout {
 
         float y = event.getY(pointerIndex) - location[1];
         float offsetY = y - lastDownY + lastDownYTr;
+        final float overScrollTop = (y - lastDownY + lastDownYTr) * DRAG_RATE;
 
-        if (offsetY >= 0) {
-          springTop.setCurrentValue(currentOffsetTop);
+        springTop.setCurrentValue(currentOffsetTop);
+
+        if (overScrollTop >= getTotalDragDistance()) {
           springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(currentOffsetTop);
+
+          if (!isRefreshing) {
+            onRefresh.onNext(true);
+            isRefreshing = true;
+            viewTopBarLogo.startRefresh(getTotalDragDistance());
+          }
+        } else {
+          springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
         }
 
         break;
@@ -406,7 +410,7 @@ public class TopBarContainer extends FrameLayout {
   }
 
   private float getTotalDragDistance() {
-    return getHeight() / 6;
+    return getHeight() / 8;
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
