@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -80,9 +82,13 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
 
 public class ChatView extends FrameLayout implements ChatMVPView {
 
+  final public static int FROM_CHAT = 0;
+  final public static int FROM_LIVE = 1;
+
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
+  private int type;
   private MessageAdapter messageAdapter;
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManager, layoutManagerGrp;
@@ -110,6 +116,11 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @BindView(R.id.refInit) FrameLayout refInit;
   @BindView(R.id.txtTitle) TextViewFont title;
 
+  @BindView(R.id.topbar) FrameLayout topbar;
+  @BindView(R.id.containerUsers) FrameLayout containerUsers;
+  @BindView(R.id.container) FrameLayout container;
+  @BindView(R.id.containerEditText) RelativeLayout containerEditText;
+
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
   @Inject RxImagePicker rxImagePicker;
@@ -124,6 +135,11 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   public ChatView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
+
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChatView);
+    this.type = a.getInt(R.styleable.ChatView_chatViewType, 0);
+    //setType();
+
     initView(context);
   }
 
@@ -139,6 +155,24 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   public void setChatId(List<User> friends) {
+
+    if (type == (FROM_LIVE)) {
+      topbar.setVisibility(GONE);
+      containerUsers.setVisibility(GONE);
+      pulseLayout.setVisibility(INVISIBLE);
+      container.setBackground(null);
+      uploadImageBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
+      videoCallBtn.setVisibility(GONE);
+      sendBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
+      editText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));
+      containerEditText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.background_blur));
+      editText.setTextColor(ContextCompat.getColor(context, R.color.white));
+    }
+
     avatarView.load(friends.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
     for (User friend : friends) {
@@ -225,8 +259,13 @@ public class ChatView extends FrameLayout implements ChatMVPView {
             isHeart = true;
             editTextChange = false;
             sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
-              sendBtn.setImageDrawable(
-                  ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
+              if (type == FROM_LIVE) {
+                sendBtn.setImageDrawable(
+                    ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
+              } else {
+                sendBtn.setImageDrawable(
+                    ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
+              }
               sendBtn.animate().setDuration(200).alpha(1f).start();
             }).start();
 
@@ -301,7 +340,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void initRecyclerView() {
     layoutManager = new LinearLayoutManager(getContext());
-    messageAdapter = new MessageAdapter(getContext());
+    messageAdapter = new MessageAdapter(getContext(), type);
     layoutManager.setStackFromEnd(true);
     //   layoutManager.setReverseLayout(true);
     recyclerView.setItemAnimator(null);

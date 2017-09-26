@@ -33,22 +33,22 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
   // private PublishSubject<View> onMessagePending = PublishSubject.create();
 
-  public MessageAdapter(Context context) {
+  public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
 
   /*  messageAdapterDelegate = new MessageAdapterDelegate(context);
     delegatesManager.addDelegate(messageAdapterDelegate);*/
 
-    messageEmojiAdapterDelegate = new MessageEmojiAdapterDelegate(context);
+    messageEmojiAdapterDelegate = new MessageEmojiAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageEmojiAdapterDelegate);
 
-    messageTextAdapterDelegate = new MessageTextAdapterDelegate(context);
+    messageTextAdapterDelegate = new MessageTextAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageTextAdapterDelegate);
 
-    messageEventAdapterDelegate = new MessageEventAdapterDelegate(context);
+    messageEventAdapterDelegate = new MessageEventAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageEventAdapterDelegate);
 
-    messageImageAdapterDelegate = new MessageImageAdapterDelegate(context);
+    messageImageAdapterDelegate = new MessageImageAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageImageAdapterDelegate);
 
     items = new ArrayList<>();

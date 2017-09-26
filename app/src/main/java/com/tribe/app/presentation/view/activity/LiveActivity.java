@@ -76,6 +76,7 @@ import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
@@ -91,6 +92,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -254,6 +256,8 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
 
   @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
+
+  @BindView(R.id.chatview) ChatView chatView;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -558,7 +562,34 @@ public class LiveActivity extends BaseActivity
     }
   }
 
+  private void initChatService(String usersFromatedId) {
+    startService(WSService.getCallingIntent(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
+  }
+
   private void initSubscriptions() {
+    subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
+      Timber.e("ON CHAT OPEN");
+      if (open) {
+        List<User> friends = live.getShortcut().getMembers();
+
+        String[] ids = new String[friends.size()];
+        for (int i = 0; i < friends.size(); i++) {
+          ids[i] = friends.get(i).getId();
+        }
+        String arrayIds = JsonUtils.arrayToJson(ids);
+        initChatService(arrayIds);
+        chatView.setChatId(friends);
+        chatView.setVisibility(VISIBLE);
+        chatView.animate().setDuration(300).alpha(1f).setListener(null);
+      } else {
+        chatView.animate()
+            .setDuration(300)
+            .alpha(0f)
+            .withEndAction(() -> chatView.setVisibility(View.GONE))
+            .setListener(null);
+      }
+    }));
+
     subscriptions.add(Observable.combineLatest(onUpdateSingleShortcutList,
         viewLive.onLiveChanged().startWith(new HashMap<>()),
         //viewLive.onInvitesChanged().startWith(new HashMap<>()),
@@ -1028,8 +1059,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE &&
-        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
+        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1133,8 +1164,8 @@ public class LiveActivity extends BaseActivity
       }
     }
 
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty()) &&
-        peopleInLive.size() > 1) {
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
+        && peopleInLive.size() > 1) {
       liveIsInvite = false;
       usersIdsInvitedInLiveRoom.clear();
       activeUersIdsInvitedInLiveRoom.clear();
@@ -1324,9 +1355,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId()) &&
-        !StringUtils.isEmpty(room.getName()) &&
-        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId())
+        && !StringUtils.isEmpty(room.getName())
+        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,
@@ -1420,8 +1451,8 @@ public class LiveActivity extends BaseActivity
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (live.hasUser(notificationPayload.getUserId()) ||
-          (room != null && room.getId().equals(notificationPayload.getSessionId()))) {
+      if (live.hasUser(notificationPayload.getUserId()) || (room != null && room.getId()
+          .equals(notificationPayload.getSessionId()))) {
         if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
           displayNotification(EmojiParser.demojizedText(
               context.getString(R.string.live_notification_guest_declined,

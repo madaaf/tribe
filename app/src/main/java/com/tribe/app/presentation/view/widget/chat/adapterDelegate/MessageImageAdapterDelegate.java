@@ -28,8 +28,8 @@ import java.util.List;
 
 public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
 
-  public MessageImageAdapterDelegate(Context context) {
-    super(context);
+  public MessageImageAdapterDelegate(Context context, int type) {
+    super(context, type);
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -37,23 +37,11 @@ public class ChatActivity extends BaseActivity {
 
   public static Intent getCallingIntent(Context context, Recipient recipient) {
     Intent intent = new Intent(context, ChatActivity.class);
-   /* List<User> friends = new ArrayList<>();
-
-    if (recipient instanceof Shortcut) {
-      friends = ((Shortcut) recipient).getMembers();
-    } else if (recipient instanceof Invite) {
-      friends = ((Invite) recipient).getMembers();
-      if (friends.isEmpty()) {
-        User user = ((Invite) recipient).getRoom().getInitiator();
-        friends.add(user);
-      }
-    }*/
-    //intent.putExtra(EXTRA_LIVE, (ArrayList<User>) friends); // TODO SOEF REVIEW
-    intent.putExtra(EXTRA_LIVE, recipient); // TODO SOEF REVIEW
+    intent.putExtra(EXTRA_LIVE, recipient);
     return intent;
   }
 
-  private void initCallRouletteService(String usersFromatedId) {
+  private void initChatService(String usersFromatedId) {
     startService(WSService.getCallingIntent(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
   }
 
@@ -107,7 +95,7 @@ public class ChatActivity extends BaseActivity {
   }
 
   @Override protected void onResume() {
-    initCallRouletteService(arrayIds);
+    initChatService(arrayIds);
     super.onResume();
   }
 

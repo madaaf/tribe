@@ -2,11 +2,11 @@ package com.tribe.app.presentation.view.widget.chat.adapterDelegate;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,6 +17,7 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import java.util.ArrayList;
@@ -36,11 +37,13 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   protected ScreenUtils screenUtils;
 
   protected Context context;
+  protected int type;
   protected LayoutInflater layoutInflater;
   protected List<Message> pendingMessages = new ArrayList<>();
   protected PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
 
-  public BaseMessageAdapterDelegate(Context context) {
+  public BaseMessageAdapterDelegate(Context context, int type) {
+    this.type = type;
     this.context = context;
     dateUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
         .dateUtils();
@@ -83,6 +86,13 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       @NonNull RecyclerView.ViewHolder holder) {
     BaseTextViewHolder vh = (BaseTextViewHolder) holder;
     Message m = items.get(position);
+
+    if (type == ChatView.FROM_LIVE) {
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.white));
+      vh.time.setTextColor(ContextCompat.getColor(context, R.color.white_opacity_40));
+      vh.time2.setTextColor(ContextCompat.getColor(context, R.color.white_opacity_40));
+      vh.daySeparator.setTextColor(ContextCompat.getColor(context, R.color.white));
+    }
 
     if (m instanceof MessageEvent) {
       vh.header.setVisibility(View.GONE);
@@ -128,7 +138,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     @BindView(R.id.name) public TextViewFont name;
     @BindView(R.id.time) public TextViewFont time;
     @BindView(R.id.header) public LinearLayout header;
-    @BindView(R.id.daySeparatorContainer) public FrameLayout daySeparatorContainer;
+    @BindView(R.id.daySeparatorContainer) public LinearLayout daySeparatorContainer;
     @BindView(R.id.daySeparator) public TextViewFont daySeparator;
     @BindView(R.id.time2) public TextViewFont time2;
 

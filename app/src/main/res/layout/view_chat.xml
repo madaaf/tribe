@@ -8,6 +8,7 @@
     android:orientation="vertical"
     >
 
+
   <FrameLayout
       android:id="@+id/topbar"
       android:layout_width="match_parent"
@@ -45,6 +46,7 @@
   </FrameLayout>
 
   <FrameLayout
+      android:id="@+id/container"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_below="@+id/topbar"
@@ -57,7 +59,7 @@
       android:layout_height="wrap_content"
       android:layout_above="@+id/containerUsers"
       android:layout_below="@+id/topbar"
-      android:background="@android:color/white"
+      android:background="@android:color/transparent"
       android:fadeScrollbars="true"
       android:overScrollMode="never"
       android:paddingEnd="15dp"
