@@ -139,7 +139,7 @@ import rx.Observable;
         userDataStore.onlineMap().startWith(new HashMap<>()),
         userDataStore.liveMap().startWith(new HashMap<>()),
         (shortcuts, onlineMap, liveMap) -> userRealmDataMapper.getShortcutRealmDataMapper()
-            .transform(updateOnlineLiveShortcutsRealm(shortcuts, onlineMap, true)));
+            .transform(shortcuts));
   }
 
   @Override public Observable<Shortcut> shortcutForUserIds(String... userIds) {
@@ -168,10 +168,12 @@ import rx.Observable;
     RealmList<ShortcutRealm> result = new RealmList<>();
 
     for (ShortcutRealm st : shortcutRealmList) {
+      st.computeMembersOnline(onlineMap);
+
       if (!excludeBlocked ||
           (!StringUtils.isEmpty(st.getStatus()) &&
               st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
-        st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
+        st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline());
         result.add(st);
       }
     }

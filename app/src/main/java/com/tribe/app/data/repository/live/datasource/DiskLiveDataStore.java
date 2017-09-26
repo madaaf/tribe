@@ -56,15 +56,15 @@ public class DiskLiveDataStore
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
-    return null;
+    return liveCache.onlineMap();
   }
 
   @Override public Observable<Map<String, Boolean>> liveMap() {
-    return null;
+    return liveCache.liveMap();
   }
 
   @Override public Observable<Map<String, Invite>> inviteMap() {
-    return null;
+    return liveCache.inviteMap();
   }
 
   @Override public Observable<User> getFbIdUpdated() {

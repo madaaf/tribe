@@ -186,7 +186,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
       User user = live_users.get(i);
       buffer.append(user.getDisplayName());
 
-      if (i < min) buffer.append(", ");
+      if (i < min - 1) buffer.append(", ");
     }
 
     if (live_users.size() > NB_MAX_USERS_STRING) {

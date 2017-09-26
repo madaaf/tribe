@@ -14,7 +14,8 @@ import java.util.Map;
 /**
  * Created by tiago on 09/10/2017.
  */
-public class ShortcutRealm extends RealmObject {
+public class
+ShortcutRealm extends RealmObject {
 
   @StringDef({ DEFAULT, HIDDEN, BLOCKED }) public @interface ShortcutStatus {
   }
@@ -147,10 +148,16 @@ public class ShortcutRealm extends RealmObject {
     this.mute = mute;
   }
 
-  public boolean isUniqueMemberOnline(Map<String, Boolean> onlineMap) {
+  public void computeMembersOnline(Map<String, Boolean> onlineMap) {
+    for (UserRealm user : members) {
+      user.setIsOnline(onlineMap.containsKey(user.getId()));
+    }
+  }
+
+  public boolean isUniqueMemberOnline() {
     if (!isSingle()) return false;
 
-    return onlineMap.containsKey(members.get(0).getId());
+    return members.get(0).isOnline();
   }
 
   public boolean isHidden() {

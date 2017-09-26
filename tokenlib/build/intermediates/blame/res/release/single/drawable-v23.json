@@ -2,5 +2,9 @@
     {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/drawable-v23/abc_control_background_material.xml",
         "source": "/Users/madaaflak/.android/build-cache/8c471ddc8f1c5003d19c5d0e8629680fbc61b1c6/output/res/drawable-v23/abc_control_background_material.xml"
+    },
+    {
+        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/release/drawable-v23/abc_control_background_material.xml",
+        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/drawable-v23/abc_control_background_material.xml"
     }
 ]

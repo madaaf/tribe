@@ -5,8 +5,11 @@ import com.tribe.app.data.repository.live.datasource.DiskLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.live.LiveRepository;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -31,7 +34,25 @@ public class DiskLiveDataRepository implements LiveRepository {
   @Override public Observable<Room> getRoomUpdated() {
     final DiskLiveDataStore liveDataStore =
         (DiskLiveDataStore) this.dataStoreFactory.createDiskDataStore();
-    return liveDataStore.getRoomUpdated();
+    return Observable.combineLatest(liveDataStore.onlineMap().startWith(new HashMap<>()),
+        liveDataStore.getRoomUpdated().startWith(Observable.empty()), (onlineMap, room) -> {
+          updateOnlineLiveRoom(room, onlineMap);
+          return room;
+        });
+  }
+
+  private void updateOnlineLiveRoom(Room room, Map<String, Boolean> onlineMap) {
+    if (room.getLiveUsers() != null) {
+      for (User user : room.getLiveUsers()) {
+        user.setIsOnline(onlineMap.containsKey(user.getId()));
+      }
+    }
+
+    if (room.getInvitedUsers() != null) {
+      for (User user : room.getInvitedUsers()) {
+        user.setIsOnline(onlineMap.containsKey(user.getId()));
+      }
+    }
   }
 
   @Override public Observable<Room> getRoom(Live live) {
@@ -65,6 +86,4 @@ public class DiskLiveDataRepository implements LiveRepository {
   @Override public Observable<Boolean> buzzRoom(String roomId) {
     return null;
   }
-
-
 }

@@ -252,10 +252,11 @@ public class UserCacheImpl implements UserCache {
         ShortcutRealm shortcutRealmDB =
             realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
         shortcutRealmDB.setMute(shortcutRealm.isMute());
-        shortcutRealmDB.setStatus(shortcutRealm.getStatus());
+        shortcutRealmDB.setStatus(shortcutRealm.getStatus().toUpperCase());
         shortcutRealmDB.setRead(shortcutRealm.isRead());
         shortcutRealmDB.setName(shortcutRealm.getName());
         shortcutRealmDB.setPicture(shortcutRealm.getPicture());
+        shortcutRealmDB.setSingle(shortcutRealm.isSingle());
       });
     } finally {
       realm.close();

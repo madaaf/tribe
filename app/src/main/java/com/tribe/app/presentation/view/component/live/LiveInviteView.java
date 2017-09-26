@@ -216,12 +216,22 @@ public class LiveInviteView extends FrameLayout
               user.setCurrentRoomId(room.getId());
               user.setWaiting(room.isUserWaiting(user.getId()));
               computeUser(temp, user, alreadyPresent);
+              for (Shortcut shortcut : listShortcut) {
+                if (user.equals(shortcut.getSingleFriend())) {
+                  user.setIsOnline(shortcut.getSingleFriend().isOnline());
+                }
+              }
             }
           }
 
           for (User user : room.getInvitedUsers()) {
             user.setRinging(true);
             computeUser(temp, user, alreadyPresent);
+            for (Shortcut shortcut : listShortcut) {
+              if (user.equals(shortcut.getSingleFriend())) {
+                user.setIsOnline(shortcut.getSingleFriend().isOnline());
+              }
+            }
           }
 
           temp.add(room);

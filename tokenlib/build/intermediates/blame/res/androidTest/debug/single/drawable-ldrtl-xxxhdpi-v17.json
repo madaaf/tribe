@@ -8,6 +8,18 @@
         "source": "/Users/madaaflak/.android/build-cache/8c471ddc8f1c5003d19c5d0e8629680fbc61b1c6/output/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
     },
     {
+        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/androidTest/debug/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png",
+        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/androidTest/debug/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/tiago/Dev/Tribe2/tokenlib/build/intermediates/res/merged/androidTest/debug/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png",
+        "source": "/Users/tiago/.android/build-cache/0b344a51d75d81a2591e32f0c94ec406152181c0/output/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    },
+    {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/androidTest/debug/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png",
         "source": "/Users/madaaflak/.android/build-cache/8c471ddc8f1c5003d19c5d0e8629680fbc61b1c6/output/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
     }

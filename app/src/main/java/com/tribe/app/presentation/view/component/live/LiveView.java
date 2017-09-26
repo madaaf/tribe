@@ -43,7 +43,6 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
@@ -263,9 +262,8 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) || (
-          live.getType().equals(Live.NEW_CALL)
-              && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) ||
+          (live.getType().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -413,7 +411,6 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(
         Observable.merge(viewControlsLive.onOpenInvite(), viewControlsLive.onOpenChat())
             .subscribe(aBool -> {
-              onOpenChat.onNext(true);
               viewDarkOverlay.animate()
                   .setInterpolator(new DecelerateInterpolator())
                   .alpha(1)
@@ -422,6 +419,9 @@ public class LiveView extends FrameLayout {
 
               viewRinging.hide();
             }));
+
+    persistentSubscriptions.add(
+        viewControlsLive.onOpenChat().subscribe(aBoolean -> onOpenChat.onNext(true)));
 
     persistentSubscriptions.add(
         viewControlsLive.onOpenInvite().subscribe(aBoolean -> viewLiveInvite.openInvite()));
@@ -434,12 +434,15 @@ public class LiveView extends FrameLayout {
                   .alpha(0)
                   .setDuration(DURATION)
                   .start();
-              onOpenChat.onNext(false);
+
               viewRinging.show();
             }));
 
     persistentSubscriptions.add(
         viewControlsLive.onCloseInvite().subscribe(aBoolean -> viewLiveInvite.closeInvite()));
+
+    persistentSubscriptions.add(
+        viewControlsLive.onCloseChat().subscribe(aBoolean -> onOpenChat.onNext(false)));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
       viewLocalLive.switchCamera();
@@ -641,10 +644,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : "
-              + remotePeer.getSession().getPeerId()
-              + " & view : "
-              + remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : " +
+              remotePeer.getSession().getPeerId() +
+              " & view : " +
+              remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -907,8 +910,9 @@ public class LiveView extends FrameLayout {
 
   public boolean shouldLeave() {
     // TODO CHANGE WITH NEW SYSTEM
-    return liveRowViewMap.size() == 0 && live != null && !live.getSource()
-        .equals(SOURCE_CALL_ROULETTE);
+    return liveRowViewMap.size() == 0 &&
+        live != null &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE);
   }
 
   public @LiveActivity.Source String getSource() {
