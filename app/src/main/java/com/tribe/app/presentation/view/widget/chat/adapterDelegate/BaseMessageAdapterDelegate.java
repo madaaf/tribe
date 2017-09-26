@@ -114,6 +114,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       }
     } else {
       vh.daySeparatorContainer.setVisibility(View.VISIBLE);
+      vh.header.setVisibility(View.VISIBLE);
     }
 
     //onMessagePending.onNext(vh.getLayoutContent());

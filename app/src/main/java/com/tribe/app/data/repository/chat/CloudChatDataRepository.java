@@ -40,11 +40,10 @@ import rx.Observable;
         .map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> loadMessages(String[] userIds) {
+  @Override public Observable<List<Message>> loadMessages(String[] userIds, String date) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.loadMessages(userIds, dateUtils.getUTCDateAsString())
+    return userDataStore.loadMessages(userIds, date)
         .doOnError(Throwable::printStackTrace)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
-
 }

@@ -31,13 +31,13 @@ public class MessagePresenter implements Presenter {
     this.getMessageFromDisk = getMessageFromDisk;
   }
 
-  public void loadMessagesDisk(String[] userIds) {
-    getMessageFromDisk.setUserIds(userIds);
+  public void loadMessagesDisk(String[] userIds, String date) {
+    getMessageFromDisk.setUserIds(userIds, date);
     getMessageFromDisk.execute(new LoadMessageDiskSubscriber());
   }
 
-  public void loadMessage(String[] userIds) {
-    userMessageInfos.setUserIds(userIds);
+  public void loadMessage(String[] userIds, String date) {
+    userMessageInfos.setUserIds(userIds, date);
     userMessageInfos.execute(new LoadMessageSubscriber());
   }
 

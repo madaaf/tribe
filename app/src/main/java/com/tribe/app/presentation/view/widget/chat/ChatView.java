@@ -133,7 +133,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
 
-    initLists();
+    initRecyclerView();
     initDependencyInjector();
     initSubscriptions();
   }
@@ -154,8 +154,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       title.setTextColor(Color.BLACK);
     }
 
-    messagePresenter.loadMessagesDisk(arrIds);
-    messagePresenter.loadMessage(arrIds);
+    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
   }
 
   private void sendPicture(Uri uri, int position) {
@@ -297,7 +297,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         });
   }
 
-  private void initLists() {
+  boolean load = false;
+
+  private void initRecyclerView() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext());
     layoutManager.setStackFromEnd(true);
@@ -306,6 +308,20 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setHasFixedSize(true);
     recyclerView.setAdapter(messageAdapter);
+
+    recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+      @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+        if (dy < 0) {
+          if (layoutManager.findFirstVisibleItemPosition() < 3 && !load) {
+            Timber.w("SCROOL OK " + messageAdapter.getMessage(0).getContent());
+            String lasteDate = messageAdapter.getMessage(0).getCreationDate();
+            messagePresenter.loadMessage(arrIds, lasteDate);
+            load = true;
+          }
+        }
+      }
+    });
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -426,15 +442,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.e("SOEF successLoadingMessage " + messages.size());
-  /*  String firstDate = messages.get(0).getCreationDate();
-    String lasteDate = messages.get(messages.size()).getCreationDate();*/
-
-    List<Message> lost = new ArrayList<>();
     for (Message m : messages) {
-      if (m instanceof MessageText) {
-        lost.add(m);
-      }
+      Timber.w("SOEf : " + m.toString());
     }
+    load = false;
   }
 
   @Override public void errorLoadingMessage() {
@@ -443,7 +454,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessageDisk(List<Message> messasges) {
     Timber.e("SOEF successLoadingMessageDisk " + messasges.size());
-    Set<Message> ok = new HashSet<>();
+   /* Set<Message> ok = new HashSet<>();
     ok.addAll(messageAdapter.getItems());
 
     if (ok.isEmpty()) { // PREMIER ENTRE
@@ -454,18 +465,23 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       }
     } else {
       for (Message m : messasges) {
-        if (!diskMessages.contains(m) && !m.getAuthor().getId().equals(user.getId())) {
+        //&& !m.getAuthor().getId().equals(user.getId())
+        if (!diskMessages.contains(m)) {
           unreadDiskMessages.add(m);
         }
       }
     }
 
     diskMessages.addAll(messasges);
+
     messageAdapter.setItems(unreadDiskMessages);
     unreadDiskMessages.clear();
-    scrollListToBottom();
+    //scrollListToBottom();
 
-    unreadDiskMessages.clear();
+    unreadDiskMessages.clear();*/
+
+    unreadDiskMessages.addAll(messasges);
+    messageAdapter.setItems(unreadDiskMessages);
   }
 
   @Override public void errorLoadingMessageDisk() {
