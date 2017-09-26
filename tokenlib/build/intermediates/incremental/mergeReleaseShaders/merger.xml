@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/tiago/Dev/Tribe2/tokenlib/src/main/shaders"/></dataSet><dataSet config="release"><source path="/Users/tiago/Dev/Tribe2/tokenlib/src/release/shaders"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/src/main/shaders"/></dataSet><dataSet config="release"><source path="/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/src/release/shaders"/></dataSet></merger>

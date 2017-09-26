@@ -25,8 +25,17 @@ public class MessageRealm extends RealmObject {
   private RealmList<ImageRealm> alts;
   private String action;
   private String created_at;
+  private String threadId;
 
   public MessageRealm() {
+  }
+
+  public String getThreadId() {
+    return threadId;
+  }
+
+  public void setThreadId(String threadId) {
+    this.threadId = threadId;
   }
 
   public String getLocalId() {

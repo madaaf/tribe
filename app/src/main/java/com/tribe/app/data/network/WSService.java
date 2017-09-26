@@ -181,9 +181,8 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null &&
-        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
-            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -208,9 +207,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() ||
-        StringUtils.isEmpty(accessToken.getTokenType()) ||
-        StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -312,10 +311,7 @@ import timber.log.Timber;
 
       RealmList<MessageRealm> messages = new RealmList<>();
       messages.add(messagRealm);
- /*     String[] array = new String[1] {messages.get()};
-  *//*   ;
-      ;*/
-      chatCache.putMessages(messages, "\"ByFIVM7oW\"");
+      chatCache.putMessages(messages, messagRealm.getThreadId());
     }));
 
     persistentSubscriptions.add(
@@ -375,8 +371,9 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-        getApplicationContext().getString(R.string.userfragment_infos) : "");
+    String userInfosFragment =
+        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+            R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 
