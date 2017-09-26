@@ -15,7 +15,6 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -23,8 +22,8 @@ import timber.log.Timber;
 
 public class MessageEventAdapterDelegate extends BaseMessageAdapterDelegate {
 
-  public MessageEventAdapterDelegate(Context context) {
-    super(context);
+  public MessageEventAdapterDelegate(Context context, int type) {
+    super(context, type);
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

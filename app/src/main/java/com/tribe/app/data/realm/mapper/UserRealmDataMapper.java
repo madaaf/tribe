@@ -3,13 +3,16 @@ package com.tribe.app.data.realm.mapper;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -19,6 +22,8 @@ import javax.inject.Singleton;
   LocationRealmDataMapper locationRealmDataMapper;
   ShortcutRealmDataMapper shortcutRealmDataMapper;
   MessageRealmDataMapper messageRealmDataMapper;
+
+  @Inject ScreenUtils screenUtils;
 
   @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
       ShortcutRealmDataMapper shortcutRealmDataMapper) {
@@ -77,16 +82,29 @@ import javax.inject.Singleton;
 
   public List<Image> transformOriginalRealmList(List<ImageRealm> collection) {
     List<Image> originalList = new ArrayList<>();
-    Image original;
-
     if (collection != null) {
-      for (ImageRealm originalRealm : collection) {
-        original = transform(originalRealm);
-        if (original != null) {
-          originalList.add(original);
-        }
-      }
+      ImageRealm stamp = new ImageRealm();
+      stamp.setUrl("STAMP");
+      stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
+      Timber.e(" SOEF STAMP " + screenUtils.getWidthPx() + " " + screenUtils.getWidthDp());
+      collection.add(stamp);
+
+      Collections.sort(collection, (o1, o2) -> {
+        Integer w1 = Integer.parseInt(o1.getWidth());
+        Integer w2 = Integer.parseInt(o2.getWidth());
+/*        Float f1 = screenUtils.pxToDp(w1);
+        float f2 = screenUtils.pxToDp(w2);*/
+        return w1.compareTo(w2);
+        //return f1.compareTo(f2);
+      });
+
+      int position = collection.indexOf(stamp);
+      ImageRealm imageSelected = collection.get(position - 1);
+      Image original = transform(imageSelected);
+      originalList.add(original);
+      return originalList;
     }
+
     return originalList;
   }
 

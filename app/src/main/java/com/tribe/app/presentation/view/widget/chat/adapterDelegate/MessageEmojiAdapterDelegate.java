@@ -21,8 +21,8 @@ import java.util.List;
 
 public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
 
-  public MessageEmojiAdapterDelegate(Context context) {
-    super(context);
+  public MessageEmojiAdapterDelegate(Context context, int type) {
+    super(context, type);
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

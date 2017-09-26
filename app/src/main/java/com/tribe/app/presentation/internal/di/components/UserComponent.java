@@ -51,9 +51,6 @@ import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
-import com.tribe.app.presentation.view.widget.chat.MessageAdapterDelegate;
-import com.tribe.app.presentation.view.widget.chat.ChatActivity;
-import com.tribe.app.presentation.view.widget.chat.adapterDelegate.BaseMessageAdapterDelegate;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
@@ -78,8 +75,6 @@ import dagger.Component;
   void inject(ChatActivity chatActivity);
 
   void inject(ChatView chatView);
-
-  void inject(MessageAdapterDelegate messageAdapterDelegate);
 
   void inject(LifeNotification lifeNotification);
 

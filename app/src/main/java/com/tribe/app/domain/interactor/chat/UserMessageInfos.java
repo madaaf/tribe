@@ -10,6 +10,7 @@ import rx.Observable;
 public class UserMessageInfos extends UseCase {
 
   private String[] userIds;
+  private String date;
   private ChatRepository chatRepository;
 
   @Inject
@@ -19,11 +20,12 @@ public class UserMessageInfos extends UseCase {
     this.chatRepository = chatRepository;
   }
 
-  public void setUserIds(String[] userIds) {
+  public void setUserIds(String[] userIds, String date) {
     this.userIds = userIds;
+    this.date = date;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.chatRepository.loadMessages(userIds);
+    return this.chatRepository.loadMessages(userIds, date);
   }
 }

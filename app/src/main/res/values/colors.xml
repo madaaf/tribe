@@ -18,6 +18,7 @@
   <color name="black.light.placeholder">#1C1C1C</color>
 
   <!-- WHITES -->
+  <color name="white">#FFFFFF</color>
   <color name="white.opacity.5">#0DFFFFFF</color>
   <color name="white.opacity.10">#1AFFFFFF</color>
   <color name="white.opacity.15">#26FFFFFF</color>

@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.widget.chat.adapterDelegate;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.util.List;
@@ -22,8 +24,8 @@ import java.util.List;
 
 public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
 
-  public MessageTextAdapterDelegate(Context context) {
-    super(context);
+  public MessageTextAdapterDelegate(Context context, int type) {
+    super(context, type);
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -42,6 +44,10 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageTextViewHolder vh = (MessageTextViewHolder) holder;
 
     vh.message.setText(m.getMessage());
+
+    if (type == ChatView.FROM_LIVE) {
+      vh.message.setTextColor(ContextCompat.getColor(context, R.color.white));
+    }
     setPendingBehavior(m, vh.container, position, m.getMessage(), MessageRealm.TEXT);
   }
 

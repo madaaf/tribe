@@ -11,6 +11,7 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -32,22 +33,22 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
   // private PublishSubject<View> onMessagePending = PublishSubject.create();
 
-  public MessageAdapter(Context context) {
+  public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
 
   /*  messageAdapterDelegate = new MessageAdapterDelegate(context);
     delegatesManager.addDelegate(messageAdapterDelegate);*/
 
-    messageEmojiAdapterDelegate = new MessageEmojiAdapterDelegate(context);
+    messageEmojiAdapterDelegate = new MessageEmojiAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageEmojiAdapterDelegate);
 
-    messageTextAdapterDelegate = new MessageTextAdapterDelegate(context);
+    messageTextAdapterDelegate = new MessageTextAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageTextAdapterDelegate);
 
-    messageEventAdapterDelegate = new MessageEventAdapterDelegate(context);
+    messageEventAdapterDelegate = new MessageEventAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageEventAdapterDelegate);
 
-    messageImageAdapterDelegate = new MessageImageAdapterDelegate(context);
+    messageImageAdapterDelegate = new MessageImageAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageImageAdapterDelegate);
 
     items = new ArrayList<>();
@@ -82,6 +83,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
       Message last = items.get(items.size() - 1);
       last.setPending(false);
       last.setId(m.getId());
+      Timber.w(" PLAYLOAD BINDING " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
       delegatesManager.onBindViewHolder(items, position, holder);
@@ -93,8 +95,22 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   public void setItems(Collection<Message> items) {
+    //
+    this.items.clear();
     this.items.addAll(items);
     super.notifyDataSetChanged();
+  }
+
+  public void setItems(List<Message> items, int position) {
+    //some fictitious objectList where we're populating data
+    for (Message obj : items) {
+      this.items.add(position, obj);
+    }
+    super.notifyDataSetChanged();
+  }
+
+  public Message getMessage(int position) {
+    return items.get(position);
   }
 
   public List<Message> getItems() {
