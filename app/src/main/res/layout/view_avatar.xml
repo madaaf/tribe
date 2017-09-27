@@ -2,15 +2,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
   <ImageView
-      android:id="@+id/imgShadow"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_centerInParent="true"
-      android:background="@drawable/bg_avatar_shadow"
-      android:visibility="gone"
-      />
-
-  <ImageView
       android:id="@+id/imgAvatar"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -18,14 +9,4 @@
       android:background="@null"
       />
 
-  <ImageView
-      android:id="@+id/imgInd"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:layout_alignBottom="@id/imgAvatar"
-      android:layout_alignRight="@id/imgAvatar"
-      android:scaleType="fitXY"
-      android:src="@drawable/picto_online"
-      android:visibility="gone"
-      />
 </merge>

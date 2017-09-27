@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -45,6 +44,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
@@ -193,7 +193,7 @@ public class HomeActivity extends BaseActivity
   private ItemTouchHelper itemTouchHelper;
   private List<Recipient> latestRecipientList;
   private boolean shouldOverridePendingTransactions = false;
-  private NotificationReceiver notificationReceiver;
+  private TribeBroadcastReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private boolean hasSynced = false;
   private boolean canEndRefresh = false;
@@ -296,10 +296,17 @@ public class HomeActivity extends BaseActivity
     }
 
     if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
 
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+
+      subscriptions.add(notificationReceiver.onCreateShortcut()
+          .subscribe(userId -> homeGridPresenter.createShortcut(userId)));
+
+      subscriptions.add(notificationReceiver.onDeclineInvitation()
+          .subscribe(roomId -> homeGridPresenter.declineInvite(roomId)));
+
       receiverRegistered = true;
     }
 
@@ -1043,34 +1050,5 @@ public class HomeActivity extends BaseActivity
 
   @Override public void onShortcut(Shortcut shortcut) {
 
-  }
-
-  class NotificationReceiver extends BroadcastReceiver {
-
-    @Override public void onReceive(Context context, Intent intent) {
-      NotificationPayload notificationPayload =
-          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
-
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-              missedCallManager);
-
-      if (liveNotificationView != null) {
-        subscriptions.add(liveNotificationView.onClickAction()
-            .delay(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(action -> {
-              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                declineInvitation(action.getSessionId());
-              } else if (action.getId().equals(NotificationUtils.ACTION_ADD_FRIEND)) {
-                homeGridPresenter.createShortcut(action.getUserId());
-              } else if (action.getIntent() != null) {
-                navigator.navigateToIntent(HomeActivity.this, action.getIntent());
-              }
-            }));
-
-        Alerter.create(HomeActivity.this, liveNotificationView).show();
-      }
-    }
   }
 }

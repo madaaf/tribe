@@ -52,7 +52,6 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
     vh.txtName.setText(context.getString(R.string.live_external_user_display_name));
     vh.txtDescription.setText(context.getString(R.string.live_external_user_username));
-    vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
   }
 

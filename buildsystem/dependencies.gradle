@@ -6,18 +6,20 @@ allprojects {
 
 ext {
   //Android
-  androidBuildToolsVersion = "25.0.1"
+  androidBuildToolsVersion = "26.0.1"
   androidMinSdkVersion = 18
-  androidTargetSdkVersion = 25
-  androidCompileSdkVersion = 25
+  androidTargetSdkVersion = 26
+  androidCompileSdkVersion = 26
+
+  compat = '26.1.0'
 
   //Libraries
   daggerVersion = '2.8'
   butterKnifeVersion = '8.4.0'
-  recyclerViewVersion = '25.1.0'
-  appCompatVersion = '25.1.0'
-  designSupportVersion = '25.1.0'
-  cardDesignVersion = '25.1.0'
+  recyclerViewVersion = "${compat}"
+  appCompatVersion = "${compat}"
+  designSupportVersion = "${compat}"
+  cardDesignVersion = "${compat}"
   rxJavaVersion = '1.2.5'
   rxAndroidVersion = '1.2.1'
   javaxAnnotationVersion = '1.0'
@@ -69,6 +71,7 @@ ext {
   instacaptureVersion = '1.2.2'
   googlePlayVisionVersion = '10.2.1'
   jodatimeVersion = '2.9.9'
+  shortcutBadgerVersion = '1.1.18@aar'
 
   //Testing
   robolectricVersion = '3.0'
@@ -143,7 +146,8 @@ ext {
                               instacapture            : "com.github.tarek360:instacapture:${instacaptureVersion}",
                               guava                   : "com.google.guava:guava:${guavaVersion}",
                               googleVision            : "com.google.android.gms:play-services-vision:${googlePlayVisionVersion}",
-                              jodatime                : "net.danlew:android.joda:${jodatimeVersion}"]
+                              jodatime                : "net.danlew:android.joda:${jodatimeVersion}",
+                              shortcutBadget          : "me.leolin:shortcutbadger:${shortcutBadgerVersion}"]
 
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",

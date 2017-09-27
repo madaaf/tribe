@@ -211,25 +211,29 @@ public class LiveInviteView extends FrameLayout
           Set<String> alreadyPresent = new HashSet<>();
           List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
 
-          for (User user : room.getLiveUsers()) {
-            if (!user.equals(currentUser)) {
-              user.setCurrentRoomId(room.getId());
-              user.setWaiting(room.isUserWaiting(user.getId()));
-              computeUser(temp, user, alreadyPresent);
-              for (Shortcut shortcut : listShortcut) {
-                if (user.equals(shortcut.getSingleFriend())) {
-                  user.setIsOnline(shortcut.getSingleFriend().isOnline());
+          if (room.getLiveUsers() != null) {
+            for (User user : room.getLiveUsers()) {
+              if (!user.equals(currentUser)) {
+                user.setCurrentRoomId(room.getId());
+                user.setWaiting(room.isUserWaiting(user.getId()));
+                computeUser(temp, user, alreadyPresent);
+                for (Shortcut shortcut : listShortcut) {
+                  if (user.equals(shortcut.getSingleFriend())) {
+                    user.setIsOnline(shortcut.getSingleFriend().isOnline());
+                  }
                 }
               }
             }
           }
 
-          for (User user : room.getInvitedUsers()) {
-            user.setRinging(true);
-            computeUser(temp, user, alreadyPresent);
-            for (Shortcut shortcut : listShortcut) {
-              if (user.equals(shortcut.getSingleFriend())) {
-                user.setIsOnline(shortcut.getSingleFriend().isOnline());
+          if (room.getInvitedUsers() != null) {
+            for (User user : room.getInvitedUsers()) {
+              user.setRinging(true);
+              computeUser(temp, user, alreadyPresent);
+              for (Shortcut shortcut : listShortcut) {
+                if (user.equals(shortcut.getSingleFriend())) {
+                  user.setIsOnline(shortcut.getSingleFriend().isOnline());
+                }
               }
             }
           }

@@ -19,9 +19,6 @@
         android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
         app:avatarType="online"
-        app:hasHole="true"
-        app:hasInd="true"
-        app:hasShadow="false"
         />
 
     <com.tribe.app.presentation.view.widget.DiceView

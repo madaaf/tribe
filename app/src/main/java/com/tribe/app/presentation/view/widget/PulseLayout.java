@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -40,6 +41,7 @@ public class PulseLayout extends RelativeLayout {
   private float centerX;
   private float centerY;
   private boolean started;
+  private boolean startFromScratch;
 
   /**
    * Simple constructor to use when creating a view from code.
@@ -106,7 +108,20 @@ public class PulseLayout extends RelativeLayout {
       return;
     }
 
-    animatorSet.start();
+    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      animatorSet.start();
+
+      if (!startFromScratch) {
+        ArrayList<Animator> animators = animatorSet.getChildAnimations();
+        for (Animator animator : animators) {
+          ObjectAnimator objectAnimator = (ObjectAnimator) animator;
+
+          long delay = objectAnimator.getStartDelay();
+          objectAnimator.setStartDelay(0);
+          objectAnimator.setCurrentPlayTime(duration - delay);
+        }
+      }
+    }
   }
 
   /**
@@ -244,45 +259,36 @@ public class PulseLayout extends RelativeLayout {
 
       addView(pulseView, index, layoutParams);
       views.add(pulseView);
-      createAnimationForView(index, pulseView, animators);
-    }
 
-    prepareAnimations(animators);
-  }
+      long delay = index * duration / count;
 
-  private void resumePulse() {
-    List<Animator> animators = new ArrayList<>();
+      ObjectAnimator scaleXAnimator =
+          ObjectAnimator.ofFloat(pulseView, "scaleX", pulseView.getScaleX(), 1f);
+      scaleXAnimator.setRepeatCount(repeatCount);
+      scaleXAnimator.setRepeatMode(ObjectAnimator.RESTART);
+      scaleXAnimator.setStartDelay(delay);
+      animators.add(scaleXAnimator);
 
-    for (int index = 0; index < views.size(); index++) {
-      createAnimationForView(index, views.get(index), animators);
+      ObjectAnimator scaleYAnimator =
+          ObjectAnimator.ofFloat(pulseView, "scaleY", pulseView.getScaleY(), 1f);
+      scaleYAnimator.setRepeatCount(repeatCount);
+      scaleYAnimator.setRepeatMode(ObjectAnimator.RESTART);
+      scaleYAnimator.setStartDelay(delay);
+      animators.add(scaleYAnimator);
+
+      ObjectAnimator alphaAnimator =
+          ObjectAnimator.ofFloat(pulseView, "alpha", pulseView.getAlpha(), 0f);
+      alphaAnimator.setRepeatCount(repeatCount);
+      alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
+      alphaAnimator.setStartDelay(delay);
+      animators.add(alphaAnimator);
     }
 
     prepareAnimations(animators);
   }
 
   private void createAnimationForView(int index, View pulseView, List<Animator> animators) {
-    long delay = index * duration / count;
 
-    ObjectAnimator scaleXAnimator =
-        ObjectAnimator.ofFloat(pulseView, "scaleX", pulseView.getScaleX(), 1f);
-    scaleXAnimator.setRepeatCount(repeatCount);
-    scaleXAnimator.setRepeatMode(ObjectAnimator.RESTART);
-    scaleXAnimator.setStartDelay(delay);
-    animators.add(scaleXAnimator);
-
-    ObjectAnimator scaleYAnimator =
-        ObjectAnimator.ofFloat(pulseView, "scaleY", pulseView.getScaleY(), 1f);
-    scaleYAnimator.setRepeatCount(repeatCount);
-    scaleYAnimator.setRepeatMode(ObjectAnimator.RESTART);
-    scaleYAnimator.setStartDelay(delay);
-    animators.add(scaleYAnimator);
-
-    ObjectAnimator alphaAnimator =
-        ObjectAnimator.ofFloat(pulseView, "alpha", pulseView.getAlpha(), 0f);
-    alphaAnimator.setRepeatCount(repeatCount);
-    alphaAnimator.setRepeatMode(ObjectAnimator.RESTART);
-    alphaAnimator.setStartDelay(delay);
-    animators.add(alphaAnimator);
   }
 
   private void prepareAnimations(List<Animator> animators) {
@@ -326,14 +332,6 @@ public class PulseLayout extends RelativeLayout {
     if (animatorSet != null) {
       animatorSet.cancel();
       animatorSet = null;
-    }
-  }
-
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-
-    if (views != null && views.size() > 0) {
-      resumePulse();
     }
   }
 

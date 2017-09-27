@@ -54,8 +54,8 @@ import javax.inject.Singleton;
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
-      // If the user calling is hidden by the current user, we unhide it
-      // https://github.com/heytribe/roadmap/issues/530
+      if (notificationPayload.getBadge() > 0) userCache.updateBadgeValue(notificationPayload.getBadge());
+
       if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
         if (application.getAppState() != null) {
           missedCallManager.setMissedNotificationPlayload(notificationPayload);
@@ -90,15 +90,15 @@ import javax.inject.Singleton;
           notify(notificationPayload, notification);
         }
 
-        //if (notificationPayload.getClickAction()
-        //    .equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
-        //  this.tribeApi.getUserInfos(application.getString(R.string.user_infos_friendships,
-        //      application.getString(R.string.userfragment_infos),
-        //      application.getString(R.string.friendshipfragment_info)))
-        //      .subscribe(userRealm -> userCache.put(userRealm));
-        //
-        //  notify(notificationPayload, notification);
-        //}
+        if (notificationPayload.getClickAction()
+            .equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
+          this.tribeApi.getUserInfos(application.getString(R.string.user_infos_friendships,
+              application.getString(R.string.userfragment_infos),
+              application.getString(R.string.friendshipfragment_info)))
+              .subscribe(userRealm -> userCache.put(userRealm));
+
+          notify(notificationPayload, notification);
+        }
       }
     }
   }
@@ -118,14 +118,30 @@ import javax.inject.Singleton;
   }
 
   private Notification buildNotification(NotificationPayload payload) {
-    NotificationCompat.Builder builder =
-        new NotificationCompat.Builder(application).setContentTitle(
-            application.getString(R.string.app_name))
-            .setContentText(payload.getBody())
-            .setWhen(new Date().getTime())
-            .setSmallIcon(R.drawable.ic_notification)
-            .setShowWhen(true)
-            .setAutoCancel(true);
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(application);
+
+    if (!StringUtils.isEmpty(payload.getTitle())) {
+      //String body = payload.getTitle();
+      //int firstOccurenceOfTwoPoints = body.indexOf("\\:");
+      //
+      //if (firstOccurenceOfTwoPoints > 0) {
+      //  Spannable sb = new SpannableString(body);
+      //  sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, firstOccurenceOfTwoPoints,
+      //      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      //  builder.setContentText(sb);
+      //} else {
+      builder.setContentText(payload.getBody());
+      //}
+
+      builder.setContentTitle(payload.getTitle());
+    } else {
+      builder.setContentText(payload.getBody());
+    }
+
+    builder.setWhen(new Date().getTime())
+        .setSmallIcon(R.drawable.ic_notification)
+        .setShowWhen(true)
+        .setAutoCancel(true);
 
     PendingIntent pendingIntent = getIntentFromPayload(payload);
     if (pendingIntent != null) builder.setContentIntent(pendingIntent);

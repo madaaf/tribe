@@ -137,7 +137,7 @@
 
   <!--ALERTS-->
   <dimen name="alerter_alert_min_height">64dp</dimen>
-  <dimen name="alerter_alert_max_height">84dp</dimen>
+  <dimen name="alerter_alert_max_height">150dp</dimen>
   <dimen name="alerter_alert_icn_size">38dp</dimen>
 
   <dimen name="alerter_padding_small">4dp</dimen>

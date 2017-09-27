@@ -139,6 +139,10 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="Caption.One.Black" parent="Caption.One">
+    <item name="android:textColor">@android:color/black</item>
+  </style>
+
   <style name="Caption.Two.White" parent="Caption.Two">
     <item name="android:textColor">@android:color/white</item>
   </style>

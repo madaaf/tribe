@@ -26,9 +26,12 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_DECLINE = "decline_live";
   public static final String CLICK_ACTION_JOIN_CALL = "join_live";
   public static final String CLICK_ACTION_USER_REGISTERED = "user_registered";
+  public static final String CLICK_ACTION_MESSAGE = "message";
 
   private String user_id;
   private String body;
+  private int badge;
+  private String title;
   private String click_action;
   private String user_display_name;
   private String sound;
@@ -55,6 +58,14 @@ public class NotificationPayload implements Serializable {
 
   public String getUserId() {
     return user_id;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public void setBody(String body) {
@@ -143,6 +154,14 @@ public class NotificationPayload implements Serializable {
 
   public void setRoomLink(String room_link) {
     this.room_link = room_link;
+  }
+
+  public int getBadge() {
+    return badge;
+  }
+
+  public void setBadge(int badge) {
+    this.badge = badge;
   }
 
   public boolean isLive() {

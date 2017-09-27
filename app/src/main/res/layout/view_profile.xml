@@ -33,9 +33,6 @@
           android:layout_gravity="left|center_vertical"
           android:layout_margin="@dimen/horizontal_margin_smaller"
           android:background="@null"
-          app:hasHole="false"
-          app:hasInd="false"
-          app:hasShadow="true"
           />
 
       <LinearLayout

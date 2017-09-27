@@ -9,7 +9,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.StringSignature;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
-import com.tribe.app.presentation.view.transformer.HoleTransformation;
 import java.io.File;
 import java.util.Random;
 
@@ -28,7 +27,6 @@ public class GlideUtils {
     private File file;
     private int size = 0;
     private ImageView target;
-    private boolean hasHole = false;
     private boolean hasPlaceholder = true;
     private boolean rounded = true;
 
@@ -63,11 +61,6 @@ public class GlideUtils {
 
     public Builder target(ImageView target) {
       this.target = target;
-      return this;
-    }
-
-    public Builder hasHole(boolean hasHole) {
-      this.hasHole = hasHole;
       return this;
     }
 
@@ -115,12 +108,7 @@ public class GlideUtils {
       }
 
       if (rounded) {
-        if (hasHole) {
-          drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context),
-              new HoleTransformation(context));
-        } else {
-          drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
-        }
+        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
       }
 
       drawableRequestBuilder.crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);

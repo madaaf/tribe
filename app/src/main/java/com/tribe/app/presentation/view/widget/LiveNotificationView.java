@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -30,8 +29,9 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.utils.SoundManager;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -58,8 +58,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private Animation slideOutAnimation;
   private boolean marginSet;
   private int sound = -1;
+  private String actionType;
   private long duration = DISPLAY_TIME_IN_SECONDS;
   private GestureDetectorCompat gestureScanner;
+
   // RESOURCES
   private int margin;
 
@@ -68,7 +70,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @BindView(R.id.view_live_notification_action_container) LinearLayout actionContainer;
   @BindView(R.id.view_notification_container) LinearLayout screen;
   @BindView(R.id.tvTitle) TextViewFont txtTitle;
-  @BindView(R.id.avatar) AvatarView avatarView;
+  @BindView(R.id.tvBody) TextViewFont txtBody;
+  @BindView(R.id.avatar) NewAvatarView avatarView;
   @Nullable @BindView(R.id.imgIcon) ImageView imgIcon;
 
   @Inject SoundManager soundManager;
@@ -79,9 +82,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private PublishSubject<LiveNotificationActionView.Action> onClickAction = PublishSubject.create();
 
   public LiveNotificationView(@NonNull final Context context,
-      @LiveNotificationView.LiveNotificationType int type) {
+      @LiveNotificationView.LiveNotificationType int type, String actionType) {
     super(context, null, R.attr.alertStyle);
     this.type = type;
+    this.actionType = actionType;
     initView();
   }
 
@@ -97,7 +101,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
     LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.view_live_notification, this, true);
+    inflater.inflate(actionType.equals(NotificationPayload.CLICK_ACTION_END_LIVE)
+        ? R.layout.view_live_notification_legacy : R.layout.view_live_notification, this, true);
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -105,17 +110,11 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     unbinder = ButterKnife.bind(this);
     setHapticFeedbackEnabled(true);
 
-    screen.setOnClickListener(v -> {
-      hide();
-    });
+    screen.setOnClickListener(v -> hide());
 
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
 
-    notificationContainer.setOnTouchListener(new OnTouchListener() {
-      @Override public boolean onTouch(View v, MotionEvent event) {
-        return gestureScanner.onTouchEvent(event);
-      }
-    });
+    notificationContainer.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
 
     setAnimation();
 
@@ -243,6 +242,13 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     }
   }
 
+  private void setBody(@NonNull final String body) {
+    if (!TextUtils.isEmpty(body)) {
+      txtBody.setVisibility(VISIBLE);
+      txtBody.setText(body);
+    }
+  }
+
   private void setSound(int sound) {
     this.sound = sound;
   }
@@ -251,6 +257,11 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     if (type == ERROR) {
       imgIcon.setImageResource(R.drawable.picto_lock);
     } else {
+      if (type == LIVE) {
+        avatarView.setType(LIVE);
+      } else {
+        avatarView.setType(ONLINE);
+      }
       avatarView.load(url);
     }
   }
@@ -274,14 +285,21 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     private final Context context;
     private String imgUrl;
     private String title;
+    private String body;
     private List<LiveNotificationActionView.Action> actionList;
     private @LiveNotificationView.LiveNotificationType int type;
     private int sound = -1;
+    private String actionClick;
 
     public Builder(Context context, @LiveNotificationView.LiveNotificationType int type) {
       this.context = context;
       this.type = type;
       this.actionList = new ArrayList<>();
+    }
+
+    public Builder actionClick(String actionClick) {
+      this.actionClick = actionClick;
+      return this;
     }
 
     public Builder imgUrl(String imgUrl) {
@@ -291,6 +309,11 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
     public Builder title(String title) {
       this.title = title;
+      return this;
+    }
+
+    public Builder body(String body) {
+      this.body = body;
       return this;
     }
 
@@ -322,9 +345,11 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     }
 
     public LiveNotificationView build() {
-      LiveNotificationView view = new LiveNotificationView(context, type);
+      LiveNotificationView view = new LiveNotificationView(context, type, actionClick);
       view.setImgUrl(imgUrl);
       view.setTitle(title);
+      view.setBody(body);
+
       if (sound != -1) view.setSound(sound);
 
       if (type != ERROR) {

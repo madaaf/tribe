@@ -2,6 +2,7 @@ package com.tribe.app.data.cache;
 
 import android.content.Context;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -347,6 +348,46 @@ public class UserCacheImpl implements UserCache {
         }
 
         userRealmDB.setShortcuts(newShortcuts);
+      });
+    } finally {
+      realm.close();
+    }
+  }
+
+  @Override public void updateBadgeValue(int badge) {
+    Realm realm = Realm.getDefaultInstance();
+
+    try {
+      realm.executeTransaction(realm1 -> {
+        BadgeRealm badgeRealm = new BadgeRealm();
+        badgeRealm.setValue(badge);
+        realm1.insertOrUpdate(badgeRealm);
+      });
+    } finally {
+      realm.close();
+    }
+  }
+
+  @Override public void incrementBadge() {
+    Realm realm = Realm.getDefaultInstance();
+
+    try {
+      realm.executeTransaction(realm1 -> {
+        BadgeRealm badgeRealm = realm1.where(BadgeRealm.class).findFirst();
+        badgeRealm.setValue(badgeRealm.getValue() + 1);
+      });
+    } finally {
+      realm.close();
+    }
+  }
+
+  @Override public void decrementBadge() {
+    Realm realm = Realm.getDefaultInstance();
+
+    try {
+      realm.executeTransaction(realm1 -> {
+        BadgeRealm badgeRealm = realm1.where(BadgeRealm.class).findFirst();
+        badgeRealm.setValue(Math.min(0, badgeRealm.getValue() - 1));
       });
     } finally {
       realm.close();

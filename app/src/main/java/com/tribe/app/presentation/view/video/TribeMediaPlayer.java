@@ -140,9 +140,7 @@ public abstract class TribeMediaPlayer {
     }
 
     public TribeMediaPlayer build() {
-      return (!DeviceUtils.supportsExoPlayer(context) || (changeSpeed
-          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) || forceLegacy)
-          ? new LegacyMediaPlayer(this) : new ExoMediaPlayer(this);
+      return new LegacyMediaPlayer(this);
     }
 
     public LegacyMediaPlayer buildLegacyMediaPlayer() {

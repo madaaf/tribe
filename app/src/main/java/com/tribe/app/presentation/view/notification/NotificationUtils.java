@@ -63,51 +63,27 @@ public class NotificationUtils {
         !isContextNotLive) {
       // A friend opened the app and is online
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder = addLiveActions(context, builder, notificationPayload);
       builder.sound(SoundManager.FRIEND_ONLINE);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       // A friend entered live - 1o1
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-
-      //if (StringUtils.isEmpty(notificationPayload.getGroupId())) {
-      if (isContextNotLive) {
-        builder = addHangLiveAction(context, builder, notificationPayload);
-      } else {
-        builder = addLiveActions(context, builder, notificationPayload);
-      }
-
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
       // A friend buzzing you in a group
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-
-      if (isContextNotLive) {
-        builder = addHangLiveAction(context, builder, notificationPayload);
-      } else {
-        builder = addLiveActions(context, builder, notificationPayload);
-      }
-
       builder.sound(SoundManager.WIZZ);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       // A joined a call you initiated via a link shared
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder = addJoinAction(context, builder, notificationPayload);
       builder.sound(SoundManager.JOIN_CALL);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       // A friend added you
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-
-      if (isContextNotLive) {
-        builder = addHangLiveAction(context, builder, notificationPayload);
-      } else {
-        builder = addLiveActions(context, builder, notificationPayload);
-      }
-
       builder.sound(SoundManager.FRIEND_ONLINE);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
@@ -119,7 +95,11 @@ public class NotificationUtils {
         .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
 
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder = addAddFriendsAction(context, builder, notificationPayload);
+      liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_MESSAGE)) {
+      // A friend added you
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       liveNotificationView = builder.build();
     }
 
@@ -131,29 +111,9 @@ public class NotificationUtils {
     return new LiveNotificationView.Builder(context,
         notificationPayload.isLive() ? LiveNotificationView.LIVE
             : LiveNotificationView.ONLINE).imgUrl(notificationPayload.getUserPicture())
-        .title(notificationPayload.getBody());
-  }
-
-  private static LiveNotificationView.Builder addHangLiveAction(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-
-    String title = context.getString(R.string.live_notification_action_hang_live_friend,
-        notificationPayload.getUserDisplayName());
-    builder.addAction(ACTION_HANG_LIVE, title,
-        getIntentForLive(context, notificationPayload, false));
-
-    if (notificationPayload.isLive()) addDeclineCallActions(context, builder, notificationPayload);
-
-    return builder;
-  }
-
-  private static LiveNotificationView.Builder addJoinAction(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-
-    builder.addAction(ACTION_JOIN, context.getString(R.string.live_notification_action_hang_live),
-        getIntentForLiveFromJoined(context, notificationPayload));
-
-    return builder;
+        .title(notificationPayload.getTitle())
+        .body(notificationPayload.getBody())
+        .actionClick(notificationPayload.getClickAction());
   }
 
   private static LiveNotificationView.Builder addDeclineCallActions(Context context,
@@ -190,42 +150,7 @@ public class NotificationUtils {
           context.getString(R.string.callback_notification_default_action),
           MissedCallDetailActivity.getIntentForMissedCallDetail(context, missedCallAction));
     }
-    builder.sound(SoundManager.NO_SOUND);
-    return builder;
-  }
-
-  private static LiveNotificationView.Builder addLiveActions(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-    if (notificationPayload.isShouldDisplayDrag()) {
-      builder.addAction(ACTION_ADD_AS_GUEST,
-          context.getString(R.string.live_notification_add_as_guest,
-              notificationPayload.getUserDisplayName()));
-    }
-
-    builder = addLeaveAction(context, builder, notificationPayload);
-    if (notificationPayload.isLive()) {
-      builder = addDeclineCallActions(context, builder, notificationPayload);
-    }
-    return builder;
-  }
-
-  private static LiveNotificationView.Builder addLeaveAction(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-
-    builder.addAction(ACTION_LEAVE, context.getString(R.string.live_notification_leave,
-        notificationPayload.getUserDisplayName()),
-        getIntentForLive(context, notificationPayload, false));
-
-    return builder;
-  }
-
-  private static LiveNotificationView.Builder addAddFriendsAction(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-
-    builder.addActionAddUser(ACTION_ADD_FRIEND,
-        context.getString(R.string.live_notification_action_add_as_friend),
-        notificationPayload.getUserId());
-
+    builder.actionClick(notificationPayload.getClickAction()).sound(SoundManager.NO_SOUND);
     return builder;
   }
 

@@ -18,6 +18,7 @@ import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -73,7 +74,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import timber.log.Timber;
 
 /**
@@ -83,6 +84,7 @@ import timber.log.Timber;
 
   private final AndroidApplication application;
   private RealmResults<UserRealm> userRealm;
+  private RealmResults<BadgeRealm> badgeRealmResults;
   private RealmResults<AccessToken> accessTokenResults;
 
   public ApplicationModule(AndroidApplication application) {
@@ -204,6 +206,29 @@ import timber.log.Timber;
     return user;
   }
 
+  @Provides @Singleton BadgeRealm provideBadge(Realm realm) {
+    BadgeRealm newBadge = new BadgeRealm();
+    badgeRealmResults = realm.where(BadgeRealm.class).findAll();
+    badgeRealmResults.addChangeListener(
+        element -> updateBadge(realm.where(BadgeRealm.class).findFirst()));
+
+    if (badgeRealmResults != null && badgeRealmResults.size() > 0) {
+      updateBadge(badgeRealmResults.first());
+    }
+
+    return newBadge;
+  }
+
+  private void updateBadge(BadgeRealm badge) {
+    if (badge != null) {
+      if (badge.getValue() == 0) {
+        ShortcutBadger.removeCount(application);
+      } else {
+        ShortcutBadger.applyCount(application, badge.getValue());
+      }
+    }
+  }
+
   @Provides @Singleton @Named("userThreadSafe") User provideCurrentUserThreadSafe(
       AccessToken accessToken, UserRealmDataMapper userRealmDataMapper) {
     final User user = new User("");
@@ -271,10 +296,6 @@ import timber.log.Timber;
 
   @Provides @Singleton SmsListener provideSmsListener(Context context, IntentFilter filter) {
     return new SmsListener(context, filter);
-  }
-
-  @Provides @Singleton ReactiveLocationProvider provideReactiveLocationProvider(Context context) {
-    return new ReactiveLocationProvider(context);
   }
 
   @Provides @Singleton SoundManager provideSoundManager(Context context,

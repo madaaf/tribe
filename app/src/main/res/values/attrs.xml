@@ -20,10 +20,6 @@
       <enum name="phone" value="3" />
       <enum name="facebook" value="4" />
     </attr>
-
-    <attr format="boolean" name="hasShadow" />
-    <attr format="boolean" name="hasInd" />
-    <attr format="boolean" name="hasHole" />
   </declare-styleable>
 
   <declare-styleable name="NewAvatarView">

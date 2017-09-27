@@ -52,4 +52,10 @@ import rx.Observable;
   void addShortcut(ShortcutRealm shortcutRealm);
 
   void removeShortcut(ShortcutRealm shortcutRealm);
+
+  void updateBadgeValue(int badge);
+
+  void incrementBadge();
+
+  void decrementBadge();
 }

@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -19,7 +18,6 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.transformer.HoleTransformation;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -49,9 +47,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.imgShadow) ImageView imgShadow;
   @BindView(R.id.imgAvatar) ImageView imgAvatar;
-  @BindView(R.id.imgInd) ImageView imgInd;
 
   // VARIABLES
   private int type;
@@ -60,13 +56,9 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private Recipient recipient;
   private List<String> membersPic;
   private String groupId;
-  private boolean hasShadow = false;
-  private boolean hasInd = true;
-  private boolean hasHole = true;
 
   // RESOURCES
   private int avatarSize;
-  private int paddingShadow;
   private String noUrl;
 
   // SUBSCRIPTIONS
@@ -92,16 +84,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
     TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
     type = a.getInt(R.styleable.AvatarView_avatarType, REGULAR);
-    hasShadow = a.getBoolean(R.styleable.AvatarView_hasShadow, false);
-    hasInd = a.getBoolean(R.styleable.AvatarView_hasInd, false);
-    hasHole = a.getBoolean(R.styleable.AvatarView_hasHole, true);
 
     // DEFAULT SIZE
     avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size);
     noUrl = getContext().getString(R.string.no_profile_picture_url);
-
-    if (hasShadow) imgShadow.setVisibility(View.VISIBLE);
-    if (hasInd && isOnlineOrLive()) imgInd.setVisibility(View.VISIBLE);
 
     setWillNotDraw(false);
     a.recycle();
@@ -157,7 +143,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
         new GlideUtils.Builder(getContext()).file(groupAvatarFile)
             .target(imgAvatar)
             .size(avatarSize)
-            .hasHole(hasHole && isOnlineOrLive())
             .load();
       } else if (!groupAvatarFile.exists()) {
         if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
@@ -168,7 +153,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
                   .subscribe(bitmap -> new GlideUtils.Builder(getContext()).file(groupAvatarFile)
                       .size(avatarSize)
                       .target(imgAvatar)
-                      .hasHole(hasHole && isOnlineOrLive())
                       .load());
         }
       }
@@ -183,13 +167,9 @@ public class AvatarView extends RelativeLayout implements Avatar {
     if (!StringUtils.isEmpty(url) && !url.equals(noUrl)) {
       setTag(R.id.profile_picture, url);
 
-      new GlideUtils.Builder(getContext()).url(url)
-          .size(avatarSize)
-          .target(imgAvatar)
-          .hasHole(hasHole && isOnlineOrLive())
-          .load();
+      new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
     } else {
-      loadPlaceholder(hasHole && isOnlineOrLive());
+      loadPlaceholder();
     }
   }
 
@@ -199,12 +179,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
         .size(avatarSize)
         .target(imgAvatar)
         .hasPlaceholder(false)
-        .hasHole(false)
         .load();
   }
 
   public void changeSize(int size, boolean shouldChangeLP) {
-    paddingShadow = hasShadow ? (int) (size * getShadowRatio()) : 0;
     refactorSize(size);
 
     if (shouldChangeLP) {
@@ -213,27 +191,16 @@ public class AvatarView extends RelativeLayout implements Avatar {
   }
 
   public void refactorSize(int size) {
-    avatarSize = size - paddingShadow;
+    avatarSize = size;
     ViewGroup.LayoutParams params = imgAvatar.getLayoutParams();
     params.width = params.height = avatarSize;
     imgAvatar.setLayoutParams(params);
-
-    int indSize = (int) (avatarSize * HoleTransformation.RATIO * (type == PHONE ? 3f : 2f));
-
-    MarginLayoutParams paramsInd = (MarginLayoutParams) imgInd.getLayoutParams();
-    paramsInd.width = paramsInd.height = indSize;
-    paramsInd.bottomMargin = paramsInd.rightMargin =
-        -(int) (indSize * (type == PHONE ? HoleTransformation.RATIO * 1.1f : 0));
-    imgInd.setLayoutParams(paramsInd);
   }
 
-  private void loadPlaceholder(boolean hasHole) {
+  private void loadPlaceholder() {
     if (avatarSize == 0) return;
     Runnable r = () -> {
-      new GlideUtils.Builder(getContext()).size(avatarSize)
-          .target(imgAvatar)
-          .hasHole(hasHole)
-          .load();
+      new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).load();
     };
     r.run();
   }
@@ -265,22 +232,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
   public void setType(@AvatarType int type) {
     this.type = type;
 
-    if (type == PHONE) {
-      imgInd.setVisibility(View.VISIBLE);
-      imgInd.setImageResource(R.drawable.picto_call);
-    } else if (type == FACEBOOK) {
-      imgInd.setVisibility(View.VISIBLE);
-      imgInd.setImageResource(R.drawable.picto_avatar_facebook);
-    } else if (type == LIVE && hasInd) {
-      imgInd.setVisibility(View.VISIBLE);
-      imgInd.setImageResource(R.drawable.picto_live);
-    } else if (type == ONLINE && hasInd) {
-      imgInd.setVisibility(View.VISIBLE);
-      imgInd.setImageResource(R.drawable.picto_online);
-    } else {
-      imgInd.setVisibility(View.GONE);
-    }
-
     if (recipient != null) {
       load(recipient);
     } else if (!StringUtils.isEmpty(url)) {
@@ -290,17 +241,5 @@ public class AvatarView extends RelativeLayout implements Avatar {
     } else if (drawableId != 0) {
       load(drawableId);
     }
-  }
-
-  public void setHasHole(boolean hasHole) {
-    this.hasHole = hasHole;
-  }
-
-  public void setHasInd(boolean hasInd) {
-    this.hasInd = hasInd;
-  }
-
-  public void setHasShadow(boolean hasShadow) {
-    this.hasShadow = hasShadow;
   }
 }

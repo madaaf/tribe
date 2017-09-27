@@ -52,7 +52,6 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
 
     vh.txtName.setText(user.getDisplayName());
     vh.txtDescription.setText(user.getUsername());
-    vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
     vh.txtAction.setText(context.getString(R.string.action_add_friend));
     vh.iconAdd.setImageResource(R.drawable.add_icon_bg);
@@ -99,7 +98,6 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
 
     vh.txtName.setText(user.getDisplayName());
     vh.txtDescription.setText(user.getUsername());
-    vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
     vh.txtAction.setText(context.getString(R.string.action_friend_added));
     vh.iconAdd.setImageResource(R.drawable.added_icon_bg);

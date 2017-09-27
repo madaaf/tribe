@@ -78,6 +78,7 @@ public class AndroidApplication extends Application {
     initInjector();
     // initLeakDetection();
     initRealm();
+    initBadger();
     initStetho();
     initFacebook();
     initBranch();
@@ -174,6 +175,10 @@ public class AndroidApplication extends Application {
     } finally {
       if (realm != null) realm.close();
     }
+  }
+
+  private void initBadger() {
+    this.applicationComponent.badgeRealm();
   }
 
   private void initFacebook() {

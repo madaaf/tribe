@@ -20,6 +20,7 @@ import com.tribe.app.data.network.job.SynchroContactsJob;
 import com.tribe.app.data.network.job.UnhideShortcutJob;
 import com.tribe.app.data.network.job.UpdateUserJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
@@ -30,6 +31,7 @@ import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.internal.di.modules.NetModule;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
@@ -121,7 +123,6 @@ import java.text.SimpleDateFormat;
 import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 /**
  * A component whose lifetime is the life of the application.
@@ -218,6 +219,8 @@ public interface ApplicationComponent {
 
   void inject(TopBarLogoView topBarLogoView);
 
+  void inject(TribeBroadcastReceiver receiver);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -307,11 +310,11 @@ public interface ApplicationComponent {
 
   SharedPreferences sharedPreferences();
 
+  BadgeRealm badgeRealm();
+
   FileUtils fileUtils();
 
   TagManager tagManager();
-
-  ReactiveLocationProvider reactiveLocationProvider();
 
   TribeAudioManager tribeAudioManager();
 

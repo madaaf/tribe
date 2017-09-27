@@ -34,9 +34,6 @@
       android:layout_height="@dimen/avatar_size_big_shadow"
       android:layout_gravity="center"
       app:avatarType="regular"
-      app:hasHole="false"
-      app:hasInd="false"
-      app:hasShadow="true"
       />
 
   <View

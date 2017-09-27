@@ -42,7 +42,7 @@
           app:pulseCount="4"
           app:pulseDuration="3000"
           >
-        
+
         <com.tribe.app.presentation.view.widget.avatar.AvatarView
             android:id="@+id/avatar"
             android:layout_width="90dp"
@@ -50,9 +50,6 @@
             android:layout_centerInParent="true"
             android:background="@null"
             app:avatarType="live"
-            app:hasHole="true"
-            app:hasInd="true"
-            app:hasShadow="false"
             />
 
       </com.tribe.app.presentation.view.widget.PulseLayout>

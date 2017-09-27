@@ -12,9 +12,8 @@
 
   <LinearLayout
       android:id="@+id/view_live_notification_container"
-      android:background="@null"
+      android:background="@color/black.light"
       android:clickable="true"
-      android:elevation="10dp"
       android:orientation="vertical"
       tools:visibility="visible"
       style="@style/AlertStyle"
@@ -27,10 +26,7 @@
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:layout_marginTop="@dimen/vertical_margin"
-        android:background="@drawable/shape_rect_rounded_5_white"
-        android:elevation="10dp"
-        android:padding="@dimen/horizontal_margin_small"
+        android:layout_marginTop="@dimen/horizontal_margin"
         >
 
       <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
@@ -53,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            style="@style/Caption.One.Black"
+            style="@style/Caption.One.White"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -62,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:visibility="gone"
-            style="@style/Body.One.Black"
+            style="@style/Body.One.White"
             />
       </LinearLayout>
 
@@ -85,4 +81,10 @@
 
     </LinearLayout>
   </LinearLayout>
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="10dp"
+      android:background="@drawable/shadow_bottom"
+      />
 </LinearLayout>

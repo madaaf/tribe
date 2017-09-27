@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 /**
  * Factory that creates different implementations of {@link UserDataStoreFactory}.
@@ -39,7 +38,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   private final GrowthApi growthApi;
   private final AccessToken accessToken;
   private final Installation installation;
-  private final ReactiveLocationProvider reactiveLocationProvider;
   private final SimpleDateFormat utcSimpleDate;
   private final @LastSync Preference<Long> lastSync;
   private final PhoneUtils phoneUtils;
@@ -48,7 +46,7 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
       LoginApi loginApi, LookupApi lookupApi, GrowthApi growthApi, AccessToken accessToken,
-      Installation installation, ReactiveLocationProvider reactiveLocationProvider,
+      Installation installation,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @LastSync Preference<Long> lastSync,
       PhoneUtils phoneUtils, @LookupResult Preference<String> lookupResult) {
 
@@ -68,7 +66,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     this.growthApi = growthApi;
     this.accessToken = accessToken;
     this.installation = installation;
-    this.reactiveLocationProvider = reactiveLocationProvider;
     this.utcSimpleDate = utcSimpleDate;
     this.lastSync = lastSync;
     this.phoneUtils = phoneUtils;

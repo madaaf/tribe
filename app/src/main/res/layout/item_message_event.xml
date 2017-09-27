@@ -27,9 +27,6 @@
         android:layout_marginStart="15dp"
         android:background="@null"
         android:scaleType="centerCrop"
-        app:hasHole="true"
-        app:hasInd="true"
-        app:hasShadow="false"
         />
     <ImageView
         android:id="@+id/videoCallBtn"

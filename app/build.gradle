@@ -217,26 +217,20 @@ dependencies {
   provided presentationDependencies.javaxAnnotation
   compile presentationDependencies.priorityJobQueue
   compile presentationDependencies.rxBindings
-  //compile presentationDependencies.picasso
-  //compile presentationDependencies.picassoDownloader
   compile presentationDependencies.glide
   compile presentationDependencies.glideOKHttp
   compile presentationDependencies.byteUnits
   compile presentationDependencies.rebound
   compile presentationDependencies.rxSharedPreferences
   compile presentationDependencies.libPhoneNumber
-  compile presentationDependencies.exoPlayer
   compile presentationDependencies.firebaseMessaging
   compile presentationDependencies.circularProgressView
-  compile presentationDependencies.rxLocation
-  compile presentationDependencies.googlePlayLocation
   compile presentationDependencies.googlePlayBase
   compile presentationDependencies.googlePlayGcm
   compile presentationDependencies.rxPermissions
   compile presentationDependencies.facebook
   compile presentationDependencies.facebookAccountKit
   compile presentationDependencies.multiDex
-  compile presentationDependencies.confetti
   compile presentationDependencies.mixpanel
   compile presentationDependencies.imageCropper
   compile presentationDependencies.firebaseInvites
@@ -249,6 +243,7 @@ dependencies {
   compile presentationDependencies.flexbox
   compile presentationDependencies.instacapture
   compile presentationDependencies.jodatime
+  compile "me.leolin:ShortcutBadger:1.1.18@aar"
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker
