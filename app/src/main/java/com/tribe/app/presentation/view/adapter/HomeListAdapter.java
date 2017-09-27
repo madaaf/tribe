@@ -53,6 +53,9 @@ public class HomeListAdapter extends RecyclerView.Adapter
     shortcutLiveHomeAdapterDelegate = new ShortcutLiveHomeAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutLiveHomeAdapterDelegate);
 
+    shortcutChatActiveHomeAdapterDelegate = new ShortcutChatActiveHomeAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutChatActiveHomeAdapterDelegate);
+
     items = new ArrayList<>();
 
     setHasStableIds(true);
@@ -105,12 +108,13 @@ public class HomeListAdapter extends RecyclerView.Adapter
 
   public Observable<View> onChatClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onChatClick(),
-        shortcutLiveHomeAdapterDelegate.onChatClick());
+        shortcutLiveHomeAdapterDelegate.onChatClick(),
+        shortcutChatActiveHomeAdapterDelegate.onChatClick());
   }
 
   public Observable<View> onLongClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
-        shortcutLiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
+        shortcutLiveHomeAdapterDelegate.onLongClick(), shortcutChatActiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
   }
 
   public void setItems(List<Recipient> items) {

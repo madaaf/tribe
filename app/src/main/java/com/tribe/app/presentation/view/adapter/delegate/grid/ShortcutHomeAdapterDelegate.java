@@ -20,7 +20,8 @@ public class ShortcutHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
     Recipient recipient = items.get(position);
     return recipient instanceof Shortcut &&
         !recipient.getId().equals(Recipient.ID_HEADER) &&
-        !recipient.getId().equals(Recipient.ID_EMPTY);
+        !recipient.getId().equals(Recipient.ID_EMPTY) &&
+        recipient.isRead();
   }
 
   @Override protected int getLayoutId() {

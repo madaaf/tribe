@@ -60,10 +60,6 @@ public class Invite extends Recipient {
     return room.getInitiator().getProfilePicture();
   }
 
-  @Override public String getSubId() {
-    return room.getId();
-  }
-
   @Override public String getId() {
     return room.getId();
   }
@@ -82,6 +78,10 @@ public class Invite extends Recipient {
 
   @Override public Date getLastSeenAt() {
     return null;
+  }
+
+  @Override public boolean isRead() {
+    return true;
   }
 
   @Override public boolean isFriend() {

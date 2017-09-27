@@ -86,6 +86,11 @@ public class ChatActivity extends BaseActivity {
     super.onResume();
   }
 
+  @Override public void finish() {
+    super.finish();
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
+  }
+
   private void initChatService(String usersFromatedId) {
     startService(WSService.getCallingIntent(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
   }

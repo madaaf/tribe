@@ -329,7 +329,10 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<List<ContactInterface>> contacts() {
     return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
-        (contactABRealmList, contactFBRealmList) -> {
+        this.tribeApi.getUserInfos(context.getString(R.string.user_infos_sync,
+            context.getString(R.string.userfragment_infos),
+            context.getString(R.string.shortcutFragment_infos))).doOnNext(saveToCacheUser),
+        (contactABRealmList, contactFBRealmList, userRealm) -> {
           List<ContactInterface> contactList = new ArrayList<>();
 
           for (ContactABRealm contactABRealm : contactABRealmList) {

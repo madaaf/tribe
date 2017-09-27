@@ -224,7 +224,7 @@ public class Navigator {
         activity.startActivity(intent);
       } else {
         activity.startActivityForResult(intent, FROM_LIVE);
-        activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+        activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
       }
     }
   }

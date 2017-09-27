@@ -23,7 +23,7 @@ public class Shortcut extends Recipient implements Serializable {
   private boolean online;
   private boolean live;
   private boolean pinned;
-  private boolean read;
+  private boolean read = true;
   private boolean mute;
   private boolean single;
   private @ShortcutRealm.ShortcutStatus String status;
@@ -102,7 +102,7 @@ public class Shortcut extends Recipient implements Serializable {
     this.status = status;
   }
 
-  public boolean isRead() {
+  @Override public boolean isRead() {
     return read;
   }
 
@@ -148,10 +148,6 @@ public class Shortcut extends Recipient implements Serializable {
 
   @Override public String getProfilePicture() {
     return isSingle() ? getSingleFriend().getProfilePicture() : picture;
-  }
-
-  @Override public String getSubId() {
-    return id;
   }
 
   public Date getLastActivityAt() {
@@ -255,35 +251,35 @@ public class Shortcut extends Recipient implements Serializable {
   }
 
   @Override public String toString() {
-    return "Shortcut{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
-        + name
-        + '\''
-        + ", picture='"
-        + picture
-        + '\''
-        + ", online="
-        + online
-        + ", live="
-        + live
-        + ", pinned="
-        + pinned
-        + ", read="
-        + read
-        + ", mute="
-        + mute
-        + ", single="
-        + single
-        + ", status='"
-        + status
-        + '\''
-        + ", last_activity_at="
-        + last_activity_at
-        + ", members="
-        + members
-        + '}';
+    return "Shortcut{" +
+        "id='" +
+        id +
+        '\'' +
+        ", name='" +
+        name +
+        '\'' +
+        ", picture='" +
+        picture +
+        '\'' +
+        ", online=" +
+        online +
+        ", live=" +
+        live +
+        ", pinned=" +
+        pinned +
+        ", read=" +
+        read +
+        ", mute=" +
+        mute +
+        ", single=" +
+        single +
+        ", status='" +
+        status +
+        '\'' +
+        ", last_activity_at=" +
+        last_activity_at +
+        ", members=" +
+        members +
+        '}';
   }
 }

@@ -456,7 +456,10 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(homeGridAdapter.onChatClick()
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(recipient -> navigator.navigateToChat(this, recipient)));
+        .subscribe(recipient -> {
+          homeGridPresenter.readShortcut(recipient.getId());
+          navigator.navigateToChat(this, recipient);
+        }));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(

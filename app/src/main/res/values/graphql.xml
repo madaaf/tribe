@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="user.infos" translatable="false">
+  <string name="user.infos" translatable="false">
         {
             user {
                 ...UserInfos
@@ -9,19 +9,10 @@
                   recent (max : 10) {
                     ...ShortcutInfos
                   }
-                  single {
-                    ...ShortcutInfos
-                  }
                   unread {
                     ...ShortcutInfos
                   }
                   online {
-                    ...ShortcutInfos
-                  }
-                  hidden {
-                    ...ShortcutInfos
-                  }
-                  blocked {
                     ...ShortcutInfos
                   }
                 }
@@ -37,6 +28,29 @@
         %1$s
         %2$s
         %3$s
+  </string>
+
+  <string name="user.infos.sync" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                shortcuts {
+                  recent {
+                    ...ShortcutInfos
+                  }
+                  hidden {
+                    ...ShortcutInfos
+                  }
+                  blocked {
+                    ...ShortcutInfos
+                  }
+                }
+            }
+        }
+
+        %1$s
+        %2$s
   </string>
 
   <string name="messages.details" translatable="false">

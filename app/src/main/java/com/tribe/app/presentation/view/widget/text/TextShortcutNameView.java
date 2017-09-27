@@ -85,7 +85,7 @@ public class TextShortcutNameView extends LinearLayout {
       setVisibility(View.VISIBLE);
 
       if (textType == CHAT) {
-        TextViewCompat.setTextAppearance(txtNameShortcut, R.style.Title_2_BlueNew);
+        TextViewCompat.setTextAppearance(txtNameShortcut, R.style.Title_2_Blue);
       } else if (textType == LIVE) {
         TextViewCompat.setTextAppearance(txtNameShortcut, R.style.Title_2_Red);
       } else {

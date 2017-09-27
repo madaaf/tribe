@@ -59,6 +59,9 @@ public abstract class Recipient implements Serializable, BaseListInterface {
     int res = ((Boolean) two.isLive()).compareTo(one.isLive());
     if (res != 0) return res;
 
+    res = ((Boolean) !two.isRead()).compareTo(!one.isRead());
+    if (res != 0) return res;
+
     res = ((Boolean) two.isOnline()).compareTo(one.isOnline());
     if (res != 0) return res;
 
@@ -88,8 +91,6 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public abstract String getProfilePicture();
 
-  public abstract String getSubId();
-
   public abstract String getId();
 
   public abstract boolean isLive();
@@ -97,6 +98,8 @@ public abstract class Recipient implements Serializable, BaseListInterface {
   public abstract boolean isOnline();
 
   public abstract Date getLastSeenAt();
+
+  public abstract boolean isRead();
 
   public boolean isFake() {
     return (getId().equals(Recipient.ID_EMPTY) ||
@@ -107,7 +110,7 @@ public abstract class Recipient implements Serializable, BaseListInterface {
   }
 
   public @HomeListViewHeader.HeaderType int getSectionType() {
-    if (isLive()) {
+    if (isLive() || !isRead()) {
       return HomeListViewHeader.ONGOING;
     } else if (isOnline()) {
       return HomeListViewHeader.ONLINE;
