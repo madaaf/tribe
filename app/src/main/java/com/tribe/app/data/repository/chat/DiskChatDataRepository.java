@@ -35,15 +35,6 @@ import rx.Observable;
   @Override public Observable<List<Message>> loadMessages(String[] userIds, String date) {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
-
- /*   return Observable.combineLatest(chatDataStore.getMessages(userIds),
-        chatDataStore.createdMessages(), (loadedMessages, newMessage) -> {
-          List<Message> list = messageRealmDataMapper.transform(loadedMessages);
-          Message newMess = messageRealmDataMapper.transform(newMessage);
-          list.add(newMess);
-          return list;
-        }).doOnError(throwable -> Timber.e("SOEF TRHOWABLE ERROR " + throwable.toString()));*/
-
     return chatDataStore.getMessages(userIds)
         .doOnError(Throwable::printStackTrace)
         .map(messageRealmDataMapper::transform);

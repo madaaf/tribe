@@ -85,6 +85,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   final public static int FROM_CHAT = 0;
   final public static int FROM_LIVE = 1;
+  private final static String TYPE_NORMAL = "TYPE_NORMAL";
+  private final static String TYPE_LIVE = "TYPE_LIVE";
+  private final static String TYPE_ONLINE = "TYPE_ONLINE";
 
   private LayoutInflater inflater;
   private Unbinder unbinder;
@@ -240,12 +243,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(context), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
-              Timber.e("SOEF GET URI " + uri.toString());
               sendItemToAdapter(MESSAGE_IMAGE, null, uri);
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
-              Timber.e("SOEF GET URI " + uri.toString());
               sendItemToAdapter(MESSAGE_IMAGE, null, uri);
             }));
           }
@@ -410,12 +411,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     pulseLayout.clearAnimation();
   }
 
-  private void setAnimation() {
-    videoCallBtn.setImageDrawable(
-        ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
-    pulseLayout.start();
-  }
-
   private void scrollListToBottom() {
     //messageAdapter.getItemCount()
    /* recyclerView.post(
@@ -443,7 +438,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
     populateUsersHorizontalList();
-    setAnimation();
+    setAnimation(TYPE_NORMAL);
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -483,9 +478,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.e("SOEF successLoadingMessage " + messages.size());
-    for (Message m : messages) {
-      Timber.w("SOEf : " + m.toString());
-    }
     load = false;
   }
 
@@ -525,6 +517,28 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messageAdapter.setItems(unreadDiskMessages);
   }
 
+  private void setAnimation(String type) {
+    switch (type) {
+      case TYPE_NORMAL:
+        videoCallBtn.setImageDrawable(
+            ContextCompat.getDrawable(context, R.drawable.picto_chat_video));
+        pulseLayout.start();
+        break;
+      case TYPE_LIVE:
+        videoCallBtn.setImageDrawable(
+            ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
+        pulseLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.red_pulse));
+        pulseLayout.start();
+        break;
+      case TYPE_ONLINE:
+        videoCallBtn.setImageDrawable(
+            ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
+        pulseLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.blue_new));
+        pulseLayout.start();
+        break;
+    }
+  }
+
   @Override public void errorLoadingMessageDisk() {
     Timber.e("SOEF errorLoadingMessageDisk");
   }
@@ -538,13 +552,19 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     Timber.e("SOEF errorMessageCreation");
   }
 
-  @Override public void successShortcutUpdate(List<Shortcut> shortcuts) {
-    Timber.e("SHORTCUT SOEF "
-        + shortcuts.get(0).getMembers().get(0).getDisplayName()
-        + " "
-        + shortcuts.get(0).isOnline()
-        + " "
-        + shortcuts.get(0).getMembers().get(0).isOnline());
+  @Override public void successShortcutUpdate(Shortcut shortcut) {
+    for (User u : shortcut.getMembers()) {
+      Timber.e("SHORTCUT SOEF " + u.getDisplayName() + " " + u.isOnline());
+    }
+    Timber.e("SHORTCUT id " + shortcut.getId() + " " + shortcut.isOnline());
+    chatUserAdapter.setItems(shortcut.getMembers());
+    if (shortcut.isLive()) {
+      setAnimation(TYPE_LIVE);
+    } else if (shortcut.isOnline()) {
+      setAnimation(TYPE_ONLINE);
+    } else {
+      setAnimation(TYPE_NORMAL);
+    }
   }
 
   @Override public void errorShortcutUpdate() {

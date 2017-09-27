@@ -722,7 +722,7 @@
 	<string name="linked_friends_loading">Chargement...</string>
 	
 	<!-- Home -->
-	<string name="home_section_ongoing">En cours</string>
+	<string name="home_section_ongoing">Nouveau</string>
 	<string name="home_section_online">En ligne</string>
 	<string name="home_section_recent">Récents</string>
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>

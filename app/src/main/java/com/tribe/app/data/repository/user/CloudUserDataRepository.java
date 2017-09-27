@@ -97,7 +97,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Shortcut>> getShortcuts(String shortcutId) {
+  @Override public Observable<Shortcut> getShortcuts(String shortcutId) {
     return null;
   }
 

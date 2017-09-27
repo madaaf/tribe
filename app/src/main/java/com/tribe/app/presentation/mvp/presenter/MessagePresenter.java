@@ -78,7 +78,7 @@ public class MessagePresenter implements Presenter {
     }
   }
 
-  private class GetDiskShortcutSubscriber extends DefaultSubscriber<List<Shortcut>> {
+  private class GetDiskShortcutSubscriber extends DefaultSubscriber<Shortcut> {
 
     @Override public void onCompleted() {
     }
@@ -87,7 +87,7 @@ public class MessagePresenter implements Presenter {
       if (chatMVPView != null) chatMVPView.errorShortcutUpdate();
     }
 
-    @Override public void onNext(List<Shortcut> shortcuts) {
+    @Override public void onNext(Shortcut shortcuts) {
       if (chatMVPView != null) chatMVPView.successShortcutUpdate(shortcuts);
     }
   }

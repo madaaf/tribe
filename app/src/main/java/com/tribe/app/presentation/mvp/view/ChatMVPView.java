@@ -22,7 +22,7 @@ public interface ChatMVPView extends MVPView {
 
   void errorMessageCreation();
 
-  void successShortcutUpdate(List<Shortcut> shortcuts);
+  void successShortcutUpdate(Shortcut shortcut);
 
   void errorShortcutUpdate();
 }

@@ -104,11 +104,31 @@ import rx.Observable;
         });
   }
 
-  @Override public Observable<List<Shortcut>> getShortcuts(String shortcutId) {
+  @Override public Observable<Shortcut> getShortcuts(String shortcutId) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
     return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.onlineMap().startWith(new HashMap<>()),
+        userDataStore.liveMap().startWith(new HashMap<>()), (userRealm, onlineMap, liveMap) -> {
+
+          List<Shortcut> shortcutList = null;
+          User user = userRealmDataMapper.transform(userRealm);
+          if (user != null && user.getShortcutList() != null) {
+            shortcutList = updateOnlineLiveShortcuts(user.getShortcutList(), onlineMap, true);
+          }
+
+          return shortcutList;
+        }).map(list -> {
+      Shortcut shortcut = null;
+      for (Shortcut sc : list) {
+        if (sc.getId().equals(shortcutId)) shortcut = sc;
+      }
+      return shortcut;
+    });
+
+
+/*    return Observable.combineLatest(userDataStore.userInfos(null),
         userDataStore.onlineMap().startWith(new HashMap<>()), ((userRealm, onlineMap) -> {
           List<Shortcut> shortcutList = null;
           User user = userRealmDataMapper.transform(userRealm);
@@ -123,7 +143,7 @@ import rx.Observable;
         if (sc.getId().equals(shortcutId)) shortcutListFiltred.add(sc);
       }
       return shortcutListFiltred;
-    });
+    });*/
   }
 
   @Override public Observable<User> getFbIdUpdated() {
@@ -192,9 +212,8 @@ import rx.Observable;
     for (ShortcutRealm st : shortcutRealmList) {
       st.computeMembersOnline(onlineMap);
 
-      if (!excludeBlocked ||
-          (!StringUtils.isEmpty(st.getStatus()) &&
-              st.getStatus().equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
+      if (!excludeBlocked || (!StringUtils.isEmpty(st.getStatus()) && st.getStatus()
+          .equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
         st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline());
         result.add(st);
       }

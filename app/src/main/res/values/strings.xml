@@ -722,7 +722,7 @@
 	<string name="linked_friends_loading">Loading...</string>
 	
 	<!-- Home -->
-	<string name="home_section_ongoing">Ongoing</string>
+	<string name="home_section_ongoing">New</string>
 	<string name="home_section_online">Online</string>
 	<string name="home_section_recent">Recent</string>
 	<string name="home_section_suggested_friends">Suggested friends</string>

@@ -59,11 +59,14 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     User i = items.get(position);
     vh.name.setText(i.getDisplayName());
     vh.avatarView.load(i.getProfilePicture());
-    if (position == 0) {
+    if (i.isOnline()) {
       vh.container.setBackground(
           ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
       extendsDots(vh);
+    } else {
+      vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat));
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.grey_chat_border));
     }
   }
 

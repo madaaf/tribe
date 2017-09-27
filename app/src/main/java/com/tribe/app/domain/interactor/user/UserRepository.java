@@ -54,8 +54,7 @@ public interface UserRepository {
    */
   Observable<User> userInfos(final String userId);
 
-  Observable<List<Shortcut>> getShortcuts(String shortcutId);
-
+  Observable<Shortcut> getShortcuts(String shortcutId);
 
   Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 
