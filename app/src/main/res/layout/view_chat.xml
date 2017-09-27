@@ -200,7 +200,6 @@
         android:layout_gravity="bottom"
         android:layout_marginTop="5dp"
         android:gravity="bottom"
-        app:pulseColor="@color/red.pulse"
         app:pulseCount="3"
         app:pulseDuration="3000"
         >

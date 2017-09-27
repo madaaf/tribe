@@ -59,9 +59,17 @@ import timber.log.Timber;
   public static final String SHORTCUT_REMOVED_SUFFIX = "___sr";
   public static final String MESSAGE_CREATED_SUFFIX = "___mc";
 
-  public static Intent getCallingIntent(Context context, String type, String usersFromatedIds) {
+  public static Intent getCallingSubscribeChat(Context context, String type,
+      String usersFromatedIds) {
+    Timber.e("SOEF SUBSCRIBE TO " + usersFromatedIds);
     Intent intent = new Intent(context, WSService.class);
     intent.putExtra(CHAT_IDS, usersFromatedIds);
+    intent.putExtra(TYPE, type);
+    return intent;
+  }
+
+  public static Intent getCallingIntent(Context context, String type, String usersFromatedIds) {
+    Intent intent = new Intent(context, WSService.class);
     intent.putExtra(TYPE, type);
     return intent;
   }

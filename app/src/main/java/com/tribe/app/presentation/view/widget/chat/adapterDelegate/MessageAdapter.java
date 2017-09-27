@@ -8,6 +8,11 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -22,7 +27,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
   protected RxAdapterDelegatesManager<List<Message>> delegatesManager;
   private List<Message> items;
 
-  //private MessageAdapterDelegate messageAdapterDelegate;
+  private Set<Message> treeSet = new TreeSet<>((o1, o2) -> {
+    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+    DateTime d1 = parser.parseDateTime(o1.getCreationDate());
+    DateTime d2 = parser.parseDateTime(o2.getCreationDate());
+    return d1.compareTo(d2);
+  });
+
 
   private MessageEmojiAdapterDelegate messageEmojiAdapterDelegate;
   private MessageTextAdapterDelegate messageTextAdapterDelegate;
@@ -31,13 +42,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
-  // private PublishSubject<View> onMessagePending = PublishSubject.create();
+
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
-
-  /*  messageAdapterDelegate = new MessageAdapterDelegate(context);
-    delegatesManager.addDelegate(messageAdapterDelegate);*/
 
     messageEmojiAdapterDelegate = new MessageEmojiAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageEmojiAdapterDelegate);
@@ -83,7 +91,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
       Message last = items.get(items.size() - 1);
       last.setPending(false);
       last.setId(m.getId());
-      Timber.w(" PLAYLOAD BINDING " + m.toString());
+      Timber.e("SOEF PLAYLOAD BINDING " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
       delegatesManager.onBindViewHolder(items, position, holder);
@@ -95,18 +103,25 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   public void setItems(Collection<Message> items) {
-    //
     this.items.clear();
-    this.items.addAll(items);
+    this.treeSet.addAll(items);
+    this.items.addAll(new ArrayList<>(treeSet)); // Use tree set to put items in bottom or in top of the list
+    Timber.e("SOEF ADD ITEM " + this.items.size());
     super.notifyDataSetChanged();
   }
 
+  /*
   public void setItems(List<Message> items, int position) {
     //some fictitious objectList where we're populating data
     for (Message obj : items) {
       this.items.add(position, obj);
     }
     super.notifyDataSetChanged();
+  }
+  */
+
+  public int getIndexOfMessage(Message message) {
+    return items.indexOf(message);
   }
 
   public Message getMessage(int position) {

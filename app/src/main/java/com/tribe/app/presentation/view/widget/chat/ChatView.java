@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -98,7 +99,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private LinearLayoutManager layoutManager, layoutManagerGrp;
   private List<Message> items = new ArrayList<>();
   private List<User> members = new ArrayList<>();
-  private Set<Message> unreadDiskMessages = new TreeSet<>((o1, o2) -> {
+  private TreeSet<Message> unreadDiskMessages = new TreeSet<>((o1, o2) -> {
     DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
     DateTime d1 = parser.parseDateTime(o1.getCreationDate());
     DateTime d2 = parser.parseDateTime(o2.getCreationDate());
@@ -345,7 +346,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext(), type);
     layoutManager.setStackFromEnd(true);
-    //   layoutManager.setReverseLayout(true);
+/*
+    layoutManager.setReverseLayout(true);*/
     recyclerView.setItemAnimator(null);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setHasFixedSize(true);
@@ -353,7 +355,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
         if (dy < 0) {
           if (layoutManager.findFirstVisibleItemPosition() < 3 && !load) {
             Timber.w("SCROOL OK " + messageAdapter.getMessage(0).getContent());
@@ -364,6 +365,21 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         }
       }
     });
+
+    recyclerView.addOnLayoutChangeListener(
+        (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+          if (bottom < oldBottom) {
+            final int lastAdapterItem = messageAdapter.getItemCount() - 1;
+            recyclerView.post(() -> {
+              int recyclerViewPositionOffset = -1000000;
+              View bottomView = layoutManager.findViewByPosition(lastAdapterItem);
+              if (bottomView != null) {
+                recyclerViewPositionOffset = 0 - bottomView.getHeight();
+              }
+              layoutManager.scrollToPositionWithOffset(lastAdapterItem, recyclerViewPositionOffset);
+            });
+          }
+        });
 
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     chatUserAdapter = new ChatUserAdapter(getContext());
@@ -377,7 +393,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void sendItemToAdapter(@Message.Type String type, String content, Uri uri) {
-    items.clear();
     Message message = null;
     switch (type) {
       case MESSAGE_TEXT:
@@ -401,7 +416,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setAuthor(user);
     message.setCreationDate(dateUtils.getUTCDateAsString());
     message.setPending(true);
-    message.setId("PENDING");
+    message.setId("PENDING_");//+ UUID.randomUUID()
     items.add(message);
     messageAdapter.setItems(items);
     scrollListToBottom();
@@ -409,13 +424,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void dispose() {
     pulseLayout.clearAnimation();
-  }
-
-  private void scrollListToBottom() {
-    //messageAdapter.getItemCount()
-   /* recyclerView.post(
-        () -> layoutManager.scrollToPositionWithOffset(layoutManager.getItemCount(), 1000));*/
-    recyclerView.post(() -> recyclerView.smoothScrollToPosition(layoutManager.getItemCount()));
   }
 
   protected void initDependencyInjector() {
@@ -450,7 +458,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @OnClick(R.id.sendBtn) void onClickSend() {
     if (!isHeart) {
-      String editedMessage = editText.getText().toString();
+      String m = editText.getText().toString();
+
+      String editedMessage = m.replaceAll("\n", "\"n");
+
       if (!editedMessage.isEmpty()) {
         if (StringUtils.isOnlyEmoji(editedMessage)) {
           sendItemToAdapter(MESSAGE_EMOJI, editedMessage, null);
@@ -471,7 +482,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @OnTouch(R.id.editText) boolean onClickEditText() {
-    scrollListToBottom();
     editText.setHint("Message");
     return false;
   }
@@ -485,36 +495,37 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     Timber.e("SOEF errorLoadingMessage");
   }
 
-  @Override public void successLoadingMessageDisk(List<Message> messasges) {
-    Timber.e("SOEF successLoadingMessageDisk " + messasges.size());
-   /* Set<Message> ok = new HashSet<>();
-    ok.addAll(messageAdapter.getItems());
+  private void scrollListToBottom() {
+    //recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()),100);
 
-    if (ok.isEmpty()) { // PREMIER ENTRE
-      for (Message m : messasges) {
-        if (!diskMessages.contains(m)) {
-          unreadDiskMessages.add(m);
-        }
+    recyclerView.postDelayed(new Runnable() {
+      @Override public void run() {
+        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
       }
-    } else {
-      for (Message m : messasges) {
-        //&& !m.getAuthor().getId().equals(user.getId())
-        if (!diskMessages.contains(m)) {
-          unreadDiskMessages.add(m);
-        }
+    }, 100);
+  }
+
+  @Override public void successLoadingMessageDisk(List<Message> messasges) {
+
+    Set<Message> adapterList = new HashSet<>();
+    adapterList.addAll(messageAdapter.getItems());
+
+    for (Message m : messasges) {
+      if (!adapterList.contains(m)) {
+        unreadDiskMessages.add(m);
       }
     }
-
-    diskMessages.addAll(messasges);
-
-    messageAdapter.setItems(unreadDiskMessages);
-    unreadDiskMessages.clear();
-    //scrollListToBottom();
-
-    unreadDiskMessages.clear();*/
-
-    unreadDiskMessages.addAll(messasges);
-    messageAdapter.setItems(unreadDiskMessages);
+    Timber.e(
+        "SOEF successLoadingMessageDisk " + messasges.size() + " " + unreadDiskMessages.size());
+    if (!unreadDiskMessages.isEmpty()) {
+      messageAdapter.setItems(unreadDiskMessages);
+      int index = messageAdapter.getIndexOfMessage(unreadDiskMessages.last());
+      recyclerView.post(() -> {
+        Timber.e("smooth scroll to position " + (index + 1));
+        recyclerView.smoothScrollToPosition(index + 1);
+      });
+      unreadDiskMessages.clear();
+    }
   }
 
   private void setAnimation(String type) {
@@ -522,18 +533,18 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       case TYPE_NORMAL:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video));
-        pulseLayout.start();
+        pulseLayout.stop();
         break;
       case TYPE_LIVE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
-        pulseLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.red_pulse));
+        pulseLayout.setColor(ContextCompat.getColor(context, R.color.red_pulse));
         pulseLayout.start();
         break;
       case TYPE_ONLINE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
-        pulseLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.blue_new));
+        pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new));
         pulseLayout.start();
         break;
     }
@@ -553,10 +564,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {
-    for (User u : shortcut.getMembers()) {
+   /* for (User u : shortcut.getMembers()) {
       Timber.e("SHORTCUT SOEF " + u.getDisplayName() + " " + u.isOnline());
     }
-    Timber.e("SHORTCUT id " + shortcut.getId() + " " + shortcut.isOnline());
+    Timber.e("SHORTCUT id " + shortcut.getId() + " " + shortcut.isOnline());*/
     chatUserAdapter.setItems(shortcut.getMembers());
     if (shortcut.isLive()) {
       setAnimation(TYPE_LIVE);

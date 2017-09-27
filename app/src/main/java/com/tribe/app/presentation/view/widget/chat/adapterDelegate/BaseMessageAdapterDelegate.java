@@ -102,6 +102,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     vh.time.setText(dateUtils.getHourAndMinuteInLocal(time));
     vh.avatarView.load(m.getAuthor().getProfilePicture());
     vh.name.setText(m.getAuthor().getDisplayName());
+    
     vh.daySeparator.setText(dateUtils.getFormattedDayId(time));
 
     if (position > 0) {
