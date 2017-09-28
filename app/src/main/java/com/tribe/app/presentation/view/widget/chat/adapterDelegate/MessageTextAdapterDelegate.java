@@ -36,6 +36,14 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     return message instanceof MessageText;
   }
 
+
+  @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
+    MessageTextViewHolder vh = new MessageTextViewHolder(
+        layoutInflater.inflate(R.layout.item_message_text, parent, false));
+
+    return vh;
+  }
+
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     super.onBindViewHolder(items, position, holder);
@@ -51,12 +59,6 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     setPendingBehavior(m, vh.container);
   }
 
-  @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
-    MessageTextViewHolder vh = new MessageTextViewHolder(
-        layoutInflater.inflate(R.layout.item_message_text, parent, false));
-
-    return vh;
-  }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {

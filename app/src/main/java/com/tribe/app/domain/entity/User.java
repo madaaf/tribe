@@ -48,6 +48,7 @@ public class User
   private boolean invisible_mode;
   private boolean push_notif;
   private boolean is_online = false;
+  private boolean isTyping = false;
   private long time_in_call = 0;
   private Date last_seen_at;
 
@@ -67,6 +68,14 @@ public class User
     this.id = id;
     this.inviteList = new ArrayList<>();
     this.shortcutList = new ArrayList<>();
+  }
+
+  public boolean isTyping() {
+    return isTyping;
+  }
+
+  public void setTyping(boolean typing) {
+    isTyping = typing;
   }
 
   public String getUsername() {
@@ -372,5 +381,20 @@ public class User
     } else {
       return LiveInviteViewHeader.ADD_FRIENDS_IN_CALL;
     }
+  }
+
+  @Override public String toString() {
+    return "User{"
+        + "id='"
+        + id
+        + '\''
+        + ", display_name='"
+        + display_name
+        + '\''
+        + ", is_online="
+        + isOnline()
+        + ", isTyping="
+        + isTyping()
+        + '}';
   }
 }

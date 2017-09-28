@@ -418,7 +418,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis supprimés et bloqués</string>
-	<string name="profile_manage_friendships">Gérer vos amis :busts_in_silhouette:</string>
+	<string name="profile_manage_friendships">Amis &amp; Notifications :bell:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
@@ -723,8 +723,8 @@
 	
 	<!-- Home -->
 	<string name="home_section_ongoing">Nouveau</string>
-	<string name="home_section_online">En ligne</string>
-	<string name="home_section_recent">Récents</string>
+	<string name="home_section_online">Amis en ligne</string>
+	<string name="home_section_recent">Chat récents</string>
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
@@ -735,16 +735,16 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
-	<string name="home_menu_shortcut_pin">Épingler en haut</string>
-	<string name="home_menu_shortcut_unpin">Retirer l\'épingle</string>
+	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>
+	<string name="home_menu_shortcut_unpin">:broken_heart: Retirer l\'épingle</string>
 	<string name="home_menu_shortcut_mute">:no_bell: notification \'est en ligne\'</string>
-	<string name="home_menu_shortcut_unmute">:bell: notification \'est en ligne\'</string>
-	<string name="home_menu_shortcut_hide">Masquer</string>
-	<string name="home_menu_shortcut_block">Bloquer</string>
-	<string name="home_menu_shortcut_update_name">Modifier le nom</string>
-	<string name="home_menu_shortcut_mark_as_read">Marquer comme lu</string>
-	<string name="home_menu_shortcut_mark_as_unread">Marquer comme non-lu</string>
-	<string name="home_menu_invite_decline">Rejeter l\'appel</string>
+	<string name="home_menu_shortcut_unmute">:bell: notification est en ligne</string>
+	<string name="home_menu_shortcut_hide">:speak_no_evil: Masquer</string>
+	<string name="home_menu_shortcut_block">:no_entry: Bloquer</string>
+	<string name="home_menu_shortcut_update_name">:pencil2: Modifier le nom</string>
+	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
+	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
+	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>

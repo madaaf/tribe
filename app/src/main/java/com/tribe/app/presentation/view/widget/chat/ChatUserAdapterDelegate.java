@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget.chat;
 
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -25,17 +26,21 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
  */
 
 public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
+  private static int COUNTER_SECONDE = 10;
 
   protected LayoutInflater layoutInflater;
-
   private Context context;
   private List<View> viewDots = new ArrayList<>();
+  private int counter = 0;
+  private int width = 0;
+  private int height = 0;
 
   public ChatUserAdapterDelegate(Context context) {
     this.layoutInflater =
@@ -59,39 +64,78 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     User i = items.get(position);
     vh.name.setText(i.getDisplayName());
     vh.avatarView.load(i.getProfilePicture());
+    Timber.e("SOEF IS ON LIGNE " + position + " " + i.toString());
     if (i.isOnline()) {
       vh.container.setBackground(
           ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
-      extendsDots(vh);
     } else {
       vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat));
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.grey_chat_border));
     }
   }
 
+  @Override
+  public void onBindViewHolder(@NonNull List<User> items, @NonNull RecyclerView.ViewHolder holder,
+      int position, List<Object> payloads) {
+    User i = (User) payloads.get(0);
+
+    Timber.e("PLAYLOAD " + position + " " + i.toString());
+    ChatUserViewHolder vh = (ChatUserViewHolder) holder;
+    counter++;
+
+    if (i.isTyping()) {
+      // setCounter();
+      extendsDots(vh);
+    } else {
+      vh.dotsContainer.setAnimation(null);
+      vh.dotsContainer.setVisibility(View.GONE);
+    }
+  }
+
+  CountDownTimer countDownTimer;
+
+  private void setCounter() {
+    if (countDownTimer != null) {
+      return;
+    }
+    countDownTimer = new CountDownTimer(COUNTER_SECONDE * 1000, 1000) {
+      public void onTick(long millisUntilFinished) {
+        Timber.w("SOEF  COUNTER " + +millisUntilFinished / 1000);
+      }
+
+      public void onFinish() {
+        Timber.w("SOEF  FINISH ");
+      }
+    };
+
+    countDownTimer.cancel();
+    countDownTimer.start();
+  }
+
   private void extendsDots(ChatUserViewHolder vh) {
+    vh.dotsContainer.setVisibility(View.VISIBLE);
+    vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
+    vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
     vh.container.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
             vh.container.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            int width = vh.container.getWidth();
-            int height = vh.container.getHeight();
-
-            vh.avatarView.setOnClickListener(v -> { //TODO DELETE this condition SOEF
-
-              ResizeAnimation a = new ResizeAnimation(vh.container);
-              a.setDuration(300);
-              a.setInterpolator(new OvershootInterpolator());
-              a.setAnimationListener(new AnimationListenerAdapter() {
-                @Override public void onAnimationStart(Animation animation) {
-                  initDots(vh.dotsContainer);
-                  animateSpin();
-                }
-              });
-              a.setParams(width, width + 60, height, height);
-              vh.container.startAnimation(a);
+            if (width == 0 || height == 0) {
+              width = vh.container.getWidth();
+              height = vh.container.getHeight();
+            }
+            ResizeAnimation a = new ResizeAnimation(vh.container);
+            a.setDuration(300);
+            a.setInterpolator(new OvershootInterpolator());
+            a.setAnimationListener(new AnimationListenerAdapter() {
+              @Override public void onAnimationStart(Animation animation) {
+                initDots(vh.dotsContainer);
+                animateSpin();
+              }
             });
+            a.setParams(width, width + 60, height, height);
+            vh.container.startAnimation(a);
           }
         });
   }
@@ -130,11 +174,6 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
               }).start())
           .start();
     }
-  }
-
-  @Override
-  public void onBindViewHolder(@NonNull List<User> items, @NonNull RecyclerView.ViewHolder holder,
-      int position, List<Object> payloads) {
   }
 
   static class ChatUserViewHolder extends RecyclerView.ViewHolder {

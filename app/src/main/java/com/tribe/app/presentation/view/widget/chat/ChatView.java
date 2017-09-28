@@ -550,17 +550,20 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private void setAnimation(String type) {
     switch (type) {
       case TYPE_NORMAL:
+        Timber.e("SOEF TYPE TYPE_NORMAL");
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video));
         pulseLayout.stop();
         break;
       case TYPE_LIVE:
+        Timber.e("SOEF TYPE TYPE_LIVE");
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
         pulseLayout.setColor(ContextCompat.getColor(context, R.color.red_pulse));
         pulseLayout.start();
         break;
       case TYPE_ONLINE:
+        Timber.e("SOEF TYPE ONLINE");
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
         pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new));
@@ -575,6 +578,18 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void isTypingEvent(String userId) {
     Timber.e("SOEF IS TYPING " + userId);
+    User userTyping = null;
+    for (User u : members) {
+      if (u.getId().equals(userId)) {
+        userTyping = u;
+        userTyping.setTyping(true);
+        userTyping.setIsOnline(true);
+      }
+    }
+    int pos = chatUserAdapter.getIndexOfUser(userTyping);
+    chatUserAdapter.notifyItemChanged(pos, userTyping);
+    // chatUserAdapter.notifyItemMoved(pos, 0);
+    //populateUsersHorizontalList();
   }
 
   @Override public void successMessageCreated(Message message, int position) {
@@ -587,10 +602,15 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {
-   /* for (User u : shortcut.getMembers()) {
-      Timber.e("SHORTCUT SOEF " + u.getDisplayName() + " " + u.isOnline());
+    for (User u : shortcut.getMembers()) {
+      Timber.e("SOEF SHORTCUT UPDATED "
+          + u.getDisplayName()
+          + " "
+          + u.isOnline()
+          + " isShortcutOnline ="
+          + shortcut.isOnline());
     }
-    Timber.e("SHORTCUT id " + shortcut.getId() + " " + shortcut.isOnline());*/
+
     chatUserAdapter.setItems(shortcut.getMembers());
     if (shortcut.isLive()) {
       setAnimation(TYPE_LIVE);

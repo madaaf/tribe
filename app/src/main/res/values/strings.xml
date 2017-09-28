@@ -418,7 +418,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked and deleted friends</string>
-	<string name="profile_manage_friendships">Manage friendships :busts_in_silhouette:</string>
+	<string name="profile_manage_friendships">Friends &amp; Notifications :bell:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
@@ -723,8 +723,8 @@
 	
 	<!-- Home -->
 	<string name="home_section_ongoing">New</string>
-	<string name="home_section_online">Online</string>
-	<string name="home_section_recent">Recent</string>
+	<string name="home_section_online">Online friends</string>
+	<string name="home_section_recent">Recent chats</string>
 	<string name="home_section_suggested_friends">Suggested friends</string>
 	<string name="home_section_invites_to_send">Invites to send</string>
 	<string name="home_section_results">Results</string>
@@ -735,16 +735,16 @@
 	<string name="home_action_new_chat">New chat</string>
 	<string name="home_anonymous_user">person</string>
 	<string name="home_anonymous_users">persons</string>
-	<string name="home_menu_shortcut_pin">Pin to Top</string>
-	<string name="home_menu_shortcut_unpin">Unpin</string>
+	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Fav to top</string>
+	<string name="home_menu_shortcut_unpin">:broken_heart: Unfav</string>
 	<string name="home_menu_shortcut_mute">:no_bell: \'is online\' notification</string>
-	<string name="home_menu_shortcut_unmute">:bell: \'is online\' notification</string>
-	<string name="home_menu_shortcut_hide">Hide</string>
-	<string name="home_menu_shortcut_block">Block</string>
-	<string name="home_menu_shortcut_update_name">Update name</string>
-	<string name="home_menu_shortcut_mark_as_read">Mark as Read</string>
-	<string name="home_menu_shortcut_mark_as_unread">Mark as Unread</string>
-	<string name="home_menu_invite_decline">Decline the call</string>
+	<string name="home_menu_shortcut_unmute">:bell: is online notification</string>
+	<string name="home_menu_shortcut_hide">:speak_no_evil: Hide</string>
+	<string name="home_menu_shortcut_block">:no_entry: Block</string>
+	<string name="home_menu_shortcut_update_name">:pencil2: Edit name</string>
+	<string name="home_menu_shortcut_mark_as_read">:eyes: Mark as read</string>
+	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
+	<string name="home_menu_invite_decline">:phone: Decline call</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>
