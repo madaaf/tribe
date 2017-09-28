@@ -326,6 +326,10 @@
         %1$s : messageCreated ( usersIds : [%2$s] )
   </string>
 
+  <string name="subscription.isTyping" translatable="false">
+        %1$s : isTyping ( usersIds : [%2$s] )
+  </string>
+
   <string name="subscription.shortcutCreated" translatable="false">
         %1$s : shortcutCreated
   </string>

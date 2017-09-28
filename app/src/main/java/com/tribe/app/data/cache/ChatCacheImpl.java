@@ -11,6 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -21,6 +22,7 @@ public class ChatCacheImpl implements ChatCache {
 
   private Context context;
   private Realm realm;
+  private PublishSubject<String> onTyping = PublishSubject.create();
 
   @Inject public ChatCacheImpl(Context context, Realm realm) {
     this.context = context;
@@ -115,6 +117,14 @@ public class ChatCacheImpl implements ChatCache {
     } finally {
       obsRealm.close();
     }
+  }
+
+  @Override public void onTyping(String userId) {
+    onTyping.onNext(userId);
+  }
+
+  @Override public Observable<String> isTyping() {
+    return onTyping;
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

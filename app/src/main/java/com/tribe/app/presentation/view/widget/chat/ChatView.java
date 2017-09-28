@@ -199,6 +199,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.getDiskShortcut(shortcut.getId());
+    messagePresenter.getIsTyping();
   }
 
   private void sendPicture(Uri uri, int position) {
@@ -504,8 +505,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     return false;
   }
 
-  @OnClick(R.id.recyclerViewChat) void onClickRecyclerView() {
+  @OnTouch(R.id.container) boolean onClickRecyclerView() {
     screenUtils.hideKeyboard(this);
+    return false;
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
@@ -569,6 +571,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void errorLoadingMessageDisk() {
     Timber.e("SOEF errorLoadingMessageDisk");
+  }
+
+  @Override public void isTypingEvent(String userId) {
+    Timber.e("SOEF IS TYPING " + userId);
   }
 
   @Override public void successMessageCreated(Message message, int position) {

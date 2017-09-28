@@ -18,6 +18,8 @@ public interface ChatMVPView extends MVPView {
 
   void errorLoadingMessageDisk();
 
+  void isTypingEvent(String userId);
+
   void successMessageCreated(Message message, int position);
 
   void errorMessageCreation();

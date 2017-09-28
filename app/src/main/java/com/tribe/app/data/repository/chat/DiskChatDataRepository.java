@@ -39,4 +39,10 @@ import rx.Observable;
         .doOnError(Throwable::printStackTrace)
         .map(messageRealmDataMapper::transform);
   }
+
+  @Override public Observable<String> isTyping() {
+    final DiskChatDataStore chatDataStore =
+        (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
+    return chatDataStore.isTyping();
+  }
 }

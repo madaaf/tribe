@@ -1,4 +1,4 @@
-package com.tribe.app.data.cache;
+qpackage com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.MessageRealm;
 import io.realm.RealmList;
@@ -13,6 +13,10 @@ import rx.Observable;
 @Singleton public interface ChatCache {
 
   void putMessages(RealmList<MessageRealm> messages, String userIds);
+
+  void onTyping(String userIds);
+
+  Observable<String> isTyping();
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 }

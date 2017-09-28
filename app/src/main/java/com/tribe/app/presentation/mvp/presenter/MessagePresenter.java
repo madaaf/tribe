@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
+import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.GetDiskShortcut;
@@ -25,18 +26,25 @@ public class MessagePresenter implements Presenter {
   protected CreateMessage createMessage;
   protected GetMessageFromDisk getMessageFromDisk;
   protected GetDiskShortcut getDiskShortcut;
+  protected IsTypingFromDisk isTypingFromDisk;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
-      GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut) {
+      GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
+      IsTypingFromDisk isTypingFromDisk) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
     this.getDiskShortcut = getDiskShortcut;
+    this.isTypingFromDisk = isTypingFromDisk;
   }
 
   public void getDiskShortcut(String shortcutId) {
     getDiskShortcut.setShortcutId(shortcutId);
     getDiskShortcut.execute(new GetDiskShortcutSubscriber());
+  }
+
+  public void getIsTyping() {
+    isTypingFromDisk.execute(new IsTypingDiskSubscriber());
   }
 
   public void loadMessagesDisk(String[] userIds, String date) {
@@ -89,6 +97,20 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(Shortcut shortcuts) {
       if (chatMVPView != null) chatMVPView.successShortcutUpdate(shortcuts);
+    }
+  }
+
+  private class IsTypingDiskSubscriber extends DefaultSubscriber<String> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+    }
+
+    @Override public void onNext(String userId) {
+      if (chatMVPView != null) chatMVPView.isTypingEvent(userId);
     }
   }
 

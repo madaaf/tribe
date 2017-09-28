@@ -51,6 +51,7 @@
       android:layout_height="match_parent"
       android:layout_below="@+id/topbar"
       android:background="@android:color/white"
+      android:clickable="true"
       />
 
   <android.support.v7.widget.RecyclerView

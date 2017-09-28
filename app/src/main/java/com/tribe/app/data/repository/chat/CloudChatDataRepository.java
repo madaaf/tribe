@@ -46,4 +46,8 @@ import rx.Observable;
         .doOnError(Throwable::printStackTrace)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
+
+  @Override public Observable<String> isTyping() {
+    return null;
+  }
 }
