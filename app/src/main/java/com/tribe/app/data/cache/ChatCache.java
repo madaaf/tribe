@@ -1,4 +1,4 @@
-qpackage com.tribe.app.data.cache;
+package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.MessageRealm;
 import io.realm.RealmList;
