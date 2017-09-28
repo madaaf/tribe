@@ -246,8 +246,9 @@ public class Shortcut extends Recipient implements Serializable {
 
   public boolean isUniqueMemberOnline(Map<String, Boolean> onlineMap) {
     if (!isSingle()) return false;
+    User user = getSingleFriend();
 
-    return onlineMap.containsKey(members.get(0).getId());
+    return onlineMap.containsKey(user.getId()) || user.isOnline();
   }
 
   @Override public String toString() {

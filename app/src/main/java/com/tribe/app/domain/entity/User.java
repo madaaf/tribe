@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 04/05/2016.
@@ -178,6 +179,9 @@ public class User
     if (is_online) return is_online;
     if (last_seen_at == null) return false;
 
+    //Timber.d("last_seen_at : " + display_name + " / " + last_seen_at);
+    //Timber.d("System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES : " +
+    //    (System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES));
     // We consider that somebody that was online less than fifteen minutes ago is still online
     return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
   }

@@ -344,7 +344,9 @@ import timber.log.Timber;
     }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutUpdated().subscribe(shortcutRealm -> {
-
+      if (!shortcutRealm.isOnline()) {
+        liveCache.removeOnline(shortcutRealm.getId());
+      } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
       userCache.updateShortcut(shortcutRealm);
     }));
 
